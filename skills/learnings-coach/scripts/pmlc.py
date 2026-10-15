@@ -870,10 +870,12 @@ def cmd_dashboard(a):
     bars = "".join(f'<div class="bar"><span>{html.escape(k)}</span><i style="width:{100*c/top_codes[0][1]:.0f}%"></i><b>{c}</b></div>'
                    for k, c in top_codes) if top_codes else ""
     learn_html = ""
+    detail = None
     if a.register:
         reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
         entries = reg["entries"] if isinstance(reg, dict) else reg
         entries = sorted(entries, key=lambda e: (_int(e.get("priority"), 9), _s(e.get("lr_id"))))
+        detail = build_detail_data(w, reg)
         recs = [r for e in entries for r in (e.get("recommendations") or [])]
         strong = sum(1 for r in recs if norm_hoc(r.get("hoc_tier")) in ("elimination", "substitution", "engineering"))
         kpis = [("Learnings", len(entries)),
@@ -887,7 +889,8 @@ def cmd_dashboard(a):
             cells = "".join(
                 f'<td style="--o:.55" title="{html.escape(tm[t])}"><span>●</span></td>' if t in tm else '<td class="z">·</td>'
                 for t in tiers_used)
-            rows.append(f"<tr><th>{html.escape(_s(e.get('lr_id')))} · {html.escape(_s(e.get('title'))[:90])}</th>"
+            lid = html.escape(_s(e.get("lr_id")))
+            rows.append(f'<tr><th><a class="lr-link" href="#detail/{lid}">{lid} · {html.escape(_s(e.get("title"))[:90])}</a></th>'
                         f"<td>{html.escape(_s(e.get('priority')))}</td><td>{html.escape(norm_entity(e.get('owner_entity')))}</td>{cells}</tr>")
         matrix = ("<table><thead><tr><th>Learning</th><th>Priority</th><th>Owner</th>"
                   + "".join(f"<th>{t} {TIER_LABELS[t]}</th>" for t in tiers_used) + "</tr></thead><tbody>"
@@ -908,6 +911,34 @@ def cmd_dashboard(a):
 <div class="wrap tiers">{''.join(per_tier)}</div>
 <h2>Strength of recommended fixes</h2>
 <div class="wrap" style="padding:12px">{hoc_bars}</div>"""
+    overview = f"""<div class="k">{''.join(f'<div><b>{v}</b><span>{html.escape(k)}</span></div>' for k, v in kpis)}</div>
+{learn_html}
+<h2>Who learns, at which level of the organisation</h2>
+<p class="m">Findings touching each functional entity, by organisational tier. A finding can involve several entities and tiers.</p>
+<div class="wrap">{table(ent_ids, tier_ids, tier_lab, et, mx_et)}</div>
+<h2>What kind of learning each entity owns</h2>
+<p class="m">Findings by four-level human-factors category. Rows weighted to Supervision and Organisational Influences need system changes, not retraining.</p>
+<div class="wrap">{table(ent_ids, [1, 2, 3, 4], lvl_lab, el, mx_el)}</div>
+<h2>Most frequent factors</h2>
+<div class="wrap" style="padding:12px">{bars}</div>"""
+    if detail is not None:
+        body = f"""<nav class="tabbar" role="tablist" aria-label="Views">
+<button type="button" role="tab" id="t-overview" aria-controls="tab-overview" aria-selected="true">Overview</button>
+<button type="button" role="tab" id="t-detail" aria-controls="tab-detail" aria-selected="false" tabindex="-1">Detailed register</button>
+</nav>
+<section id="tab-overview" role="tabpanel" aria-labelledby="t-overview">
+{overview}
+</section>
+<section id="tab-detail" role="tabpanel" aria-labelledby="t-detail" hidden>
+<noscript><p class="m">The detailed register needs JavaScript. The same data is in learnings-register.xlsx and learnings-register.json.</p></noscript>
+</section>"""
+        extra_css = (DASHBOARD_ASSETS / "detail.css").read_text(encoding="utf-8")
+        scripts = (f'<script type="application/json" id="pmlc-data">{embed_json(detail)}</script>\n'
+                   f'<script>\n{(DASHBOARD_ASSETS / "detail.js").read_text(encoding="utf-8")}\n</script>')
+    else:
+        body = (overview + '\n<p class="m">Run <code>pmlc.py dashboard --register &lt;learnings-register.json&gt;</code> '
+                "to add the detailed register tab.</p>")
+        extra_css = scripts = ""
     doc = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Organisational Learning Map</title>
 <style>
@@ -928,21 +959,15 @@ td{{background:color-mix(in srgb,var(--acc) calc(var(--o,0)*100%),transparent)}}
 .bar i{{display:block;height:12px;background:var(--acc);border-radius:3px}} .bar b{{text-align:right}}
 .tiers details{{padding:8px 12px;border-bottom:1px solid var(--line)}} .tiers summary{{cursor:pointer;font-weight:600}} .tiers li{{margin:4px 0}}
 footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}}
+{extra_css}
 </style></head><body><main>
 <h1>Organisational Learning Map</h1>
 <p class="m">{title} · {html.escape(fields.get('Location', ''))} · {html.escape(fields.get('Date', ''))}. Learnings from one ProbeMatrix investigation, distributed across the organisation by who owns them.</p>
-<div class="k">{''.join(f'<div><b>{v}</b><span>{html.escape(k)}</span></div>' for k, v in kpis)}</div>
-{learn_html}
-<h2>Who learns, at which level of the organisation</h2>
-<p class="m">Findings touching each functional entity, by organisational tier. A finding can involve several entities and tiers.</p>
-<div class="wrap">{table(ent_ids, tier_ids, tier_lab, et, mx_et)}</div>
-<h2>What kind of learning each entity owns</h2>
-<p class="m">Findings by four-level human-factors category. Rows weighted to Supervision and Organisational Influences need system changes, not retraining.</p>
-<div class="wrap">{table(ent_ids, [1, 2, 3, 4], lvl_lab, el, mx_el)}</div>
-<h2>Most frequent factors</h2>
-<div class="wrap" style="padding:12px">{bars}</div>
+{body}
 <footer>{html.escape(BRAND)}</footer>
-</main></body></html>"""
+</main>
+{scripts}
+</body></html>"""
     out = Path(a.out) if a.out else outputs_dir(ws) / "organisation-learning-map.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")

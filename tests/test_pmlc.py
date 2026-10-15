@@ -1,5 +1,6 @@
 """Engine tests on a small synthetic export (fictional event, no real data)."""
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -413,3 +414,35 @@ def test_make_public_sample_dst_and_missing(tmp_path):
     assert r.returncode == 0 and out.exists(), r.stderr
     r = subprocess.run([sys.executable, str(tool), str(x), "--names", str(names)], capture_output=True, text=True)
     assert r.returncode != 0 and "--slug" in r.stderr
+
+
+def _data_block(t):
+    m = re.search(r'<script type="application/json" id="pmlc-data">(.*?)</script>', t, re.S)
+    assert m, "no pmlc-data block"
+    return json.loads(m.group(1))
+
+
+def test_dashboard_two_tabs(ws, tmp_path):
+    reg = tmp_path / "r.json"
+    reg.write_text(json.dumps(MINI_REG))
+    out = tmp_path / "d.html"
+    run("dashboard", str(ws), "--register", str(reg), "--out", str(out))
+    t = out.read_text(encoding="utf-8")
+    assert 'role="tablist"' in t and 'id="tab-overview"' in t and 'id="tab-detail"' in t
+    assert 'href="#detail/LR-01"' in t
+    assert "Learning plan by level" in t and "Who learns, at which level" in t
+    d = _data_block(t)
+    assert d["entries"][0]["recommendations"][1]["what"].startswith("y </script>")
+    assert set(d["findings"]) == {"FND-0001", "FND-0002", "FND-0003", "FND-0004"}
+    assert t.count("</script>") == 2
+    assert not re.search(r'<(script|link)[^>]+(src|href)="https?:', t)
+    assert "function init()" in t and ".tabbar{" in t
+    assert "ProbeMatrix Learnings Coach" in t
+
+
+def test_dashboard_without_register_has_no_tabs(ws, tmp_path):
+    out = tmp_path / "d.html"
+    run("dashboard", str(ws), "--out", str(out))
+    t = out.read_text(encoding="utf-8")
+    assert 'role="tablist"' not in t and "pmlc-data" not in t and "<script" not in t
+    assert "--register" in t and "Who learns, at which level" in t
