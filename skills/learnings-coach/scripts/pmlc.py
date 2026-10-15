@@ -155,6 +155,29 @@ def cmd_run_path(a):
     print(f"slug:      {ws.parent.name if std else '(legacy layout: not under pmlc-runs/<slug>/workspace)'}")
 
 
+def sample_folder_problems(samples) -> list:
+    """Contribution rule: samples/<YYYY-MM-DD>-<site>-<event>/ with README.md and <slug>_probematrix-findings.xlsx."""
+    problems = []
+    for d in sorted(p for p in Path(samples).iterdir() if p.is_dir()):
+        if not valid_run_slug(d.name):
+            problems.append(f"{d.name}: folder name must be YYYY-MM-DD-<site>-<event> "
+                            "(lowercase words joined by hyphens)")
+            continue
+        if not (d / "README.md").is_file():
+            problems.append(f"{d.name}: missing README.md")
+        if not (d / f"{d.name}_probematrix-findings.xlsx").is_file():
+            problems.append(f"{d.name}: missing {d.name}_probematrix-findings.xlsx")
+    return problems
+
+
+def cmd_check_samples(a):
+    probs = sample_folder_problems(a.dir)
+    for p in probs:
+        print(" -", p)
+    print(f"{len(probs)} problem(s) in {a.dir}")
+    sys.exit(1 if probs else 0)
+
+
 def find_sheet(wb, *candidates):
     for c in candidates:
         for n in wb.sheetnames:
@@ -1218,6 +1241,10 @@ def main(argv=None):
     s = sp.add_parser("run-path", help="print the run folder, workspace, outputs folder and slug of a workspace")
     s.add_argument("ws")
     s.set_defaults(fn=cmd_run_path)
+
+    s = sp.add_parser("check-samples", help="check samples/<slug>/ folders follow the contribution layout")
+    s.add_argument("dir", nargs="?", default=str(HERE.parents[2] / "samples"))
+    s.set_defaults(fn=cmd_check_samples)
 
     s = sp.add_parser("scan-names", help="zero-hit name scan")
     s.add_argument("names", help="text file, one name per line")

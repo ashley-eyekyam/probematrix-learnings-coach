@@ -2,6 +2,7 @@
 ws/
 pmlc-*/
 outputs/
+!samples/*/outputs/
 *-workspace/
 # never commit raw or unsanitised exports outside samples/
 *.xlsx

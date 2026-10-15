@@ -331,3 +331,35 @@ def test_embed_json_is_script_safe():
     s = pmlc.embed_json({"t": "</script><b>&"})
     assert "<" not in s and ">" not in s and "&" not in s
     assert json.loads(s) == {"t": "</script><b>&"}
+
+
+def test_sample_folders(tmp_path):
+    tracked = subprocess.run(["git", "ls-files", "samples"], cwd=ROOT, capture_output=True, text=True).stdout.split()
+    tracked_dirs = {Path(x).parts[1] for x in tracked if len(Path(x).parts) > 2}
+    assert [p for p in pmlc.sample_folder_problems(ROOT / "samples") if p.split(":")[0] in tracked_dirs] == []
+    (tmp_path / "Hazira_2020").mkdir()
+    good = tmp_path / "2020-09-24-hazira-gas-release-fire"
+    good.mkdir()
+    probs = pmlc.sample_folder_problems(tmp_path)
+    assert any("Hazira_2020" in p and "folder name" in p for p in probs)
+    assert any(good.name in p and "README.md" in p for p in probs)
+    (good / "README.md").write_text("x")
+    (good / f"{good.name}_probematrix-findings.xlsx").write_bytes(b"x")
+    assert [p for p in pmlc.sample_folder_problems(tmp_path) if good.name in p] == []
+    r = subprocess.run([sys.executable, str(PMLC), "check-samples", str(tmp_path)], capture_output=True, text=True)
+    assert r.returncode == 1 and "Hazira_2020" in r.stdout
+
+
+def test_make_public_sample_slug(tmp_path):
+    x = make_export(tmp_path)
+    names = tmp_path / "names.txt"
+    names.write_text("Nobody Here\n")
+    tool = ROOT / "tools" / "make-public-sample.py"
+    r = subprocess.run([sys.executable, str(tool), str(x), "--slug", "Bad_Slug", "--names", str(names)],
+                       capture_output=True, text=True)
+    assert r.returncode != 0 and "--slug" in r.stderr
+    root = tmp_path / "samples"
+    r = subprocess.run([sys.executable, str(tool), str(x), "--slug", "2024-03-20-pump-fire", "--names", str(names),
+                        "--samples-root", str(root)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr + r.stdout
+    assert (root / "2024-03-20-pump-fire" / "2024-03-20-pump-fire_probematrix-findings.xlsx").exists()
