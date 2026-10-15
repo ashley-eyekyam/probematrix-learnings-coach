@@ -114,6 +114,20 @@ python3 -m venv .venv
    - "Build a learnings register and the organisation learning dashboard."
    - "Compare this with the official enquiry report (attached)."
 
+## Where outputs go
+
+Every run gets one folder next to the export, named by incident date, site and event:
+
+```
+<export-dir>/pmlc-runs/2020-09-24-hazira-gas-release-fire/
+  workspace/   findings, evidence, clusters (rebuildable from the export)
+  outputs/     learnings register (.json, .xlsx, .md), organisation-learning-map.html, audience packs
+```
+
+`organisation-learning-map.html` opens offline. With a Learnings Register it has two tabs: **Overview** (who must learn what) and **Detailed register** (every learning, recommendation, finding and evidence quote, with views for frontline, supervisors, managers, site leaders, board, investigators and auditors).
+
+To share a run with others, publish it under [`samples/<slug>/`](samples/) (see the rules there).
+
 ## Principles
 
 Learning, not blame. Roles, never names. Every sentence traces to Finding and Evidence IDs. Learnings, not finding counts. Every output is marked *Learning purposes: not a statutory document*. See [`learning-principles.md`](skills/learnings-coach/references/learning-principles.md).

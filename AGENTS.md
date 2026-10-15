@@ -18,14 +18,15 @@ A set of agent skills that turn one **ProbeMatrix investigation export** (`.xlsx
 ```bash
 pip install openpyxl
 E=skills/learnings-coach/scripts/pmlc.py
-python3 $E ingest samples/<incident>/<export>.xlsx --out ws
-python3 $E profile ws --out ws/profile.md
-python3 $E classify ws
-python3 $E dashboard ws --out ws/outputs/organisation-learning-map.html
-python3 $E select ws --tier T2 --level 3 --brief      # feed an audience skill
+python3 $E ingest path/to/<export>.xlsx --slug <site>-<event> [--date YYYY-MM-DD]
+WS=path/to/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace      # printed by ingest
+python3 $E profile $WS --out $WS/profile.md
+python3 $E classify $WS
+python3 $E dashboard $WS                       # -> <run>/outputs/organisation-learning-map.html
+python3 $E select $WS --tier T2 --level 3 --brief      # feed an audience skill
 ```
 
-Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write Markdown to `ws/outputs/`.
+Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write Markdown to `<run>/outputs/` (`python3 $E run-path $WS` prints it).
 
 ## Rules for agents
 
@@ -33,7 +34,7 @@ Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write Ma
 2. **Just culture**: roles only, no personal names, no blame or punishment language, prefer system fixes over retraining.
 3. **Count learnings, not finding instances.** Several findings can describe one condition.
 4. Mark outputs "Learning purposes: not a statutory document" and keep the ProbeMatrix footer from `skills/learnings-coach/references/output-style.md`.
-5. Do not commit real incident data that is not public record and de-identified. Use `tools/make-public-sample.py` and a zero-hit name scan before adding anything to `samples/`.
+5. **Run folders are strict:** `<export-dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/{workspace,outputs}/`. `pmlc-runs/` is git-ignored. Do not commit real incident data that is not public record and de-identified. To publish a run, create `samples/<slug>/` with `tools/make-public-sample.py --slug <slug>`, a zero-hit `scan-names` over the outputs you copy into `samples/<slug>/outputs/`, and a README; `python3 $E check-samples` must pass.
 
 ## Development
 

@@ -12,7 +12,7 @@
       "name": "probematrix-learnings-coach",
       "source": "./",
       "description": "Organisation-wide learnings from a ProbeMatrix HFACS-based investigation export.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "category": "safety",
       "keywords": ["safety", "hfacs", "lessons-learned", "investigation"]
     }

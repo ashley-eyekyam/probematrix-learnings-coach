@@ -5,7 +5,7 @@ Deterministic data work over a ProbeMatrix findings export (.xlsx), so that the
 LLM skills spend their effort on judgement, not counting.
 
 Subcommands
-  ingest        xlsx -> normalised JSON workspace (findings, evidence, incident)
+  ingest        xlsx -> JSON workspace in <export-dir>/pmlc-runs/<date>-<site>-<event>/workspace
   profile       Markdown profile of the workspace (counts, levels, roles, data-quality flags)
   classify      map 'Individuals Involved' roles to Learning Clusters (entity x tier x relation)
   select        compact Markdown/JSON bundle of findings for one audience or cluster
@@ -15,6 +15,8 @@ Subcommands
   dashboard     self-contained HTML organisational learning dashboard
   register-xlsx write a Learnings Register JSON to a formatted .xlsx
   scan-names    deterministic zero-hit name scan over files (de-identification check)
+  run-path      print a workspace's run folder, outputs folder and slug
+  check-samples check samples/<slug>/ folders follow the contribution layout
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
