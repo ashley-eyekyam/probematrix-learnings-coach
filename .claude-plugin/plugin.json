@@ -1,0 +1,14 @@
+{
+  "name": "probematrix-learnings-coach",
+  "displayName": "ProbeMatrix Learnings Coach",
+  "version": "0.1.0",
+  "description": "Turn one ProbeMatrix (HFACS-based) investigation export into learnings for every level of an organisation: frontline cards, supervisor checklists, manager agendas, leadership decisions, ExCo and board briefs, audit packs, investigator coaching, training design, emergency response, engineering and supply-chain lessons, a learnings register, causal map and organisation learning dashboard.",
+  "author": {
+    "name": "Eyekyam Risk Resolutions Pvt. Ltd.",
+    "email": "ashley@eyekyam.com"
+  },
+  "repository": "https://github.com/ashley-eyekyam/probematrix-learnings-coach",
+  "license": "MIT",
+  "keywords": ["safety", "incident-investigation", "hfacs", "human-factors", "lessons-learned", "hse", "process-safety", "probematrix"],
+  "skills": "./skills"
+}

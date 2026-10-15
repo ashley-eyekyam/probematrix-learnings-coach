@@ -1,0 +1,33 @@
+---
+name: site-leadership-coach
+description: Produce learning for site and asset leadership from a ProbeMatrix investigation export - plant manager, head of operations, site leadership team - on the decisions, trade-offs, resourcing, authority and culture signals that shaped the event, with the decisions leadership must now take and what leaders should visibly model. Use when someone asks what plant or site leaders should learn, for a leadership-team debrief, a site leadership workshop, a management review after an incident, or "what does the plant manager need to decide".
+---
+
+# Site Leadership Coach
+
+Audience: T4 plant / asset leadership. They set site priorities, allocate budgets and people, delegate authority and, by what they tolerate, set the norms.
+
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+
+## Gather
+
+```bash
+PMLC select <ws> --tier T4 --brief
+PMLC select <ws> --level 4 --min-rating <top>
+PMLC select <ws> --relation norm_setter learner absent challenger
+PMLC causal <ws> --top 40          # organisational hubs
+PMLC timeline <ws> --before <incident date>
+```
+
+## Write
+
+1. **Bottom line for the leadership team**: five learnings, each one sentence.
+2. **How the site set this up**: the organisational hubs from the causal map (L4 factors with the most downstream links), told as two or three pathways from leadership conditions to the event. Evidence trail on each step.
+3. **Signals that reached leadership level** (from the timeline) and what happened to them.
+4. **Culture signals**: what the organisation had come to treat as normal, what leaders modelled or tolerated, where challenge was absent. Describe norms, not people.
+5. **Decisions for the leadership team**: six to ten decisions, each framed as a choice with its trade-off (cost, production, staffing, authority), the learning it answers, and the leading indicator leadership will watch. Include delegation-of-authority questions if the findings show escalation delays.
+6. **What leaders will do visibly** in the next 30 days: walk-throughs, questions to ask in reviews, things to stop accepting.
+
+## Output
+
+`<ws>/outputs/site-leadership-coach.md` (aim for four to six pages), plus a one-page **leadership workshop agenda** (two hours) built on sections 2, 4 and 5.

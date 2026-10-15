@@ -1,0 +1,1078 @@
+#!/usr/bin/env python3
+"""pmlc — ProbeMatrix Learnings Coach engine.
+
+Deterministic data work over a ProbeMatrix findings export (.xlsx), so that the
+LLM skills spend their effort on judgement, not counting.
+
+Subcommands
+  ingest        xlsx -> normalised JSON workspace (findings, evidence, incident)
+  profile       Markdown profile of the workspace (counts, levels, roles, data-quality flags)
+  classify      map 'Individuals Involved' roles to Learning Clusters (entity x tier x relation)
+  select        compact Markdown/JSON bundle of findings for one audience or cluster
+  causal        causal graph extracted from the AI's causal explanations (+ Causal Chain sheet)
+  timeline      dated precursor candidates found in findings and evidence
+  interfaces    entity x entity interface matrix (shared findings + cross-entity causal links)
+  dashboard     self-contained HTML organisational learning dashboard
+  register-xlsx write a Learnings Register JSON to a formatted .xlsx
+  scan-names    deterministic zero-hit name scan over files (de-identification check)
+
+Only dependency outside the standard library: openpyxl.
+Run `python3 pmlc.py <subcommand> -h` for options.
+"""
+from __future__ import annotations
+
+import argparse
+import collections
+import datetime as dt
+import html
+import json
+import os
+import re
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+REFS = HERE.parent / "references"
+BRAND = ("Generated with ProbeMatrix Learnings Coach (open source, MIT) from a ProbeMatrix "
+         "four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com")
+LEVEL_NAMES = {1: "Unsafe Acts", 2: "Preconditions", 3: "Supervision", 4: "Organisational Influences"}
+CODE_RX = re.compile(r"\b([A-Z]{2,5})\s?(\d{1,2}\.\d{1,2})\b")
+
+
+# ----------------------------------------------------------------------------- helpers
+
+def _need_openpyxl():
+    try:
+        import openpyxl  # noqa: F401
+        return openpyxl
+    except ImportError:
+        sys.exit("openpyxl is required: pip install openpyxl")
+
+
+def _int(v, default=None):
+    try:
+        return int(str(v).strip())
+    except (TypeError, ValueError):
+        return default
+
+
+def _s(v) -> str:
+    return "" if v is None else str(v).strip()
+
+
+def split_outside_parens(s: str) -> list[str]:
+    """Split a comma-separated role list, ignoring commas inside parentheses."""
+    out, buf, depth = [], "", 0
+    for ch in s or "":
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth = max(0, depth - 1)
+        if ch == "," and depth == 0:
+            if buf.strip():
+                out.append(buf.strip())
+            buf = ""
+        else:
+            buf += ch
+    if buf.strip():
+        out.append(buf.strip())
+    return out
+
+
+def norm_code(prefix: str, num: str) -> str:
+    return f"{prefix} {num}"
+
+
+def load_ws(ws_dir: Path) -> dict:
+    ws_dir = Path(ws_dir)
+    out = {}
+    for name in ("findings", "evidence", "incident", "clusters"):
+        p = ws_dir / f"{name}.json"
+        if p.exists():
+            out[name] = json.loads(p.read_text(encoding="utf-8"))
+    if "findings" not in out:
+        sys.exit(f"No findings.json in {ws_dir}. Run: pmlc.py ingest <export.xlsx> --out {ws_dir}")
+    return out
+
+
+def write_json(path: Path, obj) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(obj, indent=1, ensure_ascii=False), encoding="utf-8")
+
+
+def find_sheet(wb, *candidates):
+    for c in candidates:
+        for n in wb.sheetnames:
+            if n.strip().lower() == c.lower():
+                return wb[n]
+    for c in candidates:
+        for n in wb.sheetnames:
+            if c.lower() in n.lower():
+                return wb[n]
+    return None
+
+
+def rows_as_dicts(ws):
+    rows = list(ws.iter_rows(values_only=True))
+    if not rows:
+        return []
+    header = [_s(h) for h in rows[0]]
+    return [dict(zip(header, r)) for r in rows[1:] if any(c is not None for c in r)]
+
+
+# ----------------------------------------------------------------------------- ingest
+
+def cmd_ingest(a):
+    openpyxl = _need_openpyxl()
+    wb = openpyxl.load_workbook(a.xlsx, read_only=True, data_only=True)
+    out = Path(a.out)
+
+    fs = find_sheet(wb, "Identified Findings", "Findings")
+    if fs is None:
+        sys.exit("Could not find an 'Identified Findings' sheet in the workbook.")
+    findings = []
+    for r in rows_as_dicts(fs):
+        fid = _s(r.get("Finding ID"))
+        if not fid:
+            continue
+        lvl = _int(r.get("Level"))
+        findings.append({
+            "id": fid,
+            "code": _s(r.get("Nanocode")),
+            "name": _s(r.get("Name")),
+            "level": lvl,
+            "level_name": _s(r.get("Level Name")) or LEVEL_NAMES.get(lvl, ""),
+            "category": _s(r.get("Category")),
+            "subcategory": _s(r.get("Subcategory")),
+            "classification": _s(r.get("Classification")),
+            "rating": _int(r.get("Rating")),
+            "instance": _s(r.get("Instance ID")),
+            "label": _s(r.get("Instance Label")),
+            "short": _s(r.get("Short Description")),
+            "justification": _s(r.get("AI Justification")),
+            "causal": _s(r.get("Causal Explanation")),
+            "roles": split_outside_parens(_s(r.get("Individuals Involved"))),
+            "evidence": [e.strip() for e in _s(r.get("Linked Evidence")).split(",") if e.strip()],
+            "evidence_to_collect": _s(r.get("Evidence to Collect")),
+            "key_questions": _s(r.get("Key Questions")),
+            "suggested_interviews": _s(r.get("Suggested Interviews")),
+            "causal_hypothesis": _s(r.get("Causal Hypothesis")),
+            "user_edited": _s(r.get("User Edited")),
+        })
+
+    evidence = {}
+    es = find_sheet(wb, "Evidence Links", "Evidence")
+    if es is not None:
+        for r in rows_as_dicts(es):
+            eid = _s(r.get("Evidence ID"))
+            if not eid:
+                continue
+            e = evidence.setdefault(eid, {"id": eid, "type": _s(r.get("Evidence Type")),
+                                          "description": _s(r.get("Evidence Description")), "links": []})
+            e["links"].append({"code": _s(r.get("Finding Code")), "relevance": _s(r.get("Relevance")),
+                               "reference": _s(r.get("Specific Reference"))})
+
+    incident = {"fields": {}, "narrative": ""}
+    isht = find_sheet(wb, "Incident Summary")
+    if isht is not None:
+        grab_next = False
+        for row in isht.iter_rows(values_only=True):
+            cells = [c for c in row if c is not None]
+            if not cells:
+                continue
+            if grab_next and len(cells) == 1 and len(_s(cells[0])) > 200:
+                incident["narrative"] = _s(cells[0])
+                grab_next = False
+                continue
+            k = _s(row[0]) if row else ""
+            v = _s(row[1]) if len(row) > 1 else ""
+            if k.upper() == "INCIDENT NARRATIVE":
+                grab_next = True
+                if len(v) > 200:
+                    incident["narrative"] = v
+                    grab_next = False
+                continue
+            if k and v and k not in ("Field",):
+                incident["fields"][k] = v
+
+    causal_sheet = []
+    cs = find_sheet(wb, "Causal Chain")
+    if cs is not None:
+        for r in rows_as_dicts(cs):
+            if _s(r.get("From Code")) and _s(r.get("To Code")):
+                causal_sheet.append({k: _s(v) for k, v in r.items()})
+    incident["causal_chain_sheet"] = causal_sheet
+    votes = []
+    vs = find_sheet(wb, "Collaboration Data")
+    if vs is not None:
+        mode = None
+        for row in vs.iter_rows(values_only=True):
+            first = _s(row[0]) if row else ""
+            if first.upper() in ("VOTES", "COMMENTS"):
+                mode = first.upper()
+                continue
+            if mode == "VOTES" and first and first != "Finding ID" and len(row) > 2:
+                votes.append({"finding": first, "vote": _s(row[1]), "reason": _s(row[2])})
+    incident["review_votes"] = votes
+    incident["source_file"] = os.path.basename(a.xlsx)
+    incident["sheets"] = wb.sheetnames
+
+    write_json(out / "findings.json", findings)
+    write_json(out / "evidence.json", evidence)
+    write_json(out / "incident.json", incident)
+    print(f"Ingested {len(findings)} findings, {len(evidence)} evidence items, "
+          f"{len(causal_sheet)} causal-chain rows -> {out}")
+
+
+# ----------------------------------------------------------------------------- profile
+
+def cmd_profile(a):
+    w = load_ws(a.ws)
+    F, E, inc = w["findings"], w.get("evidence", {}), w.get("incident", {})
+    C = collections.Counter
+    lvl = C(f["level"] for f in F)
+    rat = C(f["rating"] for f in F)
+    sub = C((f["level"], f["subcategory"]) for f in F)
+    codes = C(f"{f['code']} {f['name']}" for f in F)
+    roles = C(r for f in F for r in f["roles"])
+    etypes = C(e["type"] for e in E.values())
+    fields = inc.get("fields", {})
+    L = []
+    L.append(f"# Investigation profile: {fields.get('Incident Title', inc.get('source_file', ''))}\n")
+    L.append("| Field | Value |\n|---|---|")
+    for k in ("Incident Number", "Incident Title", "Incident Type", "Date", "Location", "Severity",
+              "Investigation Status"):
+        if k in fields:
+            L.append(f"| {k} | {fields[k]} |")
+    n = len(F)
+    up = lvl.get(3, 0) + lvl.get(4, 0)
+    L.append(f"\n**Findings:** {n} across {len(codes)} distinct factor codes. "
+             f"**Evidence items:** {len(E)}. **Distinct role strings:** {len(roles)}.")
+    if n:
+        L.append(f"**Share at Supervision + Organisational levels:** {up} of {n} ({100*up/n:.0f}%).\n")
+    L.append("## By level\n\n| Level | Name | Findings |\n|---|---|---:|")
+    for k in sorted(x for x in lvl if x is not None):
+        L.append(f"| {k} | {LEVEL_NAMES.get(k, '')} | {lvl[k]} |")
+    L.append("\n## By rating (higher = stronger causal contribution)\n\n| Rating | Findings |\n|---|---:|")
+    for k in sorted(x for x in rat if x is not None):
+        L.append(f"| {k} | {rat[k]} |")
+    L.append("\n## Sub-categories\n\n| Level | Sub-category | Findings |\n|---|---|---:|")
+    for (lv, sc), c in sub.most_common():
+        L.append(f"| {lv} | {sc} | {c} |")
+    L.append(f"\n## Most frequent factors (top {a.top})\n\n| Factor | Instances |\n|---|---:|")
+    for k, c in codes.most_common(a.top):
+        L.append(f"| {k} | {c} |")
+    L.append(f"\n## Most-named roles (top {a.top}, raw strings)\n\n| Role | Findings |\n|---|---:|")
+    for k, c in roles.most_common(a.top):
+        L.append(f"| {k} | {c} |")
+    L.append("\n## Evidence types\n\n| Type | Items |\n|---|---:|")
+    for k, c in etypes.most_common():
+        L.append(f"| {k or '(blank)'} | {c} |")
+    flags = []
+    for col, lab in (("evidence_to_collect", "Evidence to Collect"), ("key_questions", "Key Questions"),
+                     ("suggested_interviews", "Suggested Interviews"), ("causal_hypothesis", "Causal Hypothesis")):
+        if n and not any(f[col] for f in F):
+            flags.append(f"Column '{lab}' is empty on every finding (the investigator-coach skill can draft it).")
+    if not inc.get("causal_chain_sheet"):
+        flags.append("Causal Chain sheet is empty; use `pmlc.py causal` to extract links from the causal explanations.")
+    if n and all(f["user_edited"].lower() in ("", "no") for f in F):
+        flags.append("No finding is marked 'User Edited'. Confirm the human review status before publishing learnings.")
+    narr = inc.get("narrative", "")[:4000]
+    sdate = fields.get("Date", "")
+    if sdate and narr:
+        try:
+            d = dt.date.fromisoformat(sdate[:10])
+            nd = [x[0] for x in _parse_dates(narr) if x[1] in (0, 1)]
+            if nd and d not in nd:
+                flags.append(f"Summary-sheet Date {sdate} does not appear in the narrative, which mentions "
+                             f"{', '.join(sorted({x.isoformat() for x in nd})[:3])}. Confirm the date and pass "
+                             f"`--date` to `dashboard`.")
+        except ValueError:
+            pass
+    itype = fields.get("Incident Type", "")
+    if itype and narr and itype.lower() not in narr.lower():
+        flags.append(f"Incident Type '{itype}' is not mentioned in the narrative; check it before quoting it.")
+    downs = [v for v in inc.get("review_votes", []) if v["vote"].lower() in ("downgrade", "reject", "remove")]
+    if downs:
+        flags.append("Reviewer downgrade votes on: " + "; ".join(f"{v['finding']} ({v['reason']})" for v in downs)
+                     + ". Exclude or flag these findings in learnings.")
+    if fields.get("Investigation Status", "").lower().startswith("in_progress"):
+        flags.append("Investigation Status is 'in_progress'; label outputs as draft learnings.")
+    L.append("\n## Data-quality flags\n")
+    L += [f"- {x}" for x in flags] or ["- None."]
+    L.append(f"\n---\n*{BRAND}*")
+    text = "\n".join(L)
+    if a.out:
+        Path(a.out).write_text(text, encoding="utf-8")
+        print(f"Profile written to {a.out}")
+    else:
+        print(text)
+
+
+# ----------------------------------------------------------------------------- classify
+
+def _load_taxonomy(path=None):
+    p = Path(path) if path else REFS / "taxonomy.json"
+    t = json.loads(p.read_text(encoding="utf-8"))
+    for group in ("entities", "tiers", "relations"):
+        for rule in t[group]:
+            rule["_rx"] = re.compile(rule["match"], re.I)
+            rule["_ex"] = re.compile(rule["exclude"], re.I) if rule.get("exclude") else None
+    return t
+
+
+def map_role(role: str, tax: dict) -> dict:
+    ents = [e["id"] for e in tax["entities"]
+            if e["_rx"].search(role) and not (e["_ex"] and e["_ex"].search(role))]
+    tier = next((t["id"] for t in tax["tiers"] if t["_rx"].search(role)), "T9")
+    rel = next((r["id"] for r in tax["relations"] if r["_rx"].search(role)), tax["default_relation"]["id"])
+    return {"F": ents, "T": tier, "R": rel, "source": "rule"}
+
+
+def cmd_classify(a):
+    ws = Path(a.ws)
+    w = load_ws(ws)
+    tax = _load_taxonomy(a.taxonomy)
+    overrides = json.loads(Path(a.overrides).read_text(encoding="utf-8")) if a.overrides else {}
+    role_map = {}
+    for f in w["findings"]:
+        for r in f["roles"]:
+            if r in role_map:
+                continue
+            m = map_role(r, tax)
+            if r in overrides:
+                o = overrides[r]
+                m = {"F": o.get("F", m["F"]), "T": o.get("T", m["T"]), "R": o.get("R", m["R"]), "source": "override"}
+            role_map[r] = m
+    names = {e["id"]: e["name"] for e in tax["entities"]}
+    names["F99"] = "Unmapped"
+    tier_names = {t["id"]: t["name"] for t in tax["tiers"]}
+    tier_names["T9"] = "Unresolved"
+    per_f, ent_idx = {}, collections.defaultdict(list)
+    for f in w["findings"]:
+        Fs, Ts, Rs = set(), set(), set()
+        for r in f["roles"]:
+            m = role_map[r]
+            Fs.update(m["F"] or ["F99"])
+            Ts.add(m["T"])
+            Rs.add(m["R"])
+        if not f["roles"]:
+            Fs.add("F99")
+        per_f[f["id"]] = {"F": sorted(Fs), "T": sorted(Ts), "R": sorted(Rs)}
+        for e in Fs:
+            ent_idx[e].append(f["id"])
+    byid = {f["id"]: f for f in w["findings"]}
+    top_rating = max((f["rating"] or 0) for f in w["findings"]) if w["findings"] else 0
+    entities = {}
+    for e, ids in sorted(ent_idx.items()):
+        lv = collections.Counter(byid[i]["level"] for i in ids)
+        entities[e] = {"name": names.get(e, e), "findings": ids, "n": len(ids),
+                       "by_level": {str(k): lv.get(k, 0) for k in (1, 2, 3, 4)},
+                       "top_rated": sum(1 for i in ids if byid[i]["rating"] == top_rating)}
+    unresolved = sorted(r for r, m in role_map.items() if not m["F"] or m["T"] == "T9")
+    out = {"taxonomy": {"entities": names, "tiers": tier_names,
+                        "relations": {r["id"]: r["name"] for r in tax["relations"]} | {
+                            tax["default_relation"]["id"]: tax["default_relation"]["name"]}},
+           "entities": entities, "findings": per_f, "role_map": role_map, "unresolved_roles": unresolved}
+    write_json(ws / "clusters.json", out)
+    tc = collections.Counter(t for v in per_f.values() for t in v["T"])
+    print(f"Classified {len(role_map)} distinct roles; {len(unresolved)} need resolution "
+          f"(no entity or no tier). Wrote {ws/'clusters.json'}\n")
+    print("| Cluster | Name | Findings | L1/L2/L3/L4 |\n|---|---|---:|---|")
+    for e, d in entities.items():
+        bl = d["by_level"]
+        print(f"| {e} | {d['name']} | {d['n']} | {bl['1']}/{bl['2']}/{bl['3']}/{bl['4']} |")
+    print("\n| Tier | Findings touching |\n|---|---:|")
+    for t in sorted(tc):
+        print(f"| {t} {tier_names.get(t, '')} | {tc[t]} |")
+    if unresolved:
+        p = ws / "unresolved_roles.json"
+        write_json(p, unresolved)
+        print(f"\nUnresolved roles listed in {p}. Resolve them into an overrides JSON "
+              f"({{role: {{F: [...], T: ..., R: ...}}}}) and re-run with --overrides.")
+
+
+# ----------------------------------------------------------------------------- select
+
+def _evidence_for(f, E, max_quote=400):
+    out = []
+    for eid in f["evidence"]:
+        e = E.get(eid)
+        if not e:
+            out.append({"id": eid})
+            continue
+        link = next((l for l in e["links"] if l["code"] == f["code"]), e["links"][0] if e["links"] else {})
+        out.append({"id": eid, "type": e["type"], "relevance": link.get("relevance", ""),
+                    "reference": (link.get("reference", "") or "")[:max_quote]})
+    return out
+
+
+def _filter(w, a):
+    F = w["findings"]
+    cl = w.get("clusters", {}).get("findings", {})
+    out = []
+    for f in F:
+        c = cl.get(f["id"], {"F": [], "T": [], "R": []})
+        if a.entity and not set(a.entity) & set(c["F"]):
+            continue
+        if a.tier and not set(a.tier) & set(c["T"]):
+            continue
+        if a.relation and not set(a.relation) & set(c["R"]):
+            continue
+        if a.level and f["level"] not in a.level:
+            continue
+        if a.min_rating and (f["rating"] or 0) < a.min_rating:
+            continue
+        if a.code and f["code"] not in a.code:
+            continue
+        if a.text and not re.search(a.text, " ".join([f["short"], f["justification"], f["causal"], f["label"]]), re.I):
+            continue
+        out.append((f, c))
+    out.sort(key=lambda fc: (-(fc[0]["rating"] or 0), -(fc[0]["level"] or 0), fc[0]["code"]))
+    return out[: a.max] if a.max else out
+
+
+def cmd_select(a):
+    w = load_ws(a.ws)
+    if (a.entity or a.tier or a.relation) and "clusters" not in w:
+        sys.exit("Filtering by entity/tier/relation needs clusters.json. Run: pmlc.py classify <ws>")
+    E = w.get("evidence", {})
+    sel = _filter(w, a)
+    if a.format == "json":
+        items = []
+        for f, c in sel:
+            d = {k: f[k] for k in ("id", "code", "name", "level", "subcategory", "rating", "label", "short",
+                                   "justification", "causal", "roles")}
+            d.update({"clusters": c, "evidence": _evidence_for(f, E)})
+            items.append(d)
+        text = json.dumps(items, indent=1, ensure_ascii=False)
+    else:
+        L = [f"# Selected findings ({len(sel)})\n",
+             f"Filters: entity={a.entity} tier={a.tier} relation={a.relation} level={a.level} "
+             f"min_rating={a.min_rating} code={a.code} text={a.text}\n"]
+        for f, c in sel:
+            L.append(f"## {f['id']} · {f['code']} {f['name']} · L{f['level']} {f['subcategory']} · rating {f['rating']}")
+            L.append(f"**Instance:** {f['label']}\n")
+            L.append(f"**Short:** {f['short']}\n")
+            if not a.brief:
+                L.append(f"**Justification:** {f['justification']}\n")
+                L.append(f"**Causal explanation:** {f['causal']}\n")
+            L.append(f"**Roles:** {'; '.join(f['roles'])}  ")
+            L.append(f"**Clusters:** F={','.join(c['F'])} T={','.join(c['T'])} R={','.join(c['R'])}\n")
+            if not a.brief:
+                for e in _evidence_for(f, E):
+                    L.append(f"- `{e['id']}` ({e.get('type', '?')}): {e.get('relevance', '')} "
+                             f"Quote: \"{e.get('reference', '')}\"")
+            L.append("")
+        text = "\n".join(L)
+    if a.out:
+        Path(a.out).write_text(text, encoding="utf-8")
+        print(f"Wrote {len(sel)} findings to {a.out}")
+    else:
+        print(text)
+
+
+# ----------------------------------------------------------------------------- causal
+
+def cmd_causal(a):
+    ws = Path(a.ws)
+    w = load_ws(ws)
+    F = w["findings"]
+    present = {f["code"]: f["level"] for f in F}
+    names = {f["code"]: f["name"] for f in F}
+    edges = collections.Counter()
+    evid = collections.defaultdict(list)
+    for f in F:
+        text = f["causal"] + " " + (f["justification"] if a.include_justification else "")
+        refs = {norm_code(p, n) for p, n in CODE_RX.findall(text)} - {f["code"]}
+        for r in refs:
+            if r not in present:
+                continue
+            a_, b_ = f["code"], r
+            la, lb = present[a_] or 0, present[b_] or 0
+            # Convention: higher HFACS level (organisational) -> lower level (acts) = "enables".
+            src, dst = (a_, b_) if la >= lb else (b_, a_)
+            edges[(src, dst)] += 1
+            evid[(src, dst)].append(f["id"])
+    for row in w.get("incident", {}).get("causal_chain_sheet", []):
+        k = (row.get("From Code"), row.get("To Code"))
+        edges[k] += 1
+        evid[k].append("causal-chain-sheet")
+    items = [{"from": s, "to": t, "from_level": present.get(s), "to_level": present.get(t),
+              "mentions": c, "findings": evid[(s, t)][:12]} for (s, t), c in edges.most_common()]
+    write_json(ws / "causal_graph.json", {"nodes": [{"code": c, "name": names[c], "level": present[c]}
+                                                    for c in sorted(present)], "edges": items})
+    top = items[: a.top]
+    M = ["flowchart TB"]
+    used = {e["from"] for e in top} | {e["to"] for e in top}
+    for lv in (4, 3, 2, 1):
+        nodes = sorted(c for c in used if present.get(c) == lv)
+        if nodes:
+            M.append(f'  subgraph L{lv}["L{lv} {LEVEL_NAMES[lv]}"]')
+            for c in nodes:
+                M.append(f'    {c.replace(" ", "_").replace(".", "_")}["{c}<br/>{html.escape(names[c][:40])}"]')
+            M.append("  end")
+    for e in top:
+        s = e["from"].replace(" ", "_").replace(".", "_")
+        t = e["to"].replace(" ", "_").replace(".", "_")
+        M.append(f"  {s} -->|{e['mentions']}| {t}")
+    (ws / "causal_graph.mmd").write_text("\n".join(M), encoding="utf-8")
+    linked = sum(1 for f in F if ({norm_code(p, n) for p, n in CODE_RX.findall(f['causal'])} - {f['code']}) & set(present))
+    print(f"{linked} of {len(F)} findings name other factors in their causal explanation. "
+          f"{len(items)} distinct links. Wrote causal_graph.json and causal_graph.mmd (top {a.top}).")
+    print("\n| From | To | Mentions |\n|---|---|---:|")
+    for e in top[:25]:
+        print(f"| {e['from']} (L{e['from_level']}) | {e['to']} (L{e['to_level']}) | {e['mentions']} |")
+
+
+# ----------------------------------------------------------------------------- timeline
+
+MONTHS = "jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec"
+DATE_RXS = [
+    re.compile(r"\b(\d{1,2})[./-](\d{1,2})[./-](\d{4})\b"),
+    re.compile(rf"\b(\d{{1,2}})[ -]({MONTHS})[a-z]*[ -,]*(\d{{4}})\b", re.I),
+    re.compile(rf"\b({MONTHS})[a-z]*\.?\s+(\d{{4}})\b", re.I),
+    re.compile(r"\b(19[5-9]\d|20[0-4]\d)\b"),
+]
+MIDX = {m: i + 1 for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"])}
+
+
+def _parse_dates(text):
+    hits, spans = [], []
+    for i, rx in enumerate(DATE_RXS):
+        for m in rx.finditer(text):
+            if any(s <= m.start() < e for s, e in spans):
+                continue
+            try:
+                if i == 0:
+                    d = dt.date(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+                elif i == 1:
+                    d = dt.date(int(m.group(3)), MIDX[m.group(2).lower()[:3]], int(m.group(1)))
+                elif i == 2:
+                    d = dt.date(int(m.group(2)), MIDX[m.group(1).lower()[:3]], 1)
+                else:
+                    d = dt.date(int(m.group(1)), 1, 1)
+            except (ValueError, KeyError):
+                continue
+            spans.append((m.start(), m.end()))
+            hits.append((d, i, m.start(), m.end()))
+    return hits
+
+
+def cmd_timeline(a):
+    ws = Path(a.ws)
+    w = load_ws(ws)
+    events = collections.OrderedDict()
+    sources = [(f["id"], f["code"], " ".join([f["label"], f["short"], f["justification"], f["causal"]]))
+               for f in w["findings"]]
+    sources += [(e["id"], e["type"], e["description"]) for e in w.get("evidence", {}).values()]
+    for sid, kind, text in sources:
+        for d, prec, s, e in _parse_dates(text):
+            if a.before and d.isoformat() > a.before:
+                continue
+            snippet = text[max(0, s - 140): e + 140].replace("\n", " ").strip()
+            key = (d.isoformat(), prec, re.sub(r"\W+", " ", text[max(0, s - 40): e + 40]).lower()[:60])
+            ev = events.setdefault(key, {"date": d.isoformat(), "precision": ["day", "day", "month", "year"][prec],
+                                         "snippet": snippet, "sources": []})
+            if sid not in ev["sources"]:
+                ev["sources"].append(sid)
+    items = sorted(events.values(), key=lambda x: (x["date"], x["precision"]))
+    # collapse near-duplicate snippets per date
+    merged = collections.OrderedDict()
+    for it in items:
+        k = (it["date"], it["precision"])
+        if k in merged and len(merged[k]) >= a.per_date:
+            continue
+        merged.setdefault(k, []).append(it)
+    flat = [x for v in merged.values() for x in v]
+    write_json(ws / "timeline_candidates.json", flat)
+    print(f"{len(flat)} dated precursor candidates written to {ws/'timeline_candidates.json'} "
+          f"(the precursor-timeline skill curates these).\n")
+    print("| Date | Precision | Sources | Snippet |\n|---|---|---|---|")
+    for it in flat[: a.show]:
+        print(f"| {it['date']} | {it['precision']} | {', '.join(it['sources'][:4])} | {it['snippet'][:160]} |")
+
+
+# ----------------------------------------------------------------------------- interfaces
+
+def cmd_interfaces(a):
+    ws = Path(a.ws)
+    w = load_ws(ws)
+    if "clusters" not in w:
+        sys.exit("Needs clusters.json. Run: pmlc.py classify <ws>")
+    cl = w["clusters"]
+    names = cl["taxonomy"]["entities"]
+    pair = collections.Counter()
+    examples = collections.defaultdict(list)
+    for fid, c in cl["findings"].items():
+        ents = [e for e in c["F"] if e != "F99"]
+        for i, x in enumerate(ents):
+            for y in ents[i + 1:]:
+                k = tuple(sorted((x, y)))
+                pair[k] += 1
+                examples[k].append(fid)
+    code_ents = collections.defaultdict(set)
+    for f in w["findings"]:
+        code_ents[f["code"]].update(e for e in cl["findings"][f["id"]]["F"] if e != "F99")
+    # Cross-entity causal mention: finding f (owned by entity x) names factor r in its causal
+    # explanation, and r is owned (in this investigation) by entity y != x. Counted once per
+    # (finding, referenced factor, entity pair).
+    cross = collections.Counter()
+    present = {f["code"] for f in w["findings"]}
+    for f in w["findings"]:
+        own = {e for e in cl["findings"][f["id"]]["F"] if e != "F99"}
+        refs = {norm_code(p, n) for p, n in CODE_RX.findall(f["causal"])} & present - {f["code"]}
+        seen = set()
+        for r in refs:
+            for x in own:
+                for y in code_ents[r] - own:
+                    k = tuple(sorted((x, y)))
+                    if (r, k) not in seen:
+                        seen.add((r, k))
+                        cross[k] += 1
+    ents = sorted({e for k in pair for e in k} | {e for k in cross for e in k})
+    out = {"pairs": [{"a": k[0], "b": k[1], "shared_findings": pair[k], "cross_causal_mentions": cross.get(k, 0),
+                      "examples": examples[k][:10]} for k in sorted(set(pair) | set(cross),
+                                                                    key=lambda k: -(pair.get(k, 0) * 3 + cross.get(k, 0)))]}
+    write_json(ws / "interfaces.json", out)
+    print("| Interface | Shared findings | Cross-entity causal mentions |\n|---|---:|---:|")
+    for p in out["pairs"][: a.top]:
+        print(f"| {p['a']} {names.get(p['a'], '')} ↔ {p['b']} {names.get(p['b'], '')} | "
+              f"{p['shared_findings']} | {p['cross_causal_mentions']} |")
+    print(f"\nWrote {ws/'interfaces.json'} ({len(out['pairs'])} pairs across {len(ents)} entities).")
+
+
+# ----------------------------------------------------------------------------- dashboard
+
+def cmd_dashboard(a):
+    ws = Path(a.ws)
+    w = load_ws(ws)
+    if "clusters" not in w:
+        sys.exit("Needs clusters.json. Run: pmlc.py classify <ws>")
+    F = {f["id"]: f for f in w["findings"]}
+    cl = w["clusters"]
+    names, tiers = cl["taxonomy"]["entities"], cl["taxonomy"]["tiers"]
+    fields = dict(w.get("incident", {}).get("fields", {}))
+    for k, v in (("Incident Title", a.title), ("Date", a.date), ("Location", a.location)):
+        if v:
+            fields[k] = v
+    ent_ids = [e for e in cl["entities"] if e != "F99"] + (["F99"] if "F99" in cl["entities"] else [])
+    tier_ids = ["T1", "T2", "T3", "T4", "T5", "T9"]
+    et = collections.Counter()
+    el = collections.Counter()
+    for fid, c in cl["findings"].items():
+        for e in c["F"]:
+            el[(e, F[fid]["level"])] += 1
+            for t in c["T"]:
+                et[(e, t)] += 1
+    mx_et = max(et.values() or [1])
+    mx_el = max(el.values() or [1])
+    lvl = collections.Counter(f["level"] for f in F.values())
+    rat = collections.Counter(f["rating"] for f in F.values())
+    top_codes = collections.Counter(f"{f['code']} · {f['name']}" for f in F.values()).most_common(12)
+
+    def cell(v, mx):
+        if not v:
+            return '<td class="z">·</td>'
+        op = 0.15 + 0.85 * v / mx
+        return f'<td style="--o:{op:.2f}"><span>{v}</span></td>'
+
+    def table(rows, cols, colnames, counter, mx):
+        h = ["<table><thead><tr><th></th>" + "".join(f"<th>{html.escape(colnames[c])}</th>" for c in cols) + "</tr></thead><tbody>"]
+        for r in rows:
+            h.append(f"<tr><th>{r} · {html.escape(names.get(r, r))}</th>" + "".join(cell(counter.get((r, c), 0), mx) for c in cols) + "</tr>")
+        h.append("</tbody></table>")
+        return "".join(h)
+
+    tier_lab = {t: f"{t} {tiers.get(t, '')}" for t in tier_ids}
+    lvl_lab = {k: f"L{k} {LEVEL_NAMES[k]}" for k in (1, 2, 3, 4)}
+    n = len(F)
+    up = lvl.get(3, 0) + lvl.get(4, 0)
+    title = html.escape(fields.get("Incident Title", "ProbeMatrix investigation"))
+    kpis = [("Findings", n), ("Evidence items", len(w.get("evidence", {}))),
+            ("Learning clusters", len([e for e in ent_ids if e != "F99"])),
+            ("At supervision + organisational level", f"{100*up/max(n,1):.0f}%"),
+            ("Highest-rated findings", rat.get(max(r for r in rat if r is not None), 0) if rat else 0)]
+    bars = "".join(f'<div class="bar"><span>{html.escape(k)}</span><i style="width:{100*c/top_codes[0][1]:.0f}%"></i><b>{c}</b></div>'
+                   for k, c in top_codes) if top_codes else ""
+    learn_html = ""
+    if a.register:
+        reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
+        entries = reg["entries"] if isinstance(reg, dict) else reg
+        entries = sorted(entries, key=lambda e: (_int(e.get("priority"), 9), _s(e.get("lr_id"))))
+        recs = [r for e in entries for r in (e.get("recommendations") or [])]
+        strong = sum(1 for r in recs if norm_hoc(r.get("hoc_tier")) in ("elimination", "substitution", "engineering"))
+        kpis = [("Learnings", len(entries)),
+                ("Priority-1 learnings", sum(1 for e in entries if _int(e.get("priority")) == 1)),
+                ("Recommendations", len(recs)),
+                ("Fixes above administrative tier", f"{100*strong/max(len(recs),1):.0f}%")] + kpis
+        tiers_used = [t for t in TIER_LABELS if any(t in (e.get("tier_messages") or {}) for e in entries)]
+        rows = []
+        for e in entries:
+            tm = e.get("tier_messages") or {}
+            cells = "".join(
+                f'<td style="--o:.55" title="{html.escape(tm[t])}"><span>●</span></td>' if t in tm else '<td class="z">·</td>'
+                for t in tiers_used)
+            rows.append(f"<tr><th>{html.escape(_s(e.get('lr_id')))} · {html.escape(_s(e.get('title'))[:90])}</th>"
+                        f"<td>{html.escape(_s(e.get('priority')))}</td><td>{html.escape(norm_entity(e.get('owner_entity')))}</td>{cells}</tr>")
+        matrix = ("<table><thead><tr><th>Learning</th><th>Priority</th><th>Owner</th>"
+                  + "".join(f"<th>{t} {TIER_LABELS[t]}</th>" for t in tiers_used) + "</tr></thead><tbody>"
+                  + "".join(rows) + "</tbody></table>")
+        per_tier = []
+        for t in tiers_used:
+            items = "".join(f"<li><b>{html.escape(_s(e.get('lr_id')))}</b> {html.escape(e['tier_messages'][t])}</li>"
+                            for e in entries if t in (e.get("tier_messages") or {}))
+            n = sum(1 for e in entries if t in (e.get("tier_messages") or {}))
+            per_tier.append(f"<details><summary>{t} {TIER_LABELS[t]} · {n} learnings</summary><ul>{items}</ul></details>")
+        hoc = collections.Counter(norm_hoc(r.get("hoc_tier")) for r in recs)
+        hoc_bars = "".join(f'<div class="bar"><span>{t}</span><i style="width:{100*hoc[t]/max(hoc.values()):.0f}%"></i><b>{hoc[t]}</b></div>'
+                           for t in HOC_TIERS + ["unclassified"] if hoc.get(t))
+        learn_html = f"""<h2>Learnings and who must act on each</h2>
+<p class="m">One row per learning from the Learnings Register; ● means that tier has a message (hover to read it).</p>
+<div class="wrap">{matrix}</div>
+<h2>Learning plan by level</h2>
+<div class="wrap tiers">{''.join(per_tier)}</div>
+<h2>Strength of recommended fixes</h2>
+<div class="wrap" style="padding:12px">{hoc_bars}</div>"""
+    doc = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Organisational Learning Map</title>
+<style>
+:root{{--bg:#f7f8fa;--fg:#111827;--mut:#5b6472;--card:#fff;--line:#e3e6eb;--acc:#0077b6}}
+@media (prefers-color-scheme:dark){{:root:not([data-theme=light]){{--bg:#0d1117;--fg:#e6edf3;--mut:#9aa4b2;--card:#161b22;--line:#2a313c;--acc:#00bfff}}}}
+:root[data-theme=dark]{{--bg:#0d1117;--fg:#e6edf3;--mut:#9aa4b2;--card:#161b22;--line:#2a313c;--acc:#00bfff}}
+body{{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}}
+main{{max-width:1180px;margin:0 auto;padding:24px 16px 48px}}
+h1{{font-size:24px;margin:0 0 4px}} h2{{font-size:17px;margin:32px 0 8px}} p.m{{color:var(--mut);margin:0 0 16px}}
+.k{{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}}
+.k div{{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}}
+.k b{{display:block;font-size:24px}} .k span{{color:var(--mut);font-size:13px}}
+.wrap{{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}}
+table{{border-collapse:collapse;width:100%;font-size:13px}} th,td{{padding:6px 8px;border-bottom:1px solid var(--line);text-align:center}}
+tbody th{{text-align:left;font-weight:500;white-space:nowrap}} thead th{{font-weight:600;font-size:12px;color:var(--mut)}}
+td{{background:color-mix(in srgb,var(--acc) calc(var(--o,0)*100%),transparent)}} td span{{font-weight:600}} td.z{{color:var(--mut);background:none}}
+.bar{{display:grid;grid-template-columns:minmax(160px,340px) 1fr 40px;gap:8px;align-items:center;margin:4px 0;font-size:13px}}
+.bar i{{display:block;height:12px;background:var(--acc);border-radius:3px}} .bar b{{text-align:right}}
+.tiers details{{padding:8px 12px;border-bottom:1px solid var(--line)}} .tiers summary{{cursor:pointer;font-weight:600}} .tiers li{{margin:4px 0}}
+footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}}
+</style></head><body><main>
+<h1>Organisational Learning Map</h1>
+<p class="m">{title} · {html.escape(fields.get('Location', ''))} · {html.escape(fields.get('Date', ''))}. Learnings from one ProbeMatrix investigation, distributed across the organisation by who owns them.</p>
+<div class="k">{''.join(f'<div><b>{v}</b><span>{html.escape(k)}</span></div>' for k, v in kpis)}</div>
+{learn_html}
+<h2>Who learns, at which level of the organisation</h2>
+<p class="m">Findings touching each functional entity, by organisational tier. A finding can involve several entities and tiers.</p>
+<div class="wrap">{table(ent_ids, tier_ids, tier_lab, et, mx_et)}</div>
+<h2>What kind of learning each entity owns</h2>
+<p class="m">Findings by four-level human-factors category. Rows weighted to Supervision and Organisational Influences need system changes, not retraining.</p>
+<div class="wrap">{table(ent_ids, [1, 2, 3, 4], lvl_lab, el, mx_el)}</div>
+<h2>Most frequent factors</h2>
+<div class="wrap" style="padding:12px">{bars}</div>
+<footer>{html.escape(BRAND)}</footer>
+</main></body></html>"""
+    Path(a.out).write_text(doc, encoding="utf-8")
+    print(f"Dashboard written to {a.out}")
+
+
+# ----------------------------------------------------------------------------- register-xlsx
+
+REG_COLS = [
+    ("lr_id", "LR-ID"), ("ml_id", "ML-ID"), ("title", "Title"), ("owner_entity", "Learning cluster (entity)"),
+    ("tiers", "Tiers who must learn"), ("lesson", "Lesson statement"), ("context", "Context narrative"),
+    ("finding_ids", "Finding IDs"), ("evidence_ids", "Evidence IDs"), ("evidence_strength", "Evidence strength"),
+    ("confidence", "Confidence"), ("hfacs_level", "HFACS level / sub-category"), ("causal_role", "Causal role"),
+    ("barrier", "Barrier (prevention / mitigation)"), ("hazard", "Hazard / energy"), ("activity", "Activity / phase"),
+    ("performance_mode", "Human-performance mode"), ("org_system", "Organisational system"),
+    ("pattern", "Cross-incident / recurrence pattern"), ("precursors", "Precursors and weak signals"),
+    ("comparison", "Counterpart in comparator report"), ("reason_class", "Reason class (if none)"),
+    ("worst_case", "Credible worst case"), ("transferability", "Transferability"), ("priority", "Priority"),
+    ("audiences", "Audiences"), ("learning_level", "Learning level / loop"), ("formats", "Formats"),
+]
+REC_COLS = [("lr_id", "LR-ID"), ("what", "What should change"), ("level_barrier", "HFACS level and barrier"),
+            ("evidence_basis", "Evidence basis"), ("hoc_tier", "Hierarchy-of-controls tier"),
+            ("leading_indicator", "Leading indicator")]
+
+
+TIER_LABELS = {"T1": "Frontline", "T2": "Supervisors", "T3": "Function managers", "T4": "Site leadership",
+               "T5": "Corporate / board"}
+HOC_TIERS = ["elimination", "substitution", "engineering", "administrative", "training", "ppe"]
+
+
+def norm_level(v):
+    m = re.search(r"\bL\s?([1-4])\b|level\s?([1-4])", _flat(v), re.I)
+    return f"L{m.group(1) or m.group(2)} {LEVEL_NAMES[int(m.group(1) or m.group(2))]}" if m else "unclassified"
+
+
+def norm_hoc(v):
+    s = _flat(v).lower()
+    for t in HOC_TIERS:
+        if t in s or (t == "ppe" and "protective equipment" in s) or (t == "administrative" and "procedur" in s):
+            return t
+    return "unclassified"
+
+
+def norm_entity(v):
+    s = _flat(v)
+    m = re.match(r"\s*(F\d{2}[a-z]?)\b", s)
+    return m.group(1) if m else (s or "unset")
+
+
+def _flat(v):
+    if isinstance(v, list):
+        return "; ".join(_flat(x) for x in v)
+    if isinstance(v, dict):
+        return "; ".join(f"{k}: {_flat(x)}" for k, x in v.items())
+    return "" if v is None else str(v)
+
+
+def cmd_register_xlsx(a):
+    openpyxl = _need_openpyxl()
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.utils import get_column_letter
+    reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
+    entries = reg["entries"] if isinstance(reg, dict) else reg
+    wb = openpyxl.Workbook()
+    head_fill = PatternFill("solid", fgColor="0B3954")
+    head_font = Font(color="FFFFFF", bold=True)
+
+    def sheet(ws, cols, rows):
+        ws.append([c[1] for c in cols])
+        for r in rows:
+            ws.append([_flat(r.get(c[0])) for c in cols])
+        for i, c in enumerate(cols, 1):
+            ws.cell(1, i).fill = head_fill
+            ws.cell(1, i).font = head_font
+            ws.column_dimensions[get_column_letter(i)].width = 18 if len(c[1]) < 14 else 32
+        for row in ws.iter_rows(min_row=2):
+            for cell in row:
+                cell.alignment = Alignment(wrap_text=True, vertical="top")
+        ws.freeze_panes = "C2"
+
+    ws = wb.active
+    ws.title = "Learnings Register"
+    sheet(ws, REG_COLS, entries)
+    recs = [dict(r, lr_id=e.get("lr_id")) for e in entries for r in (e.get("recommendations") or [])]
+    sheet(wb.create_sheet("Recommendations"), REC_COLS, recs)
+    plan_cols = [("lr_id", "LR-ID"), ("title", "Title"), ("priority", "Priority")] + \
+                [(t, f"{t} {TIER_LABELS[t]}") for t in TIER_LABELS]
+    plan_rows = [dict({"lr_id": e.get("lr_id"), "title": e.get("title"), "priority": e.get("priority")},
+                      **(e.get("tier_messages") or {})) for e in entries]
+    sheet(wb.create_sheet("Learning Plan"), plan_cols, plan_rows)
+    s = wb.create_sheet("Summary")
+    s.append(["Count by", "Value", "Count"])
+    for c in s[1]:
+        c.fill, c.font = head_fill, head_font
+    groups = [
+        ("Learnings by cluster", collections.Counter(norm_entity(e.get("owner_entity")) for e in entries)),
+        ("Learnings by HFACS level", collections.Counter(norm_level(e.get("hfacs_level")) for e in entries)),
+        ("Learnings by priority", collections.Counter(_flat(e.get("priority")) or "unset" for e in entries)),
+        ("Learnings by counterpart", collections.Counter(_flat(e.get("comparison")) or "not compared" for e in entries)),
+        ("Learnings by tier that must act", collections.Counter(t for e in entries for t in (e.get("tier_messages") or {}))),
+        ("Recommendations by control tier", collections.Counter(norm_hoc(r.get("hoc_tier")) for r in recs)),
+    ]
+    for lab, cnt in groups:
+        for v, c in sorted(cnt.items(), key=lambda kv: (str(kv[0]))):
+            s.append([lab, v, c])
+    strong = sum(1 for r in recs if norm_hoc(r.get("hoc_tier")) in ("elimination", "substitution", "engineering"))
+    s.append(["Recommendations above administrative tier", f"{strong} of {len(recs)}",
+              f"{100*strong/max(len(recs),1):.0f}%"])
+    s.column_dimensions["A"].width, s.column_dimensions["B"].width, s.column_dimensions["C"].width = 38, 46, 10
+    ab = wb.create_sheet("About")
+    for line in [reg.get("title", "Learnings Register") if isinstance(reg, dict) else "Learnings Register",
+                 reg.get("source", "") if isinstance(reg, dict) else "",
+                 "Lessons and recommendations only: no owners, due dates or action tracking.",
+                 "Learning purposes. Not a statutory document.", BRAND]:
+        ab.append([line])
+    ab.column_dimensions["A"].width = 120
+    wb.save(a.out)
+    print(f"Register with {len(entries)} entries and {len(recs)} recommendations written to {a.out}")
+
+
+# ----------------------------------------------------------------------------- check-register
+
+def cmd_check_register(a):
+    w = load_ws(a.ws)
+    reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
+    entries = reg["entries"] if isinstance(reg, dict) else reg
+    F = {f["id"]: f for f in w["findings"]}
+    E = w.get("evidence", {})
+    cl = w.get("clusters", {}).get("findings", {})
+    downs = {v["finding"] for v in w.get("incident", {}).get("review_votes", [])
+             if v["vote"].lower() in ("downgrade", "reject", "remove")}
+    problems, covered = [], set()
+    for e in entries:
+        lid = e.get("lr_id", "?")
+        fids = e.get("finding_ids") or []
+        if not fids:
+            problems.append(f"{lid}: no finding_ids")
+        for fid in fids:
+            if fid not in F:
+                problems.append(f"{lid}: unknown finding {fid}")
+            else:
+                covered.add(fid)
+                if fid in downs:
+                    problems.append(f"{lid}: cites {fid}, which has a reviewer downgrade vote")
+        eids = e.get("evidence_ids") or []
+        if not eids:
+            problems.append(f"{lid}: no evidence_ids")
+        linked = {x for fid in fids if fid in F for x in F[fid]["evidence"]}
+        for eid in eids:
+            if eid not in E:
+                problems.append(f"{lid}: unknown evidence {eid}")
+            elif linked and eid not in linked:
+                problems.append(f"{lid}: {eid} is not linked to any of its findings")
+        if norm_level(e.get("hfacs_level")) == "unclassified":
+            problems.append(f"{lid}: hfacs_level should start with L1-L4")
+        if _s(e.get("priority")) not in ("1", "2", "3"):
+            problems.append(f"{lid}: priority should be 1, 2 or 3")
+        if not e.get("tier_messages"):
+            problems.append(f"{lid}: no tier_messages")
+        recs = e.get("recommendations") or []
+        if not recs:
+            problems.append(f"{lid}: no recommendations")
+        for i, r in enumerate(recs, 1):
+            if norm_hoc(r.get("hoc_tier")) == "unclassified":
+                problems.append(f"{lid} rec {i}: hoc_tier not one of {HOC_TIERS}")
+            if not _s(r.get("leading_indicator")):
+                problems.append(f"{lid} rec {i}: no leading_indicator")
+        # owner suggestion: entity with most findings in this learning
+        cnt = collections.Counter(x for fid in fids for x in cl.get(fid, {}).get("F", []) if x != "F99")
+        if cnt and norm_entity(e.get("owner_entity")) not in [k for k, _ in cnt.most_common(3)]:
+            problems.append(f"{lid}: owner {norm_entity(e.get('owner_entity'))} is not among the top entities of its "
+                            f"findings ({', '.join(k for k, _ in cnt.most_common(3))})")
+    uncovered = [fid for fid in F if fid not in covered and fid not in downs]
+    print(f"{len(entries)} learnings; {len(covered)} of {len(F)} findings covered "
+          f"({100*len(covered)/max(len(F),1):.0f}%); {len(problems)} problem(s).")
+    for p in problems[:80]:
+        print(" -", p)
+    if uncovered:
+        print(f"Uncovered findings ({len(uncovered)}), highest rated first:")
+        for fid in sorted(uncovered, key=lambda x: -(F[x]['rating'] or 0))[:20]:
+            print(f"   {fid} {F[fid]['code']} r{F[fid]['rating']} {F[fid]['short'][:90]}")
+    sys.exit(1 if problems else 0)
+
+
+# ----------------------------------------------------------------------------- scan-names
+
+def _iter_texts(path: Path):
+    if path.is_dir():
+        for p in sorted(path.rglob("*")):
+            if p.is_file() and not any(part.startswith(".git") for part in p.parts):
+                yield from _iter_texts(p)
+        return
+    if path.suffix.lower() in (".xlsx", ".xlsm"):
+        openpyxl = _need_openpyxl()
+        wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+        for ws in wb.worksheets:
+            for row in ws.iter_rows():
+                for c in row:
+                    if isinstance(c.value, str):
+                        yield f"{path}:{ws.title}!{c.coordinate}", c.value
+    elif path.suffix.lower() in (".md", ".txt", ".json", ".csv", ".html", ".mmd", ".py", ".yaml", ".yml"):
+        for i, line in enumerate(path.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
+            yield f"{path}:{i}", line
+
+
+def cmd_scan_names(a):
+    names = [n.strip() for n in Path(a.names).read_text(encoding="utf-8").splitlines()
+             if n.strip() and not n.startswith("#")]
+    if not names:
+        sys.exit("Names file is empty.")
+    rx = re.compile(r"\b(" + "|".join(re.escape(n) for n in names) + r")\b", re.I)
+    hits = 0
+    for target in a.paths:
+        for loc, text in _iter_texts(Path(target)):
+            for m in rx.finditer(text):
+                hits += 1
+                if hits <= a.show:
+                    print(f"HIT {loc}: '{m.group(0)}' … {text[max(0, m.start()-50):m.end()+50]!r}")
+    print(f"\n{hits} hit(s).")
+    sys.exit(1 if hits else 0)
+
+
+# ----------------------------------------------------------------------------- main
+
+def main(argv=None):
+    p = argparse.ArgumentParser(prog="pmlc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sp = p.add_subparsers(dest="cmd", required=True)
+
+    s = sp.add_parser("ingest", help="xlsx export -> JSON workspace")
+    s.add_argument("xlsx")
+    s.add_argument("--out", required=True, help="workspace directory")
+    s.set_defaults(fn=cmd_ingest)
+
+    s = sp.add_parser("profile", help="Markdown profile")
+    s.add_argument("ws")
+    s.add_argument("--top", type=int, default=15)
+    s.add_argument("--out")
+    s.set_defaults(fn=cmd_profile)
+
+    s = sp.add_parser("classify", help="roles -> Learning Clusters")
+    s.add_argument("ws")
+    s.add_argument("--taxonomy", help="alternative taxonomy.json")
+    s.add_argument("--overrides", help="JSON {role: {F:[..], T:.., R:..}} from the LLM resolution pass")
+    s.set_defaults(fn=cmd_classify)
+
+    s = sp.add_parser("select", help="filtered findings bundle")
+    s.add_argument("ws")
+    s.add_argument("--entity", nargs="*", help="e.g. F02 F09b")
+    s.add_argument("--tier", nargs="*", help="e.g. T2 T3")
+    s.add_argument("--relation", nargs="*", help="actor approver owner absent norm_setter learner challenger")
+    s.add_argument("--level", nargs="*", type=int, help="1 2 3 4")
+    s.add_argument("--min-rating", type=int)
+    s.add_argument("--code", nargs="*")
+    s.add_argument("--text", help="regex over short/justification/causal/label")
+    s.add_argument("--max", type=int)
+    s.add_argument("--brief", action="store_true", help="omit justification, causal text and evidence quotes")
+    s.add_argument("--format", choices=["md", "json"], default="md")
+    s.add_argument("--out")
+    s.set_defaults(fn=cmd_select)
+
+    s = sp.add_parser("causal", help="extract causal graph")
+    s.add_argument("ws")
+    s.add_argument("--top", type=int, default=60)
+    s.add_argument("--include-justification", action="store_true")
+    s.set_defaults(fn=cmd_causal)
+
+    s = sp.add_parser("timeline", help="dated precursor candidates")
+    s.add_argument("ws")
+    s.add_argument("--before", help="ISO date; keep only events up to this date (e.g. the incident date)")
+    s.add_argument("--per-date", type=int, default=4)
+    s.add_argument("--show", type=int, default=60)
+    s.set_defaults(fn=cmd_timeline)
+
+    s = sp.add_parser("interfaces", help="entity x entity interfaces")
+    s.add_argument("ws")
+    s.add_argument("--top", type=int, default=25)
+    s.set_defaults(fn=cmd_interfaces)
+
+    s = sp.add_parser("dashboard", help="HTML organisational learning map")
+    s.add_argument("ws")
+    s.add_argument("--out", required=True)
+    s.add_argument("--register", help="Learnings Register JSON: adds learnings, tier plan and control-strength sections")
+    s.add_argument("--title", help="override the incident title shown in the header")
+    s.add_argument("--date", help="override the incident date (use when the summary sheet is wrong)")
+    s.add_argument("--location", help="override the location shown in the header")
+    s.set_defaults(fn=cmd_dashboard)
+
+    s = sp.add_parser("check-register", help="validate a Learnings Register JSON against the workspace")
+    s.add_argument("ws")
+    s.add_argument("register")
+    s.set_defaults(fn=cmd_check_register)
+
+    s = sp.add_parser("register-xlsx", help="Learnings Register JSON -> xlsx")
+    s.add_argument("register")
+    s.add_argument("--out", required=True)
+    s.set_defaults(fn=cmd_register_xlsx)
+
+    s = sp.add_parser("scan-names", help="zero-hit name scan")
+    s.add_argument("names", help="text file, one name per line")
+    s.add_argument("paths", nargs="+")
+    s.add_argument("--show", type=int, default=50)
+    s.set_defaults(fn=cmd_scan_names)
+
+    a = p.parse_args(argv)
+    a.fn(a)
+
+
+if __name__ == "__main__":
+    main()

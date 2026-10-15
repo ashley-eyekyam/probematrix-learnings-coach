@@ -1,0 +1,29 @@
+{
+ "skill_name": "probematrix-learnings-coach",
+ "evals": [
+  {
+   "id": 1,
+   "prompt": "I'm the maintenance superintendent at a gas processing plant. Here is the ProbeMatrix findings export from our investigation of last year's gas terminal fire: samples/<incident>/<export>.xlsx. What should my shift in-charges and maintenance supervisors take away from this? I need something I can actually use in next week's supervisors' meeting.",
+   "expected_output": "supervisor-meeting-pack",
+   "files": [
+    "samples/<incident>/<export>.xlsx"
+   ]
+  },
+  {
+   "id": 2,
+   "prompt": "Our board safety committee meets next month. Using this ProbeMatrix investigation export (samples/<incident>/<export>.xlsx), prepare the briefing paper for the directors: what does this incident tell the board about oversight and assurance, and what should directors ask management?",
+   "expected_output": "board-safety-committee-paper",
+   "files": [
+    "samples/<incident>/<export>.xlsx"
+   ]
+  },
+  {
+   "id": 3,
+   "prompt": "Can you turn this ProbeMatrix investigation (samples/<incident>/<export>.xlsx) into an organisation-wide learning plan - who in the organisation needs to learn what, at which level - with a dashboard I can open in a browser and a lessons-learned register spreadsheet?",
+   "expected_output": "organisation-learning-plan",
+   "files": [
+    "samples/<incident>/<export>.xlsx"
+   ]
+  }
+ ]
+}
