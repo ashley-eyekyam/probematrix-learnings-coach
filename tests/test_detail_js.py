@@ -73,3 +73,17 @@ assert.strictEqual(d.lensSpec('').tier, null);
 assert.deepStrictEqual(d.summarise([e1, e2], data), {{learnings:2, p1:1, recs:3, strongPct:33, findings:2, evidence:1}});
 assert.deepStrictEqual(d.summarise([], data), {{learnings:0, p1:0, recs:0, strongPct:0, findings:0, evidence:0}});
 """)
+
+
+def test_assets_are_inline_safe():
+    js, css = DETAIL_JS.read_text(encoding="utf-8"), DETAIL_CSS.read_text(encoding="utf-8")
+    assert "</script" not in js.lower() and "</style" not in css.lower()
+    for s in (js, css):
+        assert "http://" not in s and "https://" not in s
+    assert "function init()" in js
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_detail_js_loads_without_dom():
+    out = node(f"const d = require({json.dumps(str(DETAIL_JS))}); console.log(Object.keys(d).sort().join(','));")
+    assert out.strip() == "evidenceIdsFor,lensSpec,lensesFor,matches,parseHash,sortEntries,sortFindings,summarise,tokenize"

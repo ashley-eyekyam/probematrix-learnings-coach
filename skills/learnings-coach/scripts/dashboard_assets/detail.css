@@ -1,0 +1,72 @@
+/* ProbeMatrix Learnings Coach: tab bar and "Detailed register" tab. Uses the page tokens
+   --bg --fg --mut --card --line --acc defined by pmlc.py dashboard (light and dark). */
+.tabbar{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:16px 0 0}
+.tabbar button{font:inherit;font-weight:600;background:none;border:0;border-bottom:3px solid transparent;color:var(--mut);padding:10px 14px;cursor:pointer}
+.tabbar button[aria-selected=true]{color:var(--fg);border-bottom-color:var(--acc)}
+.tabbar button:focus-visible,.toolbar :focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+[role=tabpanel][hidden],.lr[hidden]{display:none}
+.lr-link{color:inherit;text-decoration:none}
+.lr-link:hover{text-decoration:underline}
+.banner{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:10px;padding:10px 14px;margin:16px 0}
+.banner p{margin:2px 0}
+.banner .src{color:var(--mut);font-size:13px}
+.sum{margin:12px 0}
+.toolbar{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;padding:10px 0;border-bottom:1px solid var(--line)}
+.toolbar label{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--mut)}
+.toolbar select,.toolbar input,.toolbar button{font:inherit;font-size:14px;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 8px;min-height:36px;max-width:100%}
+.toolbar input{width:min(280px,80vw)}
+.toolbar button{cursor:pointer}
+.toolbar .btns{display:flex;gap:6px;flex-wrap:wrap}
+.showing{color:var(--mut);font-size:13px;margin:8px 0}
+.cards{display:flex;flex-direction:column;gap:10px}
+.lr>details{background:var(--card);border:1px solid var(--line);border-radius:10px}
+.lr-head{cursor:pointer;padding:12px 14px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.lr-head .t{font-weight:600;flex:1 1 300px;min-width:0}
+.lr-head .pv{flex-basis:100%;color:var(--mut);font-size:14px}
+.lr-head .meta{display:flex;flex-wrap:wrap;gap:4px;flex-basis:100%}
+.id{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;font-weight:600}
+.chip{display:inline-block;font-size:12px;line-height:1.6;padding:0 8px;border-radius:999px;border:1px solid var(--line);color:var(--mut);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.chip.p1{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:700}
+.chip.p2{border-color:var(--acc);color:var(--fg)}
+.chip.hoc.elimination,.chip.hoc.substitution,.chip.hoc.engineering,.chip.acc{border-color:var(--acc);color:var(--fg);background:color-mix(in srgb,var(--acc) 16%,transparent)}
+.chip.warn{border-color:#c2410c;color:#c2410c;font-weight:600}
+.lr-body{padding:0 14px 12px;overflow-wrap:anywhere}
+.callout{border-left:4px solid var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent);padding:8px 12px;border-radius:6px;margin:4px 0 8px}
+.sec{border-top:1px solid var(--line);padding:4px 0}
+.sec>summary{cursor:pointer;font-weight:600;padding:6px 0}
+.sec p{margin:6px 0}
+.kv b{font-weight:600}
+h4.grp{font-size:13px;margin:10px 0 2px}
+dl.fields{display:grid;grid-template-columns:minmax(120px,220px) minmax(0,1fr);gap:4px 12px;margin:4px 0 8px}
+dl.fields dt{color:var(--mut);font-size:13px}
+dl.fields dd{margin:0;min-width:0}
+ul.plain{margin:0;padding-left:18px}
+ol.recs{padding-left:22px;margin:4px 0}
+.rec{margin:8px 0}
+.kpi{font-size:14px}
+table.tm{border-collapse:collapse;width:100%;font-size:14px}
+table.tm th,table.tm td{text-align:left;vertical-align:top;padding:4px 8px;background:none;white-space:normal}
+table.tm th{color:var(--mut);font-weight:600;width:30%}
+.fnd,.evd{border:1px solid var(--line);border-radius:8px;margin:6px 0;padding:0 10px}
+.fnd>summary,.evd>summary{cursor:pointer;padding:6px 0;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
+.fnd .code{color:var(--mut);font-size:13px}
+.fnd .lab,.evd .lab{flex:1 1 220px;min-width:0}
+.fbody{padding:0 0 8px;font-size:14px}
+.fbody blockquote{margin:4px 0 4px 8px;padding-left:8px;border-left:2px solid var(--line);color:var(--mut)}
+ul.links{padding-left:18px;margin:4px 0}
+.missing{color:var(--mut);margin:6px 0}
+a.ref{color:var(--acc);text-decoration:none;border-bottom:1px dotted var(--acc)}
+.flash{outline:3px solid var(--acc);outline-offset:2px}
+.coverage{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px}
+.coverage>summary{cursor:pointer;font-weight:600}
+@media (max-width:600px){
+  dl.fields{grid-template-columns:minmax(0,1fr)}
+  .toolbar{position:static}
+  table.tm th{width:auto}
+}
+@media print{
+  .tabbar,.toolbar,noscript{display:none!important}
+  body{background:#fff;color:#000}
+  .fnd,.evd,.rec{break-inside:avoid}
+  a.ref{color:inherit;border:0}
+}
