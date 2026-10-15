@@ -100,6 +100,52 @@ def write_json(path: Path, obj) -> None:
     path.write_text(json.dumps(obj, indent=1, ensure_ascii=False), encoding="utf-8")
 
 
+# ----------------------------------------------------------------------------- run folders
+
+RUNS_DIR = "pmlc-runs"
+SLUG_PART_RX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+RUN_SLUG_RX = re.compile(r"^\d{4}-\d{2}-\d{2}(?:-[a-z0-9]+)+$")
+
+
+def iso_date(v) -> str | None:
+    """'2020-09-24' (or a value starting with it, e.g. an Excel datetime) -> '2020-09-24'; else None."""
+    m = re.match(r"\s*(\d{4}-\d{2}-\d{2})", _s(v))
+    if not m:
+        return None
+    try:
+        dt.date.fromisoformat(m.group(1))
+    except ValueError:
+        return None
+    return m.group(1)
+
+
+def run_slug(date, slug) -> str:
+    """Incident date + '<site>-<event>' -> run folder name, e.g. 2020-09-24-hazira-gas-release-fire."""
+    d = iso_date(date)
+    if not d:
+        raise ValueError(f"not an ISO date (YYYY-MM-DD): {date!r}")
+    if not SLUG_PART_RX.match(slug or ""):
+        raise ValueError("slug must be lowercase words joined by hyphens, "
+                         f"e.g. hazira-gas-release-fire (got {slug!r})")
+    return f"{d}-{slug}"
+
+
+def valid_run_slug(s) -> bool:
+    return bool(RUN_SLUG_RX.match(s or "")) and iso_date(s[:10]) is not None
+
+
+def is_standard_ws(ws) -> bool:
+    """True for <anything>/pmlc-runs/<valid slug>/workspace."""
+    p = Path(ws).resolve()
+    return p.name == "workspace" and p.parent.parent.name == RUNS_DIR and valid_run_slug(p.parent.name)
+
+
+def outputs_dir(ws) -> Path:
+    """Where a workspace's outputs go: the sibling outputs/ in the standard layout, ws/outputs otherwise."""
+    p = Path(ws).resolve()
+    return p.parent / "outputs" if is_standard_ws(p) else p / "outputs"
+
+
 def find_sheet(wb, *candidates):
     for c in candidates:
         for n in wb.sheetnames:

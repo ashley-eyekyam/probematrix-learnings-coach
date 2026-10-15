@@ -9,6 +9,8 @@ import pytest
 openpyxl = pytest.importorskip("openpyxl")
 ROOT = Path(__file__).resolve().parents[1]
 PMLC = ROOT / "skills" / "learnings-coach" / "scripts" / "pmlc.py"
+sys.path.insert(0, str(PMLC.parent))
+import pmlc  # noqa: E402  (engine module; standard-library imports only)
 
 FIND_COLS = ["Finding ID", "Nanocode", "Name", "Level", "Level Name", "Category", "Subcategory", "Classification",
              "Rating", "Instance ID", "Instance Label", "Short Description", "AI Justification", "Causal Explanation",
@@ -177,3 +179,29 @@ def test_scan_names(ws, tmp_path):
     r = subprocess.run([sys.executable, str(PMLC), "scan-names", str(n), str(ws / "findings.json")],
                        capture_output=True, text=True)
     assert r.returncode == 1 and "1 hit" in r.stdout
+
+
+def test_slug_rules():
+    assert pmlc.run_slug("2020-09-24", "hazira-gas-release-fire") == "2020-09-24-hazira-gas-release-fire"
+    assert pmlc.run_slug("2020-09-24 00:00:00", "a1") == "2020-09-24-a1"
+    for bad in ["Hazira", "gas_fire", "-fire", "fire-", "gas--fire", "", None]:
+        with pytest.raises(ValueError):
+            pmlc.run_slug("2020-09-24", bad)
+    for bad_date in ["24/09/2020", "2020-13-01", "", None]:
+        with pytest.raises(ValueError):
+            pmlc.run_slug(bad_date, "fire")
+    assert pmlc.valid_run_slug("2020-09-24-hazira-fire")
+    assert not pmlc.valid_run_slug("2020-02-30-x")
+    assert not pmlc.valid_run_slug("hazira-2020")
+    assert not pmlc.valid_run_slug("2020-09-24")
+
+
+def test_outputs_dir(tmp_path):
+    std = tmp_path / "pmlc-runs" / "2020-09-24-hazira-fire" / "workspace"
+    assert pmlc.is_standard_ws(std)
+    assert pmlc.outputs_dir(std) == (tmp_path / "pmlc-runs" / "2020-09-24-hazira-fire" / "outputs").resolve()
+    legacy = tmp_path / "pmlc-hazira2020"
+    assert not pmlc.is_standard_ws(legacy)
+    assert pmlc.outputs_dir(legacy) == legacy.resolve() / "outputs"
+    assert not pmlc.is_standard_ws(tmp_path / "runs" / "2020-09-24-x" / "workspace")
+    assert not pmlc.is_standard_ws(tmp_path / "pmlc-runs" / "Bad" / "workspace")
