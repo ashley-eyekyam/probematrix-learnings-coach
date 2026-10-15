@@ -26,6 +26,7 @@ const assert = require('assert');
 const d = require({json.dumps(str(DETAIL_JS))});
 assert.deepStrictEqual(d.tokenize('see EVD-0001 and FND-7C3A90E1; LR-03.'),
   [{{text:'see '}},{{id:'EVD-0001'}},{{text:' and '}},{{id:'FND-7C3A90E1'}},{{text:'; '}},{{id:'LR-03'}},{{text:'.'}}]);
+assert.deepStrictEqual(d.tokenize('LR-1000'), [{{id:'LR-1000'}}]);
 assert.deepStrictEqual(d.tokenize(''), []);
 assert.deepStrictEqual(d.tokenize(null), []);
 assert.deepStrictEqual(d.parseHash('#detail/LR-03'), {{tab:'detail', id:'LR-03'}});
@@ -61,6 +62,7 @@ assert.ok(d.matches(e1, data, {{q:'VALVE WAS'}}));
 assert.ok(d.matches(e1, data, {{q:'dcs log'}}));
 assert.ok(!d.matches(e2, data, {{q:'dcs log'}}));
 assert.ok(d.matches(e2, data, {{q:'  '}}));
+assert.ok(!d.matches(e1, data, {{q:'justification'}}));   // field names are not searchable text
 const t2 = d.lensSpec('T2');
 assert.strictEqual(t2.tier, 'T2');
 assert.deepStrictEqual(t2.order.slice(0, 4), ['lesson','context','warn','recs']);

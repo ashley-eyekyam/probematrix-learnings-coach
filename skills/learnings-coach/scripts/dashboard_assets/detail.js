@@ -4,14 +4,14 @@
 (function () {
   "use strict";
 
-  var ID_RX = /\b(LR-\d{1,3}|FND-[0-9A-Za-z]{4,}|EVD-\d{3,})\b/g;
+  var ID_RX = /\b(LR-\d+|FND-[0-9A-Za-z]{4,}|EVD-\d{3,})\b/g;
   var SAFE_ID = /^(LR|FND|EVD)-[0-9A-Za-z]+$/;
   var STRONG = ["elimination", "substitution", "engineering"];
 
   function flat(v) {
     if (v === null || v === undefined) return "";
     if (Array.isArray(v)) return v.map(flat).join(" ");
-    if (typeof v === "object") return Object.keys(v).map(function (k) { return k + " " + flat(v[k]); }).join(" ");
+    if (typeof v === "object") return Object.keys(v).map(function (k) { return flat(v[k]); }).join(" ");  /* values only */
     return String(v);
   }
 
@@ -469,7 +469,9 @@
 
   function go(id, ctx) {
     var t = findTarget(id, ctx);
-    if (!t) { resetFilters(); t = findTarget(id, ctx); }
+    var known = id.indexOf("LR-") === 0 ? D.entries.some(function (e) { return e.lr_id === id; })
+      : Boolean(D.findings[id] || D.evidence[id]);
+    if (!t && known) { resetFilters(); t = findTarget(id, ctx); }
     if (!t) return;
     if (t.tagName === "ARTICLE") { var card = t.querySelector("details.card"); if (card) card.open = true; }
     for (var n = t; n && n !== els.panel; n = n.parentElement) if (n.tagName === "DETAILS") n.open = true;
