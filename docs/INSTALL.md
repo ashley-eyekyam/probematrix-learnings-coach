@@ -1,6 +1,6 @@
 # Installing the ProbeMatrix Learnings Coach
 
-All hosts need **Python 3.9+** and **openpyxl** (`pip install openpyxl`). The skills call `skills/learnings-coach/scripts/pmlc.py`.
+All hosts need **Python 3.9+** and **openpyxl** (`pip install -r requirements.txt`, or `sudo apt install python3-openpyxl` on Debian/Ubuntu). The skills call `skills/learnings-coach/scripts/pmlc.py`. Full list of requirements and the local developer setup: [README, Requirements and local setup](../README.md#requirements-and-local-setup).
 
 ## Claude Code
 

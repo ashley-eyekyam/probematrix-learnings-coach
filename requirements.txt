@@ -1,0 +1,2 @@
+# Runtime: the pmlc.py engine (ingest and the Learnings Register workbook)
+openpyxl>=3.1

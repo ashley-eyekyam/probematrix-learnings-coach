@@ -74,7 +74,35 @@ git clone https://github.com/ashley-eyekyam/probematrix-learnings-coach
 cd probematrix-learnings-coach && ./tools/install-codex.sh
 ```
 
-All hosts need Python 3.9+ and `pip install openpyxl`.
+All hosts need Python 3.9+ with `openpyxl` (see below).
+
+## Requirements and local setup
+
+| Need | Version | Why | Required? |
+|---|---|---|---|
+| Python | 3.9 or newer (tested on 3.14) | runs the engine `skills/learnings-coach/scripts/pmlc.py` | yes |
+| openpyxl | 3.1 or newer (`requirements.txt`) | reads the ProbeMatrix export and writes the register workbook | yes |
+| pytest | 8 or newer (`requirements-dev.txt`) | runs the test suite | contributors |
+| Node.js | 18 or newer | runs the JavaScript tests of the dashboard's Detailed register tab (skipped if absent) | contributors, optional |
+| git, and the GitHub CLI `gh` | any recent | cloning, pull requests | contributors |
+| A web browser | any current | opens `organisation-learning-map.html` (works offline) | yes |
+
+**Set up a local clone** (a virtual environment keeps the packages out of your system Python):
+
+```bash
+git clone https://github.com/ashley-eyekyam/probematrix-learnings-coach
+cd probematrix-learnings-coach
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-dev.txt        # Windows: .venv\Scripts\pip install -r requirements-dev.txt
+.venv/bin/python -m pytest tests                      # Windows: .venv\Scripts\python -m pytest tests
+```
+
+`requirements.txt` holds what the engine needs at run time; `requirements-dev.txt` adds the test tools.
+
+**When an agent runs the engine with your system `python3`** (Claude Code, Claude desktop, Codex), that Python also needs openpyxl:
+- macOS or Windows: `python3 -m pip install --user openpyxl`
+- Debian or Ubuntu, where the system Python refuses `pip install`: `sudo apt install python3-openpyxl`
+- Or point the agent at the virtual environment: `.venv/bin/python skills/learnings-coach/scripts/pmlc.py ...`
 
 ## Try it
 

@@ -37,6 +37,6 @@ Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write Ma
 
 ## Development
 
-- Tests: `python3 -m pytest tests/` (they build a synthetic export; no real data needed).
+- Setup: `python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt`. Tests: `.venv/bin/python -m pytest tests` (they build a synthetic export; no real data needed; the JS tests need Node and are skipped without it).
 - Keep each `SKILL.md` under ~150 lines; put shared material in `skills/learnings-coach/references/`.
 - New audience skill: copy an existing audience skill, change the audience, the `select` filters and the structure, and add it to `references/audiences.md` and the README table.
