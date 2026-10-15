@@ -91,7 +91,7 @@ def load_ws(ws_dir: Path) -> dict:
         if p.exists():
             out[name] = json.loads(p.read_text(encoding="utf-8"))
     if "findings" not in out:
-        sys.exit(f"No findings.json in {ws_dir}. Run: pmlc.py ingest <export.xlsx> --out {ws_dir}")
+        sys.exit(f"No findings.json in {ws_dir}. Run: pmlc.py ingest <export.xlsx> --slug <site>-<event>")
     return out
 
 
@@ -168,10 +168,35 @@ def rows_as_dicts(ws):
 
 # ----------------------------------------------------------------------------- ingest
 
+def ingest_target(a, fields: dict) -> Path:
+    """Resolve where ingest writes the workspace; exits with a clear message if the folder rule is broken."""
+    if a.legacy_out:
+        print(f"Warning: {a.legacy_out} is outside the standard layout "
+              f"<export-dir>/{RUNS_DIR}/<YYYY-MM-DD>-<site>-<event>/workspace.", file=sys.stderr)
+        return Path(a.legacy_out)
+    if a.out:
+        if not is_standard_ws(a.out):
+            sys.exit(f"--out must be <dir>/{RUNS_DIR}/<YYYY-MM-DD>-<site>-<event>/workspace (got {a.out}). "
+                     "Use --slug instead, or --legacy-out for a non-standard folder.")
+        return Path(a.out).resolve()
+    if not a.slug:
+        sys.exit("Give --slug <site>-<event>, e.g. --slug hazira-gas-release-fire "
+                 "(the date comes from --date or the summary sheet's Date).")
+    date = a.date or fields.get("Date", "")
+    if not iso_date(date):
+        src = "--date" if a.date else "the summary sheet's Date"
+        sys.exit(f"No valid incident date from {src}: {date!r}. Pass --date YYYY-MM-DD.")
+    try:
+        slug = run_slug(date, a.slug)
+    except ValueError as err:
+        sys.exit(str(err))
+    root = Path(a.root) if a.root else Path(a.xlsx).resolve().parent
+    return root / RUNS_DIR / slug / "workspace"
+
+
 def cmd_ingest(a):
     openpyxl = _need_openpyxl()
     wb = openpyxl.load_workbook(a.xlsx, read_only=True, data_only=True)
-    out = Path(a.out)
 
     fs = find_sheet(wb, "Identified Findings", "Findings")
     if fs is None:
@@ -263,11 +288,17 @@ def cmd_ingest(a):
     incident["source_file"] = os.path.basename(a.xlsx)
     incident["sheets"] = wb.sheetnames
 
+    out = ingest_target(a, incident["fields"])
+    if is_standard_ws(out) and (out / "findings.json").exists() and not a.force:
+        sys.exit(f"{out} already holds a workspace. Pass --force to overwrite it.")
     write_json(out / "findings.json", findings)
     write_json(out / "evidence.json", evidence)
     write_json(out / "incident.json", incident)
     print(f"Ingested {len(findings)} findings, {len(evidence)} evidence items, "
           f"{len(causal_sheet)} causal-chain rows -> {out}")
+    if is_standard_ws(out):
+        outputs_dir(out).mkdir(parents=True, exist_ok=True)
+        print(f"Run folder: {out.parent}\n  workspace: {out}\n  outputs:   {outputs_dir(out)}")
 
 
 # ----------------------------------------------------------------------------- profile
@@ -1041,9 +1072,14 @@ def main(argv=None):
     p = argparse.ArgumentParser(prog="pmlc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sp = p.add_subparsers(dest="cmd", required=True)
 
-    s = sp.add_parser("ingest", help="xlsx export -> JSON workspace")
+    s = sp.add_parser("ingest", help="xlsx export -> JSON workspace in <export-dir>/pmlc-runs/<slug>/workspace")
     s.add_argument("xlsx")
-    s.add_argument("--out", required=True, help="workspace directory")
+    s.add_argument("--slug", help="<site>-<event>: lowercase words joined by hyphens, e.g. hazira-gas-release-fire")
+    s.add_argument("--date", help="incident date YYYY-MM-DD (default: the summary sheet's Date)")
+    s.add_argument("--root", help="folder that holds pmlc-runs/ (default: the export's folder)")
+    s.add_argument("--out", help="explicit workspace path; must be <dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace")
+    s.add_argument("--legacy-out", help="write the workspace to any folder (pre-0.2 layout; not for new runs)")
+    s.add_argument("--force", action="store_true", help="overwrite an existing workspace in the run folder")
     s.set_defaults(fn=cmd_ingest)
 
     s = sp.add_parser("profile", help="Markdown profile")

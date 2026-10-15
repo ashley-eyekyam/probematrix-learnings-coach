@@ -41,9 +41,7 @@ ROWS = [
 ]
 
 
-@pytest.fixture(scope="module")
-def ws(tmp_path_factory):
-    d = tmp_path_factory.mktemp("pmlc")
+def make_export(d: Path) -> Path:
     wb = openpyxl.Workbook()
     s = wb.active
     s.title = "Incident Summary"
@@ -65,7 +63,14 @@ def ws(tmp_path_factory):
     c.append(["No causal links found", None, None, None])
     x = d / "export.xlsx"
     wb.save(x)
-    run("ingest", str(x), "--out", str(d / "ws"))
+    return x
+
+
+@pytest.fixture(scope="module")
+def ws(tmp_path_factory):
+    d = tmp_path_factory.mktemp("pmlc")
+    x = make_export(d)
+    run("ingest", str(x), "--legacy-out", str(d / "ws"))
     run("classify", str(d / "ws"))
     return d / "ws"
 
@@ -74,6 +79,12 @@ def run(*args):
     r = subprocess.run([sys.executable, str(PMLC), *args], capture_output=True, text=True)
     assert r.returncode == 0, r.stderr + r.stdout
     return r.stdout
+
+
+def run_fail(*args):
+    r = subprocess.run([sys.executable, str(PMLC), *args], capture_output=True, text=True)
+    assert r.returncode != 0, r.stdout
+    return r
 
 
 def test_ingest(ws):
@@ -205,3 +216,42 @@ def test_outputs_dir(tmp_path):
     assert pmlc.outputs_dir(legacy) == legacy.resolve() / "outputs"
     assert not pmlc.is_standard_ws(tmp_path / "runs" / "2020-09-24-x" / "workspace")
     assert not pmlc.is_standard_ws(tmp_path / "pmlc-runs" / "Bad" / "workspace")
+
+
+def test_ingest_standard_layout(tmp_path):
+    x = make_export(tmp_path)
+    out = run("ingest", str(x), "--slug", "pump-fire")
+    run_dir = tmp_path / "pmlc-runs" / "2024-03-20-pump-fire"
+    assert (run_dir / "workspace" / "findings.json").exists()
+    assert (run_dir / "outputs").is_dir()
+    assert "outputs:" in out
+    r = run_fail("ingest", str(x), "--slug", "pump-fire")
+    assert "already holds a workspace" in r.stderr
+    run("ingest", str(x), "--slug", "pump-fire", "--force")
+
+
+def test_ingest_date_override_and_root(tmp_path):
+    x = make_export(tmp_path)
+    root = tmp_path / "elsewhere"
+    run("ingest", str(x), "--slug", "pump-fire", "--date", "2024-03-21", "--root", str(root))
+    assert (root / "pmlc-runs" / "2024-03-21-pump-fire" / "workspace" / "findings.json").exists()
+
+
+def test_ingest_explicit_standard_out(tmp_path):
+    x = make_export(tmp_path)
+    ws = tmp_path / "pmlc-runs" / "2024-03-20-pump-fire" / "workspace"
+    run("ingest", str(x), "--out", str(ws))
+    assert (ws / "findings.json").exists() and (ws.parent / "outputs").is_dir()
+
+
+@pytest.mark.parametrize("args, msg", [
+    ([], "--slug"),
+    (["--slug", "Pump Fire"], "lowercase"),
+    (["--slug", "pump-fire", "--date", "20/03/2024"], "--date"),
+    (["--out", "somewhere/ws"], "pmlc-runs"),
+])
+def test_ingest_refusals(tmp_path, args, msg):
+    x = make_export(tmp_path)
+    r = run_fail("ingest", str(x), *args)
+    assert msg in r.stderr
+    assert not (tmp_path / "pmlc-runs").exists()
