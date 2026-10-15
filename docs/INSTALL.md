@@ -41,5 +41,5 @@ Any agent that reads the Agent Skills format (`SKILL.md` with `name` and `descri
 
 ```bash
 python3 skills/learnings-coach/scripts/pmlc.py -h
-python3 -m pytest tests/
+.venv/bin/python -m pytest tests        # see README "Requirements and local setup"; plain python3 skips tests without openpyxl
 ```
