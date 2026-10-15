@@ -286,3 +286,48 @@ def test_default_output_paths(tmp_path):
     assert "slug:      2024-03-20-pump-fire" in out
     assert f"outputs:   {(run_dir / 'outputs').resolve()}" in out
     assert "legacy layout" in run("run-path", str(tmp_path))
+
+
+def test_downgraded_findings():
+    w = {"incident": {"review_votes": [{"finding": "FND-1", "vote": "Downgrade"},
+                                       {"finding": "FND-2", "vote": "upgrade"},
+                                       {"finding": "FND-3", "vote": "remove"}]}}
+    assert pmlc.downgraded_findings(w) == {"FND-1", "FND-3"}
+    assert pmlc.downgraded_findings({}) == set()
+
+
+def test_detail_data(ws):
+    w = pmlc.load_ws(ws)
+    d = pmlc.build_detail_data(w, MINI_REG)
+    assert d["register"] == {"title": "Synthetic register", "source": "export.xlsx"}
+    assert d["entries"][0]["custom_field"] == "kept as given"
+    assert d["entries"][0]["recommendations"][0]["owner_note"] == "extra key"
+    assert set(d["findings"]) == {"FND-0001", "FND-0002", "FND-0003", "FND-0004"}
+    assert d["findings"]["FND-0001"]["clusters"]["F"]
+    assert d["findings"]["FND-0001"]["votes"] == []
+    assert set(d["evidence"]) == {"EVD-0001", "EVD-0002", "EVD-0003"}
+    assert {u["id"]: u["reason"] for u in d["uncovered"]} == {
+        "FND-0003": "not covered by any learning", "FND-0004": "not covered by any learning"}
+    assert d["derived"]["LR-01"] == {"level": "L3 Supervision", "entity": "F02",
+                                     "hoc": ["engineering", "administrative"], "strongest": "engineering"}
+    assert d["totals"] == {"findings": 4, "evidence": 3}
+    assert d["tier_labels"]["T5"] == "Corporate / board"
+    assert d["labels"]["worst_case"] == "Credible worst case"
+    w2 = dict(w, incident=dict(w["incident"], review_votes=[{"finding": "FND-0004", "vote": "downgrade", "reason": "r"}]))
+    d2 = pmlc.build_detail_data(w2, MINI_REG)
+    assert {u["id"]: u["reason"] for u in d2["uncovered"]}["FND-0004"] == "reviewer downgrade vote"
+    assert d2["findings"]["FND-0004"]["votes"][0]["vote"] == "downgrade"
+
+
+def test_detail_data_minimal_workspace(ws):
+    w = {"findings": pmlc.load_ws(ws)["findings"]}
+    d = pmlc.build_detail_data(w, [{"lr_id": "LR-09", "finding_ids": ["FND-0001", "FND-9999"]}])
+    assert d["register"] == {} and d["evidence"] == {}
+    assert "FND-9999" not in d["findings"] and d["findings"]["FND-0001"]["clusters"] == {}
+    assert d["derived"]["LR-09"]["strongest"] == "unclassified"
+
+
+def test_embed_json_is_script_safe():
+    s = pmlc.embed_json({"t": "</script><b>&"})
+    assert "<" not in s and ">" not in s and "&" not in s
+    assert json.loads(s) == {"t": "</script><b>&"}

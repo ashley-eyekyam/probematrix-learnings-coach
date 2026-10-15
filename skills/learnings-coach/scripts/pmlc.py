@@ -730,6 +730,63 @@ def cmd_interfaces(a):
 
 # ----------------------------------------------------------------------------- dashboard
 
+DASHBOARD_ASSETS = HERE / "dashboard_assets"
+
+
+def downgraded_findings(w: dict) -> set:
+    """Finding IDs with a reviewer vote to downgrade, reject or remove them (incident.json review_votes)."""
+    return {v.get("finding") for v in w.get("incident", {}).get("review_votes", [])
+            if _s(v.get("vote")).lower() in ("downgrade", "reject", "remove")}
+
+
+def build_detail_data(w: dict, reg) -> dict:
+    """Everything the Detailed register tab shows: the register as given, plus the full workspace
+    records of every finding and evidence item it cites (each once) and the findings no learning covers."""
+    entries = reg["entries"] if isinstance(reg, dict) else reg
+    meta = {k: v for k, v in reg.items() if k != "entries"} if isinstance(reg, dict) else {}
+    F = {f["id"]: f for f in w["findings"]}
+    E = w.get("evidence", {})
+    cl = w.get("clusters", {})
+    clf = cl.get("findings", {})
+    votes = collections.defaultdict(list)
+    for v in w.get("incident", {}).get("review_votes", []):
+        votes[v.get("finding")].append(v)
+    downs = downgraded_findings(w)
+
+    derived, cited = {}, []
+    for e in entries:
+        hocs = [norm_hoc(r.get("hoc_tier")) for r in (e.get("recommendations") or [])]
+        ranked = [t for t in HOC_TIERS if t in hocs]
+        derived[_s(e.get("lr_id"))] = {"level": norm_level(e.get("hfacs_level")),
+                                       "entity": norm_entity(e.get("owner_entity")),
+                                       "hoc": hocs, "strongest": ranked[0] if ranked else "unclassified"}
+        cited += [fid for fid in (e.get("finding_ids") or []) if fid in F and fid not in cited]
+    uncovered = [{"id": fid, "label": f.get("label", ""), "rating": f.get("rating"), "level": f.get("level"),
+                  "reason": "reviewer downgrade vote" if fid in downs else "not covered by any learning"}
+                 for fid, f in F.items() if fid not in cited]
+
+    findings = {}
+    for fid in cited + [u["id"] for u in uncovered]:
+        findings[fid] = dict(F[fid], clusters=clf.get(fid, {}), votes=votes.get(fid, []))
+    eids = []
+    for e in entries:
+        eids += [x for x in (e.get("evidence_ids") or []) if x not in eids]
+    for f in findings.values():
+        eids += [x for x in (f.get("evidence") or []) if x not in eids]
+    tax = cl.get("taxonomy", {})
+    return {"register": meta, "entries": entries, "derived": derived, "findings": findings,
+            "evidence": {x: E[x] for x in eids if x in E},
+            "taxonomy": {"entities": tax.get("entities", {}), "tiers": tax.get("tiers", {})},
+            "tier_labels": TIER_LABELS, "labels": dict(REG_COLS), "hoc_order": HOC_TIERS,
+            "totals": {"findings": len(F), "evidence": len(E)}, "uncovered": uncovered}
+
+
+def embed_json(obj) -> str:
+    """JSON safe to place inside <script type="application/json">: no '<', '>' or '&' characters."""
+    s = json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
+    return s.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+
+
 def cmd_dashboard(a):
     ws = Path(a.ws)
     w = load_ws(ws)
@@ -986,8 +1043,7 @@ def cmd_check_register(a):
     F = {f["id"]: f for f in w["findings"]}
     E = w.get("evidence", {})
     cl = w.get("clusters", {}).get("findings", {})
-    downs = {v["finding"] for v in w.get("incident", {}).get("review_votes", [])
-             if v["vote"].lower() in ("downgrade", "reject", "remove")}
+    downs = downgraded_findings(w)
     problems, covered = [], set()
     for e in entries:
         lid = e.get("lr_id", "?")
