@@ -476,6 +476,8 @@
     if (t.tagName === "ARTICLE") { var card = t.querySelector("details.card"); if (card) card.open = true; }
     for (var n = t; n && n !== els.panel; n = n.parentElement) if (n.tagName === "DETAILS") n.open = true;
     t.scrollIntoView({block: "start"});
+    var bar = els.panel.querySelector(".toolbar");   /* keep the target clear of the sticky toolbar */
+    if (bar && getComputedStyle(bar).position === "sticky") window.scrollBy(0, -(bar.offsetHeight + 8));
     t.classList.add("flash");
     setTimeout(function () { t.classList.remove("flash"); }, 1600);
   }
