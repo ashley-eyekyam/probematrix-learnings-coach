@@ -40,6 +40,19 @@ ROWS = [
      "EVD-0002", None, None, None, None, "No", None, None],
 ]
 
+MINI_REG = {"title": "Synthetic register", "source": "export.xlsx", "entries": [
+    {"lr_id": "LR-01", "title": "Return to service without a test", "finding_ids": ["FND-0001", "FND-0002"],
+     "evidence_ids": ["EVD-0001"], "priority": 1, "owner_entity": "F02 Mechanical Maintenance",
+     "hfacs_level": "L3 Supervision Inadequate", "tiers": ["T1", "T2"],
+     "lesson": "If a joint is disturbed, test it before service, because untested joints leak (EVD-0001).",
+     "precursors": "Earlier seal leaks", "custom_field": "kept as given",
+     "tier_messages": {"T1": "Do not pressurise without the test record.", "T2": "Hold point before acceptance."},
+     "recommendations": [
+         {"what": "Interlock pressurisation on a signed test record", "hoc_tier": "Engineering control: interlock",
+          "leading_indicator": "Share of restarts with a test record", "owner_note": "extra key"},
+         {"what": "y </script><script>alert(1)</script> & <b>", "hoc_tier": "Administrative (procedure)",
+          "leading_indicator": "i"}]}]}
+
 
 def make_export(d: Path) -> Path:
     wb = openpyxl.Workbook()
@@ -255,3 +268,21 @@ def test_ingest_refusals(tmp_path, args, msg):
     r = run_fail("ingest", str(x), *args)
     assert msg in r.stderr
     assert not (tmp_path / "pmlc-runs").exists()
+
+
+def test_default_output_paths(tmp_path):
+    x = make_export(tmp_path)
+    run("ingest", str(x), "--slug", "pump-fire")
+    run_dir = tmp_path / "pmlc-runs" / "2024-03-20-pump-fire"
+    ws = run_dir / "workspace"
+    run("classify", str(ws))
+    run("dashboard", str(ws))
+    assert (run_dir / "outputs" / "organisation-learning-map.html").exists()
+    reg = run_dir / "outputs" / "learnings-register.json"
+    reg.write_text(json.dumps(MINI_REG))
+    run("register-xlsx", str(reg))
+    assert (run_dir / "outputs" / "learnings-register.xlsx").exists()
+    out = run("run-path", str(ws))
+    assert "slug:      2024-03-20-pump-fire" in out
+    assert f"outputs:   {(run_dir / 'outputs').resolve()}" in out
+    assert "legacy layout" in run("run-path", str(tmp_path))

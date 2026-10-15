@@ -146,6 +146,15 @@ def outputs_dir(ws) -> Path:
     return p.parent / "outputs" if is_standard_ws(p) else p / "outputs"
 
 
+def cmd_run_path(a):
+    ws = Path(a.ws).resolve()
+    std = is_standard_ws(ws)
+    print(f"run:       {ws.parent if std else ws}")
+    print(f"workspace: {ws}")
+    print(f"outputs:   {outputs_dir(ws)}")
+    print(f"slug:      {ws.parent.name if std else '(legacy layout: not under pmlc-runs/<slug>/workspace)'}")
+
+
 def find_sheet(wb, *candidates):
     for c in candidates:
         for n in wb.sheetnames:
@@ -846,8 +855,10 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 <div class="wrap" style="padding:12px">{bars}</div>
 <footer>{html.escape(BRAND)}</footer>
 </main></body></html>"""
-    Path(a.out).write_text(doc, encoding="utf-8")
-    print(f"Dashboard written to {a.out}")
+    out = Path(a.out) if a.out else outputs_dir(ws) / "organisation-learning-map.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(doc, encoding="utf-8")
+    print(f"Dashboard written to {out}")
 
 
 # ----------------------------------------------------------------------------- register-xlsx
@@ -960,8 +971,10 @@ def cmd_register_xlsx(a):
                  "Learning purposes. Not a statutory document.", BRAND]:
         ab.append([line])
     ab.column_dimensions["A"].width = 120
-    wb.save(a.out)
-    print(f"Register with {len(entries)} entries and {len(recs)} recommendations written to {a.out}")
+    out = Path(a.out) if a.out else Path(a.register).resolve().parent / "learnings-register.xlsx"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(out)
+    print(f"Register with {len(entries)} entries and {len(recs)} recommendations written to {out}")
 
 
 # ----------------------------------------------------------------------------- check-register
@@ -1129,7 +1142,7 @@ def main(argv=None):
 
     s = sp.add_parser("dashboard", help="HTML organisational learning map")
     s.add_argument("ws")
-    s.add_argument("--out", required=True)
+    s.add_argument("--out", help="default: <run>/outputs/organisation-learning-map.html")
     s.add_argument("--register", help="Learnings Register JSON: adds learnings, tier plan and control-strength sections")
     s.add_argument("--title", help="override the incident title shown in the header")
     s.add_argument("--date", help="override the incident date (use when the summary sheet is wrong)")
@@ -1143,8 +1156,12 @@ def main(argv=None):
 
     s = sp.add_parser("register-xlsx", help="Learnings Register JSON -> xlsx")
     s.add_argument("register")
-    s.add_argument("--out", required=True)
+    s.add_argument("--out", help="default: learnings-register.xlsx next to the register JSON")
     s.set_defaults(fn=cmd_register_xlsx)
+
+    s = sp.add_parser("run-path", help="print the run folder, workspace, outputs folder and slug of a workspace")
+    s.add_argument("ws")
+    s.set_defaults(fn=cmd_run_path)
 
     s = sp.add_parser("scan-names", help="zero-hit name scan")
     s.add_argument("names", help="text file, one name per line")
