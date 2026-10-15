@@ -211,7 +211,7 @@ def test_slug_rules():
     for bad in ["Hazira", "gas_fire", "-fire", "fire-", "gas--fire", "", None]:
         with pytest.raises(ValueError):
             pmlc.run_slug("2020-09-24", bad)
-    for bad_date in ["24/09/2020", "2020-13-01", "", None]:
+    for bad_date in ["24/09/2020", "2020-13-01", "2024-03-211", "", None]:
         with pytest.raises(ValueError):
             pmlc.run_slug(bad_date, "fire")
     assert pmlc.valid_run_slug("2020-09-24-hazira-fire")
@@ -363,3 +363,53 @@ def test_make_public_sample_slug(tmp_path):
                         "--samples-root", str(root)], capture_output=True, text=True)
     assert r.returncode == 0, r.stderr + r.stdout
     assert (root / "2024-03-20-pump-fire" / "2024-03-20-pump-fire_probematrix-findings.xlsx").exists()
+
+
+def test_ingest_review_fixes(tmp_path):
+    x = make_export(tmp_path)
+    ws = tmp_path / "pmlc-runs" / "2024-03-20-pump-fire" / "workspace"
+    run("ingest", str(x), "--out", str(ws))
+    assert "already holds a workspace" in run_fail("ingest", str(x), "--out", str(ws)).stderr
+    assert "not allowed with" in run_fail("ingest", str(x), "--slug", "a", "--legacy-out", str(tmp_path / "lw")).stderr
+    r = subprocess.run([sys.executable, str(PMLC), "ingest", str(x), "--legacy-out", str(ws), "--force"],
+                       capture_output=True, text=True)
+    assert r.returncode == 0 and "Warning" not in r.stderr
+    assert "No such folder" in run_fail("check-samples", str(tmp_path / "nope")).stderr
+
+
+def test_ingest_excel_datetime_date(tmp_path):
+    import datetime as _dt
+    x = make_export(tmp_path)
+    wb = openpyxl.load_workbook(x)
+    for row in wb["Incident Summary"].iter_rows():
+        if row[0].value == "Date":
+            row[1].value = _dt.datetime(2024, 3, 20, 0, 0)
+    wb.save(x)
+    run("ingest", str(x), "--slug", "pump-fire")
+    assert (tmp_path / "pmlc-runs" / "2024-03-20-pump-fire" / "workspace" / "findings.json").exists()
+
+
+def test_check_register_flags_downgraded_citation(ws, tmp_path):
+    import shutil as _sh
+    w2 = tmp_path / "w2"
+    _sh.copytree(ws, w2)
+    inc = json.loads((w2 / "incident.json").read_text())
+    inc["review_votes"] = [{"finding": "FND-0001", "vote": "downgrade", "reason": "r"}, {"finding": "FND-0002"}]
+    (w2 / "incident.json").write_text(json.dumps(inc))
+    reg = tmp_path / "r.json"
+    reg.write_text(json.dumps(MINI_REG))
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(w2), str(reg)], capture_output=True, text=True)
+    assert "cites FND-0001, which has a reviewer downgrade vote" in r.stdout
+    assert "FND-0001 (r)" in run("profile", str(w2))
+
+
+def test_make_public_sample_dst_and_missing(tmp_path):
+    x = make_export(tmp_path)
+    names = tmp_path / "names.txt"
+    names.write_text("Nobody Here\n")
+    tool = ROOT / "tools" / "make-public-sample.py"
+    out = tmp_path / "plain.xlsx"
+    r = subprocess.run([sys.executable, str(tool), str(x), str(out), "--names", str(names)], capture_output=True, text=True)
+    assert r.returncode == 0 and out.exists(), r.stderr
+    r = subprocess.run([sys.executable, str(tool), str(x), "--names", str(names)], capture_output=True, text=True)
+    assert r.returncode != 0 and "--slug" in r.stderr

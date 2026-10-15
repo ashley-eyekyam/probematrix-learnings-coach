@@ -109,7 +109,7 @@ RUN_SLUG_RX = re.compile(r"^\d{4}-\d{2}-\d{2}(?:-[a-z0-9]+)+$")
 
 def iso_date(v) -> str | None:
     """'2020-09-24' (or a value starting with it, e.g. an Excel datetime) -> '2020-09-24'; else None."""
-    m = re.match(r"\s*(\d{4}-\d{2}-\d{2})", _s(v))
+    m = re.match(r"\s*(\d{4}-\d{2}-\d{2})(?!\d)", _s(v))
     if not m:
         return None
     try:
@@ -134,20 +134,25 @@ def valid_run_slug(s) -> bool:
     return bool(RUN_SLUG_RX.match(s or "")) and iso_date(s[:10]) is not None
 
 
+def _abs(path) -> Path:
+    """Absolute path without following symlinks (folder names are what the layout rule checks)."""
+    return Path(os.path.abspath(path))
+
+
 def is_standard_ws(ws) -> bool:
     """True for <anything>/pmlc-runs/<valid slug>/workspace."""
-    p = Path(ws).resolve()
+    p = _abs(ws)
     return p.name == "workspace" and p.parent.parent.name == RUNS_DIR and valid_run_slug(p.parent.name)
 
 
 def outputs_dir(ws) -> Path:
     """Where a workspace's outputs go: the sibling outputs/ in the standard layout, ws/outputs otherwise."""
-    p = Path(ws).resolve()
+    p = _abs(ws)
     return p.parent / "outputs" if is_standard_ws(p) else p / "outputs"
 
 
 def cmd_run_path(a):
-    ws = Path(a.ws).resolve()
+    ws = _abs(a.ws)
     std = is_standard_ws(ws)
     print(f"run:       {ws.parent if std else ws}")
     print(f"workspace: {ws}")
@@ -171,6 +176,8 @@ def sample_folder_problems(samples) -> list:
 
 
 def cmd_check_samples(a):
+    if not Path(a.dir).is_dir():
+        sys.exit(f"No such folder: {a.dir}")
     probs = sample_folder_problems(a.dir)
     for p in probs:
         print(" -", p)
@@ -203,14 +210,15 @@ def rows_as_dicts(ws):
 def ingest_target(a, fields: dict) -> Path:
     """Resolve where ingest writes the workspace; exits with a clear message if the folder rule is broken."""
     if a.legacy_out:
-        print(f"Warning: {a.legacy_out} is outside the standard layout "
-              f"<export-dir>/{RUNS_DIR}/<YYYY-MM-DD>-<site>-<event>/workspace.", file=sys.stderr)
-        return Path(a.legacy_out)
+        if not is_standard_ws(a.legacy_out):
+            print(f"Warning: {a.legacy_out} is outside the standard layout "
+                  f"<export-dir>/{RUNS_DIR}/<YYYY-MM-DD>-<site>-<event>/workspace.", file=sys.stderr)
+        return _abs(a.legacy_out)
     if a.out:
         if not is_standard_ws(a.out):
             sys.exit(f"--out must be <dir>/{RUNS_DIR}/<YYYY-MM-DD>-<site>-<event>/workspace (got {a.out}). "
                      "Use --slug instead, or --legacy-out for a non-standard folder.")
-        return Path(a.out).resolve()
+        return _abs(a.out)
     if not a.slug:
         sys.exit("Give --slug <site>-<event>, e.g. --slug hazira-gas-release-fire "
                  "(the date comes from --date or the summary sheet's Date).")
@@ -222,7 +230,7 @@ def ingest_target(a, fields: dict) -> Path:
         slug = run_slug(date, a.slug)
     except ValueError as err:
         sys.exit(str(err))
-    root = Path(a.root) if a.root else Path(a.xlsx).resolve().parent
+    root = _abs(a.root) if a.root else _abs(a.xlsx).parent
     return root / RUNS_DIR / slug / "workspace"
 
 
@@ -401,9 +409,9 @@ def cmd_profile(a):
     itype = fields.get("Incident Type", "")
     if itype and narr and itype.lower() not in narr.lower():
         flags.append(f"Incident Type '{itype}' is not mentioned in the narrative; check it before quoting it.")
-    downs = [v for v in inc.get("review_votes", []) if v["vote"].lower() in ("downgrade", "reject", "remove")]
+    downs = [v for v in inc.get("review_votes", []) if _s(v.get("vote")).lower() in ("downgrade", "reject", "remove")]
     if downs:
-        flags.append("Reviewer downgrade votes on: " + "; ".join(f"{v['finding']} ({v['reason']})" for v in downs)
+        flags.append("Reviewer downgrade votes on: " + "; ".join(f"{v.get('finding')} ({v.get('reason', '')})" for v in downs)
                      + ". Exclude or flag these findings in learnings.")
     if fields.get("Investigation Status", "").lower().startswith("in_progress"):
         flags.append("Investigation Status is 'in_progress'; label outputs as draft learnings.")
@@ -1166,11 +1174,12 @@ def main(argv=None):
 
     s = sp.add_parser("ingest", help="xlsx export -> JSON workspace in <export-dir>/pmlc-runs/<slug>/workspace")
     s.add_argument("xlsx")
-    s.add_argument("--slug", help="<site>-<event>: lowercase words joined by hyphens, e.g. hazira-gas-release-fire")
+    where = s.add_mutually_exclusive_group()
+    where.add_argument("--slug", help="<site>-<event>: lowercase words joined by hyphens, e.g. hazira-gas-release-fire")
     s.add_argument("--date", help="incident date YYYY-MM-DD (default: the summary sheet's Date)")
     s.add_argument("--root", help="folder that holds pmlc-runs/ (default: the export's folder)")
-    s.add_argument("--out", help="explicit workspace path; must be <dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace")
-    s.add_argument("--legacy-out", help="write the workspace to any folder (pre-0.2 layout; not for new runs)")
+    where.add_argument("--out", help="explicit workspace path; must be <dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace")
+    where.add_argument("--legacy-out", help="write the workspace to any folder (pre-0.2 layout; not for new runs)")
     s.add_argument("--force", action="store_true", help="overwrite an existing workspace in the run folder")
     s.set_defaults(fn=cmd_ingest)
 
