@@ -25,4 +25,4 @@ Outputs `<ws>/causal_graph.json` (nodes, edges with mention counts and supportin
 
 ## Output
 
-`<ws>/outputs/causal-map.md` with the Mermaid diagram (keep it to the top 30–40 edges for legibility), a hub table, the pathway stories, gaps, and the footer. If the user wants a picture, render the Mermaid in whatever the host supports or wrap it in a small HTML page.
+`<run>/outputs/causal-map.md` with the Mermaid diagram (keep it to the top 30–40 edges for legibility), a hub table, the pathway stories, gaps, and the footer. If the user wants a picture, render the Mermaid in whatever the host supports or wrap it in a small HTML page.

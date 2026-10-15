@@ -30,4 +30,4 @@ PMLC timeline <ws> --before <incident date>
 
 ## Output
 
-`<ws>/outputs/site-leadership-coach.md` (aim for four to six pages), plus a one-page **leadership workshop agenda** (two hours) built on sections 2, 4 and 5.
+`<run>/outputs/site-leadership-coach.md` (aim for four to six pages), plus a one-page **leadership workshop agenda** (two hours) built on sections 2, 4 and 5.

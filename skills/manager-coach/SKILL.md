@@ -30,4 +30,4 @@ If the user names a function, add `--entity <F-id>`; otherwise produce one secti
 
 ## Output
 
-`<ws>/outputs/manager-coach.md`, with a one-page summary table at the end: function, top learning, top recommendation, indicator.
+`<run>/outputs/manager-coach.md`, with a one-page summary table at the end: function, top learning, top recommendation, indicator.

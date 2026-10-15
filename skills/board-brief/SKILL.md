@@ -30,4 +30,4 @@ Look specifically for: audit recommendations left open, internal audits that did
 
 ## Output
 
-`<ws>/outputs/board-brief.md`. Neutral, factual tone; no blame of management or staff; roles only.
+`<run>/outputs/board-brief.md`. Neutral, factual tone; no blame of management or staff; roles only.

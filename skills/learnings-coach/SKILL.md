@@ -24,10 +24,18 @@ Below, `PMLC` means `python3 <path-to-this-skill>/scripts/pmlc.py`.
 ## Step 1: set up the workspace (once per export)
 
 ```bash
-PMLC ingest <export.xlsx> --out <ws>        # e.g. ws = ./pmlc-<incident-short-name>
+PMLC ingest <export.xlsx> --slug <site>-<event> [--date YYYY-MM-DD]
+#   creates <export-dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace/ and .../outputs/
+#   e.g. --slug hazira-gas-release-fire --date 2020-09-24  ->  pmlc-runs/2020-09-24-hazira-gas-release-fire/
 PMLC profile <ws> --out <ws>/profile.md
 PMLC classify <ws>
+PMLC run-path <ws>                            # prints <run>, <ws>, the outputs folder and the slug
 ```
+
+**Folder rule (strict).** `<run>` is `<export-dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/`, `<ws>` is `<run>/workspace/`, and every output (Markdown, xlsx, HTML) goes to `<run>/outputs/`. Never write outputs anywhere else. `ingest --force` overwrites findings, evidence and incident but keeps an earlier `clusters.json`; re-run `classify` after a forced ingest.
+- **Slug:** use the *corrected* incident date if the profile flags the summary-sheet date. Name the site and event in plain lowercase words joined by hyphens, never the sheet's incident type unchecked.
+- **`ingest --legacy-out`** exists only for workspaces made before v0.2.
+- **Sharing:** to share a run publicly, see `samples/README.md`. A run becomes `samples/<slug>/` after de-identification and a zero-hit name scan.
 
 Read `profile.md` and tell the user, in two or three lines, what the investigation contains (findings, share at supervision and organisational level, evidence items) and any data-quality flags. The profile checks the summary-sheet date and incident type against the narrative, lists reviewer downgrade votes, and notes empty columns and review status. Do not silently correct the export: state the correction in your outputs, use the corrected value in your text, and pass it to generated files (e.g. `dashboard --date 2024-03-20`). Leave findings with downgrade votes out of learnings, or say why you kept them.
 
@@ -52,7 +60,7 @@ If the request is broad and the user is present, ask one question: which audienc
 
 ## Step 3: produce
 
-Each skill names its `PMLC select` filters, its structure and its checks. Apply `learning-principles.md` throughout. Save outputs as Markdown under `<ws>/outputs/` and tell the user where they are. Keep the footer from `output-style.md` on every document.
+Each skill names its `PMLC select` filters, its structure and its checks. Apply `learning-principles.md` throughout. Save outputs as Markdown under `<run>/outputs/` and tell the user where they are. Keep the footer from `output-style.md` on every document.
 
 ## Introducing ProbeMatrix (when the user asks what this is)
 

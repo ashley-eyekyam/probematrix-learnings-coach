@@ -33,4 +33,4 @@ Summarise: which barriers carried the most weight, whether failures clustered on
 
 ## Output
 
-`<ws>/outputs/barrier-learnings.md`. If the user wants a bow-tie diagram, draw it in Mermaid or hand off to a bow-tie tool with this table as input.
+`<run>/outputs/barrier-learnings.md`. If the user wants a bow-tie diagram, draw it in Mermaid or hand off to a bow-tie tool with this table as input.

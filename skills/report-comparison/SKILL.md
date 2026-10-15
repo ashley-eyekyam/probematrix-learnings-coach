@@ -24,7 +24,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. **Read `
 
 ## Output
 
-`<ws>/outputs/report-comparison.md`:
+`<run>/outputs/report-comparison.md`:
 1. Status line, sighted/blind statement, "same evidence, different analytical architecture" framing.
 2. Bottom line (five bullets).
 3. Coverage tables (both directions) and counts.

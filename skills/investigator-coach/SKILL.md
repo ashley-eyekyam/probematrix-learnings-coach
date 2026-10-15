@@ -28,4 +28,4 @@ Read the incident narrative in `<ws>/incident.json` and the evidence description
 
 ## Output
 
-`<ws>/outputs/investigator-coach.md`, plus `<ws>/outputs/follow-up.json` (finding ID → the four follow-up fields) if the user wants to paste them back into their investigation.
+`<run>/outputs/investigator-coach.md`, plus `<run>/outputs/follow-up.json` (finding ID → the four follow-up fields) if the user wants to paste them back into their investigation.

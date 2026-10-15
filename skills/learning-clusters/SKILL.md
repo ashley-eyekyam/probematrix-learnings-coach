@@ -40,7 +40,7 @@ If the user's organisation has different departments (e.g. a hospital, a mine, a
 
 ## 4. Report
 
-Produce `<ws>/outputs/learning-clusters.md`:
+Produce `<run>/outputs/learning-clusters.md`:
 - the cluster table printed by `classify` (entity, findings touching, L1/L2/L3/L4)
 - the tier table
 - the relation mix, with one example role per relation

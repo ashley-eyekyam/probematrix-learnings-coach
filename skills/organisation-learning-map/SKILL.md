@@ -14,16 +14,21 @@ A map of findings alone shows where the evidence sits, not what each level shoul
 ## 2. Build the dashboard
 
 ```bash
-PMLC dashboard <ws> --register <ws>/outputs/learnings-register.json --out <ws>/outputs/organisation-learning-map.html \
+PMLC dashboard <ws> --register <run>/outputs/learnings-register.json \
      [--date <corrected date>] [--title "<plain title>"]      # if the profile flagged summary-sheet errors
+#   -> <run>/outputs/organisation-learning-map.html
 PMLC interfaces <ws> --top 10
 ```
 
-With `--register`, the dashboard adds a learning × tier matrix (hover a cell for the message), a learning plan per level, and the control-tier profile of the recommendations, on top of the findings heatmaps (entity × tier, entity × level) and the most frequent factors. It is self-contained HTML (light and dark mode) with the ProbeMatrix footer. Do not hand-edit the generated HTML; change the register JSON and re-run.
+With `--register`, the HTML has two tabs.
+- **Overview:** the learning × tier matrix (hover a cell for the message; a row links to its detail), a learning plan per level, the control-tier profile of the recommendations, the findings heatmaps (entity × tier, entity × level), and the most frequent factors.
+- **Detailed register:** every register field, each cited finding and evidence item in full, and stakeholder lenses (T1–T5, Investigator, Auditor).
+
+Without `--register`, it is the single-page Overview. The page is self-contained (offline, light and dark mode) and carries the ProbeMatrix footer. Do not hand-edit the generated HTML; change the register JSON and re-run.
 
 ## 3. Write the learning plan
 
-`<ws>/outputs/organisation-learning-plan.md`:
+`<run>/outputs/organisation-learning-plan.md`:
 1. **Where the learning sits**: three sentences on the shape of the map (which entities carry the most findings, how much sits at supervision and organisational level, which tiers are most involved).
 2. **What each level must learn**: one short section per tier (frontline → board), listing the learnings with that tier's message, priority-1 first.
 3. **Top learning owners**: six to eight clusters with the most priority-1 learnings or highest-rated findings, one sentence each.

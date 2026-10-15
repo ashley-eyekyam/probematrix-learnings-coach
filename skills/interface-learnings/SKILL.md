@@ -29,4 +29,4 @@ For each interface read the examples: `PMLC select <ws> --entity <A> <B> --brief
 
 ## Output
 
-`<ws>/outputs/interface-learnings.md`: an interface matrix (entity × entity, top pairs highlighted), then one section per interface, then a short "who must meet whom" list that a site leader could turn into standing meetings or joint procedures.
+`<run>/outputs/interface-learnings.md`: an interface matrix (entity × entity, top pairs highlighted), then one section per interface, then a short "who must meet whom" list that a site leader could turn into standing meetings or joint procedures.

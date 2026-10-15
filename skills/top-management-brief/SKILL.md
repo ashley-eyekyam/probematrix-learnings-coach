@@ -29,4 +29,4 @@ Use the Learnings Register if one exists; otherwise identify the L4 learnings di
 
 ## Output
 
-`<ws>/outputs/top-management-brief.md`. Board-ready language, no jargon beyond the four HFACS levels (define them once).
+`<run>/outputs/top-management-brief.md`. Board-ready language, no jargon beyond the four HFACS levels (define them once).

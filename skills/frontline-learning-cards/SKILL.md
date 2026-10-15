@@ -33,4 +33,4 @@ Close with a **"stop and ask" list**: the situations from this event where anyon
 
 ## Output
 
-`<ws>/outputs/frontline-learning-cards.md`. Keep the footer. If translation is requested, translate the cards and keep the evidence trail unchanged.
+`<run>/outputs/frontline-learning-cards.md`. Keep the footer. If translation is requested, translate the cards and keep the evidence trail unchanged.

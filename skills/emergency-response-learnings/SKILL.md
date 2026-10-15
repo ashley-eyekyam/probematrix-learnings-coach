@@ -30,4 +30,4 @@ Read the incident narrative for the response timeline.
 
 ## Output
 
-`<ws>/outputs/emergency-response-learnings.md`. Learnings are for the system and the plan, not a judgement on the people who responded under pressure.
+`<run>/outputs/emergency-response-learnings.md`. Learnings are for the system and the plan, not a judgement on the people who responded under pressure.

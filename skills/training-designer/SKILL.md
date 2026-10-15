@@ -27,4 +27,4 @@ PMLC classify <ws>                               # tiers and entities for the ne
 
 ## Output
 
-`<ws>/outputs/training-designer.md`. If the user wants slides or a document, build them from this file with the host's document tools.
+`<run>/outputs/training-designer.md`. If the user wants slides or a document, build them from this file with the host's document tools.

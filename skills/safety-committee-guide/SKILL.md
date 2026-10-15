@@ -29,4 +29,4 @@ PMLC select <ws> --relation norm_setter learner challenger --brief
 
 ## Output
 
-`<ws>/outputs/safety-committee-guide.md`.
+`<run>/outputs/safety-committee-guide.md`.

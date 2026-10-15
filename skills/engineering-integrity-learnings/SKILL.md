@@ -27,4 +27,4 @@ PMLC timeline <ws> --before <incident date>
 
 ## Output
 
-`<ws>/outputs/engineering-integrity-learnings.md`. Do not specify engineering values (pressures, thicknesses, intervals) beyond what the evidence states; flag them as decisions for the technical authority.
+`<run>/outputs/engineering-integrity-learnings.md`. Do not specify engineering values (pressures, thicknesses, intervals) beyond what the evidence states; flag them as decisions for the technical authority.

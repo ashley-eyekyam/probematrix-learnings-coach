@@ -27,4 +27,4 @@ PMLC select <ws> --text "procure|stores|spare|OEM|vendor|supplier|local|substitu
 
 ## Output
 
-`<ws>/outputs/supply-chain-contractor-learnings.md`. If the export has few supply-chain findings, say so and keep the pack short.
+`<run>/outputs/supply-chain-contractor-learnings.md`. If the export has few supply-chain findings, say so and keep the pack short.

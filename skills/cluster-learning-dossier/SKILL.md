@@ -43,4 +43,4 @@ Each piece: three to eight learnings, each one sentence of lesson plus two to fo
 
 ## Output
 
-`<ws>/outputs/dossier-<F-id>.md`, structured: title, status line, bottom line (top five learnings for this entity), S1–S14, evidence trail, footer. If the user asks for all clusters, produce one dossier per cluster, largest first, and a one-page index.
+`<run>/outputs/dossier-<F-id>.md`, structured: title, status line, bottom line (top five learnings for this entity), S1–S14, evidence trail, footer. If the user asks for all clusters, produce one dossier per cluster, largest first, and a one-page index.

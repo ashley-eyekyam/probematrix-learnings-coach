@@ -36,4 +36,4 @@ Close with three to six **signal learnings**: patterns in how signals were handl
 
 ## Output
 
-`<ws>/outputs/precursor-timeline.md` (table plus learnings) and, if the user wants it, a simple vertical timeline in HTML.
+`<run>/outputs/precursor-timeline.md` (table plus learnings) and, if the user wants it, a simple vertical timeline in HTML.

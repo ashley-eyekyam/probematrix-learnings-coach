@@ -20,11 +20,17 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Needs `c
 
 ## Output
 
-- `<ws>/outputs/learnings-register.json` in the schema shape.
-- `PMLC check-register <ws> <ws>/outputs/learnings-register.json`: validates IDs, evidence links, controlled values, tier messages and leading indicators, flags findings with reviewer downgrade votes, and lists high-rated findings no learning covers. Fix everything it reports, then:
-- `PMLC register-xlsx <ws>/outputs/learnings-register.json --out <ws>/outputs/learnings-register.xlsx` (sheets: Learnings Register, Recommendations, Learning Plan, Summary, About). Do not rebuild these sheets by hand; if something is missing, add it to the JSON and re-run.
-- Optionally `PMLC dashboard <ws> --register <ws>/outputs/learnings-register.json --out <ws>/outputs/organisation-learning-map.html` to add the learnings to the dashboard.
-- `<ws>/outputs/learnings-register.md`: summary tables (counts by entity, level, organisational system, HoC tier), the priority-1 learnings in full, then the rest in a compact table.
+All files go to `<run>/outputs/` (see the folder rule in `learnings-coach/SKILL.md`; `PMLC run-path <ws>` prints it).
+
+- `<run>/outputs/learnings-register.json` in the schema shape.
+- `PMLC check-register <ws> <run>/outputs/learnings-register.json`: validates IDs, evidence links, controlled values, tier messages and leading indicators, flags findings with reviewer downgrade votes, and lists high-rated findings no learning covers. Fix everything it reports, then:
+- `PMLC register-xlsx <run>/outputs/learnings-register.json` writes `learnings-register.xlsx` beside it (sheets: Learnings Register, Recommendations, Learning Plan, Summary, About). Do not rebuild these sheets by hand; if something is missing, add it to the JSON and re-run.
+- `PMLC dashboard <ws> --register <run>/outputs/learnings-register.json [--date <corrected date>] [--title "<plain title>"]` writes `<run>/outputs/organisation-learning-map.html` with two tabs:
+  - **Overview:** the organisation map plus the learning × tier matrix, whose rows link to tab 2.
+  - **Detailed register:** every field of every learning, its recommendations, tier messages, and the full text of each cited finding and evidence item. It has stakeholder lenses (T1–T5, Investigator, Auditor), filters, search, expand/collapse, print, and a panel of findings no learning covers. Unknown register keys are shown, never dropped.
+  - It is required for this skill.
+  - Do not hand-edit the HTML: change the JSON and re-run.
+- `<run>/outputs/learnings-register.md`: summary tables (counts by entity, level, organisational system, HoC tier), the priority-1 learnings in full, then the rest in a compact table.
 
 ## Checks before handing over
 

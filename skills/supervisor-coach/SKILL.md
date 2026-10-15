@@ -32,4 +32,4 @@ Group L3 findings by sub-category: inadequate supervision, planned inappropriate
 
 ## Output
 
-`<ws>/outputs/supervisor-coach.md`, with a one-page printable checklist at the end.
+`<run>/outputs/supervisor-coach.md`, with a one-page printable checklist at the end.

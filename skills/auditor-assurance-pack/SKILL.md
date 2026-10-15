@@ -27,4 +27,4 @@ PMLC select <ws> --text "record|log|register|sign|closure|overdue|schedule|audit
 
 ## Output
 
-`<ws>/outputs/auditor-assurance-pack.md`, and if asked, the test points as an .xlsx (one row per test point).
+`<run>/outputs/auditor-assurance-pack.md`, and if asked, the test points as an .xlsx (one row per test point).
