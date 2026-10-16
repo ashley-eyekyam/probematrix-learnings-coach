@@ -1,0 +1,15 @@
+{"pack": "precursor-timeline", "schema": 1, "title": "Precursor Timeline: Synthetic pump fire, 2024",
+ "audience": "Site leaders and auditors", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "Local seal buying ran for two years before the fire with no response recorded.", "cites": ["FND-0003", "EVD-0003"]}],
+ "sections": [
+  {"id": "signals", "heading": "Signals before the event", "items": [
+   {"kind": "timeline", "events": [{"date": "2022-03", "text": "Seals bought locally without a specification (24 months before)", "signal": true,
+     "received_by": "Materials Management (F06, T1)", "response": "None recorded", "cites": ["FND-0003", "EVD-0003"]}]}]},
+  {"id": "event-day", "heading": "The event sequence", "items": [
+   {"kind": "timeline", "events": [{"date": "2024-03-12", "text": "Seal changed; pump restarted without a leak test", "cites": ["FND-0001", "EVD-0001"]}]}]},
+  {"id": "signal-learnings", "heading": "Signal learnings", "items": [
+   {"kind": "learning", "lesson": "A buying practice is a signal when nobody owns the risk it carries.",
+    "explanation": "The reliability engineer role that would review it was absent [FND-0003].", "owner": "Plant & Asset Leadership (F13, T4)",
+    "cites": ["FND-0003"]},
+   {"kind": "indicator", "name": "Critical spares bought without a specification", "measure": "Count per month from purchase records",
+    "cites": ["FND-0003"]}]}]}

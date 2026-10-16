@@ -36,4 +36,27 @@ Close with three to six **signal learnings**: patterns in how signals were handl
 
 ## Output
 
-`<run>/outputs/precursor-timeline.md` (table plus learnings) and, if the user wants it, a simple vertical timeline in HTML.
+Write the pack `<run>/outputs/precursor-timeline.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/precursor-timeline.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/precursor-timeline.json         # -> precursor-timeline.html (primary, vertical timeline) and .md
+```
+
+Sections and the kinds that fill them:
+- **Curated signals:** one `timeline`. Each row of the Curate table above becomes an event:
+  - Date → `date`
+  - Signal → `text`, ending with "(N months before)"
+  - `signal: true`
+  - Received by → `received_by`
+  - Response → `response` ("None recorded" is an answer)
+  - Evidence → `cites`
+- **Event sequence on the day:** a second `timeline`, in its own section.
+- **Signal learnings:** `learning` ×3–6, with `owner` = the entity and tier that must change. Follow each with its `indicator`.
+
+Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+```json
+{"date": "2022-03", "text": "… (24 months before)", "signal": true, "received_by": "Materials Management (F06, T1)",
+ "response": "None recorded", "cites": ["FND-…", "EVD-…"]}
+```

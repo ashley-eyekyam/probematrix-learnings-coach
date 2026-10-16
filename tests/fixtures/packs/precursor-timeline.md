@@ -1,0 +1,38 @@
+# Precursor Timeline: Synthetic pump fire, 2024
+
+*Learning purposes: not a statutory document*
+
+**Audience:** Site leaders and auditors
+
+**Incident:** Synthetic pump fire · 2024-03-20
+
+## Bottom line
+
+- Local seal buying ran for two years before the fire with no response recorded. [FND-0003; EVD-0003]
+
+## Signals before the event
+
+- 2022-03: Seals bought locally without a specification (24 months before) *(weak signal)* [FND-0003; EVD-0003]
+  - Received by: Materials Management (F06, T1)
+  - Response: None recorded
+
+## The event sequence
+
+- 2024-03-12: Seal changed; pump restarted without a leak test [FND-0001; EVD-0001]
+
+## Signal learnings
+
+**Learning:** A buying practice is a signal when nobody owns the risk it carries. [FND-0003]
+
+The reliability engineer role that would review it was absent [FND-0003].
+
+- Owner: Plant & Asset Leadership (F13, T4)
+
+**Indicator:** Critical spares bought without a specification [FND-0003]
+- Measure: Count per month from purchase records
+
+---
+
+This pack cites 1 of 2 relevant findings.
+
+> Generated with ProbeMatrix Learnings Coach (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
