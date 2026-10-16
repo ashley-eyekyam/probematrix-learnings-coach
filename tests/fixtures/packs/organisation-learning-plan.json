@@ -1,0 +1,21 @@
+{"pack": "organisation-learning-plan", "schema": 1, "title": "Organisation Learning Plan: Synthetic pump fire, 2024",
+ "audience": "Site leadership and learning leads", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "Mechanical Maintenance and Materials Management carry the top-rated learnings.", "cites": ["FND-0002", "FND-0003"]}],
+ "sections": [
+  {"id": "where", "heading": "Where the learning sits", "items": [
+   {"kind": "para", "text": "Two of the four findings sit at supervision or organisational level [FND-0002; FND-0003]."}]},
+  {"id": "t1", "heading": "Frontline (T1)", "items": [
+   {"kind": "learning", "lesson": "Do not pressurise without the test record.", "owner": "F02 Mechanical Maintenance", "cites": ["FND-0001"]}]},
+  {"id": "t2", "heading": "Supervision (T2)", "items": [
+   {"kind": "learning", "lesson": "Hold the restart until the test is signed.", "owner": "F02 Mechanical Maintenance", "cites": ["FND-0002"]}]},
+  {"id": "owners", "heading": "Top learning owners", "items": [
+   {"kind": "table", "columns": ["Cluster", "Priority-1 learnings", "Why"], "rows": [["F02 Mechanical Maintenance", 1, "Return to service without a test"]],
+    "row_cites": [["FND-0001", "FND-0002"]]}]},
+  {"id": "interfaces", "heading": "Strongest interfaces", "items": [
+   {"kind": "table", "columns": ["Interface", "What passes between them"], "rows": [["F02 × F06", "Critical spares"]], "row_cites": [["FND-0003"]]}]},
+  {"id": "fixes", "heading": "Strength of fixes", "items": [
+   {"kind": "para", "text": "The register's recommendations need checking for engineering controls on the spares path [FND-0003]."}]},
+  {"id": "rollout", "heading": "Rollout plan", "items": [
+   {"kind": "table", "columns": ["Order", "Skill", "Audience", "Why"],
+    "rows": [[1, "site-leadership-coach", "Site leadership", "Owns the spares decision"], [2, "supervisor-coach", "Supervisors", "Owns the hold point"]],
+    "row_cites": [["FND-0003"], ["FND-0002"]]}]}]}

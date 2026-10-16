@@ -28,7 +28,7 @@ Without `--register`, it is the single-page Overview. The page is self-contained
 
 ## 3. Write the learning plan
 
-`<run>/outputs/organisation-learning-plan.md`:
+Write the pack `<run>/outputs/organisation-learning-plan.json` (schema: `learnings-coach/references/pack-schema.md`) with these sections:
 1. **Where the learning sits**: three sentences on the shape of the map (which entities carry the most findings, how much sits at supervision and organisational level, which tiers are most involved).
 2. **What each level must learn**: one short section per tier (frontline → board), listing the learnings with that tier's message, priority-1 first.
 3. **Top learning owners**: six to eight clusters with the most priority-1 learnings or highest-rated findings, one sentence each.
@@ -36,4 +36,19 @@ Without `--register`, it is the single-page Overview. The page is self-contained
 5. **Strength of fixes**: share of recommendations above the administrative tier, and where stronger fixes are missing.
 6. **Rollout plan**: which audience packs to produce, in which order, and why (usually site leadership and supervisors first, then the largest clusters, then board and auditors). Name the skill for each.
 
-Keep the plan to three or four pages. The dashboard and register carry the detail.
+The kinds that fill each numbered section:
+1. `para`.
+2. One section per tier, holding `learning` items: `lesson` = that tier's message and `owner` = the cluster, priority-1 first.
+3. A `table` (Cluster, Priority-1 learnings, Why; `row_cites`).
+4. A `table` (Interface, What passes between them).
+5. A `para`, plus a `table` of recommendations per control tier.
+6. A `table` (Order, Skill, Audience, Why). A rollout has an order, not dates.
+
+Then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/organisation-learning-plan.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/organisation-learning-plan.json         # -> organisation-learning-plan.html (primary) and .md
+```
+
+Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. Keep the plan to three or four pages. The dashboard and register carry the detail.
