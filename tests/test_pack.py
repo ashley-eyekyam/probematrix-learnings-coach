@@ -207,16 +207,36 @@ def test_layout_graph_caps_nodes_and_ignores_self_loops():
     assert pp.layout_graph([{"id": "x", "label": "X"}], [{"from": "x", "to": "x"}], uid="s")["shown"] == 1
 
 
-PILOTS = ["board-brief", "supervisor-coach", "investigator-coach"]
+WAVE1 = ["board-brief", "supervisor-coach", "investigator-coach"]
+WAVE2 = ["frontline-learning-cards", "manager-coach", "site-leadership-coach", "top-management-brief",
+         "auditor-assurance-pack", "training-designer", "emergency-response-learnings",
+         "engineering-integrity-learnings", "supply-chain-contractor-learnings", "safety-committee-guide"]
+WAVE3 = ["causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings", "learning-clusters",
+         "cluster-learning-dossier", "report-comparison", "organisation-learning-map"]
+PACK_OF = {"cluster-learning-dossier": "dossier-F02", "organisation-learning-map": "organisation-learning-plan"}
+DOC_NAME = {"cluster-learning-dossier": "dossier-<F-id>"}          # how SKILL.md writes the pack file name
+DONE_WAVES = {"wave 1": WAVE1}                                     # tasks 15 and 24 add waves 2 and 3
+VERSION = "0.3.1"                                                  # tasks 15 and 24 bump it
+
+
+def pack_fixtures() -> list:
+    """Every per-skill fixture pack (tests/fixtures/packs/<pack>.json), all-kinds excepted."""
+    return sorted(p.stem for p in FIX.glob("*.json") if p.stem != "all-kinds")
+
+
+def skill_of(pack) -> str:
+    return {v: k for k, v in PACK_OF.items()}.get(pack, pack)
 
 
 def fixture(name):
     return json.loads((FIX / f"{name}.json").read_text(encoding="utf-8"))
 
 
-@pytest.mark.parametrize("name", PILOTS + ["all-kinds"])
+@pytest.mark.parametrize("name", pack_fixtures() + ["all-kinds"])
 def test_fixtures_are_valid(w, name):
-    assert pp.check_pack(fixture(name), w).problems == []
+    r = pp.check_pack(fixture(name), w)
+    assert r.problems == [], r.problems
+    assert not [x for x in r.warnings if "unknown field" in x or "plain text" in x], r.warnings
 
 
 def test_coverage_lists_uncited_relevant_findings(w):
@@ -257,13 +277,30 @@ def test_markdown_per_kind(w):
     assert md.endswith(pmlc.BRAND + "\n")
 
 
-@pytest.mark.parametrize("name", PILOTS)
-def test_pilot_markdown_matches_golden(w, name):
+@pytest.mark.parametrize("name", pack_fixtures())
+def test_fixture_markdown_matches_golden(w, name):
     md = pp.render_pack_md(fixture(name), w)
     golden = FIX / f"{name}.md"
     if os.environ.get("PMLC_UPDATE_GOLDEN"):
         golden.write_text(md, encoding="utf-8")
+    assert golden.exists(), f"no golden {golden.name}: run with PMLC_UPDATE_GOLDEN=1, then review it"
     assert md == golden.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("name", pack_fixtures())
+def test_fixture_html_renders(w, name):
+    pack = fixture(name)
+    t = pp.render_pack_html(w, pack, "2024-03-20-pump-fire", "2026-10-16")
+    assert not re.search(r'(src|href)="(https?:)?//', t)
+    assert t.count('id="pmlc-pack-data"') == 1 and STATUS in t and pmlc.BRAND in t
+    for kind in {it["kind"] for s in pack["sections"] for it in s["items"]}:
+        assert f'class="item k-{kind}"' in t, kind
+
+
+@pytest.mark.parametrize("name", pack_fixtures())
+def test_fixture_belongs_to_a_skill(name):
+    assert fixture(name)["pack"] == name
+    assert skill_of(name) in WAVE1 + WAVE2 + WAVE3, f"{name}: add its skill to a wave list or PACK_OF"
 
 
 def _pack_data(t):
@@ -351,16 +388,19 @@ def test_pack_on_minimal_workspace(ws, tmp_path):
     assert (lone / "outputs" / "test-pack.html").exists()   # default folder for a legacy workspace
 
 
-PACK_SKILLS = {"board-brief": "board-brief", "supervisor-coach": "supervisor-coach",
-               "investigator-coach": "investigator-coach"}     # waves 2 and 3 add the other 18
-
-
-@pytest.mark.parametrize("skill,pack", sorted(PACK_SKILLS.items()))
-def test_skill_documents_its_pack(skill, pack):
+@pytest.mark.parametrize("skill", [s for s in WAVE1 + WAVE2 + WAVE3 if PACK_OF.get(s, s) in pack_fixtures()])
+def test_skill_documents_its_pack(skill):
     t = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
-    assert f"<run>/outputs/{pack}.json" in t and "PMLC check-pack" in t and "PMLC pack" in t
+    name = DOC_NAME.get(skill, PACK_OF.get(skill, skill))
+    assert f"<run>/outputs/{name}.json" in t and "PMLC check-pack" in t and "PMLC pack" in t
     assert "pack-schema.md" in t
     assert len(t.splitlines()) <= 150
+
+
+@pytest.mark.parametrize("wave", sorted(DONE_WAVES))
+def test_wave_is_complete(wave):
+    missing = [s for s in DONE_WAVES[wave] if PACK_OF.get(s, s) not in pack_fixtures()]
+    assert missing == [], f"{wave}: no fixture pack for {missing}"
 
 
 def test_pack_schema_reference_names_every_kind():
@@ -374,9 +414,9 @@ def test_pack_schema_reference_names_every_kind():
         assert f in t, f
 
 
-def test_version_is_0_3_1():
+def test_version():
     for p in (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"):
-        assert '"version": "0.3.1"' in (ROOT / p).read_text(encoding="utf-8"), p
+        assert f'"version": "{VERSION}"' in (ROOT / p).read_text(encoding="utf-8"), p
 
 
 # ---- wave-1 review fixes
