@@ -478,3 +478,115 @@ def layout_graph(nodes, edges, uid, max_nodes=60) -> dict:
                    f'<text x="10" y="{NODE_H // 2 + 5}">{esc(_clip(label[i]))}</text><title>{esc(label[i])}</title></g>')
     out.append("</svg>")
     return {"svg": "".join(out), "omitted": omitted, "shown": len(order)}
+
+
+# ----------------------------------------------------------------------------- coverage and Markdown
+
+def coverage(w, pack) -> dict:
+    """How many of the pack's relevant findings it cites, and which relevant findings it leaves out."""
+    fids = set(cited_ids(pack)[0])
+    rel = relevant_findings(w, pack.get("scope"))
+    F = {f["id"]: f for f in w["findings"]}
+    downs = core.downgraded_findings(w)
+    unc = [{"id": x, "label": F[x].get("label", ""), "rating": F[x].get("rating"), "level": F[x].get("level"),
+            "reason": "reviewer downgrade vote" if x in downs else "not cited in this pack"} for x in rel if x not in fids]
+    return {"relevant": len(rel), "cited": len(rel) - len(unc), "uncovered": unc}
+
+
+def sorted_events(events) -> list:
+    return sorted(events, key=lambda e: e["date"])
+
+
+def _c(cites):
+    return f" [{'; '.join(cites)}]" if cites else ""
+
+
+def _numbered(xs):
+    return "\n".join(f"{i}. {x}" for i, x in enumerate(xs, 1))
+
+
+def _lines(pairs):
+    return "\n".join(f"- {k}: {v}" for k, v in pairs if v)
+
+
+def _md_cell(v):
+    return str(v).replace("|", "\\|").replace("\n", " ")
+
+
+def _md_item(it) -> str:
+    k, c, g = it["kind"], _c(it.get("cites")), it.get
+    if k == "para":
+        return it["text"] + c
+    if k == "check":
+        hold = "**Hold point:** " if g("hold_point") else ""
+        when = f" *({it['when']})*" if g("when") else ""
+        return f"- [ ] {hold}{it['text']}{when}{c}"
+    if k == "question":
+        return (f"**Q: {it['question']}**{c}\n"
+                + _lines([("Why it matters", it["why"]), ("Good evidence looks like", g("good_evidence")), ("Ask", g("to"))]))
+    if k == "recommendation":
+        return (f"**Recommendation:** {it['change']}{c}\n"
+                + _lines([("Control tier", core.norm_hoc(it["hoc_tier"])), ("Barrier", g("barrier")), ("Owner", g("owner")),
+                          ("By when", g("by_when")), ("Leading indicator", it["indicator"])]))
+    if k == "decision":
+        return (f"**Decision:** {it['decision']}{c}\n"
+                + _lines([("Options", "; ".join(g("options") or [])), ("Trade-offs", g("trade_offs")),
+                          ("Owner", g("owner")), ("By when", g("by_when"))]))
+    if k == "indicator":
+        return (f"**Indicator:** {it['name']}{c}\n"
+                + _lines([("Measure", it["measure"]), ("Deterioration looks like", g("deterioration")), ("Owner", g("owner"))]))
+    if k == "card":
+        parts = [f"### {it['title']}{c}", f"**What happened:** {it['what_happened']}"]
+        if g("why_made_sense"):
+            parts.append(f"**Why it made sense at the time:** {it['why_made_sense']}")
+        parts.append("**Warning signs:**\n" + "\n".join(f"- {x}" for x in it["warning_signs"]))
+        parts.append(f"**What good looks like:** {it['good_looks_like']}")
+        if g("discussion"):
+            parts.append("**Questions for discussion:**\n" + _numbered(it["discussion"]))
+        return "\n\n".join(parts)
+    if k == "scenario":
+        return f"**Scenario:** {it['situation']}{c}\n\n" + _numbered(it["prompts"])
+    if k == "table":
+        cols, rows, rc = list(it["columns"]), [list(r) for r in it["rows"]], g("row_cites")
+        if rc:
+            cols.append("Evidence")
+            rows = [r + ["; ".join(x)] for r, x in zip(rows, rc)]
+        out = ["| " + " | ".join(_md_cell(x) for x in cols) + " |", "|" + "---|" * len(cols)]
+        out += ["| " + " | ".join(_md_cell(x) for x in r) + " |" for r in rows]
+        return "\n".join(out) + (f"\n\nSources:{c}" if c else "")
+    if k == "test_point":
+        return (f"**Test point:** {it['requirement']}{c}\n"
+                + _lines([("What to sample", it["sample"]), ("Evidence of conformity", it["conformity_evidence"]),
+                          ("Red flags", "; ".join(g("red_flags") or []))]))
+    if k == "module":
+        out = (f"### Module: {it['title']}{c}\n\n"
+               + _lines([("Objective", it["objective"]), ("Audience", g("audience")), ("Duration", g("duration"))])
+               + "\n\n**Content:**\n" + _numbered(it["content"]))
+        return out + ("\n\n**Assessment:**\n" + _numbered(it["assessment"]) if g("assessment") else "")
+    if k == "barrier":
+        return (f"**Barrier:** {it['barrier']}{c}\n"
+                + _lines([("Failure mode", it["failure_mode"]), ("Type", g("type")),
+                          ("Control tier", core.norm_hoc(it["hoc_tier"])), ("Fix", g("fix"))]))
+    if k == "timeline":
+        lines = [f"- {e['date']}: {e['text']}{' *(weak signal)*' if e.get('signal') else ''}{_c(e.get('cites'))}"
+                 for e in sorted_events(it["events"])]
+        return (f"Sources:{c}\n\n" if c else "") + "\n".join(lines)
+    if k == "graph":
+        lab = {n["id"]: n["label"] for n in it["nodes"]}
+        lines = [f"- {lab[e['from']]} → {lab[e['to']]}" + (f" ({e['label']})" if e.get("label") else "") for e in it["edges"]]
+        return f"Graph: {len(it['nodes'])} nodes, {len(it['edges'])} links{c}\n\n" + "\n".join(lines)
+    raise ValueError(f"unknown kind {k!r}")
+
+
+def render_pack_md(pack, w) -> str:
+    """The pack as Markdown: generated, never hand-written, so it always agrees with the HTML."""
+    cov = coverage(w, pack)
+    out = [f"# {pack['title']}", f"*{pack['status']}*", f"**Audience:** {pack['audience']}", "## Bottom line",
+           "\n".join(f"- {b['text']}{_c(b.get('cites'))}" for b in pack["bottom_line"])]
+    for s in pack["sections"]:
+        out.append(f"## {s['heading']}")
+        if s.get("intro"):
+            out.append(s["intro"])
+        out += [_md_item(it) for it in s["items"]]
+    out += ["---", f"This pack cites {cov['cited']} of {cov['relevant']} relevant findings.", f"> {core.BRAND}"]
+    return "\n\n".join(out) + "\n"

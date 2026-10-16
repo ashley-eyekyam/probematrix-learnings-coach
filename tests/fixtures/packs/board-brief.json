@@ -1,0 +1,26 @@
+{"pack": "board-brief", "schema": 1, "title": "Board Brief: Synthetic pump fire, 2024",
+ "audience": "Board and its safety committee", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [
+  {"text": "Seals were bought without a specification for two years before the fire.", "cites": ["FND-0003", "EVD-0003"]},
+  {"text": "No check stopped an untested pump returning to service.", "cites": ["FND-0002"]}],
+ "scope": {"levels": [3, 4]},
+ "sections": [
+  {"id": "what-happened", "heading": "What happened and why it matters to the board", "items": [
+   {"kind": "para", "text": "A pump was restarted after a seal change without a leak test and the seal failed [FND-0001; EVD-0001]."}]},
+  {"id": "management-system", "heading": "What the investigation says about the management system", "items": [
+   {"kind": "para", "text": "Spares were bought locally without a specification, and assurance did not see the gap [FND-0003]."}]},
+  {"id": "questions", "heading": "Questions for directors to ask management", "items": [
+   {"kind": "question", "question": "How do we know critical spares meet their specification at every site?",
+    "why": "Local purchasing bypassed the specification for two years.",
+    "good_evidence": "A sampled audit of critical-spares purchase records against specifications.", "to": "Chief Executive",
+    "cites": ["FND-0003"]},
+   {"kind": "question", "question": "Which equipment can return to service without a documented test?",
+    "why": "The pump restarted without one.", "good_evidence": "A list of return-to-service hold points with test records.",
+    "cites": ["FND-0002"]}]},
+  {"id": "assurance", "heading": "Assurance the board should request", "items": [
+   {"kind": "table", "columns": ["Verification", "Sites", "By when"],
+    "rows": [["Independent check of critical-spares specifications", "All sites", "Next quarter"]], "row_cites": [["FND-0003"]]}]},
+  {"id": "indicators", "heading": "Indicators for the board dashboard", "items": [
+   {"kind": "indicator", "name": "Critical spares bought to specification",
+    "measure": "% of critical-spares orders with a specification reference", "deterioration": "Any month below 100%",
+    "owner": "Head of procurement", "cites": ["FND-0003"]}]}]}

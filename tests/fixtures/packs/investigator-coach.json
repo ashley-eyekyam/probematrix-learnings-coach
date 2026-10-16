@@ -1,0 +1,23 @@
+{"pack": "investigator-coach", "schema": 1, "title": "Investigator Coach: Synthetic pump fire, 2024",
+ "audience": "Investigators and HSE professionals", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "No statement was taken from the stores officer who bought the seals.", "cites": ["FND-0003", "EVD-0003"]}],
+ "sections": [
+  {"id": "evidence-audit", "heading": "Evidence base audit", "items": [
+   {"kind": "table", "columns": ["Evidence type", "Items"], "rows": [["document", 2], ["log_record", 1]]},
+   {"kind": "para", "text": "There is no interview evidence; every finding rests on documents [EVD-0001; EVD-0002; EVD-0003]."}]},
+  {"id": "follow-up-per-finding", "heading": "Follow-up per high-rated finding", "items": [
+   {"kind": "table", "id": "follow-up",
+    "columns": ["Finding", "Evidence to collect", "Key questions", "Suggested interviews", "Causal hypothesis"],
+    "rows": [["FND-0002", "Procedure index history", "Was a checklist ever drafted?", "Maintenance manager",
+              "The checklist was dropped in a procedure rewrite"],
+             ["FND-0003", "Purchase orders since 2022", "Who approved local purchase?", "Stores/procurement officer",
+              "Budget pressure drove local buying"]],
+    "row_cites": [["FND-0002"], ["FND-0003"]]}]},
+  {"id": "interview-plan", "heading": "Interview plan", "items": [
+   {"kind": "question", "question": "When did local seal purchases start, and who approved them?",
+    "why": "Purchase records alone do not show the decision.", "to": "Stores/procurement officer", "cites": ["FND-0003"]}]},
+  {"id": "method", "heading": "Method lessons", "items": [
+   {"kind": "para", "text": "The alarm finding may belong at L4 if the configuration was a design standard [FND-0004]."}]},
+  {"id": "training", "heading": "Training use", "items": [
+   {"kind": "scenario", "situation": "Move FND-0001 to the level where it belongs.",
+    "prompts": ["Which condition enabled the omitted step?"], "cites": ["FND-0001"]}]}]}

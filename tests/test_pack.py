@@ -204,3 +204,62 @@ def test_layout_graph_caps_nodes_and_ignores_self_loops():
     g = pp.layout_graph(nodes, edges, uid="big")
     assert g["omitted"] == 1 and g["shown"] == 60 and "Node 60<" not in g["svg"]
     assert pp.layout_graph([{"id": "x", "label": "X"}], [{"from": "x", "to": "x"}], uid="s")["shown"] == 1
+
+
+PILOTS = ["board-brief", "supervisor-coach", "investigator-coach"]
+
+
+def fixture(name):
+    return json.loads((FIX / f"{name}.json").read_text(encoding="utf-8"))
+
+
+@pytest.mark.parametrize("name", PILOTS + ["all-kinds"])
+def test_fixtures_are_valid(w, name):
+    assert pp.check_pack(fixture(name), w).problems == []
+
+
+def test_coverage_lists_uncited_relevant_findings(w):
+    p = pack_with(item("para", cites=["FND-0002"]))
+    cov = pp.coverage(w, p)
+    assert cov["relevant"] == 2 and cov["cited"] == 1
+    assert cov["uncovered"] == [{"id": "FND-0003", "label": "Seals bought locally without specification", "rating": 4,
+                                 "level": 4, "reason": "not cited in this pack"}]
+    w2 = dict(w, incident=dict(w["incident"], review_votes=[{"finding": "FND-0003", "vote": "downgrade"}]))
+    assert pp.coverage(w2, p)["uncovered"][0]["reason"] == "reviewer downgrade vote"
+
+
+def test_markdown_per_kind(w):
+    md = pp.render_pack_md(fixture("all-kinds"), w)
+    for expected in [
+        "# All kinds: Synthetic pump fire\n\n*Learning purposes: not a statutory document*\n\n**Audience:** Test readers",
+        "## Bottom line\n\n- Test before service. [FND-0002]",
+        "## Every item kind\n\nOne of each kind.",
+        "- [ ] **Hold point:** Leak-test record attached. *(before return to service)* [FND-0001]",
+        "**Q: Who approved local purchase?** [FND-0003]\n- Why it matters: The records do not show the decision.\n"
+        "- Good evidence looks like: Signed approvals\n- Ask: Stores/procurement officer",
+        "**Recommendation:** Interlock restart on a test record [FND-0001]\n- Control tier: engineering\n"
+        "- Owner: Maintenance manager\n- Leading indicator: % of restarts with a test record",
+        "**Decision:** Fund a site-wide spares review [FND-0003]\n- Options: This year; Next year",
+        "**Indicator:** Spares to specification [FND-0003]\n- Measure: % of orders with a specification",
+        "### Test what you disturb [FND-0001]\n\n**What happened:** A pump restarted untested.",
+        "**Warning signs:**\n- No test record\n- Unfamiliar seal",
+        "**Scenario:** Asked to skip the test. [FND-0001]\n\n1. What do you say?",
+        "| Finding | Note | Evidence |\n|---|---|---|\n| FND-0002 | a \\| b | FND-0002 |",
+        "**Test point:** Return-to-service tests are recorded [FND-0002]\n- What to sample: 10 recent restarts",
+        "### Module: Return to service [FND-0002]\n\n- Objective: Apply the hold point\n- Audience: Fitters\n- Duration: 45 min",
+        "**Barrier:** Leak test [FND-0001]\n- Failure mode: Skipped\n- Type: prevention\n- Control tier: administrative\n- Fix: Interlock",
+        "- 2022-03: Local seal purchases begin *(weak signal)* [FND-0003]\n- 2024-03-12: Seal changed [FND-0001]",
+        "Graph: 2 nodes, 1 links [FND-0003]\n\n- Seal bought locally → Pump restarted untested (enabled)",
+        "---\n\nThis pack cites 2 of 2 relevant findings.\n\n> " + pmlc.BRAND + "\n",
+    ]:
+        assert expected in md, expected
+    assert md.endswith(pmlc.BRAND + "\n")
+
+
+@pytest.mark.parametrize("name", PILOTS)
+def test_pilot_markdown_matches_golden(w, name):
+    md = pp.render_pack_md(fixture(name), w)
+    golden = FIX / f"{name}.md"
+    if os.environ.get("PMLC_UPDATE_GOLDEN"):
+        golden.write_text(md, encoding="utf-8")
+    assert md == golden.read_text(encoding="utf-8")

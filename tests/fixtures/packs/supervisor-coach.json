@@ -1,0 +1,24 @@
+{"pack": "supervisor-coach", "schema": 1, "title": "Supervisor Coach: Synthetic pump fire, 2024",
+ "audience": "T2 first-line supervision", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "Do not accept a disturbed joint back into service without its leak-test record.", "cites": ["FND-0001", "FND-0002"]}],
+ "scope": {"tiers": ["T2"]},
+ "sections": [
+  {"id": "before-work", "heading": "Before work starts", "items": [
+   {"kind": "check", "text": "Confirm the replacement seal matches the specification on the work order.", "cites": ["FND-0003"]}]},
+  {"id": "return-to-service", "heading": "Before equipment returns to service", "items": [
+   {"kind": "check", "text": "Leak-test record attached and signed.", "hold_point": true, "when": "before return to service",
+    "cites": ["FND-0001", "EVD-0001"]}]},
+  {"id": "known-problems", "heading": "Known problems", "items": [
+   {"kind": "para", "text": "A repeat seal leak on the same pump is a signal to escalate to the maintenance manager, not a routine repair [FND-0002]."}]},
+  {"id": "emergency", "heading": "In an emergency", "items": [
+   {"kind": "question", "question": "May a shift supervisor isolate the pump without waiting for approval?",
+    "why": "The gas alarm only displayed and nobody was authorised to act [FND-0004].", "to": "Site leadership"}]},
+  {"id": "refuse", "heading": "What to refuse", "items": [
+   {"kind": "check", "text": "Refuse to accept a pump whose seal has no specification reference.", "cites": ["FND-0003"]}]},
+  {"id": "recommendations", "heading": "Recommendations and how supervisors will know they are working", "items": [
+   {"kind": "recommendation", "change": "Interlock pump start on a signed leak-test record", "hoc_tier": "engineering",
+    "barrier": "Return-to-service test", "owner": "Maintenance supervisor",
+    "indicator": "% of pump restarts with a leak-test record on the shift log", "cites": ["FND-0001", "FND-0002"]}]},
+  {"id": "coaching", "heading": "Coaching conversations", "items": [
+   {"kind": "scenario", "situation": "A fitter says the seal is the same as last time and asks to skip the test.",
+    "prompts": ["What would you ask for?", "Who would you call?"], "cites": ["FND-0001"]}]}]}
