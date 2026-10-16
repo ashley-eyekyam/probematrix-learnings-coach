@@ -27,4 +27,23 @@ PMLC select <ws> --text "record|log|register|sign|closure|overdue|schedule|audit
 
 ## Output
 
-`<run>/outputs/auditor-assurance-pack.md`, and if asked, the test points as an .xlsx (one row per test point).
+Write the pack `<run>/outputs/auditor-assurance-pack.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/auditor-assurance-pack.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/auditor-assurance-pack.json         # -> auditor-assurance-pack.html (primary) and .md
+```
+
+Sections → kinds:
+1. `para`.
+2. `test_point` ×12–20 (requirement, sample, conformity_evidence, red_flags; **must cite**), with `group` = the management-system element.
+3. `table` with columns Condition, Records to pull, Interview and Walk-path stop, plus `row_cites`.
+4. `check` items, with `group` = the function.
+5. A `para` giving the grading scale, then a `table` results template with empty Grade and Notes cells.
+
+Set `"scope": {"levels": [3, 4], "min_rating": <top rating>}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. If asked for an .xlsx, build it from the `test_point` items (one row each) with the host's spreadsheet tools.
+
+```json
+{"kind": "test_point", "group": "Maintenance and testing", "requirement": "…", "sample": "…",
+ "conformity_evidence": "…", "red_flags": ["…"], "cites": ["FND-…", "EVD-…"]}
+```

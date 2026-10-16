@@ -1,0 +1,25 @@
+{"pack": "auditor-assurance-pack", "schema": 1, "title": "Auditor Assurance Pack: Synthetic pump fire, 2024",
+ "audience": "Internal and external auditors", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "Restarts and spares purchases can both be tested from existing records.", "cites": ["FND-0002", "FND-0003"]}],
+ "scope": {"levels": [3, 4], "min_rating": 4},
+ "sections": [
+  {"id": "why-missed", "heading": "Why existing assurance did not catch it", "items": [
+   {"kind": "para", "text": "The findings record no check of purchase records against specifications [FND-0003; EVD-0003]."}]},
+  {"id": "test-points", "heading": "Audit test points", "items": [
+   {"kind": "test_point", "group": "Maintenance and testing", "requirement": "Every restart after pressure-boundary work has a leak-test record",
+    "sample": "10 recent restarts from the CMMS", "conformity_evidence": "A signed test record on each work order",
+    "red_flags": ["Work order closed with no test entry"], "cites": ["FND-0002", "EVD-0001"]},
+   {"kind": "test_point", "group": "Materials and spares", "requirement": "Critical spares are bought to a specification",
+    "sample": "20 critical-spares purchase orders", "conformity_evidence": "A specification reference on each order",
+    "red_flags": ["Local purchase with no technical approval"], "cites": ["FND-0003", "EVD-0003"]}]},
+  {"id": "cross-site", "heading": "Cross-site verification protocol", "items": [
+   {"kind": "table", "columns": ["Condition", "Records to pull", "Interview", "Walk-path stop"],
+    "rows": [["Restart without a test", "Last 10 restart work orders", "Maintenance supervisor", "Pump bay"]],
+    "row_cites": [["FND-0002"]]}]},
+  {"id": "evidence-requests", "heading": "Evidence request list", "items": [
+   {"kind": "check", "group": "Maintenance", "text": "Return-to-service procedure and its revision history", "cites": ["FND-0002"]},
+   {"kind": "check", "group": "Procurement", "text": "Critical-spares purchase orders since March 2022", "cites": ["FND-0003"]}]},
+  {"id": "reporting", "heading": "Reporting", "items": [
+   {"kind": "para", "text": "Grade each test point: conforming, partly, not, or not tested."},
+   {"kind": "table", "columns": ["Test point", "Grade", "Notes"],
+    "rows": [["Restart leak-test record", "", ""], ["Spares to specification", "", ""]]}]}]}
