@@ -29,4 +29,24 @@ For each interface read the examples: `PMLC select <ws> --entity <A> <B> --brief
 
 ## Output
 
-`<run>/outputs/interface-learnings.md`: an interface matrix (entity × entity, top pairs highlighted), then one section per interface, then a short "who must meet whom" list that a site leader could turn into standing meetings or joint procedures.
+Write the pack `<run>/outputs/interface-learnings.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/interface-learnings.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/interface-learnings.json         # -> interface-learnings.html (primary) and .md
+```
+
+Sections and the kinds that fill them:
+- **Matrix:** a `table` with columns Interface, Shared findings and Cross-entity causal mentions. Use the top pairs from `interfaces`, with their examples as `row_cites`.
+- **One section per interface**, with `id` = the pair (e.g. `f02-f06`):
+  - `para` items with `group` = "The seam", "What went wrong at the seam" or "Why neither side saw it".
+  - A `learning` for each side, with `owner` = that side.
+  - The joint fix as a `recommendation`, with a hoc_tier and an indicator both sides can see.
+- **Who must meet whom:** a closing section of `check` items.
+
+Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+```json
+{"kind": "learning", "group": "The learning for each side", "lesson": "Stores: …", "owner": "Materials Management (F06)",
+ "cites": ["FND-…"]}
+```
