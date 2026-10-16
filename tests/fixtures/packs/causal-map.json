@@ -1,0 +1,23 @@
+{"pack": "causal-map", "schema": 1, "title": "Causal Map: Synthetic pump fire, 2024",
+ "audience": "Investigators and site leaders", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "The spares programme failure feeds both the missing checklist and the skipped test.", "cites": ["FND-0003"]}],
+ "sections": [
+  {"id": "map", "heading": "Causal map", "items": [
+   {"kind": "graph", "id": "causal-graph",
+    "nodes": [{"id": "OR 2.2", "label": "L4 OR 2.2 Spares Programme Failure"}, {"id": "AB 1.1", "label": "L1 AB 1.1 Step Omitted"},
+              {"id": "SV 1.4", "label": "L3 SV 1.4 No Guidance Provided"}, {"id": "PE 2.1", "label": "L2 PE 2.1 Alarm Not Configured"}],
+    "edges": [{"from": "OR 2.2", "to": "AB 1.1", "label": "2 mentions"}, {"from": "SV 1.4", "to": "AB 1.1", "label": "2 mentions"},
+              {"from": "OR 2.2", "to": "PE 2.1", "label": "1 mention"}, {"from": "OR 2.2", "to": "SV 1.4", "label": "1 mention"}],
+    "cites": ["FND-0001", "FND-0002", "FND-0003", "FND-0004"]}]},
+  {"id": "hubs", "heading": "Hubs", "items": [
+   {"kind": "table", "columns": ["Factor", "Level", "Out-links"],
+    "rows": [["OR 2.2 Spares Programme Failure", "L4", 3], ["SV 1.4 No Guidance Provided", "L3", 1]],
+    "row_cites": [["FND-0003"], ["FND-0002"]]}]},
+  {"id": "pathways", "heading": "Pathways", "items": [
+   {"kind": "para", "group": "Pathway 1: spares to the skipped test",
+    "text": "Seals were bought without a specification [FND-0003]. No checklist asked for a leak test [FND-0002]. The pump restarted untested [FND-0001]."}]},
+  {"id": "breaks", "heading": "Breaks in the map", "items": [
+   {"kind": "para", "text": "No finding links the alarm configuration to the restart, so the map shows no such link [FND-0004]."}]},
+  {"id": "sequence", "heading": "Event sequence", "items": [
+   {"kind": "timeline", "events": [{"date": "2022-03", "text": "Latent condition: local seal purchases begin", "signal": true, "cites": ["FND-0003"]},
+     {"date": "2024-03-12", "text": "Trigger: seal changed and pump restarted untested", "cites": ["FND-0001"]}]}]}]}

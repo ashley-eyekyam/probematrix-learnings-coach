@@ -25,4 +25,23 @@ Outputs `<ws>/causal_graph.json` (nodes, edges with mention counts and supportin
 
 ## Output
 
-`<run>/outputs/causal-map.md` with the Mermaid diagram (keep it to the top 30–40 edges for legibility), a hub table, the pathway stories, gaps, and the footer. If the user wants a picture, render the Mermaid in whatever the host supports or wrap it in a small HTML page.
+Write the pack `<run>/outputs/causal-map.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC causal-item <ws> --top 40                      # paste its output as the graph item; never retype links
+PMLC check-pack <ws> <run>/outputs/causal-map.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/causal-map.json         # -> causal-map.html (primary, drawn graph) and causal-map.md
+```
+
+Sections and the kinds that fill them:
+- **map:** the `graph` from `causal-item`, kept to the top 30–40 links for legibility.
+- **hubs:** a `table` with columns Factor, Level and Out-links, plus `row_cites`.
+- **pathways:** one `para` per pathway, with `group` set to the pathway's name. Write four sentences, one per level.
+- **breaks:** `para`. Never invent a link.
+- **sequence:** a `timeline` running from latent conditions to the trigger.
+
+`causal_graph.mmd` is still written for hosts that draw Mermaid. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+```json
+{"kind": "table", "columns": ["Factor", "Level", "Out-links"], "rows": [["OR 2.2 …", "L4", 3]], "row_cites": [["FND-…"]]}
+```
