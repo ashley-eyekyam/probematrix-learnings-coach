@@ -29,4 +29,23 @@ Use the Learnings Register if one exists; otherwise identify the L4 learnings di
 
 ## Output
 
-`<run>/outputs/top-management-brief.md`. Board-ready language, no jargon beyond the four HFACS levels (define them once).
+Write the pack `<run>/outputs/top-management-brief.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/top-management-brief.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/top-management-brief.json         # -> top-management-brief.html (primary) and .md
+```
+
+Sections → kinds:
+1. `para`, with the four HFACS levels defined once. The three enterprise learnings go in `bottom_line`.
+2. `table` with columns Learning, Transferability (site-specific, likely at similar sites, or enterprise-wide) and Reason, plus `row_cites`.
+3. `para`, with `group` = the policy or standard.
+4. `decision` ×4–6. Follow each one with its enterprise `indicator`, in the same `group`.
+5. `question`, with `to` = the role asked.
+
+Set `"scope": {"levels": [4], "min_rating": <top rating>}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. Use board-ready language.
+
+```json
+{"kind": "table", "columns": ["Learning", "Transferability", "Reason"],
+ "rows": [["…", "Likely at similar sites", "…"]], "row_cites": [["FND-…"]]}
+```

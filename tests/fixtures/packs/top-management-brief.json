@@ -1,0 +1,25 @@
+{"pack": "top-management-brief", "schema": 1, "title": "Top Management Brief: Synthetic pump fire, 2024",
+ "audience": "Corporate leadership (T5)", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "Seals were bought locally without a specification for two years, and nothing stopped it.", "cites": ["FND-0003"]}],
+ "scope": {"levels": [4], "min_rating": 4},
+ "sections": [
+  {"id": "summary", "heading": "Executive summary", "items": [
+   {"kind": "para", "text": "A pump was restarted after a seal change without a leak test [FND-0001]. Its seals had been bought locally without a specification since March 2022 [FND-0003]."},
+   {"kind": "para", "text": "HFACS sorts causes into four levels: unsafe acts (L1), preconditions (L2), supervision (L3) and organisational influences (L4)."}]},
+  {"id": "transferability", "heading": "Transferability", "items": [
+   {"kind": "table", "columns": ["Learning", "Transferability", "Reason"],
+    "rows": [["Spares bought without a specification", "Likely at similar sites", "Any site that buys spares locally"]],
+    "row_cites": [["FND-0003"]]}]},
+  {"id": "policies", "heading": "Policies and standards implicated", "items": [
+   {"kind": "para", "group": "Spares and sourcing",
+    "text": "Purchase records show local buying with no specification check [FND-0003; EVD-0003]."}]},
+  {"id": "decisions", "heading": "Decisions for top management", "items": [
+   {"kind": "decision", "group": "Critical spares", "decision": "Set one enterprise rule for critical-spares specifications",
+    "options": ["Mandatory standard", "Guidance with audit"], "trade_offs": "Cost and lead time against consistent parts.",
+    "cites": ["FND-0003"]},
+   {"kind": "indicator", "group": "Critical spares", "name": "Sites with verified spares specifications",
+    "measure": "% of sites whose critical-spares orders all cite a specification", "cites": ["FND-0003"]}]},
+  {"id": "assurance", "heading": "Assurance", "items": [
+   {"kind": "question", "question": "How will we know every site applies the spares rule?",
+    "why": "Local buying without a specification ran for two years before this event.",
+    "good_evidence": "Sampled audits from the auditor assurance pack", "to": "Head of internal audit", "cites": ["FND-0003"]}]}]}
