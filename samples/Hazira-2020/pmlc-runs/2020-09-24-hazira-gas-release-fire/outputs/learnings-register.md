@@ -1,9 +1,5 @@
 # Learnings Register: Hazira gas terminal condensate release and fire, 24 September 2020 (draft)
 
-> Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption.
-
-**Draft.** The investigation is marked *in progress* and no finding is marked as user-edited, so the human review status is unconfirmed. The export's summary sheet gives the date as 24 Aug 2020 and the incident type as "aviation"; the narrative and evidence show a hydrocarbon release and fire on **24 September 2020**, which this register uses. One finding with a reviewer downgrade vote (FND-44219027, not substantiated by evidence) is excluded.
-
 **Source:** `Hazira2020-findings-export-INC-35-2026-10-15.xlsx`. This is a desk analysis of the investigation export; it does not replace site access, interviews or physical examination.
 
 ## At a glance
