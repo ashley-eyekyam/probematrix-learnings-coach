@@ -33,4 +33,23 @@ Close with a **"stop and ask" list**: the situations from this event where anyon
 
 ## Output
 
-`<run>/outputs/frontline-learning-cards.md`. Keep the footer. If translation is requested, translate the cards and keep the evidence trail unchanged.
+Write the pack `<run>/outputs/frontline-learning-cards.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/frontline-learning-cards.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/frontline-learning-cards.json         # -> frontline-learning-cards.html (primary) and .md
+```
+
+Sections → kinds:
+- Learning Cards: `card` ×5–8 (title, what_happened, why_made_sense, warning_signs, good_looks_like, discussion ×3; **must cite**).
+- Toolbox talks: one `para` per talk, with `group` = the talk's task, then a `scenario` for its discussion.
+- "Stop and ask": `check` items, with `when` = the situation.
+
+Set `"scope": {"tiers": ["T1"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+```json
+{"kind": "card", "title": "Test what you disturb", "what_happened": "…", "why_made_sense": "…",
+ "warning_signs": ["…"], "good_looks_like": "…", "discussion": ["…", "…", "…"], "cites": ["FND-…"]}
+```
+
+If translation is requested, translate the text fields and keep every ID unchanged.
