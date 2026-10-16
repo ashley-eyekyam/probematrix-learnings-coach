@@ -24,14 +24,28 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. **Read `
 
 ## Output
 
-`<run>/outputs/report-comparison.md`:
-1. Status line, sighted/blind statement, "same evidence, different analytical architecture" framing.
-2. Bottom line (five bullets).
-3. Coverage tables (both directions) and counts.
-4. Depth and ownership comparison.
-5. Recommendations: control-tier profile of each side.
-6. Side-by-side examples (three to five).
-7. Limits of this comparison.
-8. Footer.
+Write the pack `<run>/outputs/report-comparison.json` (schema: `learnings-coach/references/pack-schema.md`), then:
 
-Offer a client-safe edition if the user will share it with the organisation that wrote the other report: same content, neutral wording, no product claims.
+```bash
+PMLC check-pack <ws> <run>/outputs/report-comparison.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/report-comparison.json         # -> report-comparison.html (primary) and .md
+```
+
+The pack supplies the status line and the footer. Sections and the kinds that fill them:
+1. **Basis:** a `para` with the sighted or blind statement and the "same evidence, different analytical architecture" framing.
+2. **Bottom line:** five entries.
+3. **Coverage:** one `table` per direction (Other report, ProbeMatrix learning, Match = yes, partial or none, Reason if none; `row_cites`), plus a counts `table`.
+4. **Depth and ownership:** a `table` (Dimension, Other report, ProbeMatrix).
+5. **Control-tier profile:** a `table`.
+6. **Side by side:** a `table` (Topic, Other report says, ProbeMatrix says; `row_cites`) with three to five rows.
+7. **Where the other report is stronger:** `para`.
+8. **Limits:** `para`.
+
+Use the cross-tab of discipline groups × Learning Clusters as a further `table`. The other report's IDs (`OBS-nn`, `RC-nn`, `REC-nn`) are plain text, not citations. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+If the user will share the comparison with the organisation that wrote the other report, also write `<run>/outputs/report-comparison-client-safe.json` with `"pack": "report-comparison-client-safe"`. Keep the same content, use neutral wording and make no product claims.
+
+```json
+{"kind": "table", "columns": ["Other report", "ProbeMatrix learning", "Match", "Reason if none"],
+ "rows": [["REC-01 …", "…", "partial", ""]], "row_cites": [["FND-…"]]}
+```
