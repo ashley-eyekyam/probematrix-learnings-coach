@@ -114,8 +114,9 @@ def _citable_item(it) -> dict:
 
 
 def _citable(pack) -> dict:
-    bl, secs = pack.get("bottom_line"), pack.get("sections")
-    return {"bottom_line": [_pick(e, ["text", "cites"]) for e in bl] if isinstance(bl, list) else [],
+    bl, secs, dq = pack.get("bottom_line"), pack.get("sections"), pack.get("data_quality")
+    return {"data_quality": [_pick(n, ["text", "cites"]) for n in dq] if isinstance(dq, list) else [],
+            "bottom_line": [_pick(e, ["text", "cites"]) for e in bl] if isinstance(bl, list) else [],
             "sections": [dict(_pick(s, ["intro"]),
                               items=[_citable_item(it) for it in s["items"]] if isinstance(s.get("items"), list) else [])
                          if isinstance(s, dict) else {} for s in secs] if isinstance(secs, list) else []}
@@ -286,6 +287,47 @@ def _check_scope(scope, w, bad):
         bad("scope", "tiers and entities need clusters.json. Run: pmlc.py classify <ws>")
 
 
+def _check_notes(pack, w, bad):
+    dq = pack.get("data_quality")
+    if dq is not None:
+        if not isinstance(dq, list) or not dq:
+            bad("data_quality", "must be a non-empty list of {text, cites}")
+        else:
+            for i, n in enumerate(dq):
+                if not isinstance(n, dict) or not _text(n.get("text")):
+                    bad(f"data_quality[{i}].text", "required")
+                elif "cites" in n and not _id_list(n["cites"]):
+                    bad(f"data_quality[{i}].cites", "must be a list of Finding or Evidence IDs")
+    ex = pack.get("exclusions")
+    if ex is None:
+        return
+    if not isinstance(ex, list) or not ex:
+        bad("exclusions", "must be a non-empty list of {id, reason}")
+        return
+    F = {f["id"] for f in w["findings"]}
+    seen = set()
+    for i, e in enumerate(ex):
+        if not isinstance(e, dict):
+            bad(f"exclusions[{i}]", "must be an object with id and reason")
+            continue
+        x = e.get("id")
+        if not (isinstance(x, str) and ID_RX.fullmatch(x) and x.startswith("FND-")):
+            bad(f"exclusions[{i}].id", "must be a Finding ID")
+        elif x not in F:
+            bad(f"exclusions[{i}].id", f"{x} is not in this workspace")
+        elif x in seen:
+            bad(f"exclusions[{i}].id", f"{x} is listed twice")
+        else:
+            seen.add(x)
+        if not _text(e.get("reason")):
+            bad(f"exclusions[{i}].reason", "required")
+
+
+def excluded_ids(pack) -> list:
+    ex = pack.get("exclusions")
+    return [e["id"] for e in ex if isinstance(e, dict) and isinstance(e.get("id"), str)] if isinstance(ex, list) else []
+
+
 def _check_follow_up(secs, bad):
     tables = [it for s in secs if isinstance(s, dict) and isinstance(s.get("items"), list)
               for it in s["items"] if isinstance(it, dict) and it.get("id") == "follow-up"]
@@ -350,6 +392,7 @@ def check_pack(pack, w) -> Result:
         elif not (_id_list(e.get("cites")) and e.get("cites")):
             bad(f"bottom_line[{i}].cites", "every bottom-line entry needs at least one Finding or Evidence ID")
     _check_scope(pack.get("scope"), w, bad)
+    _check_notes(pack, w, bad)
 
     secs = pack.get("sections") if isinstance(pack.get("sections"), list) else []
     seen, n_items = set(), 0
@@ -399,11 +442,15 @@ def check_pack(pack, w) -> Result:
         cit.add((path, x))
         if x not in (F if x.startswith("FND-") else E):
             bad(path, f"{x} is not in this workspace")
-    for path, x in _walk_ids({"bottom_line": pack.get("bottom_line"), "sections": pack.get("sections")}, ""):
+    for path, x in _walk_ids({"data_quality": pack.get("data_quality"), "bottom_line": pack.get("bottom_line"),
+                              "sections": pack.get("sections")}, ""):
         if (path, x) not in cit:
             warn(path, f"{x} is shown as plain text, not a citation; put it in cites")
+    for i, x in enumerate(excluded_ids(pack)):
+        if x in ids:
+            bad(f"exclusions[{i}].id", f"{x} is also cited; a finding is either cited or left out on purpose")
     if not P:
-        rel = relevant_findings(w, pack.get("scope"))
+        rel = [x for x in relevant_findings(w, pack.get("scope")) if x not in excluded_ids(pack)]
         got = len(set(rel) & ids)
         if rel and got * 2 < len(rel):
             W.append(f"coverage: cites {got} of {len(rel)} relevant findings (under half)")
@@ -548,14 +595,17 @@ def layout_graph(nodes, edges, uid, max_nodes=60) -> dict:
 # ----------------------------------------------------------------------------- coverage and Markdown
 
 def coverage(w, pack) -> dict:
-    """How many of the pack's relevant findings it cites, and which relevant findings it leaves out."""
+    """How many of the pack's relevant findings it cites, which it leaves out, and which it excludes on purpose."""
     fids = set(cited_ids(pack)[0])
-    rel = relevant_findings(w, pack.get("scope"))
     F = {f["id"]: f for f in w["findings"]}
+    reasons = {e["id"]: e.get("reason", "") for e in (pack.get("exclusions") or [])
+               if isinstance(e, dict) and e.get("id") in F}
+    rel = [x for x in relevant_findings(w, pack.get("scope")) if x not in reasons]
     downs = core.downgraded_findings(w)
     unc = [{"id": x, "label": F[x].get("label", ""), "rating": F[x].get("rating"), "level": F[x].get("level"),
             "reason": "reviewer downgrade vote" if x in downs else "not cited in this pack"} for x in rel if x not in fids]
-    return {"relevant": len(rel), "cited": len(rel) - len(unc), "uncovered": unc}
+    excl = [{"id": x, "label": F[x].get("label", ""), "reason": r} for x, r in reasons.items()]
+    return {"relevant": len(rel), "cited": len(rel) - len(unc), "uncovered": unc, "excluded": excl}
 
 
 def sorted_events(events) -> list:
@@ -646,14 +696,21 @@ def _md_item(it) -> str:
 def render_pack_md(pack, w) -> str:
     """The pack as Markdown: generated, never hand-written, so it always agrees with the HTML."""
     cov = coverage(w, pack)
-    out = [f"# {pack['title']}", f"*{pack['status']}*", f"**Audience:** {pack['audience']}", "## Bottom line",
+    out = [f"# {pack['title']}", f"*{pack['status']}*", f"**Audience:** {pack['audience']}"]
+    if pack.get("data_quality"):
+        out += ["## Data quality and limits",
+                "\n".join(f"- {n['text']}{_c(n.get('cites'))}" for n in pack["data_quality"])]
+    out += ["## Bottom line",
            "\n".join(f"- {b['text']}{_c(b.get('cites'))}" for b in pack["bottom_line"])]
     for s in pack["sections"]:
         out.append(f"## {s['heading']}")
         if s.get("intro"):
             out.append(s["intro"])
         out += [_md_item(it) for it in s["items"]]
-    out += ["---", f"This pack cites {cov['cited']} of {cov['relevant']} relevant findings.", f"> {core.BRAND}"]
+    tail = ["---", f"This pack cites {cov['cited']} of {cov['relevant']} relevant findings."]
+    if cov["excluded"]:
+        tail.append("Left out on purpose:\n" + "\n".join(f"- {e['id']}: {e['reason']}" for e in cov["excluded"]))
+    out += tail + [f"> {core.BRAND}"]
     return "\n\n".join(out) + "\n"
 
 
@@ -806,7 +863,7 @@ def build_pack_data(w, pack, run) -> dict:
     relevant findings the pack leaves uncited (so the coverage list can expand them too)."""
     fids, eids = cited_ids(pack)
     uncited = [x for x in relevant_findings(w, pack.get("scope")) if x not in fids]
-    findings, evidence = core.citation_records(w, fids + uncited, eids)
+    findings, evidence = core.citation_records(w, fids + uncited + excluded_ids(pack), eids)
     return {"pack": pack["pack"], "run": run, "findings": findings, "evidence": evidence}
 
 
@@ -835,12 +892,18 @@ def render_pack_html(w, pack, run, generated) -> str:
         secs.append(f'<details class="sec" id="s-{_h(s["id"])}" open><summary><h2>{_h(s["heading"])}</h2>'
                     f'<span class="n">{len(s["items"])}</span></summary><div class="sec-body">{intro}'
                     f'{_section_items(s["items"], graphs)}</div></details>')
+    dq = pack.get("data_quality") or []
+    dq_html = ('<section class="dq"><h2>Data quality and limits</h2><ul>'
+               + "".join(f'<li>{_inline(n["text"])} {_chips(n.get("cites"))}</li>' for n in dq) + "</ul></section>") if dq else ""
+    exc = "".join(f'<li>{_chip(e["id"])} {_h(e["label"])} · {_h(e["reason"])}</li>' for e in cov["excluded"])
     unc = "".join(f'<li>{_chip(u["id"])} {_h(u["label"])} · rating {_h(u["rating"])} · L{_h(u["level"])} · '
                   f'{_h(u["reason"])}</li>' for u in cov["uncovered"])
     cov_html = ('<section class="coverage"><h2>Coverage</h2>'
                 f'<p>This pack cites {cov["cited"]} of {cov["relevant"]} relevant findings.</p>'
                 + (f'<details><summary>Not covered here ({len(cov["uncovered"])})</summary><ul>{unc}</ul></details>'
-                   if unc else "") + "</section>")
+                   if unc else "")
+                + (f'<details><summary>Left out on purpose ({len(cov["excluded"])})</summary><ul>{exc}</ul></details>'
+                   if exc else "") + "</section>")
     bottom = "".join(f'<li>{_inline(b["text"])} {_chips(b.get("cites"))}</li>' for b in pack["bottom_line"])
     clear = '<button type="button" id="clear-ticks">Clear ticks</button>' if has_checks else ""
     inc = pack.get("incident") or {}
@@ -867,6 +930,7 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 <h1>{title}</h1>
 <p class="m">{meta}</p>
 <p class="status">{status}</p>
+{dq_html}
 <section class="bottom"><h2>Bottom line</h2><ul>{bottom}</ul></section>
 <div class="toolbar" role="search"><input id="q" type="search" placeholder="Search this pack" aria-label="Search this pack">
 <button type="button" id="expand-all">Expand all</button><button type="button" id="collapse-all">Collapse all</button>

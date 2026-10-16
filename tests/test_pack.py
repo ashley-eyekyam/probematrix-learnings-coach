@@ -458,3 +458,56 @@ def test_row_cites_column_is_labelled_cites(w):
     assert "| Finding | Cites |" in pp.render_pack_md(p, w)
     t = pp.render_pack_html(w, p, "r", "d")
     assert '<th scope="col">Cites</th>' in t and '<td class="cites-cell">' in t
+
+
+DQ = [{"text": "The summary sheet date is wrong.", "cites": ["EVD-0002"]}]
+EX = [{"id": "FND-0003", "reason": "Reviewer downgrade vote: not substantiated"}]
+
+
+def test_data_quality_notes(w):
+    p = pack_with(item("para", cites=["FND-0002"]), data_quality=DQ)
+    assert pp.check_pack(p, w).problems == []
+    assert "EVD-0002" in pp.cited_ids(p)[1]
+    assert "## Data quality and limits\n\n- The summary sheet date is wrong. [EVD-0002]" in pp.render_pack_md(p, w)
+    t = pp.render_pack_html(w, p, "r", "d")
+    assert '<section class="dq"><h2>Data quality and limits</h2>' in t
+    assert t.index('class="status"') < t.index('class="dq"') < t.index('class="bottom"')
+
+
+@pytest.mark.parametrize("dq, expected", [
+    ([], "data_quality: must be a non-empty list"), ("x", "data_quality: must be a non-empty list"),
+    ([{"cites": ["EVD-0002"]}], "data_quality[0].text: required"),
+    ([{"text": "x", "cites": "EVD-0002"}], "data_quality[0].cites: must be a list"),
+    ([{"text": "x", "cites": ["EVD-0404"]}], "data_quality[0].cites[0]: EVD-0404 is not in this workspace")])
+def test_data_quality_validation(w, dq, expected):
+    got = problems(pack_with(item("para"), data_quality=dq), w)
+    assert any(x.startswith(expected) for x in got), got
+
+
+def test_exclusions_leave_coverage_and_show_reason(w):
+    p = pack_with(item("para", cites=["FND-0002"]), exclusions=EX)
+    r = pp.check_pack(p, w)
+    assert r.problems == [] and not any(x.startswith("coverage") for x in r.warnings)
+    cov = pp.coverage(w, p)
+    assert (cov["relevant"], cov["cited"], cov["uncovered"]) == (1, 1, [])
+    assert cov["excluded"] == [{"id": "FND-0003", "label": "Seals bought locally without specification",
+                                "reason": "Reviewer downgrade vote: not substantiated"}]
+    md = pp.render_pack_md(p, w)
+    assert ("This pack cites 1 of 1 relevant findings.\n\nLeft out on purpose:\n"
+            "- FND-0003: Reviewer downgrade vote: not substantiated") in md
+    t = pp.render_pack_html(w, p, "r", "d")
+    assert "Left out on purpose (1)" in t and "Reviewer downgrade vote: not substantiated" in t
+    assert "FND-0003" in pp.build_pack_data(w, p, "r")["findings"] and "FND-0003" not in pp.cited_ids(p)[0]
+
+
+@pytest.mark.parametrize("ex, expected", [
+    ([{"id": "FND-0002", "reason": "x"}], "exclusions[0].id: FND-0002 is also cited"),
+    ([{"id": "FND-9999", "reason": "x"}], "exclusions[0].id: FND-9999 is not in this workspace"),
+    ([{"id": "EVD-0001", "reason": "x"}], "exclusions[0].id: must be a Finding ID"),
+    ([{"id": "FND-0003"}], "exclusions[0].reason: required"),
+    ([EX[0], EX[0]], "exclusions[1].id: FND-0003 is listed twice"),
+    ([3], "exclusions[0]: must be an object"),
+    ("FND-0003", "exclusions: must be a non-empty list")])
+def test_exclusions_validation(w, ex, expected):
+    got = problems(pack_with(item("para"), exclusions=ex), w)          # the bottom line cites FND-0002
+    assert any(x.startswith(expected) for x in got), got
