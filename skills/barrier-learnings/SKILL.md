@@ -33,4 +33,28 @@ Summarise: which barriers carried the most weight, whether failures clustered on
 
 ## Output
 
-`<run>/outputs/barrier-learnings.md`. If the user wants a bow-tie diagram, draw it in Mermaid or hand off to a bow-tie tool with this table as input.
+Write the pack `<run>/outputs/barrier-learnings.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/barrier-learnings.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/barrier-learnings.json         # -> barrier-learnings.html (primary) and .md
+```
+
+Sections and the kinds that fill them:
+- **Barriers:** one `barrier` per row of the table above, with `group` = "Prevention" or "Mitigation". The table's fields map like this:
+  - Barrier → `barrier`, plus `type`
+  - Owner → `owner`
+  - State on the day → `state`
+  - How it degraded → `failure_mode` (write "[GAP] …" where the export does not say)
+  - Fix → `fix` and `hoc_tier`
+  - Leading indicator → `indicator`
+  - Evidence → `cites`
+- **Summary:** `para`.
+- **Critical controls to verify first:** `check` items, in ranked order.
+
+Set `"scope": {"min_rating": <top rating>}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. For a bow-tie, hand the `barrier` items to a bow-tie tool.
+
+```json
+{"kind": "barrier", "group": "Prevention", "barrier": "…", "type": "prevention", "owner": "…", "state": "absent",
+ "failure_mode": "…", "hoc_tier": "engineering", "fix": "…", "indicator": "…", "cites": ["FND-…"]}
+```
