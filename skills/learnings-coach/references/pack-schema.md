@@ -40,7 +40,7 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 - **IDs:**
   - Section `id`s, and item `id`s when given, are lowercase words joined by hyphens and unique within the pack.
   - Items without an `id` get `<section-id>-<n>`.
-- **Citations:** go in `cites` (a list of IDs) or inline in any text as `[FND-…; EVD-…]`. Every cited ID must exist in the workspace.
+- **Citations:** go in `cites` (a list of IDs) or inline in body text as `[FND-…; EVD-…]`. Every cited ID must exist in the workspace. Inline IDs count only in fields that render as text: not in headings, titles, badges (`to`, `owner`, `when`, `barrier`, `type`, `audience`, `duration`), table column headers or graph labels. There they show as plain text, and `check-pack` warns.
 - **Text:** plain text only. No HTML or Markdown markup; a blank line starts a new paragraph.
 
 ## Item kinds
