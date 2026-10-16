@@ -40,9 +40,9 @@ Sections → kinds:
 | Section | Kind |
 |---|---|
 | 1 Evidence audit | `table` (evidence type, items) + `para` |
-| 2 Follow-up | the `table` with `"id": "follow-up"` and columns `Finding`, `Evidence to collect`, `Key questions`, `Suggested interviews`, `Causal hypothesis`, one row per high-rated finding with its ID first and `row_cites` |
+| 2 Follow-up | the `table` with `"id": "follow-up"` and columns `Finding`, `Evidence to collect`, `Key questions`, `Suggested interviews`, `Causal hypothesis`, one row per condition, with that condition's high-rated Finding IDs (comma-separated) in the first cell and `row_cites` |
 | 3 Interview plan | `question`, `to` the role |
 | 4 Method lessons | `para` |
 | 5 Training use | `scenario` |
 
-`pack` writes `follow-up.json` from the follow-up table, ready to paste back into the investigation.
+`pack` writes `follow-up.json` from the follow-up table (one entry per finding), ready to paste back into the investigation. Use `data_quality` for export problems and `exclusions` for findings left out on purpose.

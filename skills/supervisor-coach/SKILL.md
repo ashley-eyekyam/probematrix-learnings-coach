@@ -52,7 +52,7 @@ Sections → kinds:
 | 7 Recommendations | `recommendation`, each with its `indicator` |
 | 8 Coaching | `scenario` ×3 |
 
-Set `"scope": {"tiers": ["T2"]}`. The page prints the checks as a checklist.
+Set `"scope": {"tiers": ["T2"]}`. Give each check a `group` (Oversee, Plan, Correct, Enforce). Use `data_quality`, `exclusions` and `supporting_cites` as in `pack-schema.md`. The page prints the checks as a checklist.
 
 ```json
 {"kind": "check", "text": "Leak-test record attached and signed.", "hold_point": true,

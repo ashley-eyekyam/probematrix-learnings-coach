@@ -37,7 +37,7 @@ PMLC check-pack <ws> <run>/outputs/board-brief.json     # fix every problem it l
 PMLC pack <ws> <run>/outputs/board-brief.json           # -> board-brief.html (primary) and board-brief.md
 ```
 
-Sections → kinds: 1 and 2 `para` · 3 `question` ×8–12 (question, why, good_evidence, `to` the role asked) · 4 `table` (verification, sites, by when; `row_cites`) · 5 `indicator` ×3–5. Set `"scope": {"levels": [3, 4]}`.
+Sections → kinds: 1 and 2 `para` · 3 `question` ×8–12 (question, why, good_evidence, `to` the role asked) · 4 `table` (verification, sites, by when; `row_cites`) · 5 `indicator` ×3–5. Set `"scope": {"levels": [3, 4], "min_rating": <top rating>}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
 
 ```json
 {"kind": "question", "question": "How do we know critical spares meet their specification at every site?",

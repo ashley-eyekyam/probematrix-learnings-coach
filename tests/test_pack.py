@@ -157,7 +157,7 @@ def test_investigator_pack_needs_follow_up_table(w):
     assert any(x.startswith("investigator-coach: needs a table item with id follow-up") for x in got)
     t = item("table", id="follow-up", columns=pp.FOLLOW_UP_COLUMNS, rows=[["not an id", "a", "b", "c", "d"]])
     got = problems(pack_with(t, pack="investigator-coach"), w)
-    assert "follow-up.rows[0][0]: must be a Finding ID" in got
+    assert "follow-up.rows[0][0]: must be one or more Finding IDs" in got
 
 
 def test_cited_ids_and_item_ids():
@@ -369,11 +369,13 @@ def test_pack_schema_reference_names_every_kind():
         for f in spec["req"]:
             assert f in t, (kind, f)
     assert pp.STATUS_PHRASE in t and "check-pack" in t
+    for f in ("incident", "data_quality", "exclusions", "supporting_cites", "evidence_strength", "group", "Cites"):
+        assert f in t, f
 
 
-def test_version_is_0_3_0():
+def test_version_is_0_3_1():
     for p in (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"):
-        assert '"version": "0.3.0"' in (ROOT / p).read_text(encoding="utf-8"), p
+        assert '"version": "0.3.1"' in (ROOT / p).read_text(encoding="utf-8"), p
 
 
 # ---- wave-1 review fixes
@@ -550,3 +552,22 @@ def test_groups_render_as_subheadings(w):
     assert '<h3 class="group">&lt;b&gt;x&lt;/b&gt;</h3>' in t
     md = pp.render_pack_md(p, w)
     assert md.count("### Oversee") == 1 and md.count("### Plan") == 2
+
+
+FU_COLS = pp.FOLLOW_UP_COLUMNS
+
+
+def test_follow_up_rows_may_group_findings(w):
+    rows = [["FND-0002, ,FND-0003;", "a", "b", "c", "d"]]
+    p = pack_with(item("table", id="follow-up", columns=FU_COLS, rows=rows), pack="investigator-coach")
+    assert problems(p, w) == []
+    fu = pp.follow_up(p)
+    assert list(fu) == ["FND-0002", "FND-0003"] and fu["FND-0003"]["causal_hypothesis"] == "d"
+    p2 = pack_with(item("table", id="follow-up", columns=FU_COLS, rows=rows + [["FND-0003", "e", "f", "g", "h"]]),
+                   pack="investigator-coach")
+    assert "follow-up.rows[1][0]: FND-0003 already has a row" in problems(p2, w)
+
+
+def test_coverage_warns_only_under_a_quarter(w):
+    p = pack_with(item("para"), scope={"levels": [1, 2, 3, 4]})          # 4 relevant, bottom line cites 1
+    assert not any(x.startswith("coverage") for x in pp.check_pack(p, w).warnings)

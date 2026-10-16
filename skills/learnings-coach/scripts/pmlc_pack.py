@@ -351,12 +351,14 @@ def _check_follow_up(secs, bad):
     for r, row in enumerate(tables[0].get("rows") if isinstance(tables[0].get("rows"), list) else []):
         if not isinstance(row, list) or not row:
             continue
-        cell = row[0].strip() if isinstance(row[0], str) else ""
-        if not (ID_RX.fullmatch(cell) and cell.startswith("FND-")):
-            bad(f"follow-up.rows[{r}][0]", "must be a Finding ID")
-        elif cell in seen:
-            bad(f"follow-up.rows[{r}][0]", f"{cell} already has a row")
-        seen.add(cell)
+        cell = [x for x in re.split(r"[\s,;]+", row[0]) if x] if isinstance(row[0], str) else []
+        if not cell or not all(ID_RX.fullmatch(x) and x.startswith("FND-") for x in cell):
+            bad(f"follow-up.rows[{r}][0]", "must be one or more Finding IDs")
+            continue
+        for x in cell:
+            if x in seen:
+                bad(f"follow-up.rows[{r}][0]", f"{x} already has a row")
+            seen.add(x)
 
 
 def check_pack(pack, w) -> Result:
@@ -467,8 +469,8 @@ def check_pack(pack, w) -> Result:
     if not P:
         rel = [x for x in relevant_findings(w, pack.get("scope")) if x not in excluded_ids(pack)]
         got = len(set(rel) & ids)
-        if rel and got * 2 < len(rel):
-            W.append(f"coverage: cites {got} of {len(rel)} relevant findings (under half)")
+        if rel and got * 4 < len(rel):
+            W.append(f"coverage: cites {got} of {len(rel)} relevant findings (under a quarter)")
     return Result(P, W, {"sections": len(secs), "items": n_items, "cited": len(ids)})
 
 
@@ -1004,11 +1006,18 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 
 
 def follow_up(pack) -> dict:
-    """investigator-coach: finding ID -> the export's four follow-up fields, read from the table with id follow-up."""
+    """investigator-coach: finding ID -> the export's four follow-up fields, read from the table with id follow-up.
+    A row may name several findings (one row per condition); each gets the row's fields."""
     for s in pack["sections"]:
         for it in s["items"]:
             if it.get("id") == "follow-up" and it.get("kind") == "table":
-                return {str(row[0]).strip(): dict(zip(FOLLOW_UP_KEYS, (str(x) for x in row[1:5]))) for row in it["rows"]}
+                out = {}
+                for row in it["rows"]:
+                    fields = dict(zip(FOLLOW_UP_KEYS, (str(x) for x in row[1:5])))
+                    for x in re.split(r"[\s,;]+", str(row[0])):
+                        if x:
+                            out[x] = dict(fields)
+                return out
     return {}
 
 

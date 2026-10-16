@@ -64,6 +64,19 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 | `timeline` | events[]*: {date* (YYYY-MM-DD, YYYY-MM or YYYY), text*, signal (true/false), cites[]} | precursors, response timelines |
 | `graph` | nodes[]*: {id*, label*}; edges[]*: {from*, to*, label} | causal maps, interfaces; drawn as SVG with a text list of links |
 
+## Optional on every pack and item
+
+| Field | Where | What it does |
+|---|---|---|
+| `incident` | top level: `{"title": "…", "date": "YYYY-MM-DD"}` | Overrides the export's summary-sheet title and date in the page header (use it when the profile flags them as wrong). |
+| `data_quality` | top level: list of `{"text": "…", "cites": [...]}` | Data-quality corrections and limits (wrong dates, wrong incident type, draft status). Shown in a box under the status line. |
+| `exclusions` | top level: list of `{"id": "FND-…", "reason": "…"}` | Findings left out on purpose (e.g. a reviewer downgrade vote). They leave the coverage total and are listed with their reason. A finding is either cited or excluded, never both. |
+| `supporting_cites` | any item or bottom-line entry | Further Finding/Evidence IDs for the same condition. They count for coverage and are shown collapsed ("+N supporting"); keep `cites` to the key evidence. |
+| `evidence_strength` | any item or bottom-line entry | `direct`, `corroborated` or `inferred` (`learning-principles.md`), shown as a badge. |
+| `group` | any item | A label such as a supervisor habit, a question mix or an interviewee role; a subheading is shown whenever it changes. |
+
+A table's `row_cites` appear as an extra last column labelled **Cites**. `check-pack` warns when a pack cites fewer than a quarter of its relevant findings; the page always shows the count and lists the rest.
+
 `hoc_tier` must name one of: elimination, substitution, engineering, administrative, training, ppe. Free wording such as "Engineering control: interlock" is fine.
 
 ## Examples
@@ -81,4 +94,4 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 
 ## investigator-coach
 
-Its pack must contain a `table` with `"id": "follow-up"` and columns `Finding`, `Evidence to collect`, `Key questions`, `Suggested interviews`, `Causal hypothesis`, with a Finding ID in the first cell of each row. `pack` also writes `<run>/outputs/follow-up.json` from it (finding ID → `evidence_to_collect`, `key_questions`, `suggested_interviews`, `causal_hypothesis`).
+Its pack must contain a `table` with `"id": "follow-up"` and columns `Finding`, `Evidence to collect`, `Key questions`, `Suggested interviews`, `Causal hypothesis`, with Finding IDs in the first cell of each row. A row may list several Finding IDs (one row per condition, comma-separated); `follow-up.json` gets one entry per finding, and a finding may appear in only one row. `pack` also writes `<run>/outputs/follow-up.json` from it (finding ID → `evidence_to_collect`, `key_questions`, `suggested_interviews`, `causal_hypothesis`).
