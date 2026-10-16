@@ -374,3 +374,58 @@ def test_pack_schema_reference_names_every_kind():
 def test_version_is_0_3_0():
     for p in (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"):
         assert '"version": "0.3.0"' in (ROOT / p).read_text(encoding="utf-8"), p
+
+
+# ---- wave-1 review fixes
+
+def test_scope_with_nested_lists_is_a_problem_not_a_crash(w):                       # review 1
+    got = problems(pack_with(item("para"), scope={"tiers": [["T1"]], "entities": [["F02"]]}), w)
+    assert any(x.startswith("scope.tiers: a list of T1") for x in got)
+
+
+@pytest.mark.parametrize("label", [5, ["x"], ""])
+def test_graph_edge_label_must_be_text(w, label):                                   # review 2
+    it = item("graph", edges=[{"from": "a", "to": "b", "label": label}])
+    assert "sections[0].items[0].edges[0].label: must be text" in problems(pack_with(it), w)
+
+
+@pytest.mark.parametrize("over", [{"pack": "a\n"}, {"sections": [{"id": "s1\n", "heading": "h", "items": [MIN["para"] | {"kind": "para"}]}]}])
+def test_trailing_newline_ids_are_rejected(w, over):                                # review 5
+    assert problems(pack_with(item("para"), **over), w)
+
+
+def test_ids_outside_citable_fields_do_not_count_and_warn(w):                       # review 6
+    p = pack_with(item("para", cites=["FND-0001"]), bottom_line=[{"text": "x", "cites": ["FND-0001"]}])
+    p["sections"][0]["heading"] = "About FND-0002 and FND-0003"
+    p["sections"][0]["items"].append(item("check", when="see FND-0003", cites=["FND-0001"]))
+    r = pp.check_pack(p, w)
+    assert r.problems == []
+    assert "sections[0].heading: FND-0002 is shown as plain text, not a citation; put it in cites" in r.warnings
+    assert "sections[0].items[1].when: FND-0003 is shown as plain text, not a citation; put it in cites" in r.warnings
+    assert pp.cited_ids(p) == (["FND-0001"], [])
+    assert pp.coverage(w, p)["cited"] == 0
+    p["sections"][0]["heading"] = "About FND-9999"                                   # plain text: not checked against the workspace
+    assert pp.check_pack(p, w).problems == []
+
+
+@pytest.mark.parametrize("make", [
+    lambda d: (d / "u16.json").write_text('{"pack": "x"}', encoding="utf-16") and d / "u16.json",
+    lambda d: d,
+])
+def test_unreadable_pack_file_is_a_problem(tmp_path, make):                         # review 7
+    obj, err = pp.load_pack(make(tmp_path))
+    assert obj is None and err.startswith("(file): ")
+
+
+def test_check_label_does_not_wrap_citations(w):                                    # review 8
+    t = pp.render_pack_html(w, pack_with(item("check", id="c1", text="Test record [FND-0001]")), "r", "d")
+    m = re.search(r'<div class="item k-check" id="i-c1">(.*?)</div></div>', t, re.S)
+    assert m and "<label" not in m.group(1)
+    assert 'aria-labelledby="tl-c1"' in m.group(1) and 'id="tl-c1"' in m.group(1)
+    assert 'data-id="FND-0001"' in m.group(1)
+
+
+def test_duplicate_follow_up_rows_are_a_problem(w):                                 # review 10
+    rows = [["FND-0002", "a", "b", "c", "d"], ["FND-0002", "e", "f", "g", "h"]]
+    t = item("table", id="follow-up", columns=pp.FOLLOW_UP_COLUMNS, rows=rows)
+    assert "follow-up.rows[1][0]: FND-0002 already has a row" in problems(pack_with(t, pack="investigator-coach"), w)

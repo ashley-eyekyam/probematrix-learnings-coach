@@ -79,4 +79,18 @@ def test_pack_assets_are_inline_safe():
 @pytest.mark.skipif(not NODE, reason="node not installed")
 def test_pack_js_loads_without_dom():
     out = node(f"const p = require({json.dumps(str(PACK_JS))}); console.log(Object.keys(p).sort().join(','));")
-    assert out.strip() == "matches,parseHash,readTicks,recordRows,tickKey,writeTicks"
+    assert out.strip() == "isTicked,matches,parseHash,readTicks,recordRows,tickKey,writeTicks"
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_pack_js_review_fixes():
+    node(f"""
+const assert = require('assert');
+const p = require({json.dumps(str(PACK_JS))});
+assert.strictEqual(p.isTicked({{}}, 'constructor'), false);                 // review 9
+assert.strictEqual(p.isTicked({{'leak-test':1}}, 'leak-test'), true);
+assert.strictEqual(p.isTicked({{'leak-test':0}}, 'leak-test'), false);
+""")
+    js = PACK_JS.read_text(encoding="utf-8")
+    assert 'querySelectorAll("main details:not(.rail)")' in js                   # review 3
+    assert 'closest("[hidden]")' in js                                            # review 4

@@ -33,6 +33,8 @@
     } catch (err) { return {}; }
   }
 
+  function isTicked(ticks, k) { return Object.prototype.hasOwnProperty.call(ticks, k) && !!ticks[k]; }
+
   function writeTicks(store, key, ticks) {
     try { store.setItem(key, JSON.stringify(ticks)); return true; } catch (err) { return false; }
   }
@@ -108,13 +110,20 @@
     if (n) n.textContent = active ? shown + " matching items" : "";
   }
 
-  function setAll(open) { document.querySelectorAll("main details").forEach(function (d) { d.open = open; }); }
+  function setAll(open) {
+    document.querySelectorAll("main details:not(.rail)").forEach(function (d) { d.open = open; });
+  }
 
   function route() {
     var h = parseHash(location.hash);
     if (!h) return;                                   /* unknown or unsafe: leave the reader's view alone */
     var target = document.getElementById((h.kind === "s" ? "s-" : "i-") + h.id);
     if (!target) return;
+    if (target.closest("[hidden]")) {
+      var q = document.getElementById("q");
+      if (q) q.value = "";
+      search("");
+    }
     var sec = target.closest("details.sec");
     if (sec) sec.open = true;
     if (h.kind === "s") target.open = true;
@@ -130,7 +139,7 @@
     var boxes = document.querySelectorAll("input.tick");
     boxes.forEach(function (cb) {
       var k = cb.getAttribute("data-key");
-      cb.checked = !!ticks[k];
+      cb.checked = isTicked(ticks, k);
       cb.addEventListener("change", function () {
         if (cb.checked) ticks[k] = 1; else delete ticks[k];
         if (store) writeTicks(store, key, ticks);
@@ -148,6 +157,8 @@
     document.addEventListener("click", function (ev) {
       var b = ev.target && ev.target.closest ? ev.target.closest("button.cite") : null;
       if (b) toggleCite(b);
+      var a = ev.target && ev.target.closest ? ev.target.closest('a[href^="#s/"],a[href^="#i/"]') : null;
+      if (a && location.hash === a.getAttribute("href")) { ev.preventDefault(); route(); }
     });
     var q = document.getElementById("q");
     if (q) q.addEventListener("input", function () { search(q.value); });
@@ -174,7 +185,7 @@
   }
 
   var API = {parseHash: parseHash, matches: matches, tickKey: tickKey, readTicks: readTicks, writeTicks: writeTicks,
-             recordRows: recordRows};
+             isTicked: isTicked, recordRows: recordRows};
   if (typeof module !== "undefined" && module.exports) { module.exports = API; return; }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();
