@@ -95,7 +95,9 @@ INLINE_FIELDS = {
     "module": ["objective", "content", "assessment"], "barrier": ["barrier", "failure_mode", "fix"],
     "timeline": [], "graph": [],
 }
-CITE_FIELDS = ["cites", "row_cites"]
+CITE_FIELDS = ["cites", "row_cites", "supporting_cites"]
+STRENGTHS = ("direct", "corroborated", "inferred")
+GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group")
 
 
 def _pick(d, keys) -> dict:
@@ -116,7 +118,7 @@ def _citable_item(it) -> dict:
 def _citable(pack) -> dict:
     bl, secs, dq = pack.get("bottom_line"), pack.get("sections"), pack.get("data_quality")
     return {"data_quality": [_pick(n, ["text", "cites"]) for n in dq] if isinstance(dq, list) else [],
-            "bottom_line": [_pick(e, ["text", "cites"]) for e in bl] if isinstance(bl, list) else [],
+            "bottom_line": [_pick(e, ["text", "cites", "supporting_cites"]) for e in bl] if isinstance(bl, list) else [],
             "sections": [dict(_pick(s, ["intro"]),
                               items=[_citable_item(it) for it in s["items"]] if isinstance(s.get("items"), list) else [])
                          if isinstance(s, dict) else {} for s in secs] if isinstance(secs, list) else []}
@@ -235,6 +237,16 @@ def _check_graph(it, ip, bad):
             bad(f"{ep}.label", "must be text")
 
 
+def _check_extras(d, p, bad):
+    """Optional on every item and bottom-line entry: supporting_cites, evidence_strength and (items) group."""
+    if "supporting_cites" in d and not _id_list(d["supporting_cites"]):
+        bad(f"{p}.supporting_cites", "must be a list of Finding or Evidence IDs")
+    if "evidence_strength" in d and d["evidence_strength"] not in STRENGTHS:
+        bad(f"{p}.evidence_strength", f"must be one of {', '.join(STRENGTHS)}")
+    if "group" in d and not _text(d["group"]):
+        bad(f"{p}.group", "must be non-empty text")
+
+
 def _check_item(it, ip, bad, warn):
     if not isinstance(it, dict):
         bad(ip, "must be an object")
@@ -255,8 +267,9 @@ def _check_item(it, ip, bad, warn):
         bad(f"{ip}.cites", "must be a list of Finding or Evidence IDs")
     if spec.get("cite") and not (_id_list(it.get("cites")) and it.get("cites")):
         bad(f"{ip}.cites", f"a {kind} needs at least one Finding or Evidence ID")
+    _check_extras(it, ip, bad)
     for f in it:
-        if f not in known and f not in ("kind", "id", "cites"):
+        if f not in known and f not in GENERIC_FIELDS:
             warn(f"{ip}.{f}", f"unknown field for {kind} (ignored)")
     if _text(it.get("hoc_tier")) and core.norm_hoc(it["hoc_tier"]) == "unclassified":
         bad(f"{ip}.hoc_tier", f"must name a hierarchy-of-controls tier: {', '.join(core.HOC_TIERS)}")
@@ -389,8 +402,10 @@ def check_pack(pack, w) -> Result:
     for i, e in enumerate(bl):
         if not isinstance(e, dict) or not _text(e.get("text")):
             bad(f"bottom_line[{i}].text", "required")
-        elif not (_id_list(e.get("cites")) and e.get("cites")):
+            continue
+        if not (_id_list(e.get("cites")) and e.get("cites")):
             bad(f"bottom_line[{i}].cites", "every bottom-line entry needs at least one Finding or Evidence ID")
+        _check_extras(e, f"bottom_line[{i}]", bad)
     _check_scope(pack.get("scope"), w, bad)
     _check_notes(pack, w, bad)
 
@@ -693,6 +708,19 @@ def _md_item(it) -> str:
     raise ValueError(f"unknown kind {k!r}")
 
 
+def _md_extras(d) -> str:
+    bits = ([f"evidence: {d['evidence_strength']}"] if d.get("evidence_strength") else []) + \
+           ([f"+{len(d['supporting_cites'])} supporting"] if d.get("supporting_cites") else [])
+    return f"*({'; '.join(bits)})*" if bits else ""
+
+
+def _md_block(it) -> str:
+    x = _md_extras(it)
+    if not x:
+        return _md_item(it)
+    return _md_item(it) + (" " + x if it["kind"] in ("para", "check") else "\n\n" + x)
+
+
 def render_pack_md(pack, w) -> str:
     """The pack as Markdown: generated, never hand-written, so it always agrees with the HTML."""
     cov = coverage(w, pack)
@@ -701,12 +729,25 @@ def render_pack_md(pack, w) -> str:
         out += ["## Data quality and limits",
                 "\n".join(f"- {n['text']}{_c(n.get('cites'))}" for n in pack["data_quality"])]
     out += ["## Bottom line",
-           "\n".join(f"- {b['text']}{_c(b.get('cites'))}" for b in pack["bottom_line"])]
+           "\n".join(f"- {b['text']}{_c(b.get('cites'))}" + (" " + _md_extras(b) if _md_extras(b) else "")
+                     for b in pack["bottom_line"])]
     for s in pack["sections"]:
         out.append(f"## {s['heading']}")
         if s.get("intro"):
             out.append(s["intro"])
-        out += [_md_item(it) for it in s["items"]]
+        prev = None
+        for it in s["items"]:
+            g = it.get("group")
+            if g and g != prev:
+                out.append(f"### {g}")
+            prev = g
+            out.append(_md_block(it))
+    sup = [f"- Bottom line › {i}: {'; '.join(b['supporting_cites'])}"
+           for i, b in enumerate(pack["bottom_line"], 1) if b.get("supporting_cites")]
+    sup += [f"- {s['heading']} › {n}: {'; '.join(it['supporting_cites'])}"
+            for s in pack["sections"] for n, it in enumerate(s["items"], 1) if it.get("supporting_cites")]
+    if sup:
+        out += ["## Supporting citations", "\n".join(sup)]
     tail = ["---", f"This pack cites {cov['cited']} of {cov['relevant']} relevant findings."]
     if cov["excluded"]:
         tail.append("Left out on purpose:\n" + "\n".join(f"- {e['id']}: {e['reason']}" for e in cov["excluded"]))
@@ -761,6 +802,14 @@ def _hoc(v) -> str:
     t = core.norm_hoc(v)
     cls = "badge strong" if t in STRONG_HOC else "badge"
     return f'<span class="{cls}">Control: {_h(t)}</span>'
+
+
+def _extras(d) -> str:
+    s = d.get("evidence_strength")
+    badge = f' <span class="badge strength">Evidence: {_h(s)}</span>' if s else ""
+    sup = d.get("supporting_cites") or []
+    more = f'<details class="more"><summary>+{len(sup)} supporting</summary>{_chips(sup)}</details>' if sup else ""
+    return badge + more
 
 
 def _html_item(it, graphs) -> str:
@@ -839,22 +888,30 @@ def _html_item(it, graphs) -> str:
                 f'</summary><ul>{links}</ul></details>{c}')
     else:
         raise ValueError(f"unknown kind {k!r}")
-    return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}</div>'
+    return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}{_extras(it)}</div>'
 
 
 def _section_items(items, graphs) -> str:
-    out, run = [], []
+    out, run, prev = [], [], None
+
+    def flush():
+        if run:
+            out.append('<div class="grid">' + "".join(run) + "</div>")
+            run.clear()
+
     for it in items:
+        g = it.get("group")
+        if g and g != prev:
+            flush()
+            out.append(f'<h3 class="group">{_h(g)}</h3>')
+        prev = g
         h = _html_item(it, graphs)
         if it["kind"] in GRID_KINDS:
             run.append(h)
             continue
-        if run:
-            out.append('<div class="grid">' + "".join(run) + "</div>")
-            run = []
+        flush()
         out.append(h)
-    if run:
-        out.append('<div class="grid">' + "".join(run) + "</div>")
+    flush()
     return "".join(out)
 
 
@@ -904,7 +961,7 @@ def render_pack_html(w, pack, run, generated) -> str:
                    if unc else "")
                 + (f'<details><summary>Left out on purpose ({len(cov["excluded"])})</summary><ul>{exc}</ul></details>'
                    if exc else "") + "</section>")
-    bottom = "".join(f'<li>{_inline(b["text"])} {_chips(b.get("cites"))}</li>' for b in pack["bottom_line"])
+    bottom = "".join(f'<li>{_inline(b["text"])} {_chips(b.get("cites"))}{_extras(b)}</li>' for b in pack["bottom_line"])
     clear = '<button type="button" id="clear-ticks">Clear ticks</button>' if has_checks else ""
     inc = pack.get("incident") or {}
     meta = " · ".join(_h(x) for x in (pack["audience"], inc.get("title") or fields.get("Incident Title"),

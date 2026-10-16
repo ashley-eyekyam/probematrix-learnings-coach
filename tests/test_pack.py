@@ -511,3 +511,42 @@ def test_exclusions_leave_coverage_and_show_reason(w):
 def test_exclusions_validation(w, ex, expected):
     got = problems(pack_with(item("para"), exclusions=ex), w)          # the bottom line cites FND-0002
     assert any(x.startswith(expected) for x in got), got
+
+
+def test_extras_validation(w):
+    got = problems(pack_with(item("para", supporting_cites="FND-0003", evidence_strength="strong", group="")), w)
+    for e in ["sections[0].items[0].supporting_cites: must be a list",
+              "sections[0].items[0].evidence_strength: must be one of direct, corroborated, inferred",
+              "sections[0].items[0].group: must be non-empty text"]:
+        assert any(x.startswith(e) for x in got), (e, got)
+    got = problems(pack_with(item("para"), bottom_line=[{"text": "x", "cites": ["FND-0002"], "evidence_strength": "maybe"}]), w)
+    assert any(x.startswith("bottom_line[0].evidence_strength: must be one of") for x in got)
+    got = problems(pack_with(item("para", supporting_cites=["FND-9999"])), w)
+    assert "sections[0].items[0].supporting_cites[0]: FND-9999 is not in this workspace" in got
+
+
+def test_supporting_cites_count_and_render(w):
+    p = pack_with(item("para", text="Key point.", cites=["FND-0002"], supporting_cites=["FND-0003", "EVD-0003"],
+                       evidence_strength="corroborated"),
+                  bottom_line=[{"text": "Test before service.", "cites": ["FND-0002"], "supporting_cites": ["FND-0001"],
+                                "evidence_strength": "direct"}])
+    r = pp.check_pack(p, w)
+    assert r.problems == [] and not any("unknown field" in x for x in r.warnings)
+    assert pp.coverage(w, p)["cited"] == 2
+    t = pp.render_pack_html(w, p, "r", "d")
+    assert "<summary>+2 supporting</summary>" in t and "Evidence: corroborated" in t
+    assert "<summary>+1 supporting</summary>" in t and "Evidence: direct" in t
+    md = pp.render_pack_md(p, w)
+    assert "Key point. [FND-0002] *(evidence: corroborated; +2 supporting)*" in md
+    assert "- Test before service. [FND-0002] *(evidence: direct; +1 supporting)*" in md
+    assert "## Supporting citations\n\n- Bottom line › 1: FND-0001\n- Section one › 1: FND-0003; EVD-0003" in md
+
+
+def test_groups_render_as_subheadings(w):
+    p = pack_with(item("check", group="Oversee"), item("check", group="Oversee"), item("check", group="Plan"),
+                  item("check"), item("check", group="Plan"), item("para", group="<b>x</b>"))
+    t = pp.render_pack_html(w, p, "r", "d")
+    assert t.count('<h3 class="group">Oversee</h3>') == 1 and t.count('<h3 class="group">Plan</h3>') == 2
+    assert '<h3 class="group">&lt;b&gt;x&lt;/b&gt;</h3>' in t
+    md = pp.render_pack_md(p, w)
+    assert md.count("### Oversee") == 1 and md.count("### Plan") == 2
