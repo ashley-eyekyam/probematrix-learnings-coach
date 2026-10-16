@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+- Learning packs for the eight analysis skills: `causal-map` (drawn graph from `pmlc.py causal-item`), `precursor-timeline`, `interface-learnings`, `barrier-learnings`, `learning-clusters`, `cluster-learning-dossier` (`dossier-<F-id>`), `report-comparison` and the organisation learning plan (`organisation-learning-plan`). Every skill except the router and `learnings-register` now writes a pack; all keep writing `<skill>.md` at the same path.
+
 ## 0.3.2
 
 - Learning packs for the ten audience skills: `frontline-learning-cards`, `manager-coach`, `site-leadership-coach`, `top-management-brief`, `auditor-assurance-pack`, `training-designer`, `emergency-response-learnings`, `engineering-integrity-learnings`, `supply-chain-contractor-learnings` and `safety-committee-guide` now write a pack JSON and render `<skill>.html` plus `<skill>.md` with `pmlc.py pack`.

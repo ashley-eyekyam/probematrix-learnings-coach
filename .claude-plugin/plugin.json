@@ -1,7 +1,7 @@
 {
   "name": "probematrix-learnings-coach",
   "displayName": "ProbeMatrix Learnings Coach",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Turn one ProbeMatrix (HFACS-based) investigation export into learnings for every level of an organisation: frontline cards, supervisor checklists, manager agendas, leadership decisions, ExCo and board briefs, audit packs, investigator coaching, training design, emergency response, engineering and supply-chain lessons, a learnings register, causal map and organisation learning dashboard.",
   "author": {
     "name": "Eyekyam Risk Resolutions Pvt. Ltd.",

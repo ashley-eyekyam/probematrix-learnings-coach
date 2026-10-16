@@ -37,7 +37,7 @@ Audit test points · Investigator follow-up · Training modules · ER drills · 
 | `organisation-learning-map` | leadership, HSE | HTML dashboard + rollout plan |
 | `cluster-learning-dossier` | any department | complete learning dossier for one function |
 | `learnings-register` | HSE, management | Learnings Register (.md + .xlsx) with recommendations |
-| `causal-map` | investigators, leaders | causal graph (Mermaid) and pathway stories |
+| `causal-map` | investigators, leaders | causal graph and pathway stories |
 | `precursor-timeline` | leaders, auditors | dated weak signals and how they were handled |
 | `interface-learnings` | managers | what fell between departments |
 | `barrier-learnings` | engineers, HSE | barriers, failure modes, control-tier fixes |
@@ -126,7 +126,7 @@ Every run gets one folder next to the export, named by incident date, site and e
 
 `organisation-learning-map.html` opens offline. With a Learnings Register it has two tabs: **Overview** (who must learn what) and **Detailed register** (every learning, recommendation, finding and evidence quote, with views for frontline, supervisors, managers, site leaders, board, investigators and auditors).
 
-Audience packs (all thirteen audience skills; the analysis skills follow in 0.3.3) are self-contained HTML pages too: collapsible sections, every Finding and Evidence ID expandable to the full record, a coverage note, search and print. The same content is in `<skill>.md`.
+Every audience and analysis skill writes a learning pack, a self-contained HTML page too: collapsible sections, every Finding and Evidence ID expandable to the full record, a coverage note, search and print. The same content is in `<skill>.md`.
 
 To share a run with others, publish it under [`samples/<slug>/`](samples/) (see the rules there).
 

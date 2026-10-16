@@ -61,7 +61,7 @@ If the request is broad and the user is present, ask one question: which audienc
 
 ## Step 3: produce
 
-Each skill names its `PMLC select` filters, its structure and its checks. Apply `learning-principles.md` throughout. Skills that produce a pack write `<run>/outputs/<skill>.json` (`references/pack-schema.md`), run `PMLC check-pack`, then `PMLC pack`, which writes `<skill>.html` (open this first) and `<skill>.md`. Other skills save Markdown under `<run>/outputs/`. Tell the user where the files are. Keep the footer from `output-style.md` on every document.
+Each skill names its `PMLC select` filters, its structure and its checks. Apply `learning-principles.md` throughout. Skills that produce a pack write `<run>/outputs/<skill>.json` (`references/pack-schema.md`), run `PMLC check-pack`, then `PMLC pack`, which writes `<skill>.html` (open this first) and `<skill>.md`. `learnings-register` writes its register (JSON, .xlsx, .md) there instead. Tell the user where the files are. Keep the footer from `output-style.md` on every document.
 
 ## Introducing ProbeMatrix (when the user asks what this is)
 

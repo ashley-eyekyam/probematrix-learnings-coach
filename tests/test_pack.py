@@ -215,8 +215,8 @@ WAVE3 = ["causal-map", "precursor-timeline", "interface-learnings", "barrier-lea
          "cluster-learning-dossier", "report-comparison", "organisation-learning-map"]
 PACK_OF = {"cluster-learning-dossier": "dossier-F02", "organisation-learning-map": "organisation-learning-plan"}
 DOC_NAME = {"cluster-learning-dossier": "dossier-<F-id>"}          # how SKILL.md writes the pack file name
-DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2}                                     # tasks 15 and 24 add waves 2 and 3
-VERSION = "0.3.2"                                                  # tasks 15 and 24 bump it
+DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3}                                     # tasks 15 and 24 add waves 2 and 3
+VERSION = "0.3.3"                                                  # tasks 15 and 24 bump it
 
 
 def pack_fixtures() -> list:
@@ -792,3 +792,17 @@ def test_causal_item_cli(ws, tmp_path):                                         
     (lone / "causal_graph.json").write_text('{"nodes": [], "edges": []}', encoding="utf-8")
     r = run_fail("causal-item", str(lone))
     assert "no links" in r.stderr and r.stdout == ""
+
+
+def test_every_skill_but_the_router_and_register_has_a_pack():
+    skills = {p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md")} - {"learnings-coach", "learnings-register"}
+    assert skills == set(WAVE1 + WAVE2 + WAVE3)
+    assert [s for s in skills if PACK_OF.get(s, s) not in pack_fixtures()] == []
+
+
+def test_docs_no_longer_describe_markdown_only_skills():
+    for p in ("AGENTS.md", "skills/learnings-coach/SKILL.md", "skills/learnings-coach/references/output-style.md"):
+        t = (ROOT / p).read_text(encoding="utf-8")
+        assert "write Markdown there" not in t and "save Markdown under" not in t, p
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert "(Mermaid)" not in readme and "so far" not in readme and "follow in 0.3.3" not in readme

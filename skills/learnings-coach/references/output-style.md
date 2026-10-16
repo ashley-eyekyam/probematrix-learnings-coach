@@ -2,7 +2,7 @@
 
 ## Default format
 
-Skills that produce a learning pack write JSON (`pack-schema.md`) and render it with `pmlc.py pack` to a self-contained HTML page (the primary deliverable) and generated Markdown, one pack per deliverable, in `<run>/outputs/`. Other skills write Markdown there. Convert to .docx, .pdf, .pptx or .xlsx only when the user asks, using whatever document tools the host provides. `pmlc.py register-xlsx` writes the Learnings Register spreadsheet and `pmlc.py dashboard` writes the HTML learning map.
+Skills that produce a learning pack write JSON (`pack-schema.md`) and render it with `pmlc.py pack` to a self-contained HTML page (the primary deliverable) and generated Markdown, one pack per deliverable, in `<run>/outputs/`. `learnings-register` keeps its own register formats (JSON, .xlsx, .md) and `organisation-learning-map.html`. Convert to .docx, .pdf, .pptx or .xlsx only when the user asks, using whatever document tools the host provides. `pmlc.py register-xlsx` writes the Learnings Register spreadsheet and `pmlc.py dashboard` writes the HTML learning map.
 
 ## Every document
 
