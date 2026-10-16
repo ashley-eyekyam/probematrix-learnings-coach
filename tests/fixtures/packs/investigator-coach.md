@@ -19,7 +19,7 @@ There is no interview evidence; every finding rests on documents [EVD-0001; EVD-
 
 ## Follow-up per high-rated finding
 
-| Finding | Evidence to collect | Key questions | Suggested interviews | Causal hypothesis | Evidence |
+| Finding | Evidence to collect | Key questions | Suggested interviews | Causal hypothesis | Cites |
 |---|---|---|---|---|---|
 | FND-0002 | Procedure index history | Was a checklist ever drafted? | Maintenance manager | The checklist was dropped in a procedure rewrite | FND-0002 |
 | FND-0003 | Purchase orders since 2022 | Who approved local purchase? | Stores/procurement officer | Budget pressure drove local buying | FND-0003 |

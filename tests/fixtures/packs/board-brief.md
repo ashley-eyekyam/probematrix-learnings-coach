@@ -30,7 +30,7 @@ Spares were bought locally without a specification, and assurance did not see th
 
 ## Assurance the board should request
 
-| Verification | Sites | By when | Evidence |
+| Verification | Sites | By when | Cites |
 |---|---|---|---|
 | Independent check of critical-spares specifications | All sites | Next quarter | FND-0003 |
 

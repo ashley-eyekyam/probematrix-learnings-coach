@@ -74,6 +74,8 @@ def test_pack_assets_are_inline_safe():
     assert ".rail{" in css and "@media print" in css and ".tablewrap{" in css
     assert "appearance:none" in css                       # print shows empty tick boxes
     assert "scroll-margin-top" in css                     # deep links land below the sticky toolbar
+    assert "repeat(auto-fit," in css and "repeat(auto-fill," not in css     # no empty card columns on wide screens
+    assert ".tablewrap td.cites-cell{min-width:" in css                    # citations cannot squeeze text columns
 
 
 @pytest.mark.skipif(not NODE, reason="node not installed")

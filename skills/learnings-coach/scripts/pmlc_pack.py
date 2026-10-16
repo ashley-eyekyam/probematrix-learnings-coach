@@ -329,6 +329,18 @@ def check_pack(pack, w) -> Result:
         bad("pack", "must be lowercase words joined by hyphens (or dossier-F<nn>)")
     if _text(pack.get("status")) and STATUS_PHRASE not in pack["status"]:
         bad("status", f'must contain "{STATUS_PHRASE}"')
+    inc = pack.get("incident")
+    if inc is not None:
+        if not isinstance(inc, dict):
+            bad("incident", "must be an object with title and/or date")
+        else:
+            for k in inc:
+                if k not in ("title", "date"):
+                    bad(f"incident.{k}", "unknown key; use title, date")
+            if "title" in inc and not _text(inc["title"]):
+                bad("incident.title", "must be non-empty text")
+            if "date" in inc and not (isinstance(inc["date"], str) and len(inc["date"]) == 10 and _iso_partial(inc["date"])):
+                bad("incident.date", "must be YYYY-MM-DD")
     bl = pack.get("bottom_line") if isinstance(pack.get("bottom_line"), list) else []
     if len(bl) > MAX_BOTTOM_LINE:
         bad("bottom_line", f"at most {MAX_BOTTOM_LINE} entries (got {len(bl)})")
@@ -602,7 +614,7 @@ def _md_item(it) -> str:
     if k == "table":
         cols, rows, rc = list(it["columns"]), [list(r) for r in it["rows"]], g("row_cites")
         if rc:
-            cols.append("Evidence")
+            cols.append("Cites")
             rows = [r + ["; ".join(x)] for r, x in zip(rows, rc)]
         out = ["| " + " | ".join(_md_cell(x) for x in cols) + " |", "|" + "---|" * len(cols)]
         out += ["| " + " | ".join(_md_cell(x) for x in r) + " |" for r in rows]
@@ -730,11 +742,11 @@ def _html_item(it, graphs) -> str:
                 + _list(it["prompts"], "ol") + f"</details>{c}")
     elif k == "table":
         rc = g("row_cites")
-        cols = list(it["columns"]) + (["Evidence"] if rc else [])
+        cols = list(it["columns"]) + (["Cites"] if rc else [])
         head = "".join(f'<th scope="col">{_h(x)}</th>' for x in cols)
         rows = []
         for r, row in enumerate(it["rows"]):
-            cells = "".join(f"<td>{_inline(x)}</td>" for x in row) + (f"<td>{_chips(rc[r])}</td>" if rc else "")
+            cells = "".join(f"<td>{_inline(x)}</td>" for x in row) + (f'<td class="cites-cell">{_chips(rc[r])}</td>' if rc else "")
             rows.append(f"<tr>{cells}</tr>")
         body = (f'<div class="tablewrap" tabindex="0"><table><thead><tr>{head}</tr></thead>'
                 f'<tbody>{"".join(rows)}</tbody></table></div>{c}')
@@ -831,8 +843,9 @@ def render_pack_html(w, pack, run, generated) -> str:
                    if unc else "") + "</section>")
     bottom = "".join(f'<li>{_inline(b["text"])} {_chips(b.get("cites"))}</li>' for b in pack["bottom_line"])
     clear = '<button type="button" id="clear-ticks">Clear ticks</button>' if has_checks else ""
-    meta = " · ".join(_h(x) for x in (pack["audience"], fields.get("Incident Title"), fields.get("Date"),
-                                      f"run {run}", f"generated {generated}") if x)
+    inc = pack.get("incident") or {}
+    meta = " · ".join(_h(x) for x in (pack["audience"], inc.get("title") or fields.get("Incident Title"),
+                                      inc.get("date") or fields.get("Date"), f"run {run}", f"generated {generated}") if x)
     title = _h(pack["title"])
     status = _h(pack["status"])
     css = (core.DASHBOARD_ASSETS / "pack.css").read_text(encoding="utf-8")

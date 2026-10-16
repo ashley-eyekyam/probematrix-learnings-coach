@@ -244,7 +244,7 @@ def test_markdown_per_kind(w):
         "### Test what you disturb [FND-0001]\n\n**What happened:** A pump restarted untested.",
         "**Warning signs:**\n- No test record\n- Unfamiliar seal",
         "**Scenario:** Asked to skip the test. [FND-0001]\n\n1. What do you say?",
-        "| Finding | Note | Evidence |\n|---|---|---|\n| FND-0002 | a \\| b | FND-0002 |",
+        "| Finding | Note | Cites |\n|---|---|---|\n| FND-0002 | a \\| b | FND-0002 |",
         "**Test point:** Return-to-service tests are recorded [FND-0002]\n- What to sample: 10 recent restarts",
         "### Module: Return to service [FND-0002]\n\n- Objective: Apply the hold point\n- Audience: Fitters\n- Duration: 45 min",
         "**Barrier:** Leak test [FND-0001]\n- Failure mode: Skipped\n- Type: prevention\n- Control tier: administrative\n- Fix: Interlock",
@@ -429,3 +429,32 @@ def test_duplicate_follow_up_rows_are_a_problem(w):                             
     rows = [["FND-0002", "a", "b", "c", "d"], ["FND-0002", "e", "f", "g", "h"]]
     t = item("table", id="follow-up", columns=pp.FOLLOW_UP_COLUMNS, rows=rows)
     assert "follow-up.rows[1][0]: FND-0002 already has a row" in problems(pack_with(t, pack="investigator-coach"), w)
+
+
+# ---- v1.1: checkpoint amendment
+
+def _meta(t):
+    return re.search(r'<p class="m">(.*?)</p>', t, re.S).group(1)
+
+
+def test_incident_override_in_header(w):
+    p = pack_with(item("para", cites=["FND-0002"]), incident={"title": "Corrected pump fire", "date": "2024-03-19"})
+    assert pp.check_pack(p, w).problems == []
+    m = _meta(pp.render_pack_html(w, p, "r", "d"))
+    assert "Corrected pump fire" in m and "2024-03-19" in m and "2024-03-20" not in m
+
+
+@pytest.mark.parametrize("inc, expected", [
+    ("x", "incident: must be an object"), ({"date": "20/03/2024"}, "incident.date: must be YYYY-MM-DD"),
+    ({"date": "2024-03"}, "incident.date: must be YYYY-MM-DD"), ({"place": "x"}, "incident.place: unknown key"),
+    ({"title": 5}, "incident.title: must be non-empty text")])
+def test_incident_override_validation(w, inc, expected):
+    got = problems(pack_with(item("para"), incident=inc), w)
+    assert any(x.startswith(expected) for x in got), got
+
+
+def test_row_cites_column_is_labelled_cites(w):
+    p = pack_with(item("table", columns=["Finding"], rows=[["FND-0002"]], row_cites=[["FND-0002"]]))
+    assert "| Finding | Cites |" in pp.render_pack_md(p, w)
+    t = pp.render_pack_html(w, p, "r", "d")
+    assert '<th scope="col">Cites</th>' in t and '<td class="cites-cell">' in t
