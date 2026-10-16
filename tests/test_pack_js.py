@@ -1,0 +1,82 @@
+"""Unit tests for the learning-pack page's pure JavaScript functions (run under Node if installed)."""
+import json
+import shutil
+import subprocess
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+ASSETS = ROOT / "skills" / "learnings-coach" / "scripts" / "dashboard_assets"
+PACK_JS = ASSETS / "pack.js"
+PACK_CSS = ASSETS / "pack.css"
+NODE = shutil.which("node")
+
+
+def node(script: str) -> str:
+    r = subprocess.run([NODE, "-e", script], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr + r.stdout
+    return r.stdout
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_pack_js_pure_functions():
+    node(f"""
+const assert = require('assert');
+const p = require({json.dumps(str(PACK_JS))});
+assert.deepStrictEqual(p.parseHash('#s/before-work'), {{kind:'s', id:'before-work'}});
+assert.deepStrictEqual(p.parseHash('#i/before-work-2'), {{kind:'i', id:'before-work-2'}});
+assert.strictEqual(p.parseHash('#x/a'), null);
+assert.strictEqual(p.parseHash('#s/<img>'), null);
+assert.strictEqual(p.parseHash('#s/%E0'), null);
+assert.strictEqual(p.parseHash(''), null);
+assert.strictEqual(p.parseHash(undefined), null);
+assert.ok(p.matches('Leak-test record attached', 'LEAK record'));
+assert.ok(!p.matches('Leak-test record attached', 'leak permit'));
+assert.ok(p.matches('anything', '   '));
+assert.ok(p.matches(null, ''));
+assert.strictEqual(p.tickKey('supervisor-coach', '2024-03-20-pump-fire'), 'pmlc-pack:supervisor-coach:2024-03-20-pump-fire');
+const mem = {{s:{{}}, getItem(k){{return k in this.s ? this.s[k] : null;}}, setItem(k,v){{this.s[k]=String(v);}}}};
+assert.deepStrictEqual(p.readTicks(mem, 'k'), {{}});
+assert.ok(p.writeTicks(mem, 'k', {{'leak-test':1}}));
+assert.deepStrictEqual(p.readTicks(mem, 'k'), {{'leak-test':1}});
+mem.s.k = 'not json';
+assert.deepStrictEqual(p.readTicks(mem, 'k'), {{}});
+mem.s.k = '[1]';
+assert.deepStrictEqual(p.readTicks(mem, 'k'), {{}});
+const boom = {{getItem(){{throw new Error('denied');}}, setItem(){{throw new Error('denied');}}}};
+assert.deepStrictEqual(p.readTicks(boom, 'k'), {{}});
+assert.strictEqual(p.writeTicks(boom, 'k', {{}}), false);
+const D = {{findings: {{'FND-0001': {{id:'FND-0001', label:'Pump restarted', level:1, level_name:'Unsafe Acts', rating:3,
+  roles:['Pump Technician'], clusters:{{F:['F02'], T:['T1'], R:['actor']}}, votes:[{{vote:'downgrade', reason:'dup'}}],
+  evidence:['EVD-0001'], justification:'no test'}}}},
+  evidence: {{'EVD-0001': {{id:'EVD-0001', type:'document', description:'Work order',
+  links:[{{code:'AB 1.1', relevance:'Shows no test', reference:'no leak test recorded'}}]}}}}}};
+const fr = p.recordRows('FND-0001', D);
+assert.deepStrictEqual(fr[0], ['Finding', 'Pump restarted']);
+assert.ok(fr.some(r => r[0] === 'Level' && r[1] === 'L1 Unsafe Acts'));
+assert.ok(fr.some(r => r[0] === 'Learning clusters' && r[1] === 'F02 · T1 · actor'));
+assert.ok(fr.some(r => r[0] === 'Reviewer votes' && r[1] === 'downgrade: dup'));
+assert.ok(!fr.some(r => r[0] === 'Causal explanation'));
+assert.deepStrictEqual(p.recordRows('EVD-0001', D),
+  [['Evidence','Work order'],['Type','document'],['Linked to AB 1.1','Shows no test: no leak test recorded']]);
+assert.strictEqual(p.recordRows('FND-9999', D), null);
+assert.strictEqual(p.recordRows('FND-0001', null), null);
+""")
+
+
+def test_pack_assets_are_inline_safe():
+    js, css = PACK_JS.read_text(encoding="utf-8"), PACK_CSS.read_text(encoding="utf-8")
+    assert "</script" not in js.lower() and "</style" not in css.lower()
+    for s in (js, css):
+        assert "http://" not in s and "https://" not in s
+    assert "function init()" in js and "localStorage" in js
+    assert ".rail{" in css and "@media print" in css and ".tablewrap{" in css
+    assert "appearance:none" in css                       # print shows empty tick boxes
+    assert "scroll-margin-top" in css                     # deep links land below the sticky toolbar
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_pack_js_loads_without_dom():
+    out = node(f"const p = require({json.dumps(str(PACK_JS))}); console.log(Object.keys(p).sort().join(','));")
+    assert out.strip() == "matches,parseHash,readTicks,recordRows,tickKey,writeTicks"

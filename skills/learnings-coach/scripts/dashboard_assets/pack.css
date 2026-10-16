@@ -1,0 +1,84 @@
+/* ProbeMatrix Learnings Coach: learning-pack page (<skill>.html). Uses the page tokens
+   --bg --fg --mut --card --line --acc defined by pmlc.py (light and dark). */
+[hidden]{display:none!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--warn:#fb923c}}
+:root[data-theme=dark]{--warn:#fb923c}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.status{display:inline-block;border:1px solid var(--acc);border-radius:6px;padding:2px 8px;font-weight:600;font-size:13px;margin:4px 0 12px}
+.bottom{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:10px;padding:10px 16px;margin:12px 0}
+.bottom h2{font-size:17px;margin:4px 0 8px}
+.bottom li{margin:4px 0}
+.toolbar{display:none;position:sticky;top:0;z-index:5;background:var(--bg);flex-wrap:wrap;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);margin:8px 0}
+body.js .toolbar{display:flex}
+.toolbar input,.toolbar button{font:inherit;font-size:14px;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:36px;max-width:100%}
+.toolbar input{width:min(280px,100%)}
+.toolbar button{cursor:pointer}
+#showing{color:var(--mut);font-size:13px}
+.layout{display:block}
+.rail{font-size:14px;margin:8px 0}
+.rail>summary{cursor:pointer;font-weight:600;padding:4px 0}
+.rail ol{list-style:none;margin:0;padding:0}
+.rail li{margin:2px 0}
+.rail a{color:inherit;text-decoration:none;display:flex;justify-content:space-between;gap:8px;padding:4px 8px;border-radius:6px}
+.rail a:hover{background:var(--card)}
+.rail .n,details.sec>summary .n{color:var(--mut);font-size:13px}
+@media (min-width:1000px){
+  .layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:24px;align-items:start}
+  .rail{position:sticky;top:64px;margin:12px 0}
+  .rail>summary{display:none}
+}
+details.sec{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:12px 0;scroll-margin-top:72px}
+details.sec>summary{cursor:pointer;padding:12px 16px;display:flex;gap:8px;align-items:baseline}
+details.sec>summary h2{font-size:17px;margin:0}
+.sec-body{padding:0 16px 12px}
+.intro{color:var(--mut)}
+.item{padding:10px 0;border-top:1px solid var(--line);scroll-margin-top:72px;overflow-wrap:anywhere;min-width:0}
+.sec-body>.item:first-child,.grid>.item{border-top:0}
+.item.hit{outline:2px solid var(--acc);outline-offset:4px;border-radius:6px}
+.item p{margin:4px 0}
+.item h3{font-size:16px;margin:0 0 6px}
+.label{display:block;color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-top:8px}
+.badge{display:inline-block;font-size:12px;line-height:1.6;padding:0 8px;border-radius:999px;border:1px solid var(--line);color:var(--mut);margin:0 4px 2px 0}
+.badge.strong{border-color:var(--acc);color:var(--fg);background:color-mix(in srgb,var(--acc) 16%,transparent)}
+.badge.hold{border-color:var(--warn,#c2410c);color:var(--warn,#c2410c);font-weight:600}
+.indicator-line{border-left:4px solid var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent);padding:6px 10px;border-radius:6px;margin:8px 0}
+.check{display:flex;gap:10px;align-items:flex-start}
+.check input{margin-top:4px;width:18px;height:18px;flex:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:12px;margin:10px 0}
+.card{border:1px solid var(--line);border-radius:10px;padding:12px;height:100%;box-sizing:border-box}
+.tablewrap{overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:8px}
+.tablewrap table{border-collapse:collapse;width:100%;font-size:14px}
+.tablewrap th,.tablewrap td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tablewrap thead th{position:sticky;top:0;background:var(--card);font-size:13px;color:var(--mut)}
+.timeline{list-style:none;margin:0;padding:0 0 0 16px;border-left:2px solid var(--line)}
+.timeline li{margin:8px 0}
+.timeline time{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:600;margin-right:8px}
+.graphwrap{overflow-x:auto;max-width:100%}
+svg.graph{max-width:100%;height:auto;color:var(--fg)}
+svg.graph rect{fill:var(--card);stroke:var(--acc)}
+svg.graph text{fill:currentColor;font-size:13px}
+svg.graph .edge{stroke:var(--mut);fill:none}
+svg.graph .back{stroke-dasharray:4 3}
+svg.graph .node:focus{outline:none}
+svg.graph .node:focus rect{stroke-width:3}
+button.cite{font:inherit;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.6;border:1px solid var(--line);border-radius:999px;background:none;color:var(--acc);padding:0 8px;cursor:pointer;margin:0 2px}
+button.cite[aria-expanded=true]{background:color-mix(in srgb,var(--acc) 16%,transparent)}
+.rec{display:block;border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin:6px 0;font-size:14px;background:var(--bg)}
+.rec dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 12px;margin:0}
+.rec dt{color:var(--mut)}
+.rec dd{margin:0}
+.coverage{margin-top:24px}
+.coverage li{margin:4px 0}
+.trail{display:none}
+@media (max-width:600px){.rec dl{grid-template-columns:1fr}}
+@media print{
+  :root:not(#_){--bg:#fff;--fg:#000;--mut:#444;--card:#fff;--line:#ccc;--acc:#0077b6;--warn:#c2410c}
+  body{background:#fff;color:#000}
+  .toolbar,.rail,.rec{display:none!important}
+  .layout{display:block}
+  .trail{display:block;break-before:page}
+  details.sec{border:0}
+  .check input{appearance:none;-webkit-appearance:none;border:1px solid #000;border-radius:2px;background:#fff}
+  .card,.k-check,.k-question,.k-recommendation{break-inside:avoid}
+  button.cite{color:#000;border-color:#999}
+}
