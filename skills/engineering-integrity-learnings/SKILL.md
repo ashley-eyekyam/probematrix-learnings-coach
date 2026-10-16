@@ -27,4 +27,26 @@ PMLC timeline <ws> --before <incident date>
 
 ## Output
 
-`<run>/outputs/engineering-integrity-learnings.md`. Do not specify engineering values (pressures, thicknesses, intervals) beyond what the evidence states; flag them as decisions for the technical authority.
+Write the pack `<run>/outputs/engineering-integrity-learnings.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/engineering-integrity-learnings.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/engineering-integrity-learnings.json         # -> engineering-integrity-learnings.html (primary) and .md
+```
+
+Sections → kinds:
+1. For each learning, write three items with the same `group` (the theme):
+   - a `learning`: the technical condition and how it persisted;
+   - a `barrier` for the barrier it weakened (type, owner, state, failure_mode, hoc_tier, fix, indicator);
+   - a `recommendation`, engineering controls first where credible.
+2. `decision` items (options, no answers), with `owner` = the technical authority.
+3. `check` items stating the minimum record, with `when` = the point in the work.
+
+Set `"scope": {"entities": ["F03", "F04", "F05", "F07"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+```json
+{"kind": "barrier", "group": "Specification and substitution", "barrier": "…", "type": "prevention", "owner": "…",
+ "state": "absent", "failure_mode": "…", "hoc_tier": "engineering", "fix": "…", "indicator": "…", "cites": ["FND-…"]}
+```
+
+Do not specify engineering values (pressures, thicknesses, intervals) beyond what the evidence states; make them `decision` items for the technical authority.
