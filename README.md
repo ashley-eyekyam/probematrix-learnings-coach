@@ -126,7 +126,7 @@ Every run gets one folder next to the export, named by incident date, site and e
 
 `organisation-learning-map.html` opens offline. With a Learnings Register it has two tabs: **Overview** (who must learn what) and **Detailed register** (every learning, recommendation, finding and evidence quote, with views for frontline, supervisors, managers, site leaders, board, investigators and auditors).
 
-Audience packs (board brief, supervisor coach and investigator coach so far) are self-contained HTML pages too: collapsible sections, every Finding and Evidence ID expandable to the full record, a coverage note, search and print. The same content is in `<skill>.md`.
+Audience packs (all thirteen audience skills; the analysis skills follow in 0.3.3) are self-contained HTML pages too: collapsible sections, every Finding and Evidence ID expandable to the full record, a coverage note, search and print. The same content is in `<skill>.md`.
 
 To share a run with others, publish it under [`samples/<slug>/`](samples/) (see the rules there).
 

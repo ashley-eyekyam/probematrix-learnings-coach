@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2
+
+- Learning packs for the ten audience skills: `frontline-learning-cards`, `manager-coach`, `site-leadership-coach`, `top-management-brief`, `auditor-assurance-pack`, `training-designer`, `emergency-response-learnings`, `engineering-integrity-learnings`, `supply-chain-contractor-learnings` and `safety-committee-guide` now write a pack JSON and render `<skill>.html` plus `<skill>.md` with `pmlc.py pack`.
+- Pack schema v1 additions (all optional): a `learning` item kind; `owner`, `state` and `indicator` on `barrier`; `time`, `received_by` and `response` on timeline events; `row_supporting_cites` on tables; `finding_notes` on the investigator follow-up table (copied to `follow-up.json`).
+- `pmlc.py causal-item` prints a ready graph item from `causal_graph.json`.
+- Fixes: the Markdown shows the incident title and date; `dossier-F09b`-style names are accepted; an unknown scope entity is a problem; the bottom-line and data-quality boxes fit their text on wide screens.
+
 ## 0.3.1 (2026-10-16)
 
 - Pack schema v1 additions from the pilot run (all optional): `incident` override, `data_quality`, `exclusions`, `supporting_cites`, `evidence_strength`, `group`; investigator follow-up rows per condition; the `row_cites` column is labelled Cites; the coverage warning fires under a quarter; card grids and table columns fixed on wide and narrow screens.
