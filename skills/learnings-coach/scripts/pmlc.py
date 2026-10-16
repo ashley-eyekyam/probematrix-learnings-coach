@@ -15,6 +15,8 @@ Subcommands
   dashboard     self-contained HTML organisational learning dashboard
   register-xlsx write a Learnings Register JSON to a formatted .xlsx
   scan-names    deterministic zero-hit name scan over files (de-identification check)
+  check-pack    check a learning pack JSON against the workspace
+  pack          learning pack JSON -> <run>/outputs/<pack>.html and .md
   run-path      print a workspace's run folder, outputs folder and slug
   check-samples check samples/<slug>/ folders follow the contribution layout
 
@@ -1207,6 +1209,20 @@ def cmd_scan_names(a):
     sys.exit(1 if hits else 0)
 
 
+# ----------------------------------------------------------------------------- learning packs
+
+def _pack_module():
+    """pmlc_pack lives next to this file; import it lazily so the core engine never depends on it."""
+    if str(HERE) not in sys.path:
+        sys.path.insert(0, str(HERE))
+    import pmlc_pack
+    return pmlc_pack
+
+
+def cmd_check_pack(a):
+    _pack_module().cmd_check_pack(a)
+
+
 # ----------------------------------------------------------------------------- main
 
 def main(argv=None):
@@ -1295,6 +1311,11 @@ def main(argv=None):
     s = sp.add_parser("check-samples", help="check samples/<slug>/ folders follow the contribution layout")
     s.add_argument("dir", nargs="?", default=str(HERE.parents[2] / "samples"))
     s.set_defaults(fn=cmd_check_samples)
+
+    s = sp.add_parser("check-pack", help="check a learning pack JSON against the workspace")
+    s.add_argument("ws")
+    s.add_argument("pack")
+    s.set_defaults(fn=cmd_check_pack)
 
     s = sp.add_parser("scan-names", help="zero-hit name scan")
     s.add_argument("names", help="text file, one name per line")
