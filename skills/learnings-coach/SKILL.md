@@ -18,6 +18,7 @@ One investigation, learned by the whole organisation. This skill sets up the ana
   - `references/audiences.md`: who learns what, and which skill serves them.
   - `references/output-style.md`: document structure, Learning Card, toolbox talk, board question, footer.
   - `references/register-schema.md`, `references/comparison-method.md`: for the register and comparison skills.
+  - `references/pack-schema.md`: the learning-pack JSON that skills render to HTML.
 
 Below, `PMLC` means `python3 <path-to-this-skill>/scripts/pmlc.py`.
 
@@ -60,7 +61,7 @@ If the request is broad and the user is present, ask one question: which audienc
 
 ## Step 3: produce
 
-Each skill names its `PMLC select` filters, its structure and its checks. Apply `learning-principles.md` throughout. Save outputs as Markdown under `<run>/outputs/` and tell the user where they are. Keep the footer from `output-style.md` on every document.
+Each skill names its `PMLC select` filters, its structure and its checks. Apply `learning-principles.md` throughout. Skills that produce a pack write `<run>/outputs/<skill>.json` (`references/pack-schema.md`), run `PMLC check-pack`, then `PMLC pack`, which writes `<skill>.html` (open this first) and `<skill>.md`. Other skills save Markdown under `<run>/outputs/`. Tell the user where the files are. Keep the footer from `output-style.md` on every document.
 
 ## Introducing ProbeMatrix (when the user asks what this is)
 

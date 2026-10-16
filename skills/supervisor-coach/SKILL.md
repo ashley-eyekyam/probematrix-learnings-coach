@@ -32,4 +32,29 @@ Group L3 findings by sub-category: inadequate supervision, planned inappropriate
 
 ## Output
 
-`<run>/outputs/supervisor-coach.md`, with a one-page printable checklist at the end.
+Write the pack `<run>/outputs/supervisor-coach.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/supervisor-coach.json
+PMLC pack <ws> <run>/outputs/supervisor-coach.json      # -> supervisor-coach.html (primary) and .md
+```
+
+Sections → kinds:
+
+| Section | Kind |
+|---|---|
+| 1 Bottom line | `bottom_line` |
+| 2 Before work starts | `check` |
+| 3 Before return to service | `check` with `"hold_point": true` |
+| 4 Known problems | `para` |
+| 5 In an emergency | `question`, `to` the site |
+| 6 What to refuse | `check` |
+| 7 Recommendations | `recommendation`, each with its `indicator` |
+| 8 Coaching | `scenario` ×3 |
+
+Set `"scope": {"tiers": ["T2"]}`. The page prints the checks as a checklist.
+
+```json
+{"kind": "check", "text": "Leak-test record attached and signed.", "hold_point": true,
+ "when": "before return to service", "cites": ["FND-…"]}
+```

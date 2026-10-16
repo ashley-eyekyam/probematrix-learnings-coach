@@ -30,4 +30,18 @@ Look specifically for: audit recommendations left open, internal audits that did
 
 ## Output
 
-`<run>/outputs/board-brief.md`. Neutral, factual tone; no blame of management or staff; roles only.
+Write the pack `<run>/outputs/board-brief.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/board-brief.json     # fix every problem it lists
+PMLC pack <ws> <run>/outputs/board-brief.json           # -> board-brief.html (primary) and board-brief.md
+```
+
+Sections → kinds: 1 and 2 `para` · 3 `question` ×8–12 (question, why, good_evidence, `to` the role asked) · 4 `table` (verification, sites, by when; `row_cites`) · 5 `indicator` ×3–5. Set `"scope": {"levels": [3, 4]}`.
+
+```json
+{"kind": "question", "question": "How do we know critical spares meet their specification at every site?",
+ "why": "…", "good_evidence": "…", "to": "Chief Executive", "cites": ["FND-…"]}
+```
+
+Neutral, factual tone; no blame of management or staff; roles only.

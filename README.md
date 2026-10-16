@@ -121,10 +121,12 @@ Every run gets one folder next to the export, named by incident date, site and e
 ```
 <export-dir>/pmlc-runs/2020-09-24-hazira-gas-release-fire/
   workspace/   findings, evidence, clusters (rebuildable from the export)
-  outputs/     learnings register (.json, .xlsx, .md), organisation-learning-map.html, audience packs
+  outputs/     learnings register (.json, .xlsx, .md), organisation-learning-map.html, audience packs (<skill>.html + .md)
 ```
 
 `organisation-learning-map.html` opens offline. With a Learnings Register it has two tabs: **Overview** (who must learn what) and **Detailed register** (every learning, recommendation, finding and evidence quote, with views for frontline, supervisors, managers, site leaders, board, investigators and auditors).
+
+Audience packs (board brief, supervisor coach and investigator coach so far) are self-contained HTML pages too: collapsible sections, every Finding and Evidence ID expandable to the full record, a coverage note, search and print. The same content is in `<skill>.md`.
 
 To share a run with others, publish it under [`samples/<slug>/`](samples/) (see the rules there).
 

@@ -24,9 +24,10 @@ python3 $E profile $WS --out $WS/profile.md
 python3 $E classify $WS
 python3 $E dashboard $WS                       # -> <run>/outputs/organisation-learning-map.html
 python3 $E select $WS --tier T2 --level 3 --brief      # feed an audience skill
+python3 $E pack $WS <run>/outputs/board-brief.json  # -> board-brief.html + .md
 ```
 
-Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write Markdown to `<run>/outputs/` (`python3 $E run-path $WS` prints it).
+Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write its pack JSON to `<run>/outputs/<skill>.json`, then run `python3 $E check-pack $WS <pack>` and `python3 $E pack $WS <pack>` (skills without a pack write Markdown there; `python3 $E run-path $WS` prints the folder).
 
 ## Rules for agents
 

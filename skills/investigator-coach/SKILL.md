@@ -28,4 +28,21 @@ Read the incident narrative in `<ws>/incident.json` and the evidence description
 
 ## Output
 
-`<run>/outputs/investigator-coach.md`, plus `<run>/outputs/follow-up.json` (finding ID → the four follow-up fields) if the user wants to paste them back into their investigation.
+Write the pack `<run>/outputs/investigator-coach.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/investigator-coach.json
+PMLC pack <ws> <run>/outputs/investigator-coach.json    # -> investigator-coach.html, .md and follow-up.json
+```
+
+Sections → kinds:
+
+| Section | Kind |
+|---|---|
+| 1 Evidence audit | `table` (evidence type, items) + `para` |
+| 2 Follow-up | the `table` with `"id": "follow-up"` and columns `Finding`, `Evidence to collect`, `Key questions`, `Suggested interviews`, `Causal hypothesis`, one row per high-rated finding with its ID first and `row_cites` |
+| 3 Interview plan | `question`, `to` the role |
+| 4 Method lessons | `para` |
+| 5 Training use | `scenario` |
+
+`pack` writes `follow-up.json` from the follow-up table, ready to paste back into the investigation.

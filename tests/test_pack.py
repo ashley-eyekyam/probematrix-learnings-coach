@@ -348,3 +348,29 @@ def test_pack_on_minimal_workspace(ws, tmp_path):
     good.write_text(json.dumps(pack_with(item("para", cites=["FND-0002"]))), encoding="utf-8")
     run("pack", str(lone), str(good))
     assert (lone / "outputs" / "test-pack.html").exists()   # default folder for a legacy workspace
+
+
+PACK_SKILLS = {"board-brief": "board-brief", "supervisor-coach": "supervisor-coach",
+               "investigator-coach": "investigator-coach"}     # waves 2 and 3 add the other 18
+
+
+@pytest.mark.parametrize("skill,pack", sorted(PACK_SKILLS.items()))
+def test_skill_documents_its_pack(skill, pack):
+    t = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
+    assert f"<run>/outputs/{pack}.json" in t and "PMLC check-pack" in t and "PMLC pack" in t
+    assert "pack-schema.md" in t
+    assert len(t.splitlines()) <= 150
+
+
+def test_pack_schema_reference_names_every_kind():
+    t = (ROOT / "skills" / "learnings-coach" / "references" / "pack-schema.md").read_text(encoding="utf-8")
+    for kind, spec in pp.KINDS.items():
+        assert f"`{kind}`" in t, kind
+        for f in spec["req"]:
+            assert f in t, (kind, f)
+    assert pp.STATUS_PHRASE in t and "check-pack" in t
+
+
+def test_version_is_0_3_0():
+    for p in (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"):
+        assert '"version": "0.3.0"' in (ROOT / p).read_text(encoding="utf-8"), p

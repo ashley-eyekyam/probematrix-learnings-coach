@@ -2,7 +2,7 @@
 
 ## Default format
 
-Write Markdown first (one file per deliverable, in an `outputs/` folder next to the workspace unless the user names another place). Convert to .docx, .pdf, .pptx or .xlsx only when the user asks, using whatever document tools the host provides. `pmlc.py register-xlsx` writes the Learnings Register spreadsheet and `pmlc.py dashboard` writes the HTML learning map.
+Skills that produce a learning pack write JSON (`pack-schema.md`) and render it with `pmlc.py pack` to a self-contained HTML page (the primary deliverable) and generated Markdown, one pack per deliverable, in `<run>/outputs/`. Other skills write Markdown there. Convert to .docx, .pdf, .pptx or .xlsx only when the user asks, using whatever document tools the host provides. `pmlc.py register-xlsx` writes the Learnings Register spreadsheet and `pmlc.py dashboard` writes the HTML learning map.
 
 ## Every document
 
@@ -16,6 +16,8 @@ Write Markdown first (one file per deliverable, in an `outputs/` folder next to 
 > Generated with ProbeMatrix Learnings Coach (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
 
 ## Reusable blocks
+
+In a pack these are the `card`, `question` and `test_point` item kinds.
 
 **Learning Card** (one per learning, fits one page)
 - Title (a plain statement, not a slogan)
