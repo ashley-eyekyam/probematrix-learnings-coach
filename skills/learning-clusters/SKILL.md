@@ -40,11 +40,24 @@ If the user's organisation has different departments (e.g. a hospital, a mine, a
 
 ## 4. Report
 
-Produce `<run>/outputs/learning-clusters.md`:
-- the cluster table printed by `classify` (entity, findings touching, L1/L2/L3/L4)
-- the tier table
-- the relation mix, with one example role per relation
-- the top five clusters by highest-rated findings, with one sentence each on what kind of learning they own
-- unresolved items and the decision taken on each
+Write the pack `<run>/outputs/learning-clusters.json` (schema: `learnings-coach/references/pack-schema.md`), then:
 
-Note that a finding can touch several clusters, so cluster counts add up to more than the number of findings.
+```bash
+PMLC check-pack <ws> <run>/outputs/learning-clusters.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/learning-clusters.json         # -> learning-clusters.html (primary) and .md
+```
+
+Sections and the kinds that fill them:
+- **Cluster table:** a `table` copied from `classify`, with columns Entity, Findings, L1, L2, L3 and L4, plus `row_cites`. Give the section an `intro` saying that a finding can touch several clusters, so the counts add up to more than the number of findings.
+- **Tier table:** a `table`.
+- **Relation mix:** a `table` with one example role per relation.
+- **Top five clusters:** one `para` each, with `group` = the cluster.
+- **Unresolved items:** a `table` with columns Role string, Decision and Reason. Write "(a personal name)", never the name.
+- **Taxonomy adaptation:** a `para`, only if you did step 3.
+
+The bottom line cites the highest-rated finding of each top cluster. Put data-quality corrections in `data_quality`.
+
+```json
+{"kind": "table", "columns": ["Entity", "Findings", "L1", "L2", "L3", "L4"],
+ "rows": [["F02 Mechanical Maintenance", 2, 1, 0, 1, 0]], "row_cites": [["FND-…", "FND-…"]]}
+```

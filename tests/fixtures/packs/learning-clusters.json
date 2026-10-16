@@ -1,0 +1,23 @@
+{"pack": "learning-clusters", "schema": 1, "title": "Learning Clusters: Synthetic pump fire, 2024",
+ "audience": "Investigation and learning leads", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "Mechanical Maintenance (F02) owns both the top-rated supervision finding and the practice it allowed.",
+                  "cites": ["FND-0001", "FND-0002"]}],
+ "sections": [
+  {"id": "clusters", "heading": "Learning Clusters",
+   "intro": "A finding can touch several clusters, so the counts add up to more than the number of findings.", "items": [
+   {"kind": "table", "columns": ["Entity", "Findings", "L1", "L2", "L3", "L4"],
+    "rows": [["F02 Mechanical Maintenance", 2, 1, 0, 1, 0], ["F06 Materials Management", 1, 0, 0, 0, 1]],
+    "row_cites": [["FND-0001", "FND-0002"], ["FND-0003"]]}]},
+  {"id": "tiers", "heading": "Tiers", "items": [
+   {"kind": "table", "columns": ["Tier", "Findings"], "rows": [["T1 Frontline", 3], ["T2 Supervision", 3]],
+    "row_cites": [["FND-0001", "FND-0003", "FND-0004"], ["FND-0001", "FND-0002", "FND-0004"]]}]},
+  {"id": "relations", "heading": "Relation mix", "items": [
+   {"kind": "table", "columns": ["Relation", "Example role"],
+    "rows": [["approver", "Maintenance Supervisor (return-to-service approval)"], ["absent", "Reliability Engineer (absent)"]],
+    "row_cites": [["FND-0001"], ["FND-0003"]]}]},
+  {"id": "top-clusters", "heading": "Top clusters", "items": [
+   {"kind": "para", "group": "F02 Mechanical Maintenance", "text": "Owns the return-to-service learning [FND-0001; FND-0002]."}]},
+  {"id": "leftovers", "heading": "Unresolved roles and decisions", "items": [
+   {"kind": "table", "columns": ["Role string", "Decision", "Reason"],
+    "rows": [["(a personal name)", "Left unmapped", "Roles only: names are never mapped or shown"]],
+    "row_cites": [["FND-0004"]]}]}]}
