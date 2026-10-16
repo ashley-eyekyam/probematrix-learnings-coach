@@ -29,4 +29,24 @@ PMLC select <ws> --relation norm_setter learner challenger --brief
 
 ## Output
 
-`<run>/outputs/safety-committee-guide.md`.
+Write the pack `<run>/outputs/safety-committee-guide.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/safety-committee-guide.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/safety-committee-guide.json         # -> safety-committee-guide.html (primary) and .md
+```
+
+Sections → kinds:
+1. `para`.
+2. `learning` ×5, plus a `para` on where the analysis places the causes.
+3. `question` ×10, with `to` = the management role.
+4. `check` items.
+5. A `para` with the ground rules, then a `table` agenda with columns Minutes and Item.
+6. `check` items, with `when` = "30 days", "60 days" or "90 days".
+
+Set `"scope": {"tiers": ["T1", "T2"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+```json
+{"kind": "question", "question": "Who may stop a restart when the test record is missing?", "why": "…",
+ "to": "Maintenance manager", "cites": ["FND-…"]}
+```

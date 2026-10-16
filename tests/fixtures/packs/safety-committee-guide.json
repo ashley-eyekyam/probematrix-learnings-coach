@@ -1,0 +1,23 @@
+{"pack": "safety-committee-guide", "schema": 1, "title": "Safety Committee Guide: Synthetic pump fire, 2024",
+ "audience": "Joint safety committee and workforce representatives", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "The two top-rated findings sit at supervision and organisational level, not with the crew.",
+                  "cites": ["FND-0002", "FND-0003"]}],
+ "scope": {"tiers": ["T1", "T2"]},
+ "sections": [
+  {"id": "what-happened", "heading": "What happened", "items": [
+   {"kind": "para", "text": "After a seal change, a pump was restarted without a leak test [FND-0001]."}]},
+  {"id": "system", "heading": "What the investigation says about the system", "items": [
+   {"kind": "learning", "lesson": "The job had no checklist to catch a skipped test.",
+    "explanation": "The procedure index has no return-to-service entry [EVD-0002].", "cites": ["FND-0002"]}]},
+  {"id": "questions", "heading": "Questions to raise with management", "items": [
+   {"kind": "question", "question": "Who may stop a restart when the test record is missing?", "why": "The restart went ahead without one.",
+    "to": "Maintenance manager", "cites": ["FND-0001"]}]},
+  {"id": "look-for", "heading": "What to look for on site", "items": [
+   {"kind": "check", "text": "Is there a leak-test record on the last pump work order?", "cites": ["FND-0001"]}]},
+  {"id": "running", "heading": "Running the discussion", "items": [
+   {"kind": "para", "text": "Ground rules: no names, no blame, talk about conditions."},
+   {"kind": "table", "columns": ["Minutes", "Item"],
+    "rows": [["0-10", "What happened"], ["10-40", "Questions for management"], ["40-60", "Concerns to send on"]]}]},
+  {"id": "follow-up", "heading": "Follow-up", "items": [
+   {"kind": "check", "text": "Ask to see the new return-to-service checklist.", "when": "30 days", "cites": ["FND-0002"]},
+   {"kind": "check", "text": "Ask for the share of restarts with a test record.", "when": "90 days", "cites": ["FND-0001"]}]}]}
