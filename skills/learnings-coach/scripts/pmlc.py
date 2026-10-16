@@ -772,18 +772,33 @@ def downgraded_findings(w: dict) -> set:
             if _s(v.get("vote")).lower() in ("downgrade", "reject", "remove")}
 
 
+def citation_records(w: dict, finding_ids, evidence_ids=()) -> tuple:
+    """Full workspace records for the given findings (each with its clusters and reviewer votes), and for the
+    given evidence plus every evidence item those findings link. Unknown IDs are skipped; first-seen order kept.
+    Shared by the Detailed register tab and learning packs so both embed identical records."""
+    F = {f["id"]: f for f in w["findings"]}
+    E = w.get("evidence", {})
+    clf = w.get("clusters", {}).get("findings", {})
+    votes = collections.defaultdict(list)
+    for v in w.get("incident", {}).get("review_votes", []):
+        votes[v.get("finding")].append(v)
+    findings = {}
+    for fid in finding_ids:
+        if fid in F and fid not in findings:
+            findings[fid] = dict(F[fid], clusters=clf.get(fid, {}), votes=votes.get(fid, []))
+    eids = []
+    for x in list(evidence_ids) + [x for f in findings.values() for x in (f.get("evidence") or [])]:
+        if x not in eids:
+            eids.append(x)
+    return findings, {x: E[x] for x in eids if x in E}
+
+
 def build_detail_data(w: dict, reg) -> dict:
     """Everything the Detailed register tab shows: the register as given, plus the full workspace
     records of every finding and evidence item it cites (each once) and the findings no learning covers."""
     entries = reg["entries"] if isinstance(reg, dict) else reg
     meta = {k: v for k, v in reg.items() if k != "entries"} if isinstance(reg, dict) else {}
     F = {f["id"]: f for f in w["findings"]}
-    E = w.get("evidence", {})
-    cl = w.get("clusters", {})
-    clf = cl.get("findings", {})
-    votes = collections.defaultdict(list)
-    for v in w.get("incident", {}).get("review_votes", []):
-        votes[v.get("finding")].append(v)
     downs = downgraded_findings(w)
 
     derived, cited = {}, []
@@ -798,26 +813,27 @@ def build_detail_data(w: dict, reg) -> dict:
                   "reason": "reviewer downgrade vote" if fid in downs else "not covered by any learning"}
                  for fid, f in F.items() if fid not in cited]
 
-    findings = {}
-    for fid in cited + [u["id"] for u in uncovered]:
-        findings[fid] = dict(F[fid], clusters=clf.get(fid, {}), votes=votes.get(fid, []))
-    eids = []
-    for e in entries:
-        eids += [x for x in (e.get("evidence_ids") or []) if x not in eids]
-    for f in findings.values():
-        eids += [x for x in (f.get("evidence") or []) if x not in eids]
-    tax = cl.get("taxonomy", {})
-    return {"register": meta, "entries": entries, "derived": derived, "findings": findings,
-            "evidence": {x: E[x] for x in eids if x in E},
+    findings, evidence = citation_records(w, cited + [u["id"] for u in uncovered],
+                                          [x for e in entries for x in (e.get("evidence_ids") or [])])
+    tax = w.get("clusters", {}).get("taxonomy", {})
+    return {"register": meta, "entries": entries, "derived": derived, "findings": findings, "evidence": evidence,
             "taxonomy": {"entities": tax.get("entities", {}), "tiers": tax.get("tiers", {})},
             "tier_labels": TIER_LABELS, "labels": dict(REG_COLS), "hoc_order": HOC_TIERS,
-            "totals": {"findings": len(F), "evidence": len(E)}, "uncovered": uncovered}
+            "totals": {"findings": len(F), "evidence": len(w.get("evidence", {}))}, "uncovered": uncovered}
 
 
 def embed_json(obj) -> str:
     """JSON safe to place inside <script type="application/json">: no '<', '>' or '&' characters."""
     s = json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
     return s.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+
+
+PAGE_TOKENS_CSS = """:root{--bg:#f7f8fa;--fg:#111827;--mut:#5b6472;--card:#fff;--line:#e3e6eb;--acc:#0077b6}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d1117;--fg:#e6edf3;--mut:#9aa4b2;--card:#161b22;--line:#2a313c;--acc:#00bfff}}
+:root[data-theme=dark]{--bg:#0d1117;--fg:#e6edf3;--mut:#9aa4b2;--card:#161b22;--line:#2a313c;--acc:#00bfff}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}"""
+# Wide screens: containers use the space, prose keeps a readable measure (owner request 2026-10-15).
+WIDE_CSS = "@media (min-width:1400px){main{max-width:min(calc(100vw - 32px),1600px)} main p,main li{max-width:75ch}}"
 
 
 def cmd_dashboard(a):
@@ -944,11 +960,9 @@ def cmd_dashboard(a):
     doc = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Organisational Learning Map</title>
 <style>
-:root{{--bg:#f7f8fa;--fg:#111827;--mut:#5b6472;--card:#fff;--line:#e3e6eb;--acc:#0077b6}}
-@media (prefers-color-scheme:dark){{:root:not([data-theme=light]){{--bg:#0d1117;--fg:#e6edf3;--mut:#9aa4b2;--card:#161b22;--line:#2a313c;--acc:#00bfff}}}}
-:root[data-theme=dark]{{--bg:#0d1117;--fg:#e6edf3;--mut:#9aa4b2;--card:#161b22;--line:#2a313c;--acc:#00bfff}}
-body{{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}}
+{PAGE_TOKENS_CSS}
 main{{max-width:1180px;margin:0 auto;padding:24px 16px 48px}}
+{WIDE_CSS}
 h1{{font-size:24px;margin:0 0 4px}} h2{{font-size:17px;margin:32px 0 8px}} p.m{{color:var(--mut);margin:0 0 16px}}
 .k{{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}}
 .k div{{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}}

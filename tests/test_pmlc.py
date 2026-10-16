@@ -446,3 +446,22 @@ def test_dashboard_without_register_has_no_tabs(ws, tmp_path):
     t = out.read_text(encoding="utf-8")
     assert 'role="tablist"' not in t and "pmlc-data" not in t and "<script" not in t
     assert "--register" in t and "Who learns, at which level" in t
+
+
+def test_citation_records(ws):
+    w = pmlc.load_ws(ws)
+    w = dict(w, incident=dict(w["incident"], review_votes=[{"finding": "FND-0003", "vote": "downgrade", "reason": "r"}]))
+    f, e = pmlc.citation_records(w, ["FND-0003", "FND-9999", "FND-0003"], ["EVD-0002", "EVD-0404"])
+    assert list(f) == ["FND-0003"]
+    assert f["FND-0003"]["votes"][0]["vote"] == "downgrade" and f["FND-0003"]["clusters"]["F"]
+    assert list(e) == ["EVD-0002", "EVD-0003", "EVD-0001"]
+    assert pmlc.citation_records({"findings": []}, ["FND-0001"]) == ({}, {})
+
+
+def test_map_uses_shared_tokens_and_wide_rule(ws, tmp_path):
+    out = tmp_path / "d.html"
+    run("dashboard", str(ws), "--out", str(out))
+    t = out.read_text(encoding="utf-8")
+    assert pmlc.PAGE_TOKENS_CSS in t
+    assert pmlc.WIDE_CSS in t and "@media (min-width:1400px)" in t
+    assert t.index("main{max-width:1180px") < t.index(pmlc.WIDE_CSS)
