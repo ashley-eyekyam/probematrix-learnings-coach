@@ -30,4 +30,25 @@ If the user names a function, add `--entity <F-id>`; otherwise produce one secti
 
 ## Output
 
-`<run>/outputs/manager-coach.md`, with a one-page summary table at the end: function, top learning, top recommendation, indicator.
+Write the pack `<run>/outputs/manager-coach.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/manager-coach.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/manager-coach.json         # -> manager-coach.html (primary) and manager-coach.md
+```
+
+Sections → kinds. Write one section per function (`id` = the function, e.g. `mechanical-maintenance`), with each part as a `group`:
+- What your system allowed: `learning` ×3–6 (`owner` = the role that owns the system).
+- Interfaces you share: `para`.
+- Recommendations: `recommendation` (change, hoc_tier, barrier, indicator).
+- Leading indicators: `indicator` ×2–4.
+- 90-day agenda: `table` (Days, Action; `row_cites`).
+
+End with a `summary` section: one `table` with columns Function, Top learning, Top recommendation and Indicator.
+
+Set `"scope": {"tiers": ["T3"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+```json
+{"kind": "learning", "group": "What your system allowed", "lesson": "Return to service relied on memory, not a checklist.",
+ "explanation": "…", "owner": "Maintenance manager", "cites": ["FND-…"]}
+```
