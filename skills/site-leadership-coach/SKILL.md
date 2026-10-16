@@ -30,4 +30,26 @@ PMLC timeline <ws> --before <incident date>
 
 ## Output
 
-`<run>/outputs/site-leadership-coach.md` (aim for four to six pages), plus a one-page **leadership workshop agenda** (two hours) built on sections 2, 4 and 5.
+Write the pack `<run>/outputs/site-leadership-coach.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/site-leadership-coach.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/site-leadership-coach.json         # -> site-leadership-coach.html (primary) and .md
+```
+
+Sections → kinds:
+1. The pack's `bottom_line`: five entries.
+2. A `graph` from `PMLC causal-item <ws> --top 20`. Paste it unchanged; drop nodes only if you need to. Follow it with one `para` per pathway, with `group` = the pathway's name.
+3. A `timeline`, with `signal`, `received_by` and `response` on each event.
+4. `para`.
+5. `decision` ×6–10 (options, trade_offs, owner). Follow each one with the `indicator` leadership will watch, in the same `group`.
+6. `check` items, with `when` = "next 30 days".
+
+Close with a `workshop` section: one `table` with columns Time, Activity and Built on, for a two-hour agenda built on sections 2, 4 and 5.
+
+Set `"scope": {"tiers": ["T4"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+```json
+{"kind": "decision", "group": "Spares specification", "decision": "Require a specification for every critical-spares order",
+ "options": ["…", "…"], "trade_offs": "…", "owner": "Plant manager", "cites": ["FND-…"]}
+```
