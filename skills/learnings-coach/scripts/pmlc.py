@@ -17,6 +17,7 @@ Subcommands
   scan-names    deterministic zero-hit name scan over files (de-identification check)
   check-pack    check a learning pack JSON against the workspace
   pack          learning pack JSON -> <run>/outputs/<pack>.html and .md
+  causal-item   the top causal links as a ready graph item for a pack (JSON on stdout)
   run-path      print a workspace's run folder, outputs folder and slug
   check-samples check samples/<slug>/ folders follow the contribution layout
 
@@ -1227,6 +1228,10 @@ def cmd_pack(a):
     _pack_module().cmd_pack(a)
 
 
+def cmd_causal_item(a):
+    _pack_module().cmd_causal_item(a)
+
+
 # ----------------------------------------------------------------------------- main
 
 def main(argv=None):
@@ -1327,6 +1332,11 @@ def main(argv=None):
     s.add_argument("--out", help="output folder (default: <run>/outputs)")
     s.add_argument("--no-md", action="store_true", help="write only the HTML")
     s.set_defaults(fn=cmd_pack)
+
+    s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)")
+    s.add_argument("ws")
+    s.add_argument("--top", type=int, default=40, help="links to keep (default 40)")
+    s.set_defaults(fn=cmd_causal_item)
 
     s = sp.add_parser("scan-names", help="zero-hit name scan")
     s.add_argument("names", help="text file, one name per line")

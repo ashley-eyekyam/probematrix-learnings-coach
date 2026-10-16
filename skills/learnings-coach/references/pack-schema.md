@@ -62,7 +62,7 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 | `module` | title*, objective*, audience, duration, content[]*, assessment[] | training modules |
 | `barrier` | barrier*, failure_mode*, hoc_tier*, type, fix, owner, state (absent, degraded, defeated, worked partly, worked), indicator; **must cite** | barrier analysis |
 | `timeline` | events[]*: {date* (YYYY-MM-DD, YYYY-MM or YYYY), time (HH:MM), text*, signal (true/false), received_by, response, cites[]} | precursors, response timelines; events sort by date then time, and same-date events without a time keep your order |
-| `graph` | nodes[]*: {id*, label*}; edges[]*: {from*, to*, label} | causal maps, interfaces; drawn as SVG with a text list of links |
+| `graph` | nodes[]*: {id*, label*}; edges[]*: {from*, to*, label} | causal maps, interfaces; drawn as SVG with a text list of links. `PMLC causal-item <ws> --top 40` prints a ready graph item from `causal_graph.json` (run `PMLC causal` first) |
 | `learning` | lesson* (one sentence), explanation (two to four sentences), owner (who must learn it); **must cite** | a learning: the lesson, why, and its evidence (dossiers, manager and leadership coaches, signal and interface learnings) |
 
 ## Optional on every pack and item

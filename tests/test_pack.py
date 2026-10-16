@@ -716,3 +716,39 @@ def test_timeline_event_extras_validation(w, extra, expected):
     ev = dict({"date": "2024-03-20", "text": "x"}, **extra)
     got = problems(pack_with(item("timeline", events=[ev])), w)
     assert any(x.startswith("sections[0].items[0]." + expected) for x in got), got
+
+
+# ---- waves 2/3, task 3: causal-item
+
+CG = {"nodes": [{"code": "OR 2.2", "name": "Spares Programme Failure", "level": 4},
+                {"code": "SV 1.4", "name": "No Guidance Provided", "level": 3},
+                {"code": "AB 1.1", "name": "Step Omitted", "level": 1}],
+      "edges": [{"from": "SV 1.4", "to": "AB 1.1", "mentions": 1, "findings": ["FND-0002"]},
+                {"from": "OR 2.2", "to": "AB 1.1", "mentions": 2, "findings": ["FND-0003", "FND-0001"]},
+                {"from": "OR 2.2", "to": "SV 1.4", "mentions": 1, "findings": ["FND-0003"]}]}
+
+
+def test_causal_graph_item():
+    it = pp.causal_graph_item(CG, top=2)
+    assert it["kind"] == "graph" and it["id"] == "causal-map"
+    assert it["edges"] == [{"from": "OR 2.2", "to": "AB 1.1", "label": "2 mentions"},
+                           {"from": "OR 2.2", "to": "SV 1.4", "label": "1 mention"}]
+    assert it["nodes"] == [{"id": "OR 2.2", "label": "L4 OR 2.2 Spares Programme Failure"},
+                           {"id": "AB 1.1", "label": "L1 AB 1.1 Step Omitted"},
+                           {"id": "SV 1.4", "label": "L3 SV 1.4 No Guidance Provided"}]
+    assert it["cites"] == ["FND-0001", "FND-0003"]
+    assert pp.causal_graph_item(CG, top=10) == pp.causal_graph_item(CG, top=10)          # deterministic
+
+
+def test_causal_item_cli(ws, tmp_path):                                                  # review focus 4
+    run("causal", str(ws))
+    it = json.loads(run("causal-item", str(ws), "--top", "3"))
+    assert len(it["edges"]) == 3 and problems(pack_with(it), pmlc.load_ws(ws)) == []
+    lone = tmp_path / "lone"
+    lone.mkdir()
+    for f in ("findings.json", "evidence.json", "incident.json"):
+        (lone / f).write_bytes((ws / f).read_bytes())
+    assert "Run: pmlc.py causal" in run_fail("causal-item", str(lone)).stderr
+    (lone / "causal_graph.json").write_text('{"nodes": [], "edges": []}', encoding="utf-8")
+    r = run_fail("causal-item", str(lone))
+    assert "no links" in r.stderr and r.stdout == ""
