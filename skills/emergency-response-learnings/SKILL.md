@@ -30,4 +30,25 @@ Read the incident narrative for the response timeline.
 
 ## Output
 
-`<run>/outputs/emergency-response-learnings.md`. Learnings are for the system and the plan, not a judgement on the people who responded under pressure.
+Write the pack `<run>/outputs/emergency-response-learnings.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/emergency-response-learnings.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/emergency-response-learnings.json         # -> emergency-response-learnings.html (primary) and .md
+```
+
+Sections → kinds:
+1. A `timeline` with one event per step: `time` (HH:MM) where the evidence gives it, `received_by` = who got the alarm or call, and the gap since the previous step in `text`. Events on the same day without times keep your order.
+2. `learning` items, with `group` = the response phase.
+3. One `para` per gap.
+4. `scenario` ×3: injects in `situation`, decision points and the time standard in `prompts`.
+5. `indicator`.
+
+Set `"scope": {"entities": ["F09a", "F09b", "F10"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+```json
+{"kind": "timeline", "events": [{"date": "YYYY-MM-DD", "time": "14:05", "text": "…", "received_by": "Control room operators",
+ "cites": ["FND-…"]}]}
+```
+
+Learnings are for the system and the plan, not a judgement on the people who responded under pressure.
