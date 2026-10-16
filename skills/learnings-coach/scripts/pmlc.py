@@ -1223,6 +1223,10 @@ def cmd_check_pack(a):
     _pack_module().cmd_check_pack(a)
 
 
+def cmd_pack(a):
+    _pack_module().cmd_pack(a)
+
+
 # ----------------------------------------------------------------------------- main
 
 def main(argv=None):
@@ -1316,6 +1320,13 @@ def main(argv=None):
     s.add_argument("ws")
     s.add_argument("pack")
     s.set_defaults(fn=cmd_check_pack)
+
+    s = sp.add_parser("pack", help="learning pack JSON -> <run>/outputs/<pack>.html (and .md)")
+    s.add_argument("ws")
+    s.add_argument("pack")
+    s.add_argument("--out", help="output folder (default: <run>/outputs)")
+    s.add_argument("--no-md", action="store_true", help="write only the HTML")
+    s.set_defaults(fn=cmd_pack)
 
     s = sp.add_parser("scan-names", help="zero-hit name scan")
     s.add_argument("names", help="text file, one name per line")

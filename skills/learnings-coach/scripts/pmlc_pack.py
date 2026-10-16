@@ -590,3 +590,255 @@ def render_pack_md(pack, w) -> str:
         out += [_md_item(it) for it in s["items"]]
     out += ["---", f"This pack cites {cov['cited']} of {cov['relevant']} relevant findings.", f"> {core.BRAND}"]
     return "\n\n".join(out) + "\n"
+
+
+# ----------------------------------------------------------------------------- HTML
+
+GRID_KINDS = {"card", "indicator", "test_point", "module"}
+STRONG_HOC = {"elimination", "substitution", "engineering"}
+
+
+def _h(s) -> str:
+    return html.escape("" if s is None else str(s), quote=True)
+
+
+def _chip(x) -> str:
+    return f'<button type="button" class="cite" data-id="{_h(x)}" aria-expanded="false">{_h(x)}</button>'
+
+
+def _chips(cites) -> str:
+    return '<span class="cites">' + "".join(_chip(x) for x in cites) + "</span>" if cites else ""
+
+
+def _inline(s) -> str:
+    """Escaped text in which Finding and Evidence IDs become citation buttons."""
+    s, out, last = str(s), [], 0
+    for m in ID_RX.finditer(s):
+        out += [_h(s[last:m.start()]), _chip(m.group(1))]
+        last = m.end()
+    return "".join(out) + _h(s[last:])
+
+
+def _rich(text) -> str:
+    return "".join(f"<p>{_inline(p)}</p>" for p in re.split(r"\n\s*\n", str(text)) if p.strip())
+
+
+def _labelled(label, value) -> str:
+    return f'<span class="label">{_h(label)}</span><p>{_inline(value)}</p>' if value else ""
+
+
+def _list(xs, tag="ul") -> str:
+    return f"<{tag}>" + "".join(f"<li>{_inline(x)}</li>" for x in xs) + f"</{tag}>" if xs else ""
+
+
+def _badges(pairs) -> str:
+    return "".join(f'<span class="badge">{_h(k)}: {_h(v)}</span>' for k, v in pairs if v)
+
+
+def _hoc(v) -> str:
+    t = core.norm_hoc(v)
+    cls = "badge strong" if t in STRONG_HOC else "badge"
+    return f'<span class="{cls}">Control: {_h(t)}</span>'
+
+
+def _html_item(it, graphs) -> str:
+    k, g, c = it["kind"], it.get, _chips(it.get("cites"))
+    if k == "para":
+        body = _rich(it["text"]) + c
+    elif k == "check":
+        key = _h(it["id"])
+        hold = '<span class="badge hold">Hold point</span> ' if g("hold_point") else ""
+        when = f' <span class="badge">{_h(g("when"))}</span>' if g("when") else ""
+        body = (f'<div class="check"><input type="checkbox" class="tick" id="t-{key}" data-key="{key}">'
+                f'<label for="t-{key}">{hold}{_inline(it["text"])}{when}</label></div>{c}')
+    elif k == "question":
+        to = f' <span class="badge">Ask: {_h(g("to"))}</span>' if g("to") else ""
+        body = (f'<p><b>{_inline(it["question"])}</b>{to}</p>' + _labelled("Why it matters", it["why"])
+                + _labelled("Good evidence looks like", g("good_evidence")) + c)
+    elif k == "recommendation":
+        meta = _hoc(it["hoc_tier"]) + _badges([("Barrier", g("barrier")), ("Owner", g("owner")), ("By", g("by_when"))])
+        body = (f'<p><b>{_inline(it["change"])}</b></p><p>{meta}</p><p class="indicator-line">'
+                f'<span class="label">Leading indicator</span>{_inline(it["indicator"])}</p>{c}')
+    elif k == "decision":
+        opts = '<span class="label">Options</span>' + _list(g("options")) if g("options") else ""
+        body = (f'<p><b>{_inline(it["decision"])}</b></p>{opts}' + _labelled("Trade-offs", g("trade_offs"))
+                + f'<p>{_badges([("Owner", g("owner")), ("By", g("by_when"))])}</p>{c}')
+    elif k == "indicator":
+        body = (f'<div class="card"><p><b>{_inline(it["name"])}</b></p>' + _labelled("Measure", it["measure"])
+                + _labelled("Deterioration looks like", g("deterioration")) + _labelled("Owner", g("owner")) + c + "</div>")
+    elif k == "card":
+        disc = '<span class="label">Questions for discussion</span>' + _list(g("discussion"), "ol") if g("discussion") else ""
+        body = (f'<div class="card"><h3>{_h(it["title"])}</h3>' + _labelled("What happened", it["what_happened"])
+                + _labelled("Why it made sense at the time", g("why_made_sense"))
+                + '<span class="label">Warning signs</span>' + _list(it["warning_signs"])
+                + _labelled("What good looks like", it["good_looks_like"]) + disc + c + "</div>")
+    elif k == "scenario":
+        body = (f'<p><b>Scenario.</b> {_inline(it["situation"])}</p><details><summary>Discussion prompts</summary>'
+                + _list(it["prompts"], "ol") + f"</details>{c}")
+    elif k == "table":
+        rc = g("row_cites")
+        cols = list(it["columns"]) + (["Evidence"] if rc else [])
+        head = "".join(f'<th scope="col">{_h(x)}</th>' for x in cols)
+        rows = []
+        for r, row in enumerate(it["rows"]):
+            cells = "".join(f"<td>{_inline(x)}</td>" for x in row) + (f"<td>{_chips(rc[r])}</td>" if rc else "")
+            rows.append(f"<tr>{cells}</tr>")
+        body = (f'<div class="tablewrap" tabindex="0"><table><thead><tr>{head}</tr></thead>'
+                f'<tbody>{"".join(rows)}</tbody></table></div>{c}')
+    elif k == "test_point":
+        flags = ('<span class="label">Red flags seen in this investigation</span>' + _list(g("red_flags"))
+                 if g("red_flags") else "")
+        body = (f'<div class="card"><p><b>{_inline(it["requirement"])}</b></p>' + _labelled("What to sample", it["sample"])
+                + _labelled("Evidence of conformity", it["conformity_evidence"]) + flags + c + "</div>")
+    elif k == "module":
+        meta = "".join(f'<span class="badge">{_h(g(f))}</span>' for f in ("audience", "duration") if g(f))
+        assess = ("<details><summary>Assessment</summary>" + _list(g("assessment"), "ol") + "</details>"
+                  if g("assessment") else "")
+        body = (f'<div class="card"><h3>Module: {_h(it["title"])}</h3><p>{meta}</p>' + _labelled("Objective", it["objective"])
+                + '<span class="label">Content</span>' + _list(it["content"], "ol") + assess + c + "</div>")
+    elif k == "barrier":
+        meta = _hoc(it["hoc_tier"]) + _badges([("Type", g("type"))])
+        body = (f'<p><b>{_inline(it["barrier"])}</b></p><p>{meta}</p>' + _labelled("Failure mode", it["failure_mode"])
+                + _labelled("Fix", g("fix")) + c)
+    elif k == "timeline":
+        lis = []
+        for e in sorted_events(it["events"]):
+            sig = '<span class="badge hold">Weak signal</span> ' if e.get("signal") else ""
+            lis.append(f'<li><time>{_h(e["date"])}</time>{sig}{_inline(e["text"])} {_chips(e.get("cites"))}</li>')
+        body = f'<ol class="timeline">{"".join(lis)}</ol>{c}'
+    elif k == "graph":
+        gr = graphs[it["id"]]
+        lab = {n["id"]: n["label"] for n in it["nodes"]}
+        note = (f'<p class="m">{gr["omitted"]} nodes with the fewest links are not drawn; every link is listed below.</p>'
+                if gr["omitted"] else "")
+        links = "".join(f'<li>{_h(lab[e["from"]])} → {_h(lab[e["to"]])}'
+                        + (f' ({_h(e["label"])})' if e.get("label") else "") + "</li>" for e in it["edges"])
+        body = (f'<div class="graphwrap">{gr["svg"]}</div>{note}<details><summary>Links as text ({len(it["edges"])})'
+                f'</summary><ul>{links}</ul></details>{c}')
+    else:
+        raise ValueError(f"unknown kind {k!r}")
+    return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}</div>'
+
+
+def _section_items(items, graphs) -> str:
+    out, run = [], []
+    for it in items:
+        h = _html_item(it, graphs)
+        if it["kind"] in GRID_KINDS:
+            run.append(h)
+            continue
+        if run:
+            out.append('<div class="grid">' + "".join(run) + "</div>")
+            run = []
+        out.append(h)
+    if run:
+        out.append('<div class="grid">' + "".join(run) + "</div>")
+    return "".join(out)
+
+
+def build_pack_data(w, pack, run) -> dict:
+    """What the page script needs: full records of every cited finding and evidence item, plus the
+    relevant findings the pack leaves uncited (so the coverage list can expand them too)."""
+    fids, eids = cited_ids(pack)
+    uncited = [x for x in relevant_findings(w, pack.get("scope")) if x not in fids]
+    findings, evidence = core.citation_records(w, fids + uncited, eids)
+    return {"pack": pack["pack"], "run": run, "findings": findings, "evidence": evidence}
+
+
+def _trail(data) -> str:
+    rows = [f'<dt>{_h(i)}</dt><dd>{_h(f.get("label") or f.get("name"))} · L{_h(f.get("level"))} · '
+            f'rating {_h(f.get("rating"))}. {_h(f.get("short"))}</dd>' for i, f in data["findings"].items()]
+    rows += [f'<dt>{_h(i)}</dt><dd>{_h(e.get("type"))}: {_h(e.get("description"))}</dd>' for i, e in data["evidence"].items()]
+    return f'<section class="trail"><h2>Evidence trail</h2><dl>{"".join(rows)}</dl></section>'
+
+
+def render_pack_html(w, pack, run, generated) -> str:
+    """One self-contained offline page: server-rendered content, with pack.js adding behaviour."""
+    pack = with_item_ids(pack)
+    fields = w.get("incident", {}).get("fields", {})
+    data = build_pack_data(w, pack, run)
+    cov = coverage(w, pack)
+    graphs = {it["id"]: layout_graph(it["nodes"], it["edges"], uid=it["id"])
+              for s in pack["sections"] for it in s["items"] if it["kind"] == "graph"}
+    has_checks = any(it["kind"] == "check" for s in pack["sections"] for it in s["items"])
+
+    rail = "".join(f'<li><a href="#s/{_h(s["id"])}"><span>{_h(s["heading"])}</span>'
+                   f'<span class="n">{len(s["items"])}</span></a></li>' for s in pack["sections"])
+    secs = []
+    for s in pack["sections"]:
+        intro = f'<div class="intro">{_rich(s["intro"])}</div>' if s.get("intro") else ""
+        secs.append(f'<details class="sec" id="s-{_h(s["id"])}" open><summary><h2>{_h(s["heading"])}</h2>'
+                    f'<span class="n">{len(s["items"])}</span></summary><div class="sec-body">{intro}'
+                    f'{_section_items(s["items"], graphs)}</div></details>')
+    unc = "".join(f'<li>{_chip(u["id"])} {_h(u["label"])} · rating {_h(u["rating"])} · L{_h(u["level"])} · '
+                  f'{_h(u["reason"])}</li>' for u in cov["uncovered"])
+    cov_html = ('<section class="coverage"><h2>Coverage</h2>'
+                f'<p>This pack cites {cov["cited"]} of {cov["relevant"]} relevant findings.</p>'
+                + (f'<details><summary>Not covered here ({len(cov["uncovered"])})</summary><ul>{unc}</ul></details>'
+                   if unc else "") + "</section>")
+    bottom = "".join(f'<li>{_inline(b["text"])} {_chips(b.get("cites"))}</li>' for b in pack["bottom_line"])
+    clear = '<button type="button" id="clear-ticks">Clear ticks</button>' if has_checks else ""
+    meta = " · ".join(_h(x) for x in (pack["audience"], fields.get("Incident Title"), fields.get("Date"),
+                                      f"run {run}", f"generated {generated}") if x)
+    title = _h(pack["title"])
+    status = _h(pack["status"])
+    css = (core.DASHBOARD_ASSETS / "pack.css").read_text(encoding="utf-8")
+    js = (core.DASHBOARD_ASSETS / "pack.js").read_text(encoding="utf-8")
+    payload = core.embed_json(data)
+    brand = _h(core.BRAND)
+    tokens, wide = core.PAGE_TOKENS_CSS, core.WIDE_CSS
+    body = "".join(secs) + cov_html + _trail(data)
+    return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title}</title>
+<style>
+{tokens}
+main{{max-width:1180px;margin:0 auto;padding:24px 16px 48px}}
+{wide}
+h1{{font-size:24px;margin:0 0 4px}} p.m{{color:var(--mut);margin:0 0 8px}}
+footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}}
+{css}
+</style></head><body><main>
+<h1>{title}</h1>
+<p class="m">{meta}</p>
+<p class="status">{status}</p>
+<section class="bottom"><h2>Bottom line</h2><ul>{bottom}</ul></section>
+<div class="toolbar" role="search"><input id="q" type="search" placeholder="Search this pack" aria-label="Search this pack">
+<button type="button" id="expand-all">Expand all</button><button type="button" id="collapse-all">Collapse all</button>
+<button type="button" id="print">Print</button>{clear}<span id="showing" aria-live="polite"></span></div>
+<div class="layout"><details class="rail" open><summary>Contents</summary><ol>{rail}</ol></details>
+<div class="content">{body}</div></div>
+<footer>{brand}</footer>
+</main>
+<script type="application/json" id="pmlc-pack-data">{payload}</script>
+<script>
+{js}
+</script>
+</body></html>"""
+
+
+def follow_up(pack) -> dict:
+    """investigator-coach: finding ID -> the export's four follow-up fields, read from the table with id follow-up."""
+    for s in pack["sections"]:
+        for it in s["items"]:
+            if it.get("id") == "follow-up" and it.get("kind") == "table":
+                return {str(row[0]).strip(): dict(zip(FOLLOW_UP_KEYS, (str(x) for x in row[1:5]))) for row in it["rows"]}
+    return {}
+
+
+def cmd_pack(a):
+    w, pack, _ = _checked(a)
+    ws = core._abs(a.ws)
+    run = ws.parent.name if core.is_standard_ws(ws) else ws.name
+    out = Path(a.out) if a.out else core.outputs_dir(ws)
+    out.mkdir(parents=True, exist_ok=True)
+    page = out / f"{pack['pack']}.html"
+    page.write_text(render_pack_html(w, pack, run, dt.date.today().isoformat()), encoding="utf-8")
+    print(f"HTML written to {page}")
+    if not a.no_md:
+        md = out / f"{pack['pack']}.md"
+        md.write_text(render_pack_md(pack, w), encoding="utf-8")
+        print(f"Markdown written to {md}")
+    if pack["pack"] == "investigator-coach":
+        fu = out / "follow-up.json"
+        core.write_json(fu, follow_up(pack))
+        print(f"Follow-up fields written to {fu}")

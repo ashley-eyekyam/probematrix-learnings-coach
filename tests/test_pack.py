@@ -263,3 +263,88 @@ def test_pilot_markdown_matches_golden(w, name):
     if os.environ.get("PMLC_UPDATE_GOLDEN"):
         golden.write_text(md, encoding="utf-8")
     assert md == golden.read_text(encoding="utf-8")
+
+
+def _pack_data(t):
+    m = re.search(r'<script type="application/json" id="pmlc-pack-data">(.*?)</script>', t, re.S)
+    assert m, "no pmlc-pack-data block"
+    return json.loads(m.group(1))
+
+
+def test_render_pack_html_all_kinds(w):
+    pack = fixture("all-kinds")
+    t = pp.render_pack_html(w, pack, "2024-03-20-pump-fire", "2026-10-16")
+    assert not re.search(r'(src|href)="(https?:)?//', t)
+    assert t.count('id="pmlc-pack-data"') == 1 and t.count("</script>") == 2
+    assert "&lt;/script&gt;&lt;script&gt;alert(1)&lt;/script&gt; &amp; &lt;b&gt;" in t
+    d = _pack_data(t)
+    fids, eids = pp.cited_ids(pack)
+    assert set(fids) <= set(d["findings"]) and set(eids) <= set(d["evidence"])
+    assert d["pack"] == "all-kinds" and d["run"] == "2024-03-20-pump-fire"
+    for kind in pp.KINDS:
+        assert f'class="item k-{kind}"' in t, kind
+    assert 'id="i-leak-test"' in t and 'id="s-all"' in t and 'href="#s/all"' in t and 'id="i-all-1"' in t
+    assert 'data-key="leak-test"' in t and 'id="clear-ticks"' in t
+    assert '<svg class="graph"' in t and "url(#arr-causes)" in t
+    assert 'data-id="FND-0001"' in t and 'aria-expanded="false"' in t
+    assert "Learning purposes: not a statutory document" in t and pmlc.BRAND in t
+    assert "This pack cites 2 of 2 relevant findings." in t and 'class="trail"' in t
+    assert pmlc.PAGE_TOKENS_CSS in t and pmlc.WIDE_CSS in t and "function init()" in t and ".rail{" in t
+    assert "Synthetic pump fire" in t and "2024-03-20" in t and "generated 2026-10-16" in t
+
+
+def test_render_pack_html_lists_uncovered_findings(w):
+    t = pp.render_pack_html(w, pack_with(item("para", cites=["FND-0002"])), "r", "2026-10-16")
+    assert "This pack cites 1 of 2 relevant findings." in t and "Not covered here (1)" in t
+    assert 'data-id="FND-0003"' in t and "FND-0003" in _pack_data(t)["findings"]
+    assert 'id="clear-ticks"' not in t                     # no checks, no clear button
+
+
+def test_follow_up_from_investigator_pack():
+    fu = pp.follow_up(fixture("investigator-coach"))
+    assert list(fu) == ["FND-0002", "FND-0003"]
+    assert fu["FND-0003"] == {"evidence_to_collect": "Purchase orders since 2022",
+                              "key_questions": "Who approved local purchase?",
+                              "suggested_interviews": "Stores/procurement officer",
+                              "causal_hypothesis": "Budget pressure drove local buying"}
+
+
+def test_pack_cli_writes_html_md_and_follow_up(tmp_path):
+    x = make_export(tmp_path)
+    run("ingest", str(x), "--slug", "pump-fire")
+    ws_ = tmp_path / "pmlc-runs" / "2024-03-20-pump-fire" / "workspace"
+    run("classify", str(ws_))
+    outd = ws_.parent / "outputs"
+    src = outd / "investigator-coach.json"
+    src.write_text((FIX / "investigator-coach.json").read_text(encoding="utf-8"), encoding="utf-8")
+    run("pack", str(ws_), str(src))
+    run("pack", str(ws_), str(src))                       # re-running overwrites cleanly
+    t = (outd / "investigator-coach.html").read_text(encoding="utf-8")
+    assert "run 2024-03-20-pump-fire" in t
+    assert (outd / "investigator-coach.md").read_text(encoding="utf-8") == (FIX / "investigator-coach.md").read_text(encoding="utf-8")
+    assert list(json.loads((outd / "follow-up.json").read_text(encoding="utf-8"))) == ["FND-0002", "FND-0003"]
+
+
+def test_pack_cli_refuses_a_failing_pack(ws, tmp_path):
+    bad = tmp_path / "b.json"
+    bad.write_text(json.dumps(pack_with(item("para"), status="Draft")), encoding="utf-8")
+    r = run_fail("pack", str(ws), str(bad), "--out", str(tmp_path / "o"))
+    assert "status: must contain" in r.stderr and "Nothing written." in r.stderr
+    assert not (tmp_path / "o").exists()
+
+
+def test_pack_cli_no_md(ws, tmp_path):
+    good = tmp_path / "p.json"
+    good.write_text(json.dumps(pack_with(item("para", cites=["FND-0002"]))), encoding="utf-8")
+    run("pack", str(ws), str(good), "--out", str(tmp_path / "o"), "--no-md")
+    assert (tmp_path / "o" / "test-pack.html").exists() and not (tmp_path / "o" / "test-pack.md").exists()
+
+
+def test_pack_on_minimal_workspace(ws, tmp_path):
+    lone = tmp_path / "lone"
+    lone.mkdir()
+    (lone / "findings.json").write_text((ws / "findings.json").read_text(encoding="utf-8"), encoding="utf-8")
+    good = tmp_path / "p.json"
+    good.write_text(json.dumps(pack_with(item("para", cites=["FND-0002"]))), encoding="utf-8")
+    run("pack", str(lone), str(good))
+    assert (lone / "outputs" / "test-pack.html").exists()   # default folder for a legacy workspace
