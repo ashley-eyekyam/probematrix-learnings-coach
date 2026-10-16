@@ -43,4 +43,28 @@ Each piece: three to eight learnings, each one sentence of lesson plus two to fo
 
 ## Output
 
-`<run>/outputs/dossier-<F-id>.md`, structured: title, status line, bottom line (top five learnings for this entity), S1–S14, evidence trail, footer. If the user asks for all clusters, produce one dossier per cluster, largest first, and a one-page index.
+Write the pack `<run>/outputs/dossier-<F-id>.json` (schema: `learnings-coach/references/pack-schema.md`; `pack` = `dossier-<F-id>`, e.g. `dossier-F02` or `dossier-F09b`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/dossier-<F-id>.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/dossier-<F-id>.json         # -> dossier-<F-id>.html (primary) and .md
+```
+
+The bottom line holds the top five learnings for this entity. Give each sub-division its own section, with `id` = `s<n>-<name>`. The engine adds the evidence trail. Sections and the kinds that fill them:
+- **S1:** a `table` of counts.
+- **S2–S5:** `learning` ×3–8 each (lesson, explanation).
+- **S6:** `para` and `learning`.
+- **S7:** `barrier` (type, state, failure_mode, hoc_tier, fix).
+- **S8:** a `timeline` with `signal`, `received_by` and `response`.
+- **S9:** `para`, with `group` = the tier.
+- **S10:** `recommendation`.
+- **S11:** a `table` with columns Tier and Competence.
+- **S12:** a `table` with columns Learning, Reach and Reason.
+- **S13:** `para`, only when there is a comparator report.
+- **S14:** a `table` with columns Learning and Format.
+
+Set `"scope": {"entities": ["<F-id>"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. For all clusters, write one dossier per cluster, largest first, plus a pack `dossier-index` with one `table` (Cluster, Findings, Top learning, File).
+
+```json
+{"kind": "learning", "lesson": "Supervisors had no checklist to refuse a restart against.", "explanation": "…", "cites": ["FND-…"]}
+```
