@@ -178,3 +178,29 @@ def test_check_pack_cli(ws, tmp_path):
     assert "(json): invalid JSON at line 1" in r.stderr
     r = run_fail("check-pack", str(ws), str(tmp_path / "missing.json"))
     assert "not found" in r.stderr
+
+
+G_NODES = [{"id": "a", "label": "Seal bought locally"}, {"id": "b", "label": "No return-to-service check"},
+           {"id": "c", "label": "Pump restarted untested"}, {"id": "d", "label": "Leak & fire"}]
+G_EDGES = [{"from": "a", "to": "b"}, {"from": "b", "to": "c"}, {"from": "a", "to": "c", "label": "enabled"},
+           {"from": "c", "to": "d"}, {"from": "d", "to": "a", "label": "feedback"}]
+
+
+def test_layout_graph_is_deterministic_and_layered():
+    g1 = pp.layout_graph(G_NODES, G_EDGES, uid="g1")
+    assert g1 == pp.layout_graph(copy.deepcopy(G_NODES), copy.deepcopy(G_EDGES), uid="g1")
+    assert g1["omitted"] == 0 and g1["shown"] == 4 and g1["svg"].startswith('<svg class="graph"')
+    xs = [int(m) for m in re.findall(r'transform="translate\((\d+),', g1["svg"])]
+    assert xs == sorted(xs) and len(set(xs)) == 4            # a, b, c, d sit in four successive layers
+    assert 'class="edge back"' in g1["svg"]                  # d -> a closes a cycle
+    assert "Leak &amp; fire" in g1["svg"] and "Leak & fire" not in g1["svg"]
+    assert 'marker-end="url(#arr-g1)"' in g1["svg"] and 'id="arr-g1"' in g1["svg"]
+    assert "http" not in g1["svg"]
+
+
+def test_layout_graph_caps_nodes_and_ignores_self_loops():
+    nodes = [{"id": f"n{i}", "label": f"Node {i}"} for i in range(61)]
+    edges = [{"from": "n0", "to": f"n{i}"} for i in range(1, 60)]          # n60 has no links
+    g = pp.layout_graph(nodes, edges, uid="big")
+    assert g["omitted"] == 1 and g["shown"] == 60 and "Node 60<" not in g["svg"]
+    assert pp.layout_graph([{"id": "x", "label": "X"}], [{"from": "x", "to": "x"}], uid="s")["shown"] == 1
