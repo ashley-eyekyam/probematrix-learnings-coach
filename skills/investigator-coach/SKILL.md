@@ -45,4 +45,4 @@ Sections → kinds:
 | 4 Method lessons | `para` |
 | 5 Training use | `scenario` |
 
-`pack` writes `follow-up.json` from the follow-up table (one entry per finding), ready to paste back into the investigation. Use `data_quality` for export problems and `exclusions` for findings left out on purpose.
+`pack` writes `follow-up.json` from the follow-up table (one entry per finding), ready to paste back into the investigation. Use `data_quality` for export problems and `exclusions` for findings left out on purpose. When one finding in a shared row needs its own note, add `finding_notes` (`{"FND-…": "note"}`) to the table.

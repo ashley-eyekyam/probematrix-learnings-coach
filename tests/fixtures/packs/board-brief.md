@@ -4,6 +4,8 @@
 
 **Audience:** Board and its safety committee
 
+**Incident:** Synthetic pump fire · 2024-03-20
+
 ## Bottom line
 
 - Seals were bought without a specification for two years before the fire. [FND-0003; EVD-0003]

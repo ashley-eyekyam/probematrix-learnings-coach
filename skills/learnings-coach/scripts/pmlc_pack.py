@@ -17,7 +17,7 @@ import pmlc as core
 
 SCHEMA_VERSION = 1
 STATUS_PHRASE = "Learning purposes: not a statutory document"
-PACK_NAME_RX = re.compile(r"^(?:[a-z0-9]+(?:-[a-z0-9]+)*|dossier-F\d+)$")
+PACK_NAME_RX = re.compile(r"^(?:[a-z0-9]+(?:-[a-z0-9]+)*|dossier-F\d+[a-z]?)$")
 SLUG_RX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 ID_RX = re.compile(r"\b(FND-[0-9A-Za-z]{4,}|EVD-\d{3,})\b")
 DATE_RX = re.compile(r"^\d{4}(?:-\d{2}(?:-\d{2})?)?$")
@@ -34,7 +34,7 @@ KINDS = {
     "card": {"req": ["title", "what_happened", "warning_signs", "good_looks_like"], "opt": ["why_made_sense", "discussion"],
              "cite": True},
     "scenario": {"req": ["situation", "prompts"], "opt": []},
-    "table": {"req": ["columns", "rows"], "opt": ["row_cites"]},
+    "table": {"req": ["columns", "rows"], "opt": ["row_cites", "row_supporting_cites", "finding_notes"]},
     "test_point": {"req": ["requirement", "sample", "conformity_evidence"], "opt": ["red_flags"], "cite": True},
     "module": {"req": ["title", "objective", "content"], "opt": ["audience", "duration", "assessment"]},
     "barrier": {"req": ["barrier", "failure_mode", "hoc_tier"], "opt": ["type", "fix"], "cite": True},
@@ -42,7 +42,8 @@ KINDS = {
     "graph": {"req": ["nodes", "edges"], "opt": []},
 }
 STR_LIST_FIELDS = {"options", "warning_signs", "discussion", "prompts", "columns", "content", "assessment", "red_flags"}
-OBJ_LIST_FIELDS = {"rows", "row_cites", "events", "nodes", "edges"}
+OBJ_LIST_FIELDS = {"rows", "row_cites", "row_supporting_cites", "events", "nodes", "edges"}
+MAP_FIELDS = {"finding_notes"}
 BOOL_FIELDS = {"hold_point"}
 FOLLOW_UP_COLUMNS = ["Finding", "Evidence to collect", "Key questions", "Suggested interviews", "Causal hypothesis"]
 FOLLOW_UP_KEYS = ["evidence_to_collect", "key_questions", "suggested_interviews", "causal_hypothesis"]
@@ -95,7 +96,7 @@ INLINE_FIELDS = {
     "module": ["objective", "content", "assessment"], "barrier": ["barrier", "failure_mode", "fix"],
     "timeline": [], "graph": [],
 }
-CITE_FIELDS = ["cites", "row_cites", "supporting_cites"]
+CITE_FIELDS = ["cites", "row_cites", "row_supporting_cites", "supporting_cites"]
 STRENGTHS = ("direct", "corroborated", "inferred")
 GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group")
 
@@ -167,6 +168,8 @@ def _check_field(v, f, path, bad):
     elif f in OBJ_LIST_FIELDS:
         if not isinstance(v, list) or not v:
             bad(path, "must be a non-empty list")
+    elif f in MAP_FIELDS:
+        return                                   # shape checked by the kind's own check (_check_table)
     elif not _text(v):
         bad(path, "must be non-empty text")
 
@@ -182,15 +185,37 @@ def _check_table(it, ip, bad):
         for c, cell in enumerate(row):
             if isinstance(cell, bool) or not isinstance(cell, (str, int, float)):
                 bad(f"{ip}.rows[{r}][{c}]", "must be text or a number")
-    rc = it.get("row_cites")
-    if rc is None:
+    for f in ("row_cites", "row_supporting_cites"):
+        rc = it.get(f)
+        if rc is None:
+            continue
+        if not isinstance(rc, list) or len(rc) != len(rows):
+            bad(f"{ip}.{f}", "must hold one list of IDs per row")
+            continue
+        for r, c in enumerate(rc):
+            if not _id_list(c):
+                bad(f"{ip}.{f}[{r}]", "must be a list of Finding or Evidence IDs")
+    _check_finding_notes(it, rows, ip, bad)
+
+
+def _check_finding_notes(it, rows, ip, bad):
+    """investigator-coach: an optional note per finding on the follow-up table, for findings that share a row."""
+    notes = it.get("finding_notes")
+    if notes is None:
         return
-    if not isinstance(rc, list) or len(rc) != len(rows):
-        bad(f"{ip}.row_cites", "must hold one list of IDs per row")
+    if it.get("id") != "follow-up":
+        bad(f"{ip}.finding_notes", "only on the investigator-coach follow-up table")
         return
-    for r, c in enumerate(rc):
-        if not _id_list(c):
-            bad(f"{ip}.row_cites[{r}]", "must be a list of Finding or Evidence IDs")
+    if not isinstance(notes, dict) or not notes:
+        bad(f"{ip}.finding_notes", "must be an object of Finding ID to note")
+        return
+    firsts = {x for row in rows if isinstance(row, list) and row and isinstance(row[0], str)
+              for x in re.split(r"[\s,;]+", row[0]) if x}
+    for x, v in notes.items():
+        if x not in firsts:
+            bad(f"{ip}.finding_notes.{x}", "not a Finding ID in this table's first column")
+        elif not _text(v):
+            bad(f"{ip}.finding_notes.{x}", "must be non-empty text")
 
 
 def _check_timeline(it, ip, bad):
@@ -296,6 +321,11 @@ def _check_scope(scope, w, bad):
         bad("scope.entities", "a list of entity IDs like F02")
     if mr is not None and (isinstance(mr, bool) or not isinstance(mr, int)):
         bad("scope.min_rating", "a whole number or null")
+    if "clusters" in w and isinstance(en, list):
+        known = w["clusters"].get("taxonomy", {}).get("entities", {})
+        for x in en:
+            if isinstance(x, str) and x not in known:
+                bad("scope.entities", f"{x} is not an entity in clusters.json")
     if (t or en) and "clusters" not in w:
         bad("scope", "tiers and entities need clusters.json. Run: pmlc.py classify <ws>")
 
@@ -645,6 +675,15 @@ def _md_cell(v):
     return str(v).replace("|", "\\|").replace("\n", " ")
 
 
+def _cites_cell(cites, sup) -> str:
+    """The Markdown Cites cell of one table row: key IDs, then '+N supporting'."""
+    s = "; ".join(cites)
+    if not sup:
+        return s
+    more = f"+{len(sup)} supporting"
+    return f"{s} ({more})" if s else more
+
+
 def _md_item(it) -> str:
     k, c, g = it["kind"], _c(it.get("cites")), it.get
     if k == "para":
@@ -679,13 +718,17 @@ def _md_item(it) -> str:
     if k == "scenario":
         return f"**Scenario:** {it['situation']}{c}\n\n" + _numbered(it["prompts"])
     if k == "table":
-        cols, rows, rc = list(it["columns"]), [list(r) for r in it["rows"]], g("row_cites")
-        if rc:
+        cols, rows = list(it["columns"]), [list(r) for r in it["rows"]]
+        rc, rs = g("row_cites"), g("row_supporting_cites")
+        if rc or rs:
             cols.append("Cites")
-            rows = [r + ["; ".join(x)] for r, x in zip(rows, rc)]
+            rows = [r + [_cites_cell(rc[i] if rc else [], rs[i] if rs else [])] for i, r in enumerate(rows)]
         out = ["| " + " | ".join(_md_cell(x) for x in cols) + " |", "|" + "---|" * len(cols)]
         out += ["| " + " | ".join(_md_cell(x) for x in r) + " |" for r in rows]
-        return "\n".join(out) + (f"\n\nSources:{c}" if c else "")
+        md = "\n".join(out) + (f"\n\nSources:{c}" if c else "")
+        if g("finding_notes"):
+            md += "\n\nNotes per finding:\n" + "\n".join(f"- {x}: {v}" for x, v in it["finding_notes"].items())
+        return md
     if k == "test_point":
         return (f"**Test point:** {it['requirement']}{c}\n"
                 + _lines([("What to sample", it["sample"]), ("Evidence of conformity", it["conformity_evidence"]),
@@ -727,6 +770,10 @@ def render_pack_md(pack, w) -> str:
     """The pack as Markdown: generated, never hand-written, so it always agrees with the HTML."""
     cov = coverage(w, pack)
     out = [f"# {pack['title']}", f"*{pack['status']}*", f"**Audience:** {pack['audience']}"]
+    fields, inc = w.get("incident", {}).get("fields", {}), pack.get("incident") or {}
+    shown = [str(x) for x in (inc.get("title") or fields.get("Incident Title"), inc.get("date") or fields.get("Date")) if x]
+    if shown:
+        out.append("**Incident:** " + " · ".join(shown))
     if pack.get("data_quality"):
         out += ["## Data quality and limits",
                 "\n".join(f"- {n['text']}{_c(n.get('cites'))}" for n in pack["data_quality"])]
@@ -748,6 +795,9 @@ def render_pack_md(pack, w) -> str:
            for i, b in enumerate(pack["bottom_line"], 1) if b.get("supporting_cites")]
     sup += [f"- {s['heading']} › {n}: {'; '.join(it['supporting_cites'])}"
             for s in pack["sections"] for n, it in enumerate(s["items"], 1) if it.get("supporting_cites")]
+    sup += [f"- {s['heading']} › {n}, row {r}: {'; '.join(x)}"
+            for s in pack["sections"] for n, it in enumerate(s["items"], 1)
+            for r, x in enumerate(it.get("row_supporting_cites") or [], 1) if x]
     if sup:
         out += ["## Supporting citations", "\n".join(sup)]
     tail = ["---", f"This pack cites {cov['cited']} of {cov['relevant']} relevant findings."]
@@ -849,15 +899,23 @@ def _html_item(it, graphs) -> str:
         body = (f'<p><b>Scenario.</b> {_inline(it["situation"])}</p><details><summary>Discussion prompts</summary>'
                 + _list(it["prompts"], "ol") + f"</details>{c}")
     elif k == "table":
-        rc = g("row_cites")
-        cols = list(it["columns"]) + (["Cites"] if rc else [])
+        rc, rs = g("row_cites"), g("row_supporting_cites")
+        cols = list(it["columns"]) + (["Cites"] if rc or rs else [])
         head = "".join(f'<th scope="col">{_h(x)}</th>' for x in cols)
         rows = []
         for r, row in enumerate(it["rows"]):
-            cells = "".join(f"<td>{_inline(x)}</td>" for x in row) + (f'<td class="cites-cell">{_chips(rc[r])}</td>' if rc else "")
-            rows.append(f"<tr>{cells}</tr>")
+            cites = ""
+            if rc or rs:
+                sup = rs[r] if rs else []
+                more = (f'<details class="more"><summary>+{len(sup)} supporting</summary>{_chips(sup)}</details>'
+                        if sup else "")
+                cites = f'<td class="cites-cell">{_chips(rc[r]) if rc else ""}{more}</td>'
+            rows.append("<tr>" + "".join(f"<td>{_inline(x)}</td>" for x in row) + cites + "</tr>")
+        notes = g("finding_notes")
+        note_html = ('<span class="label">Notes per finding</span><ul class="notes">'
+                     + "".join(f"<li>{_chip(x)} {_h(v)}</li>" for x, v in notes.items()) + "</ul>") if notes else ""
         body = (f'<div class="tablewrap" tabindex="0"><table><thead><tr>{head}</tr></thead>'
-                f'<tbody>{"".join(rows)}</tbody></table></div>{c}')
+                f'<tbody>{"".join(rows)}</tbody></table></div>{note_html}{c}')
     elif k == "test_point":
         flags = ('<span class="label">Red flags seen in this investigation</span>' + _list(g("red_flags"))
                  if g("red_flags") else "")
@@ -1007,16 +1065,17 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 
 def follow_up(pack) -> dict:
     """investigator-coach: finding ID -> the export's four follow-up fields, read from the table with id follow-up.
-    A row may name several findings (one row per condition); each gets the row's fields."""
+    A row may name several findings (one row per condition); each gets the row's fields, plus its own note if
+    finding_notes gives one."""
     for s in pack["sections"]:
         for it in s["items"]:
             if it.get("id") == "follow-up" and it.get("kind") == "table":
-                out = {}
+                out, notes = {}, it.get("finding_notes") or {}
                 for row in it["rows"]:
                     fields = dict(zip(FOLLOW_UP_KEYS, (str(x) for x in row[1:5])))
                     for x in re.split(r"[\s,;]+", str(row[0])):
                         if x:
-                            out[x] = dict(fields)
+                            out[x] = dict(fields, **({"note": notes[x]} if x in notes else {}))
                 return out
     return {}
 

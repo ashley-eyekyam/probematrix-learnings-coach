@@ -4,6 +4,8 @@
 
 **Audience:** T2 first-line supervision
 
+**Incident:** Synthetic pump fire · 2024-03-20
+
 ## Bottom line
 
 - Do not accept a disturbed joint back into service without its leak-test record. [FND-0001; FND-0002]

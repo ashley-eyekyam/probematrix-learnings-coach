@@ -571,3 +571,83 @@ def test_follow_up_rows_may_group_findings(w):
 def test_coverage_warns_only_under_a_quarter(w):
     p = pack_with(item("para"), scope={"levels": [1, 2, 3, 4]})          # 4 relevant, bottom line cites 1
     assert not any(x.startswith("coverage") for x in pp.check_pack(p, w).warnings)
+
+
+# ---- waves 2/3, task 1: pilot friction fixes
+
+def test_markdown_shows_the_incident(w):
+    md = pp.render_pack_md(pack_with(item("para", cites=["FND-0002"])), w)
+    assert "**Audience:** Testers\n\n**Incident:** Synthetic pump fire · 2024-03-20\n\n" in md
+    p = pack_with(item("para", cites=["FND-0002"]), incident={"title": "Corrected pump fire", "date": "2024-03-19"})
+    md = pp.render_pack_md(p, w)
+    assert "**Incident:** Corrected pump fire · 2024-03-19" in md and "2024-03-20" not in md
+
+
+def test_table_rows_may_carry_supporting_cites(w):
+    t_ = item("table", columns=["Finding"], rows=[["Spares"], ["Checklist"]], row_cites=[["FND-0003"], ["FND-0002"]],
+              row_supporting_cites=[["EVD-0003", "FND-0001"], []])
+    p = pack_with(t_)
+    r = pp.check_pack(p, w)
+    assert r.problems == [] and not any("unknown field" in x for x in r.warnings)
+    assert "FND-0001" in pp.cited_ids(p)[0]
+    md = pp.render_pack_md(p, w)
+    assert "| Spares | FND-0003 (+2 supporting) |" in md and "| Checklist | FND-0002 |" in md
+    assert "- Section one › 1, row 1: EVD-0003; FND-0001" in md
+    assert pp.render_pack_html(w, p, "r", "d").count("<summary>+2 supporting</summary>") == 1
+    only = pack_with(item("table", columns=["a"], rows=[["x"]], row_supporting_cites=[["FND-0002"]]))
+    assert problems(only, w) == [] and "| a | Cites |" in pp.render_pack_md(only, w)
+    assert "| x | +1 supporting |" in pp.render_pack_md(only, w)
+    got = problems(pack_with(item("table", columns=["a"], rows=[["x"]], row_supporting_cites=[["FND-0002"], []])), w)
+    assert any(x.startswith("sections[0].items[0].row_supporting_cites: must hold one list of IDs per row") for x in got)
+
+
+def test_follow_up_notes_per_finding(w):
+    rows = [["FND-0002, FND-0003", "a", "b", "c", "d"]]
+    notes = {"FND-0003": "Ask who approved local buying first."}
+    p = pack_with(item("table", id="follow-up", columns=FU_COLS, rows=rows, finding_notes=notes), pack="investigator-coach")
+    r = pp.check_pack(p, w)
+    assert r.problems == [] and not any("unknown field" in x for x in r.warnings)
+    fu = pp.follow_up(p)
+    assert fu["FND-0003"]["note"] == notes["FND-0003"] and "note" not in fu["FND-0002"]
+    assert "Notes per finding:\n- FND-0003: Ask who approved local buying first." in pp.render_pack_md(p, w)
+    assert '<ul class="notes"><li>' in pp.render_pack_html(w, p, "r", "d")
+
+
+@pytest.mark.parametrize("notes, expected", [
+    ("x", "finding_notes: must be an object"),
+    ({"FND-0001": "not in a row"}, "finding_notes.FND-0001: not a Finding ID in this table's first column"),
+    ({"FND-0002": ""}, "finding_notes.FND-0002: must be non-empty text"),
+])
+def test_follow_up_notes_validation(w, notes, expected):                              # review focus 5
+    p = pack_with(item("table", id="follow-up", columns=FU_COLS, rows=[["FND-0002", "a", "b", "c", "d"]],
+                       finding_notes=notes), pack="investigator-coach")
+    got = problems(p, w)
+    assert any(x.startswith("sections[0].items[0]." + expected) for x in got), got
+
+
+def test_finding_notes_only_on_the_follow_up_table(w):
+    got = problems(pack_with(item("table", finding_notes={"FND-0002": "x"})), w)
+    assert any(x.startswith("sections[0].items[0].finding_notes: only on the investigator-coach follow-up table")
+               for x in got), got
+
+
+def test_dossier_pack_name_for_a_lettered_entity(w):                                  # review focus 1
+    assert problems(pack_with(item("para"), pack="dossier-F09b"), w) == []
+    assert any(x.startswith("pack: must be lowercase") for x in problems(pack_with(item("para"), pack="dossier-F09B"), w))
+
+
+def test_scope_entities_must_exist(w):                                                # review focus 2
+    assert "scope.entities: F2 is not an entity in clusters.json" in problems(pack_with(item("para"), scope={"entities": ["F2"]}), w)
+    assert problems(pack_with(item("para"), scope={"entities": ["F09b"]}), w) == []
+
+
+def test_summary_boxes_fit_their_text():
+    css = (pmlc.DASHBOARD_ASSETS / "pack.css").read_text(encoding="utf-8")
+    assert ".bottom,.dq{width:fit-content;max-width:100%;box-sizing:border-box}" in css
+
+
+def test_schema_reference_covers_the_friction_fixes():
+    t = (ROOT / "skills" / "learnings-coach" / "references" / "pack-schema.md").read_text(encoding="utf-8")
+    assert "rates the evidence for the condition the item describes, not how well a proposed fix will work" in t
+    for f in ("row_supporting_cites", "finding_notes", "dossier-F09b", "**Incident:**"):
+        assert f in t, f
