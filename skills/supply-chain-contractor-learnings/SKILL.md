@@ -27,4 +27,23 @@ PMLC select <ws> --text "procure|stores|spare|OEM|vendor|supplier|local|substitu
 
 ## Output
 
-`<run>/outputs/supply-chain-contractor-learnings.md`. If the export has few supply-chain findings, say so and keep the pack short.
+Write the pack `<run>/outputs/supply-chain-contractor-learnings.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/supply-chain-contractor-learnings.json   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/supply-chain-contractor-learnings.json         # -> supply-chain-contractor-learnings.html (primary) and .md
+```
+
+Sections → kinds:
+1. A `timeline` with one event per decision point: `received_by` = the role that took the decision, and `response` = "No record" where there is none.
+2. `learning` items with `group` = Procurement and stores / Engineering at the supply interface / Vendors and OEMs / Contractors and outsourced roles (only the groups the evidence supports).
+3. `recommendation` (change, hoc_tier, indicator).
+
+Set `"scope": {"entities": ["F06", "F14"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+
+```json
+{"kind": "timeline", "events": [{"date": "YYYY-MM", "text": "…", "received_by": "Stores/procurement officer",
+ "response": "No technical approval recorded", "cites": ["FND-…"]}]}
+```
+
+If the export has few supply-chain findings, say so in a `para` and keep the pack short.
