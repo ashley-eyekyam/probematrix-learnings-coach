@@ -1,0 +1,25 @@
+{"pack": "training-designer", "schema": 1, "title": "Training Designer: Synthetic pump fire, 2024",
+ "audience": "Training and L&D", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "Fitters need the leak-test hold point; the missing checklist is a system fix, not a training need.",
+                  "cites": ["FND-0001", "FND-0002"]}],
+ "scope": {"levels": [1, 2]},
+ "sections": [
+  {"id": "needs-map", "heading": "Training-needs map", "items": [
+   {"kind": "table", "columns": ["Role group", "Competence", "Need"],
+    "rows": [["Maintenance fitters (F02, T1)", "Return-to-service testing", "Competence gap"],
+             ["Maintenance supervision (F02, T2)", "Return-to-service checklist", "System problem: send to manager-coach"]],
+    "row_cites": [["FND-0001"], ["FND-0002"]]}]},
+  {"id": "modules", "heading": "Modules", "items": [
+   {"kind": "module", "title": "Return to service", "objective": "Carry out and record a leak test before restart",
+    "audience": "Fitters", "duration": "45 min", "content": ["The case, roles only [FND-0001]", "Practice on the test rig"],
+    "assessment": ["Observed test on the rig"], "cites": ["FND-0001"]}]},
+  {"id": "scenarios", "heading": "Scenario exercises", "items": [
+   {"kind": "scenario", "situation": "The pump is back from a seal change and the test rig is unavailable.",
+    "prompts": ["What do you do?", "Facilitator: listen for a refusal to restart"], "cites": ["FND-0001"]}]},
+  {"id": "assessment", "heading": "Assessment", "items": [
+   {"kind": "question", "question": "At which HFACS level is the missing checklist?", "why": "Answer: L3 supervision.",
+    "good_evidence": "Names supervision, not the fitter", "cites": ["FND-0002"]}]},
+  {"id": "cascade", "heading": "Cascade plan", "items": [
+   {"kind": "table", "columns": ["Who", "Trains whom", "Materials", "Transfer measure at 90 days"],
+    "rows": [["Maintenance trainer", "All fitters", "The module and the scenario", "% of restarts with a test record"]],
+    "row_cites": [["FND-0001"]]}]}]}
