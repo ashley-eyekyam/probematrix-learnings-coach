@@ -29,6 +29,7 @@ MIN = {
     "barrier": {"barrier": "b", "failure_mode": "f", "hoc_tier": "administrative", "cites": ["FND-0002"]},
     "timeline": {"events": [{"date": "2024-03-12", "text": "seal change"}]},
     "graph": {"nodes": [{"id": "a", "label": "A"}, {"id": "b", "label": "B"}], "edges": [{"from": "a", "to": "b"}]},
+    "learning": {"lesson": "l", "cites": ["FND-0002"]},
 }
 
 
@@ -56,7 +57,7 @@ def problems(p, w):
     return pp.check_pack(p, w).problems
 
 
-def test_fourteen_kinds():
+def test_fifteen_kinds():
     assert sorted(pp.KINDS) == sorted(MIN)
 
 
@@ -651,3 +652,67 @@ def test_schema_reference_covers_the_friction_fixes():
     assert "rates the evidence for the condition the item describes, not how well a proposed fix will work" in t
     for f in ("row_supporting_cites", "finding_notes", "dossier-F09b", "**Incident:**"):
         assert f in t, f
+
+
+# ---- waves 2/3, task 2: learning kind, barrier and timeline fields
+
+def test_learning_item(w):
+    it = item("learning", lesson="Test what you disturb.", explanation="The seal was changed and not tested [EVD-0001].",
+              owner="Maintenance supervision", cites=["FND-0001"])
+    p = pack_with(it)
+    assert pp.check_pack(p, w).problems == []
+    assert "EVD-0001" in pp.cited_ids(p)[1]
+    md = pp.render_pack_md(p, w)
+    assert ("**Learning:** Test what you disturb. [FND-0001]\n\nThe seal was changed and not tested [EVD-0001]."
+            "\n\n- Owner: Maintenance supervision") in md
+    h = pp.render_pack_html(w, p, "r", "d")
+    assert 'class="item k-learning"' in h and "<b>Test what you disturb.</b>" in h
+    assert '<span class="badge">Owner: Maintenance supervision</span>' in h and 'data-id="EVD-0001"' in h
+
+
+def test_barrier_owner_state_and_indicator(w):
+    p = pack_with(item("barrier", owner="Maintenance (T2)", state="degraded", indicator="% of restarts with a test record"))
+    r = pp.check_pack(p, w)
+    assert r.problems == [] and not any("unknown field" in x for x in r.warnings)
+    md = pp.render_pack_md(p, w)
+    assert "- State on the day: degraded\n- Owner: Maintenance (T2)\n- Control tier: administrative" in md
+    assert "- Leading indicator: % of restarts with a test record" in md
+    h = pp.render_pack_html(w, p, "r", "d")
+    assert "State: degraded" in h and "Owner: Maintenance (T2)" in h and ">Leading indicator<" in h
+    got = problems(pack_with(item("barrier", state="broken")), w)
+    assert any(x.startswith("sections[0].items[0].state: must be one of absent, degraded, defeated, worked partly, worked")
+               for x in got), got
+
+
+def test_timeline_times_and_signal_handling(w):
+    ev = [{"date": "2024-03-20", "time": "14:20", "text": "Isolation valve closed", "cites": ["FND-0004"]},
+          {"date": "2024-03-20", "time": "14:05", "text": "Gas alarm on the display", "cites": ["FND-0004"]},
+          {"date": "2022-03", "text": "Local seal purchases begin", "signal": True, "received_by": "Stores (T1)",
+           "response": "None recorded", "cites": ["FND-0003"]}]
+    p = pack_with(item("timeline", events=ev))
+    assert pp.check_pack(p, w).problems == []
+    md = pp.render_pack_md(p, w)
+    assert ("- 2022-03: Local seal purchases begin *(weak signal)* [FND-0003]\n  - Received by: Stores (T1)\n"
+            "  - Response: None recorded\n- 2024-03-20 14:05: Gas alarm on the display [FND-0004]\n"
+            "- 2024-03-20 14:20: Isolation valve closed [FND-0004]") in md
+    h = pp.render_pack_html(w, p, "r", "d")
+    assert "<time>2024-03-20 14:05</time>" in h and "Received by: Stores (T1)" in h and "Response: None recorded" in h
+    assert h.index("14:05</time>") < h.index("14:20</time>")
+
+
+def test_same_day_events_without_times_keep_their_order(w):                          # review focus 3
+    ev = [{"date": "2024-03-20", "text": "Alarm"}, {"date": "2024-03-20", "text": "Phone call"},
+          {"date": "2024-03-20", "text": "Isolation"}]
+    md = pp.render_pack_md(pack_with(item("timeline", events=ev)), w)
+    assert md.index("Alarm") < md.index("Phone call") < md.index("Isolation")
+
+
+@pytest.mark.parametrize("extra, expected", [
+    ({"time": "2pm"}, "events[0].time: must be HH:MM"), ({"time": "24:00"}, "events[0].time: must be HH:MM"),
+    ({"time": "14:05\n"}, "events[0].time: must be HH:MM"),
+    ({"received_by": ""}, "events[0].received_by: must be non-empty text"),
+    ({"response": 3}, "events[0].response: must be non-empty text")])
+def test_timeline_event_extras_validation(w, extra, expected):
+    ev = dict({"date": "2024-03-20", "text": "x"}, **extra)
+    got = problems(pack_with(item("timeline", events=[ev])), w)
+    assert any(x.startswith("sections[0].items[0]." + expected) for x in got), got

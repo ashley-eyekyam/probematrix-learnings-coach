@@ -37,9 +37,11 @@ KINDS = {
     "table": {"req": ["columns", "rows"], "opt": ["row_cites", "row_supporting_cites", "finding_notes"]},
     "test_point": {"req": ["requirement", "sample", "conformity_evidence"], "opt": ["red_flags"], "cite": True},
     "module": {"req": ["title", "objective", "content"], "opt": ["audience", "duration", "assessment"]},
-    "barrier": {"req": ["barrier", "failure_mode", "hoc_tier"], "opt": ["type", "fix"], "cite": True},
+    "barrier": {"req": ["barrier", "failure_mode", "hoc_tier"], "opt": ["type", "fix", "owner", "state", "indicator"],
+                "cite": True},
     "timeline": {"req": ["events"], "opt": []},
     "graph": {"req": ["nodes", "edges"], "opt": []},
+    "learning": {"req": ["lesson"], "opt": ["explanation", "owner"], "cite": True},
 }
 STR_LIST_FIELDS = {"options", "warning_signs", "discussion", "prompts", "columns", "content", "assessment", "red_flags"}
 OBJ_LIST_FIELDS = {"rows", "row_cites", "row_supporting_cites", "events", "nodes", "edges"}
@@ -93,11 +95,13 @@ INLINE_FIELDS = {
     "card": ["what_happened", "why_made_sense", "warning_signs", "good_looks_like", "discussion"],
     "scenario": ["situation", "prompts"], "table": ["rows"],
     "test_point": ["requirement", "sample", "conformity_evidence", "red_flags"],
-    "module": ["objective", "content", "assessment"], "barrier": ["barrier", "failure_mode", "fix"],
-    "timeline": [], "graph": [],
+    "module": ["objective", "content", "assessment"], "barrier": ["barrier", "failure_mode", "fix", "indicator"],
+    "timeline": [], "graph": [], "learning": ["lesson", "explanation"],
 }
 CITE_FIELDS = ["cites", "row_cites", "row_supporting_cites", "supporting_cites"]
 STRENGTHS = ("direct", "corroborated", "inferred")
+BARRIER_STATES = ("absent", "degraded", "defeated", "worked partly", "worked")
+TIME_RX = re.compile(r"(?:[01]\d|2[0-3]):[0-5]\d")          # used with fullmatch: "14:05", never "14:05\n"
 GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group")
 
 
@@ -233,8 +237,18 @@ def _check_timeline(it, ip, bad):
             bad(f"{ep}.text", "required")
         if "signal" in ev and not isinstance(ev["signal"], bool):
             bad(f"{ep}.signal", "must be true or false")
+        if "time" in ev and not (isinstance(ev["time"], str) and TIME_RX.fullmatch(ev["time"])):
+            bad(f"{ep}.time", "must be HH:MM (24-hour)")
+        for f in ("received_by", "response"):
+            if f in ev and not _text(ev[f]):
+                bad(f"{ep}.{f}", "must be non-empty text")
         if "cites" in ev and not _id_list(ev["cites"]):
             bad(f"{ep}.cites", "must be a list of Finding or Evidence IDs")
+
+
+def _check_barrier(it, ip, bad):
+    if "state" in it and it["state"] not in BARRIER_STATES:
+        bad(f"{ip}.state", f"must be one of {', '.join(BARRIER_STATES)}")
 
 
 def _check_graph(it, ip, bad):
@@ -298,7 +312,8 @@ def _check_item(it, ip, bad, warn):
             warn(f"{ip}.{f}", f"unknown field for {kind} (ignored)")
     if _text(it.get("hoc_tier")) and core.norm_hoc(it["hoc_tier"]) == "unclassified":
         bad(f"{ip}.hoc_tier", f"must name a hierarchy-of-controls tier: {', '.join(core.HOC_TIERS)}")
-    {"table": _check_table, "timeline": _check_timeline, "graph": _check_graph}.get(kind, lambda *x: None)(it, ip, bad)
+    {"table": _check_table, "timeline": _check_timeline, "graph": _check_graph,
+     "barrier": _check_barrier}.get(kind, lambda *x: None)(it, ip, bad)
     if not spec.get("cite") and not any(True for _ in _walk_ids(_citable_item(it), "")):
         warn(ip, "no Finding or Evidence ID cited")
 
@@ -656,7 +671,8 @@ def coverage(w, pack) -> dict:
 
 
 def sorted_events(events) -> list:
-    return sorted(events, key=lambda e: e["date"])
+    """By date, then time; events with the same date and no time keep the author's order (sorted is stable)."""
+    return sorted(events, key=lambda e: (e["date"], e.get("time") or ""))
 
 
 def _c(cites):
@@ -740,16 +756,26 @@ def _md_item(it) -> str:
         return out + ("\n\n**Assessment:**\n" + _numbered(it["assessment"]) if g("assessment") else "")
     if k == "barrier":
         return (f"**Barrier:** {it['barrier']}{c}\n"
-                + _lines([("Failure mode", it["failure_mode"]), ("Type", g("type")),
-                          ("Control tier", core.norm_hoc(it["hoc_tier"])), ("Fix", g("fix"))]))
+                + _lines([("Failure mode", it["failure_mode"]), ("Type", g("type")), ("State on the day", g("state")),
+                          ("Owner", g("owner")), ("Control tier", core.norm_hoc(it["hoc_tier"])), ("Fix", g("fix")),
+                          ("Leading indicator", g("indicator"))]))
     if k == "timeline":
-        lines = [f"- {e['date']}: {e['text']}{' *(weak signal)*' if e.get('signal') else ''}{_c(e.get('cites'))}"
-                 for e in sorted_events(it["events"])]
+        lines = []
+        for e in sorted_events(it["events"]):
+            when = e["date"] + (f" {e['time']}" if e.get("time") else "")
+            lines.append(f"- {when}: {e['text']}{' *(weak signal)*' if e.get('signal') else ''}{_c(e.get('cites'))}")
+            lines += [f"  - {lab}: {e[f]}" for f, lab in (("received_by", "Received by"), ("response", "Response"))
+                      if e.get(f)]
         return (f"Sources:{c}\n\n" if c else "") + "\n".join(lines)
     if k == "graph":
         lab = {n["id"]: n["label"] for n in it["nodes"]}
         lines = [f"- {lab[e['from']]} → {lab[e['to']]}" + (f" ({e['label']})" if e.get("label") else "") for e in it["edges"]]
         return f"Graph: {len(it['nodes'])} nodes, {len(it['edges'])} links{c}\n\n" + "\n".join(lines)
+    if k == "learning":
+        out = f"**Learning:** {it['lesson']}{c}"
+        if g("explanation"):
+            out += f"\n\n{it['explanation']}"
+        return out + (f"\n\n- Owner: {it['owner']}" if g("owner") else "")
     raise ValueError(f"unknown kind {k!r}")
 
 
@@ -928,14 +954,17 @@ def _html_item(it, graphs) -> str:
         body = (f'<div class="card"><h3>Module: {_h(it["title"])}</h3><p>{meta}</p>' + _labelled("Objective", it["objective"])
                 + '<span class="label">Content</span>' + _list(it["content"], "ol") + assess + c + "</div>")
     elif k == "barrier":
-        meta = _hoc(it["hoc_tier"]) + _badges([("Type", g("type"))])
+        meta = _hoc(it["hoc_tier"]) + _badges([("Type", g("type")), ("State", g("state")), ("Owner", g("owner"))])
         body = (f'<p><b>{_inline(it["barrier"])}</b></p><p>{meta}</p>' + _labelled("Failure mode", it["failure_mode"])
-                + _labelled("Fix", g("fix")) + c)
+                + _labelled("Fix", g("fix")) + _labelled("Leading indicator", g("indicator")) + c)
     elif k == "timeline":
         lis = []
         for e in sorted_events(it["events"]):
             sig = '<span class="badge hold">Weak signal</span> ' if e.get("signal") else ""
-            lis.append(f'<li><time>{_h(e["date"])}</time>{sig}{_inline(e["text"])} {_chips(e.get("cites"))}</li>')
+            when = _h(e["date"] + (f" {e['time']}" if e.get("time") else ""))
+            more = "".join(f'<p class="m">{lab}: {_h(e[f])}</p>'
+                           for f, lab in (("received_by", "Received by"), ("response", "Response")) if e.get(f))
+            lis.append(f'<li><time>{when}</time>{sig}{_inline(e["text"])} {_chips(e.get("cites"))}{more}</li>')
         body = f'<ol class="timeline">{"".join(lis)}</ol>{c}'
     elif k == "graph":
         gr = graphs[it["id"]]
@@ -946,6 +975,9 @@ def _html_item(it, graphs) -> str:
                         + (f' ({_h(e["label"])})' if e.get("label") else "") + "</li>" for e in it["edges"])
         body = (f'<div class="graphwrap">{gr["svg"]}</div>{note}<details><summary>Links as text ({len(it["edges"])})'
                 f'</summary><ul>{links}</ul></details>{c}')
+    elif k == "learning":
+        body = (f'<p><b>{_inline(it["lesson"])}</b> {_badges([("Owner", g("owner"))])}</p>'
+                + (_rich(it["explanation"]) if g("explanation") else "") + c)
     else:
         raise ValueError(f"unknown kind {k!r}")
     return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}{_extras(it)}</div>'

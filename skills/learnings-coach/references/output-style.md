@@ -17,7 +17,7 @@ Skills that produce a learning pack write JSON (`pack-schema.md`) and render it 
 
 ## Reusable blocks
 
-In a pack these are the `card`, `question` and `test_point` item kinds.
+In a pack these are the `card`, `question` and `test_point` item kinds. A learning written as a one-sentence lesson with its explanation is the `learning` kind.
 
 **Learning Card** (one per learning, fits one page)
 - Title (a plain statement, not a slogan)

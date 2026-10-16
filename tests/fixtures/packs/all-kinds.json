@@ -26,4 +26,6 @@
   {"kind": "timeline", "events": [{"date": "2024-03-12", "text": "Seal changed", "cites": ["FND-0001"]},
                                   {"date": "2022-03", "text": "Local seal purchases begin", "signal": true, "cites": ["FND-0003"]}]},
   {"kind": "graph", "id": "causes", "nodes": [{"id": "a", "label": "Seal bought locally"}, {"id": "b", "label": "Pump restarted untested"}],
-   "edges": [{"from": "a", "to": "b", "label": "enabled"}], "cites": ["FND-0003"]}]}]}
+   "edges": [{"from": "a", "to": "b", "label": "enabled"}], "cites": ["FND-0003"]},
+  {"kind": "learning", "lesson": "Test what you disturb.", "explanation": "The checklist had no leak-test step [FND-0002].",
+   "owner": "Maintenance supervision", "cites": ["FND-0002"]}]}]}
