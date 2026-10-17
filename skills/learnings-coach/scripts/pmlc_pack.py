@@ -27,7 +27,7 @@ MAX_BOTTOM_LINE = 7
 KINDS = {
     "para": {"req": ["text"], "opt": []},
     "check": {"req": ["text"], "opt": ["hold_point", "when"]},
-    "question": {"req": ["question", "why"], "opt": ["good_evidence", "to"]},
+    "question": {"req": ["question", "why"], "opt": ["answer", "good_evidence", "to"]},
     "recommendation": {"req": ["change", "indicator", "hoc_tier"], "opt": ["barrier", "owner", "by_when"], "cite": True},
     "decision": {"req": ["decision"], "opt": ["options", "trade_offs", "owner", "by_when"]},
     "indicator": {"req": ["name", "measure"], "opt": ["deterioration", "owner"]},
@@ -89,7 +89,7 @@ def _walk_ids(v, path):
 # Fields rendered with citation buttons. An ID anywhere else (headings, titles, badges, column headers, graph
 # labels) is shown as plain text, so it is not a citation and does not count towards coverage.
 INLINE_FIELDS = {
-    "para": ["text"], "check": ["text"], "question": ["question", "why", "good_evidence"],
+    "para": ["text"], "check": ["text"], "question": ["question", "why", "answer", "good_evidence"],
     "recommendation": ["change", "indicator"], "decision": ["decision", "options", "trade_offs"],
     "indicator": ["name", "measure", "deterioration", "owner"],
     "card": ["what_happened", "why_made_sense", "warning_signs", "good_looks_like", "discussion"],
@@ -565,7 +565,8 @@ def _clip(s, n=LABEL_MAX):
 def layout_graph(nodes, edges, uid, max_nodes=60) -> dict:
     """Deterministic left-to-right layered drawing of a small graph as inline SVG (no library).
     Layers follow the longest path from the sources; back edges (found by depth-first search in input order)
-    are ignored for layering and drawn as dashed curves; four barycentre passes order each layer.
+    are ignored for layering and drawn as dashed curves below the nodes; a link that skips a layer arcs above them,
+    so it never lies on a chain through the layers between; four barycentre passes order each layer.
     Over max_nodes, the nodes with the most links are kept and the rest counted in 'omitted'."""
     order = [n["id"] for n in nodes]
     label = {n["id"]: n.get("label") or n["id"] for n in nodes}
@@ -628,9 +629,11 @@ def layout_graph(nodes, edges, uid, max_nodes=60) -> dict:
     ncols = (max(cols) + 1) if cols else 0
     nrows = max((len(c) for c in cols.values()), default=0)
     curved = any((u, v) in back or layer[v] <= layer[u] for u, v, _ in E)
+    skips = {(u, v) for u, v, _ in E if (u, v) not in back and layer[v] > layer[u] + 1}
+    top = CURVE if skips else 0
     width = PAD * 2 + ncols * NODE_W + max(0, ncols - 1) * GAP_X
-    height = PAD * 2 + nrows * NODE_H + max(0, nrows - 1) * GAP_Y + (CURVE if curved else 0)
-    xy = {i: (PAD + layer[i] * (NODE_W + GAP_X), PAD + pos[i] * (NODE_H + GAP_Y)) for i in order}
+    height = PAD * 2 + nrows * NODE_H + max(0, nrows - 1) * GAP_Y + (CURVE if curved else 0) + top
+    xy = {i: (PAD + layer[i] * (NODE_W + GAP_X), PAD + top + pos[i] * (NODE_H + GAP_Y)) for i in order}
     esc = html.escape
     out = [f'<svg class="graph" viewBox="0 0 {width} {height}" width="{width}" height="{height}" role="group" '
            f'aria-label="Graph of {len(order)} nodes and {len(E)} links">',
@@ -641,6 +644,9 @@ def layout_graph(nodes, edges, uid, max_nodes=60) -> dict:
         if (u, v) in back or layer[v] <= layer[u]:
             sx, sy, ex, ey = x1 + NODE_W // 2, y1 + NODE_H, x2 + NODE_W // 2, y2 + NODE_H
             d, cls = f"M{sx},{sy} C{sx},{sy + CURVE} {ex},{ey + CURVE} {ex},{ey}", "edge back"
+        elif (u, v) in skips:                         # top centre to top centre, through the room above row one
+            sx, ex = x1 + NODE_W // 2, x2 + NODE_W // 2
+            d, cls = f"M{sx},{y1} C{sx},0 {ex},0 {ex},{y2}", "edge skip"
         else:
             d, cls = f"M{x1 + NODE_W},{y1 + NODE_H // 2} L{x2},{y2 + NODE_H // 2}", "edge"
         tip = esc(label[u]) + " → " + esc(label[v]) + (": " + esc(str(lab)) if lab else "")
@@ -743,7 +749,8 @@ def _md_item(it) -> str:
         return f"- [ ] {hold}{it['text']}{when}{c}"
     if k == "question":
         return (f"**Q: {it['question']}**{c}\n"
-                + _lines([("Why it matters", it["why"]), ("Good evidence looks like", g("good_evidence")), ("Ask", g("to"))]))
+                + _lines([("Why it matters", it["why"]), ("Answer", g("answer")),
+                          ("Good evidence looks like", g("good_evidence")), ("Put to", g("to"))]))
     if k == "recommendation":
         return (f"**Recommendation:** {it['change']}{c}\n"
                 + _lines([("Control tier", core.norm_hoc(it["hoc_tier"])), ("Barrier", g("barrier")), ("Owner", g("owner")),
@@ -843,13 +850,18 @@ def render_pack_md(pack, w) -> str:
         out.append(f"## {s['heading']}")
         if s.get("intro"):
             out.append(s["intro"])
-        prev = None
+        prev, tick = None, False
         for it in s["items"]:
             g = it.get("group")
-            if g and g != prev:
+            head = bool(g and g != prev)
+            if head:
                 out.append(f"### {g}")
             prev = g
-            out.append(_md_block(it))
+            if tick and it["kind"] == "check" and not head:       # consecutive checks: one tight list
+                out[-1] += "\n" + _md_block(it)
+            else:
+                out.append(_md_block(it))
+            tick = it["kind"] == "check"
     sup = [f"- Bottom line › {i}: {'; '.join(b['supporting_cites'])}"
            for i, b in enumerate(pack["bottom_line"], 1) if b.get("supporting_cites")]
     sup += [f"- {s['heading']} › {n}: {'; '.join(it['supporting_cites'])}"
@@ -934,8 +946,9 @@ def _html_item(it, graphs) -> str:
         body = (f'<div class="check"><input type="checkbox" class="tick" id="t-{key}" data-key="{key}" '
                 f'aria-labelledby="tl-{key}"><span id="tl-{key}">{hold}{_inline(it["text"])}{when}</span></div>{c}')
     elif k == "question":
-        to = f' <span class="badge">Ask: {_h(g("to"))}</span>' if g("to") else ""
+        to = f' <span class="badge">Put to: {_h(g("to"))}</span>' if g("to") else ""
         body = (f'<p><b>{_inline(it["question"])}</b>{to}</p>' + _labelled("Why it matters", it["why"])
+                + _labelled("Answer", g("answer"))
                 + _labelled("Good evidence looks like", g("good_evidence")) + c)
     elif k == "recommendation":
         meta = _hoc(it["hoc_tier"]) + _badges([("Barrier", g("barrier")), ("Owner", g("owner")), ("By", g("by_when"))])

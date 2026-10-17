@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.4
+
+- `question` items take an optional `answer` (an answer key); `training-designer` puts its answer keys there instead of in `why`. The role a question goes to is labelled "Put to" (was "Ask").
+- Causal and other graphs: a link that skips a layer (such as L4 to L1) arcs above the nodes instead of lying on the chain through the layers between.
+- The Markdown renders consecutive checks as one tight list.
+
 ## 0.3.3
 
 - Learning packs for the eight analysis skills: `causal-map` (drawn graph from `pmlc.py causal-item`), `precursor-timeline`, `interface-learnings`, `barrier-learnings`, `learning-clusters`, `cluster-learning-dossier` (`dossier-<F-id>`), `report-comparison` and the organisation learning plan (`organisation-learning-plan`). Every skill except the router and `learnings-register` now writes a pack; all keep writing `<skill>.md` at the same path.

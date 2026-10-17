@@ -38,7 +38,7 @@ Sections → kinds:
 1. `table` with columns Role group, Competence and Need ("Competence gap" or "System problem: send to manager-coach"), plus `row_cites`.
 2. `module` ×3–6 (title, objective, audience, duration, content, assessment).
 3. `scenario` ×3, with the facilitator notes in `prompts`.
-4. `question` ×10–15: `why` = the answer key, `good_evidence` = what a good answer includes, `cites` = the finding it tests.
+4. `question` ×10–15: `why` = what the question tests, `answer` = the answer key, `good_evidence` = what a good answer includes, `cites` = the finding it tests.
 5. `table` with columns Who, Trains whom, Materials and Transfer measure at 90 days.
 
 Set `"scope": {"levels": [1, 2]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. If the user wants slides or a document, build them from this pack with the host's document tools.

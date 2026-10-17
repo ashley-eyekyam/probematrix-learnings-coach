@@ -52,7 +52,6 @@ Five minutes on the leak test: why it matters and where the record goes [FND-000
 ## Stop and ask
 
 - [ ] Stop and ask if there is no leak-test record before a restart. *(before restart)* [FND-0001]
-
 - [ ] Stop and ask if a gas alarm shows and nobody has said what to do. *(any gas alarm)* [FND-0004]
 
 ---

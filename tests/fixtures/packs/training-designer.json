@@ -17,7 +17,8 @@
    {"kind": "scenario", "situation": "The pump is back from a seal change and the test rig is unavailable.",
     "prompts": ["What do you do?", "Facilitator: listen for a refusal to restart"], "cites": ["FND-0001"]}]},
   {"id": "assessment", "heading": "Assessment", "items": [
-   {"kind": "question", "question": "At which HFACS level is the missing checklist?", "why": "Answer: L3 supervision.",
+   {"kind": "question", "question": "At which HFACS level is the missing checklist?", "why": "Tests whether the cause is placed at the level that owns the fix.",
+    "answer": "L3 supervision.",
     "good_evidence": "Names supervision, not the fitter", "cites": ["FND-0002"]}]},
   {"id": "cascade", "heading": "Cascade plan", "items": [
    {"kind": "table", "columns": ["Who", "Trains whom", "Materials", "Transfer measure at 90 days"],

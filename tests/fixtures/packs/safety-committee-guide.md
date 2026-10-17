@@ -24,7 +24,7 @@ The procedure index has no return-to-service entry [EVD-0002].
 
 **Q: Who may stop a restart when the test record is missing?** [FND-0001]
 - Why it matters: The restart went ahead without one.
-- Ask: Maintenance manager
+- Put to: Maintenance manager
 
 ## What to look for on site
 
@@ -43,7 +43,6 @@ Ground rules: no names, no blame, talk about conditions.
 ## Follow-up
 
 - [ ] Ask to see the new return-to-service checklist. *(30 days)* [FND-0002]
-
 - [ ] Ask for the share of restarts with a test record. *(90 days)* [FND-0001]
 
 ---

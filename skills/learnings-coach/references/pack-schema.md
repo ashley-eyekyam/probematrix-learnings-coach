@@ -51,7 +51,7 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 |---|---|---|
 | `para` | text* | narrative, explanation |
 | `check` | text*, hold_point (true/false), when | checklists, hold points, what to refuse; readers can tick them on screen |
-| `question` | question*, why*, good_evidence, to (role asked) | board questions, questions to raise, interview questions |
+| `question` | question*, why*, answer (an answer key), good_evidence, to (role the question is put to) | board questions, questions to raise, interview questions |
 | `recommendation` | change*, indicator*, hoc_tier*, barrier, owner, by_when; **must cite** | what should change, with its leading indicator and hierarchy-of-controls tier |
 | `decision` | decision*, options[], trade_offs, owner, by_when | decisions for leaders, pending engineering decisions |
 | `indicator` | name*, measure*, deterioration, owner | leading indicators, readiness indicators |

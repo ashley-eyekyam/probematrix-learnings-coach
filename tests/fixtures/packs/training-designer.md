@@ -42,7 +42,8 @@
 ## Assessment
 
 **Q: At which HFACS level is the missing checklist?** [FND-0002]
-- Why it matters: Answer: L3 supervision.
+- Why it matters: Tests whether the cause is placed at the level that owns the fix.
+- Answer: L3 supervision.
 - Good evidence looks like: Names supervision, not the fitter
 
 ## Cascade plan

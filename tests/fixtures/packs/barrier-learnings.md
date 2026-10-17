@@ -48,7 +48,6 @@ Failures cluster on the prevention side. Of the two fixes the export supports, o
 ## Critical controls to verify first
 
 - [ ] Leak test before return to service [FND-0002]
-
 - [ ] Specification of critical spares [FND-0003]
 
 ---

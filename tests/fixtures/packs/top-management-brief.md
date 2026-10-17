@@ -44,7 +44,7 @@ Purchase records show local buying with no specification check [FND-0003; EVD-00
 **Q: How will we know every site applies the spares rule?** [FND-0003]
 - Why it matters: Local buying without a specification ran for two years before this event.
 - Good evidence looks like: Sampled audits from the auditor assurance pack
-- Ask: Head of internal audit
+- Put to: Head of internal audit
 
 ---
 

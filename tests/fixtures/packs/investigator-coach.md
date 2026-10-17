@@ -30,7 +30,7 @@ There is no interview evidence; every finding rests on documents [EVD-0001; EVD-
 
 **Q: When did local seal purchases start, and who approved them?** [FND-0003]
 - Why it matters: Purchase records alone do not show the decision.
-- Ask: Stores/procurement officer
+- Put to: Stores/procurement officer
 
 ## Method lessons
 

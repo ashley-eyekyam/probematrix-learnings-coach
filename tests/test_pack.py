@@ -216,7 +216,7 @@ WAVE3 = ["causal-map", "precursor-timeline", "interface-learnings", "barrier-lea
 PACK_OF = {"cluster-learning-dossier": "dossier-F02", "organisation-learning-map": "organisation-learning-plan"}
 DOC_NAME = {"cluster-learning-dossier": "dossier-<F-id>"}          # how SKILL.md writes the pack file name
 DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3}                                     # tasks 15 and 24 add waves 2 and 3
-VERSION = "0.3.3"                                                  # tasks 15 and 24 bump it
+VERSION = "0.3.4"                                                  # tasks 15 and 24 bump it
 
 
 def pack_fixtures() -> list:
@@ -257,7 +257,7 @@ def test_markdown_per_kind(w):
         "## Every item kind\n\nOne of each kind.",
         "- [ ] **Hold point:** Leak-test record attached. *(before return to service)* [FND-0001]",
         "**Q: Who approved local purchase?** [FND-0003]\n- Why it matters: The records do not show the decision.\n"
-        "- Good evidence looks like: Signed approvals\n- Ask: Stores/procurement officer",
+        "- Good evidence looks like: Signed approvals\n- Put to: Stores/procurement officer",
         "**Recommendation:** Interlock restart on a test record [FND-0001]\n- Control tier: engineering\n"
         "- Owner: Maintenance manager\n- Leading indicator: % of restarts with a test record",
         "**Decision:** Fund a site-wide spares review [FND-0003]\n- Options: This year; Next year",
@@ -806,3 +806,39 @@ def test_docs_no_longer_describe_markdown_only_skills():
         assert "write Markdown there" not in t and "save Markdown under" not in t, p
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert "(Mermaid)" not in readme and "so far" not in readme and "follow in 0.3.3" not in readme
+
+
+# ----------------------------------------------------------------------------- 0.3.4 polish
+
+def test_question_answer_and_put_to(w):
+    q = item("question", why="Tests whether the cause is placed at the right level.", answer="L3 supervision.",
+             good_evidence="Names supervision", to="Chief Executive", cites=["FND-0002"])
+    assert problems(pack_with(q), w) == []
+    md = pp.render_pack_md(pack_with(q), w)
+    assert ("- Why it matters: Tests whether the cause is placed at the right level.\n- Answer: L3 supervision.\n"
+            "- Good evidence looks like: Names supervision\n- Put to: Chief Executive") in md
+    t = pp.render_pack_html(w, pack_with(q), "2024-03-20-pump-fire", "2026-10-16")
+    assert '<span class="badge">Put to: Chief Executive</span>' in t
+    assert '<span class="label">Answer</span><p>L3 supervision.</p>' in t
+    assert "Ask:" not in md and "Ask:" not in t
+
+
+def test_layout_graph_curves_skip_level_links_above_the_nodes():
+    nodes = [{"id": "l4", "label": "L4"}, {"id": "l3", "label": "L3"}, {"id": "l1", "label": "L1"}]
+    g = pp.layout_graph(nodes, [{"from": "l4", "to": "l3"}, {"from": "l3", "to": "l1"}, {"from": "l4", "to": "l1"}],
+                        uid="s")["svg"]
+    skips = re.findall(r'<path class="edge skip" d="M(\d+),(\d+) C\d+,(\d+) ', g)
+    assert len(skips) == 1                                        # only l4 -> l1 skips a layer
+    top = min(int(y) for y in re.findall(r'transform="translate\(\d+,(\d+)\)', g))
+    sx, sy, cy = map(int, skips[0])
+    assert sy == top and cy < top                                 # leaves the node's top edge and arcs above it
+    assert len(re.findall(r'<path class="edge" ', g)) == 2        # the chain stays straight
+    plain = pp.layout_graph(nodes[:2], [{"from": "l4", "to": "l3"}], uid="p")["svg"]
+    assert "skip" not in plain and f'translate({pp.PAD},{pp.PAD})' in plain   # no extra room without a skip
+
+
+def test_consecutive_checks_form_one_tight_list(w):
+    p = pack_with(item("check", text="Isolate the pump."), item("check", text="Record the test.", when="before restart"),
+                  item("para", text="Then hand over."), item("check", text="Sign the permit."))
+    md = pp.render_pack_md(p, w)
+    assert "- [ ] Isolate the pump.\n- [ ] Record the test. *(before restart)*\n\nThen hand over.\n\n- [ ] Sign" in md

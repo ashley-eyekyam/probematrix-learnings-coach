@@ -26,7 +26,7 @@ A repeat seal leak on the same pump is a signal to escalate to the maintenance m
 
 **Q: May a shift supervisor isolate the pump without waiting for approval?**
 - Why it matters: The gas alarm only displayed and nobody was authorised to act [FND-0004].
-- Ask: Site leadership
+- Put to: Site leadership
 
 ## What to refuse
 

@@ -24,7 +24,7 @@ Spares were bought locally without a specification, and assurance did not see th
 **Q: How do we know critical spares meet their specification at every site?** [FND-0003]
 - Why it matters: Local purchasing bypassed the specification for two years.
 - Good evidence looks like: A sampled audit of critical-spares purchase records against specifications.
-- Ask: Chief Executive
+- Put to: Chief Executive
 
 **Q: Which equipment can return to service without a documented test?** [FND-0002]
 - Why it matters: The pump restarted without one.
