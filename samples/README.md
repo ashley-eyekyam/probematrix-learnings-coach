@@ -4,7 +4,7 @@ Download an export from a sub-folder, install the plugin, and ask your agent to 
 
 | Sample | Event | Source of evidence | Findings |
 |---|---|---|---|
-| *(to be added)* | | | |
+| [`2020-09-24-hazira-gas-release-fire`](2020-09-24-hazira-gas-release-fire/) | Gas terminal release and fire, ONGC Hazira, 24 Sep 2020 | PNGRB Enquiry Committee report (desk analysis, sighted) | 436 (draft) |
 
 ## What a sample contains
 
