@@ -14,3 +14,6 @@ __pycache__/
 .venv/
 # os
 .DS_Store
+# internal briefs (not for the public repo)
+docs/briefs/outreach-engine-improvement-prompt.md
+docs/briefs/reference-adhoc-render-script.py
