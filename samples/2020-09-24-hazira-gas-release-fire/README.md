@@ -14,14 +14,17 @@ A ProbeMatrix findings export and its Learnings Coach outputs for the hydrocarbo
 
 | File | What it is |
 |---|---|
+| `2020-09-24-hazira-gas-release-fire_official-report.pdf` | The official PNGRB Enquiry Committee report, as published |
+| `2020-09-24-hazira-gas-release-fire_probematrix-report.pdf` | The ProbeMatrix HFMAP investigation report (222 pages) |
 | `2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx` | The export: 436 findings and 789 evidence links, five sheets only |
 | `outputs/learnings-register.json`, `.md`, `.xlsx` | Learnings Register: 25 learnings and 44 recommendations covering 435 of 436 findings |
 | `outputs/organisation-learning-map.html` | Organisation learning map with the detailed register tab (self-contained, works offline) |
 
 ## How it was prepared
 
-- The export went through `tools/make-public-sample.py`: only the five sheets the coach reads were kept, and the name scan returned zero hits against a list of every personal name in the enquiry report. `pmlc.py scan-names` over `outputs/` also returned zero hits. People appear as roles only.
-- **Summary-sheet corrections:** the date was changed from 2020-08-24 to 2020-09-24 and the incident type from aviation to fire, to match the enquiry report.
+- The export went through `tools/make-public-sample.py`: only the five sheets the coach reads were kept, and the name scan returned zero hits against a list of every personal name in the enquiry report. `pmlc.py scan-names` over the ProbeMatrix report and `outputs/` also returned zero hits. The ProbeMatrix material names roles only.
+- **Summary-sheet corrections:** the date was changed from 2020-08-24 to 2020-09-24 and the incident type from aviation to fire, to match the enquiry report. The ProbeMatrix report was generated before this correction and still shows 2020-08-24 on its cover.
+- The guidance printed under each HFACS code in the ProbeMatrix report is the generic code library text, so some lines (for example on aviation brownout landings) are not about this event.
 - One finding (FND-44219027) is left out of the register because a reviewer voted to downgrade it.
 
 ## Status

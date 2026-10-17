@@ -216,7 +216,7 @@ WAVE3 = ["causal-map", "precursor-timeline", "interface-learnings", "barrier-lea
 PACK_OF = {"cluster-learning-dossier": "dossier-F02", "organisation-learning-map": "organisation-learning-plan"}
 DOC_NAME = {"cluster-learning-dossier": "dossier-<F-id>"}          # how SKILL.md writes the pack file name
 DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3}                                     # tasks 15 and 24 add waves 2 and 3
-VERSION = "0.3.4"                                                  # tasks 15 and 24 bump it
+VERSION = "0.3.5"                                                  # tasks 15 and 24 bump it
 
 
 def pack_fixtures() -> list:

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.5
+
+- `scan-names` lists any file it cannot read (such as a PDF) and exits 2, so a zero-hit result never silently skips a file.
+- Samples: the de-identification rule covers ProbeMatrix material; an official public report may be included unmodified. New sample `2020-09-24-hazira-gas-release-fire` replaces the old `Hazira-2020` folder.
+
 ## 0.3.4
 
 - `question` items take an optional `answer` (an answer key); `training-designer` puts its answer keys there instead of in `why`. The role a question goes to is labelled "Put to" (was "Ask").

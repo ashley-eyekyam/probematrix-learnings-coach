@@ -1174,11 +1174,19 @@ def cmd_check_register(a):
 
 # ----------------------------------------------------------------------------- scan-names
 
+TEXT_TYPES = (".md", ".txt", ".json", ".csv", ".html", ".mmd", ".py", ".yaml", ".yml")
+
+
+def _scan_files(path: Path):
+    if path.is_dir():
+        return [p for p in sorted(path.rglob("*")) if p.is_file() and not any(x.startswith(".git") for x in p.parts)]
+    return [path]
+
+
 def _iter_texts(path: Path):
     if path.is_dir():
-        for p in sorted(path.rglob("*")):
-            if p.is_file() and not any(part.startswith(".git") for part in p.parts):
-                yield from _iter_texts(p)
+        for p in _scan_files(path):
+            yield from _iter_texts(p)
         return
     if path.suffix.lower() in (".xlsx", ".xlsm"):
         openpyxl = _need_openpyxl()
@@ -1188,7 +1196,7 @@ def _iter_texts(path: Path):
                 for c in row:
                     if isinstance(c.value, str):
                         yield f"{path}:{ws.title}!{c.coordinate}", c.value
-    elif path.suffix.lower() in (".md", ".txt", ".json", ".csv", ".html", ".mmd", ".py", ".yaml", ".yml"):
+    elif path.suffix.lower() in TEXT_TYPES:
         for i, line in enumerate(path.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
             yield f"{path}:{i}", line
 
@@ -1207,7 +1215,14 @@ def cmd_scan_names(a):
                 if hits <= a.show:
                     print(f"HIT {loc}: '{m.group(0)}' … {text[max(0, m.start()-50):m.end()+50]!r}")
     print(f"\n{hits} hit(s).")
-    sys.exit(1 if hits else 0)
+    unread = [str(f) for t in a.paths for f in _scan_files(Path(t))
+              if f.suffix.lower() not in TEXT_TYPES + (".xlsx", ".xlsm")]
+    if unread:
+        print(f"{len(unread)} file(s) not scanned (this type cannot be read), so zero hits does not cover them:")
+        for f in unread:
+            print(" -", f)
+        print("Scan their text instead, e.g. `pdftotext -layout report.pdf report.txt`, then scan report.txt.")
+    sys.exit(1 if hits else 2 if unread else 0)
 
 
 # ----------------------------------------------------------------------------- learning packs
@@ -1338,7 +1353,7 @@ def main(argv=None):
     s.add_argument("--top", type=int, default=40, help="links to keep (default 40)")
     s.set_defaults(fn=cmd_causal_item)
 
-    s = sp.add_parser("scan-names", help="zero-hit name scan")
+    s = sp.add_parser("scan-names", help="zero-hit name scan (exit 1 on hits, 2 if a file could not be read)")
     s.add_argument("names", help="text file, one name per line")
     s.add_argument("paths", nargs="+")
     s.add_argument("--show", type=int, default=50)

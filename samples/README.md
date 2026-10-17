@@ -17,6 +17,8 @@ samples/
   <YYYY-MM-DD>-<site>-<event>/                 e.g. 2020-09-24-hazira-gas-release-fire
     README.md
     <slug>_probematrix-findings.xlsx           from tools/make-public-sample.py --slug <slug>
+    <slug>_probematrix-report.pdf              the ProbeMatrix investigation report (optional)
+    <slug>_official-report.pdf                 the official public report, unmodified (optional)
     outputs/                                   copied from your pmlc-runs/<slug>/outputs/ (optional)
       learnings-register.json / .xlsx / .md
       organisation-learning-map.html
@@ -28,8 +30,8 @@ The slug is the same one `pmlc.py ingest --slug` used for your run, so a contrib
 ## Rules for adding a sample
 
 1. The incident is **public record** (for example a published regulator or enquiry report), and you have the right to publish an analysis of it.
-2. The export is **de-identified to roles**: no personal names, staff numbers or contact details.
-3. Prepare it with `tools/make-public-sample.py --slug <slug>`. The name scan must return **zero hits**. Run `pmlc.py scan-names <names-file> samples/<slug>/outputs` too, and get zero hits, before adding outputs.
+2. **ProbeMatrix material is de-identified to roles**: the export, the ProbeMatrix report and the outputs carry no personal names, staff numbers or contact details. This rule covers ProbeMatrix investigations only. The official report is a public document and is included as published, unmodified.
+3. Prepare the export with `tools/make-public-sample.py --slug <slug>`. The name scan must return **zero hits**. Run `pmlc.py scan-names <names-file>` over `samples/<slug>/outputs` and over the ProbeMatrix report's text (`pdftotext -layout <report>.pdf <report>.txt`; `scan-names` cannot read a PDF and says so), and get zero hits, before adding them.
 4. Add a `README.md` in the sample folder stating:
    - the public source;
    - what the ProbeMatrix analysis had access to (desk analysis of the published report, no site access or interviews);

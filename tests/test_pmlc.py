@@ -206,6 +206,21 @@ def test_scan_names(ws, tmp_path):
     assert r.returncode == 1 and "1 hit" in r.stdout
 
 
+def test_scan_names_reports_files_it_cannot_read(tmp_path):
+    n = tmp_path / "names.txt"
+    n.write_text("Fictional Person\n")
+    d = tmp_path / "out"
+    d.mkdir()
+    (d / "notes.md").write_text("roles only\n")
+    (d / "report.pdf").write_bytes(b"%PDF-1.4 Fictional Person")
+    r = subprocess.run([sys.executable, str(PMLC), "scan-names", str(n), str(d)], capture_output=True, text=True)
+    assert r.returncode == 2 and "0 hit(s)" in r.stdout and "report.pdf" in r.stdout and "not scanned" in r.stdout
+    assert "pdftotext" in r.stdout                                    # tells you how to scan it
+    (d / "report.pdf").unlink()
+    r = subprocess.run([sys.executable, str(PMLC), "scan-names", str(n), str(d)], capture_output=True, text=True)
+    assert r.returncode == 0 and "not scanned" not in r.stdout
+
+
 def test_slug_rules():
     assert pmlc.run_slug("2020-09-24", "hazira-gas-release-fire") == "2020-09-24-hazira-gas-release-fire"
     assert pmlc.run_slug("2020-09-24 00:00:00", "a1") == "2020-09-24-a1"
