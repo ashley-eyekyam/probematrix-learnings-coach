@@ -858,3 +858,14 @@ def test_scope_tags(w):
     del w3["clusters"]["taxonomy"]["tags"]
     got = problems(pack_with(item("para"), scope={"tags": ["emergency"]}), w3)
     assert any("Re-run classify" in x for x in got)
+
+
+def test_scope_top_and_relations(w):
+    top = {f["id"] for f in w["findings"] if f["rating"] == 4}
+    assert set(pp.relevant_findings(w, {"min_rating": "top"})) == top
+    assert problems(pack_with(item("para"), scope={"min_rating": "top"}), w) == []
+    got = problems(pack_with(item("para"), scope={"relations": ["nonsense"]}), w)
+    assert any(x.startswith("scope.relations") for x in got)
+    assert problems(pack_with(item("para"), scope={"relations": ["owner"], "entity_mode": "all"}), w) == []
+    got = problems(pack_with(item("para"), scope={"entity_mode": "both"}), w)
+    assert any(x.startswith("scope.entity_mode") for x in got)

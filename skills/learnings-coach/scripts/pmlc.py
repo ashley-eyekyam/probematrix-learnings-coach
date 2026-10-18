@@ -34,6 +34,7 @@ import json
 import os
 import re
 import sys
+import types
 from pathlib import Path
 
 __version__ = "0.3.5"
@@ -165,6 +166,10 @@ def cmd_run_path(a):
     print(f"workspace: {ws}")
     print(f"outputs:   {outputs_dir(ws)}")
     print(f"slug:      {ws.parent.name if std else '(legacy layout: not under pmlc-runs/<slug>/workspace)'}")
+    if (ws / "findings.json").is_file():
+        w = load_ws(ws)
+        print(f"top_rating: {top_rating(w)}")
+        print(f"incident_date: {incident_date(w) or 'unknown'}")
 
 
 def sample_folder_problems(samples) -> list:
@@ -332,6 +337,7 @@ def cmd_ingest(a):
             if mode == "VOTES" and first and first != "Finding ID" and len(row) > 2:
                 votes.append({"finding": first, "vote": _s(row[1]), "reason": _s(row[2])})
     incident["review_votes"] = votes
+    incident["date"] = iso_date(a.date) or iso_date(incident["fields"].get("Date"))
     incident["source_file"] = os.path.basename(a.xlsx)
     incident["sheets"] = wb.sheetnames
 
@@ -603,17 +609,51 @@ def _evidence_for(f, E, max_quote=400):
     return out
 
 
+SELECT_DEFAULTS = dict(entity=None, tag=None, tier=None, relation=None, level=None, code=None, text=None,
+                       subcategory=None, prefix=None, min_rating=None, top_rated=False, entity_mode="any",
+                       exclude_downgraded=False, max=None)
+
+
+def select_args(**kw) -> types.SimpleNamespace:
+    """The namespace _filter reads, with every filter at its default; callers pass only what they set."""
+    unknown = set(kw) - set(SELECT_DEFAULTS)
+    if unknown:
+        raise TypeError(f"unknown select filter(s): {', '.join(sorted(unknown))}")
+    return types.SimpleNamespace(**{**SELECT_DEFAULTS, **kw})
+
+
+def top_rating(w) -> int:
+    """The highest rating in the workspace (0 when there are no findings)."""
+    return max(((f["rating"] or 0) for f in w["findings"]), default=0)
+
+
+def incident_date(w) -> str | None:
+    """The incident date (YYYY-MM-DD): recorded at ingest, else the summary sheet's Date field, else None."""
+    inc = w.get("incident", {})
+    return inc.get("date") or iso_date(inc.get("fields", {}).get("Date"))
+
+
 def _filter(w, a):
     F = w["findings"]
-    cl = w.get("clusters", {}).get("findings", {})
+    clusters = w.get("clusters", {})
+    cl = clusters.get("findings", {})
     entity = set(a.entity or [])
-    tags = getattr(a, "tag", None)
-    if tags:
-        entity |= set(entities_for_tags(w.get("clusters", {}), tags))
+    tag_sets = [set(entities_for_tags(clusters, [t])) for t in (a.tag or [])]
+    all_mode = a.entity_mode == "all"
+    if not all_mode:
+        entity = entity.union(*tag_sets)
+    prefixes = {p.upper() for p in a.prefix or []}
+    subs = {x.lower() for x in a.subcategory or []}
+    top = top_rating(w) if a.top_rated else None
+    dropped = downgraded_findings(w) if a.exclude_downgraded else set()
     out = []
     for f in F:
         c = cl.get(f["id"], {"F": [], "T": [], "R": []})
-        if entity and not entity & set(c["F"]):
+        have = set(c["F"])
+        if all_mode:
+            if (entity or tag_sets) and not (entity <= have and all(ts & have for ts in tag_sets)):
+                continue
+        elif entity and not entity & have:
             continue
         if a.tier and not set(a.tier) & set(c["T"]):
             continue
@@ -623,7 +663,15 @@ def _filter(w, a):
             continue
         if a.min_rating and (f["rating"] or 0) < a.min_rating:
             continue
+        if top is not None and (f["rating"] or 0) != top:
+            continue
         if a.code and f["code"] not in a.code:
+            continue
+        if prefixes and f["code"].split(" ")[0].upper() not in prefixes:
+            continue
+        if subs and f["subcategory"].lower() not in subs:
+            continue
+        if f["id"] in dropped:
             continue
         if a.text and not re.search(a.text, " ".join([f["short"], f["justification"], f["causal"], f["label"]]), re.I):
             continue
@@ -638,6 +686,8 @@ def cmd_select(a):
         sys.exit("Filtering by entity/tag/tier/relation needs clusters.json. Run: pmlc.py classify <ws>")
     E = w.get("evidence", {})
     sel = _filter(w, a)
+    skipped = sorted(downgraded_findings(w) & {f["id"] for f in w["findings"]}) if a.exclude_downgraded else []
+    note = f"Excluded (reviewer downgrade): {', '.join(skipped) or 'none'}"
     if a.format == "json":
         items = []
         for f, c in sel:
@@ -649,7 +699,8 @@ def cmd_select(a):
     else:
         L = [f"# Selected findings ({len(sel)})\n",
              f"Filters: entity={a.entity} tag={a.tag} tier={a.tier} relation={a.relation} level={a.level} "
-             f"min_rating={a.min_rating} code={a.code} text={a.text}\n"]
+             f"min_rating={a.min_rating} top_rated={a.top_rated} entity_mode={a.entity_mode} code={a.code} "
+             f"prefix={a.prefix} subcategory={a.subcategory} text={a.text}\n"]
         for f, c in sel:
             L.append(f"## {f['id']} · {f['code']} {f['name']} · L{f['level']} {f['subcategory']} · rating {f['rating']}")
             L.append(f"**Instance:** {f['label']}\n")
@@ -664,7 +715,11 @@ def cmd_select(a):
                     L.append(f"- `{e['id']}` ({e.get('type', '?')}): {e.get('relevance', '')} "
                              f"Quote: \"{e.get('reference', '')}\"")
             L.append("")
+        if a.exclude_downgraded:
+            L.append(note)
         text = "\n".join(L)
+    if a.exclude_downgraded and a.format == "json":
+        print(note, file=sys.stderr)
     if a.out:
         Path(a.out).write_text(text, encoding="utf-8")
         print(f"Wrote {len(sel)} findings to {a.out}")
@@ -762,13 +817,18 @@ def _parse_dates(text):
 def cmd_timeline(a):
     ws = Path(a.ws)
     w = load_ws(ws)
+    before = a.before
+    if before == "incident":
+        before = incident_date(w)
+        if not before:
+            sys.exit("No incident date in this workspace; pass --date to ingest.")
     events = collections.OrderedDict()
     sources = [(f["id"], f["code"], " ".join([f["label"], f["short"], f["justification"], f["causal"]]))
                for f in w["findings"]]
     sources += [(e["id"], e["type"], e["description"]) for e in w.get("evidence", {}).values()]
     for sid, kind, text in sources:
         for d, prec, s, e in _parse_dates(text):
-            if a.before and d.isoformat() > a.before:
+            if before and d.isoformat() > before:
                 continue
             snippet = text[max(0, s - 140): e + 140].replace("\n", " ").strip()
             key = (d.isoformat(), prec, re.sub(r"\W+", " ", text[max(0, s - 40): e + 40]).lower()[:60])
@@ -1368,6 +1428,14 @@ def build_parser():
     s.add_argument("--relation", nargs="*", help="actor approver owner absent norm_setter learner challenger")
     s.add_argument("--level", nargs="*", type=int, help="1 2 3 4")
     s.add_argument("--min-rating", type=int)
+    s.add_argument("--top-rated", action="store_true", help="only findings at the workspace's top rating (run-path prints it)")
+    s.add_argument("--entity-mode", choices=["any", "all"], default="any",
+                   help="any: a finding matches if it has any requested entity (default). all: it must have every "
+                        "--entity and, for each --tag, at least one of that tag's entities (the shared findings)")
+    s.add_argument("--exclude-downgraded", action="store_true",
+                   help="drop findings a reviewer voted to downgrade, reject or remove, and say which")
+    s.add_argument("--subcategory", nargs="+", help="HFACS subcategory, case-insensitive exact match")
+    s.add_argument("--prefix", nargs="+", help="Nanocode prefix before the space, e.g. SV OR")
     s.add_argument("--code", nargs="*")
     s.add_argument("--text", help="regex over short/justification/causal/label")
     s.add_argument("--max", type=int)
@@ -1384,7 +1452,7 @@ def build_parser():
 
     s = sp.add_parser("timeline", help="dated precursor candidates")
     s.add_argument("ws")
-    s.add_argument("--before", help="ISO date; keep only events up to this date (e.g. the incident date)")
+    s.add_argument("--before", help="ISO date, or the word incident for the workspace's incident date; keep only events up to it")
     s.add_argument("--per-date", type=int, default=4)
     s.add_argument("--show", type=int, default=60)
     s.set_defaults(fn=cmd_timeline)

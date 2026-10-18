@@ -15,7 +15,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Needs `<
 PMLC select <ws> --entity <F-id> --out <ws>/sel-<F-id>.md              # full text
 PMLC select <ws> --entity <F-id> --level 1 --brief                      # per level as needed
 PMLC interfaces <ws>                                                     # for S6
-PMLC timeline <ws> --before <incident date>                              # for S8
+PMLC timeline <ws> --before incident                              # for S8
 ```
 
 For large clusters (more than ~60 findings) work level by level so each pass stays grounded; read the full justification and causal text of the highest-rated findings first.

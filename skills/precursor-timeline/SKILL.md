@@ -10,7 +10,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`.
 ## Gather candidates
 
 ```bash
-PMLC timeline <ws> --before <incident date YYYY-MM-DD>
+PMLC timeline <ws> --before incident
 ```
 
 This lists every dated mention in findings and evidence (`<ws>/timeline_candidates.json`), with snippets and sources. Many are duplicates or context dates (e.g. a commissioning year). The engine finds dates; you decide which are signals.

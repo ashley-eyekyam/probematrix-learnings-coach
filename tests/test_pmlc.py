@@ -683,3 +683,80 @@ def test_entities_for_tags():
     assert pmlc.entities_for_tags(cl, ["z", "y"]) == ["B", "C"]
     with pytest.raises(SystemExit, match=r"No entity has tag\(s\) \['q'\] in taxonomy t.json"):
         pmlc.entities_for_tags(cl, ["x", "q"])
+
+
+def _ids(*args):
+    return {f["id"] for f in json.loads(run(*args, "--format", "json"))}
+
+
+def test_top_rated_and_run_path(ws):
+    assert _ids("select", str(ws), "--top-rated") == {"FND-0002", "FND-0003"}
+    out = run("run-path", str(ws))
+    assert "top_rating: 4" in out and "incident_date: 2024-03-20" in out
+
+
+def test_ingest_records_incident_date(tmp_path):
+    x = make_export(tmp_path)
+    run("ingest", str(x), "--legacy-out", str(tmp_path / "w1"), "--date", "2024-03-21")
+    assert json.loads((tmp_path / "w1" / "incident.json").read_text())["date"] == "2024-03-21"
+    run("ingest", str(x), "--legacy-out", str(tmp_path / "w2"))
+    assert json.loads((tmp_path / "w2" / "incident.json").read_text())["date"] == "2024-03-20"
+
+
+def test_subcategory_prefix_exclude_downgraded(tmp_path):
+    x = make_export(tmp_path)
+    wb = openpyxl.load_workbook(x)
+    c = wb.create_sheet("Collaboration Data")
+    for r in [("VOTES",), ("Finding ID", "Vote", "Reason"), ("FND-0004", "downgrade", "weak evidence")]:
+        c.append(r)
+    wb.save(x)
+    w = tmp_path / "w"
+    run("ingest", str(x), "--legacy-out", str(w))
+    run("classify", str(w))
+    assert _ids("select", str(w)) == {"FND-0001", "FND-0002", "FND-0003", "FND-0004"}
+    assert _ids("select", str(w), "--exclude-downgraded") == {"FND-0001", "FND-0002", "FND-0003"}
+    md = run("select", str(w), "--exclude-downgraded", "--brief")
+    assert md.rstrip().splitlines()[-1] == "Excluded (reviewer downgrade): FND-0004"
+    r = subprocess.run([sys.executable, str(PMLC), "select", str(w), "--exclude-downgraded", "--format", "json"],
+                       capture_output=True, text=True)
+    assert "Excluded (reviewer downgrade): FND-0004" in r.stderr
+    assert json.loads(r.stdout)
+    assert _ids("select", str(w), "--subcategory", "errors") == {"FND-0001"}
+    assert _ids("select", str(w), "--prefix", "SV", "OR") == {"FND-0002", "FND-0003"}
+
+
+def test_entity_mode_all_and_tags_synthetic(ws):
+    both = _ids("select", str(ws), "--entity", "F02", "F06", "--entity-mode", "all")
+    anyof = _ids("select", str(ws), "--entity", "F02", "F06")
+    assert both <= anyof
+
+
+def test_timeline_before_incident(ws):
+    run("timeline", str(ws), "--before", "incident")
+    a = (ws / "timeline_candidates.json").read_text()
+    run("timeline", str(ws), "--before", "2024-03-20")
+    assert (ws / "timeline_candidates.json").read_text() == a
+
+
+def test_timeline_before_incident_without_date(tmp_path):
+    x = make_export(tmp_path)
+    run("ingest", str(x), "--legacy-out", str(tmp_path / "w"))
+    p = tmp_path / "w" / "incident.json"
+    d = json.loads(p.read_text())
+    d.pop("date")
+    d["fields"].pop("Date")
+    p.write_text(json.dumps(d))
+    r = run_fail("timeline", str(tmp_path / "w"), "--before", "incident")
+    assert "No incident date in this workspace; pass --date to ingest." in r.stderr
+
+
+def test_select_args_rejects_unknown_filter():
+    assert pmlc.select_args(tag=["x"]).tag == ["x"] and pmlc.select_args().entity_mode == "any"
+    with pytest.raises(TypeError):
+        pmlc.select_args(bogus=1)
+
+
+def test_no_placeholders_left():
+    for p in (ROOT / "skills").glob("*/SKILL.md"):
+        t = p.read_text(encoding="utf-8")
+        assert "<top" not in t and "<incident date" not in t, p

@@ -13,7 +13,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 
 ```bash
 PMLC select <ws> --tag emergency --brief
-PMLC select <ws> --tag emergency --min-rating <top>
+PMLC select <ws> --tag emergency --top-rated
 PMLC select <ws> --text "alarm|detect|isolat|MOV|valve|drill|fire.?water|pump|evacuat|command|CCTV" --brief
 PMLC timeline <ws>                     # use the event-day sequence if present
 ```

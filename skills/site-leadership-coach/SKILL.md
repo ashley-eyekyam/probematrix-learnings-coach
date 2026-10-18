@@ -13,10 +13,10 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 
 ```bash
 PMLC select <ws> --tier T4 --brief
-PMLC select <ws> --level 4 --min-rating <top>
+PMLC select <ws> --level 4 --top-rated
 PMLC select <ws> --relation norm_setter learner absent challenger
 PMLC causal <ws> --top 40          # organisational hubs
-PMLC timeline <ws> --before <incident date>
+PMLC timeline <ws> --before incident
 ```
 
 ## Write

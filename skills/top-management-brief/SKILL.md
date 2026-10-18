@@ -13,7 +13,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 
 ```bash
 PMLC select <ws> --tier T4 T5 --brief
-PMLC select <ws> --level 4 --min-rating <top>
+PMLC select <ws> --level 4 --top-rated
 PMLC select <ws> --tag people corporate assurance --level 4 --brief   # people, corporate, assurance
 ```
 
@@ -43,7 +43,7 @@ Sections → kinds:
 4. `decision` ×4–6. Follow each one with its enterprise `indicator`, in the same `group`.
 5. `question`, with `to` = the role asked.
 
-Set `"scope": {"levels": [4], "min_rating": <top rating>}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. Use board-ready language.
+Set `"scope": {"levels": [4], "min_rating": "top"}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. Use board-ready language.
 
 ```json
 {"kind": "table", "columns": ["Learning", "Transferability", "Reason"],

@@ -9,7 +9,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Needs `c
 
 ## Method
 
-1. **Find the learnings, not the findings.** Start from the highest-rated findings: `PMLC select <ws> --min-rating <top rating> --brief`. Group findings that describe the same condition. A typical investigation of a few hundred findings yields 15–40 learnings. Then sweep lower ratings for conditions not yet covered, especially at L3–L4.
+1. **Find the learnings, not the findings.** Start from the highest-rated findings: `PMLC select <ws> --top-rated --brief`. Group findings that describe the same condition. A typical investigation of a few hundred findings yields 15–40 learnings. Then sweep lower ratings for conditions not yet covered, especially at L3–L4.
 2. **One learning per row.** Write the lesson as a generalisable sentence that would make sense to another site ("If X, then Y, because Z"), not a restatement of the event.
 3. **Classify** each learning against register sections B–H. Owner entity and tiers come from `clusters.json` for its findings.
 4. **Recommend.** One to three recommendations per learning, each with HoC tier and a leading indicator. At least one recommendation per priority-1 learning should be above the administrative tier, or say why none is possible.

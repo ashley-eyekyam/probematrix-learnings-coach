@@ -13,7 +13,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 
 ```bash
 PMLC select <ws> --tier T3 --brief
-PMLC select <ws> --tier T3 --level 3 4 --min-rating <top>
+PMLC select <ws> --tier T3 --level 3 4 --top-rated
 PMLC select <ws> --relation owner absent --brief          # systems they own; functions that did not exist
 PMLC interfaces <ws> --top 15
 ```

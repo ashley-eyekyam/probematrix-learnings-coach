@@ -14,7 +14,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 ```bash
 PMLC select <ws> --tier T1 --brief                     # what frontline roles were involved in
 PMLC select <ws> --tier T1 --level 1 2                  # acts and conditions at the sharp end
-PMLC select <ws> --tier T1 --min-rating <top>           # the ones that mattered most
+PMLC select <ws> --tier T1 --top-rated           # the ones that mattered most
 ```
 
 If the user names a crew or trade ("maintenance fitters", "control-room operators"), add `--entity <F-id>`.

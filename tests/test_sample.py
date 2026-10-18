@@ -71,3 +71,8 @@ def test_select_by_tag_on_hazira(hz):
     emergency = {d["id"] for d in hz.select("--tag", "emergency")}
     assert emergency == {d["id"] for d in hz.select("--entity", "F09a", "F09b", "F10")}
     assert hz.clusters["taxonomy"]["overlays"] == ["india-process-site"]
+
+
+def test_entity_mode_all_is_intersection(hz):
+    assert len(hz.select("--entity", "F02", "F06")) == 196
+    assert len(hz.select("--entity", "F02", "F06", "--entity-mode", "all")) == 27

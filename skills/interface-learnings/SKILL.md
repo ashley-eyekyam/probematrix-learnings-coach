@@ -15,7 +15,7 @@ PMLC interfaces <ws> --top 25
 
 Each pair has **shared findings** (both entities named on the same finding) and **cross-entity causal mentions** (a finding owned by one entity names a factor owned by the other in its causal explanation). Rank interfaces by both. Take the top eight to twelve.
 
-For each interface read the examples: `PMLC select <ws> --entity <A> <B> --brief`, then the full text of the highest-rated ones.
+For each interface read the examples: `PMLC select <ws> --entity <A> <B> --entity-mode all --brief` (the findings both entities share), then the full text of the highest-rated ones.
 
 ## For each interface, write
 

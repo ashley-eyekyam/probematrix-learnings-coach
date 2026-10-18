@@ -13,7 +13,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 
 ```bash
 PMLC select <ws> --tier T2 --brief
-PMLC select <ws> --level 3 --min-rating <top>                  # supervision factors that mattered most
+PMLC select <ws> --level 3 --top-rated                  # supervision factors that mattered most
 PMLC select <ws> --tier T2 --relation approver                 # sign-offs and acceptances
 ```
 

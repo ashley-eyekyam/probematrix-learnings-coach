@@ -10,7 +10,6 @@ import html
 import json
 import re
 import sys
-import types
 from pathlib import Path
 
 import pmlc as core
@@ -153,10 +152,11 @@ def relevant_findings(w, scope=None) -> list:
     """Finding IDs a pack is expected to draw on: those matching its scope (the same filter as select), or,
     without a scope, the top-rated findings (rating equal to the workspace maximum, as classify counts them)."""
     if scope:
-        a = types.SimpleNamespace(entity=scope.get("entities") or None, tag=scope.get("tags") or None,
-                                  tier=scope.get("tiers") or None,
-                                  relation=None, level=scope.get("levels") or None,
-                                  min_rating=scope.get("min_rating"), code=None, text=None, max=None)
+        a = core.select_args(entity=scope.get("entities") or None, tag=scope.get("tags") or None,
+                             tier=scope.get("tiers") or None, relation=scope.get("relations") or None,
+                             level=scope.get("levels") or None, entity_mode=scope.get("entity_mode") or "any",
+                             top_rated=scope.get("min_rating") == "top",
+                             min_rating=None if scope.get("min_rating") == "top" else scope.get("min_rating"))
         rel = {f["id"] for f, _ in core._filter(w, a)}
         return [f["id"] for f in w["findings"] if f["id"] in rel]
     top = max(((f.get("rating") or 0) for f in w["findings"]), default=0)
@@ -326,8 +326,8 @@ def _check_scope(scope, w, bad):
         bad("scope", "must be an object")
         return
     for k in scope:
-        if k not in ("tiers", "levels", "entities", "tags", "min_rating"):
-            bad(f"scope.{k}", "unknown key; use tiers, levels, entities, tags, min_rating")
+        if k not in ("tiers", "levels", "entities", "tags", "min_rating", "relations", "entity_mode"):
+            bad(f"scope.{k}", "unknown key; use tiers, levels, entities, tags, min_rating, relations, entity_mode")
     t, lv, en, mr = scope.get("tiers") or [], scope.get("levels") or [], scope.get("entities") or [], scope.get("min_rating")
     tg = scope.get("tags") or []
     if not isinstance(t, list) or any(not isinstance(x, str) or x not in core.TIER_LABELS for x in t):
@@ -339,8 +339,19 @@ def _check_scope(scope, w, bad):
     if not isinstance(tg, list) or any(not isinstance(x, str) for x in tg):
         bad("scope.tags", "a list of tags like emergency")
         tg = []
-    if mr is not None and (isinstance(mr, bool) or not isinstance(mr, int)):
-        bad("scope.min_rating", "a whole number or null")
+    if mr is not None and mr != "top" and (isinstance(mr, bool) or not isinstance(mr, int)):
+        bad("scope.min_rating", 'a whole number, "top" or null')
+    rl = scope.get("relations") or []
+    if not isinstance(rl, list) or any(not isinstance(x, str) for x in rl):
+        bad("scope.relations", "a list of relation IDs like owner")
+        rl = []
+    elif "clusters" in w:
+        known_rel = w["clusters"].get("taxonomy", {}).get("relations", {})
+        for x in rl:
+            if x not in known_rel:
+                bad("scope.relations", f"{x} is not a relation in clusters.json ({', '.join(sorted(known_rel))})")
+    if scope.get("entity_mode") not in (None, "any", "all"):
+        bad("scope.entity_mode", 'must be "any" or "all"')
     if "clusters" in w and isinstance(en, list):
         known = w["clusters"].get("taxonomy", {}).get("entities", {})
         for x in en:
@@ -355,7 +366,7 @@ def _check_scope(scope, w, bad):
             for x in tg:
                 if x not in known:
                     bad("scope.tags", f"{x} is not a tag in clusters.json")
-    if (t or en or tg) and "clusters" not in w:
+    if (t or en or tg or rl) and "clusters" not in w:
         bad("scope", "tiers, entities and tags need clusters.json. Run: pmlc.py classify <ws>")
 
 

@@ -13,9 +13,9 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 
 ```bash
 PMLC select <ws> --tag engineering --brief
-PMLC select <ws> --tag engineering --level 3 4 --min-rating <top>
+PMLC select <ws> --tag engineering --level 3 4 --top-rated
 PMLC select <ws> --text "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design" --brief
-PMLC timeline <ws> --before <incident date>
+PMLC timeline <ws> --before incident
 ```
 
 ## Write

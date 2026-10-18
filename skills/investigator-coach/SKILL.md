@@ -13,7 +13,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 
 ```bash
 PMLC profile <ws>                           # shows whether follow-up columns are empty
-PMLC select <ws> --min-rating <top> --format json --out <ws>/top.json
+PMLC select <ws> --top-rated --format json --out <ws>/top.json
 ```
 
 Read the incident narrative in `<ws>/incident.json` and the evidence descriptions in `<ws>/evidence.json`.

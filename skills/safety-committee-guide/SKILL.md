@@ -14,7 +14,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 ```bash
 PMLC profile <ws>
 PMLC select <ws> --tier T1 T2 --brief
-PMLC select <ws> --level 4 --min-rating <top> --brief
+PMLC select <ws> --level 4 --top-rated --brief
 PMLC select <ws> --relation norm_setter learner challenger --brief
 ```
 
