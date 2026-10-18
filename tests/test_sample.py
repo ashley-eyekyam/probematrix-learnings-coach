@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from test_pmlc import PMLC, ROOT, run
+from test_pmlc import PMLC, ROOT, pmlc, run
 
 pytest.importorskip("openpyxl")
 SAMPLE = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire"
@@ -88,3 +88,21 @@ def test_budget_truncates_by_rating(hz):
     m = re.search(r"Dropped for budget: (\d+) findings", r.stdout)
     assert m and int(m.group(1)) > 0
     assert len(ratings) + int(m.group(1)) == len(hz.select("--tier", "T2"))
+
+
+def test_analysis_stats_cross_check(hz):
+    st = hz.incident["analysis_stats"]
+    assert st["total"] == 436
+    assert {int(k): v for k, v in st["by_level"].items()} == {1: 36, 2: 92, 3: 167, 4: 141}
+
+
+def test_export_schema_doc_matches_sample(hz):
+    import openpyxl
+    wb = openpyxl.load_workbook(EXPORT, read_only=True)
+    for sheet, known in pmlc.KNOWN_COLUMNS.items():
+        header = [c for c in next(wb[sheet].iter_rows(values_only=True)) if c]
+        assert header == known, sheet
+    doc = (ROOT / "skills" / "learnings-coach" / "references" / "export-schema.md").read_text(encoding="utf-8")
+    for name in [c for cols in pmlc.KNOWN_COLUMNS.values() for c in cols] + pmlc.KNOWN_SUMMARY_FIELDS:
+        assert name in doc, name
+    assert set(hz.incident["fields"]) <= set(pmlc.KNOWN_SUMMARY_FIELDS)

@@ -816,3 +816,67 @@ def test_size_report_on_stderr(ws):
     r = _select_proc(ws)
     m = re.search(r"select: (\d+) findings, (\d+) chars", r.stderr)
     assert m and int(m.group(2)) == len(r.stdout)
+
+
+def _edit_export(src, dst, fn):
+    wb = openpyxl.load_workbook(src)
+    fn(wb)
+    wb.save(dst)
+    return dst
+
+
+def test_ingest_refuses_capa_planner(tmp_path):
+    def mk(wb):
+        wb.create_sheet("Corrective Actions")
+        wb.create_sheet("Preventive Actions")
+    x = _edit_export(make_export(tmp_path), tmp_path / "capa.xlsx", mk)
+    r = run_fail("ingest", str(x), "--slug", "pump-fire", "--root", str(tmp_path / "r"))
+    assert 'This is a CAPA Planner export, not a findings export. Export "Identified Findings"' in r.stderr
+    assert not (tmp_path / "r").exists()
+
+
+def test_renamed_header_reported_and_strict(tmp_path):
+    def mk(wb):
+        s = wb["Identified Findings"]
+        for c in s[1]:
+            if c.value == "Rating":
+                c.value = "Score"
+    x = _edit_export(make_export(tmp_path), tmp_path / "renamed.xlsx", mk)
+    out = run("ingest", str(x), "--slug", "pump-fire", "--root", str(tmp_path / "r"))
+    assert "missing: Identified Findings: Rating" in out
+    assert "unknown: Identified Findings: Score" in out
+    assert re.search(r"schema: fingerprint [0-9a-f]{12};", out)
+    r = run_fail("ingest", str(x), "--slug", "pump-fire", "--root", str(tmp_path / "r2"), "--strict")
+    assert "Rating" in r.stderr
+    inc = json.loads(next((tmp_path / "r").rglob("incident.json")).read_text())
+    assert inc["schema"]["missing"]["Identified Findings"] == ["Rating"]
+    assert inc["schema"]["unknown"] == {"Identified Findings": ["Score"]}
+
+
+def test_strict_tolerates_optional_missing(tmp_path):
+    def mk(wb):
+        s = wb["Identified Findings"]
+        for c in s[1]:
+            if c.value == "Created At":
+                c.value = "Created"
+    x = _edit_export(make_export(tmp_path), tmp_path / "opt.xlsx", mk)
+    run("ingest", str(x), "--slug", "pump-fire", "--root", str(tmp_path / "r"), "--strict")
+
+
+def test_no_stats_sheet_note(tmp_path):
+    out = run("ingest", str(make_export(tmp_path)), "--slug", "pump-fire", "--root", str(tmp_path / "r"))
+    assert "cross-check skipped" in out
+    assert "schema: fingerprint " in out
+    inc = json.loads(next((tmp_path / "r").rglob("incident.json")).read_text())
+    assert inc["analysis_stats"] is None
+
+
+def test_stats_mismatch_warns(tmp_path):
+    def mk(wb):
+        s = wb.create_sheet("Analysis Statistics")
+        for r in [("ANALYSIS STATISTICS", None), ("Level", "Level Name", "Total Findings"), (1, "Unsafe Acts", 5),
+                  ("Total", None, 9)]:
+            s.append(r)
+    x = _edit_export(make_export(tmp_path), tmp_path / "st.xlsx", mk)
+    out = run("ingest", str(x), "--slug", "pump-fire", "--root", str(tmp_path / "r"))
+    assert "warning: Analysis Statistics says 9 findings, ingested 4" in out

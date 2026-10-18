@@ -36,7 +36,11 @@ def pmlc(*args):
 
 def main():
     with tempfile.TemporaryDirectory() as tmp:
-        pmlc("ingest", EXPORT, "--slug", "hazira-gas-release-fire", "--root", tmp)
+        out = pmlc("ingest", EXPORT, "--slug", "hazira-gas-release-fire", "--root", tmp)
+        if "Analysis Statistics agrees (436)" not in out:
+            fail("ingest did not cross-check Analysis Statistics:\n" + out)
+        if "missing: none; unknown: none" not in out:
+            fail("ingest reported schema drift on the sample:\n" + out)
         ws = os.path.join(tmp, "pmlc-runs", RUN_NAME, "workspace")
         if not os.path.isdir(ws):
             fail("workspace not created at " + ws)

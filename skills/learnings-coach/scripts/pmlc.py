@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import collections
 import datetime as dt
+import hashlib
 import html
 import json
 import os
@@ -217,6 +218,84 @@ def rows_as_dicts(ws):
     return [dict(zip(header, r)) for r in rows[1:] if any(c is not None for c in r)]
 
 
+# ----------------------------------------------------------------------------- export schema
+
+KNOWN_COLUMNS = {
+    "Identified Findings": ["Finding ID", "Nanocode", "Name", "Level", "Level Name", "Category", "Subcategory",
+                            "Classification", "Rating", "Instance ID", "Instance Label", "Short Description",
+                            "AI Justification", "Causal Explanation", "Individuals Involved", "Linked Evidence",
+                            "Evidence to Collect", "Key Questions", "Suggested Interviews", "Causal Hypothesis",
+                            "User Edited", "Created At", "Updated At"],
+    "Evidence Links": ["Finding Code", "Finding Name", "Evidence ID", "Evidence Type", "Relevance",
+                       "Specific Reference", "Evidence Description"],
+    "Causal Chain": ["Link ID", "From Code", "From Level", "To Code", "To Level", "Relationship", "Confidence",
+                     "Basis", "Evidence Support", "User Confirmed", "Notes"],
+}
+KNOWN_SUMMARY_FIELDS = [
+    "Incident Number", "Incident Title", "Incident Type", "Date", "Time", "Location", "Severity", "Outcome",
+    "Investigation Status", "Investigating Officer", "Consequence Type", "Persons Affected", "Fatalities",
+    "Injuries", "Risk Rating", "Potential Severity", "Likelihood of Recurrence", "Reportable to Regulator",
+    "Regulatory Bodies", "Regulatory Reference", "Department", "Area/Zone", "Shift", "Weather Conditions",
+    "Lighting Conditions", "Supervisor at Time", "Investigation Team", "Due Date", "Completed Date",
+    "Verification Required",
+]
+REQUIRED_COLUMNS = ["Finding ID", "Level", "Rating", "Individuals Involved", "Linked Evidence"]
+CAPA_PLANNER_SHEETS = ("Chapter Headers", "Corrective Actions", "Preventive Actions", "Residual Risks")
+
+
+def _header(ws) -> list[str]:
+    if ws is None:
+        return []
+    for row in ws.iter_rows(values_only=True):
+        return [h for h in (_s(c) for c in row) if h]
+    return []
+
+
+def schema_report(wb) -> dict:
+    """Fingerprint plus missing and unknown columns for the three columnar sheets."""
+    headers = {n: _header(find_sheet(wb, n)) for n in KNOWN_COLUMNS}
+    canon = "\n".join(list(wb.sheetnames) + ["\t".join(headers[n]) for n in KNOWN_COLUMNS])
+    missing, unknown = {}, {}
+    for n, known in KNOWN_COLUMNS.items():
+        if find_sheet(wb, n) is None:
+            continue
+        m = [c for c in known if c not in headers[n]]
+        u = [c for c in headers[n] if c not in known]
+        if m:
+            missing[n] = m
+        if u:
+            unknown[n] = u
+    return {"fingerprint": hashlib.sha256(canon.encode("utf-8")).hexdigest()[:12],
+            "missing": missing, "unknown": unknown}
+
+
+def analysis_stats(ws):
+    """Read the `Level | Level Name | Total Findings` block and its Total row, or None."""
+    if ws is None:
+        return None
+    by_level, total, in_block = {}, None, False
+    for row in ws.iter_rows(values_only=True):
+        cells = list(row) + [None] * 3
+        if not in_block:
+            in_block = (_s(cells[0]) == "Level" and _s(cells[1]) == "Level Name"
+                        and _s(cells[2]) == "Total Findings")
+            continue
+        first = cells[0]
+        if _s(first).lower() == "total":
+            total = _int(cells[2])
+            break
+        lvl, n = _int(first), _int(cells[2])
+        if lvl is not None and n is not None:
+            by_level[lvl] = n
+    if total is None:
+        return None
+    return {"total": total, "by_level": by_level}
+
+
+def _fmt_cols(d: dict) -> str:
+    return "; ".join(f"{s}: {', '.join(c)}" for s, c in d.items()) or "none"
+
+
 # ----------------------------------------------------------------------------- ingest
 
 def ingest_target(a, fields: dict) -> Path:
@@ -249,10 +328,18 @@ def ingest_target(a, fields: dict) -> Path:
 def cmd_ingest(a):
     openpyxl = _need_openpyxl()
     wb = openpyxl.load_workbook(a.xlsx, read_only=True, data_only=True)
+    names = {n.strip().lower() for n in wb.sheetnames}
+    if sum(1 for c in CAPA_PLANNER_SHEETS if c.lower() in names) >= 2:
+        sys.exit('This is a CAPA Planner export, not a findings export. '
+                 'Export "Identified Findings" from the investigation instead.')
 
     fs = find_sheet(wb, "Identified Findings", "Findings")
     if fs is None:
         sys.exit("Could not find an 'Identified Findings' sheet in the workbook.")
+    schema = schema_report(wb)
+    req_missing = [c for c in REQUIRED_COLUMNS if c in schema["missing"].get("Identified Findings", [])]
+    if a.strict and req_missing:
+        sys.exit("--strict: Identified Findings is missing required column(s): " + ", ".join(req_missing))
     findings = []
     for r in rows_as_dicts(fs):
         fid = _s(r.get("Finding ID"))
@@ -340,6 +427,9 @@ def cmd_ingest(a):
     incident["date"] = iso_date(a.date) or iso_date(incident["fields"].get("Date"))
     incident["source_file"] = os.path.basename(a.xlsx)
     incident["sheets"] = wb.sheetnames
+    incident["schema"] = schema
+    stats = analysis_stats(find_sheet(wb, "Analysis Statistics"))
+    incident["analysis_stats"] = stats
 
     out = ingest_target(a, incident["fields"])
     if is_standard_ws(out) and (out / "findings.json").exists() and not a.force:
@@ -349,6 +439,14 @@ def cmd_ingest(a):
     write_json(out / "incident.json", incident)
     print(f"Ingested {len(findings)} findings, {len(evidence)} evidence items, "
           f"{len(causal_sheet)} causal-chain rows -> {out}")
+    print(f"schema: fingerprint {schema['fingerprint']}; missing: {_fmt_cols(schema['missing'])}; "
+          f"unknown: {_fmt_cols(schema['unknown'])}")
+    if stats is None:
+        print("note: no Analysis Statistics block recognised; cross-check skipped")
+    elif stats["total"] == len(findings):
+        print(f"cross-check: Analysis Statistics agrees ({stats['total']})")
+    else:
+        print(f"warning: Analysis Statistics says {stats['total']} findings, ingested {len(findings)}")
     if is_standard_ws(out):
         outputs_dir(out).mkdir(parents=True, exist_ok=True)
         print(f"Run folder: {out.parent}\n  workspace: {out}\n  outputs:   {outputs_dir(out)}")
@@ -1520,6 +1618,7 @@ def build_parser():
     where.add_argument("--out", help="explicit workspace path; must be <dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace")
     where.add_argument("--legacy-out", help="write the workspace to any folder (pre-0.2 layout; not for new runs)")
     s.add_argument("--force", action="store_true", help="overwrite an existing workspace in the run folder")
+    s.add_argument("--strict", action="store_true", help="exit 1 when a required column is missing")
     s.set_defaults(fn=cmd_ingest)
 
     s = sp.add_parser("profile", help="Markdown profile")
