@@ -1063,7 +1063,9 @@ def _select_presets(a):
     calls = [p for p in presets[skill] if not name or p["name"] == name]
     if not calls:
         sys.exit(f"Unknown preset {a.preset}. Names for {skill}: {', '.join(p['name'] for p in presets[skill])}")
-    out_flags = ["--format", a.format]
+    out_flags = []
+    if any(t.split("=")[0] == "--format" for t in getattr(a, "_argv", [])):
+        out_flags += ["--format", a.format]
     for flag, val in (("--budget-chars", a.budget_chars), ("--fields", a.fields), ("--group-by", a.group_by),
                       ("--count-by", a.count_by)):
         if val is not None:
@@ -2070,7 +2072,10 @@ def build_parser():
     s.add_argument("--format", choices=["md", "json"], default="md")
     s.add_argument("--out")
     s.add_argument("--preset", metavar="SKILL[:NAME]",
-                   help="run a skill's recorded gather calls (references/select-presets.json); takes only output flags")
+                   help="run a skill's recorded gather calls (references/select-presets.json); takes only output "
+                        "flags. Each call keeps its own --format unless you pass --format, which overrides all. "
+                        "With several calls the output is one bundle per call under '# Preset <skill>: <name>' "
+                        "headings, so json output is concatenated bundles, not one JSON value")
     s.set_defaults(fn=cmd_select)
 
     s = sp.add_parser("causal", help="extract causal graph")

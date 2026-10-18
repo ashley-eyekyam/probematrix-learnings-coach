@@ -1359,3 +1359,19 @@ def test_preset_out_and_unknown(ws, tmp_path):
 def test_preset_with_filter_refused(ws, flag):
     r = run_fail("select", str(ws), "--preset", "supervisor-coach", *flag)
     assert "--preset cannot be combined with filters; edit the preset or drop --preset." in r.stderr
+
+
+def _preset_bundles(text):
+    parts = re.split(r"^# Preset [^\n]*\n", text, flags=re.M)[1:]
+    return [json.loads(p) for p in parts]
+
+
+def test_preset_keeps_own_format(ws):
+    assert len(_preset_bundles(run("select", str(ws), "--preset", "investigator-coach:top-json"))) == 1
+    md = run("select", str(ws), "--preset", "investigator-coach:top-json", "--format", "md")
+    assert "# Selected findings" in md
+
+
+def test_preset_json_bundles_split_on_headings(ws):
+    out = run("select", str(ws), "--preset", "supervisor-coach", "--format", "json")
+    assert len(_preset_bundles(out)) == 3
