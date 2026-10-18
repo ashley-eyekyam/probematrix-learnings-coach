@@ -6,6 +6,7 @@ Later tasks add assertions here.
 """
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -51,7 +52,7 @@ def main():
             fail("expected %d evidence items, got %d" % (EXPECT_EVIDENCE, len(evidence)))
 
         out = pmlc("check-register", ws, REGISTER)
-        if "0 problem(s)" not in out:
+        if not re.search(r"; 0 problem\(s\)\.", out):
             fail("check-register did not report 0 problem(s):\n" + out)
 
     print("smoke OK: %d findings, %d evidence, register 0 problems" % (EXPECT_FINDINGS, EXPECT_EVIDENCE))
