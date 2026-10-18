@@ -1540,3 +1540,33 @@ def test_skill_commands_parse(capsys):
 
 def test_skill_argv_placeholders():
     assert _skill_argv("PMLC select <ws> --level <n> --format <f>  # c") == ["select", "X", "--level", "1", "--format", "md"]
+
+
+# ----------------------------------------------------------------------------- UAT inputs (tools/make-uat-inputs.py)
+
+def _sheets_and_header(x):
+    wb = openpyxl.load_workbook(x, read_only=True)
+    head = [c.value for c in next(wb["Identified Findings"].iter_rows(max_row=1))]
+    return wb.sheetnames, head
+
+
+@pytest.mark.parametrize("where", ["fresh", "committed"])
+def test_make_uat_inputs(tmp_path, where):
+    if where == "fresh":
+        r = subprocess.run([sys.executable, str(ROOT / "tools" / "make-uat-inputs.py"), "--out", str(tmp_path)],
+                           capture_output=True, text=True, cwd=ROOT)
+        assert r.returncode == 0, r.stderr
+        d = tmp_path
+    else:
+        d = ROOT / "docs" / "uat" / "inputs"
+    base = ["Incident Summary", "Identified Findings", "Evidence Links", "Causal Chain"]
+    sheets, head = _sheets_and_header(d / "uat-votes.xlsx")
+    assert sheets == base + ["Collaboration Data"] and head == FIND_COLS
+    votes = [tuple(r) for r in openpyxl.load_workbook(d / "uat-votes.xlsx")["Collaboration Data"].iter_rows(values_only=True)]
+    assert ("FND-0004", "downgrade", "weak evidence") in votes
+    sheets, head = _sheets_and_header(d / "uat-renamed-header.xlsx")
+    assert sheets == base and "Rating" not in head and head[FIND_COLS.index("Rating")] == "Score"
+    sheets, head = _sheets_and_header(d / "uat-capa-planner.xlsx")
+    assert sheets == base + ["Corrective Actions", "Preventive Actions"] and head == FIND_COLS
+    for n in ("uat-votes-pack.json", "uat-unlinked-pack.json"):
+        assert json.loads((d / n).read_text(encoding="utf-8"))["schema"] == 1

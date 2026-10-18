@@ -18,6 +18,36 @@ Check with `/plugin`; the skills appear as `probematrix-learnings-coach:<skill>`
 
 Install the plugin from the same marketplace through the app's plugin settings, or upload the plugin folder if your workspace allows custom plugins. Attach the export to the conversation.
 
+## Getting updates
+
+Plugins do not update themselves unless you turn on auto-update. To get the latest version:
+
+- **Claude Code:** `/plugin marketplace update probematrix`, then `/reload-plugins`.
+- **Claude app:** open the plugin settings, find the `probematrix` marketplace and choose Update.
+
+To check which version you have, ask the agent: *"Run the Learnings Coach engine with `--version` and tell me the result."* It prints, for example, `pmlc 2.0.0a1`.
+
+## Pinning a version
+
+The marketplace follows the `main` branch unless you name a tag with `#<tag>`:
+
+```
+/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v0.3.5            # stable 0.3.5
+/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v2.0.0-alpha.1    # the v2.0 alpha
+```
+
+You can have only one marketplace named `probematrix` at a time. To change the pin, remove the marketplace first and then add it again:
+
+```
+/plugin marketplace remove probematrix
+/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v0.3.5
+/plugin install probematrix-learnings-coach@probematrix
+```
+
+## Going back to stable
+
+While v2.0 is in testing, `main` carries an alpha. To go back to the stable release, pin `v0.3.5` as in [Pinning a version](#pinning-a-version), then run `/reload-plugins` (or restart the app). To follow `main` again later, remove the marketplace and add it without a tag.
+
 ## OpenAI Codex (CLI, IDE, app)
 
 Codex discovers skills in `.agents/skills` from the working directory up to the repository root, and in `~/.agents/skills` for all projects.
