@@ -772,6 +772,9 @@ def test_budget_too_small_keeps_none(ws):
     r = _select_proc(ws, "--budget-chars", "10")
     assert "# Selected findings (0)" in r.stdout and "### FND" not in r.stdout and "## FND" not in r.stdout
     assert "Dropped for budget: 4 findings (lowest kept rating none): FND-0003, FND-0002, FND-0001, FND-0004" in r.stdout
+    m = re.search(r"below the minimum output \((\d+) chars\); no findings kept", r.stderr)
+    assert m and "select: budget 10 is below" in r.stderr and len(r.stdout) == int(m.group(1))
+    assert "Dropped for budget: 4 findings" in r.stderr
     j = _select_proc(ws, "--budget-chars", "10", "--format", "json")
     assert json.loads(j.stdout) == [] and "Dropped for budget: 4 findings" in j.stderr
 
@@ -780,7 +783,8 @@ def test_budget_keeps_rating_order_and_counts_footers(ws):
     full = _select_proc(ws, "--brief").stdout
     r = _select_proc(ws, "--brief", "--budget-chars", str(len(full) - 1))
     assert len(r.stdout) <= len(full) - 1
-    assert "Dropped for budget: " in r.stdout
+    assert "Dropped for budget: " in r.stdout and "Dropped for budget: " in r.stderr
+    assert "below the minimum" not in r.stderr
     assert re.search(r"select: \d+ findings, %d chars" % len(r.stdout), r.stderr)
     ok = _select_proc(ws, "--brief", "--budget-chars", str(len(full)))
     assert ok.stdout == full and "Dropped" not in ok.stdout

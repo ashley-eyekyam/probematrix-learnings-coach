@@ -826,11 +826,13 @@ def cmd_select(a):
         if a.budget_chars is not None:
             kept = _fit_count(nsel, lambda k: len(render(k)) <= a.budget_chars)
         text = render(kept)
-        if not md:
-            if kept < nsel:
-                print(dropped_line(kept), file=sys.stderr)
-            if a.exclude_downgraded:
-                print(note, file=sys.stderr)
+        if kept < nsel:
+            print(dropped_line(kept), file=sys.stderr)
+        if kept == 0 and nsel and a.budget_chars is not None and len(text) > a.budget_chars:
+            print(f"select: budget {a.budget_chars} is below the minimum output ({len(text)} chars); "
+                  "no findings kept", file=sys.stderr)
+        if not md and a.exclude_downgraded:
+            print(note, file=sys.stderr)
     if a.count_by and a.exclude_downgraded:
         if a.format == "json":
             print(note, file=sys.stderr)
@@ -1558,7 +1560,8 @@ def build_parser():
     s.add_argument("--max", type=int)
     s.add_argument("--brief", action="store_true", help="omit justification, causal text and evidence quotes")
     s.add_argument("--budget-chars", type=int, help="keep findings in rating order while the output stays within "
-                                                    "N characters, and say how many were dropped")
+                                                    "N characters, and say how many were dropped; the header and "
+                                                    "footer lines are always printed")
     s.add_argument("--fields", help="comma-separated: " + ", ".join(SELECT_FIELDS) + " (id is always kept)")
     s.add_argument("--group-by", choices=["level", "subcategory", "code", "entity"],
                    help="group the findings under one heading (md) or key (json) per value")
