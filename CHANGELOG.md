@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased] (v2.0.0)
+
+- Workflow: every change starts with an issue and a branch; v2.0 work happens on `feature/v2.0-features-edition` under epic issue #1. AGENTS.md and CONTRIBUTING.md describe the workflow, and `.github/` adds pull request, feature and bug templates.
+
 ## 0.3.5
 
 - `scan-names` lists any file it cannot read (such as a PDF) and exits 2, so a zero-hit result never silently skips a file.

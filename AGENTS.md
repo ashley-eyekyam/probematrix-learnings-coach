@@ -42,3 +42,11 @@ Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write it
 - Setup: `python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt`. Tests: `.venv/bin/python -m pytest tests` (they build a synthetic export; no real data needed; the JS tests need Node and are skipped without it).
 - Keep each `SKILL.md` under ~150 lines; put shared material in `skills/learnings-coach/references/`.
 - New audience skill: copy an existing audience skill, change the audience, the `select` filters and the structure, and add it to `references/audiences.md` and the README table.
+
+### Workflow: issue, branch, pull request
+
+- Every change starts with a GitHub issue and a branch; nothing is committed to `main` directly. Branch names: `feature/`, `fix/` or `docs/` plus `<issue#>-<slug>`.
+- **v2.0 Features Edition:** all v2.0 work goes only on `feature/v2.0-features-edition`, tracked by epic issue #1. Check the current branch before the first commit of a session.
+- Commit messages read `<type>(<area>): <what> (#N)`, for example `fix(engine): keep role overrides in classify (#1)`. Push after every task.
+- Each v2.0 phase ends with an annotated tag `v2.0.0-alpha.N` (version `2.0.0aN`), a CHANGELOG entry, the phase ticked in the issue and a summary comment. Merge `main` into the branch when it moves; never rebase.
+- The branch reaches `main` through one pull request ("Closes #1"), merged with a merge commit (not squash or rebase).
