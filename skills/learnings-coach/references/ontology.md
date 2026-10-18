@@ -30,24 +30,29 @@ The unit of learning is the **learning**, not the finding. Findings are instance
 
 ### 3.1 Layer F: functional entity (who owns the learning)
 
-| ID | Entity | Typical roles |
-|---|---|---|
-| F01 | Operations & Control Room | control-room operators, shift engineers, shift in-charges |
-| F02 | Mechanical Maintenance | fitters, technicians, maintenance supervisors and managers |
-| F03 | Electrical Maintenance | electrical technicians, electrical PM planners, hazardous-area equipment owners |
-| F04 | Instrumentation, Control & Calibration | calibration teams, DCS / F&G engineers, instrument supervisors |
-| F05 | Asset Integrity, Corrosion & Inspection | integrity and corrosion engineers, inspection, reliability |
-| F06 | Materials Management | stores, procurement, spares and quality control |
-| F07 | Engineering, Design, Documents & MOC | engineering authority, design, document control, management of change |
-| F08 | Work Management & Planning | planners, CMMS / work-order and notification owners |
-| F09a | Fire-fighting Operations & Fire-water Systems | fire crews, fire station, fire-water and fire-pump maintenance |
-| F09b | Emergency Planning & Command | emergency plan owners, incident / site controllers, drill coordinators |
-| F10 | Security & Surveillance | security staff, CCTV operators, watch posts |
-| F11 | HSE, Process Safety & Audit | HSE function, process safety, audit teams, permit-to-work owners |
-| F12 | HR, Training & Competence | HR policy owners, training coordinators, rostering and staffing |
-| F13 | Plant & Asset Leadership | plant manager, head of operations, site / area management |
-| F14 | Corporate, External & Vendors | directors, corporate functions, vendors, OEMs, suppliers, contractors |
-| F99 | Unmapped | roles the rules could not place; resolve them before publishing |
+| ID | Entity | Tags | Typical roles |
+|---|---|---|---|
+| F01 | Operations & Control Room | operations | control-room operators, shift engineers, shift in-charges |
+| F02 | Mechanical Maintenance | operations | fitters, technicians, maintenance supervisors and managers |
+| F03 | Electrical Maintenance | engineering | electrical technicians, electrical PM planners, hazardous-area equipment owners |
+| F04 | Instrumentation, Control & Calibration | engineering | calibration teams, DCS / F&G engineers, instrument supervisors |
+| F05 | Asset Integrity, Corrosion & Inspection | engineering | integrity and corrosion engineers, inspection, reliability |
+| F06 | Materials Management | supply | stores, procurement, spares and quality control |
+| F07 | Engineering, Design, Documents & MOC | engineering | engineering authority, design, document control, management of change |
+| F08 | Work Management & Planning | operations | planners, CMMS / work-order and notification owners |
+| F09a | Fire-fighting Operations & Fire-water Systems | emergency | fire crews, fire station, fire-water and fire-pump maintenance |
+| F09b | Emergency Planning & Command | emergency | emergency plan owners, incident / site controllers, drill coordinators |
+| F10 | Security & Surveillance | emergency | security staff, CCTV operators, watch posts |
+| F11 | HSE, Process Safety & Audit | assurance | HSE function, process safety, audit teams, permit-to-work owners |
+| F12 | HR, Training & Competence | people | HR policy owners, training coordinators, rostering and staffing |
+| F13 | Plant & Asset Leadership | leadership | plant manager, head of operations, site / area management |
+| F14 | Corporate & Board | corporate | directors, corporate functions, the board, recommendation tracking |
+| F15 | Regulators & External Bodies | external | regulators, statutory inspectorates |
+| F16 | Vendors, OEMs & Suppliers | supply | vendors, OEMs, manufacturers, suppliers |
+| F17 | Contractors | contractor, supply | contractors and their crews |
+| F99 | Unmapped | | roles the rules could not place; resolve them before publishing |
+
+Before v2.0, F14 also held regulators, vendors and contractors; they are now F15 to F17. The audience skills select by **tag** (`PMLC select <ws> --tag emergency`, pack `"scope": {"tags": [...]}`), not by entity ID, so a renamed or extended taxonomy keeps working as long as its entities carry the same tags. Site- or country-specific role words (e.g. CISF, ERDMP, SIC / CIC, GM / CGM, resident engineer) live in an overlay under `references/overlays/` and are applied with `PMLC classify <ws> --overlay <name>`.
 
 Adapt the list to the organisation: rename, split or merge entities in `taxonomy.json`. Keep the IDs stable within one study.
 

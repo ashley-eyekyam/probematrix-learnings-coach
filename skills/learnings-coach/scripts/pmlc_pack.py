@@ -153,7 +153,8 @@ def relevant_findings(w, scope=None) -> list:
     """Finding IDs a pack is expected to draw on: those matching its scope (the same filter as select), or,
     without a scope, the top-rated findings (rating equal to the workspace maximum, as classify counts them)."""
     if scope:
-        a = types.SimpleNamespace(entity=scope.get("entities") or None, tier=scope.get("tiers") or None,
+        a = types.SimpleNamespace(entity=scope.get("entities") or None, tag=scope.get("tags") or None,
+                                  tier=scope.get("tiers") or None,
                                   relation=None, level=scope.get("levels") or None,
                                   min_rating=scope.get("min_rating"), code=None, text=None, max=None)
         rel = {f["id"] for f, _ in core._filter(w, a)}
@@ -325,15 +326,19 @@ def _check_scope(scope, w, bad):
         bad("scope", "must be an object")
         return
     for k in scope:
-        if k not in ("tiers", "levels", "entities", "min_rating"):
-            bad(f"scope.{k}", "unknown key; use tiers, levels, entities, min_rating")
+        if k not in ("tiers", "levels", "entities", "tags", "min_rating"):
+            bad(f"scope.{k}", "unknown key; use tiers, levels, entities, tags, min_rating")
     t, lv, en, mr = scope.get("tiers") or [], scope.get("levels") or [], scope.get("entities") or [], scope.get("min_rating")
+    tg = scope.get("tags") or []
     if not isinstance(t, list) or any(not isinstance(x, str) or x not in core.TIER_LABELS for x in t):
         bad("scope.tiers", "a list of T1 to T5")
     if not isinstance(lv, list) or any(isinstance(x, bool) or x not in (1, 2, 3, 4) for x in lv):
         bad("scope.levels", "a list of 1 to 4")
     if not isinstance(en, list) or any(not isinstance(x, str) for x in en):
         bad("scope.entities", "a list of entity IDs like F02")
+    if not isinstance(tg, list) or any(not isinstance(x, str) for x in tg):
+        bad("scope.tags", "a list of tags like emergency")
+        tg = []
     if mr is not None and (isinstance(mr, bool) or not isinstance(mr, int)):
         bad("scope.min_rating", "a whole number or null")
     if "clusters" in w and isinstance(en, list):
@@ -341,8 +346,17 @@ def _check_scope(scope, w, bad):
         for x in en:
             if isinstance(x, str) and x not in known:
                 bad("scope.entities", f"{x} is not an entity in clusters.json")
-    if (t or en) and "clusters" not in w:
-        bad("scope", "tiers and entities need clusters.json. Run: pmlc.py classify <ws>")
+    if "clusters" in w and tg:
+        tagmap = w["clusters"].get("taxonomy", {}).get("tags")
+        if tagmap is None:
+            bad("scope.tags", "clusters.json has no tags (it predates v2.0). Re-run classify")
+        else:
+            known = {x for ts in tagmap.values() for x in ts}
+            for x in tg:
+                if x not in known:
+                    bad("scope.tags", f"{x} is not a tag in clusters.json")
+    if (t or en or tg) and "clusters" not in w:
+        bad("scope", "tiers, entities and tags need clusters.json. Run: pmlc.py classify <ws>")
 
 
 def _check_notes(pack, w, bad):

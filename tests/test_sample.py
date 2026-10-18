@@ -1,0 +1,73 @@
+"""Tests on the committed Hazira sample (public record). Later tasks reuse the module fixture `hz`."""
+import json
+import re
+import subprocess
+import sys
+import types
+from pathlib import Path
+
+import pytest
+
+from test_pmlc import PMLC, ROOT, run
+
+pytest.importorskip("openpyxl")
+SAMPLE = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire"
+EXPORT = SAMPLE / "2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+REGISTER = SAMPLE / "outputs" / "learnings-register.json"
+GOLDEN = Path(__file__).resolve().parent / "fixtures" / "roles-golden.json"
+
+
+@pytest.fixture(scope="module")
+def hz(tmp_path_factory):
+    root = tmp_path_factory.mktemp("hazira")
+    run("ingest", str(EXPORT), "--slug", "hazira-gas-release-fire", "--root", str(root))
+    ws = root / "pmlc-runs" / "2020-09-24-hazira-gas-release-fire" / "workspace"
+    run("classify", str(ws), "--overlay", "india-process-site")
+
+    def select(*args):
+        return json.loads(run("select", str(ws), *args, "--format", "json"))
+
+    return types.SimpleNamespace(
+        ws=ws, select=select,
+        clusters=json.loads((ws / "clusters.json").read_text(encoding="utf-8")),
+        incident=json.loads((ws / "incident.json").read_text(encoding="utf-8")))
+
+
+def test_baseline(hz):
+    findings = json.loads((hz.ws / "findings.json").read_text(encoding="utf-8"))
+    assert len(findings) == 436
+    assert len(json.loads((hz.ws / "evidence.json").read_text(encoding="utf-8"))) == 46
+    assert max(f["rating"] or 0 for f in findings) == 4
+    assert len(hz.clusters["role_map"]) == 630
+    assert len(hz.select("--entity", "F02", "F06")) == 196
+
+
+def test_golden_roles(hz):
+    golden = json.loads(GOLDEN.read_text(encoding="utf-8"))
+    assert len(golden) >= 50
+    rm = hz.clusters["role_map"]
+    wrong = {r: ({k: rm[r][k] for k in "FTR"} if r in rm else None, want) for r, want in golden.items()
+             if r not in rm or {k: rm[r][k] for k in "FTR"} != want}
+    assert wrong == {}
+
+
+def test_no_design_role_is_approver(hz):
+    assert not [r for r, m in hz.clusters["role_map"].items() if "design" in r.lower() and m["R"] == "approver"]
+
+
+def test_plant_policy_roles_are_t4(hz):
+    roles = {r: m["T"] for r, m in hz.clusters["role_map"].items() if re.search(r"(?i)plant manag.*polic", r)}
+    assert roles and set(roles.values()) == {"T4"}, roles
+
+
+def test_register_still_clean(hz):
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(hz.ws), str(REGISTER)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "; 0 problem(s)." in r.stdout
+
+
+def test_select_by_tag_on_hazira(hz):
+    emergency = {d["id"] for d in hz.select("--tag", "emergency")}
+    assert emergency == {d["id"] for d in hz.select("--entity", "F09a", "F09b", "F10")}
+    assert hz.clusters["taxonomy"]["overlays"] == ["india-process-site"]

@@ -13,7 +13,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 
 ```bash
 PMLC select <ws> --level 3 4 --min-rating <top> --brief
-PMLC select <ws> --entity F11 --brief                      # how existing audits performed
+PMLC select <ws> --tag assurance --brief                    # how existing audits performed
 PMLC select <ws> --text "record|log|register|sign|closure|overdue|schedule|audit" --brief
 ```
 

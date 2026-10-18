@@ -14,7 +14,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 ```bash
 PMLC select <ws> --tier T4 T5 --brief
 PMLC select <ws> --level 4 --min-rating <top>
-PMLC select <ws> --entity F12 F14 F11 --level 4 --brief     # policy, corporate, assurance
+PMLC select <ws> --tag people corporate assurance --level 4 --brief   # people, corporate, assurance
 ```
 
 Use the Learnings Register if one exists; otherwise identify the L4 learnings directly.

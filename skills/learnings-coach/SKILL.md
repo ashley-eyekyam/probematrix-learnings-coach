@@ -29,7 +29,7 @@ PMLC ingest <export.xlsx> --slug <site>-<event> [--date YYYY-MM-DD]
 #   creates <export-dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace/ and .../outputs/
 #   e.g. --slug hazira-gas-release-fire --date 2020-09-24  ->  pmlc-runs/2020-09-24-hazira-gas-release-fire/
 PMLC profile <ws> --out <ws>/profile.md
-PMLC classify <ws>
+PMLC classify <ws>                            # add --overlay india-process-site for Indian process-site role words
 PMLC run-path <ws>                            # prints <run>, <ws>, the outputs folder and the slug
 ```
 

@@ -40,7 +40,7 @@ def main():
         ws = os.path.join(tmp, "pmlc-runs", RUN_NAME, "workspace")
         if not os.path.isdir(ws):
             fail("workspace not created at " + ws)
-        pmlc("classify", ws)
+        pmlc("classify", ws, "--overlay", "india-process-site")
 
         with open(os.path.join(ws, "findings.json"), encoding="utf-8") as fh:
             findings = json.load(fh)

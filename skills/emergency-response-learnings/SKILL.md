@@ -5,15 +5,15 @@ description: Produce learning for emergency response and fire services from a Pr
 
 # Emergency Response Learnings
 
-Audience: Learning Clusters F09a (fire-fighting operations and fire-water systems), F09b (emergency planning and command) and F10 (security and surveillance), plus control-room roles who make the first response decisions.
+Audience: the Learning Clusters tagged `emergency` (in the default taxonomy F09a fire-fighting operations and fire-water systems, F09b emergency planning and command, F10 security and surveillance), plus control-room roles who make the first response decisions.
 
 Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 
 ```bash
-PMLC select <ws> --entity F09a F09b F10 --brief
-PMLC select <ws> --entity F09b --min-rating <top>
+PMLC select <ws> --tag emergency --brief
+PMLC select <ws> --tag emergency --min-rating <top>
 PMLC select <ws> --text "alarm|detect|isolat|MOV|valve|drill|fire.?water|pump|evacuat|command|CCTV" --brief
 PMLC timeline <ws>                     # use the event-day sequence if present
 ```
@@ -44,7 +44,7 @@ Sections → kinds:
 4. `scenario` ×3: injects in `situation`, decision points and the time standard in `prompts`.
 5. `indicator`.
 
-Set `"scope": {"entities": ["F09a", "F09b", "F10"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+Set `"scope": {"tags": ["emergency"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
 
 ```json
 {"kind": "timeline", "events": [{"date": "YYYY-MM-DD", "time": "14:05", "text": "…", "received_by": "Control room operators",

@@ -1,0 +1,16 @@
+{
+ "_about": "Role words specific to Indian process sites (public-sector oil and gas): CISF security posts, ERDMP / DMP emergency plans, site and chief incident controllers (SIC / CIC), resident engineers, GM / CGM ranks and production chief engineers. Apply with: pmlc.py classify <ws> --overlay india-process-site. Each regex is OR-ed onto the base rule with the same ID.",
+ "name": "india-process-site",
+ "extend": {
+  "entities": {
+   "F01": "chief engineer \\(production\\)|junior engineer",
+   "F09b": "erdmp|\\bdmp\\b|\\bsic\\b|\\bcic\\b",
+   "F10": "cisf|constable|sub-inspector",
+   "F13": "resident engineer|\\bgm\\b|\\bcgm\\b"
+  },
+  "tiers": {
+   "T4": "\\bcgm\\b|\\bgm\\b|\\bsic\\b|\\bcic\\b|resident engineer",
+   "T1": "constable|sub-inspector|junior engineer"
+  }
+ }
+}

@@ -435,22 +435,64 @@ def cmd_profile(a):
 
 # ----------------------------------------------------------------------------- classify
 
-def _load_taxonomy(path=None):
+def _overlay_path(x) -> Path:
+    """A bare name resolves to references/overlays/<name>.json; anything with a slash or .json is a path."""
+    if x.endswith(".json") or "/" in x or os.sep in x:
+        return Path(x)
+    return REFS / "overlays" / f"{x}.json"
+
+
+def _load_taxonomy(path=None, overlays=()) -> dict:
+    """The taxonomy rules with compiled regexes. Each overlay (name or path) ORs its extra regexes onto the base
+    rules with the same IDs: match = (?:base)|(?:extra)."""
     p = Path(path) if path else REFS / "taxonomy.json"
     t = json.loads(p.read_text(encoding="utf-8"))
+    t["_file"] = str(path) if path else "taxonomy.json"
+    t["_overlays"] = []
+    for x in overlays:
+        op = _overlay_path(x)
+        if not op.exists():
+            sys.exit(f"Overlay {x} not found at {op}. Pass a name from references/overlays/ or a path to a .json file.")
+        ov = json.loads(op.read_text(encoding="utf-8"))
+        name = ov.get("name") or op.stem
+        for group in ("entities", "tiers"):
+            rules = {r["id"]: r for r in t[group]}
+            for rid, extra in (ov.get("extend", {}).get(group) or {}).items():
+                if rid not in rules:
+                    sys.exit(f"Overlay {name} extends {rid}, which is not in the {group} of taxonomy {t['_file']}.")
+                rules[rid]["match"] = f"(?:{rules[rid]['match']})|(?:{extra})"
+        t["_overlays"].append(name)
     for group in ("entities", "tiers", "relations"):
         for rule in t[group]:
             rule["_rx"] = re.compile(rule["match"], re.I)
             rule["_ex"] = re.compile(rule["exclude"], re.I) if rule.get("exclude") else None
+            rule["_wk"] = re.compile(rule["weak"], re.I) if rule.get("weak") else None
     return t
 
 
 def map_role(role: str, tax: dict) -> dict:
     ents = [e["id"] for e in tax["entities"]
             if e["_rx"].search(role) and not (e["_ex"] and e["_ex"].search(role))]
-    tier = next((t["id"] for t in tax["tiers"] if t["_rx"].search(role)), "T9")
+    tier = next((t["id"] for t in tax["tiers"] if t["_rx"].search(role)), None) \
+        or next((t["id"] for t in tax["tiers"] if t["_wk"] and t["_wk"].search(role)), "T9")
     rel = next((r["id"] for r in tax["relations"] if r["_rx"].search(role)), tax["default_relation"]["id"])
     return {"F": ents, "T": tier, "R": rel, "source": "rule"}
+
+
+def entities_for_tags(clusters: dict, tags: list) -> list:
+    """Entity IDs (taxonomy order) carrying any of the tags. Exits when a tag is unknown or clusters.json has no tags."""
+    tx = clusters.get("taxonomy", {})
+    tagmap = tx.get("tags") or {}
+    in_use = sorted({t for ts in tagmap.values() for t in ts})
+    missing = [t for t in tags if t not in in_use]
+    if missing:
+        sys.exit(f"No entity has tag(s) {missing} in taxonomy {tx.get('file', 'unknown')}. Tags in use: "
+                 f"{', '.join(in_use) or 'none'}. Re-run classify if clusters.json predates v2.0.")
+    return [e for e, ts in tagmap.items() if set(ts) & set(tags)]
+
+
+def _taxonomy_label(file, overlays) -> str:
+    return " + ".join([file, *overlays])
 
 
 def load_overrides(path: Path) -> dict:
@@ -463,7 +505,12 @@ def load_overrides(path: Path) -> dict:
 def cmd_classify(a):
     ws = Path(a.ws)
     w = load_ws(ws)
-    tax = _load_taxonomy(a.taxonomy)
+    tax = _load_taxonomy(a.taxonomy, a.overlay or ())
+    prev = w.get("clusters", {}).get("taxonomy", {})
+    if "file" in prev:
+        was, now = _taxonomy_label(prev["file"], prev.get("overlays", [])), _taxonomy_label(tax["_file"], tax["_overlays"])
+        if was != now:
+            print(f"warning: previous classify used {was}; this run uses {now}")
     ov_path = None
     if not a.no_overrides:
         if a.overrides:
@@ -511,7 +558,9 @@ def cmd_classify(a):
     unresolved = sorted(r for r, m in role_map.items() if not m["F"] or m["T"] == "T9")
     out = {"taxonomy": {"entities": names, "tiers": tier_names,
                         "relations": {r["id"]: r["name"] for r in tax["relations"]} | {
-                            tax["default_relation"]["id"]: tax["default_relation"]["name"]}},
+                            tax["default_relation"]["id"]: tax["default_relation"]["name"]},
+                        "tags": {e["id"]: list(e.get("tags", [])) for e in tax["entities"]},
+                        "file": tax["_file"], "overlays": tax["_overlays"]},
            "entities": entities, "findings": per_f, "role_map": role_map, "unresolved_roles": unresolved,
            "overrides": {"file": ov_path, "applied": applied, "stale": stale}}
     write_json(ws / "clusters.json", out)
@@ -557,10 +606,14 @@ def _evidence_for(f, E, max_quote=400):
 def _filter(w, a):
     F = w["findings"]
     cl = w.get("clusters", {}).get("findings", {})
+    entity = set(a.entity or [])
+    tags = getattr(a, "tag", None)
+    if tags:
+        entity |= set(entities_for_tags(w.get("clusters", {}), tags))
     out = []
     for f in F:
         c = cl.get(f["id"], {"F": [], "T": [], "R": []})
-        if a.entity and not set(a.entity) & set(c["F"]):
+        if entity and not entity & set(c["F"]):
             continue
         if a.tier and not set(a.tier) & set(c["T"]):
             continue
@@ -581,8 +634,8 @@ def _filter(w, a):
 
 def cmd_select(a):
     w = load_ws(a.ws)
-    if (a.entity or a.tier or a.relation) and "clusters" not in w:
-        sys.exit("Filtering by entity/tier/relation needs clusters.json. Run: pmlc.py classify <ws>")
+    if (a.entity or a.tag or a.tier or a.relation) and "clusters" not in w:
+        sys.exit("Filtering by entity/tag/tier/relation needs clusters.json. Run: pmlc.py classify <ws>")
     E = w.get("evidence", {})
     sel = _filter(w, a)
     if a.format == "json":
@@ -595,7 +648,7 @@ def cmd_select(a):
         text = json.dumps(items, indent=1, ensure_ascii=False)
     else:
         L = [f"# Selected findings ({len(sel)})\n",
-             f"Filters: entity={a.entity} tier={a.tier} relation={a.relation} level={a.level} "
+             f"Filters: entity={a.entity} tag={a.tag} tier={a.tier} relation={a.relation} level={a.level} "
              f"min_rating={a.min_rating} code={a.code} text={a.text}\n"]
         for f, c in sel:
             L.append(f"## {f['id']} · {f['code']} {f['name']} · L{f['level']} {f['subcategory']} · rating {f['rating']}")
@@ -1299,6 +1352,9 @@ def build_parser():
     s = sp.add_parser("classify", help="roles -> Learning Clusters")
     s.add_argument("ws")
     s.add_argument("--taxonomy", help="alternative taxonomy.json")
+    s.add_argument("--overlay", action="append", metavar="NAME_OR_PATH",
+                   help="extra site role words OR-ed onto the taxonomy (repeatable); a bare name means "
+                        "references/overlays/<name>.json, e.g. india-process-site")
     s.add_argument("--overrides", help="JSON {role: {F:[..], T:.., R:..}} from the LLM resolution pass "
                                           "(default: <ws>/role_overrides.json when it exists)")
     s.add_argument("--no-overrides", action="store_true", help="ignore any overrides file")
@@ -1307,6 +1363,7 @@ def build_parser():
     s = sp.add_parser("select", help="filtered findings bundle")
     s.add_argument("ws")
     s.add_argument("--entity", nargs="*", help="e.g. F02 F09b")
+    s.add_argument("--tag", nargs="+", help="entity tags, e.g. emergency or supply contractor; unioned with --entity")
     s.add_argument("--tier", nargs="*", help="e.g. T2 T3")
     s.add_argument("--relation", nargs="*", help="actor approver owner absent norm_setter learner challenger")
     s.add_argument("--level", nargs="*", type=int, help="1 2 3 4")

@@ -133,7 +133,7 @@ def test_wrong_types_never_crash(w, p):
 def test_scope_needs_clusters(w):
     w2 = {k: v for k, v in w.items() if k != "clusters"}
     got = problems(pack_with(item("para"), scope={"tiers": ["T2"]}), w2)
-    assert any(x.startswith("scope: tiers and entities need clusters.json") for x in got)
+    assert any(x.startswith("scope: tiers, entities and tags need clusters.json") for x in got)
 
 
 def test_relevant_findings(w):
@@ -842,3 +842,19 @@ def test_consecutive_checks_form_one_tight_list(w):
                   item("para", text="Then hand over."), item("check", text="Sign the permit."))
     md = pp.render_pack_md(p, w)
     assert "- [ ] Isolate the pump.\n- [ ] Record the test. *(before restart)*\n\nThen hand over.\n\n- [ ] Sign" in md
+
+
+def test_scope_tags(w):
+    assert problems(pack_with(item("para"), scope={"tags": ["emergency"]}), w) == []
+    assert "scope.tags: nonsense is not a tag in clusters.json" in problems(
+        pack_with(item("para"), scope={"tags": ["nonsense"]}), w)
+    assert any(x.startswith("scope.tags: a list of tags") for x in problems(pack_with(item("para"), scope={"tags": "x"}), w))
+    assert "FND-0004" in pp.relevant_findings(w, {"tags": ["emergency"]})
+    w2 = dict(w)
+    del w2["clusters"]
+    got = problems(pack_with(item("para"), scope={"tags": ["emergency"]}), w2)
+    assert any(x.startswith("scope: tiers, entities and tags need clusters.json") for x in got)
+    w3 = copy.deepcopy(w)
+    del w3["clusters"]["taxonomy"]["tags"]
+    got = problems(pack_with(item("para"), scope={"tags": ["emergency"]}), w3)
+    assert any("Re-run classify" in x for x in got)

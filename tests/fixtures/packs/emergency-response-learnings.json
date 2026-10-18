@@ -2,7 +2,7 @@
  "audience": "Emergency response, fire and control-room roles", "status": "Learning purposes: not a statutory document",
  "bottom_line": [{"text": "The gas alarm showed on a display but started no shutdown, so the response depended on someone noticing it.",
                   "cites": ["FND-0004", "EVD-0002"]}],
- "scope": {"entities": ["F09a", "F09b", "F10"]},
+ "scope": {"tags": ["emergency"]},
  "sections": [
   {"id": "timeline", "heading": "Response timeline", "items": [
    {"kind": "timeline", "events": [

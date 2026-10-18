@@ -14,7 +14,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 ```bash
 PMLC profile <ws>
 PMLC select <ws> --level 4 --min-rating <top> --brief
-PMLC select <ws> --entity F11 --level 3 4 --brief           # audit and assurance findings
+PMLC select <ws> --tag assurance --level 3 4 --brief        # audit and assurance findings
 PMLC timeline <ws> --before <incident date>                 # signals that existed before the event
 ```
 

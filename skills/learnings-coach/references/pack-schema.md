@@ -34,7 +34,7 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 - **`status`:** must contain `Learning purposes: not a statutory document`.
 - **`bottom_line`:** 1 to 7 takeaways, each citing at least one Finding or Evidence ID.
 - **`scope` (optional):**
-  - It says which findings the pack should cover, using the same filters as `PMLC select`. Tiers and entities need `clusters.json`.
+  - It says which findings the pack should cover, using the same filters as `PMLC select`. `tags` (e.g. `["emergency"]`) expand to every entity with that tag and are unioned with `entities`; prefer tags, so the pack survives a custom taxonomy. Tiers, entities and tags need `clusters.json`.
   - Without a scope, coverage is measured against the top-rated findings.
   - The page shows "This pack cites *x* of *y* relevant findings" and lists the rest.
 - **IDs:**

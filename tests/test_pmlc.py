@@ -562,3 +562,113 @@ def test_release_script_bumps_all_three(tmp_path):
     bad = subprocess.run([sys.executable, str(ROOT / "tools" / "release.py"), "banana", "--root", str(tmp_path)],
                          capture_output=True, text=True)
     assert bad.returncode != 0
+
+
+# ----------------------------------------------------------------------------- taxonomy v2.0: tags, F14 split, overlays
+
+def test_sign_no_longer_matches_design():
+    tax = pmlc._load_taxonomy()
+    assert pmlc.map_role("F&G System Designers", tax)["R"] != "approver"
+    assert pmlc.map_role("Permit signatory", tax)["R"] == "approver"
+    assert pmlc.map_role("Supervisors who signed the permit", tax)["R"] == "approver"
+    assert pmlc.map_role("Supervisor (calibration sign-off)", tax)["R"] == "approver"
+    assert pmlc.map_role("Line Supervisors who assigned them", tax)["R"] != "approver"
+
+
+def test_rank_beats_policy():
+    tax = pmlc._load_taxonomy()
+    assert pmlc.map_role("Plant Management (policy owner)", tax)["T"] == "T4"
+    assert pmlc.map_role("Corporate policy owner", tax)["T"] == "T5"
+    assert pmlc.map_role("HR/Training Supervisor", tax)["T"] == "T2"
+    assert pmlc.map_role("Policy owner", tax)["T"] == "T3"          # 'owner' is a T3 match
+    assert pmlc.map_role("Policy", tax)["T"] == "T5"                # weak: only when no tier matches
+
+
+def test_f14_split():
+    tax = pmlc._load_taxonomy()
+    assert pmlc.map_role("Corporate Director", tax)["F"] == ["F14"]
+    assert pmlc.map_role("Statutory inspectorate", tax)["F"] == ["F15"]
+    assert pmlc.map_role("OEM / seal manufacturer", tax)["F"] == ["F16"]
+    assert pmlc.map_role("Contractor crew", tax)["F"][-1] == "F17"
+    tags = {e["id"]: e["tags"] for e in tax["entities"]}
+    assert tags["F17"] == ["contractor", "supply"] and tags["F16"] == ["supply"] and tags["F15"] == ["external"]
+    assert all(tags[e] for e in tags)
+
+
+def test_site_tokens_need_the_overlay():
+    assert "F10" not in pmlc.map_role("CISF constable", pmlc._load_taxonomy())["F"]
+    assert "F10" in pmlc.map_role("CISF constable", pmlc._load_taxonomy(overlays=["india-process-site"]))["F"]
+    ov = pmlc._load_taxonomy(overlays=["india-process-site"])
+    assert pmlc.map_role("CISF constable", ov)["T"] == "T1"
+    assert pmlc.map_role("Resident Engineer", ov)["T"] == "T4"
+    assert pmlc.map_role("SIC", ov)["F"] == ["F09b"]
+    assert pmlc.map_role("SIC", pmlc._load_taxonomy())["F"] == []
+
+
+def test_overlay_errors(tmp_path):
+    with pytest.raises(SystemExit, match="not found"):
+        pmlc._load_taxonomy(overlays=["no-such-overlay"])
+    bad = tmp_path / "bad.json"
+    bad.write_text(json.dumps({"name": "bad", "extend": {"entities": {"F77": "x"}}}), encoding="utf-8")
+    with pytest.raises(SystemExit, match="F77"):
+        pmlc._load_taxonomy(overlays=[str(bad)])
+
+
+def test_classify_records_taxonomy_and_warns_on_change(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    out = run("classify", str(w))
+    assert "warning: previous classify" not in out
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["taxonomy"]["file"] == "taxonomy.json" and cl["taxonomy"]["overlays"] == []
+    assert cl["taxonomy"]["tags"]["F09b"] == ["emergency"]
+    out = run("classify", str(w), "--overlay", "india-process-site")
+    assert "warning: previous classify used taxonomy.json; this run uses taxonomy.json + india-process-site" in out
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["taxonomy"]["overlays"] == ["india-process-site"]
+    assert "warning: previous classify" not in run("classify", str(w), "--overlay", "india-process-site")
+
+
+def test_select_by_tag_and_unknown_tag(ws):
+    ids = {d["id"] for d in json.loads(run("select", str(ws), "--tag", "emergency", "--format", "json"))}
+    assert "FND-0004" in ids
+    both = {d["id"] for d in json.loads(run("select", str(ws), "--tag", "emergency", "--entity", "F02",
+                                            "--format", "json"))}
+    f02 = {d["id"] for d in json.loads(run("select", str(ws), "--entity", "F02", "--format", "json"))}
+    assert both == ids | f02
+    r = run_fail("select", str(ws), "--tag", "nonsense")
+    assert "nonsense" in r.stderr and "Tags in use" in r.stderr
+
+
+def test_custom_taxonomy_renamed_ids_still_select_by_tag(tmp_path, ws):
+    tax = json.loads((pmlc.REFS / "taxonomy.json").read_text(encoding="utf-8"))
+    for i, e in enumerate(tax["entities"]):
+        e["id"] = f"X{i}"
+    p = tmp_path / "renamed.json"
+    p.write_text(json.dumps(tax), encoding="utf-8")
+    w2 = tmp_path / "ws2"
+    shutil.copytree(ws, w2)
+    run("classify", str(w2), "--taxonomy", str(p))
+    cl = json.loads((w2 / "clusters.json").read_text())
+    assert "F09b" not in cl["entities"] and cl["taxonomy"]["file"] == str(p)
+    sel = lambda d: {x["id"] for x in json.loads(run("select", str(d), "--tag", "emergency", "--format", "json"))}  # noqa: E731
+    assert sel(w2) == sel(ws)
+
+
+def test_old_clusters_without_tags(ws, tmp_path):
+    w2 = tmp_path / "old"
+    shutil.copytree(ws, w2)
+    cl = json.loads((w2 / "clusters.json").read_text())
+    del cl["taxonomy"]["tags"]
+    (w2 / "clusters.json").write_text(json.dumps(cl), encoding="utf-8")
+    r = run_fail("select", str(w2), "--tag", "emergency")
+    assert "Re-run classify" in r.stderr
+
+
+def test_entities_for_tags():
+    cl = {"taxonomy": {"file": "t.json", "tags": {"A": ["x"], "B": ["y", "x"], "C": ["z"]}}}
+    assert pmlc.entities_for_tags(cl, ["x"]) == ["A", "B"]
+    assert pmlc.entities_for_tags(cl, ["z", "y"]) == ["B", "C"]
+    with pytest.raises(SystemExit, match=r"No entity has tag\(s\) \['q'\] in taxonomy t.json"):
+        pmlc.entities_for_tags(cl, ["x", "q"])
