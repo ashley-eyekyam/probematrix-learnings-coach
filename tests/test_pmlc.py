@@ -1003,3 +1003,19 @@ def test_manifest_helpers(tmp_path):
     assert pmlc.stale_files(tmp_path) == []
     (tmp_path / "findings.json").write_text("[1]", encoding="utf-8")
     assert pmlc.stale_files(tmp_path)[0][0] == "x.json"
+
+
+def test_new_overrides_file_marks_clusters_stale(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    run("classify", str(w))
+    assert "current" in _status_row(run("status", str(w)), "clusters.json")
+    (w / "role_overrides.json").write_text("{}", encoding="utf-8")
+    assert "stale" in _status_row(run("status", str(w)), "clusters.json")
+    run("classify", str(w))
+    assert "current" in _status_row(run("status", str(w)), "clusters.json")
+    (w / "role_overrides.json").unlink()
+    run("classify", str(w), "--no-overrides")
+    (w / "role_overrides.json").write_text("{}", encoding="utf-8")
+    assert "current" in _status_row(run("status", str(w)), "clusters.json")

@@ -192,6 +192,8 @@ def _current_input(ws: Path, name: str, entry: dict):
         return taxonomy_hash(paths) if paths and all(p.is_file() for p in paths) else None
     if name == "overrides":
         p = src.get("overrides")
+        if not p and src.get("overrides_auto") and (ws / "role_overrides.json").is_file():
+            return file_sha256(ws / "role_overrides.json")
         return "none" if not p else (file_sha256(p) if Path(p).is_file() else None)
     if name == "export":
         return "skip"
@@ -842,7 +844,8 @@ def cmd_classify(a):
     record_derived(ws, "clusters.json",
                    {"findings.json": file_sha256(ws / "findings.json"), "taxonomy": taxonomy_hash(tpaths),
                     "overrides": file_sha256(ov_path) if ov_path else "none"},
-                   {"taxonomy": [str(_abs(p)) for p in tpaths], "overrides": str(_abs(ov_path)) if ov_path else None})
+                   {"taxonomy": [str(_abs(p)) for p in tpaths], "overrides": str(_abs(ov_path)) if ov_path else None,
+                    "overrides_auto": not a.no_overrides and not a.overrides})
     if ov_path:
         print(f"Applied {applied} override(s) from {ov_path}")
     if stale:
