@@ -485,6 +485,31 @@ def test_make_public_sample_dst_and_missing(tmp_path):
     assert r.returncode != 0 and "--slug" in r.stderr
 
 
+def test_check_samples_needs_no_scan_record(tmp_path):
+    good = tmp_path / "2020-09-24-hazira-gas-release-fire"
+    good.mkdir()
+    (good / "README.md").write_text("x")
+    (good / f"{good.name}_probematrix-findings.xlsx").write_bytes(b"x")
+    r = subprocess.run([sys.executable, str(PMLC), "check-samples", str(tmp_path)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+
+
+def test_make_public_sample_without_names(tmp_path):
+    x = make_export(tmp_path)
+    tool = ROOT / "tools" / "make-public-sample.py"
+    root = tmp_path / "samples"
+    r = subprocess.run([sys.executable, str(tool), str(x), "--slug", "2024-03-20-pump-fire",
+                        "--samples-root", str(root)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr + r.stdout
+    assert "name scan skipped" in r.stdout
+    assert (root / "2024-03-20-pump-fire" / "2024-03-20-pump-fire_probematrix-findings.xlsx").exists()
+
+
+def test_docs_no_zero_hit_rule():
+    for rel in ("AGENTS.md", "samples/README.md", "skills/learnings-coach/SKILL.md"):
+        assert "zero-hit" not in (ROOT / rel).read_text(encoding="utf-8").lower(), rel
+
+
 def _data_block(t):
     m = re.search(r'<script type="application/json" id="pmlc-data">(.*?)</script>', t, re.S)
     assert m, "no pmlc-data block"
