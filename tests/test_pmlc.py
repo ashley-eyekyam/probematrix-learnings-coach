@@ -1570,3 +1570,21 @@ def test_make_uat_inputs(tmp_path, where):
     assert sheets == base + ["Corrective Actions", "Preventive Actions"] and head == FIND_COLS
     for n in ("uat-votes-pack.json", "uat-unlinked-pack.json"):
         assert json.loads((d / n).read_text(encoding="utf-8"))["schema"] == 1
+
+
+def test_dashboard_with_no_ratings(tmp_path):
+    """No finding has a rating (Rating column renamed): dashboard must not crash on max() of nothing."""
+    import openpyxl
+    x = make_export(tmp_path)
+    wb = openpyxl.load_workbook(x)
+    sheet = wb["Identified Findings"]
+    for cell in sheet[1]:
+        if cell.value == "Rating":
+            cell.value = "Score"
+    wb.save(x)
+    run("ingest", str(x), "--slug", "pump-renamed")
+    ws_dir = tmp_path / "pmlc-runs"
+    wsp = next(ws_dir.glob("*/workspace"))
+    run("classify", str(wsp))
+    run("dashboard", str(wsp))
+    assert (wsp.parent / "outputs" / "organisation-learning-map.html").is_file()

@@ -1681,7 +1681,7 @@ def cmd_dashboard(a):
     kpis = [("Findings", n), ("Evidence items", len(w.get("evidence", {}))),
             ("Learning clusters", len([e for e in ent_ids if e != "F99"])),
             ("At supervision + organisational level", f"{100*up/max(n,1):.0f}%"),
-            ("Highest-rated findings", rat.get(max(r for r in rat if r is not None), 0) if rat else 0)]
+            ("Highest-rated findings", rat.get(max((r for r in rat if r is not None), default=None), 0))]
     bars = "".join(f'<div class="bar"><span>{html.escape(k)}</span><i style="width:{100*c/top_codes[0][1]:.0f}%"></i><b>{c}</b></div>'
                    for k, c in top_codes) if top_codes else ""
     learn_html = ""

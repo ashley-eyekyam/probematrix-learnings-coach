@@ -8,7 +8,7 @@
 
 - Fix: role overrides now persist. `classify` keeps `role_overrides.json` when you re-run it, and it reuses the previous taxonomy and overlays (`--no-overlay` opts out; `--no-overrides` ignores the overrides file). A malformed overrides file is reported, not ignored.
 - Fix: interface selection uses shared findings. `select --entity F02 --entity F06 --entity-mode all` returns the findings both functions share (27 on the Hazira sample, not 196). `--entity-mode any` is the old behaviour.
-- `pmlc.py status <ws>` lists the workspace files, what each was built from and which are out of date, and when each pack was last checked. Stale files also warn on stderr.
+- `pmlc.py status <ws>` lists the workspace files, what each was built from and which are out of date, and when each pack was last checked. `pack` and `dashboard` also print a stale-input warning on stderr.
 - `pmlc.py --version`; `run-path` also prints `top_rating` and `incident_date`.
 - `select`: `--tag` (select by entity tag, not hard-coded IDs), `--top-rated`, `--exclude-downgraded`, `--subcategory`, `--prefix`, `--budget-chars` (never splits a finding), `--fields`, `--group-by`, `--count-by`, and `--preset <skill>` (reproduces that skill's gather calls). Presets share one budget.
 - `timeline`: clock times and an event-day sequence (one entry per minute), `--on <day|incident>`, `--entity`, `--min-precision`, and `--before incident` (months or years before the incident, with year-only dates shown as such).
@@ -16,7 +16,7 @@
 - Checks: `check-pack` evidence linkage counts justification IDs, a citation to a downgraded finding needs a `data_quality` note, and `check-register` reports controlled-vocabulary drift as warnings (not errors).
 - Taxonomy: F14 is now Corporate & Board, and F15 Regulators, F16 Vendors/OEMs and F17 Contractors are new. Entities carry tags. Site-specific role words moved to the `india-process-site` overlay. Governance is a weak T5 signal and a general manager is plant leadership (T4). Migration: re-run `classify` on existing workspaces; add `--overlay india-process-site` for Hazira-style vocabulary (it is remembered afterwards).
 - Samples: official and ProbeMatrix material may be included unmodified; the name scan is optional. Just culture in outputs is unchanged.
-- CI: GitHub Actions on Linux, macOS and Windows, with and without Node; ruff, subprocess coverage (90% floor), a Hazira smoke test and a skills drift test (subcommands and SKILL.md command lines).
+- CI: GitHub Actions on Linux (ubuntu) only, with Python 3.9 and the latest 3.x, with and without Node; ruff, subprocess coverage (90% floor), a Hazira smoke test and a skills drift test (subcommands and SKILL.md command lines).
 - evals: 71 defined; structure check passing; graded runs: none yet (golden packs arrive in Phase 4).
 - Docs: an alpha notice at the top of the README with the one-line pin back to 0.3.5, INSTALL sections on getting updates, pinning a version and going back to stable, and a UAT book for testing in the Claude app (`docs/uat/v2.0.0-alpha.1-uat.md`, inputs from `tools/make-uat-inputs.py`). CI also runs on pushes to `main`.
 
