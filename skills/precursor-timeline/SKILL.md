@@ -57,6 +57,6 @@ Sections and the kinds that fill them:
 Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
 
 ```json
-{"date": "2022-03", "text": "… (24 months before)", "signal": true, "received_by": "Materials Management (F06, T1)",
+{"date": "2022-03", "text": "…", "signal": true, "received_by": "Materials Management (F06, T1)",
  "response": "None recorded", "cites": ["FND-…", "EVD-…"]}
 ```
