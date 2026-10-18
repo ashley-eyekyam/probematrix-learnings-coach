@@ -40,7 +40,7 @@ Repeat until F99 and T9 are empty or each remaining case is explained.
 
 If the user's organisation has different departments (e.g. a hospital, a mine, an airline), copy `learnings-coach/references/taxonomy.json`, edit the entities and regexes, and run `PMLC classify <ws> --taxonomy <file>`. Keep IDs stable once outputs are shared.
 
-Site- or country-specific role words go in an overlay (`references/overlays/`), not in the base taxonomy: `PMLC classify <ws> --overlay <name>`. Give new entities `tags` so the audience skills find them.
+Site- or country-specific role words go in an overlay (`references/overlays/`), not in the base taxonomy: `PMLC classify <ws> --overlay <name>`. A later plain `classify` remembers the overlays and taxonomy the previous one used; pass `--taxonomy`/`--overlay` to change them, or `--no-overlay` for none. Give new entities `tags` so the audience skills find them.
 
 ## 4. Report
 

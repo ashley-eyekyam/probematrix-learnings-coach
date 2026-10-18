@@ -719,6 +719,43 @@ def test_classify_records_taxonomy_and_warns_on_change(tmp_path):
     assert "warning: previous classify" not in run("classify", str(w), "--overlay", "india-process-site")
 
 
+def _sources(w):
+    return json.loads((w / "manifest.json").read_text())["files"]["clusters.json"]["sources"]["taxonomy"]
+
+
+def test_classify_remembers_overlay_and_taxonomy(fresh_ws, tmp_path):              # ruling 24
+    w = fresh_ws
+    run("classify", str(w), "--overlay", "india-process-site")
+    out = run("classify", str(w))
+    assert ("Reusing taxonomy taxonomy.json and overlays india-process-site from the previous classify (pass "
+            "--taxonomy/--overlay to change, --no-overlay for none).") in out
+    assert "warning: previous classify" not in out
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["taxonomy"]["overlays"] == ["india-process-site"]
+    assert len(_sources(w)) == 2 and _sources(w)[1].endswith("india-process-site.json")
+    assert "current" in _status_row(run("status", str(w)), "clusters.json")
+    out = run("classify", str(w), "--no-overlay")
+    assert "warning: previous classify used taxonomy.json + india-process-site; this run uses taxonomy.json" in out
+    assert json.loads((w / "clusters.json").read_text())["taxonomy"]["overlays"] == []
+    assert len(_sources(w)) == 1
+    assert "Reusing" not in run("classify", str(w))
+    assert json.loads((w / "clusters.json").read_text())["taxonomy"]["overlays"] == []
+    assert "cannot be combined" in run_fail("classify", str(w), "--no-overlay", "--overlay", "x").stderr
+    tax = tmp_path / "tax.json"
+    tax.write_bytes((pmlc.REFS / "taxonomy.json").read_bytes())
+    run("classify", str(w), "--taxonomy", str(tax), "--overlay", "india-process-site")
+    out = run("classify", str(w))
+    assert f"Reusing taxonomy {tax} and overlays india-process-site" in out and "warning:" not in out
+    assert _sources(w)[0] == str(tax.resolve()) and len(_sources(w)) == 2
+    out = run("classify", str(w), "--no-overlay")
+    assert f"Reusing taxonomy {tax} and overlays none" in out
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["taxonomy"]["file"] == str(tax) and cl["taxonomy"]["overlays"] == []
+    tax.unlink()
+    assert "no longer there" in run_fail("classify", str(w)).stderr
+    run("classify", str(w), "--taxonomy", str(pmlc.REFS / "taxonomy.json"))
+
+
 def test_select_by_tag_and_unknown_tag(ws):
     ids = {d["id"] for d in json.loads(run("select", str(ws), "--tag", "emergency", "--format", "json"))}
     assert "FND-0004" in ids

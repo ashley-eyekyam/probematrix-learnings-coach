@@ -818,11 +818,48 @@ def load_overrides(path: Path, tax: dict | None = None) -> dict:
     return out
 
 
+def _previous_taxonomy(ws: Path, prev: dict):
+    """(taxonomy path or None for the base one, [overlay names or paths]) that the last classify used. Prefers the
+    manifest's absolute sources; a built-in overlay comes back as its bare name."""
+    src = load_manifest(ws).get("files", {}).get("clusters.json", {}).get("sources", {}).get("taxonomy") or []
+    names = list(prev.get("overlays", []))
+    file = prev.get("file")
+    tax = None
+    if file and file != "taxonomy.json":
+        tax = src[0] if src and Path(src[0]).is_file() else file
+    paths = src[1:] if len(src) == len(names) + 1 else [None] * len(names)
+    builtin = (REFS / "overlays").resolve()
+    overlays = []
+    for name, op in zip(names, paths):
+        if op and Path(op).is_file():
+            overlays.append(Path(op).stem if Path(op).resolve().parent == builtin else op)
+        else:
+            overlays.append(name)
+    return tax, overlays
+
+
 def cmd_classify(a):
     ws = Path(a.ws)
     w = load_ws(ws)
-    tax = _load_taxonomy(a.taxonomy, a.overlay or ())
+    if a.no_overlay and a.overlay:
+        sys.exit("--no-overlay and --overlay cannot be combined; pass one or the other.")
     prev = w.get("clusters", {}).get("taxonomy", {})
+    taxonomy, overlays = a.taxonomy, list(a.overlay or ())
+    reused = False
+    if not a.taxonomy and not a.overlay and "file" in prev:
+        taxonomy, rec_overlays = _previous_taxonomy(ws, prev)
+        if not a.no_overlay:
+            overlays = rec_overlays
+        if taxonomy and not Path(taxonomy).is_file():
+            sys.exit(f"The previous classify used taxonomy {taxonomy}, which is no longer there. Pass --taxonomy "
+                     f"<file> to choose one (the base taxonomy is {REFS / 'taxonomy.json'}).")
+        reused = bool(taxonomy or overlays)
+        if reused:
+            print(f"Reusing taxonomy {taxonomy or 'taxonomy.json'} and overlays {', '.join(overlays) or 'none'} "
+                  "from the previous classify (pass --taxonomy/--overlay to change, --no-overlay for none).")
+    tax = _load_taxonomy(taxonomy, overlays)
+    if reused and taxonomy:
+        tax["_file"] = prev["file"]  # the same file under the name it was recorded with
     if "file" in prev:
         was, now = _taxonomy_label(prev["file"], prev.get("overlays", [])), _taxonomy_label(tax["_file"], tax["_overlays"])
         if was != now:
@@ -880,7 +917,7 @@ def cmd_classify(a):
            "entities": entities, "findings": per_f, "role_map": role_map, "unresolved_roles": unresolved,
            "overrides": {"file": ov_path, "applied": applied, "stale": stale}}
     write_json(ws / "clusters.json", out)
-    tpaths = taxonomy_sources(a.taxonomy, a.overlay or ())
+    tpaths = taxonomy_sources(taxonomy, overlays)
     record_derived(ws, "clusters.json",
                    {"findings.json": file_sha256(ws / "findings.json"), "taxonomy": taxonomy_hash(tpaths),
                     "overrides": file_sha256(ov_path) if ov_path else "none"},
@@ -2086,6 +2123,9 @@ def build_parser():
     s.add_argument("--overlay", action="append", metavar="NAME_OR_PATH",
                    help="extra site role words OR-ed onto the taxonomy (repeatable); a bare name means "
                         "references/overlays/<name>.json, e.g. india-process-site")
+    s.add_argument("--no-overlay", action="store_true",
+                   help="use no overlay. Without --taxonomy/--overlay/--no-overlay, classify reuses the taxonomy "
+                        "and overlays the previous classify used")
     s.add_argument("--overrides", help="JSON {role: {F:[..], T:.., R:..}} from the LLM resolution pass "
                                           "(default: <ws>/role_overrides.json when it exists)")
     s.add_argument("--no-overrides", action="store_true", help="ignore any overrides file")
