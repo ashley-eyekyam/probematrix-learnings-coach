@@ -1024,7 +1024,72 @@ def _fit_count(n, fits):
     return lo
 
 
+SELECT_FILTER_FLAGS = ("--entity", "--tier", "--relation", "--level", "--min-rating", "--top-rated", "--code",
+                       "--text", "--tag", "--subcategory", "--prefix", "--entity-mode", "--exclude-downgraded", "--max")
+PRESET_FILE = REFS / "select-presets.json"
+SELECT_LINE = re.compile(r"PMLC select <ws>((?: [^`\n]*)?)")
+
+
+def skill_select_lines(text: str) -> list[list[str]]:
+    """The argument lists of the `PMLC select <ws> ...` gather calls in a SKILL.md, in order.
+
+    Each call runs to the end of its line or its closing backtick. A trailing `# comment` and any `--out ...`
+    are dropped. A call with a `<...>` placeholder left (such as <F-id>) is a template, not a preset."""
+    import shlex
+    calls = []
+    for m in SELECT_LINE.finditer(text):
+        rest = re.sub(r"\s+#.*$", "", m.group(1))
+        rest = re.sub(r"\s--out\s+\S+", "", rest)
+        if re.search(r"<[^>]*>", rest):
+            continue
+        calls.append(shlex.split(rest))
+    return calls
+
+
+def load_presets() -> dict:
+    return json.loads(PRESET_FILE.read_text(encoding="utf-8"))
+
+
+def _select_presets(a):
+    """select --preset skill[:name]: run the skill's recorded gather calls with the real select parser."""
+    given = [t for t in getattr(a, "_argv", []) if t.split("=")[0] in SELECT_FILTER_FLAGS]
+    changed = [k for k, v in SELECT_DEFAULTS.items() if getattr(a, k) != v]
+    if given or changed:
+        sys.exit("--preset cannot be combined with filters; edit the preset or drop --preset.")
+    skill, _, name = a.preset.partition(":")
+    presets = load_presets()
+    if skill not in presets:
+        sys.exit(f"Unknown preset skill {skill}. Skills with presets: {', '.join(sorted(presets))}")
+    calls = [p for p in presets[skill] if not name or p["name"] == name]
+    if not calls:
+        sys.exit(f"Unknown preset {a.preset}. Names for {skill}: {', '.join(p['name'] for p in presets[skill])}")
+    out_flags = ["--format", a.format]
+    for flag, val in (("--budget-chars", a.budget_chars), ("--fields", a.fields), ("--group-by", a.group_by),
+                      ("--count-by", a.count_by)):
+        if val is not None:
+            out_flags += [flag, str(val)]
+    if a.brief:
+        out_flags.append("--brief")
+    import contextlib
+    import io
+    parts = []
+    for p in calls:
+        sub = build_parser().parse_args(["select", a.ws, *p["args"], *out_flags])
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            cmd_select(sub)
+        parts.append(f"# Preset {skill}: {p['name']}\n\n{buf.getvalue()}")
+    text = "\n".join(parts)
+    if a.out:
+        Path(a.out).write_text(text, encoding="utf-8")
+        print(f"Wrote {len(calls)} preset bundle(s) to {a.out}")
+    else:
+        sys.stdout.write(text)
+
+
 def cmd_select(a):
+    if getattr(a, "preset", None):
+        return _select_presets(a)
     w = load_ws(a.ws)
     grouping = a.group_by or a.count_by
     if (a.entity or a.tag or a.tier or a.relation or grouping in ("entity", "tier", "relation")) \
@@ -2004,6 +2069,8 @@ def build_parser():
     s.add_argument("--count-by", choices=COUNT_BY, help="print only a count table (md) or dict (json)")
     s.add_argument("--format", choices=["md", "json"], default="md")
     s.add_argument("--out")
+    s.add_argument("--preset", metavar="SKILL[:NAME]",
+                   help="run a skill's recorded gather calls (references/select-presets.json); takes only output flags")
     s.set_defaults(fn=cmd_select)
 
     s = sp.add_parser("causal", help="extract causal graph")
@@ -2088,6 +2155,7 @@ def build_parser():
 
 def main(argv=None):
     a = build_parser().parse_args(argv)
+    a._argv = list(sys.argv[1:] if argv is None else argv)
     a.fn(a)
 
 

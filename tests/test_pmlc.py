@@ -1305,3 +1305,57 @@ def test_select_full_md_out(ws, tmp_path):
     brief = tmp_path / "brief.md"
     run("select", str(ws), "--entity", "F02", "--brief", "--out", str(brief))
     assert "Quote:" not in brief.read_text() and "**Justification:**" not in brief.read_text()
+
+
+# ----------------------------------------------------------------------------- select presets
+
+def _skill_calls():
+    out = {}
+    for md in sorted((ROOT / "skills").glob("*/SKILL.md")):
+        calls = pmlc.skill_select_lines(md.read_text(encoding="utf-8"))
+        if calls:
+            out[md.parent.name] = calls
+    return out
+
+
+def test_presets_match_skill_lines():
+    presets = json.loads((ROOT / "skills/learnings-coach/references/select-presets.json").read_text(encoding="utf-8"))
+    assert {k: [p["args"] for p in v] for k, v in presets.items()} == _skill_calls()
+    for skill, entries in presets.items():
+        names = [p["name"] for p in entries]
+        assert len(names) == len(set(names)) and all(re.fullmatch(r"[a-z0-9-]+", n) for n in names), skill
+
+
+def test_skill_select_lines_parsing():
+    t = ('`PMLC select <ws> --code "<code>"`\n'
+         'PMLC select <ws> --text "a|b c" --brief   # why\n'
+         'PMLC select <ws> --top-rated --format json --out <ws>/top.json\n'
+         'see (`PMLC select <ws> --level 4`) now\n'
+         'PMLC select <ws> --entity <F-id> --brief\n')
+    assert pmlc.skill_select_lines(t) == [["--text", "a|b c", "--brief"], ["--top-rated", "--format", "json"],
+                                          ["--level", "4"]]
+
+
+def test_preset_runs(ws):
+    out = run("select", str(ws), "--preset", "supervisor-coach")
+    n = len(json.loads((ROOT / "skills/learnings-coach/references/select-presets.json").read_text())["supervisor-coach"])
+    assert out.count("# Preset supervisor-coach:") == n and n >= 2
+    one = run("select", str(ws), "--preset", "supervisor-coach:" + json.loads(
+        (ROOT / "skills/learnings-coach/references/select-presets.json").read_text())["supervisor-coach"][0]["name"],
+        "--brief")
+    assert one.count("# Preset") == 1 and "# Selected findings" in one
+
+
+def test_preset_out_and_unknown(ws, tmp_path):
+    f = tmp_path / "p.md"
+    run("select", str(ws), "--preset", "frontline-learning-cards", "--out", str(f), "--format", "json")
+    assert f.read_text().count("# Preset frontline-learning-cards:") == 3
+    assert "Unknown preset skill" in run_fail("select", str(ws), "--preset", "nope").stderr
+    assert "Unknown preset" in run_fail("select", str(ws), "--preset", "manager-coach:nope").stderr
+
+
+@pytest.mark.parametrize("flag", [["--tier", "T1"], ["--top-rated"], ["--entity-mode", "any"], ["--max", "3"],
+                                  ["--exclude-downgraded"], ["--text", "x"], ["--level", "1"]])
+def test_preset_with_filter_refused(ws, flag):
+    r = run_fail("select", str(ws), "--preset", "supervisor-coach", *flag)
+    assert "--preset cannot be combined with filters; edit the preset or drop --preset." in r.stderr
