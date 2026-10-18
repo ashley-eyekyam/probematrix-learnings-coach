@@ -25,7 +25,7 @@ Seals were bought locally without a specification [FND-0003]. Nothing in the ret
 
 ## Signals that reached leadership
 
-- 2022-03: Local seal purchases begin *(weak signal)* [FND-0003; EVD-0003]
+- 2022-03 (24 months before): Local seal purchases begin *(weak signal)* [FND-0003; EVD-0003]
   - Received by: Plant manager (budget owner)
   - Response: None recorded
 

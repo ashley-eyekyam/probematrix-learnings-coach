@@ -37,6 +37,8 @@ PMLC check-pack <ws> <run>/outputs/emergency-response-learnings.json   # fix eve
 PMLC pack <ws> <run>/outputs/emergency-response-learnings.json         # -> emergency-response-learnings.html (primary) and .md
 ```
 
+Run `PMLC timeline <ws> --on incident` first: it writes `timeline_event_day.json`, the clock times on the day (each with its sources) to build the sequence from.
+
 Sections → kinds:
 1. A `timeline` with one event per step: `time` (HH:MM) where the evidence gives it, `received_by` = who got the alarm or call, and the gap since the previous step in `text`. Events on the same day without times keep your order.
 2. `learning` items, with `group` = the response phase.

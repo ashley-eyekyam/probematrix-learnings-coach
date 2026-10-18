@@ -12,7 +12,7 @@
 
 ## Signals before the event
 
-- 2022-03: Seals bought locally without a specification (24 months before) *(weak signal)* [FND-0003; EVD-0003]
+- 2022-03 (24 months before): Seals bought locally without a specification *(weak signal)* [FND-0003; EVD-0003]
   - Received by: Materials Management (F06, T1)
   - Response: None recorded
 

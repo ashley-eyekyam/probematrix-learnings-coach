@@ -1212,26 +1212,94 @@ def _parse_dates(text):
     return hits
 
 
+CLOCK_RX = re.compile(r"\b([01]?\d|2[0-3])[:.]([0-5]\d)(?::[0-5]\d)?\s*(?:hrs?|h\b)?")
+PRECISION_RANK = {"day": 0, "month": 1, "year": 2}
+
+
+def months_between(a: dt.date, b: dt.date) -> int:
+    """Whole months from a to b (negative when a is after b)."""
+    return (b.year - a.year) * 12 + b.month - a.month - (b.day < a.day)
+
+
+def _clock_times(text, start=0, end=None):
+    """Clock times in text[start:end] as (match start, match end, 'HH:MM'). A '.' separator needs an hrs/h suffix, so
+    decimals and dd.mm.yyyy dates are not read as times."""
+    out = []
+    for m in CLOCK_RX.finditer(text, start, len(text) if end is None else end):
+        if text[m.end(1)] == "." and not re.search(r"h(rs?)?$", m.group(0).rstrip()):
+            continue
+        out.append((m.start(), m.end(), f"{int(m.group(1)):02d}:{m.group(2)}"))
+    return out
+
+
+def _event_day_sequence(w, day, sources):
+    """Every clock time in the sources as {time, snippet, sources}, sorted by time and deduplicated."""
+    found = collections.OrderedDict()
+    for sid, text in sources:
+        cuts = [0] + [m.end() for m in re.finditer(r"\. |\n", text)] + [len(text)]
+        for s, e, hhmm in _clock_times(text):
+            i = max(j for j in range(len(cuts) - 1) if cuts[j] <= s)
+            sentence = text[cuts[i]: cuts[i + 1]]
+            if any(prec <= 1 and d.isoformat() != day for d, prec, _, _ in _parse_dates(sentence)):
+                continue
+            mid = (s + e) // 2
+            key = (hhmm, re.sub(r"\W+", " ", text[max(0, mid - 30): mid + 30]).lower().strip())
+            ev = found.setdefault(key, {"time": hhmm, "snippet": re.sub(r"\s+", " ", text[max(0, s - 100): e + 100]).strip(),
+                                        "sources": []})
+            if sid not in ev["sources"]:
+                ev["sources"].append(sid)
+    return sorted(found.values(), key=lambda x: x["time"])
+
+
 def cmd_timeline(a):
     ws = Path(a.ws)
     w = load_ws(ws)
+    inc_date = incident_date(w)
     before = a.before
     if before == "incident":
-        before = incident_date(w)
+        before = inc_date
         if not before:
             sys.exit("No incident date in this workspace; pass --date to ingest.")
+    day = a.on
+    if day == "incident":
+        day = inc_date
+        if not day:
+            sys.exit("No incident date in this workspace; pass --date to ingest.")
+    elif day:
+        try:
+            dt.date.fromisoformat(day)
+        except ValueError:
+            sys.exit("--on takes a YYYY-MM-DD date or the word incident.")
+    findings = w["findings"]
+    evidence = w.get("evidence", {})
+    if a.entity:
+        cl = w.get("clusters", {}).get("findings")
+        if cl is None:
+            sys.exit("Needs clusters.json. Run: pmlc.py classify <ws>")
+        keep = {f["id"] for f in findings if set(a.entity) & set(cl.get(f["id"], {}).get("F", []))}
+        keep_ev = {e for f in findings if f["id"] in keep for e in f["evidence"]}
+        findings = [f for f in findings if f["id"] in keep]
+        evidence = {k: v for k, v in evidence.items() if v["id"] in keep_ev}
     events = collections.OrderedDict()
     sources = [(f["id"], f["code"], " ".join([f["label"], f["short"], f["justification"], f["causal"]]))
-               for f in w["findings"]]
-    sources += [(e["id"], e["type"], e["description"]) for e in w.get("evidence", {}).values()]
+               for f in findings]
+    sources += [(e["id"], e["type"], e["description"]) for e in evidence.values()]
+    min_rank = PRECISION_RANK[a.min_precision]
     for sid, kind, text in sources:
         for d, prec, s, e in _parse_dates(text):
             if before and d.isoformat() > before:
                 continue
+            precision = ["day", "day", "month", "year"][prec]
+            if PRECISION_RANK[precision] > min_rank:
+                continue
             snippet = text[max(0, s - 140): e + 140].replace("\n", " ").strip()
             key = (d.isoformat(), prec, re.sub(r"\W+", " ", text[max(0, s - 40): e + 40]).lower()[:60])
-            ev = events.setdefault(key, {"date": d.isoformat(), "precision": ["day", "day", "month", "year"][prec],
+            ev = events.setdefault(key, {"date": d.isoformat(), "precision": precision,
                                          "snippet": snippet, "sources": []})
+            if precision == "day" and "time" not in ev:
+                times = _clock_times(text, e, e + 40)
+                if times:
+                    ev["time"] = times[0][2]
             if sid not in ev["sources"]:
                 ev["sources"].append(sid)
     items = sorted(events.values(), key=lambda x: (x["date"], x["precision"]))
@@ -1243,6 +1311,9 @@ def cmd_timeline(a):
             continue
         merged.setdefault(k, []).append(it)
     flat = [x for v in merged.values() for x in v]
+    inc = dt.date.fromisoformat(inc_date) if inc_date else None
+    for it in flat:
+        it["months_before"] = months_between(dt.date.fromisoformat(it["date"]), inc) if inc else None
     write_json(ws / "timeline_candidates.json", flat)
     record_derived(ws, "timeline_candidates.json",
                    {n: file_sha256(ws / n) for n in ("findings.json", "evidence.json") if (ws / n).exists()})
@@ -1250,7 +1321,20 @@ def cmd_timeline(a):
           f"(the precursor-timeline skill curates these).\n")
     print("| Date | Precision | Sources | Snippet |\n|---|---|---|---|")
     for it in flat[: a.show]:
-        print(f"| {it['date']} | {it['precision']} | {', '.join(it['sources'][:4])} | {it['snippet'][:160]} |")
+        when = it["date"] + (f" {it['time']}" if it.get("time") else "")
+        print(f"| {when} | {it['precision']} | {', '.join(it['sources'][:4])} | {it['snippet'][:160]} |")
+    if day:
+        texts = [(x[0], x[2]) for x in sources]
+        texts.append(("narrative", w.get("incident", {}).get("narrative", "")))
+        seq = _event_day_sequence(w, day, texts)
+        write_json(ws / "timeline_event_day.json", seq)
+        record_derived(ws, "timeline_event_day.json",
+                       {n: file_sha256(ws / n) for n in ("findings.json", "evidence.json", "incident.json")
+                        if (ws / n).exists()})
+        print(f"\n{len(seq)} clock times on {day} written to {ws/'timeline_event_day.json'}.\n")
+        print("| Time | Sources | Snippet |\n|---|---|---|")
+        for it in seq[: a.show]:
+            print(f"| {it['time']} | {', '.join(it['sources'][:4])} | {it['snippet'][:160]} |")
 
 
 # ----------------------------------------------------------------------------- interfaces
@@ -1865,6 +1949,11 @@ def build_parser():
     s.add_argument("--before", help="ISO date, or the word incident for the workspace's incident date; keep only events up to it")
     s.add_argument("--per-date", type=int, default=4)
     s.add_argument("--show", type=int, default=60)
+    s.add_argument("--on", metavar="DAY|incident",
+                   help="also write timeline_event_day.json: every clock time for that day (YYYY-MM-DD, or incident)")
+    s.add_argument("--entity", nargs="+", metavar="F", help="keep only findings in these entities, and their linked evidence")
+    s.add_argument("--min-precision", choices=["day", "month", "year"], default="year",
+                   help="coarsest date precision to keep (year keeps everything)")
     s.set_defaults(fn=cmd_timeline)
 
     s = sp.add_parser("interfaces", help="entity x entity interfaces")

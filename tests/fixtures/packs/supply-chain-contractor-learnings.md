@@ -12,7 +12,7 @@
 
 ## How the part reached the job
 
-- 2022-03: Seals bought locally without a specification [FND-0003; EVD-0003]
+- 2022-03 (24 months before): Seals bought locally without a specification [FND-0003; EVD-0003]
   - Received by: Stores/procurement officer
   - Response: No technical approval recorded
 - 2024-03-12: Seal changed on the pump [FND-0001]

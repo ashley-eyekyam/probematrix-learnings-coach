@@ -106,3 +106,18 @@ def test_export_schema_doc_matches_sample(hz):
     for name in [c for cols in pmlc.KNOWN_COLUMNS.values() for c in cols] + pmlc.KNOWN_SUMMARY_FIELDS:
         assert name in doc, name
     assert set(hz.incident["fields"]) <= set(pmlc.KNOWN_SUMMARY_FIELDS)
+
+
+def test_event_day_sequence(hz):
+    run("timeline", str(hz.ws), "--on", "incident")
+    seq = json.loads((hz.ws / "timeline_event_day.json").read_text(encoding="utf-8"))
+    times = [x["time"] for x in seq]
+    assert times == sorted(times) and {"02:12", "03:01", "03:08"} <= set(times)
+    assert all(x["sources"] and x["snippet"] for x in seq)
+
+
+def test_min_precision_month_drops_years(hz):
+    run("timeline", str(hz.ws), "--min-precision", "month")
+    t = json.loads((hz.ws / "timeline_candidates.json").read_text(encoding="utf-8"))
+    assert t and all(x["precision"] != "year" for x in t)
+    assert all("months_before" in x for x in t)

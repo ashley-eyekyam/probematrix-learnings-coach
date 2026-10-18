@@ -1019,3 +1019,77 @@ def test_new_overrides_file_marks_clusters_stale(tmp_path):
     run("classify", str(w), "--no-overrides")
     (w / "role_overrides.json").write_text("{}", encoding="utf-8")
     assert "current" in _status_row(run("status", str(w)), "clusters.json")
+
+
+def test_months_before(ws):
+    run("timeline", str(ws))
+    t = json.loads((ws / "timeline_candidates.json").read_text())
+    seal = [x for x in t if x["date"] == "2022-03-01"]
+    assert seal and all(x["months_before"] == 24 for x in seal)
+    assert all(isinstance(x["months_before"], int) for x in t)
+
+
+def test_months_between():
+    d = pmlc.dt.date
+    assert pmlc.months_between(d(2022, 3, 1), d(2024, 3, 20)) == 24
+    assert pmlc.months_between(d(2022, 3, 21), d(2024, 3, 20)) == 23
+    assert pmlc.months_between(d(2024, 5, 1), d(2024, 3, 20)) == -2
+
+
+def test_timeline_entity_filter(ws):
+    run("timeline", str(ws), "--entity", "F06")
+    t = json.loads((ws / "timeline_candidates.json").read_text())
+    f3 = {"FND-0003"} | set(next(f for f in pmlc.load_ws(ws)["findings"] if f["id"] == "FND-0003")["evidence"])
+    assert t and all(set(x["sources"]) <= f3 for x in t)
+
+
+def test_timeline_min_precision(ws):
+    run("timeline", str(ws), "--min-precision", "month")
+    t = json.loads((ws / "timeline_candidates.json").read_text())
+    assert t and all(x["precision"] != "year" for x in t)
+    run("timeline", str(ws), "--min-precision", "day")
+    assert all(x["precision"] == "day" for x in json.loads((ws / "timeline_candidates.json").read_text()))
+
+
+def test_clock_times_and_event_day(tmp_path):
+    x = make_export(tmp_path)
+    run("ingest", str(x), "--legacy-out", str(tmp_path / "w"))
+    w = tmp_path / "w"
+    fp = w / "findings.json"
+    fs = json.loads(fp.read_text())
+    fs[0]["short"] += " On 20 March 2024 14:05 hrs the seal was changed. At ~02:35 the alarm sounded. Pressure 2.5 bar."
+    fs[1]["short"] += " Earlier on 5 January 2023 at 09:10 a check was missed. Then at 03:01:20 we left."
+    fp.write_text(json.dumps(fs))
+    out = run("timeline", str(w), "--on", "incident")
+    t = json.loads((w / "timeline_candidates.json").read_text())
+    assert any(x["date"] == "2024-03-20" and x.get("time") == "14:05" for x in t)
+    seq = json.loads((w / "timeline_event_day.json").read_text())
+    times = [x["time"] for x in seq]
+    assert times == sorted(times) and "02:35" in times and "03:01" in times and "14:05" in times
+    assert "09:10" not in times and "02:30" not in times and "2:50" not in times
+    assert "| 02:35 |" in out
+    assert "timeline_event_day.json" in json.loads((w / "manifest.json").read_text())["files"]
+    run("timeline", str(w), "--on", "2023-01-05")
+    assert "09:10" in [x["time"] for x in json.loads((w / "timeline_event_day.json").read_text())]
+
+
+def test_on_bad_day(ws):
+    assert "YYYY-MM-DD" in run_fail("timeline", str(ws), "--on", "yesterday").stderr
+
+
+def test_on_incident_without_date(tmp_path):
+    x = make_export(tmp_path)
+    run("ingest", str(x), "--legacy-out", str(tmp_path / "w"))
+    p = tmp_path / "w" / "incident.json"
+    d = json.loads(p.read_text())
+    d.pop("date")
+    d["fields"].pop("Date")
+    p.write_text(json.dumps(d))
+    r = run_fail("timeline", str(tmp_path / "w"), "--on", "incident")
+    assert "No incident date in this workspace; pass --date to ingest." in r.stderr
+
+
+def test_entity_needs_clusters(tmp_path):
+    x = make_export(tmp_path)
+    run("ingest", str(x), "--legacy-out", str(tmp_path / "w"))
+    assert "classify" in run_fail("timeline", str(tmp_path / "w"), "--entity", "F06").stderr

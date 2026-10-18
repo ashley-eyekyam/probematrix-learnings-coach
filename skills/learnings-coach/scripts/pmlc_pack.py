@@ -744,6 +744,32 @@ def sorted_events(events) -> list:
     return sorted(events, key=lambda e: (e["date"], e.get("time") or ""))
 
 
+_INC_DATE = None      # the incident date of the pack being rendered; set by render_pack_md / render_pack_html
+
+
+def event_when(ev: dict, incident_date: str | None) -> str:
+    """How a timeline event's date reads: 'c. 2015' (year only), '2019-03', '2019-03-04 14:05', then ' (N months before)'
+    when the date is at least one whole month before the incident."""
+    d = ev["date"]
+    if len(d) == 4:
+        when = f"c. {d}"
+    else:
+        when = d + (f" {ev['time']}" if ev.get("time") else "")
+    if incident_date:
+        try:
+            y, m, day = (list(map(int, d.split("-"))) + [1, 1])[:3]
+            n = core.months_between(dt.date(y, m, day), dt.date.fromisoformat(incident_date))
+        except ValueError:
+            return when
+        if n > 0:
+            when += f" ({n} months before)"
+    return when
+
+
+def _pack_incident_date(pack, w):
+    return (pack.get("incident") or {}).get("date") or core.incident_date(w)
+
+
 def _c(cites):
     return f" [{'; '.join(cites)}]" if cites else ""
 
@@ -832,7 +858,7 @@ def _md_item(it) -> str:
     if k == "timeline":
         lines = []
         for e in sorted_events(it["events"]):
-            when = e["date"] + (f" {e['time']}" if e.get("time") else "")
+            when = event_when(e, _INC_DATE)
             lines.append(f"- {when}: {e['text']}{' *(weak signal)*' if e.get('signal') else ''}{_c(e.get('cites'))}")
             lines += [f"  - {lab}: {e[f]}" for f, lab in (("received_by", "Received by"), ("response", "Response"))
                       if e.get(f)]
@@ -864,6 +890,8 @@ def _md_block(it) -> str:
 
 def render_pack_md(pack, w) -> str:
     """The pack as Markdown: generated, never hand-written, so it always agrees with the HTML."""
+    global _INC_DATE
+    _INC_DATE = _pack_incident_date(pack, w)
     cov = coverage(w, pack)
     out = [f"# {pack['title']}", f"*{pack['status']}*", f"**Audience:** {pack['audience']}"]
     fields, inc = w.get("incident", {}).get("fields", {}), pack.get("incident") or {}
@@ -1037,7 +1065,7 @@ def _html_item(it, graphs) -> str:
         lis = []
         for e in sorted_events(it["events"]):
             sig = '<span class="badge hold">Weak signal</span> ' if e.get("signal") else ""
-            when = _h(e["date"] + (f" {e['time']}" if e.get("time") else ""))
+            when = _h(event_when(e, _INC_DATE))
             more = "".join(f'<p class="m">{lab}: {_h(e[f])}</p>'
                            for f, lab in (("received_by", "Received by"), ("response", "Response")) if e.get(f))
             lis.append(f'<li><time>{when}</time>{sig}{_inline(e["text"])} {_chips(e.get("cites"))}{more}</li>')
@@ -1101,6 +1129,8 @@ def _trail(data) -> str:
 
 def render_pack_html(w, pack, run, generated) -> str:
     """One self-contained offline page: server-rendered content, with pack.js adding behaviour."""
+    global _INC_DATE
+    _INC_DATE = _pack_incident_date(pack, w)
     pack = with_item_ids(pack)
     fields = w.get("incident", {}).get("fields", {})
     data = build_pack_data(w, pack, run)

@@ -38,7 +38,7 @@ No finding links the alarm configuration to the restart, so the map shows no suc
 
 ## Event sequence
 
-- 2022-03: Latent condition: local seal purchases begin *(weak signal)* [FND-0003]
+- 2022-03 (24 months before): Latent condition: local seal purchases begin *(weak signal)* [FND-0003]
 - 2024-03-12: Trigger: seal changed and pump restarted untested [FND-0001]
 
 ---

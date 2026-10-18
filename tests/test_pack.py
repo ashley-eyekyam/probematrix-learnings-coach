@@ -269,7 +269,7 @@ def test_markdown_per_kind(w):
         "**Test point:** Return-to-service tests are recorded [FND-0002]\n- What to sample: 10 recent restarts",
         "### Module: Return to service [FND-0002]\n\n- Objective: Apply the hold point\n- Audience: Fitters\n- Duration: 45 min",
         "**Barrier:** Leak test [FND-0001]\n- Failure mode: Skipped\n- Type: prevention\n- Control tier: administrative\n- Fix: Interlock",
-        "- 2022-03: Local seal purchases begin *(weak signal)* [FND-0003]\n- 2024-03-12: Seal changed [FND-0001]",
+        "- 2022-03 (24 months before): Local seal purchases begin *(weak signal)* [FND-0003]\n- 2024-03-12: Seal changed [FND-0001]",
         "Graph: 2 nodes, 1 links [FND-0003]\n\n- Seal bought locally → Pump restarted untested (enabled)",
         "---\n\nThis pack cites 2 of 2 relevant findings.\n\n> " + pmlc.BRAND + "\n",
     ]:
@@ -732,7 +732,7 @@ def test_timeline_times_and_signal_handling(w):
     p = pack_with(item("timeline", events=ev))
     assert pp.check_pack(p, w).problems == []
     md = pp.render_pack_md(p, w)
-    assert ("- 2022-03: Local seal purchases begin *(weak signal)* [FND-0003]\n  - Received by: Stores (T1)\n"
+    assert ("- 2022-03 (24 months before): Local seal purchases begin *(weak signal)* [FND-0003]\n  - Received by: Stores (T1)\n"
             "  - Response: None recorded\n- 2024-03-20 14:05: Gas alarm on the display [FND-0004]\n"
             "- 2024-03-20 14:20: Isolation valve closed [FND-0004]") in md
     h = pp.render_pack_html(w, p, "r", "d")
@@ -869,3 +869,23 @@ def test_scope_top_and_relations(w):
     assert problems(pack_with(item("para"), scope={"relations": ["owner"], "entity_mode": "all"}), w) == []
     got = problems(pack_with(item("para"), scope={"entity_mode": "both"}), w)
     assert any(x.startswith("scope.entity_mode") for x in got)
+
+
+def test_event_when():
+    assert pp.event_when({"date": "2015"}, None) == "c. 2015"
+    assert pp.event_when({"date": "2019-03"}, None) == "2019-03"
+    assert pp.event_when({"date": "2019-03-04", "time": "14:05"}, None) == "2019-03-04 14:05"
+    assert pp.event_when({"date": "2019-03"}, "2020-09-24") == "2019-03 (18 months before)"
+    assert pp.event_when({"date": "2015"}, "2020-09-24") == "c. 2015 (68 months before)"
+    assert pp.event_when({"date": "2020-09-10"}, "2020-09-24") == "2020-09-10"
+    assert pp.event_when({"date": "2021-01-01"}, "2020-09-24") == "2021-01-01"
+
+
+def test_pack_renders_months_before(w):
+    ev = [{"date": "2022", "text": "Year only"}, {"date": "2024-03-20", "time": "14:05", "text": "Alarm"}]
+    p = pack_with(item("timeline", events=ev))
+    md = pp.render_pack_md(p, w)
+    assert "- c. 2022 (26 months before): Year only" in md and "- 2024-03-20 14:05: Alarm" in md
+    assert "<time>c. 2022 (26 months before)</time>" in pp.render_pack_html(w, p, "r", "d")
+    p["incident"] = {"date": "2024-05-20"}
+    assert "- 2024-03-20 14:05 (2 months before): Alarm" in pp.render_pack_md(p, w)
