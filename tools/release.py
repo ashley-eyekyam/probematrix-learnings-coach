@@ -3,9 +3,10 @@
 
     python3 tools/release.py 2.0.0a1 [--root DIR]
 
-Rewrites __version__ in skills/learnings-coach/scripts/pmlc.py and "version" in
-.claude-plugin/plugin.json and .claude-plugin/marketplace.json. Changes version
-strings only; prints the tag command but does not run git. Standard library only.
+Rewrites __version__ in skills/learnings-coach/scripts/pmlc.py with the PEP 440 form
+(2.0.0a1) and "version" in .claude-plugin/plugin.json and .claude-plugin/marketplace.json
+with the semver form (2.0.0-alpha.1). Changes version strings only, and none of them when
+the version is malformed; prints the tag command but does not run git. Standard library only.
 """
 from __future__ import annotations
 
@@ -15,10 +16,10 @@ import sys
 from pathlib import Path
 
 VERSION_RX = re.compile(r"(\d+)\.(\d+)\.(\d+)(?:(a|rc)(\d+))?")
-TARGETS = [
-    ("skills/learnings-coach/scripts/pmlc.py", re.compile(r'(__version__ = ")[^"]*(")')),
-    (".claude-plugin/plugin.json", re.compile(r'("version": ")[^"]*(")')),
-    (".claude-plugin/marketplace.json", re.compile(r'("version": ")[^"]*(")')),
+TARGETS = [  # (file, version-string regex, True when the file takes the semver form)
+    ("skills/learnings-coach/scripts/pmlc.py", re.compile(r'(__version__ = ")[^"]*(")'), False),
+    (".claude-plugin/plugin.json", re.compile(r'("version": ")[^"]*(")'), True),
+    (".claude-plugin/marketplace.json", re.compile(r'("version": ")[^"]*(")'), True),
 ]
 
 
@@ -42,12 +43,13 @@ def main(argv=None):
     tag = semver(a.version)
     root = Path(a.root)
     texts = {}
-    for rel, rx in TARGETS:
+    for rel, rx, use_semver in TARGETS:
         path = root / rel
         if not path.is_file():
             sys.exit(f"Cannot find {path}.")
         text = path.read_text(encoding="utf-8")
-        new, n = rx.subn(lambda m: m.group(1) + a.version + m.group(2), text, count=1)
+        v = tag if use_semver else a.version
+        new, n = rx.subn(lambda m: m.group(1) + v + m.group(2), text, count=1)
         if n != 1:
             sys.exit(f"No version string found in {path}.")
         texts[path] = new

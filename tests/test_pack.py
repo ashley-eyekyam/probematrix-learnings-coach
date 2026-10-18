@@ -3,6 +3,7 @@ import copy
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,9 @@ import pytest
 from test_pmlc import ROOT, make_export, run, run_fail, ws  # noqa: F401  (ws is a module-scoped fixture)
 import pmlc  # noqa: E402  (test_pmlc put the engine folder on sys.path)
 import pmlc_pack as pp  # noqa: E402
+
+sys.path.insert(0, str(ROOT / "tools"))
+import release  # noqa: E402  (tools/release.py: the PEP 440 -> semver mapping the manifests use)
 
 FIX = Path(__file__).resolve().parent / "fixtures" / "packs"
 STATUS = "Learning purposes: not a statutory document"
@@ -415,8 +419,9 @@ def test_pack_schema_reference_names_every_kind():
 
 
 def test_version():
+    sem = release.semver(VERSION)  # the manifests carry the semver form of the PEP 440 __version__ (ruling 25)
     for p in (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"):
-        assert f'"version": "{VERSION}"' in (ROOT / p).read_text(encoding="utf-8"), p
+        assert f'"version": "{sem}"' in (ROOT / p).read_text(encoding="utf-8"), p
 
 
 # ---- wave-1 review fixes

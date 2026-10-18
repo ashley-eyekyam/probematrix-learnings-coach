@@ -630,16 +630,19 @@ def test_release_script_bumps_all_three(tmp_path):
     for f in files:
         (tmp_path / f).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(ROOT / f, tmp_path / f)
-    r = subprocess.run([sys.executable, str(ROOT / "tools" / "release.py"), "2.0.0a1", "--root", str(tmp_path)],
-                       capture_output=True, text=True)
-    assert r.returncode == 0, r.stderr + r.stdout
-    assert '__version__ = "2.0.0a1"' in (tmp_path / files[0]).read_text(encoding="utf-8")
-    for f in files[1:]:
-        assert '"version": "2.0.0a1"' in (tmp_path / f).read_text(encoding="utf-8"), f
-    assert "git tag -a v2.0.0-alpha.1" in r.stdout
+    for pep, sem in (("2.0.0a1", "2.0.0-alpha.1"), ("2.0.0rc1", "2.0.0-rc.1"), ("2.0.0", "2.0.0")):  # ruling 25
+        r = subprocess.run([sys.executable, str(ROOT / "tools" / "release.py"), pep, "--root", str(tmp_path)],
+                           capture_output=True, text=True)
+        assert r.returncode == 0, r.stderr + r.stdout
+        assert f'__version__ = "{pep}"' in (tmp_path / files[0]).read_text(encoding="utf-8")
+        for f in files[1:]:
+            assert f'"version": "{sem}"' in (tmp_path / f).read_text(encoding="utf-8"), f
+        assert f"git tag -a v{sem}" in r.stdout
+    before = {f: (tmp_path / f).read_bytes() for f in files}
     bad = subprocess.run([sys.executable, str(ROOT / "tools" / "release.py"), "banana", "--root", str(tmp_path)],
                          capture_output=True, text=True)
     assert bad.returncode != 0
+    assert {f: (tmp_path / f).read_bytes() for f in files} == before
 
 
 # ----------------------------------------------------------------------------- taxonomy v2.0: tags, F14 split, overlays
