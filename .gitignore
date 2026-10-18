@@ -7,7 +7,8 @@ outputs/
 # never commit raw or unsanitised exports outside samples/
 *.xlsx
 !samples/**/*.xlsx
-!docs/uat/inputs/*.xlsx
+!docs/uat/inputs/uat-*.xlsx
+~$*
 # python
 __pycache__/
 *.pyc

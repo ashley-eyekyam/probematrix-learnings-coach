@@ -1,6 +1,8 @@
 # ProbeMatrix Learnings Coach
 
-> **v2.0 alpha in testing.** The stable release is 0.3.5. To stay on it: `/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v0.3.5`. See [Pinning a version](docs/INSTALL.md#pinning-a-version).
+> **v2.0 alpha in testing.** The stable release is 0.3.5, and `main` now carries the alpha. To stay on 0.3.5:
+> - **Claude app:** in the app's plugin settings, leave auto-update off and do not choose Update for the `probematrix` marketplace. If you have already updated, remove that marketplace there, add `ashley-eyekyam/probematrix-learnings-coach#v0.3.5` and install the plugin again.
+> - **Claude Code:** pin the tag as in [Pinning a version](docs/INSTALL.md#pinning-a-version). Once you have installed the plugin the `probematrix` marketplace name is already taken, so pinning means removing the marketplace, adding it again with `#v0.3.5` and reinstalling the plugin; a single `marketplace add` is not enough.
 
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE) ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)
 
@@ -32,7 +34,7 @@ Audit test points · Investigator follow-up · Training modules · ER drills · 
 
 ## What's new in v2.0 so far
 
-v2.0 is in testing (current build: 2.0.0-alpha.2, Phase 1: correct and tested). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+v2.0 is in testing (current build: 2.0.0-alpha.3, Phase 1: correct and tested). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
 
 - The coach no longer forgets your role corrections when you re-run the analysis.
 - Questions about where two departments meet now use only the findings both share, so the numbers are small and meaningful (27 on the Hazira sample, not 196).

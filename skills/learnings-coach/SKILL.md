@@ -36,6 +36,7 @@ PMLC status <ws>                              # which workspace files are out of
 
 **Folder rule (strict).** `<run>` is `<export-dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/`, `<ws>` is `<run>/workspace/`, and every output (Markdown, xlsx, HTML) goes to `<run>/outputs/`. Never write outputs anywhere else. `ingest --force` overwrites findings, evidence and incident but keeps an earlier `clusters.json`; re-run `classify` after a forced ingest.
 - **Slug:** use the *corrected* incident date if the profile flags the summary-sheet date. Name the site and event in plain lowercase words joined by hyphens, never the sheet's incident type unchecked.
+- **Read-only upload folder** (as in the Claude app): if the export's folder is not writable, add `--root <a writable working folder>` to `ingest`; the run folder is then made under that folder's `pmlc-runs/`.
 - **`ingest --legacy-out`** exists only for workspaces made before v0.2.
 - **Sharing:** to share a run publicly, see `samples/README.md` (repository only). A public-record run becomes `samples/<slug>/`; the official report and ProbeMatrix material may be included unmodified, with no name scan required (learnings still follow just culture: roles only, no blame). `scan-names` remains available for your own organisation's runs.
 
