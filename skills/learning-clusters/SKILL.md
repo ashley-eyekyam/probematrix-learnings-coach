@@ -29,8 +29,10 @@ Then check the rule-based mappings that look wrong. Look especially at role stri
 Write the decisions to `<ws>/role_overrides.json` as `{"<role string>": {"F": ["F05"], "T": "T3", "R": "owner"}}` and re-run:
 
 ```bash
-PMLC classify <ws> --overrides <ws>/role_overrides.json
+PMLC classify <ws>
 ```
+
+`role_overrides.json` is read automatically on every `classify`; `--no-overrides` ignores it.
 
 Repeat until F99 and T9 are empty or each remaining case is explained.
 

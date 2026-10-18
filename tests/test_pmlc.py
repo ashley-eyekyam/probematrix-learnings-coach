@@ -134,6 +134,58 @@ def test_overrides(ws, tmp_path):
     assert "Mr Fictional Person" not in cl["unresolved_roles"]
 
 
+def test_overrides_survive_plain_reclassify(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    run("classify", str(w))
+    (w / "role_overrides.json").write_text(
+        json.dumps({"Mr Fictional Person": {"F": ["F01"], "T": "T1", "R": "actor"},
+                    "Stores/Procurement Officer": {"T": "T1"}}))
+    out = run("classify", str(w))  # plain re-run, as training-designer used to do
+    assert "Applied 2 override(s) from" in out
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["role_map"]["Mr Fictional Person"]["source"] == "override"
+    assert cl["overrides"]["applied"] == 2 and cl["overrides"]["stale"] == []
+    assert cl["overrides"]["file"].endswith("role_overrides.json")
+    assert not (w / "unresolved_roles.json").exists()
+    run("classify", str(w), "--no-overrides")
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["role_map"]["Mr Fictional Person"]["source"] == "rule"
+    assert cl["overrides"] == {"file": None, "applied": 0, "stale": []}
+    assert (w / "unresolved_roles.json").exists()
+
+
+def test_overrides_bad_json_and_stale_keys(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    (w / "role_overrides.json").write_text("{not json")
+    r = run_fail("classify", str(w))
+    assert "role_overrides.json" in r.stderr and "--no-overrides" in r.stderr
+    run("classify", str(w), "--no-overrides")
+    (w / "role_overrides.json").write_text(json.dumps({"Nobody Here": {"F": ["F01"]}}))
+    out = run("classify", str(w))
+    assert "warning: 1 override(s) match no role: Nobody Here" in out
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["overrides"]["stale"] == ["Nobody Here"] and cl["overrides"]["applied"] == 0
+
+
+def test_explicit_overrides_file_recorded(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    o = tmp_path / "o.json"
+    o.write_text(json.dumps({"Mr Fictional Person": {"F": ["F01"], "T": "T1", "R": "actor"}}))
+    run("classify", str(w), "--overrides", str(o))
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["overrides"]["file"] == str(o) and cl["overrides"]["applied"] == 1
+
+
+def test_training_designer_never_classifies():
+    assert "PMLC classify" not in (ROOT / "skills/training-designer/SKILL.md").read_text()
+
+
 def test_causal(ws):
     out = run("causal", str(ws))
     g = json.loads((ws / "causal_graph.json").read_text())

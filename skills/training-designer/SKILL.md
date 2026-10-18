@@ -14,8 +14,9 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `le
 ```bash
 PMLC select <ws> --text "train|competen|qualif|knowledge|experience|familiar|skill" --brief
 PMLC select <ws> --level 1 2 --brief            # acts and individual conditions
-PMLC classify <ws>                               # tiers and entities for the needs map
 ```
+
+Read <ws>/clusters.json for tiers and entities (the hub's classify step builds it; never re-run classify here).
 
 ## Write
 

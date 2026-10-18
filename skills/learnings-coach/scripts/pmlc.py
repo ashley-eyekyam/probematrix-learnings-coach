@@ -453,11 +453,24 @@ def map_role(role: str, tax: dict) -> dict:
     return {"F": ents, "T": tier, "R": rel, "source": "rule"}
 
 
+def load_overrides(path: Path) -> dict:
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except json.JSONDecodeError as err:
+        sys.exit(f"{path} is not valid JSON ({err}). Fix it or pass --no-overrides.")
+
+
 def cmd_classify(a):
     ws = Path(a.ws)
     w = load_ws(ws)
     tax = _load_taxonomy(a.taxonomy)
-    overrides = json.loads(Path(a.overrides).read_text(encoding="utf-8")) if a.overrides else {}
+    ov_path = None
+    if not a.no_overrides:
+        if a.overrides:
+            ov_path = a.overrides
+        elif (ws / "role_overrides.json").exists():
+            ov_path = str(ws / "role_overrides.json")
+    overrides = load_overrides(Path(ov_path)) if ov_path else {}
     role_map = {}
     for f in w["findings"]:
         for r in f["roles"]:
@@ -468,6 +481,8 @@ def cmd_classify(a):
                 o = overrides[r]
                 m = {"F": o.get("F", m["F"]), "T": o.get("T", m["T"]), "R": o.get("R", m["R"]), "source": "override"}
             role_map[r] = m
+    applied = sum(1 for m in role_map.values() if m["source"] == "override")
+    stale = sorted(k for k in overrides if k not in role_map)
     names = {e["id"]: e["name"] for e in tax["entities"]}
     names["F99"] = "Unmapped"
     tier_names = {t["id"]: t["name"] for t in tax["tiers"]}
@@ -497,8 +512,13 @@ def cmd_classify(a):
     out = {"taxonomy": {"entities": names, "tiers": tier_names,
                         "relations": {r["id"]: r["name"] for r in tax["relations"]} | {
                             tax["default_relation"]["id"]: tax["default_relation"]["name"]}},
-           "entities": entities, "findings": per_f, "role_map": role_map, "unresolved_roles": unresolved}
+           "entities": entities, "findings": per_f, "role_map": role_map, "unresolved_roles": unresolved,
+           "overrides": {"file": ov_path, "applied": applied, "stale": stale}}
     write_json(ws / "clusters.json", out)
+    if ov_path:
+        print(f"Applied {applied} override(s) from {ov_path}")
+    if stale:
+        print(f"warning: {len(stale)} override(s) match no role: {', '.join(stale)}")
     tc = collections.Counter(t for v in per_f.values() for t in v["T"])
     print(f"Classified {len(role_map)} distinct roles; {len(unresolved)} need resolution "
           f"(no entity or no tier). Wrote {ws/'clusters.json'}\n")
@@ -513,7 +533,10 @@ def cmd_classify(a):
         p = ws / "unresolved_roles.json"
         write_json(p, unresolved)
         print(f"\nUnresolved roles listed in {p}. Resolve them into an overrides JSON "
-              f"({{role: {{F: [...], T: ..., R: ...}}}}) and re-run with --overrides.")
+              f"({{role: {{F: [...], T: ..., R: ...}}}}) in {ws/'role_overrides.json'} and re-run classify; "
+              f"that file is picked up automatically.")
+    else:
+        (ws / "unresolved_roles.json").unlink(missing_ok=True)
 
 
 # ----------------------------------------------------------------------------- select
@@ -1276,7 +1299,9 @@ def build_parser():
     s = sp.add_parser("classify", help="roles -> Learning Clusters")
     s.add_argument("ws")
     s.add_argument("--taxonomy", help="alternative taxonomy.json")
-    s.add_argument("--overrides", help="JSON {role: {F:[..], T:.., R:..}} from the LLM resolution pass")
+    s.add_argument("--overrides", help="JSON {role: {F:[..], T:.., R:..}} from the LLM resolution pass "
+                                          "(default: <ws>/role_overrides.json when it exists)")
+    s.add_argument("--no-overrides", action="store_true", help="ignore any overrides file")
     s.set_defaults(fn=cmd_classify)
 
     s = sp.add_parser("select", help="filtered findings bundle")
