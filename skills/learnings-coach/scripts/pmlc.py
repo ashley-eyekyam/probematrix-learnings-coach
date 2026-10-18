@@ -772,11 +772,50 @@ def _taxonomy_label(file, overlays) -> str:
     return " + ".join([file, *overlays])
 
 
-def load_overrides(path: Path) -> dict:
+OVERRIDE_SHAPE = '{"<role>": {"F": ["F05"], "T": "T3", "R": "owner"}}'
+
+
+def load_overrides(path: Path, tax: dict | None = None) -> dict:
+    """{role: {F: [ids], T: id, R: id}} from an overrides file, with F normalised to a list. Exits with a sentence
+    naming the file (and the role) when the file is missing, is not JSON or has the wrong shape, or, given the
+    taxonomy, when an ID is not one of its entities (or F99), tiers (or T9) or relations (or the default)."""
+    p = Path(path)
+    if not p.is_file():
+        sys.exit(f"Overrides file {path} not found. Pass an existing file or --no-overrides.")
     try:
-        return json.loads(Path(path).read_text(encoding="utf-8"))
+        raw = json.loads(p.read_text(encoding="utf-8"))
     except json.JSONDecodeError as err:
         sys.exit(f"{path} is not valid JSON ({err}). Fix it or pass --no-overrides.")
+    if not isinstance(raw, dict):
+        sys.exit(f"{path} must be a JSON object of roles, shaped {OVERRIDE_SHAPE}.")
+    allowed = None
+    if tax is not None:
+        allowed = {"F": {e["id"] for e in tax["entities"]} | {"F99"}, "T": {t["id"] for t in tax["tiers"]} | {"T9"},
+                   "R": {r["id"] for r in tax["relations"]} | {tax["default_relation"]["id"]}}
+    out = {}
+    for role, o in raw.items():
+        where = f"{path}: the override for role {role!r}"
+        if not isinstance(o, dict):
+            sys.exit(f"{where} must be an object shaped {OVERRIDE_SHAPE}, not {json.dumps(o)}.")
+        extra = sorted(set(o) - {"F", "T", "R"})
+        if extra:
+            sys.exit(f"{where} has unknown key(s) {', '.join(extra)}; only F, T and R are read.")
+        o = dict(o)
+        if isinstance(o.get("F"), str):
+            o["F"] = [o["F"]]
+        if "F" in o and not (isinstance(o["F"], list) and all(isinstance(x, str) for x in o["F"])):
+            sys.exit(f"{where} has F {json.dumps(o['F'])}; F must be a list of entity IDs such as [\"F05\"].")
+        for k in ("T", "R"):
+            if k in o and not isinstance(o[k], str):
+                sys.exit(f"{where} has {k} {json.dumps(o[k])}; {k} must be one ID as a string.")
+        if allowed:
+            for k in ("F", "T", "R"):
+                bad = [x for x in ([] if k not in o else o[k] if k == "F" else [o[k]]) if x not in allowed[k]]
+                if bad:
+                    sys.exit(f"{where} has unknown {k} ID(s) {', '.join(bad)}; taxonomy {tax['_file']} has "
+                             f"{', '.join(sorted(allowed[k]))}.")
+        out[role] = o
+    return out
 
 
 def cmd_classify(a):
@@ -794,7 +833,7 @@ def cmd_classify(a):
             ov_path = a.overrides
         elif (ws / "role_overrides.json").exists():
             ov_path = str(ws / "role_overrides.json")
-    overrides = load_overrides(Path(ov_path)) if ov_path else {}
+    overrides = load_overrides(Path(ov_path), tax) if ov_path else {}
     role_map = {}
     for f in w["findings"]:
         for r in f["roles"]:

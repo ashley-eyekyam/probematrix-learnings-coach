@@ -182,6 +182,54 @@ def test_explicit_overrides_file_recorded(tmp_path):
     assert cl["overrides"]["file"] == str(o) and cl["overrides"]["applied"] == 1
 
 
+@pytest.fixture
+def fresh_ws(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    return w
+
+
+def test_override_f_as_string_is_one_entity(fresh_ws):                              # final review 1
+    (fresh_ws / "role_overrides.json").write_text(json.dumps({"Mr Fictional Person": {"F": "F05", "T": "T1"}}))
+    run("classify", str(fresh_ws))
+    cl = json.loads((fresh_ws / "clusters.json").read_text())
+    assert cl["role_map"]["Mr Fictional Person"]["F"] == ["F05"]
+    assert not {"F", "0", "5"} & set(cl["entities"])
+
+
+@pytest.mark.parametrize("bad, words", [
+    ({"Mr Fictional Person": "F05"}, ["role 'Mr Fictional Person'", "must be an object"]),
+    (["F05"], ["must be a JSON object of roles"]),
+    ({"Mr Fictional Person": {"F": [5]}}, ["F must be a list"]),
+    ({"Mr Fictional Person": {"T": ["T1"]}}, ["T must be one ID"]),
+    ({"Mr Fictional Person": {"F": ["F77"]}}, ["unknown F ID(s) F77"]),
+    ({"Mr Fictional Person": {"T": "T7"}}, ["unknown T ID(s) T7"]),
+    ({"Mr Fictional Person": {"R": "boss"}}, ["unknown R ID(s) boss"]),
+    ({"Mr Fictional Person": {"Tier": "T1"}}, ["unknown key(s) Tier"]),
+])
+def test_malformed_overrides_exit_with_a_sentence(fresh_ws, bad, words):           # final review 1
+    (fresh_ws / "role_overrides.json").write_text(json.dumps(bad))
+    r = run_fail("classify", str(fresh_ws))
+    assert "Traceback" not in r.stderr and "role_overrides.json" in r.stderr
+    for w in words:
+        assert w in r.stderr, r.stderr
+
+
+def test_override_fallback_ids_are_valid(fresh_ws):                                 # final review 1
+    (fresh_ws / "role_overrides.json").write_text(json.dumps({"Mr Fictional Person": {"F": [], "T": "T9"}}))
+    run("classify", str(fresh_ws))
+    o = fresh_ws / "o.json"
+    o.write_text(json.dumps({"Mr Fictional Person": {"F": ["F99"], "R": "actor"}}))
+    run("classify", str(fresh_ws), "--overrides", str(o))
+
+
+def test_missing_explicit_overrides_file(fresh_ws, tmp_path):                       # final review 1
+    r = run_fail("classify", str(fresh_ws), "--overrides", str(tmp_path / "missing.json"))
+    assert "Traceback" not in r.stderr
+    assert "Overrides file" in r.stderr and "missing.json not found" in r.stderr and "--no-overrides" in r.stderr
+
+
 def test_training_designer_never_classifies():
     assert "PMLC classify" not in (ROOT / "skills/training-designer/SKILL.md").read_text()
 
