@@ -91,6 +91,24 @@ def test_budget_truncates_by_rating(hz):
     assert len(ratings) + int(m.group(1)) == len(hz.select("--tier", "T2"))
 
 
+def _preset(hz, *extra):
+    r = subprocess.run([sys.executable, str(PMLC), "select", str(hz.ws), "--preset", "site-leadership-coach", *extra],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    return r
+
+
+def test_preset_budget_is_shared_across_calls(hz):                                  # ruling 27
+    floor = _preset(hz, "--budget-chars", "0")
+    parts = re.split(r"(?m)^(?=# Preset site-leadership-coach: )", floor.stdout)[1:]
+    assert len(parts) == 3 and "below the minimum output" in floor.stderr
+    min_len = max(len(x) for x in parts)
+    capped = _preset(hz, "--budget-chars", "20000").stdout
+    uncapped = _preset(hz).stdout
+    assert len(capped) < 20000 + 3 * min_len
+    assert len(uncapped) > 5 * 20000
+
+
 def test_analysis_stats_cross_check(hz):
     st = hz.incident["analysis_stats"]
     assert st["total"] == 436

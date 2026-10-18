@@ -1106,8 +1106,7 @@ def _select_presets(a):
     out_flags = []
     if any(t.split("=")[0] == "--format" for t in getattr(a, "_argv", [])):
         out_flags += ["--format", a.format]
-    for flag, val in (("--budget-chars", a.budget_chars), ("--fields", a.fields), ("--group-by", a.group_by),
-                      ("--count-by", a.count_by)):
+    for flag, val in (("--fields", a.fields), ("--group-by", a.group_by), ("--count-by", a.count_by)):
         if val is not None:
             out_flags += [flag, str(val)]
     if a.brief:
@@ -1116,11 +1115,16 @@ def _select_presets(a):
     import io
     parts = []
     for p in calls:
-        sub = build_parser().parse_args(["select", a.ws, *p["args"], *out_flags])
+        head = f"# Preset {skill}: {p['name']}\n\n"
+        budget = []
+        if a.budget_chars is not None:  # one budget for the whole bundle: each call gets what the earlier ones left
+            used = sum(len(x) for x in parts) + len(parts) + len(head)
+            budget = ["--budget-chars", str(max(0, a.budget_chars - used))]
+        sub = build_parser().parse_args(["select", a.ws, *p["args"], *out_flags, *budget])
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             cmd_select(sub)
-        parts.append(f"# Preset {skill}: {p['name']}\n\n{buf.getvalue()}")
+        parts.append(head + buf.getvalue())
     text = "\n".join(parts)
     if a.out:
         Path(a.out).write_text(text, encoding="utf-8")
@@ -2120,7 +2124,9 @@ def build_parser():
                    help="run a skill's recorded gather calls (references/select-presets.json); takes only output "
                         "flags. Each call keeps its own --format unless you pass --format, which overrides all. "
                         "With several calls the output is one bundle per call under '# Preset <skill>: <name>' "
-                        "headings, so json output is concatenated bundles, not one JSON value")
+                        "headings, so json output is concatenated bundles, not one JSON value. --budget-chars "
+                        "caps the whole bundle, headings included: each call gets what the earlier calls left, and a "
+                        "call with nothing left prints only its minimum output (with the below-minimum warning)")
     s.set_defaults(fn=cmd_select)
 
     s = sp.add_parser("causal", help="extract causal graph")
