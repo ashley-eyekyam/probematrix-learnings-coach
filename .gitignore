@@ -19,3 +19,6 @@ docs/briefs/outreach-engine-improvement-prompt.md
 docs/briefs/reference-adhoc-render-script.py
 .coverage
 .coverage.*
+
+# Office lock files
+.~lock.*#

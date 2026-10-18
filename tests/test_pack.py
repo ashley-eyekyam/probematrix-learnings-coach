@@ -811,6 +811,9 @@ def test_docs_no_longer_describe_markdown_only_skills():
         assert "write Markdown there" not in t and "save Markdown under" not in t, p
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert "(Mermaid)" not in readme and "follow in 0.3.3" not in readme
+    # "so far" is allowed only once: in the v2.0 heading (guards stale "so far only write Markdown" wording)
+    assert readme.count("so far") == 1
+    assert [ln for ln in readme.splitlines() if "so far" in ln] == ["## What's new in v2.0 so far"]
 
 
 # ----------------------------------------------------------------------------- 0.3.4 polish
