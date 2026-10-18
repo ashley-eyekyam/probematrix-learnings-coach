@@ -7,7 +7,7 @@ description: Classify every finding in a ProbeMatrix investigation export into L
 
 Step 1 of the Learnings Coach method: put every finding with the people who own its learning.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (`<skills-root>` is the folder that contains this skill). If the workspace does not exist yet, follow Step 1 of the `learnings-coach` skill. Read `learnings-coach/references/ontology.md` §3 for the taxonomy.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it) (`<skills-root>` is the folder that contains this skill). If the workspace does not exist yet, follow Step 1 of the `learnings-coach` skill. Read `learnings-coach/references/ontology.md` §3 for the taxonomy.
 
 ## 1. Run the rules
 
@@ -21,7 +21,7 @@ This writes `<ws>/clusters.json` and lists roles with no entity (F99) or no tier
 
 Read `unresolved_roles.json`. For each role string decide:
 - **F**: one or more entity IDs. A role can belong to several ("Operations / maintenance manager" → F01, F02, F13 if it is a site-level role).
-- **T**: one tier. Infer from the wording: crews and technicians T1; supervisors, signatories, shift in-charges T2; managers, leads, authorities, owners T3; plant or site leadership T4; corporate, policy owners, directors T5.
+- **T**: one tier. Infer from the wording: crews and technicians T1; supervisors, signatories, shift in-charges T2; managers, leads, authorities, owners T3; plant or site leadership T4; corporate functions, corporate policy owners, directors, the board T5. Rank words beat the word "policy": a plant manager who owns a policy is T4.
 - **R**: the relation from the qualifier in parentheses, else `actor`.
 
 Then check the rule-based mappings that look wrong. Look especially at role strings that name a function and a rank together. When in doubt, read the findings that use the role: `PMLC select <ws> --text "<distinctive words>" --brief`.
@@ -29,14 +29,18 @@ Then check the rule-based mappings that look wrong. Look especially at role stri
 Write the decisions to `<ws>/role_overrides.json` as `{"<role string>": {"F": ["F05"], "T": "T3", "R": "owner"}}` and re-run:
 
 ```bash
-PMLC classify <ws> --overrides <ws>/role_overrides.json
+PMLC classify <ws>
 ```
+
+`role_overrides.json` is read automatically on every `classify`; `--no-overrides` ignores it.
 
 Repeat until F99 and T9 are empty or each remaining case is explained.
 
 ## 3. Adapt the taxonomy (when the organisation is different)
 
 If the user's organisation has different departments (e.g. a hospital, a mine, an airline), copy `learnings-coach/references/taxonomy.json`, edit the entities and regexes, and run `PMLC classify <ws> --taxonomy <file>`. Keep IDs stable once outputs are shared.
+
+Site- or country-specific role words go in an overlay (`references/overlays/`), not in the base taxonomy: `PMLC classify <ws> --overlay <name>`. A later plain `classify` remembers the overlays and taxonomy the previous one used; pass `--taxonomy`/`--overlay` to change them, or `--no-overlay` for none. Give new entities `tags` so the audience skills find them.
 
 ## 4. Report
 

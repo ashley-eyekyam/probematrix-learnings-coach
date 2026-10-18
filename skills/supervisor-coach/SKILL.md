@@ -7,13 +7,13 @@ description: Produce learning for first-line supervisors from a ProbeMatrix inve
 
 Audience: T2 first-line supervision. They decide which work starts and which work is accepted. In most ProbeMatrix analyses the Supervision level (L3) is the largest; this is where much of the learning lives.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 
 ```bash
 PMLC select <ws> --tier T2 --brief
-PMLC select <ws> --level 3 --min-rating <top>                  # supervision factors that mattered most
+PMLC select <ws> --level 3 --top-rated                  # supervision factors that mattered most
 PMLC select <ws> --tier T2 --relation approver                 # sign-offs and acceptances
 ```
 

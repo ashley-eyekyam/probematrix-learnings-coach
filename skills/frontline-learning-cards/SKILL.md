@@ -7,14 +7,14 @@ description: Turn a ProbeMatrix investigation export into frontline learning - o
 
 Audience: T1 frontline. They control how the task is done today. They do not control procedures, budgets or design, so never hand them an organisational fix as if it were theirs.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md` and the Learning Card and toolbox talk blocks in `learnings-coach/references/output-style.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md` and the Learning Card and toolbox talk blocks in `learnings-coach/references/output-style.md`.
 
 ## Gather
 
 ```bash
 PMLC select <ws> --tier T1 --brief                     # what frontline roles were involved in
 PMLC select <ws> --tier T1 --level 1 2                  # acts and conditions at the sharp end
-PMLC select <ws> --tier T1 --min-rating <top>           # the ones that mattered most
+PMLC select <ws> --tier T1 --top-rated           # the ones that mattered most
 ```
 
 If the user names a crew or trade ("maintenance fitters", "control-room operators"), add `--entity <F-id>`.

@@ -3,7 +3,7 @@
  "bottom_line": [{"text": "Local seal buying ran for two years before the fire with no response recorded.", "cites": ["FND-0003", "EVD-0003"]}],
  "sections": [
   {"id": "signals", "heading": "Signals before the event", "items": [
-   {"kind": "timeline", "events": [{"date": "2022-03", "text": "Seals bought locally without a specification (24 months before)", "signal": true,
+   {"kind": "timeline", "events": [{"date": "2022-03", "text": "Seals bought locally without a specification", "signal": true,
      "received_by": "Materials Management (F06, T1)", "response": "None recorded", "cites": ["FND-0003", "EVD-0003"]}]}]},
   {"id": "event-day", "heading": "The event sequence", "items": [
    {"kind": "timeline", "events": [{"date": "2024-03-12", "text": "Seal changed; pump restarted without a leak test", "cites": ["FND-0001", "EVD-0001"]}]}]},

@@ -10,7 +10,6 @@ import html
 import json
 import re
 import sys
-import types
 from pathlib import Path
 
 import pmlc as core
@@ -153,9 +152,11 @@ def relevant_findings(w, scope=None) -> list:
     """Finding IDs a pack is expected to draw on: those matching its scope (the same filter as select), or,
     without a scope, the top-rated findings (rating equal to the workspace maximum, as classify counts them)."""
     if scope:
-        a = types.SimpleNamespace(entity=scope.get("entities") or None, tier=scope.get("tiers") or None,
-                                  relation=None, level=scope.get("levels") or None,
-                                  min_rating=scope.get("min_rating"), code=None, text=None, max=None)
+        a = core.select_args(entity=scope.get("entities") or None, tag=scope.get("tags") or None,
+                             tier=scope.get("tiers") or None, relation=scope.get("relations") or None,
+                             level=scope.get("levels") or None, entity_mode=scope.get("entity_mode") or "any",
+                             top_rated=scope.get("min_rating") == "top",
+                             min_rating=None if scope.get("min_rating") == "top" else scope.get("min_rating"))
         rel = {f["id"] for f, _ in core._filter(w, a)}
         return [f["id"] for f in w["findings"] if f["id"] in rel]
     top = max(((f.get("rating") or 0) for f in w["findings"]), default=0)
@@ -325,24 +326,48 @@ def _check_scope(scope, w, bad):
         bad("scope", "must be an object")
         return
     for k in scope:
-        if k not in ("tiers", "levels", "entities", "min_rating"):
-            bad(f"scope.{k}", "unknown key; use tiers, levels, entities, min_rating")
+        if k not in ("tiers", "levels", "entities", "tags", "min_rating", "relations", "entity_mode"):
+            bad(f"scope.{k}", "unknown key; use tiers, levels, entities, tags, min_rating, relations, entity_mode")
     t, lv, en, mr = scope.get("tiers") or [], scope.get("levels") or [], scope.get("entities") or [], scope.get("min_rating")
+    tg = scope.get("tags") or []
     if not isinstance(t, list) or any(not isinstance(x, str) or x not in core.TIER_LABELS for x in t):
         bad("scope.tiers", "a list of T1 to T5")
     if not isinstance(lv, list) or any(isinstance(x, bool) or x not in (1, 2, 3, 4) for x in lv):
         bad("scope.levels", "a list of 1 to 4")
     if not isinstance(en, list) or any(not isinstance(x, str) for x in en):
         bad("scope.entities", "a list of entity IDs like F02")
-    if mr is not None and (isinstance(mr, bool) or not isinstance(mr, int)):
-        bad("scope.min_rating", "a whole number or null")
+    if not isinstance(tg, list) or any(not isinstance(x, str) for x in tg):
+        bad("scope.tags", "a list of tags like emergency")
+        tg = []
+    if mr is not None and mr != "top" and (isinstance(mr, bool) or not isinstance(mr, int)):
+        bad("scope.min_rating", 'a whole number, "top" or null')
+    rl = scope.get("relations") or []
+    if not isinstance(rl, list) or any(not isinstance(x, str) for x in rl):
+        bad("scope.relations", "a list of relation IDs like owner")
+        rl = []
+    elif "clusters" in w:
+        known_rel = w["clusters"].get("taxonomy", {}).get("relations", {})
+        for x in rl:
+            if x not in known_rel:
+                bad("scope.relations", f"{x} is not a relation in clusters.json ({', '.join(sorted(known_rel))})")
+    if scope.get("entity_mode") not in (None, "any", "all"):
+        bad("scope.entity_mode", 'must be "any" or "all"')
     if "clusters" in w and isinstance(en, list):
         known = w["clusters"].get("taxonomy", {}).get("entities", {})
         for x in en:
             if isinstance(x, str) and x not in known:
                 bad("scope.entities", f"{x} is not an entity in clusters.json")
-    if (t or en) and "clusters" not in w:
-        bad("scope", "tiers and entities need clusters.json. Run: pmlc.py classify <ws>")
+    if "clusters" in w and tg:
+        tagmap = w["clusters"].get("taxonomy", {}).get("tags")
+        if tagmap is None:
+            bad("scope.tags", "clusters.json has no tags (it predates v2.0). Re-run classify")
+        else:
+            known = {x for ts in tagmap.values() for x in ts}
+            for x in tg:
+                if x not in known:
+                    bad("scope.tags", f"{x} is not a tag in clusters.json")
+    if (t or en or tg or rl) and "clusters" not in w:
+        bad("scope", "tiers, entities and tags need clusters.json. Run: pmlc.py classify <ws>")
 
 
 def _check_notes(pack, w, bad):
@@ -508,6 +533,23 @@ def check_pack(pack, w) -> Result:
                               "sections": pack.get("sections")}, ""):
         if (path, x) not in cit:
             warn(path, f"{x} is shown as plain text, not a citation; put it in cites")
+    downs = core.downgraded_findings(w)
+    noted = {x for _, x in _walk_ids(_citable(pack)["data_quality"], "data_quality") if x.startswith("FND-")}
+    FM = {f["id"]: f for f in w["findings"]}
+    cit_all = _citable(pack)
+    units = [(f"bottom_line[{i}]", e) for i, e in enumerate(cit_all["bottom_line"])]
+    for si, s in enumerate(cit_all["sections"]):
+        units += [(f"sections[{si}].items[{ii}]", it) for ii, it in enumerate(s.get("items", []))]
+    for upath, unit in units:
+        found = [(p_, x) for p_, x in _walk_ids(unit, upath)]
+        for p_, x in found:
+            if x in downs and x not in noted:
+                bad(p_, f"cites {x}, which has a reviewer downgrade vote; add a data_quality note citing it, or leave it out")
+        fnds = {x for _, x in found if x.startswith("FND-") and x in FM}
+        if fnds:
+            linked = set().union(*(core.linked_evidence(FM[x]) for x in fnds))
+            for x in dict.fromkeys(x for _, x in found if x.startswith("EVD-") and x in E and x not in linked):
+                warn(upath, f"{x} is not linked to any finding this item cites")
     for i, x in enumerate(excluded_ids(pack)):
         if x in ids:
             bad(f"exclusions[{i}].id", f"{x} is also cited; a finding is either cited or left out on purpose")
@@ -536,6 +578,11 @@ def _checked(a):
     w = core.load_ws(a.ws)
     pack, err = load_pack(a.pack)
     res = Result([err], [], {}) if err else check_pack(pack, w)
+    if not err and isinstance(pack, dict) and isinstance(pack.get("pack"), str):
+        try:
+            core.record_pack_check(a.ws, pack["pack"], a.pack, not res.problems, len(res.problems))
+        except OSError:
+            pass
     for x in res.warnings:
         print(f"warning: {x}")
     if res.problems:
@@ -714,6 +761,32 @@ def sorted_events(events) -> list:
     return sorted(events, key=lambda e: (e["date"], e.get("time") or ""))
 
 
+_INC_DATE = None      # the incident date of the pack being rendered; set by render_pack_md / render_pack_html
+
+
+def event_when(ev: dict, incident_date: str | None) -> str:
+    """How a timeline event's date reads: 'c. 2015' (year only), '2019-03', '2019-03-04 14:05'. A date before the incident
+    adds ' (N months before)', or ' (about N years before)' for a year-only date."""
+    d = ev["date"]
+    when = f"c. {d}" if len(d) == 4 else d + (f" {ev['time']}" if ev.get("time") else "")
+    if incident_date:
+        try:
+            y, m, day = (list(map(int, d.split("-"))) + [1, 1])[:3]
+            if len(d) == 4:
+                n, unit = int(incident_date[:4]) - y, "years"
+            else:
+                n, unit = core.months_between(dt.date(y, m, day), dt.date.fromisoformat(incident_date)), "months"
+        except ValueError:
+            return when
+        if n > 0:
+            when += f" (about {n} {'year' if n == 1 else 'years'} before)" if unit == "years" else f" ({n} months before)"
+    return when
+
+
+def _pack_incident_date(pack, w):
+    return (pack.get("incident") or {}).get("date") or core.incident_date(w)
+
+
 def _c(cites):
     return f" [{'; '.join(cites)}]" if cites else ""
 
@@ -802,7 +875,7 @@ def _md_item(it) -> str:
     if k == "timeline":
         lines = []
         for e in sorted_events(it["events"]):
-            when = e["date"] + (f" {e['time']}" if e.get("time") else "")
+            when = event_when(e, _INC_DATE)
             lines.append(f"- {when}: {e['text']}{' *(weak signal)*' if e.get('signal') else ''}{_c(e.get('cites'))}")
             lines += [f"  - {lab}: {e[f]}" for f, lab in (("received_by", "Received by"), ("response", "Response"))
                       if e.get(f)]
@@ -834,6 +907,8 @@ def _md_block(it) -> str:
 
 def render_pack_md(pack, w) -> str:
     """The pack as Markdown: generated, never hand-written, so it always agrees with the HTML."""
+    global _INC_DATE
+    _INC_DATE = _pack_incident_date(pack, w)
     cov = coverage(w, pack)
     out = [f"# {pack['title']}", f"*{pack['status']}*", f"**Audience:** {pack['audience']}"]
     fields, inc = w.get("incident", {}).get("fields", {}), pack.get("incident") or {}
@@ -1007,7 +1082,7 @@ def _html_item(it, graphs) -> str:
         lis = []
         for e in sorted_events(it["events"]):
             sig = '<span class="badge hold">Weak signal</span> ' if e.get("signal") else ""
-            when = _h(e["date"] + (f" {e['time']}" if e.get("time") else ""))
+            when = _h(event_when(e, _INC_DATE))
             more = "".join(f'<p class="m">{lab}: {_h(e[f])}</p>'
                            for f, lab in (("received_by", "Received by"), ("response", "Response")) if e.get(f))
             lis.append(f'<li><time>{when}</time>{sig}{_inline(e["text"])} {_chips(e.get("cites"))}{more}</li>')
@@ -1071,6 +1146,8 @@ def _trail(data) -> str:
 
 def render_pack_html(w, pack, run, generated) -> str:
     """One self-contained offline page: server-rendered content, with pack.js adding behaviour."""
+    global _INC_DATE
+    _INC_DATE = _pack_incident_date(pack, w)
     pack = with_item_ids(pack)
     fields = w.get("incident", {}).get("fields", {})
     data = build_pack_data(w, pack, run)
@@ -1160,6 +1237,7 @@ def follow_up(pack) -> dict:
 
 def cmd_pack(a):
     w, pack, _ = _checked(a)
+    core.warn_stale(a.ws)
     ws = core._abs(a.ws)
     run = ws.parent.name if core.is_standard_ws(ws) else ws.name
     out = Path(a.out) if a.out else core.outputs_dir(ws)

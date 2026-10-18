@@ -1,0 +1,31 @@
+{
+ "pack": "uat-unlinked-pack",
+ "schema": 1,
+ "title": "UAT unlinked evidence pack: synthetic pump fire",
+ "audience": "UAT testers",
+ "status": "Learning purposes: not a statutory document",
+ "bottom_line": [
+  {
+   "text": "No check stopped an untested pump returning to service.",
+   "cites": [
+    "FND-0002"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "learnings",
+   "heading": "Learnings",
+   "items": [
+    {
+     "kind": "learning",
+     "lesson": "Return to service needs a checklist with a hold point.",
+     "cites": [
+      "FND-0002",
+      "EVD-0003"
+     ]
+    }
+   ]
+  }
+ ]
+}

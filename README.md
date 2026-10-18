@@ -1,5 +1,9 @@
 # ProbeMatrix Learnings Coach
 
+> **v2.0 alpha in testing.** The stable release is 0.3.5, and `main` now carries the alpha. To stay on 0.3.5:
+> - **Claude app:** in the app's plugin settings, leave auto-update off and do not choose Update for the `probematrix` marketplace. If you have already updated, remove that marketplace there, add `ashley-eyekyam/probematrix-learnings-coach#v0.3.5` and install the plugin again.
+> - **Claude Code:** pin the tag as in [Pinning a version](docs/INSTALL.md#pinning-a-version). Once you have installed the plugin the `probematrix` marketplace name is already taken, so pinning means removing the marketplace, adding it again with `#v0.3.5` and reinstalling the plugin; a single `marketplace add` is not enough.
+
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE) ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)
 
 **One investigation. Every level of the organisation learns.**
@@ -20,13 +24,25 @@ ProbeMatrix analyses the evidence at four human-factors levels (Unsafe Acts → 
 ProbeMatrix export (.xlsx)
         │  pmlc ingest / classify
         ▼
-Learning Clusters  =  entity (15 functions)  ×  tier (frontline → board)  ×  relation (actor, approver, owner, absent…)
+Learning Clusters  =  entity (17 functions)  ×  tier (frontline → board)  ×  relation (actor, approver, owner, absent…)
         │  one focused pass per cluster × sub-division (practice, conditions, supervision, system,
         │  interfaces, barriers, precursors, tier messages, recommendations, competence, transferability)
         ▼
 Learning Cards · Supervisor checklists · Manager agendas · Leadership decisions · ExCo & Board briefs
 Audit test points · Investigator follow-up · Training modules · ER drills · Learnings Register (.xlsx) · Dashboard
 ```
+
+## What's new in v2.0 so far
+
+v2.0 is in testing (current build: 2.0.0-alpha.3, Phase 1: correct and tested). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+
+- The coach no longer forgets your role corrections when you re-run the analysis.
+- Questions about where two departments meet now use only the findings both share, so the numbers are small and meaningful (27 on the Hazira sample, not 196).
+- It tells you when an analysis file is out of date (`pmlc.py status`).
+- It refuses exports it cannot read properly, such as a CAPA Planner file, and warns when an export's own statistics disagree with its findings.
+- Regulators, vendors and contractors now have their own functions, and site-specific role words (for Indian process sites) are an optional overlay you switch on.
+- Timelines show clock times and how long before the incident each signal appeared.
+- Automatic tests run on every change, so fixes stay fixed.
 
 ## The skills
 
@@ -73,6 +89,8 @@ Full instructions: [`docs/INSTALL.md`](docs/INSTALL.md).
 git clone https://github.com/ashley-eyekyam/probematrix-learnings-coach
 cd probematrix-learnings-coach && ./tools/install-codex.sh
 ```
+
+On Windows, `.agents/skills` is a symlink to `../skills`. Clone with `git config core.symlinks true` (symlinks need Developer Mode or an elevated shell), or run `tools/install-codex.sh` (Git Bash or WSL), or copy the `skills/` folders yourself.
 
 All hosts need Python 3.9+ with `openpyxl` (see below).
 

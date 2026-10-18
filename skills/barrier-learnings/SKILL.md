@@ -5,11 +5,11 @@ description: Analyse which safety barriers and controls failed in a ProbeMatrix 
 
 # Barrier Learnings
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/output-style.md` (hierarchy of controls, leading indicators).
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/output-style.md` (hierarchy of controls, leading indicators).
 
 ## Identify barriers
 
-From the incident narrative (`<ws>/incident.json`) and the highest-rated findings (`PMLC select <ws> --min-rating <top> --brief`), list the barriers that were supposed to stand between the hazard and the outcome:
+From the incident narrative (`<ws>/incident.json`) and the highest-rated findings (`PMLC select <ws> --top-rated --brief`), list the barriers that were supposed to stand between the hazard and the outcome:
 - **Prevention side** (before loss of control): design and specification, maintenance and testing, inspection, procedures and permits, competence, change management.
 - **Mitigation side** (after loss of control): detection, alarm, isolation, ignition control, emergency response, fire protection, escape and recovery.
 
@@ -52,7 +52,7 @@ Sections and the kinds that fill them:
 - **Summary:** `para`.
 - **Critical controls to verify first:** `check` items, in ranked order.
 
-Set `"scope": {"min_rating": <top rating>}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. For a bow-tie, hand the `barrier` items to a bow-tie tool.
+Set `"scope": {"min_rating": "top"}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. For a bow-tie, hand the `barrier` items to a bow-tie tool.
 
 ```json
 {"kind": "barrier", "group": "Prevention", "barrier": "…", "type": "prevention", "owner": "…", "state": "absent",

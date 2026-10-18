@@ -7,13 +7,13 @@ description: Turn a ProbeMatrix investigation export into an audit and assurance
 
 Audience: anyone who tests whether controls work: internal audit, HSE audit teams, certification and regulatory inspectors, insurers. They need **testable criteria** and **evidence to request**, not narrative.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md` and the audit test point block in `output-style.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md` and the audit test point block in `output-style.md`.
 
 ## Gather
 
 ```bash
-PMLC select <ws> --level 3 4 --min-rating <top> --brief
-PMLC select <ws> --entity F11 --brief                      # how existing audits performed
+PMLC select <ws> --level 3 4 --top-rated --brief
+PMLC select <ws> --tag assurance --brief                    # how existing audits performed
 PMLC select <ws> --text "record|log|register|sign|closure|overdue|schedule|audit" --brief
 ```
 
@@ -41,7 +41,7 @@ Sections → kinds:
 4. `check` items, with `group` = the function.
 5. A `para` giving the grading scale, then a `table` results template with empty Grade and Notes cells.
 
-Set `"scope": {"levels": [3, 4], "min_rating": <top rating>}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. If asked for an .xlsx, build it from the `test_point` items (one row each) with the host's spreadsheet tools.
+Set `"scope": {"levels": [3, 4], "min_rating": "top"}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. If asked for an .xlsx, build it from the `test_point` items (one row each) with the host's spreadsheet tools.
 
 ```json
 {"kind": "test_point", "group": "Maintenance and testing", "requirement": "…", "sample": "…",

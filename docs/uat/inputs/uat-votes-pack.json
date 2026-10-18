@@ -1,0 +1,30 @@
+{
+ "pack": "uat-votes-pack",
+ "schema": 1,
+ "title": "UAT votes pack: synthetic pump fire",
+ "audience": "UAT testers",
+ "status": "Learning purposes: not a statutory document",
+ "bottom_line": [
+  {
+   "text": "No check stopped an untested pump returning to service.",
+   "cites": [
+    "FND-0002"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "learnings",
+   "heading": "Learnings",
+   "items": [
+    {
+     "kind": "learning",
+     "lesson": "A gas alarm that only displays does not stop the release.",
+     "cites": [
+      "FND-0004"
+     ]
+    }
+   ]
+  }
+ ]
+}

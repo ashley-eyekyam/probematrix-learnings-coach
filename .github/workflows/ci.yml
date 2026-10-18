@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.x"]
+        node: [true, false]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        if: matrix.node
+        with:
+          node-version: "20"
+      - name: Remove Node so the JS tests skip
+        if: ${{ !matrix.node }}
+        run: |
+          # ubuntu-latest ships node; the JS tests skip only when shutil.which("node") finds none
+          for i in $(seq 1 20); do
+            p=$(command -v node) || break
+            sudo rm -f "$p"
+            hash -r
+          done
+          if command -v node; then echo "node is still on PATH"; exit 1; fi
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check .
+      - name: Enable subprocess coverage
+        run: |
+          echo "import coverage; coverage.process_startup()" > "$(python -c 'import site; print(site.getsitepackages()[0])')/pmlc-cov.pth"
+      - name: Tests with coverage
+        env:
+          COVERAGE_PROCESS_START: ${{ github.workspace }}/.coveragerc
+        run: coverage run -m pytest tests -q
+      - name: Check the JS tests skipped without Node
+        if: ${{ !matrix.node }}
+        run: |
+          python -m pytest tests/test_pack_js.py tests/test_detail_js.py -q -rs | tee js.txt
+          want=$(cat tests/test_pack_js.py tests/test_detail_js.py | grep -c "skipif(not NODE")
+          got=$(grep -c "SKIPPED.*node not installed" js.txt || true)
+          echo "node tests: $want, skipped for no node: $got"
+          if [ "$got" -ne "$want" ] || [ "$want" -eq 0 ]; then echo "the Node tests did not all skip"; exit 1; fi
+      - run: coverage combine
+      - run: coverage report
+      - run: python skills/learnings-coach/scripts/pmlc.py check-samples
+      - run: python evals/run_evals.py check
+
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: pip install -r requirements-dev.txt
+      - run: python tools/smoke_sample.py

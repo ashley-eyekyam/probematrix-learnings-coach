@@ -5,12 +5,12 @@ description: Build a precursor and weak-signal timeline from a ProbeMatrix inves
 
 # Precursor Timeline
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it).
 
 ## Gather candidates
 
 ```bash
-PMLC timeline <ws> --before <incident date YYYY-MM-DD>
+PMLC timeline <ws> --before incident
 ```
 
 This lists every dated mention in findings and evidence (`<ws>/timeline_candidates.json`), with snippets and sources. Many are duplicates or context dates (e.g. a commissioning year). The engine finds dates; you decide which are signals.
@@ -46,7 +46,7 @@ PMLC pack <ws> <run>/outputs/precursor-timeline.json         # -> precursor-time
 Sections and the kinds that fill them:
 - **Curated signals:** one `timeline`. Each row of the Curate table above becomes an event:
   - Date → `date`
-  - Signal → `text`, ending with "(N months before)"
+  - Signal → `text`; do not write "(N months before)": the renderer computes it from the incident date and shows year-only dates as "c. YYYY (about N years before)"
   - `signal: true`
   - Received by → `received_by`
   - Response → `response` ("None recorded" is an answer)
@@ -57,6 +57,6 @@ Sections and the kinds that fill them:
 Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
 
 ```json
-{"date": "2022-03", "text": "… (24 months before)", "signal": true, "received_by": "Materials Management (F06, T1)",
+{"date": "2022-03", "text": "…", "signal": true, "received_by": "Materials Management (F06, T1)",
  "response": "None recorded", "cites": ["FND-…", "EVD-…"]}
 ```

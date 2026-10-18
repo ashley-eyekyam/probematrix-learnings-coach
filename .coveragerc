@@ -1,0 +1,7 @@
+[run]
+parallel = True
+source = skills/learnings-coach/scripts
+
+[report]
+fail_under = 90
+show_missing = True

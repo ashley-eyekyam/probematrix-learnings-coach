@@ -12,7 +12,7 @@
 
 ## How the part reached the job
 
-- 2022-03: Seals bought locally without a specification [FND-0003; EVD-0003]
+- 2022-03 (24 months before): Seals bought locally without a specification [FND-0003; EVD-0003]
   - Received by: Stores/procurement officer
   - Response: No technical approval recorded
 - 2024-03-12: Seal changed on the pump [FND-0001]
@@ -47,4 +47,4 @@ The reliability engineer role named in the findings was absent [FND-0003].
 
 This pack cites 1 of 1 relevant findings.
 
-> Generated with ProbeMatrix Learnings Coach (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a3 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

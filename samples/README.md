@@ -30,8 +30,8 @@ The slug is the same one `pmlc.py ingest --slug` used for your run, so a contrib
 ## Rules for adding a sample
 
 1. The incident is **public record** (for example a published regulator or enquiry report), and you have the right to publish an analysis of it.
-2. **ProbeMatrix material is de-identified to roles**: the export, the ProbeMatrix report and the outputs carry no personal names, staff numbers or contact details. This rule covers ProbeMatrix investigations only. The official report is a public document and is included as published, unmodified.
-3. Prepare the export with `tools/make-public-sample.py --slug <slug>`. The name scan must return **zero hits**. Run `pmlc.py scan-names <names-file>` over `samples/<slug>/outputs` and over the ProbeMatrix report's text (`pdftotext -layout <report>.pdf <report>.txt`; `scan-names` cannot read a PDF and says so), and get zero hits, before adding them.
+2. **Material may be included unmodified.** The official public report and ProbeMatrix material (export, report, outputs) go in as they are; no name scan is required. Generated learnings still follow just culture (roles only, no blame). De-identification tooling (`pmlc.py scan-names`, and `--names` on `tools/make-public-sample.py`) remains available for an organisation's own runs.
+3. Prepare the export with `tools/make-public-sample.py --slug <slug>`. It keeps the sheets the coach reads and applies any `--set` overrides. Without `--names` it skips the name scan and says so.
 4. Add a `README.md` in the sample folder stating:
    - the public source;
    - what the ProbeMatrix analysis had access to (desk analysis of the published report, no site access or interviews);

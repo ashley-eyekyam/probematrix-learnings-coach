@@ -1,0 +1,53 @@
+# Evals
+
+`evals.json` holds the trigger evals for the 23 skills, written against the public Hazira sample
+(`samples/2020-09-24-hazira-gas-release-fire/`). Every skill owns at least three evals: at least one `trigger`,
+one `no-trigger` and one `collision`.
+
+## Eval shape
+
+| Field | Meaning |
+|---|---|
+| `id` | Unique integer |
+| `owner` | The skill whose eval set this belongs to (used for the per-skill counts) |
+| `kind` | `trigger`, `no-trigger` or `collision` |
+| `skill` | The skill that should fire, or `null` for a `no-trigger` eval |
+| `not_skill` | `no-trigger` only: the skill that must not fire (equals `owner`) |
+| `sibling` | `collision` only: the sibling skill the prompt must not route to |
+| `prompt` | The request, written as the named audience would write it |
+| `files` | Repo paths the prompt refers to (the sample export; the official report for report-comparison) |
+| `expectations` | Checks to run against a run folder (below) |
+
+- **trigger**: a realistic request from the skill's audience, with the export.
+- **no-trigger**: an HSE request with no ProbeMatrix export, aimed at the generic HSE skills that could steal it
+  (a toolbox talk, a bow-tie, an ERP). No learnings-coach skill should fire.
+- **collision**: a request that sits on a description overlap between two sibling skills (for example
+  manager-coach and site-leadership-coach, or board-brief and top-management-brief); `skill` must win over `sibling`.
+
+## Expectation types
+
+| Type | Parameters | Passes when |
+|---|---|---|
+| `pack_exists` | `pack` | `<run>/outputs/<pack>.json` exists |
+| `check_pack_ok` | `pack` | `pmlc.py check-pack <ws> <pack>.json` exits 0 |
+| `check_register_ok` | `pack` | `pmlc.py check-register <ws> <pack>.json` exits 0 (learnings-register) |
+| `scope_equals` | `pack`, `scope` | the pack's `scope` equals the one the SKILL.md fixes |
+| `coverage_min` | `pack`, `ratio` | cited relevant findings / relevant findings is at least `ratio` (0.25, the engine's warning line) |
+| `routes_to` | `skill` (or `null`) | judged by a person or from a transcript: reported as `manual` |
+
+Pack names follow each skill's SKILL.md: usually the skill name, `dossier-F02` for cluster-learning-dossier,
+`organisation-learning-plan` for organisation-learning-map, and `learnings-register` for the register.
+The hub (`learnings-coach`) writes no pack; its evals carry `routes_to` only.
+
+## Commands
+
+```bash
+python3 evals/run_evals.py check                  # structure, paths, kinds, per-skill counts (CI runs this)
+python3 evals/run_evals.py grade <run-dir>        # grade evals whose packs exist in <run-dir>/outputs
+python3 evals/run_evals.py grade <run-dir> --ids 3,7
+```
+
+`grade` prints `| id | skill | expectation | pass/fail |` and the pass rate over machine checks, and exits 1 if any
+machine check fails. To grade a skill, run it on the sample (see `skills/learnings-coach/SKILL.md`), then point
+`grade` at the run folder it printed (`<export-dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/`).
+Both commands take `--file <evals.json>` to use another eval file. Standard library only, Python 3.9+.

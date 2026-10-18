@@ -25,7 +25,7 @@ Seals were bought locally without a specification [FND-0003]. Nothing in the ret
 
 ## Signals that reached leadership
 
-- 2022-03: Local seal purchases begin *(weak signal)* [FND-0003; EVD-0003]
+- 2022-03 (24 months before): Local seal purchases begin *(weak signal)* [FND-0003; EVD-0003]
   - Received by: Plant manager (budget owner)
   - Response: None recorded
 
@@ -61,4 +61,4 @@ Buying seals locally without a specification had become routine; the findings re
 
 This pack cites 1 of 1 relevant findings.
 
-> Generated with ProbeMatrix Learnings Coach (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a3 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

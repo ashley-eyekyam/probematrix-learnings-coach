@@ -7,16 +7,16 @@ description: Produce learning for site and asset leadership from a ProbeMatrix i
 
 Audience: T4 plant / asset leadership. They set site priorities, allocate budgets and people, delegate authority and, by what they tolerate, set the norms.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 
 ```bash
 PMLC select <ws> --tier T4 --brief
-PMLC select <ws> --level 4 --min-rating <top>
+PMLC select <ws> --level 4 --top-rated
 PMLC select <ws> --relation norm_setter learner absent challenger
 PMLC causal <ws> --top 40          # organisational hubs
-PMLC timeline <ws> --before <incident date>
+PMLC timeline <ws> --before incident
 ```
 
 ## Write

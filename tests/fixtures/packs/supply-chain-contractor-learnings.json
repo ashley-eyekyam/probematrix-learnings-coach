@@ -3,7 +3,7 @@
  "audience": "Procurement, stores, vendors and contractors", "status": "Learning purposes: not a statutory document",
  "bottom_line": [{"text": "Seals were bought locally without a specification, and no one approved them technically.",
                   "cites": ["FND-0003", "EVD-0003"]}],
- "scope": {"entities": ["F06", "F14"]},
+ "scope": {"tags": ["supply", "contractor"]},
  "sections": [
   {"id": "path", "heading": "How the part reached the job", "items": [
    {"kind": "timeline", "events": [

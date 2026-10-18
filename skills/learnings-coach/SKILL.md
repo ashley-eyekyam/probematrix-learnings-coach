@@ -29,14 +29,16 @@ PMLC ingest <export.xlsx> --slug <site>-<event> [--date YYYY-MM-DD]
 #   creates <export-dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace/ and .../outputs/
 #   e.g. --slug hazira-gas-release-fire --date 2020-09-24  ->  pmlc-runs/2020-09-24-hazira-gas-release-fire/
 PMLC profile <ws> --out <ws>/profile.md
-PMLC classify <ws>
-PMLC run-path <ws>                            # prints <run>, <ws>, the outputs folder and the slug
+PMLC classify <ws>                            # add --overlay india-process-site for Indian process-site role words (remembered on re-run; --no-overlay clears)
+PMLC run-path <ws>                            # prints <run>, <ws>, the outputs folder, the slug, top_rating and incident_date
+PMLC status <ws>                              # which workspace files are out of date; re-run classify/ingest as it says
 ```
 
 **Folder rule (strict).** `<run>` is `<export-dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/`, `<ws>` is `<run>/workspace/`, and every output (Markdown, xlsx, HTML) goes to `<run>/outputs/`. Never write outputs anywhere else. `ingest --force` overwrites findings, evidence and incident but keeps an earlier `clusters.json`; re-run `classify` after a forced ingest.
 - **Slug:** use the *corrected* incident date if the profile flags the summary-sheet date. Name the site and event in plain lowercase words joined by hyphens, never the sheet's incident type unchecked.
+- **Read-only upload folder** (as in the Claude app): if the export's folder is not writable, add `--root <a writable working folder>` to `ingest`; the run folder is then made under that folder's `pmlc-runs/`.
 - **`ingest --legacy-out`** exists only for workspaces made before v0.2.
-- **Sharing:** to share a run publicly, see `samples/README.md`. A run becomes `samples/<slug>/` after de-identification and a zero-hit name scan.
+- **Sharing:** to share a run publicly, see `samples/README.md` (repository only). A public-record run becomes `samples/<slug>/`; the official report and ProbeMatrix material may be included unmodified, with no name scan required (learnings still follow just culture: roles only, no blame). `scan-names` remains available for your own organisation's runs.
 
 Read `profile.md` and tell the user, in two or three lines, what the investigation contains (findings, share at supervision and organisational level, evidence items) and any data-quality flags. The profile checks the summary-sheet date and incident type against the narrative, lists reviewer downgrade votes, and notes empty columns and review status. Do not silently correct the export: state the correction in your outputs, use the corrected value in your text, and pass it to generated files (e.g. `dashboard --date 2024-03-20`). Leave findings with downgrade votes out of learnings, or say why you kept them.
 
@@ -60,6 +62,8 @@ If `classify` reports unresolved roles, run the `learning-clusters` skill's reso
 If the request is broad and the user is present, ask one question: which audience first? Otherwise start with the organisation map and the three audiences with the most findings.
 
 ## Step 3: produce
+
+Select by entity tag (`PMLC select --tag <tag>`) instead of hard-coding entity IDs where a tag exists.
 
 Each skill names its `PMLC select` filters, its structure and its checks. Apply `learning-principles.md` throughout. Skills that produce a pack write `<run>/outputs/<skill>.json` (`references/pack-schema.md`), run `PMLC check-pack`, then `PMLC pack`, which writes `<skill>.html` (open this first) and `<skill>.md`. `learnings-register` writes its register (JSON, .xlsx, .md) there instead. Tell the user where the files are. Keep the footer from `output-style.md` on every document.
 

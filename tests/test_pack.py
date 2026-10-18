@@ -3,6 +3,7 @@ import copy
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,9 @@ import pytest
 from test_pmlc import ROOT, make_export, run, run_fail, ws  # noqa: F401  (ws is a module-scoped fixture)
 import pmlc  # noqa: E402  (test_pmlc put the engine folder on sys.path)
 import pmlc_pack as pp  # noqa: E402
+
+sys.path.insert(0, str(ROOT / "tools"))
+import release  # noqa: E402  (tools/release.py: the PEP 440 -> semver mapping the manifests use)
 
 FIX = Path(__file__).resolve().parent / "fixtures" / "packs"
 STATUS = "Learning purposes: not a statutory document"
@@ -49,7 +53,7 @@ def pack_with(*items, **top):
 
 
 @pytest.fixture(scope="module")
-def w(ws):
+def w(ws):  # noqa: F811
     return pmlc.load_ws(ws)
 
 
@@ -133,7 +137,7 @@ def test_wrong_types_never_crash(w, p):
 def test_scope_needs_clusters(w):
     w2 = {k: v for k, v in w.items() if k != "clusters"}
     got = problems(pack_with(item("para"), scope={"tiers": ["T2"]}), w2)
-    assert any(x.startswith("scope: tiers and entities need clusters.json") for x in got)
+    assert any(x.startswith("scope: tiers, entities and tags need clusters.json") for x in got)
 
 
 def test_relevant_findings(w):
@@ -169,7 +173,7 @@ def test_cited_ids_and_item_ids():
     assert "id" not in p["sections"][0]["items"][0]
 
 
-def test_check_pack_cli(ws, tmp_path):
+def test_check_pack_cli(ws, tmp_path):  # noqa: F811
     good = tmp_path / "p.json"
     good.write_text(json.dumps(pack_with(item("para", cites=["FND-0002"]))), encoding="utf-8")
     assert run("check-pack", str(ws), str(good)).strip().endswith("OK: 1 sections, 1 items, 1 cited IDs")
@@ -216,7 +220,7 @@ WAVE3 = ["causal-map", "precursor-timeline", "interface-learnings", "barrier-lea
 PACK_OF = {"cluster-learning-dossier": "dossier-F02", "organisation-learning-map": "organisation-learning-plan"}
 DOC_NAME = {"cluster-learning-dossier": "dossier-<F-id>"}          # how SKILL.md writes the pack file name
 DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3}                                     # tasks 15 and 24 add waves 2 and 3
-VERSION = "0.3.5"                                                  # tasks 15 and 24 bump it
+VERSION = pmlc.__version__
 
 
 def pack_fixtures() -> list:
@@ -269,7 +273,7 @@ def test_markdown_per_kind(w):
         "**Test point:** Return-to-service tests are recorded [FND-0002]\n- What to sample: 10 recent restarts",
         "### Module: Return to service [FND-0002]\n\n- Objective: Apply the hold point\n- Audience: Fitters\n- Duration: 45 min",
         "**Barrier:** Leak test [FND-0001]\n- Failure mode: Skipped\n- Type: prevention\n- Control tier: administrative\n- Fix: Interlock",
-        "- 2022-03: Local seal purchases begin *(weak signal)* [FND-0003]\n- 2024-03-12: Seal changed [FND-0001]",
+        "- 2022-03 (24 months before): Local seal purchases begin *(weak signal)* [FND-0003]\n- 2024-03-12: Seal changed [FND-0001]",
         "Graph: 2 nodes, 1 links [FND-0003]\n\n- Seal bought locally → Pump restarted untested (enabled)",
         "---\n\nThis pack cites 2 of 2 relevant findings.\n\n> " + pmlc.BRAND + "\n",
     ]:
@@ -363,7 +367,7 @@ def test_pack_cli_writes_html_md_and_follow_up(tmp_path):
     assert list(json.loads((outd / "follow-up.json").read_text(encoding="utf-8"))) == ["FND-0002", "FND-0003"]
 
 
-def test_pack_cli_refuses_a_failing_pack(ws, tmp_path):
+def test_pack_cli_refuses_a_failing_pack(ws, tmp_path):  # noqa: F811
     bad = tmp_path / "b.json"
     bad.write_text(json.dumps(pack_with(item("para"), status="Draft")), encoding="utf-8")
     r = run_fail("pack", str(ws), str(bad), "--out", str(tmp_path / "o"))
@@ -371,14 +375,14 @@ def test_pack_cli_refuses_a_failing_pack(ws, tmp_path):
     assert not (tmp_path / "o").exists()
 
 
-def test_pack_cli_no_md(ws, tmp_path):
+def test_pack_cli_no_md(ws, tmp_path):  # noqa: F811
     good = tmp_path / "p.json"
     good.write_text(json.dumps(pack_with(item("para", cites=["FND-0002"]))), encoding="utf-8")
     run("pack", str(ws), str(good), "--out", str(tmp_path / "o"), "--no-md")
     assert (tmp_path / "o" / "test-pack.html").exists() and not (tmp_path / "o" / "test-pack.md").exists()
 
 
-def test_pack_on_minimal_workspace(ws, tmp_path):
+def test_pack_on_minimal_workspace(ws, tmp_path):  # noqa: F811
     lone = tmp_path / "lone"
     lone.mkdir()
     (lone / "findings.json").write_text((ws / "findings.json").read_text(encoding="utf-8"), encoding="utf-8")
@@ -415,8 +419,9 @@ def test_pack_schema_reference_names_every_kind():
 
 
 def test_version():
+    sem = release.semver(VERSION)  # the manifests carry the semver form of the PEP 440 __version__ (ruling 25)
     for p in (".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"):
-        assert f'"version": "{VERSION}"' in (ROOT / p).read_text(encoding="utf-8"), p
+        assert f'"version": "{sem}"' in (ROOT / p).read_text(encoding="utf-8"), p
 
 
 # ---- wave-1 review fixes
@@ -732,7 +737,7 @@ def test_timeline_times_and_signal_handling(w):
     p = pack_with(item("timeline", events=ev))
     assert pp.check_pack(p, w).problems == []
     md = pp.render_pack_md(p, w)
-    assert ("- 2022-03: Local seal purchases begin *(weak signal)* [FND-0003]\n  - Received by: Stores (T1)\n"
+    assert ("- 2022-03 (24 months before): Local seal purchases begin *(weak signal)* [FND-0003]\n  - Received by: Stores (T1)\n"
             "  - Response: None recorded\n- 2024-03-20 14:05: Gas alarm on the display [FND-0004]\n"
             "- 2024-03-20 14:20: Isolation valve closed [FND-0004]") in md
     h = pp.render_pack_html(w, p, "r", "d")
@@ -780,7 +785,7 @@ def test_causal_graph_item():
     assert pp.causal_graph_item(CG, top=10) == pp.causal_graph_item(CG, top=10)          # deterministic
 
 
-def test_causal_item_cli(ws, tmp_path):                                                  # review focus 4
+def test_causal_item_cli(ws, tmp_path):  # noqa: F811                                                  # review focus 4
     run("causal", str(ws))
     it = json.loads(run("causal-item", str(ws), "--top", "3"))
     assert len(it["edges"]) == 3 and problems(pack_with(it), pmlc.load_ws(ws)) == []
@@ -805,7 +810,10 @@ def test_docs_no_longer_describe_markdown_only_skills():
         t = (ROOT / p).read_text(encoding="utf-8")
         assert "write Markdown there" not in t and "save Markdown under" not in t, p
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "(Mermaid)" not in readme and "so far" not in readme and "follow in 0.3.3" not in readme
+    assert "(Mermaid)" not in readme and "follow in 0.3.3" not in readme
+    # "so far" is allowed only once: in the v2.0 heading (guards stale "so far only write Markdown" wording)
+    assert readme.count("so far") == 1
+    assert [ln for ln in readme.splitlines() if "so far" in ln] == ["## What's new in v2.0 so far"]
 
 
 # ----------------------------------------------------------------------------- 0.3.4 polish
@@ -842,3 +850,73 @@ def test_consecutive_checks_form_one_tight_list(w):
                   item("para", text="Then hand over."), item("check", text="Sign the permit."))
     md = pp.render_pack_md(p, w)
     assert "- [ ] Isolate the pump.\n- [ ] Record the test. *(before restart)*\n\nThen hand over.\n\n- [ ] Sign" in md
+
+
+def test_scope_tags(w):
+    assert problems(pack_with(item("para"), scope={"tags": ["emergency"]}), w) == []
+    assert "scope.tags: nonsense is not a tag in clusters.json" in problems(
+        pack_with(item("para"), scope={"tags": ["nonsense"]}), w)
+    assert any(x.startswith("scope.tags: a list of tags") for x in problems(pack_with(item("para"), scope={"tags": "x"}), w))
+    assert "FND-0004" in pp.relevant_findings(w, {"tags": ["emergency"]})
+    w2 = dict(w)
+    del w2["clusters"]
+    got = problems(pack_with(item("para"), scope={"tags": ["emergency"]}), w2)
+    assert any(x.startswith("scope: tiers, entities and tags need clusters.json") for x in got)
+    w3 = copy.deepcopy(w)
+    del w3["clusters"]["taxonomy"]["tags"]
+    got = problems(pack_with(item("para"), scope={"tags": ["emergency"]}), w3)
+    assert any("Re-run classify" in x for x in got)
+
+
+def test_scope_top_and_relations(w):
+    top = {f["id"] for f in w["findings"] if f["rating"] == 4}
+    assert set(pp.relevant_findings(w, {"min_rating": "top"})) == top
+    assert problems(pack_with(item("para"), scope={"min_rating": "top"}), w) == []
+    got = problems(pack_with(item("para"), scope={"relations": ["nonsense"]}), w)
+    assert any(x.startswith("scope.relations") for x in got)
+    assert problems(pack_with(item("para"), scope={"relations": ["owner"], "entity_mode": "all"}), w) == []
+    got = problems(pack_with(item("para"), scope={"entity_mode": "both"}), w)
+    assert any(x.startswith("scope.entity_mode") for x in got)
+
+
+def test_event_when():
+    assert pp.event_when({"date": "2015"}, None) == "c. 2015"
+    assert pp.event_when({"date": "2019-03"}, None) == "2019-03"
+    assert pp.event_when({"date": "2019-03-04", "time": "14:05"}, None) == "2019-03-04 14:05"
+    assert pp.event_when({"date": "2019-03"}, "2020-09-24") == "2019-03 (18 months before)"
+    assert pp.event_when({"date": "2015"}, "2020-09-24") == "c. 2015 (about 5 years before)"
+    assert pp.event_when({"date": "2019"}, "2020-09-24") == "c. 2019 (about 1 year before)"
+    assert pp.event_when({"date": "2020"}, "2020-09-24") == "c. 2020"
+    assert pp.event_when({"date": "2020-09-10"}, "2020-09-24") == "2020-09-10"
+    assert pp.event_when({"date": "2021-01-01"}, "2020-09-24") == "2021-01-01"
+
+
+def test_pack_renders_months_before(w):
+    ev = [{"date": "2022", "text": "Year only"}, {"date": "2024-03-20", "time": "14:05", "text": "Alarm"}]
+    p = pack_with(item("timeline", events=ev))
+    md = pp.render_pack_md(p, w)
+    assert "- c. 2022 (about 2 years before): Year only" in md and "- 2024-03-20 14:05: Alarm" in md
+    assert "<time>c. 2022 (about 2 years before)</time>" in pp.render_pack_html(w, p, "r", "d")
+    p["incident"] = {"date": "2024-05-20"}
+    assert "- 2024-03-20 14:05 (2 months before): Alarm" in pp.render_pack_md(p, w)
+
+
+def test_pack_unlinked_evidence_warns(w):
+    r = pp.check_pack(pack_with(item("card", cites=["FND-0002", "EVD-0003"])), w)
+    assert any("EVD-0003 is not linked to any finding this item cites" in x for x in r.warnings)
+    assert not r.problems
+    ok = pp.check_pack(pack_with(item("card", cites=["FND-0003", "EVD-0003"])), w)
+    assert not any("is not linked" in x for x in ok.warnings)
+    only_evd = pp.check_pack(pack_with(item("test_point")), w)
+    assert not any("is not linked" in x for x in only_evd.warnings)
+
+
+def test_pack_downgraded_needs_note(w):
+    w2 = dict(w, incident=dict(w["incident"], review_votes=[{"finding": "FND-0004", "vote": "downgrade"}]))
+    p = pack_with(item("learning", cites=["FND-0004"]))
+    r = pp.check_pack(p, w2)
+    assert any("cites FND-0004, which has a reviewer downgrade vote; add a data_quality note" in x for x in r.problems)
+    p["data_quality"] = [{"text": "Reviewer doubted this finding.", "cites": ["FND-0004"]}]
+    assert not any("downgrade vote" in x for x in pp.check_pack(p, w2).problems)
+    p2 = pack_with(item("learning"), bottom_line=[{"text": "x", "cites": ["FND-0004"]}])
+    assert any("bottom_line" in x and "downgrade vote" in x for x in pp.check_pack(p2, w2).problems)

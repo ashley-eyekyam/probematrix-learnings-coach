@@ -5,17 +5,17 @@ description: Produce learning for engineering, design, asset integrity, inspecti
 
 # Engineering & Integrity Learnings
 
-Audience: Learning Clusters F04 (instrumentation, control and calibration), F05 (asset integrity, corrosion and inspection), F07 (engineering, design, documents and MOC), plus F03 where hazardous-area equipment is involved.
+Audience: the Learning Clusters tagged `engineering` (in the default taxonomy F04 instrumentation, control and calibration, F05 asset integrity, corrosion and inspection, F07 engineering, design, documents and MOC, and F03 electrical, for hazardous-area equipment).
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 
 ```bash
-PMLC select <ws> --entity F03 F04 F05 F07 --brief
-PMLC select <ws> --entity F04 F05 F07 --level 3 4 --min-rating <top>
+PMLC select <ws> --tag engineering --brief
+PMLC select <ws> --tag engineering --level 3 4 --top-rated
 PMLC select <ws> --text "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design" --brief
-PMLC timeline <ws> --before <incident date>
+PMLC timeline <ws> --before incident
 ```
 
 ## Write
@@ -42,7 +42,7 @@ Sections → kinds:
 2. `decision` items (options, no answers), with `owner` = the technical authority.
 3. `check` items stating the minimum record, with `when` = the point in the work.
 
-Set `"scope": {"entities": ["F03", "F04", "F05", "F07"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+Set `"scope": {"tags": ["engineering"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
 
 ```json
 {"kind": "barrier", "group": "Specification and substitution", "barrier": "…", "type": "prevention", "owner": "…",

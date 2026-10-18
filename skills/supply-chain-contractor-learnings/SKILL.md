@@ -5,14 +5,14 @@ description: Produce learning for procurement, stores, materials management, ven
 
 # Supply Chain & Contractor Learnings
 
-Audience: Learning Clusters F06 (materials management) and F14 (corporate, external and vendors), plus any contractor or agency roles named in the findings.
+Audience: the Learning Clusters tagged `supply` or `contractor` (in the default taxonomy F06 materials management, F16 vendors, OEMs and suppliers, F17 contractors), plus any agency roles named in the findings.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 
 ```bash
-PMLC select <ws> --entity F06 F14 --brief
+PMLC select <ws> --tag supply contractor --brief
 PMLC select <ws> --text "procure|stores|spare|OEM|vendor|supplier|local|substitut|contract|agency|outsourc" --brief
 ```
 
@@ -39,7 +39,7 @@ Sections → kinds:
 2. `learning` items with `group` = Procurement and stores / Engineering at the supply interface / Vendors and OEMs / Contractors and outsourced roles (only the groups the evidence supports).
 3. `recommendation` (change, hoc_tier, indicator).
 
-Set `"scope": {"entities": ["F06", "F14"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+Set `"scope": {"tags": ["supply", "contractor"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
 
 ```json
 {"kind": "timeline", "events": [{"date": "YYYY-MM", "text": "…", "received_by": "Stores/procurement officer",

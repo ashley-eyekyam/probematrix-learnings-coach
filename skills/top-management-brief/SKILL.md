@@ -7,14 +7,14 @@ description: Produce a top-management brief from a ProbeMatrix investigation exp
 
 Audience: T5 corporate leadership. They set policy, enterprise standards and investment, and they decide whether a lesson from one site is applied at every site.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 
 ```bash
 PMLC select <ws> --tier T4 T5 --brief
-PMLC select <ws> --level 4 --min-rating <top>
-PMLC select <ws> --entity F12 F14 F11 --level 4 --brief     # policy, corporate, assurance
+PMLC select <ws> --level 4 --top-rated
+PMLC select <ws> --tag people corporate assurance --level 4 --brief   # people, corporate, assurance
 ```
 
 Use the Learnings Register if one exists; otherwise identify the L4 learnings directly.
@@ -43,7 +43,7 @@ Sections → kinds:
 4. `decision` ×4–6. Follow each one with its enterprise `indicator`, in the same `group`.
 5. `question`, with `to` = the role asked.
 
-Set `"scope": {"levels": [4], "min_rating": <top rating>}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. Use board-ready language.
+Set `"scope": {"levels": [4], "min_rating": "top"}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. Use board-ready language.
 
 ```json
 {"kind": "table", "columns": ["Learning", "Transferability", "Reason"],

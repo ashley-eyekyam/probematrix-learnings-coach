@@ -7,13 +7,13 @@ description: Produce learning for department and function managers from a ProbeM
 
 Audience: T3 function and department management. They own procedures, resources and priorities inside a function. Their learning is mostly at Supervision (L3) and Organisational (L4) level.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md` and the leading-indicator guidance in `output-style.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md` and the leading-indicator guidance in `output-style.md`.
 
 ## Gather
 
 ```bash
 PMLC select <ws> --tier T3 --brief
-PMLC select <ws> --tier T3 --level 3 4 --min-rating <top>
+PMLC select <ws> --tier T3 --level 3 4 --top-rated
 PMLC select <ws> --relation owner absent --brief          # systems they own; functions that did not exist
 PMLC interfaces <ws> --top 15
 ```

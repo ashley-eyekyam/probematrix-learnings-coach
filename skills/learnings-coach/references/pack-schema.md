@@ -34,7 +34,8 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 - **`status`:** must contain `Learning purposes: not a statutory document`.
 - **`bottom_line`:** 1 to 7 takeaways, each citing at least one Finding or Evidence ID.
 - **`scope` (optional):**
-  - It says which findings the pack should cover, using the same filters as `PMLC select`. Tiers and entities need `clusters.json`.
+  - It says which findings the pack should cover, using the same filters as `PMLC select`. `tags` (e.g. `["emergency"]`) expand to every entity with that tag and are unioned with `entities`; prefer tags, so the pack survives a custom taxonomy. Tiers, entities and tags need `clusters.json`.
+  - `min_rating` is a whole number or `"top"` (the workspace's top rating, which `run-path` prints). `relations` is a list of relation IDs (e.g. `["owner"]`). `entity_mode` is `"any"` (default) or `"all"`: with `all` a finding must carry every entity in `entities` and at least one entity of each tag, as with `select --entity-mode all`.
   - Without a scope, coverage is measured against the top-rated findings.
   - The page shows "This pack cites *x* of *y* relevant findings" and lists the rest.
 - **IDs:**

@@ -7,6 +7,8 @@ outputs/
 # never commit raw or unsanitised exports outside samples/
 *.xlsx
 !samples/**/*.xlsx
+!docs/uat/inputs/uat-*.xlsx
+~$*
 # python
 __pycache__/
 *.pyc
@@ -17,3 +19,8 @@ __pycache__/
 # internal briefs (not for the public repo)
 docs/briefs/outreach-engine-improvement-prompt.md
 docs/briefs/reference-adhoc-render-script.py
+.coverage
+.coverage.*
+
+# Office lock files
+.~lock.*#

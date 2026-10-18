@@ -7,7 +7,7 @@ description: Build the complete learning dossier for one department or function 
 
 Steps 2 and 3 of the method for one Learning Cluster: open it along sub-divisions S1–S14 (`learnings-coach/references/ontology.md` §4) and write one learning piece per sub-division.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Needs `<ws>/clusters.json` (see `learning-clusters`). Read `learnings-coach/references/learning-principles.md` first.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Needs `<ws>/clusters.json` (see `learning-clusters`). Read `learnings-coach/references/learning-principles.md` first.
 
 ## Gather
 
@@ -15,7 +15,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Needs `<
 PMLC select <ws> --entity <F-id> --out <ws>/sel-<F-id>.md              # full text
 PMLC select <ws> --entity <F-id> --level 1 --brief                      # per level as needed
 PMLC interfaces <ws>                                                     # for S6
-PMLC timeline <ws> --before <incident date>                              # for S8
+PMLC timeline <ws> --before incident                              # for S8
 ```
 
 For large clusters (more than ~60 findings) work level by level so each pass stays grounded; read the full justification and causal text of the highest-rated findings first.

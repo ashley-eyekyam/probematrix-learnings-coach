@@ -1,0 +1,175 @@
+"""Tests on the committed Hazira sample (public record). Later tasks reuse the module fixture `hz`."""
+import json
+import re
+import subprocess
+import sys
+import types
+from pathlib import Path
+
+import pytest
+
+from test_pmlc import PMLC, ROOT, pmlc, run
+
+pytest.importorskip("openpyxl")
+SAMPLE = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire"
+EXPORT = SAMPLE / "2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+REGISTER = SAMPLE / "outputs" / "learnings-register.json"
+EXPECTED_JUSTIFICATION_ONLY = 56  # measured; matches the planning research figure
+GOLDEN = Path(__file__).resolve().parent / "fixtures" / "roles-golden.json"
+
+
+@pytest.fixture(scope="module")
+def hz(tmp_path_factory):
+    root = tmp_path_factory.mktemp("hazira")
+    run("ingest", str(EXPORT), "--slug", "hazira-gas-release-fire", "--root", str(root))
+    ws = root / "pmlc-runs" / "2020-09-24-hazira-gas-release-fire" / "workspace"
+    run("classify", str(ws), "--overlay", "india-process-site")
+
+    def select(*args):
+        return json.loads(run("select", str(ws), *args, "--format", "json"))
+
+    return types.SimpleNamespace(
+        ws=ws, select=select,
+        clusters=json.loads((ws / "clusters.json").read_text(encoding="utf-8")),
+        incident=json.loads((ws / "incident.json").read_text(encoding="utf-8")))
+
+
+def test_baseline(hz):
+    findings = json.loads((hz.ws / "findings.json").read_text(encoding="utf-8"))
+    assert len(findings) == 436
+    assert len(json.loads((hz.ws / "evidence.json").read_text(encoding="utf-8"))) == 46
+    assert max(f["rating"] or 0 for f in findings) == 4
+    assert len(hz.clusters["role_map"]) == 630
+    assert len(hz.select("--entity", "F02", "F06")) == 196
+
+
+def test_golden_roles(hz):
+    golden = json.loads(GOLDEN.read_text(encoding="utf-8"))
+    assert len(golden) >= 50
+    rm = hz.clusters["role_map"]
+    wrong = {r: ({k: rm[r][k] for k in "FTR"} if r in rm else None, want) for r, want in golden.items()
+             if r not in rm or {k: rm[r][k] for k in "FTR"} != want}
+    assert wrong == {}
+
+
+def test_no_design_role_is_approver(hz):
+    assert not [r for r, m in hz.clusters["role_map"].items() if "design" in r.lower() and m["R"] == "approver"]
+
+
+def test_plant_policy_roles_are_t4(hz):
+    roles = {r: m["T"] for r, m in hz.clusters["role_map"].items() if re.search(r"(?i)plant manag.*polic", r)}
+    assert roles and set(roles.values()) == {"T4"}, roles
+
+
+def test_register_still_clean(hz):
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(hz.ws), str(REGISTER)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "; 0 problem(s)." in r.stdout
+
+
+def test_select_by_tag_on_hazira(hz):
+    emergency = {d["id"] for d in hz.select("--tag", "emergency")}
+    assert emergency == {d["id"] for d in hz.select("--entity", "F09a", "F09b", "F10")}
+    assert hz.clusters["taxonomy"]["overlays"] == ["india-process-site"]
+
+
+def test_entity_mode_all_is_intersection(hz):
+    assert len(hz.select("--entity", "F02", "F06")) == 196
+    assert len(hz.select("--entity", "F02", "F06", "--entity-mode", "all")) == 27
+
+
+def test_budget_truncates_by_rating(hz):
+    r = subprocess.run([sys.executable, str(PMLC), "select", str(hz.ws), "--tier", "T2", "--budget-chars", "60000"],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert len(r.stdout) <= 60000
+    ratings = [int(x) for x in re.findall(r"· rating (\d+)", r.stdout)]
+    assert ratings and ratings == sorted(ratings, reverse=True)
+    m = re.search(r"Dropped for budget: (\d+) findings", r.stdout)
+    assert m and int(m.group(1)) > 0
+    assert len(ratings) + int(m.group(1)) == len(hz.select("--tier", "T2"))
+
+
+def _preset(hz, *extra):
+    r = subprocess.run([sys.executable, str(PMLC), "select", str(hz.ws), "--preset", "site-leadership-coach", *extra],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    return r
+
+
+def test_preset_budget_is_shared_across_calls(hz):                                  # ruling 27
+    floor = _preset(hz, "--budget-chars", "0")
+    parts = re.split(r"(?m)^(?=# Preset site-leadership-coach: )", floor.stdout)[1:]
+    assert len(parts) == 3 and "below the minimum output" in floor.stderr
+    min_len = max(len(x) for x in parts)
+    capped = _preset(hz, "--budget-chars", "20000").stdout
+    uncapped = _preset(hz).stdout
+    assert len(capped) < 20000 + 3 * min_len
+    assert len(uncapped) > 5 * 20000
+
+
+def test_analysis_stats_cross_check(hz):
+    st = hz.incident["analysis_stats"]
+    assert st["total"] == 436
+    assert {int(k): v for k, v in st["by_level"].items()} == {1: 36, 2: 92, 3: 167, 4: 141}
+
+
+def test_export_schema_doc_matches_sample(hz):
+    import openpyxl
+    wb = openpyxl.load_workbook(EXPORT, read_only=True)
+    for sheet, known in pmlc.KNOWN_COLUMNS.items():
+        header = [c for c in next(wb[sheet].iter_rows(values_only=True)) if c]
+        assert header == known, sheet
+    doc = (ROOT / "skills" / "learnings-coach" / "references" / "export-schema.md").read_text(encoding="utf-8")
+    for name in [c for cols in pmlc.KNOWN_COLUMNS.values() for c in cols] + pmlc.KNOWN_SUMMARY_FIELDS:
+        assert name in doc, name
+    assert set(hz.incident["fields"]) <= set(pmlc.KNOWN_SUMMARY_FIELDS)
+
+
+def test_event_day_sequence(hz):
+    run("timeline", str(hz.ws), "--on", "incident")
+    seq = json.loads((hz.ws / "timeline_event_day.json").read_text(encoding="utf-8"))
+    times = [x["time"] for x in seq]
+    assert times == sorted(times) and {"02:12", "03:01", "03:08"} <= set(times)
+    assert len(times) == len(set(times)) and len(seq) < 60
+    assert all(x["sources"] and 1 <= len(x["snippets"]) <= 3 and x["mentions"] >= len(x["sources"]) for x in seq)
+    e308 = next(x for x in seq if x["time"] == "03:08")
+    assert e308["mentions"] > 1 and len(e308["sources"]) > 1
+
+
+def test_event_day_other_day_keeps_only_dated_times(hz):                            # ruling 26
+    run("timeline", str(hz.ws), "--on", "2019-01-01")
+    seq = json.loads((hz.ws / "timeline_event_day.json").read_text(encoding="utf-8"))
+    assert seq == []                             # no Hazira sentence dated 2019-01-01 gives a clock time
+    run("timeline", str(hz.ws), "--on", "incident")
+    assert len(json.loads((hz.ws / "timeline_event_day.json").read_text(encoding="utf-8"))) == 29
+
+
+def test_min_precision_month_drops_years(hz):
+    run("timeline", str(hz.ws), "--min-precision", "month")
+    t = json.loads((hz.ws / "timeline_candidates.json").read_text(encoding="utf-8"))
+    assert t and all(x["precision"] != "year" for x in t)
+    assert all("months_before" in x for x in t)
+
+
+def test_justification_only_links_count(hz):
+    w = pmlc.load_ws(hz.ws)
+    only = sum(len(pmlc.linked_evidence(f) - set(f["evidence"])) for f in w["findings"])
+    # Measured on the committed export (planning research estimated 56); pairs named only in AI Justification.
+    assert only > 0
+    assert only == EXPECTED_JUSTIFICATION_ONLY
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(hz.ws), str(REGISTER)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+
+
+def test_sample_register_vocab(hz, capsys):
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(hz.ws), str(REGISTER)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    warns = [ln for ln in r.stdout.splitlines() if ln.startswith("warning: ")]
+    with capsys.disabled():
+        print(f"\nHazira vocabulary warnings: {len(warns)}")
+        for ln in warns:
+            print("  " + ln)

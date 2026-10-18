@@ -1,7 +1,7 @@
 {"pack": "engineering-integrity-learnings", "schema": 1, "title": "Engineering and Integrity Learnings: Synthetic pump fire, 2024",
  "audience": "Engineering, integrity, MOC and I&C", "status": "Learning purposes: not a statutory document",
  "bottom_line": [{"text": "Seals bought without a specification entered service with no technical approval.", "cites": ["FND-0003"]}],
- "scope": {"entities": ["F03", "F04", "F05", "F07"]},
+ "scope": {"tags": ["engineering"]},
  "sections": [
   {"id": "themes", "heading": "Technical learnings by theme", "items": [
    {"kind": "learning", "group": "Specification and substitution", "lesson": "A part without a specification is an unreviewed design change.",

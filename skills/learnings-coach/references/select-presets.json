@@ -1,0 +1,71 @@
+{
+  "auditor-assurance-pack": [
+    {"name": "top-l34", "args": ["--level", "3", "4", "--top-rated", "--brief"]},
+    {"name": "assurance", "args": ["--tag", "assurance", "--brief"]},
+    {"name": "text", "args": ["--text", "record|log|register|sign|closure|overdue|schedule|audit", "--brief"]}
+  ],
+  "barrier-learnings": [
+    {"name": "top", "args": ["--top-rated", "--brief"]}
+  ],
+  "board-brief": [
+    {"name": "top-l4", "args": ["--level", "4", "--top-rated", "--brief"]},
+    {"name": "assurance-l34", "args": ["--tag", "assurance", "--level", "3", "4", "--brief"]}
+  ],
+  "emergency-response-learnings": [
+    {"name": "emergency", "args": ["--tag", "emergency", "--brief"]},
+    {"name": "top-emergency", "args": ["--tag", "emergency", "--top-rated"]},
+    {"name": "text", "args": ["--text", "alarm|detect|isolat|MOV|valve|drill|fire.?water|pump|evacuat|command|CCTV", "--brief"]}
+  ],
+  "engineering-integrity-learnings": [
+    {"name": "engineering", "args": ["--tag", "engineering", "--brief"]},
+    {"name": "top-engineering-l34", "args": ["--tag", "engineering", "--level", "3", "4", "--top-rated"]},
+    {"name": "text", "args": ["--text", "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design", "--brief"]}
+  ],
+  "frontline-learning-cards": [
+    {"name": "tier-t1", "args": ["--tier", "T1", "--brief"]},
+    {"name": "tier-t1-l12", "args": ["--tier", "T1", "--level", "1", "2"]},
+    {"name": "top-tier-t1", "args": ["--tier", "T1", "--top-rated"]}
+  ],
+  "investigator-coach": [
+    {"name": "top-json", "args": ["--top-rated", "--format", "json"]}
+  ],
+  "learnings-register": [
+    {"name": "top", "args": ["--top-rated", "--brief"]}
+  ],
+  "manager-coach": [
+    {"name": "tier-t3", "args": ["--tier", "T3", "--brief"]},
+    {"name": "top-tier-t3-l34", "args": ["--tier", "T3", "--level", "3", "4", "--top-rated"]},
+    {"name": "relation", "args": ["--relation", "owner", "absent", "--brief"]}
+  ],
+  "report-comparison": [
+    {"name": "text", "args": ["--text", "recommendation|remedial", "--brief"]}
+  ],
+  "safety-committee-guide": [
+    {"name": "tiers-t1-t2", "args": ["--tier", "T1", "T2", "--brief"]},
+    {"name": "top-l4", "args": ["--level", "4", "--top-rated", "--brief"]},
+    {"name": "relation", "args": ["--relation", "norm_setter", "learner", "challenger", "--brief"]}
+  ],
+  "site-leadership-coach": [
+    {"name": "tier-t4", "args": ["--tier", "T4", "--brief"]},
+    {"name": "top-l4", "args": ["--level", "4", "--top-rated"]},
+    {"name": "relation", "args": ["--relation", "norm_setter", "learner", "absent", "challenger"]}
+  ],
+  "supervisor-coach": [
+    {"name": "tier-t2", "args": ["--tier", "T2", "--brief"]},
+    {"name": "top-l3", "args": ["--level", "3", "--top-rated"]},
+    {"name": "tier-t2-relation", "args": ["--tier", "T2", "--relation", "approver"]}
+  ],
+  "supply-chain-contractor-learnings": [
+    {"name": "supply-contractor", "args": ["--tag", "supply", "contractor", "--brief"]},
+    {"name": "text", "args": ["--text", "procure|stores|spare|OEM|vendor|supplier|local|substitut|contract|agency|outsourc", "--brief"]}
+  ],
+  "top-management-brief": [
+    {"name": "tiers-t4-t5", "args": ["--tier", "T4", "T5", "--brief"]},
+    {"name": "top-l4", "args": ["--level", "4", "--top-rated"]},
+    {"name": "people-corporate-assurance", "args": ["--tag", "people", "corporate", "assurance", "--level", "4", "--brief"]}
+  ],
+  "training-designer": [
+    {"name": "text", "args": ["--text", "train|competen|qualif|knowledge|experience|familiar|skill", "--brief"]},
+    {"name": "l12", "args": ["--level", "1", "2", "--brief"]}
+  ]
+}
