@@ -1375,3 +1375,70 @@ def test_preset_keeps_own_format(ws):
 def test_preset_json_bundles_split_on_headings(ws):
     out = run("select", str(ws), "--preset", "supervisor-coach", "--format", "json")
     assert len(_preset_bundles(out)) == 3
+
+
+# ----------------------------------------------------------------------------- docs drift guard
+
+def _subcommands() -> list[str]:
+    parser = pmlc.build_parser()
+    sub = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
+    return list(sub.choices)
+
+
+def test_every_subcommand_documented():
+    doc = pmlc.__doc__.split("Subcommands", 1)[1].split("Only dependency", 1)[0]
+    listed = re.findall(r"^  ([a-z][a-z-]*)\s", doc, flags=re.M)
+    docs = "\n".join((ROOT / n).read_text(encoding="utf-8") for n in ("AGENTS.md", "README.md"))
+    names = _subcommands()
+    assert sorted(listed) == sorted(names), "docstring Subcommands block differs from the parser"
+    missing = [n for n in names if not re.search(r"(?<![\w-])" + re.escape(n) + r"(?![\w-])", docs)]
+    assert not missing, f"not in AGENTS.md or README.md: {missing}"
+
+
+_NUMERIC_FLAGS = {"--level", "--top", "--max", "--min-rating", "--per-date", "--show", "--budget-chars"}
+
+
+def _skill_argv(line: str) -> list[str]:
+    import shlex
+    line = re.sub(r"\s+#.*$", "", line.strip())
+    line = re.sub(r"\[(--[^\]]*)\]", r"\1", line)  # [--opt value] marks an optional part
+    flags = "|".join(re.escape(f) for f in sorted(_NUMERIC_FLAGS))
+    line = re.sub(rf"({flags})(\s+)<[^>]*>", r"\1\g<2>1", line)
+    line = re.sub(r"(--format\s+)<[^>]*>", r"\1md", line)
+    return shlex.split(re.sub(r"<[^>]*>", "X", line))[1:]
+
+
+def _skill_command_lines():
+    """(file, line number, command) for each `PMLC ...` line in a fenced block; `\\` continuations are joined."""
+    for md in sorted((ROOT / "skills").glob("*/SKILL.md")):
+        fenced, cur = False, None
+        for n, line in enumerate(md.read_text(encoding="utf-8").splitlines(), 1):
+            if line.lstrip().startswith("```"):
+                fenced = not fenced
+            elif cur:
+                cur = (cur[0], cur[1] + " " + line.strip())
+            elif fenced and line.lstrip().startswith("PMLC "):
+                cur = (n, line.strip())
+            if cur and not cur[1].endswith("\\"):
+                yield md, cur[0], cur[1]
+                cur = None
+            elif cur:
+                cur = (cur[0], cur[1][:-1].rstrip())
+
+
+def test_skill_commands_parse(capsys):
+    seen = 0
+    for md, n, line in _skill_command_lines():
+        seen += 1
+        try:
+            pmlc.build_parser().parse_args(_skill_argv(line))
+        except ValueError as e:
+            pytest.fail(f"{md.relative_to(ROOT)}:{n}: {line.strip()}\n  {e}")
+        except SystemExit:
+            err = capsys.readouterr().err.strip().splitlines()
+            pytest.fail(f"{md.relative_to(ROOT)}:{n}: {line.strip()}\n  {err[-1] if err else 'parse error'}")
+    assert seen > 30
+
+
+def test_skill_argv_placeholders():
+    assert _skill_argv("PMLC select <ws> --level <n> --format <f>  # c") == ["select", "X", "--level", "1", "--format", "md"]

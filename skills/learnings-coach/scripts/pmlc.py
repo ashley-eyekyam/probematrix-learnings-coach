@@ -16,6 +16,7 @@ Subcommands
   register-xlsx write a Learnings Register JSON to a formatted .xlsx
   scan-names    deterministic zero-hit name scan over files (de-identification check)
   check-pack    check a learning pack JSON against the workspace
+  check-register check a Learnings Register JSON against the workspace
   pack          learning pack JSON -> <run>/outputs/<pack>.html and .md
   causal-item   the top causal links as a ready graph item for a pack (JSON on stdout)
   status        which derived files are current or stale, and the last check of each pack
