@@ -880,3 +880,126 @@ def test_stats_mismatch_warns(tmp_path):
     x = _edit_export(make_export(tmp_path), tmp_path / "st.xlsx", mk)
     out = run("ingest", str(x), "--slug", "pump-fire", "--root", str(tmp_path / "r"))
     assert "warning: Analysis Statistics says 9 findings, ingested 4" in out
+
+
+# ----------------------------------------------------------------------------- manifest and status
+
+PACKS = ROOT / "tests" / "fixtures" / "packs"
+
+def _status_row(out, name):
+    return next(ln for ln in out.splitlines() if ln.startswith(f"| {name} "))
+
+
+def _changed_export(d: Path) -> Path:
+    import openpyxl as ox
+    x = make_export(d)
+    wb = ox.load_workbook(x)
+    wb["Identified Findings"].cell(row=2, column=12).value = "A different short description of the event."
+    y = d / "changed.xlsx"
+    wb.save(y)
+    return y
+
+
+def test_stale_after_force_ingest(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    run("classify", str(w))
+    run("causal", str(w))
+    assert "current" in _status_row(run("status", str(w)), "causal_graph.json")
+    run("ingest", str(_changed_export(tmp_path)), "--legacy-out", str(w), "--force")
+    out = run("status", str(w))
+    assert "stale" in _status_row(out, "causal_graph.json")
+    assert "stale" in _status_row(out, "clusters.json")
+    assert "stale" in _status_row(out, "causal_graph.mmd")
+    run("causal", str(w))
+    assert "current" in _status_row(run("status", str(w)), "causal_graph.json")
+
+
+def test_same_export_not_stale(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    run("classify", str(w))
+    run("causal", str(w))
+    run("interfaces", str(w))
+    run("timeline", str(w))
+    run("ingest", str(x), "--legacy-out", str(w), "--force")
+    out = run("status", str(w))
+    for name in ("findings.json", "clusters.json", "causal_graph.json", "interfaces.json", "timeline_candidates.json"):
+        assert "current" in _status_row(out, name), out
+
+
+def test_stale_propagates_and_warns(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    run("classify", str(w))
+    run("interfaces", str(w))
+    run("ingest", str(_changed_export(tmp_path)), "--legacy-out", str(w), "--force")
+    assert "stale" in _status_row(run("status", str(w)), "interfaces.json")
+    r = subprocess.run([sys.executable, str(PMLC), "dashboard", str(w)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert "warning: stale input clusters.json" in r.stderr and "re-run pmlc classify" in r.stderr
+    pack = PACKS / "supervisor-coach.json"
+    r = subprocess.run([sys.executable, str(PMLC), "pack", str(w), str(pack)], capture_output=True, text=True)
+    assert "warning: stale input" in r.stderr
+
+
+def test_pack_check_recorded(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    p = tmp_path / "mine.json"
+    p.write_bytes((PACKS / "supervisor-coach.json").read_bytes())
+    r = subprocess.run([sys.executable, str(PMLC), "check-pack", str(w), str(p)], capture_output=True, text=True)
+    out = run("status", str(w))
+    row = next(ln for ln in out.splitlines() if ln.startswith("| supervisor-coach "))
+    assert row.rstrip().endswith("| no |"), (row, r.stdout, r.stderr)
+    p.write_text(p.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+    row = next(ln for ln in run("status", str(w)).splitlines() if ln.startswith("| supervisor-coach "))
+    assert row.rstrip().endswith("| yes |")
+    p.unlink()
+    row = next(ln for ln in run("status", str(w)).splitlines() if ln.startswith("| supervisor-coach "))
+    assert row.rstrip().endswith("| missing |")
+
+
+def test_status_on_pre_manifest_workspace(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    run("classify", str(w))
+    (w / "manifest.json").unlink()
+    out = run("status", str(w))
+    assert "unknown (built before manifest)" in _status_row(out, "findings.json")
+    assert "unknown (built before manifest)" in _status_row(out, "clusters.json")
+
+
+def test_status_unrecorded_pack_and_changed_taxonomy(tmp_path):
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    tax = tmp_path / "tax.json"
+    tax.write_bytes((pmlc.REFS / "taxonomy.json").read_bytes())
+    ov = tmp_path / "ov.json"
+    ov.write_text("{}", encoding="utf-8")
+    run("classify", str(w), "--taxonomy", str(tax), "--overrides", str(ov))
+    assert "current" in _status_row(run("status", str(w)), "clusters.json")
+    ov.write_text('{"x": {}}', encoding="utf-8")
+    out = run("status", str(w))
+    assert "stale" in _status_row(out, "clusters.json") and "overrides" in _status_row(out, "clusters.json")
+    ov.unlink()
+    assert "missing" in _status_row(run("status", str(w)), "clusters.json")
+    (w / "outputs").mkdir(exist_ok=True)
+    (w / "outputs" / "loose.json").write_text('{"pack": "loose"}', encoding="utf-8")
+    assert "| loose | never | n/a |" in run("status", str(w))
+
+
+def test_manifest_helpers(tmp_path):
+    assert pmlc.stale_files(tmp_path) == []
+    (tmp_path / "findings.json").write_text("[]", encoding="utf-8")
+    (tmp_path / "x.json").write_text("1", encoding="utf-8")
+    pmlc.record_derived(tmp_path, "x.json", {"findings.json": pmlc.file_sha256(tmp_path / "findings.json")})
+    assert pmlc.stale_files(tmp_path) == []
+    (tmp_path / "findings.json").write_text("[1]", encoding="utf-8")
+    assert pmlc.stale_files(tmp_path)[0][0] == "x.json"

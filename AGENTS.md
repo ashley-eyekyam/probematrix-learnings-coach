@@ -22,6 +22,7 @@ python3 $E ingest path/to/<export>.xlsx --slug <site>-<event> [--date YYYY-MM-DD
 WS=path/to/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace      # printed by ingest
 python3 $E profile $WS --out $WS/profile.md
 python3 $E classify $WS
+python3 $E status $WS                          # which derived files are stale after a re-ingest
 python3 $E dashboard $WS                       # -> <run>/outputs/organisation-learning-map.html
 python3 $E select $WS --tier T2 --level 3 --brief      # feed an audience skill
 python3 $E pack $WS <run>/outputs/board-brief.json  # -> board-brief.html + .md

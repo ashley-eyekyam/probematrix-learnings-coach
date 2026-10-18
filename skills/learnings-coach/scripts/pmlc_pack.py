@@ -561,6 +561,11 @@ def _checked(a):
     w = core.load_ws(a.ws)
     pack, err = load_pack(a.pack)
     res = Result([err], [], {}) if err else check_pack(pack, w)
+    if not err and isinstance(pack, dict) and isinstance(pack.get("pack"), str):
+        try:
+            core.record_pack_check(a.ws, pack["pack"], a.pack, not res.problems, len(res.problems))
+        except OSError:
+            pass
     for x in res.warnings:
         print(f"warning: {x}")
     if res.problems:
@@ -1185,6 +1190,7 @@ def follow_up(pack) -> dict:
 
 def cmd_pack(a):
     w, pack, _ = _checked(a)
+    core.warn_stale(a.ws)
     ws = core._abs(a.ws)
     run = ws.parent.name if core.is_standard_ws(ws) else ws.name
     out = Path(a.out) if a.out else core.outputs_dir(ws)

@@ -18,6 +18,7 @@ Subcommands
   check-pack    check a learning pack JSON against the workspace
   pack          learning pack JSON -> <run>/outputs/<pack>.html and .md
   causal-item   the top causal links as a ready graph item for a pack (JSON on stdout)
+  status        which derived files are current or stale, and the last check of each pack
   run-path      print a workspace's run folder, outputs folder and slug
   check-samples check samples/<slug>/ folders follow the contribution layout
 
@@ -107,6 +108,172 @@ def load_ws(ws_dir: Path) -> dict:
 def write_json(path: Path, obj) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(obj, indent=1, ensure_ascii=False), encoding="utf-8")
+
+
+# ----------------------------------------------------------------------------- manifest
+
+MANIFEST = "manifest.json"
+KNOWN_DERIVED = ("findings.json", "evidence.json", "incident.json", "clusters.json", "causal_graph.json",
+                 "causal_graph.mmd", "timeline_candidates.json", "timeline_event_day.json", "interfaces.json")
+REBUILD = {"findings.json": "ingest", "evidence.json": "ingest", "incident.json": "ingest",
+           "clusters.json": "classify", "causal_graph.json": "causal", "causal_graph.mmd": "causal",
+           "timeline_candidates.json": "timeline", "timeline_event_day.json": "timeline",
+           "interfaces.json": "interfaces"}
+
+
+def file_sha256(path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _now() -> str:
+    return dt.datetime.now().isoformat(timespec="seconds")
+
+
+def load_manifest(ws) -> dict:
+    try:
+        m = json.loads((Path(ws) / MANIFEST).read_text(encoding="utf-8"))
+        return m if isinstance(m, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_manifest(ws, m: dict) -> None:
+    m["engine_version"] = __version__
+    m.setdefault("files", {})
+    m.setdefault("packs", {})
+    write_json(Path(ws) / MANIFEST, m)
+
+
+def record_derived(ws, name: str, inputs: dict, sources: dict | None = None) -> None:
+    """Record the sha256 of ws/name and of every input it was built from (read-modify-write)."""
+    ws = Path(ws)
+    m = load_manifest(ws)
+    entry = {"sha256": file_sha256(ws / name), "inputs": inputs, "written": _now()}
+    if sources:
+        entry["sources"] = sources
+    m.setdefault("files", {})[name] = entry
+    _save_manifest(ws, m)
+
+
+def record_export(ws, xlsx) -> None:
+    ws = Path(ws)
+    m = load_manifest(ws)
+    m["export"] = {"file": os.path.basename(xlsx), "sha256": file_sha256(xlsx)}
+    _save_manifest(ws, m)
+
+
+def record_pack_check(ws, pack_name, pack_path, ok, n_problems) -> None:
+    ws = Path(ws)
+    m = load_manifest(ws)
+    p = Path(pack_path)
+    m.setdefault("packs", {})[pack_name] = {
+        "sha256": file_sha256(p) if p.is_file() else "", "path": str(_abs(p)),
+        "ok": bool(ok), "problems": n_problems, "checked": _now()}
+    _save_manifest(ws, m)
+
+
+def taxonomy_sources(path, overlays) -> list:
+    return [Path(path) if path else REFS / "taxonomy.json", *[_overlay_path(x) for x in overlays]]
+
+
+def taxonomy_hash(paths) -> str:
+    return hashlib.sha256("\n".join(file_sha256(p) for p in paths).encode()).hexdigest()
+
+
+def _current_input(ws: Path, name: str, entry: dict):
+    """The input's hash now, 'none', or None when it cannot be checked (export) or is missing."""
+    src = entry.get("sources", {})
+    if name == "taxonomy":
+        paths = [Path(p) for p in src.get("taxonomy", [])]
+        return taxonomy_hash(paths) if paths and all(p.is_file() for p in paths) else None
+    if name == "overrides":
+        p = src.get("overrides")
+        return "none" if not p else (file_sha256(p) if Path(p).is_file() else None)
+    if name == "export":
+        return "skip"
+    p = ws / name
+    return file_sha256(p) if p.is_file() else None
+
+
+def stale_files(ws) -> list:
+    """[(file, reason)] for recorded derived files whose recorded input hash differs from the current one."""
+    ws = Path(ws)
+    files = load_manifest(ws).get("files", {})
+    out = {}
+    for name, entry in files.items():
+        for inp, rec in entry.get("inputs", {}).items():
+            cur = _current_input(ws, inp, entry)
+            if cur == "skip":
+                continue
+            if cur is None:
+                out[name] = f"input {inp} is missing"
+                break
+            if cur != rec:
+                out[name] = f"{inp} changed since this was built"
+                break
+    changed = True
+    while changed:  # a file built from a stale derived file is stale too
+        changed = False
+        for name, entry in files.items():
+            if name in out:
+                continue
+            for inp in entry.get("inputs", {}):
+                if inp in out and inp in files:
+                    out[name] = f"input {inp} is stale"
+                    changed = True
+                    break
+    return sorted(out.items())
+
+
+def warn_stale(ws) -> None:
+    for name, reason in stale_files(ws):
+        cmd = REBUILD.get(name, "ingest")
+        print(f"warning: stale input {name} ({reason}); re-run pmlc {cmd} {ws}", file=sys.stderr)
+
+
+def cmd_status(a):
+    ws = Path(a.ws)
+    if not ws.is_dir():
+        sys.exit(f"{ws} is not a folder.")
+    m = load_manifest(ws)
+    recorded = m.get("files", {})
+    stale = dict(stale_files(ws))
+    print("| File | State | Reason |\n|---|---|---|")
+    names = [n for n in KNOWN_DERIVED if (ws / n).exists() or n in recorded]
+    for n in names:
+        if not (ws / n).exists():
+            state, reason = "stale", "file is missing"
+        elif n not in recorded:
+            state, reason = "unknown (built before manifest)", ""
+        elif n in stale:
+            state, reason = "stale", stale[n]
+        else:
+            state, reason = "current", ""
+        print(f"| {n} | {state} | {reason} |")
+    packs = dict(m.get("packs", {}))
+    out = outputs_dir(ws)
+    if out.is_dir():
+        for p in sorted(out.glob("*.json")):
+            try:
+                d = json.loads(p.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            if isinstance(d, dict) and isinstance(d.get("pack"), str):
+                packs.setdefault(d["pack"], None)
+    print("\n| Pack | Last check | Changed since |\n|---|---|---|")
+    for name in sorted(packs):
+        rec = packs[name]
+        if not rec:
+            print(f"| {name} | never | n/a |")
+            continue
+        last = ("ok" if rec.get("ok") else f"{rec.get('problems', 0)} problem(s)") + f" ({rec.get('checked', '')})"
+        p = Path(rec.get("path", ""))
+        changed = "missing" if not p.is_file() else ("yes" if file_sha256(p) != rec.get("sha256") else "no")
+        print(f"| {name} | {last} | {changed} |")
 
 
 # ----------------------------------------------------------------------------- run folders
@@ -437,6 +604,9 @@ def cmd_ingest(a):
     write_json(out / "findings.json", findings)
     write_json(out / "evidence.json", evidence)
     write_json(out / "incident.json", incident)
+    record_export(out, a.xlsx)
+    for n in ("findings.json", "evidence.json", "incident.json"):
+        record_derived(out, n, {"export": file_sha256(a.xlsx)})
     print(f"Ingested {len(findings)} findings, {len(evidence)} evidence items, "
           f"{len(causal_sheet)} causal-chain rows -> {out}")
     print(f"schema: fingerprint {schema['fingerprint']}; missing: {_fmt_cols(schema['missing'])}; "
@@ -668,6 +838,11 @@ def cmd_classify(a):
            "entities": entities, "findings": per_f, "role_map": role_map, "unresolved_roles": unresolved,
            "overrides": {"file": ov_path, "applied": applied, "stale": stale}}
     write_json(ws / "clusters.json", out)
+    tpaths = taxonomy_sources(a.taxonomy, a.overlay or ())
+    record_derived(ws, "clusters.json",
+                   {"findings.json": file_sha256(ws / "findings.json"), "taxonomy": taxonomy_hash(tpaths),
+                    "overrides": file_sha256(ov_path) if ov_path else "none"},
+                   {"taxonomy": [str(_abs(p)) for p in tpaths], "overrides": str(_abs(ov_path)) if ov_path else None})
     if ov_path:
         print(f"Applied {applied} override(s) from {ov_path}")
     if stale:
@@ -989,6 +1164,9 @@ def cmd_causal(a):
         t = e["to"].replace(" ", "_").replace(".", "_")
         M.append(f"  {s} -->|{e['mentions']}| {t}")
     (ws / "causal_graph.mmd").write_text("\n".join(M), encoding="utf-8")
+    ins = {n: file_sha256(ws / n) for n in ("findings.json", "incident.json") if (ws / n).exists()}
+    for n in ("causal_graph.json", "causal_graph.mmd"):
+        record_derived(ws, n, ins)
     linked = sum(1 for f in F if ({norm_code(p, n) for p, n in CODE_RX.findall(f['causal'])} - {f['code']}) & set(present))
     print(f"{linked} of {len(F)} findings name other factors in their causal explanation. "
           f"{len(items)} distinct links. Wrote causal_graph.json and causal_graph.mmd (top {a.top}).")
@@ -1063,6 +1241,8 @@ def cmd_timeline(a):
         merged.setdefault(k, []).append(it)
     flat = [x for v in merged.values() for x in v]
     write_json(ws / "timeline_candidates.json", flat)
+    record_derived(ws, "timeline_candidates.json",
+                   {n: file_sha256(ws / n) for n in ("findings.json", "evidence.json") if (ws / n).exists()})
     print(f"{len(flat)} dated precursor candidates written to {ws/'timeline_candidates.json'} "
           f"(the precursor-timeline skill curates these).\n")
     print("| Date | Precision | Sources | Snippet |\n|---|---|---|---|")
@@ -1112,6 +1292,7 @@ def cmd_interfaces(a):
                       "examples": examples[k][:10]} for k in sorted(set(pair) | set(cross),
                                                                     key=lambda k: -(pair.get(k, 0) * 3 + cross.get(k, 0)))]}
     write_json(ws / "interfaces.json", out)
+    record_derived(ws, "interfaces.json", {n: file_sha256(ws / n) for n in ("findings.json", "clusters.json")})
     print("| Interface | Shared findings | Cross-entity causal mentions |\n|---|---:|---:|")
     for p in out["pairs"][: a.top]:
         print(f"| {p['a']} {names.get(p['a'], '')} ↔ {p['b']} {names.get(p['b'], '')} | "
@@ -1199,6 +1380,7 @@ def cmd_dashboard(a):
     w = load_ws(ws)
     if "clusters" not in w:
         sys.exit("Needs clusters.json. Run: pmlc.py classify <ws>")
+    warn_stale(ws)
     F = {f["id"]: f for f in w["findings"]}
     cl = w["clusters"]
     names, tiers = cl["taxonomy"]["entities"], cl["taxonomy"]["tiers"]
@@ -1705,6 +1887,10 @@ def build_parser():
     s.add_argument("register")
     s.add_argument("--out", help="default: learnings-register.xlsx next to the register JSON")
     s.set_defaults(fn=cmd_register_xlsx)
+
+    s = sp.add_parser("status", help="show which workspace files are current or stale, and pack check history")
+    s.add_argument("ws")
+    s.set_defaults(fn=cmd_status)
 
     s = sp.add_parser("run-path", help="print the run folder, workspace, outputs folder and slug of a workspace")
     s.add_argument("ws")
