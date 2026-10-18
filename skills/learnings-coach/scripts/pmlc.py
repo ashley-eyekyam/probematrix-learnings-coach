@@ -1233,8 +1233,8 @@ def _clock_times(text, start=0, end=None):
 
 
 def _event_day_sequence(w, day, sources):
-    """Every clock time in the sources as {time, snippet, sources}, sorted by time and deduplicated."""
-    found = collections.OrderedDict()
+    """One entry per minute: {time, mentions, sources, snippets}, sorted by time."""
+    found = {}
     for sid, text in sources:
         cuts = [0] + [m.end() for m in re.finditer(r"\. |\n", text)] + [len(text)]
         for s, e, hhmm in _clock_times(text):
@@ -1242,12 +1242,13 @@ def _event_day_sequence(w, day, sources):
             sentence = text[cuts[i]: cuts[i + 1]]
             if any(prec <= 1 and d.isoformat() != day for d, prec, _, _ in _parse_dates(sentence)):
                 continue
-            mid = (s + e) // 2
-            key = (hhmm, re.sub(r"\W+", " ", text[max(0, mid - 30): mid + 30]).lower().strip())
-            ev = found.setdefault(key, {"time": hhmm, "snippet": re.sub(r"\s+", " ", text[max(0, s - 100): e + 100]).strip(),
-                                        "sources": []})
+            ev = found.setdefault(hhmm, {"time": hhmm, "mentions": 0, "sources": [], "snippets": []})
+            ev["mentions"] += 1
             if sid not in ev["sources"]:
                 ev["sources"].append(sid)
+            snip = re.sub(r"\s+", " ", text[max(0, s - 100): e + 100]).strip()
+            if len(ev["snippets"]) < 3 and snip not in ev["snippets"]:
+                ev["snippets"].append(snip)
     return sorted(found.values(), key=lambda x: x["time"])
 
 
@@ -1313,7 +1314,12 @@ def cmd_timeline(a):
     flat = [x for v in merged.values() for x in v]
     inc = dt.date.fromisoformat(inc_date) if inc_date else None
     for it in flat:
-        it["months_before"] = months_between(dt.date.fromisoformat(it["date"]), inc) if inc else None
+        d = dt.date.fromisoformat(it["date"])
+        if it["precision"] == "year":
+            it["months_before"] = None
+            it["years_before"] = inc.year - d.year if inc else None
+        else:
+            it["months_before"] = months_between(d, inc) if inc else None
     write_json(ws / "timeline_candidates.json", flat)
     record_derived(ws, "timeline_candidates.json",
                    {n: file_sha256(ws / n) for n in ("findings.json", "evidence.json") if (ws / n).exists()})
@@ -1332,9 +1338,9 @@ def cmd_timeline(a):
                        {n: file_sha256(ws / n) for n in ("findings.json", "evidence.json", "incident.json")
                         if (ws / n).exists()})
         print(f"\n{len(seq)} clock times on {day} written to {ws/'timeline_event_day.json'}.\n")
-        print("| Time | Sources | Snippet |\n|---|---|---|")
+        print("| Time | Mentions | Sources | Snippet |\n|---|---:|---|---|")
         for it in seq[: a.show]:
-            print(f"| {it['time']} | {', '.join(it['sources'][:4])} | {it['snippet'][:160]} |")
+            print(f"| {it['time']} | {it['mentions']} | {', '.join(it['sources'][:4])} | {it['snippets'][0][:160]} |")
 
 
 # ----------------------------------------------------------------------------- interfaces

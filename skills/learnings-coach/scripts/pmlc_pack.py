@@ -748,21 +748,21 @@ _INC_DATE = None      # the incident date of the pack being rendered; set by ren
 
 
 def event_when(ev: dict, incident_date: str | None) -> str:
-    """How a timeline event's date reads: 'c. 2015' (year only), '2019-03', '2019-03-04 14:05', then ' (N months before)'
-    when the date is at least one whole month before the incident."""
+    """How a timeline event's date reads: 'c. 2015' (year only), '2019-03', '2019-03-04 14:05'. A date before the incident
+    adds ' (N months before)', or ' (about N years before)' for a year-only date."""
     d = ev["date"]
-    if len(d) == 4:
-        when = f"c. {d}"
-    else:
-        when = d + (f" {ev['time']}" if ev.get("time") else "")
+    when = f"c. {d}" if len(d) == 4 else d + (f" {ev['time']}" if ev.get("time") else "")
     if incident_date:
         try:
             y, m, day = (list(map(int, d.split("-"))) + [1, 1])[:3]
-            n = core.months_between(dt.date(y, m, day), dt.date.fromisoformat(incident_date))
+            if len(d) == 4:
+                n, unit = int(incident_date[:4]) - y, "years"
+            else:
+                n, unit = core.months_between(dt.date(y, m, day), dt.date.fromisoformat(incident_date)), "months"
         except ValueError:
             return when
         if n > 0:
-            when += f" ({n} months before)"
+            when += f" (about {n} {'year' if n == 1 else 'years'} before)" if unit == "years" else f" ({n} months before)"
     return when
 
 

@@ -46,7 +46,7 @@ PMLC pack <ws> <run>/outputs/precursor-timeline.json         # -> precursor-time
 Sections and the kinds that fill them:
 - **Curated signals:** one `timeline`. Each row of the Curate table above becomes an event:
   - Date → `date`
-  - Signal → `text`; do not write "(N months before)": the renderer computes it from the incident date and shows "c. YYYY" for year-only dates
+  - Signal → `text`; do not write "(N months before)": the renderer computes it from the incident date and shows year-only dates as "c. YYYY (about N years before)"
   - `signal: true`
   - Received by → `received_by`
   - Response → `response` ("None recorded" is an answer)

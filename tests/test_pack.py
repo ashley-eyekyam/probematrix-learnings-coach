@@ -876,7 +876,9 @@ def test_event_when():
     assert pp.event_when({"date": "2019-03"}, None) == "2019-03"
     assert pp.event_when({"date": "2019-03-04", "time": "14:05"}, None) == "2019-03-04 14:05"
     assert pp.event_when({"date": "2019-03"}, "2020-09-24") == "2019-03 (18 months before)"
-    assert pp.event_when({"date": "2015"}, "2020-09-24") == "c. 2015 (68 months before)"
+    assert pp.event_when({"date": "2015"}, "2020-09-24") == "c. 2015 (about 5 years before)"
+    assert pp.event_when({"date": "2019"}, "2020-09-24") == "c. 2019 (about 1 year before)"
+    assert pp.event_when({"date": "2020"}, "2020-09-24") == "c. 2020"
     assert pp.event_when({"date": "2020-09-10"}, "2020-09-24") == "2020-09-10"
     assert pp.event_when({"date": "2021-01-01"}, "2020-09-24") == "2021-01-01"
 
@@ -885,7 +887,7 @@ def test_pack_renders_months_before(w):
     ev = [{"date": "2022", "text": "Year only"}, {"date": "2024-03-20", "time": "14:05", "text": "Alarm"}]
     p = pack_with(item("timeline", events=ev))
     md = pp.render_pack_md(p, w)
-    assert "- c. 2022 (26 months before): Year only" in md and "- 2024-03-20 14:05: Alarm" in md
-    assert "<time>c. 2022 (26 months before)</time>" in pp.render_pack_html(w, p, "r", "d")
+    assert "- c. 2022 (about 2 years before): Year only" in md and "- 2024-03-20 14:05: Alarm" in md
+    assert "<time>c. 2022 (about 2 years before)</time>" in pp.render_pack_html(w, p, "r", "d")
     p["incident"] = {"date": "2024-05-20"}
     assert "- 2024-03-20 14:05 (2 months before): Alarm" in pp.render_pack_md(p, w)

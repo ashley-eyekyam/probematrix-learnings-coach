@@ -113,7 +113,10 @@ def test_event_day_sequence(hz):
     seq = json.loads((hz.ws / "timeline_event_day.json").read_text(encoding="utf-8"))
     times = [x["time"] for x in seq]
     assert times == sorted(times) and {"02:12", "03:01", "03:08"} <= set(times)
-    assert all(x["sources"] and x["snippet"] for x in seq)
+    assert len(times) == len(set(times)) and len(seq) < 60
+    assert all(x["sources"] and 1 <= len(x["snippets"]) <= 3 and x["mentions"] >= len(x["sources"]) for x in seq)
+    e308 = next(x for x in seq if x["time"] == "03:08")
+    assert e308["mentions"] > 1 and len(e308["sources"]) > 1
 
 
 def test_min_precision_month_drops_years(hz):

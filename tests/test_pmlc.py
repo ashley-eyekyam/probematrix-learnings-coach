@@ -1026,7 +1026,8 @@ def test_months_before(ws):
     t = json.loads((ws / "timeline_candidates.json").read_text())
     seal = [x for x in t if x["date"] == "2022-03-01"]
     assert seal and all(x["months_before"] == 24 for x in seal)
-    assert all(isinstance(x["months_before"], int) for x in t)
+    assert all(isinstance(x["months_before"], int) for x in t if x["precision"] != "year")
+    assert all(x["months_before"] is None and isinstance(x["years_before"], int) for x in t if x["precision"] == "year")
 
 
 def test_months_between():
