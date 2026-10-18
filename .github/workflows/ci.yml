@@ -23,6 +23,16 @@ jobs:
         if: matrix.node
         with:
           node-version: "20"
+      - name: Remove Node so the JS tests skip
+        if: ${{ !matrix.node }}
+        run: |
+          # ubuntu-latest ships node; the JS tests skip only when shutil.which("node") finds none
+          for i in $(seq 1 20); do
+            p=$(command -v node) || break
+            sudo rm -f "$p"
+            hash -r
+          done
+          if command -v node; then echo "node is still on PATH"; exit 1; fi
       - run: pip install -r requirements-dev.txt
       - run: ruff check .
       - name: Enable subprocess coverage
@@ -32,6 +42,12 @@ jobs:
         env:
           COVERAGE_PROCESS_START: ${{ github.workspace }}/.coveragerc
         run: coverage run -m pytest tests -q
+      - name: Check the JS tests skipped without Node
+        if: ${{ !matrix.node }}
+        run: |
+          python -m pytest tests/test_pack_js.py tests/test_detail_js.py -q -rs | tee js.txt
+          grep -q "SKIPPED.*node not installed" js.txt
+          if grep -qE "[0-9]+ passed" js.txt; then echo "JS tests ran without Node"; exit 1; fi
       - run: coverage combine
       - run: coverage report
       - run: python skills/learnings-coach/scripts/pmlc.py check-samples
