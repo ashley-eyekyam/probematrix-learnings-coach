@@ -680,51 +680,168 @@ def _filter(w, a):
     return out[: a.max] if a.max else out
 
 
+SELECT_FIELDS = ["label", "short", "justification", "causal", "roles", "clusters", "evidence", "code", "name",
+                 "level", "subcategory", "rating"]
+COUNT_BY = ["entity", "tier", "relation", "level", "subcategory", "code"]
+
+
+def _group_keys(f, c, how):
+    """The group(s) a finding falls in; an entity/tier/relation key repeats the finding once per value."""
+    if how == "level":
+        return [f"L{f['level']}"]
+    if how == "subcategory":
+        return [f["subcategory"] or "(none)"]
+    if how == "code":
+        return [f["code"]]
+    return list(c[{"entity": "F", "tier": "T", "relation": "R"}[how]]) or ["(none)"]
+
+
+def _md_block(f, c, E, fields, brief, head):
+    def on(k):
+        return fields is None or k in fields
+
+    parts = [f["id"]]
+    cn = " ".join(str(f[k]) for k in ("code", "name") if on(k))
+    lv = " ".join(x for x in ([f"L{f['level']}"] if on("level") else []) + ([f["subcategory"]] if on("subcategory") else []))
+    for p in (cn, lv, f"rating {f['rating']}" if on("rating") else ""):
+        if p:
+            parts.append(p)
+    L = [f"{head} " + " · ".join(parts)]
+    if on("label"):
+        L.append(f"**Instance:** {f['label']}\n")
+    if on("short"):
+        L.append(f"**Short:** {f['short']}\n")
+    if not brief:
+        if on("justification"):
+            L.append(f"**Justification:** {f['justification']}\n")
+        if on("causal"):
+            L.append(f"**Causal explanation:** {f['causal']}\n")
+    if on("roles"):
+        L.append(f"**Roles:** {'; '.join(f['roles'])}  ")
+    if on("clusters"):
+        L.append(f"**Clusters:** F={','.join(c['F'])} T={','.join(c['T'])} R={','.join(c['R'])}\n")
+    if not brief and on("evidence"):
+        for e in _evidence_for(f, E):
+            L.append(f"- `{e['id']}` ({e.get('type', '?')}): {e.get('relevance', '')} "
+                     f"Quote: \"{e.get('reference', '')}\"")
+    L.append("")
+    return "\n".join(L)
+
+
+def _json_item(f, c, E, fields):
+    d = {k: f[k] for k in ("id", "code", "name", "level", "subcategory", "rating", "label", "short",
+                           "justification", "causal", "roles")}
+    d["clusters"] = c
+    if fields is None or "evidence" in fields:
+        d["evidence"] = _evidence_for(f, E)
+    return d if fields is None else {k: v for k, v in d.items() if k == "id" or k in fields}
+
+
+def _fit_count(n, fits):
+    """The largest k in 0..n with fits(k) (0 when even nothing fits); fits is near-monotone in k."""
+    lo, hi = 0, n
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        lo, hi = (mid, hi) if fits(mid) else (lo, mid - 1)
+    while lo and not fits(lo):
+        lo -= 1
+    return lo
+
+
 def cmd_select(a):
     w = load_ws(a.ws)
-    if (a.entity or a.tag or a.tier or a.relation) and "clusters" not in w:
-        sys.exit("Filtering by entity/tag/tier/relation needs clusters.json. Run: pmlc.py classify <ws>")
+    grouping = a.group_by or a.count_by
+    if (a.entity or a.tag or a.tier or a.relation or grouping in ("entity", "tier", "relation")) \
+            and "clusters" not in w:
+        sys.exit("Filtering or grouping by entity/tag/tier/relation needs clusters.json. "
+                 "Run: pmlc.py classify <ws>")
+    fields = None
+    if a.fields:
+        fields = {x.strip() for x in a.fields.split(",") if x.strip()}
+        bad = fields - set(SELECT_FIELDS) - {"id"}
+        if bad:
+            sys.exit(f"Unknown --fields value(s): {', '.join(sorted(bad))}. Allowed: {', '.join(SELECT_FIELDS)}")
     E = w.get("evidence", {})
     sel = _filter(w, a)
     skipped = sorted(downgraded_findings(w) & {f["id"] for f in w["findings"]}) if a.exclude_downgraded else []
     note = f"Excluded (reviewer downgrade): {', '.join(skipped) or 'none'}"
-    if a.format == "json":
-        items = []
-        for f, c in sel:
-            d = {k: f[k] for k in ("id", "code", "name", "level", "subcategory", "rating", "label", "short",
-                                   "justification", "causal", "roles")}
-            d.update({"clusters": c, "evidence": _evidence_for(f, E)})
-            items.append(d)
-        text = json.dumps(items, indent=1, ensure_ascii=False)
+    nsel = len(sel)
+    if a.count_by:
+        ignored = [n for n, v in (("--budget-chars", a.budget_chars), ("--fields", a.fields),
+                                  ("--group-by", a.group_by)) if v]
+        if ignored:
+            print(f"note: --count-by ignores {', '.join(ignored)}", file=sys.stderr)
+        counts = collections.Counter(k for f, c in sel for k in _group_keys(f, c, a.count_by))
+        rows = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+        if a.format == "json":
+            text = json.dumps(dict(rows), indent=1, ensure_ascii=False)
+        else:
+            text = "\n".join([f"# Findings by {a.count_by} ({nsel} selected)\n", f"| {a.count_by} | findings |",
+                              "|---|---:|"] + [f"| {k} | {n} |" for k, n in rows] + [""])
+        kept = nsel
     else:
-        L = [f"# Selected findings ({len(sel)})\n",
-             f"Filters: entity={a.entity} tag={a.tag} tier={a.tier} relation={a.relation} level={a.level} "
-             f"min_rating={a.min_rating} top_rated={a.top_rated} entity_mode={a.entity_mode} code={a.code} "
-             f"prefix={a.prefix} subcategory={a.subcategory} text={a.text}\n"]
-        for f, c in sel:
-            L.append(f"## {f['id']} · {f['code']} {f['name']} · L{f['level']} {f['subcategory']} · rating {f['rating']}")
-            L.append(f"**Instance:** {f['label']}\n")
-            L.append(f"**Short:** {f['short']}\n")
-            if not a.brief:
-                L.append(f"**Justification:** {f['justification']}\n")
-                L.append(f"**Causal explanation:** {f['causal']}\n")
-            L.append(f"**Roles:** {'; '.join(f['roles'])}  ")
-            L.append(f"**Clusters:** F={','.join(c['F'])} T={','.join(c['T'])} R={','.join(c['R'])}\n")
-            if not a.brief:
-                for e in _evidence_for(f, E):
-                    L.append(f"- `{e['id']}` ({e.get('type', '?')}): {e.get('relevance', '')} "
-                             f"Quote: \"{e.get('reference', '')}\"")
-            L.append("")
-        if a.exclude_downgraded:
-            L.append(note)
-        text = "\n".join(L)
-    if a.exclude_downgraded and a.format == "json":
-        print(note, file=sys.stderr)
+        md = a.format != "json"
+        head = "###" if a.group_by else "##"
+        blocks = [_md_block(f, c, E, fields, a.brief, head) if md else _json_item(f, c, E, fields) for f, c in sel]
+
+        def render(k):
+            if md:
+                els = [f"# Selected findings ({k})\n",
+                       f"Filters: entity={a.entity} tag={a.tag} tier={a.tier} relation={a.relation} level={a.level} "
+                       f"min_rating={a.min_rating} top_rated={a.top_rated} entity_mode={a.entity_mode} "
+                       f"code={a.code} prefix={a.prefix} subcategory={a.subcategory} text={a.text}\n"]
+                if a.group_by:
+                    groups = {}
+                    for (f, c), b in zip(sel[:k], blocks[:k]):
+                        for g in _group_keys(f, c, a.group_by):
+                            groups.setdefault(g, []).append(b)
+                    for g in sorted(groups):
+                        els.append(f"## {g}\n")
+                        els.extend(groups[g])
+                else:
+                    els.extend(blocks[:k])
+                els.extend(footers_for(k))
+                return "\n".join(els) + "\n"
+            if a.group_by:
+                groups = {}
+                for (f, c), b in zip(sel[:k], blocks[:k]):
+                    for g in _group_keys(f, c, a.group_by):
+                        groups.setdefault(g, []).append(b)
+                data = {g: groups[g] for g in sorted(groups)}
+            else:
+                data = blocks[:k]
+            return json.dumps(data, indent=1, ensure_ascii=False) + "\n"
+
+        def dropped_line(k):
+            ids = [f["id"] for f, _ in sel[k:]]
+            low = sel[k - 1][0]["rating"] if k else "none"
+            return (f"Dropped for budget: {len(ids)} findings (lowest kept rating {low}): "
+                    f"{', '.join(ids[:20])}{'…' if len(ids) > 20 else ''}")
+
+        def footers_for(k):
+            out = [dropped_line(k)] if k < nsel else []
+            return out + ([note] if a.exclude_downgraded else [])
+
+        kept = nsel
+        if a.budget_chars is not None:
+            kept = _fit_count(nsel, lambda k: len(render(k)) <= a.budget_chars)
+        text = render(kept)
+        if not md:
+            if kept < nsel:
+                print(dropped_line(kept), file=sys.stderr)
+            if a.exclude_downgraded:
+                print(note, file=sys.stderr)
+    if a.count_by and a.exclude_downgraded:
+        if a.format == "json":
+            print(note, file=sys.stderr)
+        else:
+            text += note + "\n"
     if a.out:
         Path(a.out).write_text(text, encoding="utf-8")
-        print(f"Wrote {len(sel)} findings to {a.out}")
+        print(f"Wrote {kept} findings to {a.out}")
     else:
-        print(text)
+        sys.stdout.write(text)
+    print(f"select: {kept} findings, {len(text)} chars", file=sys.stderr)
 
 
 # ----------------------------------------------------------------------------- causal
@@ -1440,6 +1557,12 @@ def build_parser():
     s.add_argument("--text", help="regex over short/justification/causal/label")
     s.add_argument("--max", type=int)
     s.add_argument("--brief", action="store_true", help="omit justification, causal text and evidence quotes")
+    s.add_argument("--budget-chars", type=int, help="keep findings in rating order while the output stays within "
+                                                    "N characters, and say how many were dropped")
+    s.add_argument("--fields", help="comma-separated: " + ", ".join(SELECT_FIELDS) + " (id is always kept)")
+    s.add_argument("--group-by", choices=["level", "subcategory", "code", "entity"],
+                   help="group the findings under one heading (md) or key (json) per value")
+    s.add_argument("--count-by", choices=COUNT_BY, help="print only a count table (md) or dict (json)")
     s.add_argument("--format", choices=["md", "json"], default="md")
     s.add_argument("--out")
     s.set_defaults(fn=cmd_select)

@@ -76,3 +76,15 @@ def test_select_by_tag_on_hazira(hz):
 def test_entity_mode_all_is_intersection(hz):
     assert len(hz.select("--entity", "F02", "F06")) == 196
     assert len(hz.select("--entity", "F02", "F06", "--entity-mode", "all")) == 27
+
+
+def test_budget_truncates_by_rating(hz):
+    r = subprocess.run([sys.executable, str(PMLC), "select", str(hz.ws), "--tier", "T2", "--budget-chars", "60000"],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert len(r.stdout) <= 60000
+    ratings = [int(x) for x in re.findall(r"· rating (\d+)", r.stdout)]
+    assert ratings and ratings == sorted(ratings, reverse=True)
+    m = re.search(r"Dropped for budget: (\d+) findings", r.stdout)
+    assert m and int(m.group(1)) > 0
+    assert len(ratings) + int(m.group(1)) == len(hz.select("--tier", "T2"))

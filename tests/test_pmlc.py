@@ -760,3 +760,55 @@ def test_no_placeholders_left():
     for p in (ROOT / "skills").glob("*/SKILL.md"):
         t = p.read_text(encoding="utf-8")
         assert "<top" not in t and "<incident date" not in t, p
+
+
+def _select_proc(*args):
+    r = subprocess.run([sys.executable, str(PMLC), "select", *map(str, args)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    return r
+
+
+def test_budget_too_small_keeps_none(ws):
+    r = _select_proc(ws, "--budget-chars", "10")
+    assert "# Selected findings (0)" in r.stdout and "### FND" not in r.stdout and "## FND" not in r.stdout
+    assert "Dropped for budget: 4 findings (lowest kept rating none): FND-0003, FND-0002, FND-0001, FND-0004" in r.stdout
+    j = _select_proc(ws, "--budget-chars", "10", "--format", "json")
+    assert json.loads(j.stdout) == [] and "Dropped for budget: 4 findings" in j.stderr
+
+
+def test_budget_keeps_rating_order_and_counts_footers(ws):
+    full = _select_proc(ws, "--brief").stdout
+    r = _select_proc(ws, "--brief", "--budget-chars", str(len(full) - 1))
+    assert len(r.stdout) <= len(full) - 1
+    assert "Dropped for budget: " in r.stdout
+    assert re.search(r"select: \d+ findings, %d chars" % len(r.stdout), r.stderr)
+    ok = _select_proc(ws, "--brief", "--budget-chars", str(len(full)))
+    assert ok.stdout == full and "Dropped" not in ok.stdout
+
+
+def test_fields_group_count(ws):
+    items = json.loads(run("select", str(ws), "--fields", "id,short", "--format", "json"))
+    assert items and all(set(d) == {"id", "short"} for d in items)
+    r = run_fail("select", str(ws), "--fields", "id,bogus")
+    assert "label, short, justification" in r.stderr
+    md = run("select", str(ws), "--fields", "short")
+    assert "**Short:**" in md and "**Justification:**" not in md and "## FND-0002" in md
+    cl = json.loads((ws / "clusters.json").read_text())["findings"]
+    want = {}
+    for c in cl.values():
+        for e in c["F"]:
+            want[e] = want.get(e, 0) + 1
+    assert json.loads(run("select", str(ws), "--count-by", "entity", "--format", "json")) == want
+    assert "| F02 |" in run("select", str(ws), "--count-by", "entity")
+    md = run("select", str(ws), "--group-by", "level")
+    assert md.index("\n## L3") < md.index("### FND-0002")
+    g = json.loads(run("select", str(ws), "--group-by", "level", "--format", "json"))
+    assert {d["id"] for d in g["L3"]} == {"FND-0002"}
+    r = _select_proc(ws, "--count-by", "tier", "--budget-chars", "5")
+    assert "ignores --budget-chars" in r.stderr
+
+
+def test_size_report_on_stderr(ws):
+    r = _select_proc(ws)
+    m = re.search(r"select: (\d+) findings, (\d+) chars", r.stderr)
+    assert m and int(m.group(2)) == len(r.stdout)
