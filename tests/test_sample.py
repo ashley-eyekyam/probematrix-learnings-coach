@@ -120,6 +120,14 @@ def test_event_day_sequence(hz):
     assert e308["mentions"] > 1 and len(e308["sources"]) > 1
 
 
+def test_event_day_other_day_keeps_only_dated_times(hz):                            # ruling 26
+    run("timeline", str(hz.ws), "--on", "2019-01-01")
+    seq = json.loads((hz.ws / "timeline_event_day.json").read_text(encoding="utf-8"))
+    assert seq == []                             # no Hazira sentence dated 2019-01-01 gives a clock time
+    run("timeline", str(hz.ws), "--on", "incident")
+    assert len(json.loads((hz.ws / "timeline_event_day.json").read_text(encoding="utf-8"))) == 29
+
+
 def test_min_precision_month_drops_years(hz):
     run("timeline", str(hz.ws), "--min-precision", "month")
     t = json.loads((hz.ws / "timeline_candidates.json").read_text(encoding="utf-8"))

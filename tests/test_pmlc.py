@@ -1149,7 +1149,8 @@ def test_clock_times_and_event_day(tmp_path):
     assert "| 02:35 |" in out
     assert "timeline_event_day.json" in json.loads((w / "manifest.json").read_text())["files"]
     run("timeline", str(w), "--on", "2023-01-05")
-    assert "09:10" in [x["time"] for x in json.loads((w / "timeline_event_day.json").read_text())]
+    other = [x["time"] for x in json.loads((w / "timeline_event_day.json").read_text())]
+    assert other == ["09:10"]                    # undated 02:35 / 03:01 belong to the incident day only (ruling 26)
 
 
 def test_on_bad_day(ws):

@@ -1340,14 +1340,19 @@ def _clock_times(text, start=0, end=None):
 
 
 def _event_day_sequence(w, day, sources):
-    """One entry per minute: {time, mentions, sources, snippets}, sorted by time."""
+    """One entry per minute: {time, mentions, sources, snippets}, sorted by time.
+
+    A time counts when its sentence holds no day-precision date other than `day`. A sentence with no date at all
+    counts only when `day` is the incident date, since undated times in an export describe the incident day."""
     found = {}
+    undated_ok = day == incident_date(w)
     for sid, text in sources:
         cuts = [0] + [m.end() for m in re.finditer(r"\. |\n", text)] + [len(text)]
         for s, e, hhmm in _clock_times(text):
             i = max(j for j in range(len(cuts) - 1) if cuts[j] <= s)
             sentence = text[cuts[i]: cuts[i + 1]]
-            if any(prec <= 1 and d.isoformat() != day for d, prec, _, _ in _parse_dates(sentence)):
+            days = [d.isoformat() for d, prec, _, _ in _parse_dates(sentence) if prec <= 1]
+            if any(d != day for d in days) or (not days and not undated_ok):
                 continue
             ev = found.setdefault(hhmm, {"time": hhmm, "mentions": 0, "sources": [], "snippets": []})
             ev["mentions"] += 1
@@ -2130,7 +2135,9 @@ def build_parser():
     s.add_argument("--per-date", type=int, default=4)
     s.add_argument("--show", type=int, default=60)
     s.add_argument("--on", metavar="DAY|incident",
-                   help="also write timeline_event_day.json: every clock time for that day (YYYY-MM-DD, or incident)")
+                   help="also write timeline_event_day.json: every clock time for that day (YYYY-MM-DD, or incident). "
+                        "Times in undated sentences count only for the incident date; for any other day a time "
+                        "counts only when its sentence gives that day's date")
     s.add_argument("--entity", nargs="+", metavar="F", help="keep only findings in these entities, and their linked evidence")
     s.add_argument("--min-precision", choices=["day", "month", "year"], default="year",
                    help="coarsest date precision to keep (year keeps everything)")
