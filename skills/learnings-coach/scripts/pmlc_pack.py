@@ -533,6 +533,23 @@ def check_pack(pack, w) -> Result:
                               "sections": pack.get("sections")}, ""):
         if (path, x) not in cit:
             warn(path, f"{x} is shown as plain text, not a citation; put it in cites")
+    downs = core.downgraded_findings(w)
+    noted = {x for _, x in _walk_ids(_citable(pack)["data_quality"], "data_quality") if x.startswith("FND-")}
+    FM = {f["id"]: f for f in w["findings"]}
+    cit_all = _citable(pack)
+    units = [(f"bottom_line[{i}]", e) for i, e in enumerate(cit_all["bottom_line"])]
+    for si, s in enumerate(cit_all["sections"]):
+        units += [(f"sections[{si}].items[{ii}]", it) for ii, it in enumerate(s.get("items", []))]
+    for upath, unit in units:
+        found = [(p_, x) for p_, x in _walk_ids(unit, upath)]
+        for p_, x in found:
+            if x in downs and x not in noted:
+                bad(p_, f"cites {x}, which has a reviewer downgrade vote; add a data_quality note citing it, or leave it out")
+        fnds = {x for _, x in found if x.startswith("FND-") and x in FM}
+        if fnds:
+            linked = set().union(*(core.linked_evidence(FM[x]) for x in fnds))
+            for x in dict.fromkeys(x for _, x in found if x.startswith("EVD-") and x in E and x not in linked):
+                warn(upath, f"{x} is not linked to any finding this item cites")
     for i, x in enumerate(excluded_ids(pack)):
         if x in ids:
             bad(f"exclusions[{i}].id", f"{x} is also cited; a finding is either cited or left out on purpose")

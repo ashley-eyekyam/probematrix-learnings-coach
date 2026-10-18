@@ -1398,6 +1398,14 @@ def cmd_interfaces(a):
 DASHBOARD_ASSETS = HERE / "dashboard_assets"
 
 
+EVD_RX = re.compile(r"\bEVD-\d{3,}\b")
+
+
+def linked_evidence(f: dict) -> set:
+    """Evidence a finding is linked to: its Linked Evidence column plus the EVD IDs its AI Justification names."""
+    return set(f["evidence"]) | set(EVD_RX.findall(f["justification"]))
+
+
 def downgraded_findings(w: dict) -> set:
     """Finding IDs with a reviewer vote to downgrade, reject or remove them (incident.json review_votes)."""
     return {v.get("finding") for v in w.get("incident", {}).get("review_votes", [])
@@ -1765,7 +1773,7 @@ def cmd_check_register(a):
         eids = e.get("evidence_ids") or []
         if not eids:
             problems.append(f"{lid}: no evidence_ids")
-        linked = {x for fid in fids if fid in F for x in F[fid]["evidence"]}
+        linked = {x for fid in fids if fid in F for x in linked_evidence(F[fid])}
         for eid in eids:
             if eid not in E:
                 problems.append(f"{lid}: unknown evidence {eid}")

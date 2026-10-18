@@ -891,3 +891,24 @@ def test_pack_renders_months_before(w):
     assert "<time>c. 2022 (about 2 years before)</time>" in pp.render_pack_html(w, p, "r", "d")
     p["incident"] = {"date": "2024-05-20"}
     assert "- 2024-03-20 14:05 (2 months before): Alarm" in pp.render_pack_md(p, w)
+
+
+def test_pack_unlinked_evidence_warns(w):
+    r = pp.check_pack(pack_with(item("card", cites=["FND-0002", "EVD-0003"])), w)
+    assert any("EVD-0003 is not linked to any finding this item cites" in x for x in r.warnings)
+    assert not r.problems
+    ok = pp.check_pack(pack_with(item("card", cites=["FND-0003", "EVD-0003"])), w)
+    assert not any("is not linked" in x for x in ok.warnings)
+    only_evd = pp.check_pack(pack_with(item("test_point")), w)
+    assert not any("is not linked" in x for x in only_evd.warnings)
+
+
+def test_pack_downgraded_needs_note(w):
+    w2 = dict(w, incident=dict(w["incident"], review_votes=[{"finding": "FND-0004", "vote": "downgrade"}]))
+    p = pack_with(item("learning", cites=["FND-0004"]))
+    r = pp.check_pack(p, w2)
+    assert any("cites FND-0004, which has a reviewer downgrade vote; add a data_quality note" in x for x in r.problems)
+    p["data_quality"] = [{"text": "Reviewer doubted this finding.", "cites": ["FND-0004"]}]
+    assert not any("downgrade vote" in x for x in pp.check_pack(p, w2).problems)
+    p2 = pack_with(item("learning"), bottom_line=[{"text": "x", "cites": ["FND-0004"]}])
+    assert any("bottom_line" in x and "downgrade vote" in x for x in pp.check_pack(p2, w2).problems)

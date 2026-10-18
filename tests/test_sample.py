@@ -14,6 +14,7 @@ pytest.importorskip("openpyxl")
 SAMPLE = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire"
 EXPORT = SAMPLE / "2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
 REGISTER = SAMPLE / "outputs" / "learnings-register.json"
+EXPECTED_JUSTIFICATION_ONLY = 56  # measured; matches the planning research figure
 GOLDEN = Path(__file__).resolve().parent / "fixtures" / "roles-golden.json"
 
 
@@ -124,3 +125,14 @@ def test_min_precision_month_drops_years(hz):
     t = json.loads((hz.ws / "timeline_candidates.json").read_text(encoding="utf-8"))
     assert t and all(x["precision"] != "year" for x in t)
     assert all("months_before" in x for x in t)
+
+
+def test_justification_only_links_count(hz):
+    w = pmlc.load_ws(hz.ws)
+    only = sum(len(pmlc.linked_evidence(f) - set(f["evidence"])) for f in w["findings"])
+    # Measured on the committed export (planning research estimated 56); pairs named only in AI Justification.
+    assert only > 0
+    assert only == EXPECTED_JUSTIFICATION_ONLY
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(hz.ws), str(REGISTER)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
