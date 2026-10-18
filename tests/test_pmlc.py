@@ -1587,4 +1587,6 @@ def test_dashboard_with_no_ratings(tmp_path):
     wsp = next(ws_dir.glob("*/workspace"))
     run("classify", str(wsp))
     run("dashboard", str(wsp))
-    assert (wsp.parent / "outputs" / "organisation-learning-map.html").is_file()
+    page = wsp.parent / "outputs" / "organisation-learning-map.html"
+    assert page.is_file()
+    assert "<b>0</b><span>Highest-rated findings" in page.read_text(encoding="utf-8")
