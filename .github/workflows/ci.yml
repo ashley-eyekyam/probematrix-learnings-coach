@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: ["feature/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.x"]
+        node: [true, false]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        if: matrix.node
+        with:
+          node-version: "20"
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check .
+      - name: Enable subprocess coverage
+        run: |
+          echo "import coverage; coverage.process_startup()" > "$(python -c 'import site; print(site.getsitepackages()[0])')/pmlc-cov.pth"
+      - name: Tests with coverage
+        env:
+          COVERAGE_PROCESS_START: ${{ github.workspace }}/.coveragerc
+        run: coverage run -m pytest tests -q
+      - run: coverage combine
+      - run: coverage report
+      - run: python skills/learnings-coach/scripts/pmlc.py check-samples
+
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: pip install -r requirements-dev.txt
+      - run: python tools/smoke_sample.py

@@ -49,7 +49,7 @@ def pack_with(*items, **top):
 
 
 @pytest.fixture(scope="module")
-def w(ws):
+def w(ws):  # noqa: F811
     return pmlc.load_ws(ws)
 
 
@@ -169,7 +169,7 @@ def test_cited_ids_and_item_ids():
     assert "id" not in p["sections"][0]["items"][0]
 
 
-def test_check_pack_cli(ws, tmp_path):
+def test_check_pack_cli(ws, tmp_path):  # noqa: F811
     good = tmp_path / "p.json"
     good.write_text(json.dumps(pack_with(item("para", cites=["FND-0002"]))), encoding="utf-8")
     assert run("check-pack", str(ws), str(good)).strip().endswith("OK: 1 sections, 1 items, 1 cited IDs")
@@ -363,7 +363,7 @@ def test_pack_cli_writes_html_md_and_follow_up(tmp_path):
     assert list(json.loads((outd / "follow-up.json").read_text(encoding="utf-8"))) == ["FND-0002", "FND-0003"]
 
 
-def test_pack_cli_refuses_a_failing_pack(ws, tmp_path):
+def test_pack_cli_refuses_a_failing_pack(ws, tmp_path):  # noqa: F811
     bad = tmp_path / "b.json"
     bad.write_text(json.dumps(pack_with(item("para"), status="Draft")), encoding="utf-8")
     r = run_fail("pack", str(ws), str(bad), "--out", str(tmp_path / "o"))
@@ -371,14 +371,14 @@ def test_pack_cli_refuses_a_failing_pack(ws, tmp_path):
     assert not (tmp_path / "o").exists()
 
 
-def test_pack_cli_no_md(ws, tmp_path):
+def test_pack_cli_no_md(ws, tmp_path):  # noqa: F811
     good = tmp_path / "p.json"
     good.write_text(json.dumps(pack_with(item("para", cites=["FND-0002"]))), encoding="utf-8")
     run("pack", str(ws), str(good), "--out", str(tmp_path / "o"), "--no-md")
     assert (tmp_path / "o" / "test-pack.html").exists() and not (tmp_path / "o" / "test-pack.md").exists()
 
 
-def test_pack_on_minimal_workspace(ws, tmp_path):
+def test_pack_on_minimal_workspace(ws, tmp_path):  # noqa: F811
     lone = tmp_path / "lone"
     lone.mkdir()
     (lone / "findings.json").write_text((ws / "findings.json").read_text(encoding="utf-8"), encoding="utf-8")
@@ -780,7 +780,7 @@ def test_causal_graph_item():
     assert pp.causal_graph_item(CG, top=10) == pp.causal_graph_item(CG, top=10)          # deterministic
 
 
-def test_causal_item_cli(ws, tmp_path):                                                  # review focus 4
+def test_causal_item_cli(ws, tmp_path):  # noqa: F811                                                  # review focus 4
     run("causal", str(ws))
     it = json.loads(run("causal-item", str(ws), "--top", "3"))
     assert len(it["edges"]) == 3 and problems(pack_with(it), pmlc.load_ws(ws)) == []

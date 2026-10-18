@@ -525,7 +525,7 @@ def _evidence_for(f, E, max_quote=400):
         if not e:
             out.append({"id": eid})
             continue
-        link = next((l for l in e["links"] if l["code"] == f["code"]), e["links"][0] if e["links"] else {})
+        link = next((lk for lk in e["links"] if lk["code"] == f["code"]), e["links"][0] if e["links"] else {})
         out.append({"id": eid, "type": e["type"], "relevance": link.get("relevance", ""),
                     "reference": (link.get("reference", "") or "")[:max_quote]})
     return out
