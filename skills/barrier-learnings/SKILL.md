@@ -5,7 +5,7 @@ description: Analyse which safety barriers and controls failed in a ProbeMatrix 
 
 # Barrier Learnings
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/output-style.md` (hierarchy of controls, leading indicators).
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/output-style.md` (hierarchy of controls, leading indicators).
 
 ## Identify barriers
 

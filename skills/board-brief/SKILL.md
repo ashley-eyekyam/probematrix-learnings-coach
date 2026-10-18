@@ -7,7 +7,7 @@ description: Produce a board-level briefing from a ProbeMatrix investigation exp
 
 Audience: the board and its safety / risk committee. Directors do not manage the site; they oversee whether management's systems work and whether the assurance they receive is true. Their learning is about **oversight and assurance**, not operations.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md` and the board question block in `output-style.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md` and the board question block in `output-style.md`.
 
 ## Gather
 

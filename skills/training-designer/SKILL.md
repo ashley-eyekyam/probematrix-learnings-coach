@@ -7,7 +7,7 @@ description: Design training from a ProbeMatrix investigation export for trainin
 
 Audience: training and L&D. They turn learnings into competence that lasts. Training is the weakest control on its own: design it alongside the system fixes, not instead of them.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 

@@ -7,7 +7,7 @@ description: Produce learning for emergency response and fire services from a Pr
 
 Audience: the Learning Clusters tagged `emergency` (in the default taxonomy F09a fire-fighting operations and fire-water systems, F09b emergency planning and command, F10 security and surveillance), plus control-room roles who make the first response decisions.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 

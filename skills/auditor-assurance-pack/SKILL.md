@@ -7,7 +7,7 @@ description: Turn a ProbeMatrix investigation export into an audit and assurance
 
 Audience: anyone who tests whether controls work: internal audit, HSE audit teams, certification and regulatory inspectors, insurers. They need **testable criteria** and **evidence to request**, not narrative.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md` and the audit test point block in `output-style.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md` and the audit test point block in `output-style.md`.
 
 ## Gather
 

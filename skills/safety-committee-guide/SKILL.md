@@ -7,7 +7,7 @@ description: Produce a discussion guide from a ProbeMatrix investigation export 
 
 Audience: workforce representatives and joint safety committees. They give the workforce a voice, raise concerns and check that learning reaches the people who do the work. They need a fair account and good questions.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 

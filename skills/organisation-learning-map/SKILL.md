@@ -5,7 +5,7 @@ description: Produce the whole-organisation view of one ProbeMatrix investigatio
 
 # Organisation Learning Map
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Needs `clusters.json` (resolve unresolved roles first if time allows; see `learning-clusters`).
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Needs `clusters.json` (resolve unresolved roles first if time allows; see `learning-clusters`).
 
 ## 1. Build the learnings (unless a register already exists)
 

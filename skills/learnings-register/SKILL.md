@@ -5,7 +5,7 @@ description: Build a formal Learnings Register (lessons-learned register) from a
 
 # Learnings Register
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Needs `clusters.json` (see `learning-clusters`). Read `learnings-coach/references/learning-principles.md` and `learnings-coach/references/register-schema.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Needs `clusters.json` (see `learning-clusters`). Read `learnings-coach/references/learning-principles.md` and `learnings-coach/references/register-schema.md`.
 
 ## Method
 

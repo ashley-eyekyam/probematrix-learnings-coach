@@ -74,6 +74,8 @@ git clone https://github.com/ashley-eyekyam/probematrix-learnings-coach
 cd probematrix-learnings-coach && ./tools/install-codex.sh
 ```
 
+On Windows, `.agents/skills` is a symlink to `../skills`. Clone with `git config core.symlinks true` (symlinks need Developer Mode or an elevated shell), or run `tools/install-codex.sh` (Git Bash or WSL), or copy the `skills/` folders yourself.
+
 All hosts need Python 3.9+ with `openpyxl` (see below).
 
 ## Requirements and local setup

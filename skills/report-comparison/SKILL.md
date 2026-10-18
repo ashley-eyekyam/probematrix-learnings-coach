@@ -5,7 +5,7 @@ description: Compare a ProbeMatrix investigation with an official, regulatory, c
 
 # Report Comparison
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. **Read `learnings-coach/references/comparison-method.md` before starting**, and `learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). **Read `learnings-coach/references/comparison-method.md` before starting**, and `learning-principles.md`.
 
 ## Inputs
 

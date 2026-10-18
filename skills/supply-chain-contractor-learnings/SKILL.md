@@ -7,7 +7,7 @@ description: Produce learning for procurement, stores, materials management, ven
 
 Audience: the Learning Clusters tagged `supply` or `contractor` (in the default taxonomy F06 materials management, F16 vendors, OEMs and suppliers, F17 contractors), plus any agency roles named in the findings.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 

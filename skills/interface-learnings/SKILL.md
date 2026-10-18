@@ -5,7 +5,7 @@ description: Find the learnings that fall between departments in a ProbeMatrix i
 
 # Interface Learnings
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Needs `clusters.json`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Needs `clusters.json`.
 
 ## Gather
 

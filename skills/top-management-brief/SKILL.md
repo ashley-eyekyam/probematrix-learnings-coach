@@ -7,7 +7,7 @@ description: Produce a top-management brief from a ProbeMatrix investigation exp
 
 Audience: T5 corporate leadership. They set policy, enterprise standards and investment, and they decide whether a lesson from one site is applied at every site.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 

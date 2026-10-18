@@ -1154,3 +1154,41 @@ def test_register_warnings_rules():
     t2 = "\n".join(pmlc.register_warnings([e2], w))
     assert "performance_mode 'guessing'" in t2 and "hfacs_level" in t2
     assert pmlc.register_warnings([{"lr_id": "LR-11"}], w) == []
+
+
+SKILL_FILES = sorted((ROOT / "skills").glob("*/SKILL.md"))
+
+
+def test_sub_skills_state_dependency():
+    subs = [p for p in SKILL_FILES if p.parent.name != "learnings-coach"]
+    assert len(subs) == 22
+    for p in subs:
+        engine = [ln for ln in p.read_text(encoding="utf-8").splitlines() if ln.startswith("Engine:")]
+        assert engine, p
+        assert "installed alongside" in engine[0], p
+
+
+def test_no_repo_only_paths_in_skills():
+    pat = re.compile(r"\b(samples|tools|docs|tests|evals)/")
+    for p in SKILL_FILES:
+        for ln in p.read_text(encoding="utf-8").splitlines():
+            if pat.search(ln):
+                assert "(repository only)" in ln, "%s: %s" % (p, ln)
+
+
+def test_installer_checks_python(tmp_path):
+    bash = shutil.which("bash")
+    if not bash:
+        pytest.skip("bash not available")
+    fake = tmp_path / "bin"
+    fake.mkdir()
+    py = fake / "python3"
+    py.write_text("#!/bin/sh\nexit 1\n")
+    py.chmod(0o755)
+    dest = tmp_path / "dest"
+    env = {"PATH": "%s:/usr/bin:/bin" % fake, "CODEX_SKILLS_DIR": str(dest), "HOME": str(tmp_path)}
+    r = subprocess.run([bash, str(ROOT / "tools" / "install-codex.sh")], env=env,
+                       capture_output=True, text=True)
+    assert r.returncode == 1
+    assert "3.9" in r.stdout + r.stderr
+    assert not dest.exists()

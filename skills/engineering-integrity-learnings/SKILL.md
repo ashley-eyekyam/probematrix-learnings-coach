@@ -7,7 +7,7 @@ description: Produce learning for engineering, design, asset integrity, inspecti
 
 Audience: the Learning Clusters tagged `engineering` (in the default taxonomy F04 instrumentation, control and calibration, F05 asset integrity, corrosion and inspection, F07 engineering, design, documents and MOC, and F03 electrical, for hazardous-area equipment).
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
 
 ## Gather
 

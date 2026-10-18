@@ -7,7 +7,7 @@ description: Build the complete learning dossier for one department or function 
 
 Steps 2 and 3 of the method for one Learning Cluster: open it along sub-divisions S1–S14 (`learnings-coach/references/ontology.md` §4) and write one learning piece per sub-division.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Needs `<ws>/clusters.json` (see `learning-clusters`). Read `learnings-coach/references/learning-principles.md` first.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Needs `<ws>/clusters.json` (see `learning-clusters`). Read `learnings-coach/references/learning-principles.md` first.
 
 ## Gather
 

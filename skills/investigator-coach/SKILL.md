@@ -7,7 +7,7 @@ description: Coach incident investigators and HSE professionals using a ProbeMat
 
 Audience: investigators, HSE advisers and process-safety engineers who run or review investigations.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`. Read `learnings-coach/references/learning-principles.md` and `export-schema.md`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md` and `export-schema.md`.
 
 ## Gather
 

@@ -5,7 +5,7 @@ description: Build a precursor and weak-signal timeline from a ProbeMatrix inves
 
 # Precursor Timeline
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it).
 
 ## Gather candidates
 

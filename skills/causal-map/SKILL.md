@@ -5,7 +5,7 @@ description: Extract and explain the causal map of a ProbeMatrix investigation -
 
 # Causal Map
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py`.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it).
 
 ## Build
 
