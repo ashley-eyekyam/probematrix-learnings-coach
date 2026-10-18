@@ -404,6 +404,11 @@ def test_embed_json_is_script_safe():
 
 
 def test_sample_folders(tmp_path):
+    if shutil.which("git") is None:
+        pytest.skip("git is not available")
+    inside = subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], cwd=ROOT, capture_output=True, text=True)
+    if inside.returncode != 0:
+        pytest.skip("repository root is not a git work tree")
     tracked = subprocess.run(["git", "ls-files", "samples"], cwd=ROOT, capture_output=True, text=True).stdout.split()
     tracked_dirs = {Path(x).parts[1] for x in tracked if len(Path(x).parts) > 2}
     assert [p for p in pmlc.sample_folder_problems(ROOT / "samples") if p.split(":")[0] in tracked_dirs] == []
@@ -1192,3 +1197,111 @@ def test_installer_checks_python(tmp_path):
     assert r.returncode == 1
     assert "3.9" in r.stdout + r.stderr
     assert not dest.exists()
+
+
+def _variant(tmp_path, edit):
+    """Build the synthetic export, let edit(workbook) change it, ingest it, and return the workspace."""
+    x = make_export(tmp_path)
+    wb = openpyxl.load_workbook(x)
+    edit(wb)
+    wb.save(x)
+    w = tmp_path / "w"
+    run("ingest", str(x), "--legacy-out", str(w))
+    return w
+
+
+def _incident(w):
+    return json.loads((w / "incident.json").read_text())
+
+
+LONG_NARR = "A seal failed and gas escaped at the pump house on a night shift. " * 5  # over 200 characters
+
+
+def test_narrative_capture_both_layouts(tmp_path):
+    assert len(LONG_NARR) > 200
+
+    def same_row(wb):
+        wb["Incident Summary"].append(("INCIDENT NARRATIVE", LONG_NARR))
+
+    def next_row(wb):
+        s = wb["Incident Summary"]
+        s.append(("INCIDENT NARRATIVE",))
+        s.append((LONG_NARR,))
+
+    def short_ignored(wb):
+        s = wb["Incident Summary"]
+        s.append(("INCIDENT NARRATIVE",))
+        s.append(("too short to be the narrative",))
+
+    for n, edit in (("a", same_row), ("b", next_row)):
+        d = tmp_path / n
+        d.mkdir()
+        assert _incident(_variant(d, edit))["narrative"] == LONG_NARR.strip()
+    d = tmp_path / "c"
+    d.mkdir()
+    assert _incident(_variant(d, short_ignored))["narrative"] == ""
+
+
+def test_votes_ingest(tmp_path):
+    def edit(wb):
+        c = wb.create_sheet("Collaboration Data")
+        for r in [("COMMENTS",), ("Finding ID", "Author", "Comment"), ("FND-0001", "Reviewer A", "a comment row"),
+                  ("VOTES",), ("Finding ID", "Vote", "Reason"), ("FND-0002", "upgrade", "strong evidence"),
+                  ("FND-0004", "downgrade", "weak evidence"), ("COMMENTS",), ("FND-0003", "Reviewer B", "late")]:
+            c.append(r)
+
+    votes = _incident(_variant(tmp_path, edit))["review_votes"]
+    assert votes == [{"finding": "FND-0002", "vote": "upgrade", "reason": "strong evidence"},
+                     {"finding": "FND-0004", "vote": "downgrade", "reason": "weak evidence"}]
+
+
+def test_profile_flags(tmp_path):
+    def edit(wb):
+        s = wb["Incident Summary"]
+        s.append(("Incident Type", "Explosion"))
+        s["B6"] = "in_progress"
+        s.append(("INCIDENT NARRATIVE", LONG_NARR + "It happened on 05/04/2023."))
+        c = wb.create_sheet("Collaboration Data")
+        for r in [("VOTES",), ("Finding ID", "Vote", "Reason"), ("FND-0004", "downgrade", "weak evidence")]:
+            c.append(r)
+
+    w = _variant(tmp_path, edit)
+    out = run("profile", str(w))
+    flags = out.split("## Data-quality flags")[1]
+    assert "Summary-sheet Date 2024-03-20 does not appear in the narrative, which mentions 2023-04-05" in flags
+    assert "Incident Type 'Explosion' is not mentioned in the narrative" in flags
+    assert "Investigation Status is 'in_progress'; label outputs as draft learnings." in flags
+    assert "Reviewer downgrade votes on: FND-0004 (weak evidence)." in flags
+
+
+def test_profile_no_status_flag_when_completed(ws):
+    flags = run("profile", str(ws)).split("## Data-quality flags")[1]
+    assert "in_progress" not in flags and "downgrade votes" not in flags
+
+
+def test_causal_sheet_merge(tmp_path):
+    def edit(wb):
+        c = wb["Causal Chain"]
+        c.delete_rows(2)
+        c.append(["CL-1", "PE 2.1", 2, "AB 1.1"])
+        c.append(["CL-2", "PE 2.1", 2, None])  # missing To Code: not kept at ingest
+
+    w = _variant(tmp_path, edit)
+    assert _incident(w)["causal_chain_sheet"] == [
+        {"Link ID": "CL-1", "From Code": "PE 2.1", "From Level": "2", "To Code": "AB 1.1"}]
+    run("causal", str(w))
+    g = json.loads((w / "causal_graph.json").read_text())
+    sheet = [e for e in g["edges"] if "causal-chain-sheet" in e["findings"]]
+    assert [(e["from"], e["to"], e["from_level"], e["to_level"]) for e in sheet] == [("PE 2.1", "AB 1.1", 2, 1)]
+
+
+def test_select_full_md_out(ws, tmp_path):
+    out = tmp_path / "sel.md"
+    run("select", str(ws), "--entity", "F02", "--out", str(out))
+    md = out.read_text()
+    assert "**Justification:** Work order shows no test [EVD-0001]." in md
+    assert "**Causal explanation:** Enabled by SV 1.4 and OR 2.2." in md
+    assert '- `EVD-0001` (document): Shows no test Quote: "no leak test recorded"' in md
+    brief = tmp_path / "brief.md"
+    run("select", str(ws), "--entity", "F02", "--brief", "--out", str(brief))
+    assert "Quote:" not in brief.read_text() and "**Justification:**" not in brief.read_text()
