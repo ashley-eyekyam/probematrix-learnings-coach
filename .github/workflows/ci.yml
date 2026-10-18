@@ -35,6 +35,7 @@ jobs:
       - run: coverage combine
       - run: coverage report
       - run: python skills/learnings-coach/scripts/pmlc.py check-samples
+      - run: python evals/run_evals.py check
 
   smoke:
     runs-on: ubuntu-latest

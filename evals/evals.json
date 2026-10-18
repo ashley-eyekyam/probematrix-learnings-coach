@@ -1,28 +1,1754 @@
 {
  "skill_name": "probematrix-learnings-coach",
+ "sample": "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx",
  "evals": [
   {
    "id": 1,
-   "prompt": "I'm the maintenance superintendent at a gas processing plant. Here is the ProbeMatrix findings export from our investigation of last year's gas terminal fire: samples/<incident>/<export>.xlsx. What should my shift in-charges and maintenance supervisors take away from this? I need something I can actually use in next week's supervisors' meeting.",
-   "expected_output": "supervisor-meeting-pack",
+   "owner": "auditor-assurance-pack",
+   "skill": "auditor-assurance-pack",
+   "kind": "trigger",
+   "prompt": "I lead the internal ISO 45001 audit team for our gas processing business. Using the ProbeMatrix export of the Hazira terminal fire (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), give me audit test points, what to sample and the evidence to request, so we can test whether the same conditions exist at our other plants.",
    "files": [
-    "samples/<incident>/<export>.xlsx"
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "auditor-assurance-pack"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "auditor-assurance-pack"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "auditor-assurance-pack",
+     "scope": {
+      "levels": [
+       3,
+       4
+      ],
+      "min_rating": "top"
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "auditor-assurance-pack",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "auditor-assurance-pack"
+    }
    ]
   },
   {
    "id": 2,
-   "prompt": "Our board safety committee meets next month. Using this ProbeMatrix investigation export (samples/<incident>/<export>.xlsx), prepare the briefing paper for the directors: what does this incident tell the board about oversight and assurance, and what should directors ask management?",
-   "expected_output": "board-safety-committee-paper",
-   "files": [
-    "samples/<incident>/<export>.xlsx"
+   "owner": "auditor-assurance-pack",
+   "skill": null,
+   "not_skill": "auditor-assurance-pack",
+   "kind": "no-trigger",
+   "prompt": "Draft an ISO 45001 internal audit checklist for clause 8.1.4 (procurement and contractors) for a chemical warehouse. We have no incident behind this, it's routine audit planning.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
    ]
   },
   {
    "id": 3,
-   "prompt": "Can you turn this ProbeMatrix investigation (samples/<incident>/<export>.xlsx) into an organisation-wide learning plan - who in the organisation needs to learn what, at which level - with a dashboard I can open in a browser and a lessons-learned register spreadsheet?",
-   "expected_output": "organisation-learning-plan",
+   "owner": "auditor-assurance-pack",
+   "skill": "auditor-assurance-pack",
+   "sibling": "top-management-brief",
+   "kind": "collision",
+   "prompt": "Corporate HSE wants assurance that the Hazira lessons have actually been applied across every site. From this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) give our assurance team an audit protocol and red flags to verify at each location, not an executive summary.",
    "files": [
-    "samples/<incident>/<export>.xlsx"
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "auditor-assurance-pack"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "auditor-assurance-pack"
+    },
+    {
+     "type": "routes_to",
+     "skill": "auditor-assurance-pack"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "owner": "barrier-learnings",
+   "skill": "barrier-learnings",
+   "kind": "trigger",
+   "prompt": "Why didn't our safeguards work at Hazira? Take the ProbeMatrix findings (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and show me which prevention and mitigation barriers failed, who owned each, how it degraded, and fixes stronger than retraining.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "barrier-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "barrier-learnings"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "barrier-learnings",
+     "scope": {
+      "min_rating": "top"
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "barrier-learnings",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "barrier-learnings"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "owner": "barrier-learnings",
+   "skill": null,
+   "not_skill": "barrier-learnings",
+   "kind": "no-trigger",
+   "prompt": "Build a bow-tie for a loss of containment from a floating-roof crude tank in our tank farm, with threats, consequences and the critical controls on each side.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "owner": "barrier-learnings",
+   "skill": "barrier-learnings",
+   "sibling": "engineering-integrity-learnings",
+   "kind": "collision",
+   "prompt": "For our critical-controls review, I need the barrier view of the Hazira investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): each defence that failed before and after the release, its owner, failure mode and a hierarchy-of-controls rating with a leading indicator.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "barrier-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "barrier-learnings"
+    },
+    {
+     "type": "routes_to",
+     "skill": "barrier-learnings"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "owner": "board-brief",
+   "skill": "board-brief",
+   "kind": "trigger",
+   "prompt": "Our board safety committee meets next month. Using this ProbeMatrix investigation export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), prepare the briefing paper for the directors: what does this incident tell the board about oversight and assurance, and what should directors ask management?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "board-brief"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "board-brief"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "board-brief",
+     "scope": {
+      "levels": [
+       3,
+       4
+      ],
+      "min_rating": "top"
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "board-brief",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "board-brief"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "owner": "board-brief",
+   "skill": null,
+   "not_skill": "board-brief",
+   "kind": "no-trigger",
+   "prompt": "Write the quarterly HSE report for our board: LTIFR, TRIR, process safety events and the top five risks, from the attached KPI spreadsheet.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "owner": "board-brief",
+   "skill": "board-brief",
+   "sibling": "top-management-brief",
+   "kind": "collision",
+   "prompt": "I'm company secretary. The non-executive directors on the risk committee want a paper from the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) on governance and oversight lessons and the questions they should put to the executive. This is for the board, not the ExCo.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "board-brief"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "board-brief"
+    },
+    {
+     "type": "routes_to",
+     "skill": "board-brief"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "owner": "causal-map",
+   "skill": "causal-map",
+   "kind": "trigger",
+   "prompt": "How did the organisation set this up? Using the ProbeMatrix export of the Hazira fire (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), draw the causal map from organisational influences down to the unsafe acts, rank the main pathways and explain them in plain language.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "causal-map"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "causal-map"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "causal-map",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "causal-map"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "owner": "causal-map",
+   "skill": null,
+   "not_skill": "causal-map",
+   "kind": "no-trigger",
+   "prompt": "Run a 5-Whys and fishbone root-cause analysis for a forklift that struck a racking upright in our warehouse yesterday. Here are my notes from the scene.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "owner": "causal-map",
+   "skill": "causal-map",
+   "sibling": "interface-learnings",
+   "kind": "collision",
+   "prompt": "I need a diagram of the Hazira investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) showing how the HFACS factors connect, the causal chain from level 4 to level 1, for our investigation review meeting.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "causal-map"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "causal-map"
+    },
+    {
+     "type": "routes_to",
+     "skill": "causal-map"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "owner": "cluster-learning-dossier",
+   "skill": "cluster-learning-dossier",
+   "kind": "trigger",
+   "prompt": "What does mechanical maintenance need to learn from the Hazira investigation? From the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) put every learning for maintenance in one place: practices, conditions, warning signs, messages for each level, recommendations and training needs.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "dossier-F02"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "dossier-F02"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "dossier-F02",
+     "scope": {
+      "entities": [
+       "F02"
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "dossier-F02",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "cluster-learning-dossier"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "owner": "cluster-learning-dossier",
+   "skill": null,
+   "not_skill": "cluster-learning-dossier",
+   "kind": "no-trigger",
+   "prompt": "Write a departmental induction pack for new starters in our mechanical maintenance workshop: PPE, isolation rules, tool control and who to call.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "owner": "cluster-learning-dossier",
+   "skill": "cluster-learning-dossier",
+   "sibling": "learning-clusters",
+   "kind": "collision",
+   "prompt": "I'm the maintenance head. I don't need the whole organisation grouped, I just want the complete lessons pack for maintenance alone from this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "dossier-F02"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "dossier-F02"
+    },
+    {
+     "type": "routes_to",
+     "skill": "cluster-learning-dossier"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "owner": "emergency-response-learnings",
+   "skill": "emergency-response-learnings",
+   "kind": "trigger",
+   "prompt": "Our fire chief wants input for the ERDMP review. Using the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), what should the fire crews, fire-water maintainers and incident controllers learn about detection to isolation, alarms, command and drills?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "emergency-response-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "emergency-response-learnings"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "emergency-response-learnings",
+     "scope": {
+      "tags": [
+       "emergency"
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "emergency-response-learnings",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "emergency-response-learnings"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "owner": "emergency-response-learnings",
+   "skill": null,
+   "not_skill": "emergency-response-learnings",
+   "kind": "no-trigger",
+   "prompt": "Write an emergency response plan for an LPG bottling plant: scenarios, roles, muster points, communication tree and drill schedule.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "owner": "emergency-response-learnings",
+   "skill": "emergency-response-learnings",
+   "sibling": "frontline-learning-cards",
+   "kind": "collision",
+   "prompt": "From the Hazira findings (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), give our emergency response team and the security and CCTV operators the response-time lessons and three drill scenarios for the next mock drill.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "emergency-response-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "emergency-response-learnings"
+    },
+    {
+     "type": "routes_to",
+     "skill": "emergency-response-learnings"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "owner": "engineering-integrity-learnings",
+   "skill": "engineering-integrity-learnings",
+   "kind": "trigger",
+   "prompt": "What should our integrity, inspection and instrumentation engineers and MOC owners learn from Hazira? Here's the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). I want a technical lessons pack with recommendations rated on the hierarchy of controls.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "engineering-integrity-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "engineering-integrity-learnings"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "engineering-integrity-learnings",
+     "scope": {
+      "tags": [
+       "engineering"
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "engineering-integrity-learnings",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "engineering-integrity-learnings"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "owner": "engineering-integrity-learnings",
+   "skill": null,
+   "not_skill": "engineering-integrity-learnings",
+   "kind": "no-trigger",
+   "prompt": "Set up a risk-based inspection programme for the piping and pressure vessels on our new hydrogen unit, with inspection intervals and corrosion loops.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 21,
+   "owner": "engineering-integrity-learnings",
+   "skill": "engineering-integrity-learnings",
+   "sibling": "barrier-learnings",
+   "kind": "collision",
+   "prompt": "The technical authority asked for lessons on specifications, change control, testing after maintenance and alarm design from this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Engineering audience only.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "engineering-integrity-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "engineering-integrity-learnings"
+    },
+    {
+     "type": "routes_to",
+     "skill": "engineering-integrity-learnings"
+    }
+   ]
+  },
+  {
+   "id": 22,
+   "owner": "frontline-learning-cards",
+   "skill": "frontline-learning-cards",
+   "kind": "trigger",
+   "prompt": "Make this useful for the guys on the floor. From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) I need one-page learning cards and five-minute toolbox talks for operators and fitters, blame-free, with warning signs and stop-and-ask points.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "frontline-learning-cards",
+     "scope": {
+      "tiers": [
+       "T1"
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "frontline-learning-cards",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "frontline-learning-cards"
+    }
+   ]
+  },
+  {
+   "id": 23,
+   "owner": "frontline-learning-cards",
+   "skill": "frontline-learning-cards",
+   "kind": "trigger",
+   "prompt": "Can you turn this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) into shift-briefing material for control-room staff and field technicians?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "frontline-learning-cards",
+     "scope": {
+      "tiers": [
+       "T1"
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "frontline-learning-cards",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "frontline-learning-cards"
+    }
+   ]
+  },
+  {
+   "id": 24,
+   "owner": "frontline-learning-cards",
+   "skill": null,
+   "not_skill": "frontline-learning-cards",
+   "kind": "no-trigger",
+   "prompt": "Write a toolbox talk on working at height for our scaffolding crew, covering harness checks and edge protection.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 25,
+   "owner": "frontline-learning-cards",
+   "skill": "frontline-learning-cards",
+   "sibling": "emergency-response-learnings",
+   "kind": "collision",
+   "prompt": "Our security guards and gate staff need a short learning card from the Hazira investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) for their pre-shift talk, plain language please, not an emergency plan review.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "routes_to",
+     "skill": "frontline-learning-cards"
+    }
+   ]
+  },
+  {
+   "id": 26,
+   "owner": "interface-learnings",
+   "skill": "interface-learnings",
+   "kind": "trigger",
+   "prompt": "What fell through the cracks between operations, maintenance and procurement at Hazira? Use the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) to show the handovers, unclear ownership and the assumptions one function made about another.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "interface-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "interface-learnings"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "interface-learnings",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "interface-learnings"
+    }
+   ]
+  },
+  {
+   "id": 27,
+   "owner": "interface-learnings",
+   "skill": null,
+   "not_skill": "interface-learnings",
+   "kind": "no-trigger",
+   "prompt": "Design a RACI matrix for shift handover between our production and maintenance teams at a new bottling line.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 28,
+   "owner": "interface-learnings",
+   "skill": "interface-learnings",
+   "sibling": "causal-map",
+   "kind": "collision",
+   "prompt": "Who should have been talking to whom? From this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), show me the cross-department failures and how to set up a cross-functional review, not the causal chain.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "interface-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "interface-learnings"
+    },
+    {
+     "type": "routes_to",
+     "skill": "interface-learnings"
+    }
+   ]
+  },
+  {
+   "id": 29,
+   "owner": "investigator-coach",
+   "skill": "investigator-coach",
+   "kind": "trigger",
+   "prompt": "I'm the lead investigator. How do I strengthen this investigation? From the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) list the evidence gaps and conflicts, the interviews still to do and the causal hypotheses to test.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "investigator-coach"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "investigator-coach"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "investigator-coach",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "investigator-coach"
+    }
+   ]
+  },
+  {
+   "id": 30,
+   "owner": "investigator-coach",
+   "skill": null,
+   "not_skill": "investigator-coach",
+   "kind": "no-trigger",
+   "prompt": "Teach me how to interview witnesses after a serious injury: question types, order, and how to avoid leading questions.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 31,
+   "owner": "investigator-coach",
+   "skill": "investigator-coach",
+   "sibling": "report-comparison",
+   "kind": "collision",
+   "prompt": "How good is this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) on its own? Where is the evidence thin, and what did the investigators miss at the supervisory and organisational levels? I don't need a comparison with any other report.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "investigator-coach"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "investigator-coach"
+    },
+    {
+     "type": "routes_to",
+     "skill": "investigator-coach"
+    }
+   ]
+  },
+  {
+   "id": 32,
+   "owner": "learning-clusters",
+   "skill": "learning-clusters",
+   "kind": "trigger",
+   "prompt": "Classify every finding in this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) by department, the level that must learn and the role's relation to the factor, and resolve any roles the rules can't place.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "learning-clusters"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "learning-clusters"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "learning-clusters",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "learning-clusters"
+    }
+   ]
+  },
+  {
+   "id": 33,
+   "owner": "learning-clusters",
+   "skill": null,
+   "not_skill": "learning-clusters",
+   "kind": "no-trigger",
+   "prompt": "Group these 40 near-miss reports from our site by department and severity and tell me which teams have the most.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 34,
+   "owner": "learning-clusters",
+   "skill": "learning-clusters",
+   "sibling": "organisation-learning-map",
+   "kind": "collision",
+   "prompt": "Before we make any audience packs, group the Hazira findings (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) by department, role and level so I can see who in the organisation should learn. No dashboard needed yet.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "learning-clusters"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "learning-clusters"
+    },
+    {
+     "type": "routes_to",
+     "skill": "learning-clusters"
+    }
+   ]
+  },
+  {
+   "id": 35,
+   "owner": "learnings-coach",
+   "skill": "learnings-coach",
+   "kind": "trigger",
+   "prompt": "Here's the ProbeMatrix findings export from our Hazira investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). What should we learn from this?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": "learnings-coach"
+    }
+   ]
+  },
+  {
+   "id": 36,
+   "owner": "learnings-coach",
+   "skill": "learnings-coach",
+   "kind": "trigger",
+   "prompt": "I've just been sent this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Set it up and tell me which learning outputs I can make from it for different audiences.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": "learnings-coach"
+    }
+   ]
+  },
+  {
+   "id": 37,
+   "owner": "learnings-coach",
+   "skill": null,
+   "not_skill": "learnings-coach",
+   "kind": "no-trigger",
+   "prompt": "What is HFACS and how do its four levels work? I'm preparing for an investigator course.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 38,
+   "owner": "learnings-coach",
+   "skill": "learnings-coach",
+   "sibling": "organisation-learning-map",
+   "kind": "collision",
+   "prompt": "Where do I start with this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx)? I'm not sure yet who the output is for.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": "learnings-coach"
+    }
+   ]
+  },
+  {
+   "id": 39,
+   "owner": "learnings-register",
+   "skill": "learnings-register",
+   "kind": "trigger",
+   "prompt": "Turn these Hazira findings (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) into a formal lessons-learned register in Excel, one row per learning with evidence, HFACS level, owner, priority and recommendations with leading indicators, so I can share it with the regulator.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "learnings-register"
+    },
+    {
+     "type": "check_register_ok",
+     "pack": "learnings-register"
+    },
+    {
+     "type": "routes_to",
+     "skill": "learnings-register"
+    }
+   ]
+  },
+  {
+   "id": 40,
+   "owner": "learnings-register",
+   "skill": null,
+   "not_skill": "learnings-register",
+   "kind": "no-trigger",
+   "prompt": "Build me a CAPA tracker spreadsheet for our audit findings with owners, due dates and status columns.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 41,
+   "owner": "learnings-register",
+   "skill": "learnings-register",
+   "sibling": "organisation-learning-map",
+   "kind": "collision",
+   "prompt": "I only want an Excel of learnings from this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): a register with recommendations. No dashboard.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "learnings-register"
+    },
+    {
+     "type": "check_register_ok",
+     "pack": "learnings-register"
+    },
+    {
+     "type": "routes_to",
+     "skill": "learnings-register"
+    }
+   ]
+  },
+  {
+   "id": 42,
+   "owner": "manager-coach",
+   "skill": "manager-coach",
+   "kind": "trigger",
+   "prompt": "What should our maintenance, procurement and training managers change after Hazira? Using the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) give each function a 90-day improvement agenda with leading indicators.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "manager-coach"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "manager-coach"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "manager-coach",
+     "scope": {
+      "tiers": [
+       "T3"
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "manager-coach",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "manager-coach"
+    }
+   ]
+  },
+  {
+   "id": 43,
+   "owner": "manager-coach",
+   "skill": null,
+   "not_skill": "manager-coach",
+   "kind": "no-trigger",
+   "prompt": "Give me ten leading indicators for a maintenance department's safety KPIs for next year's scorecard.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 44,
+   "owner": "manager-coach",
+   "skill": "manager-coach",
+   "sibling": "site-leadership-coach",
+   "kind": "collision",
+   "prompt": "I need a management-review input from this incident (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) for the department heads: the systems, procedures and resources each function owns and what they should change.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "manager-coach"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "manager-coach"
+    },
+    {
+     "type": "routes_to",
+     "skill": "manager-coach"
+    }
+   ]
+  },
+  {
+   "id": 45,
+   "owner": "organisation-learning-map",
+   "skill": "organisation-learning-map",
+   "kind": "trigger",
+   "prompt": "Can you turn this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) into an organisation-wide learning plan - who in the organisation needs to learn what, at which level - with a dashboard I can open in a browser?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "organisation-learning-plan"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "organisation-learning-plan"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "organisation-learning-plan",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "organisation-learning-map"
+    }
+   ]
+  },
+  {
+   "id": 46,
+   "owner": "organisation-learning-map",
+   "skill": null,
+   "not_skill": "organisation-learning-map",
+   "kind": "no-trigger",
+   "prompt": "Build an HSE performance dashboard for our five sites from the monthly incident data in this CSV.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 47,
+   "owner": "organisation-learning-map",
+   "skill": "organisation-learning-map",
+   "sibling": "learning-clusters",
+   "kind": "collision",
+   "prompt": "Give me the whole-organisation view of the Hazira investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): a heatmap of which departments and levels own which learnings and the order to roll out the audience packs.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "organisation-learning-plan"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "organisation-learning-plan"
+    },
+    {
+     "type": "routes_to",
+     "skill": "organisation-learning-map"
+    }
+   ]
+  },
+  {
+   "id": 48,
+   "owner": "precursor-timeline",
+   "skill": "precursor-timeline",
+   "kind": "trigger",
+   "prompt": "Did we see this coming? From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) build a timeline of every warning, missed inspection, repeated repair and overdue action before the release, and who received each signal.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "precursor-timeline"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "precursor-timeline"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "precursor-timeline",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "precursor-timeline"
+    }
+   ]
+  },
+  {
+   "id": 49,
+   "owner": "precursor-timeline",
+   "skill": null,
+   "not_skill": "precursor-timeline",
+   "kind": "no-trigger",
+   "prompt": "Make a Gantt-style timeline for our turnaround next March, with the shutdown, inspections and restart.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 50,
+   "owner": "precursor-timeline",
+   "skill": "precursor-timeline",
+   "sibling": "causal-map",
+   "kind": "collision",
+   "prompt": "I want the history of the asset and the weak signals before the Hazira fire (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), dated, for a session on normalisation of deviance. Not the causal diagram.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "precursor-timeline"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "precursor-timeline"
+    },
+    {
+     "type": "routes_to",
+     "skill": "precursor-timeline"
+    }
+   ]
+  },
+  {
+   "id": 51,
+   "owner": "report-comparison",
+   "skill": "report-comparison",
+   "kind": "trigger",
+   "prompt": "We have the official PNGRB enquiry committee report (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_official-report.pdf) and our ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) on the same Hazira fire. Compare them fairly: what each covers, depth by HFACS level, and what the second look adds.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx",
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_official-report.pdf"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "report-comparison"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "report-comparison"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "report-comparison",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "report-comparison"
+    }
+   ]
+  },
+  {
+   "id": 52,
+   "owner": "report-comparison",
+   "skill": null,
+   "not_skill": "report-comparison",
+   "kind": "no-trigger",
+   "prompt": "Compare ISO 45001 and OHSAS 18001 clause by clause for our transition plan.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 53,
+   "owner": "report-comparison",
+   "skill": "report-comparison",
+   "sibling": "investigator-coach",
+   "kind": "collision",
+   "prompt": "Put the regulator's enquiry report (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_official-report.pdf) side by side with the ProbeMatrix analysis (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) for a client discussion: two-way coverage of learnings and recommendations, without blame.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx",
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_official-report.pdf"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "report-comparison"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "report-comparison"
+    },
+    {
+     "type": "routes_to",
+     "skill": "report-comparison"
+    }
+   ]
+  },
+  {
+   "id": 54,
+   "owner": "safety-committee-guide",
+   "skill": "safety-committee-guide",
+   "kind": "trigger",
+   "prompt": "Our joint health and safety committee and the union safety reps want to discuss Hazira. From the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) prepare a discussion guide with the questions the workforce should raise with management.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-committee-guide"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-committee-guide"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "safety-committee-guide",
+     "scope": {
+      "tiers": [
+       "T1",
+       "T2"
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "safety-committee-guide",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-committee-guide"
+    }
+   ]
+  },
+  {
+   "id": 55,
+   "owner": "safety-committee-guide",
+   "skill": null,
+   "not_skill": "safety-committee-guide",
+   "kind": "no-trigger",
+   "prompt": "Write terms of reference for a new joint health and safety committee at our factory, including membership and meeting frequency.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 56,
+   "owner": "safety-committee-guide",
+   "skill": "safety-committee-guide",
+   "sibling": "frontline-learning-cards",
+   "kind": "collision",
+   "prompt": "For a workforce town-hall on the Hazira investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) I need a guide for the safety reps that keeps the discussion on systems, not blame, and says what to look for on site. Not learning cards.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-committee-guide"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-committee-guide"
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-committee-guide"
+    }
+   ]
+  },
+  {
+   "id": 57,
+   "owner": "site-leadership-coach",
+   "skill": "site-leadership-coach",
+   "kind": "trigger",
+   "prompt": "What does the plant manager need to decide after Hazira? Using the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) prepare a site leadership workshop on the trade-offs, resourcing, authority and culture signals behind the event.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "site-leadership-coach"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "site-leadership-coach"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "site-leadership-coach",
+     "scope": {
+      "tiers": [
+       "T4"
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "site-leadership-coach",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "site-leadership-coach"
+    }
+   ]
+  },
+  {
+   "id": 58,
+   "owner": "site-leadership-coach",
+   "skill": null,
+   "not_skill": "site-leadership-coach",
+   "kind": "no-trigger",
+   "prompt": "Plan a two-day leadership offsite on safety culture for our plant managers, with an agenda and exercises.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 59,
+   "owner": "site-leadership-coach",
+   "skill": "site-leadership-coach",
+   "sibling": "manager-coach",
+   "kind": "collision",
+   "prompt": "I'm the head of operations. For the site leadership team's management review after the incident (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), what decisions must we take and what should we visibly model?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "site-leadership-coach"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "site-leadership-coach"
+    },
+    {
+     "type": "routes_to",
+     "skill": "site-leadership-coach"
+    }
+   ]
+  },
+  {
+   "id": 60,
+   "owner": "supervisor-coach",
+   "skill": "supervisor-coach",
+   "kind": "trigger",
+   "prompt": "I'm the maintenance superintendent at a gas processing plant. Here is the ProbeMatrix findings export from our investigation of the gas terminal fire: samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx. What should my shift in-charges and maintenance supervisors take away from this? I need something I can use in next week's supervisors' meeting.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "supervisor-coach"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "supervisor-coach"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "supervisor-coach",
+     "scope": {
+      "tiers": [
+       "T2"
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "supervisor-coach",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "supervisor-coach"
+    }
+   ]
+  },
+  {
+   "id": 61,
+   "owner": "supervisor-coach",
+   "skill": null,
+   "not_skill": "supervisor-coach",
+   "kind": "no-trigger",
+   "prompt": "Write a permit-to-work checklist for hot work in a refinery: gas testing, fire watch and isolations.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 62,
+   "owner": "supervisor-coach",
+   "skill": "supervisor-coach",
+   "sibling": "frontline-learning-cards",
+   "kind": "collision",
+   "prompt": "From the Hazira findings (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) give our permit issuers and shift in-charges hold points: what to check before work starts, what to verify before return to service, what to escalate and refuse.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "supervisor-coach"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "supervisor-coach"
+    },
+    {
+     "type": "routes_to",
+     "skill": "supervisor-coach"
+    }
+   ]
+  },
+  {
+   "id": 63,
+   "owner": "supply-chain-contractor-learnings",
+   "skill": "supply-chain-contractor-learnings",
+   "kind": "trigger",
+   "prompt": "What should procurement, stores and our vendors learn from Hazira? From the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) give me spares-policy input on specifications, substitutions and OEM support for ageing equipment.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "supply-chain-contractor-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "supply-chain-contractor-learnings"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "supply-chain-contractor-learnings",
+     "scope": {
+      "tags": [
+       "supply",
+       "contractor"
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "supply-chain-contractor-learnings",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "supply-chain-contractor-learnings"
+    }
+   ]
+  },
+  {
+   "id": 64,
+   "owner": "supply-chain-contractor-learnings",
+   "skill": null,
+   "not_skill": "supply-chain-contractor-learnings",
+   "kind": "no-trigger",
+   "prompt": "Write a contractor pre-qualification questionnaire for mechanical maintenance contractors.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 65,
+   "owner": "supply-chain-contractor-learnings",
+   "skill": "supply-chain-contractor-learnings",
+   "sibling": "manager-coach",
+   "kind": "collision",
+   "prompt": "I need a supplier and contractor briefing from this investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) for our OEMs and the contract workforce, not a management agenda.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "supply-chain-contractor-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "supply-chain-contractor-learnings"
+    },
+    {
+     "type": "routes_to",
+     "skill": "supply-chain-contractor-learnings"
+    }
+   ]
+  },
+  {
+   "id": 66,
+   "owner": "top-management-brief",
+   "skill": "top-management-brief",
+   "kind": "trigger",
+   "prompt": "Write a CEO and ExCo brief from the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): which learnings transfer across our sites, which corporate standards and investments they implicate, and what to decide at enterprise level.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "top-management-brief"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "top-management-brief"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "top-management-brief",
+     "scope": {
+      "levels": [
+       4
+      ],
+      "min_rating": "top"
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "top-management-brief",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "top-management-brief"
+    }
+   ]
+  },
+  {
+   "id": 67,
+   "owner": "top-management-brief",
+   "skill": null,
+   "not_skill": "top-management-brief",
+   "kind": "no-trigger",
+   "prompt": "Draft our group HSE policy statement for the CEO to sign.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 68,
+   "owner": "top-management-brief",
+   "skill": "top-management-brief",
+   "sibling": "board-brief",
+   "kind": "collision",
+   "prompt": "What does head office need to do after Hazira (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx)? The executive committee wants an enterprise-wide lessons note; the board paper comes later.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "top-management-brief"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "top-management-brief"
+    },
+    {
+     "type": "routes_to",
+     "skill": "top-management-brief"
+    }
+   ]
+  },
+  {
+   "id": 69,
+   "owner": "training-designer",
+   "skill": "training-designer",
+   "kind": "trigger",
+   "prompt": "I'm the training manager. Turn the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) into curriculum: a training-needs map by role, case-based modules, scenario exercises and assessment questions with answer keys.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "training-designer"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "training-designer"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "training-designer",
+     "scope": {
+      "levels": [
+       1,
+       2
+      ]
+     }
+    },
+    {
+     "type": "coverage_min",
+     "pack": "training-designer",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "training-designer"
+    }
+   ]
+  },
+  {
+   "id": 70,
+   "owner": "training-designer",
+   "skill": null,
+   "not_skill": "training-designer",
+   "kind": "no-trigger",
+   "prompt": "Do a training needs analysis for our new forklift operators, with competencies and refresher intervals.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 71,
+   "owner": "training-designer",
+   "skill": "training-designer",
+   "sibling": "frontline-learning-cards",
+   "kind": "collision",
+   "prompt": "Our instructors want an e-learning module with a quiz from the Hazira case (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), not a one-off toolbox talk.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "training-designer"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "training-designer"
+    },
+    {
+     "type": "routes_to",
+     "skill": "training-designer"
+    }
    ]
   }
  ]
