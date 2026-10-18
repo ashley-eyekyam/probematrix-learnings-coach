@@ -644,6 +644,12 @@ def test_release_script_bumps_all_three(tmp_path):
 
 # ----------------------------------------------------------------------------- taxonomy v2.0: tags, F14 split, overlays
 
+@pytest.mark.parametrize("role, tier", [("Plant General Manager", "T4"), ("General Manager (Operations)", "T4"),
+                                        ("Deputy General Manager", "T3"), ("Assistant General Manager", "T3")])
+def test_general_manager_is_plant_leadership(role, tier):                            # final review 10
+    assert pmlc.map_role(role, pmlc._load_taxonomy())["T"] == tier
+
+
 def test_sign_no_longer_matches_design():
     tax = pmlc._load_taxonomy()
     assert pmlc.map_role("F&G System Designers", tax)["R"] != "approver"
