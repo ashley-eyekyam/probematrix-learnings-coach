@@ -40,7 +40,7 @@ import sys
 import types
 from pathlib import Path
 
-__version__ = "2.0.0a1"
+__version__ = "2.0.0a2"
 
 HERE = Path(__file__).resolve().parent
 REFS = HERE.parent / "references"

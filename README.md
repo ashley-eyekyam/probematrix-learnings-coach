@@ -32,7 +32,7 @@ Audit test points · Investigator follow-up · Training modules · ER drills · 
 
 ## What's new in v2.0 so far
 
-v2.0 is in testing (current build: 2.0.0-alpha.1, Phase 1: correct and tested). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+v2.0 is in testing (current build: 2.0.0-alpha.2, Phase 1: correct and tested). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
 
 - The coach no longer forgets your role corrections when you re-run the analysis.
 - Questions about where two departments meet now use only the findings both share, so the numbers are small and meaningful (27 on the Hazira sample, not 196).

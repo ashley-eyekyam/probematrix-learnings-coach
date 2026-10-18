@@ -25,7 +25,7 @@ Plugins do not update themselves unless you turn on auto-update. To get the late
 - **Claude Code:** `/plugin marketplace update probematrix`, then `/reload-plugins`.
 - **Claude app:** open the plugin settings, find the `probematrix` marketplace and choose Update.
 
-To check which version you have, ask the agent: *"Run the Learnings Coach engine with `--version` and tell me the result."* It prints, for example, `pmlc 2.0.0a1`.
+To check which version you have, ask the agent: *"Run the Learnings Coach engine with `--version` and tell me the result."* It prints, for example, `pmlc 2.0.0a2`.
 
 ## Pinning a version
 
@@ -33,7 +33,7 @@ The marketplace follows the `main` branch unless you name a tag with `#<tag>`:
 
 ```
 /plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v0.3.5            # stable 0.3.5
-/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v2.0.0-alpha.1    # the v2.0 alpha
+/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v2.0.0-alpha.2    # the v2.0 alpha
 ```
 
 You can have only one marketplace named `probematrix` at a time. To change the pin, remove the marketplace first and then add it again:

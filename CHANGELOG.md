@@ -4,6 +4,10 @@
 
 - Workflow: every change starts with an issue and a branch; v2.0 work happens on `feature/v2.0-features-edition` under epic issue #1. AGENTS.md and CONTRIBUTING.md describe the workflow, and `.github/` adds pull request, feature and bug templates.
 
+### 2.0.0a2
+
+- Dashboard no longer crashes when no finding has a rating; alpha notice, pinning and update instructions; UAT book (`docs/uat/`): an alpha notice at the top of the README with the one-line pin back to 0.3.5, INSTALL sections on getting updates, pinning a version and going back to stable, and a UAT book for testing in the Claude app (`docs/uat/v2.0.0-alpha.2-uat.md`, inputs from `tools/make-uat-inputs.py`).
+
 ### Phase 1: Correct and tested (2.0.0a1)
 
 - Fix: role overrides now persist. `classify` keeps `role_overrides.json` when you re-run it, and it reuses the previous taxonomy and overlays (`--no-overlay` opts out; `--no-overrides` ignores the overrides file). A malformed overrides file is reported, not ignored.
@@ -18,7 +22,7 @@
 - Samples: official and ProbeMatrix material may be included unmodified; the name scan is optional. Just culture in outputs is unchanged.
 - CI: GitHub Actions on Linux (ubuntu) only, with Python 3.9 and the latest 3.x, with and without Node; ruff, subprocess coverage (90% floor), a Hazira smoke test and a skills drift test (subcommands and SKILL.md command lines).
 - evals: 71 defined; structure check passing; graded runs: none yet (golden packs arrive in Phase 4).
-- Docs: an alpha notice at the top of the README with the one-line pin back to 0.3.5, INSTALL sections on getting updates, pinning a version and going back to stable, and a UAT book for testing in the Claude app (`docs/uat/v2.0.0-alpha.1-uat.md`, inputs from `tools/make-uat-inputs.py`). CI also runs on pushes to `main`.
+- CI also runs on pushes to `main`.
 
 ## 0.3.5
 
