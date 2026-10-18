@@ -7,7 +7,7 @@
     {"id": "F04", "name": "Instrumentation, Control & Calibration", "match": "calibrat|instrument|\\bdcs\\b|control system|\\bi&c\\b|automation|f&g|fire and gas detect|metering", "tags": ["engineering"]},
     {"id": "F05", "name": "Asset Integrity, Corrosion & Inspection", "match": "integrit|corrosion|inspection|pipeline|\\but\\b|thickness|reliabilit|ndt", "tags": ["engineering"]},
     {"id": "F06", "name": "Materials Management (Stores / Procurement)", "match": "stores|procure|materials? manag|purchas|spares|quality control", "tags": ["supply"]},
-    {"id": "F07", "name": "Engineering, Design, Documents & MOC", "match": "engineering (manager|management|authority|decision|document|data)|engineering/|technical authority|design|draught|drafting|document|drawing|p&id|\\bmoc\\b|management of change|change review|configuration|records|commissioning|facilities engineering", "tags": ["engineering"]},
+    {"id": "F07", "name": "Engineering, Design, Documents & MOC", "match": "engineering (manager|management|authority|decision|document|data)|engineering/|technical authority|design|draught|drafting|document(ation)? control|engineering document|drawing|p&id|\\bmoc\\b|management of change|change review|configuration|records|commissioning|facilities engineering", "tags": ["engineering"]},
     {"id": "F08", "name": "Work Management & Planning", "match": "planner|\\bsap\\b|notification|work[- ]order|work[- ]management|maintenance planning|planning (lead|supervis|staff)", "tags": ["operations"]},
     {"id": "F09a", "name": "Fire-fighting Operations & Fire-water Systems", "match": "fire[- ]?fight|fire[- ]?water|fire station|fire (crew|team|service|chief|officer)|fire pump|fire and safety|fire & safety", "tags": ["emergency"]},
     {"id": "F09b", "name": "Emergency Planning & Command", "match": "drill|incident (control|command)|emergenc|crisis", "tags": ["emergency"]},
@@ -21,7 +21,7 @@
     {"id": "F17", "name": "Contractors", "match": "contractor", "tags": ["contractor", "supply"]}
   ],
   "tiers": [
-    {"id": "T5", "name": "Corporate / policy owner / board", "match": "corporate|director|board|governance", "weak": "policy|programme owner|program owner"},
+    {"id": "T5", "name": "Corporate / policy owner / board", "match": "corporate|director|board", "weak": "governance|policy|programme owner|program owner"},
     {"id": "T4", "name": "Plant / asset leadership", "match": "plant manag|plant management|head operations|site manag|leadership|superintendent|asset owner"},
     {"id": "T3", "name": "Function / department management", "match": "manag|\\bhead\\b|authority|\\blead\\b|owner|custodian|approver|decision-maker|programme|program"},
     {"id": "T2", "name": "First-line supervision / shift in-charge", "match": "supervis|in-?charge|\\bdgm\\b|chief engineer|signatory|permit issu|coordinator|controller|planner|team lead|leader|senior officer|foreman"},

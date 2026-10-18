@@ -55,9 +55,16 @@
   "Local suppliers": {"F": ["F16"], "T": "T9", "R": "actor"},
   "Vendor/drawing contractor": {"F": ["F07", "F16", "F17"], "T": "T9", "R": "actor"},
   "Vendor package owner": {"F": ["F16"], "T": "T3", "R": "owner"},
-  "Supervisors who signed incomplete calibration documents": {"F": ["F04", "F07"], "T": "T2", "R": "approver"},
+  "Supervisors who signed incomplete calibration documents": {"F": ["F04"], "T": "T2", "R": "approver"},
   "Calibration Supervisor (signatory)": {"F": ["F04"], "T": "T2", "R": "approver"},
   "Maintenance supervisor responsible for calibration sign-off": {"F": ["F04"], "T": "T2", "R": "approver"},
   "Maintenance Planner/Supervisor (job assignment)": {"F": ["F08"], "T": "T2", "R": "actor"},
-  "CISF CCTV Control Room Staff": {"F": ["F10"], "T": "T1", "R": "actor"}
+  "CISF CCTV Control Room Staff": {"F": ["F10"], "T": "T1", "R": "actor"},
+  "Plant management responsible for MOC governance": {"F": ["F07", "F13"], "T": "T4", "R": "owner"},
+  "Maintenance documentation supervision": {"F": ["F02"], "T": "T2", "R": "actor"},
+  "DMP/ERDMP document owners": {"F": ["F09b"], "T": "T3", "R": "owner"},
+  "Document control supervisors": {"F": ["F07"], "T": "T2", "R": "actor"},
+  "Engineering documentation control": {"F": ["F07"], "T": "T9", "R": "actor"},
+  "ONGC engineering/document control": {"F": ["F07"], "T": "T9", "R": "actor"},
+  "Engineering/Document Control Team": {"F": ["F07"], "T": "T1", "R": "actor"}
 }

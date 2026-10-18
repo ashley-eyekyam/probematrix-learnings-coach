@@ -582,6 +582,17 @@ def test_rank_beats_policy():
     assert pmlc.map_role("HR/Training Supervisor", tax)["T"] == "T2"
     assert pmlc.map_role("Policy owner", tax)["T"] == "T3"          # 'owner' is a T3 match
     assert pmlc.map_role("Policy", tax)["T"] == "T5"                # weak: only when no tier matches
+    assert pmlc.map_role("Plant management responsible for MOC governance", tax)["T"] == "T4"
+    assert pmlc.map_role("Governance", tax)["T"] == "T5"            # governance is weak T5 (ruling R6)
+
+
+def test_f07_document_token_is_narrow():
+    tax = pmlc._load_taxonomy()
+    assert "F07" not in pmlc.map_role("Supervisors who signed incomplete calibration documents", tax)["F"]
+    assert "F07" not in pmlc.map_role("Maintenance documentation supervision", tax)["F"]
+    for r in ("Document control", "Engineering Document Control", "Engineering documentation control",
+              "Document control supervisors", "Engineering/Document Control Team"):
+        assert "F07" in pmlc.map_role(r, tax)["F"], r
 
 
 def test_f14_split():
