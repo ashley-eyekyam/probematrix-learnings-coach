@@ -761,10 +761,13 @@ def entities_for_tags(clusters: dict, tags: list) -> list:
     tx = clusters.get("taxonomy", {})
     tagmap = tx.get("tags") or {}
     in_use = sorted({t for ts in tagmap.values() for t in ts})
+    if not in_use:
+        sys.exit(f"Taxonomy {tx.get('file', 'unknown')} defines no tags: add `tags` to its entities (see "
+                 "references/taxonomy.json), or re-run classify if clusters.json predates v2.0.")
     missing = [t for t in tags if t not in in_use]
     if missing:
         sys.exit(f"No entity has tag(s) {missing} in taxonomy {tx.get('file', 'unknown')}. Tags in use: "
-                 f"{', '.join(in_use) or 'none'}. Re-run classify if clusters.json predates v2.0.")
+                 f"{', '.join(in_use)}.")
     return [e for e, ts in tagmap.items() if set(ts) & set(tags)]
 
 

@@ -789,7 +789,8 @@ def test_old_clusters_without_tags(ws, tmp_path):
     del cl["taxonomy"]["tags"]
     (w2 / "clusters.json").write_text(json.dumps(cl), encoding="utf-8")
     r = run_fail("select", str(w2), "--tag", "emergency")
-    assert "Re-run classify" in r.stderr
+    assert "defines no tags: add `tags` to its entities (see references/taxonomy.json)" in r.stderr
+    assert "re-run classify if clusters.json predates v2.0" in r.stderr
 
 
 def test_entities_for_tags():
@@ -798,6 +799,8 @@ def test_entities_for_tags():
     assert pmlc.entities_for_tags(cl, ["z", "y"]) == ["B", "C"]
     with pytest.raises(SystemExit, match=r"No entity has tag\(s\) \['q'\] in taxonomy t.json"):
         pmlc.entities_for_tags(cl, ["x", "q"])
+    with pytest.raises(SystemExit, match=r"^Taxonomy t.json defines no tags"):
+        pmlc.entities_for_tags({"taxonomy": {"file": "t.json", "tags": {"A": []}}}, ["x"])
 
 
 def _ids(*args):
