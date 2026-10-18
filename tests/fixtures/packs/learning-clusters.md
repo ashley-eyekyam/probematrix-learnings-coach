@@ -49,4 +49,4 @@ Owns the return-to-service learning [FND-0001; FND-0002].
 
 This pack cites 2 of 2 relevant findings.
 
-> Generated with ProbeMatrix Learnings Coach v0.3.5 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a1 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

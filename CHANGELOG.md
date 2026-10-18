@@ -4,6 +4,21 @@
 
 - Workflow: every change starts with an issue and a branch; v2.0 work happens on `feature/v2.0-features-edition` under epic issue #1. AGENTS.md and CONTRIBUTING.md describe the workflow, and `.github/` adds pull request, feature and bug templates.
 
+### Phase 1: Correct and tested (2.0.0a1)
+
+- Fix: role overrides now persist. `classify` keeps `role_overrides.json` when you re-run it, and it reuses the previous taxonomy and overlays (`--no-overlay` opts out; `--no-overrides` ignores the overrides file). A malformed overrides file is reported, not ignored.
+- Fix: interface selection uses shared findings. `select --entity F02 --entity F06 --entity-mode all` returns the findings both functions share (27 on the Hazira sample, not 196). `--entity-mode any` is the old behaviour.
+- `pmlc.py status <ws>` lists the workspace files, what each was built from and which are out of date, and when each pack was last checked. Stale files also warn on stderr.
+- `pmlc.py --version`; `run-path` also prints `top_rating` and `incident_date`.
+- `select`: `--tag` (select by entity tag, not hard-coded IDs), `--top-rated`, `--exclude-downgraded`, `--subcategory`, `--prefix`, `--budget-chars` (never splits a finding), `--fields`, `--group-by`, `--count-by`, and `--preset <skill>` (reproduces that skill's gather calls). Presets share one budget.
+- `timeline`: clock times and an event-day sequence (one entry per minute), `--on <day|incident>`, `--entity`, `--min-precision`, and `--before incident` (months or years before the incident, with year-only dates shown as such).
+- `ingest --strict` fails on missing required columns. `ingest` records a schema fingerprint, cross-checks the Analysis Statistics sheet against the findings, and refuses a CAPA Planner export with a clear message.
+- Checks: `check-pack` evidence linkage counts justification IDs, a citation to a downgraded finding needs a `data_quality` note, and `check-register` reports controlled-vocabulary drift as warnings (not errors).
+- Taxonomy: F14 is now Corporate & Board, and F15 Regulators, F16 Vendors/OEMs and F17 Contractors are new. Entities carry tags. Site-specific role words moved to the `india-process-site` overlay. Governance is a weak T5 signal and a general manager is plant leadership (T4). Migration: re-run `classify` on existing workspaces; add `--overlay india-process-site` for Hazira-style vocabulary (it is remembered afterwards).
+- Samples: official and ProbeMatrix material may be included unmodified; the name scan is optional. Just culture in outputs is unchanged.
+- CI: GitHub Actions on Linux, macOS and Windows, with and without Node; ruff, subprocess coverage (90% floor), a Hazira smoke test and a skills drift test (subcommands and SKILL.md command lines).
+- evals: 71 defined; structure check passing; graded runs: none yet (golden packs arrive in Phase 4).
+
 ## 0.3.5
 
 - `scan-names` lists any file it cannot read (such as a PDF) and exits 2, so a zero-hit result never silently skips a file.

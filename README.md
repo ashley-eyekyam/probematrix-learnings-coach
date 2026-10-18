@@ -20,13 +20,25 @@ ProbeMatrix analyses the evidence at four human-factors levels (Unsafe Acts → 
 ProbeMatrix export (.xlsx)
         │  pmlc ingest / classify
         ▼
-Learning Clusters  =  entity (15 functions)  ×  tier (frontline → board)  ×  relation (actor, approver, owner, absent…)
+Learning Clusters  =  entity (17 functions)  ×  tier (frontline → board)  ×  relation (actor, approver, owner, absent…)
         │  one focused pass per cluster × sub-division (practice, conditions, supervision, system,
         │  interfaces, barriers, precursors, tier messages, recommendations, competence, transferability)
         ▼
 Learning Cards · Supervisor checklists · Manager agendas · Leadership decisions · ExCo & Board briefs
 Audit test points · Investigator follow-up · Training modules · ER drills · Learnings Register (.xlsx) · Dashboard
 ```
+
+## What's new in v2.0 so far
+
+v2.0 is in progress on a feature branch (current build: 2.0.0-alpha.1, Phase 1: correct and tested). The full guide will be rewritten before release.
+
+- The coach no longer forgets your role corrections when you re-run the analysis.
+- Questions about where two departments meet now use only the findings both share, so the numbers are small and meaningful (27 on the Hazira sample, not 196).
+- It tells you when an analysis file is out of date (`pmlc.py status`).
+- It refuses exports it cannot read properly, such as a CAPA Planner file, and warns when an export's own statistics disagree with its findings.
+- Regulators, vendors and contractors now have their own functions, and site-specific role words (for Indian process sites) are an optional overlay you switch on.
+- Timelines show clock times and how long before the incident each signal appeared.
+- Automatic tests run on every change, so fixes stay fixed.
 
 ## The skills
 

@@ -810,7 +810,7 @@ def test_docs_no_longer_describe_markdown_only_skills():
         t = (ROOT / p).read_text(encoding="utf-8")
         assert "write Markdown there" not in t and "save Markdown under" not in t, p
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "(Mermaid)" not in readme and "so far" not in readme and "follow in 0.3.3" not in readme
+    assert "(Mermaid)" not in readme and "follow in 0.3.3" not in readme
 
 
 # ----------------------------------------------------------------------------- 0.3.4 polish
