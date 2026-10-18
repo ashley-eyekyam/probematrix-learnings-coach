@@ -36,9 +36,11 @@ import re
 import sys
 from pathlib import Path
 
+__version__ = "0.3.5"
+
 HERE = Path(__file__).resolve().parent
 REFS = HERE.parent / "references"
-BRAND = ("Generated with ProbeMatrix Learnings Coach (open source, MIT) from a ProbeMatrix "
+BRAND = (f"Generated with ProbeMatrix Learnings Coach v{__version__} (open source, MIT) from a ProbeMatrix "
          "four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com")
 LEVEL_NAMES = {1: "Unsafe Acts", 2: "Preconditions", 3: "Supervision", 4: "Organisational Influences"}
 CODE_RX = re.compile(r"\b([A-Z]{2,5})\s?(\d{1,2}\.\d{1,2})\b")
@@ -1249,8 +1251,9 @@ def cmd_causal_item(a):
 
 # ----------------------------------------------------------------------------- main
 
-def main(argv=None):
+def build_parser():
     p = argparse.ArgumentParser(prog="pmlc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--version", action="version", version=f"pmlc {__version__}")
     sp = p.add_subparsers(dest="cmd", required=True)
 
     s = sp.add_parser("ingest", help="xlsx export -> JSON workspace in <export-dir>/pmlc-runs/<slug>/workspace")
@@ -1359,7 +1362,11 @@ def main(argv=None):
     s.add_argument("--show", type=int, default=50)
     s.set_defaults(fn=cmd_scan_names)
 
-    a = p.parse_args(argv)
+    return p
+
+
+def main(argv=None):
+    a = build_parser().parse_args(argv)
     a.fn(a)
 
 

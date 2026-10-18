@@ -1,6 +1,8 @@
 """Engine tests on a small synthetic export (fictional event, no real data)."""
+import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -480,3 +482,31 @@ def test_map_uses_shared_tokens_and_wide_rule(ws, tmp_path):
     assert pmlc.PAGE_TOKENS_CSS in t
     assert pmlc.WIDE_CSS in t and "@media (min-width:1400px)" in t
     assert t.index("main{max-width:1180px") < t.index(pmlc.WIDE_CSS)
+
+
+def test_version_single_source():
+    assert re.fullmatch(r"\d+\.\d+\.\d+((a|rc)\d+)?", pmlc.__version__)
+    assert f"v{pmlc.__version__}" in pmlc.BRAND
+    assert run("--version").strip() == f"pmlc {pmlc.__version__}"
+
+
+def test_build_parser_has_every_subcommand():
+    sub = next(a for a in pmlc.build_parser()._actions if isinstance(a, argparse._SubParsersAction))
+    assert {"ingest", "classify", "select", "check-register", "check-pack", "pack"} <= set(sub.choices)
+
+
+def test_release_script_bumps_all_three(tmp_path):
+    files = ["skills/learnings-coach/scripts/pmlc.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
+    for f in files:
+        (tmp_path / f).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(ROOT / f, tmp_path / f)
+    r = subprocess.run([sys.executable, str(ROOT / "tools" / "release.py"), "2.0.0a1", "--root", str(tmp_path)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr + r.stdout
+    assert '__version__ = "2.0.0a1"' in (tmp_path / files[0]).read_text(encoding="utf-8")
+    for f in files[1:]:
+        assert '"version": "2.0.0a1"' in (tmp_path / f).read_text(encoding="utf-8"), f
+    assert "git tag -a v2.0.0-alpha.1" in r.stdout
+    bad = subprocess.run([sys.executable, str(ROOT / "tools" / "release.py"), "banana", "--root", str(tmp_path)],
+                         capture_output=True, text=True)
+    assert bad.returncode != 0

@@ -54,4 +54,4 @@ Failures cluster on the prevention side. Of the two fixes the export supports, o
 
 This pack cites 2 of 2 relevant findings.
 
-> Generated with ProbeMatrix Learnings Coach (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v0.3.5 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
