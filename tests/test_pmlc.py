@@ -1094,3 +1094,38 @@ def test_entity_needs_clusters(tmp_path):
     x = make_export(tmp_path)
     run("ingest", str(x), "--legacy-out", str(tmp_path / "w"))
     assert "classify" in run_fail("timeline", str(tmp_path / "w"), "--entity", "F06").stderr
+
+
+def test_vocab_drift_is_a_warning(ws, tmp_path):
+    reg = json.loads(json.dumps(MINI_REG))
+    reg["entries"][0]["confidence"] = "very high"
+    p = tmp_path / "reg.json"
+    p.write_text(json.dumps(reg))
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(ws), str(p)], capture_output=True, text=True)
+    assert "warning: LR-01: confidence 'very high' is not one of" in r.stdout
+    base = tmp_path / "base.json"
+    base.write_text(json.dumps(MINI_REG))
+    r0 = subprocess.run([sys.executable, str(PMLC), "check-register", str(ws), str(base)],
+                        capture_output=True, text=True)
+    assert r.returncode == r0.returncode
+    assert "; 0 problem(s)." in r.stdout or r0.returncode != 0
+    assert "warning: LR-01: confidence" not in r0.stdout
+
+
+def test_register_warnings_rules():
+    w = {"evidence": {"EVD-0001": {}}, "findings": [{"subcategory": "Organizational Process"}]}
+    e = {"lr_id": "LR-09", "evidence_strength": "Direct", "causal_role": ["initiating", "bogus"],
+         "transferability": "", "performance_mode": "rule-based; violation", "comparison": "maybe",
+         "tier_messages": {"T1": "x", "T9": "y"},
+         "hfacs_level": "L4 Organisational Process: procedures (x)",
+         "recommendations": [{"evidence_basis": "EVD-0001, EVD-9999"}]}
+    out = pmlc.register_warnings([e], w)
+    text = "\n".join(out)
+    assert "causal_role 'bogus'" in text and "comparison 'maybe'" in text
+    assert "T9" in text and "EVD-9999" in text
+    assert "evidence_strength" not in text and "transferability" not in text and "performance_mode" not in text
+    assert "hfacs_level" not in text and "EVD-0001" not in text
+    e2 = {"lr_id": "LR-10", "performance_mode": "guessing", "hfacs_level": "L4 Something Else (x)"}
+    t2 = "\n".join(pmlc.register_warnings([e2], w))
+    assert "performance_mode 'guessing'" in t2 and "hfacs_level" in t2
+    assert pmlc.register_warnings([{"lr_id": "LR-11"}], w) == []

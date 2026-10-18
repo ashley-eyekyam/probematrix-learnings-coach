@@ -136,3 +136,14 @@ def test_justification_only_links_count(hz):
     r = subprocess.run([sys.executable, str(PMLC), "check-register", str(hz.ws), str(REGISTER)],
                        capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+def test_sample_register_vocab(hz, capsys):
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(hz.ws), str(REGISTER)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    warns = [ln for ln in r.stdout.splitlines() if ln.startswith("warning: ")]
+    with capsys.disabled():
+        print(f"\nHazira vocabulary warnings: {len(warns)}")
+        for ln in warns:
+            print("  " + ln)

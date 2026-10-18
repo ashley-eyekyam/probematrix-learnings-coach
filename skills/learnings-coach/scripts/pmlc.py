@@ -1749,6 +1749,58 @@ def cmd_register_xlsx(a):
 
 # ----------------------------------------------------------------------------- check-register
 
+REGISTER_VOCAB = {
+    "evidence_strength": ("direct", "corroborated", "inferred"),
+    "confidence": ("high", "medium", "low"),
+    "causal_role": ("initiating", "contributory", "escalating", "failed mitigation"),
+    "transferability": ("same site", "other sites", "industry-wide"),
+    "comparison": ("yes", "partial", "none", "not compared"),
+}
+PERFORMANCE_MODES = ("skill-based", "rule-based", "knowledge-based", "n/a")
+
+
+def _vals(v) -> list:
+    """Non-empty string values of a field; a list is taken element by element."""
+    items = v if isinstance(v, (list, tuple)) else [v]
+    return [x for x in (_s(i) for i in items if i is not None) if x]
+
+
+def _fold_spelling(s: str) -> str:
+    return re.sub(r"\s+", " ", s.lower().replace("isation", "ization")).strip()
+
+
+def register_warnings(entries: list, w: dict) -> list:
+    """Controlled-vocabulary drift as 'warning: ...' lines. Absent or empty fields are not checked."""
+    E = w.get("evidence", {})
+    subs = {_fold_spelling(f["subcategory"]) for f in w.get("findings", []) if f.get("subcategory")}
+    out = []
+    for e in entries:
+        lid = e.get("lr_id", "?")
+        for field, allowed in REGISTER_VOCAB.items():
+            for v in _vals(e.get(field)):
+                if v.lower() not in allowed:
+                    out.append(f"warning: {lid}: {field} {v!r} is not one of {', '.join(allowed)}")
+        for v in _vals(e.get("performance_mode")):
+            if not v.lower().startswith(PERFORMANCE_MODES):
+                out.append(f"warning: {lid}: performance_mode {v!r} does not start with one of "
+                           f"{', '.join(PERFORMANCE_MODES)}")
+        tm = e.get("tier_messages")
+        for k in (tm if isinstance(tm, dict) else {}):
+            if k not in TIER_LABELS:
+                out.append(f"warning: {lid}: tier_messages key {k!r} is not one of {', '.join(TIER_LABELS)}")
+        bases = [e.get("evidence_basis")] + [r.get("evidence_basis") for r in (e.get("recommendations") or [])
+                                              if isinstance(r, dict)]
+        for eid in sorted({x for b in bases for v in _vals(b) for x in EVD_RX.findall(v)}):
+            if eid not in E:
+                out.append(f"warning: {lid}: evidence_basis names {eid}, which is not in the workspace")
+        lvl = _vals(e.get("hfacs_level"))
+        if lvl and subs:
+            m = re.match(r"\s*L\s?[1-4]\b[\s:.\-]*(.*)$", lvl[0], re.I | re.S)
+            rest = _fold_spelling(m.group(1)) if m else ""
+            if rest and not any(rest == x or re.match(re.escape(x) + r"[\s(:]", rest) for x in subs):
+                out.append(f"warning: {lid}: hfacs_level sub-category {lvl[0]!r} matches no sub-category in the export")
+    return out
+
 def cmd_check_register(a):
     w = load_ws(a.ws)
     reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
@@ -1807,6 +1859,8 @@ def cmd_check_register(a):
         print(f"Uncovered findings ({len(uncovered)}), highest rated first:")
         for fid in sorted(uncovered, key=lambda x: -(F[x]['rating'] or 0))[:20]:
             print(f"   {fid} {F[fid]['code']} r{F[fid]['rating']} {F[fid]['short'][:90]}")
+    for line in register_warnings(entries, w):
+        print(line)
     sys.exit(1 if problems else 0)
 
 

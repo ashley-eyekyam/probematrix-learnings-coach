@@ -26,6 +26,9 @@ Controlled values (keep to these so summaries count cleanly; put detail in anoth
 - `hoc_tier`: one of `elimination`, `substitution`, `engineering`, `administrative`, `training`, `ppe`.
 - `priority`: `1`, `2` or `3`.
 - `comparison`: `yes`, `partial`, `none`, `not compared`.
+- `evidence_strength`, `confidence`, `causal_role`, `transferability`, `performance_mode` (starts with `skill-based`, `rule-based`, `knowledge-based` or `n/a`), the `tier_messages` keys (`T1` to `T5`), the EVD IDs in `evidence_basis` and the `hfacs_level` sub-category (matching the export, `isation` and `ization` treated alike) use the values listed under Sections.
+
+`check-register` reports drift from these as `warning:` lines after the summary. In v2.0 drift is a warning and never changes the exit code; in v2.1 it becomes an error.
 
 Organisational systems vocabulary: procedures; training and competence; supervision; staffing and fatigue; communication and handover; design and human–machine interface; maintenance regime; management of change; contractor and supply chain; emergency preparedness; resourcing; safety culture; assurance and audit.
 
