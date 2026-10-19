@@ -162,12 +162,15 @@ MONTH_NAMES = list(calendar.month_name)[1:]
 _MON = {m[:3].lower(): i for i, m in enumerate(MONTH_NAMES, 1)}
 _MON_RX = r"(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?"
 # A clock time, with the "at" (or "at about") that introduces it, so "restarted at 14:05 on" reads "restarted on":
-# HH:MM (optional :SS, optional hrs), H:MM only with am/pm or hrs (so a ratio such as 1:10 stays), and HHMM only
-# with hrs or hours ("1405 hrs").
+# H:MM or HH:MM (optional :SS, optional am/pm or hrs), and HHMM only with hrs or hours ("1405 hrs"). A colon time
+# with no seconds and no suffix ("bare") is kept when a ratio word sits next to it, e.g. "ratio 1:10" (X23).
 TIME_RX = re.compile(r"(?:\bat\s+(?:about\s+|around\s+|approximately\s+)?)?(?<![\w:.])"
-                     r"(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?(?:\s*(?:hrs?|hours?)\b)?(?![\d:])"
-                     r"|\d:[0-5]\d(?::[0-5]\d)?\s*(?:hrs?\b|hours?\b|[ap]\.?m\b\.?)"
+                     r"(?:(?P<clock>(?:[01]?\d|2[0-3]):[0-5]\d)(?P<sec>:[0-5]\d)?"
+                     r"(?P<suf>\s*(?:hrs?\b|hours?\b|[ap]\.?m\b\.?))?(?![\d:])"
                      r"|(?:[01]\d|2[0-3])[0-5]\d\s*(?:hrs?|hours?)\b)", re.I)
+RATIO_WORDS = {"ratio", "ratios", "slope", "slopes", "scale", "odds", "mix", "mixture", "dilution", "dilutions"}
+_WORD_BEFORE = re.compile(r"([A-Za-z]+)\W*(?:\bof\W*)?$")      # "ratio 1:10" and "a ratio of 1:10"
+_WORD_AFTER = re.compile(r"^\W*([A-Za-z]+)")
 ISO_DATE_RX = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})(?:[T ](?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?"
                          r"(?:Z|[+-]\d{2}:?\d{2})?)?(?![\d-])")
 DMY_TEXT_RX = re.compile(r"\b(\d{1,2})(?:st|nd|rd|th)?[ -]" + _MON_RX + r",?[ -](\d{4})\b", re.I)
@@ -198,7 +201,16 @@ def coarsen_dates(text: str) -> str:
 
 def strip_times(text: str) -> str:
     """Clock times (HH:MM, with an optional :SS and 'hrs') removed, and the spacing they leave tidied."""
-    out = TIME_RX.sub("", text)
+    def drop(m):
+        if m.group("clock") and not (m.group("sec") or m.group("suf")):
+            before = _WORD_BEFORE.search(text, 0, m.start())
+            after = _WORD_AFTER.search(text[m.end():])
+            near = {x.group(1).lower() for x in (before, after) if x}
+            if near & RATIO_WORDS:
+                return m.group(0)
+        return ""
+
+    out = TIME_RX.sub(drop, text)
     if out == text:
         return text
     out = re.sub(r"[ \t]{2,}", " ", out)

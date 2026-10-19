@@ -189,7 +189,7 @@ SPACK = {"pack": "test-pack", "schema": 1, "title": "Test pack: synthetic pump f
              {"kind": "recommendation", "change": "Interlock the restart on a test record", "indicator": "Restarts tested",
               "hoc_tier": "engineering", "owner": "Plant Manager", "cites": ["FND-0001"]}]}]}
 SHARED = "Shared {}: identifying details are masked"
-TIME_RX = re.compile(r"\b\d{2}:\d{2}\b")
+TIME_RX = re.compile(r"\b\d{1,2}:\d{2}\b")
 
 
 def _cli(*args, env=None):
@@ -245,11 +245,15 @@ def shws(tmp_path):
 def test_share_text_masks_in_order():
     ctx = pv.ShareCtx("external", ["R. K. Sharma"], ["Bharat Seals"], {SINGLE: "Security (Frontline)"})
     t = pv.share_text("R. K. Sharma and Mr Fictional Person of Bharat Seals and Acme Pumps Ltd checked P-101 "
-                      f"and PSV12A; the {SINGLE} saw it at 14:05 hrs, 14:05:30 and 1405 hrs. FND-0001 EVD-0001 F02 "
+                      f"and PSV12A; the {SINGLE} saw it at 14:05 hrs, 14:05:30, 9:15 and 1405 hrs. FND-0001 EVD-0001 F02 "
                       "LR-01 T4.", ctx)
     assert t == ("[name] and [name] of [organisation] and [organisation] checked [equipment tag] and [equipment tag]; "
-                 "the Security (Frontline) saw it, and. FND-0001 EVD-0001 F02 LR-01 T4.")
+                 "the Security (Frontline) saw it,, and. FND-0001 EVD-0001 F02 LR-01 T4.")
     for raw, want in [("a 1:10 slope and 3:2 odds", "a 1:10 slope and 3:2 odds"), ("at 9:15 am the alarm", "the alarm"),
+                      ("at 9:15 the alarm", "the alarm"), ("alarm 9:15:30 rang", "alarm rang"),
+                      ("the 7:45 shift", "the shift"), ("ratio 1:10 mix", "ratio 1:10 mix"), ("a 1:2 slope", "a 1:2 slope"),
+                      ("a 1:10 dilution and odds of 3:15", "a 1:10 dilution and odds of 3:15"), ("a ratio of 1:10", "a ratio of 1:10"), ("at 03:12", ""),
+                      ("1405 hrs", ""),
                       ("1405 hours", ""), ("1405 tonnes", "1405 tonnes"), ("Mr R. K. Sharma", "[name]"),
                       ("Shri Sharma left", "[name] left")]:
         assert pv.share_text(raw, ctx) == want, raw
