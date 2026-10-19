@@ -142,3 +142,70 @@ def test_scan_names_uses_privacy_core(tmp_path):
     import sys
     r = subprocess.run([sys.executable, str(PMLC), "scan-names", str(n), str(t)], capture_output=True, text=True)
     assert r.returncode == 1 and "1 hit" in r.stdout
+
+
+# ----------------------------------------------------------------------------- public-sample tooling (Task 9)
+
+def _sample(tmp_path, *extra, hidden_name=False):
+    import subprocess
+    import sys
+    from openpyxl.comments import Comment
+    from test_pmlc import ROOT
+    memo = "To: Qux Zorbin\nFrom: Qux Zorbin\nCc: boss\n" + "The pump seal failed and leaked. " * 8
+    x = make_export(tmp_path, summary=[("Investigating Officer", "Qux Zorbin"), ("Supervisor at Time", "Qux Zorbin")],
+                    narrative=memo)
+    wb = openpyxl.load_workbook(x)
+    wb.properties.creator = "Qux Zorbin"
+    wb.properties.lastModifiedBy = "Qux Zorbin"
+    ws = wb["Identified Findings"]
+    ws["A2"].comment = Comment("note by Qux Zorbin", "Qux Zorbin")
+    ws.oddHeader.center.text = "Qux Zorbin"
+    ws.oddFooter.left.text = "Qux Zorbin"
+    if hidden_name:
+        ws.append(["FND-9999", "", "Hidden Qux Zorbin"])
+        ws.row_dimensions[ws.max_row].hidden = True
+    wb.create_sheet("Personnel").append(["Qux Zorbin"])
+    wb["Personnel"].sheet_state = "hidden"
+    wb.save(x)
+    out = tmp_path / "out.xlsx"
+    r = subprocess.run([sys.executable, str(ROOT / "tools" / "make-public-sample.py"), str(x), str(out), *extra],
+                       capture_output=True, text=True)
+    return out, r
+
+
+def test_make_public_sample_strips_metadata(tmp_path):
+    import subprocess
+    import sys
+    import zipfile
+    from test_pmlc import PMLC
+    out, r = _sample(tmp_path)
+    assert r.returncode == 0, r.stderr + r.stdout
+    with zipfile.ZipFile(out) as z:
+        assert not [n for n in z.namelist() if "comment" in n.lower()]
+        blob = " ".join(z.read(n).decode("utf-8", "ignore") for n in z.namelist())
+    assert "Qux" not in blob
+    names = tmp_path / "n.txt"
+    names.write_text("Qux Zorbin\n")
+    r = subprocess.run([sys.executable, str(PMLC), "scan-names", str(names), str(out)], capture_output=True, text=True)
+    assert r.returncode == 0 and "0 hit" in r.stdout
+    # a hidden row in a kept sheet is unhidden, so the --names scan sees it and refuses to write
+    out2, r2 = _sample(tmp_path / "h" if (tmp_path / "h").mkdir() is None else tmp_path, "--names", str(names),
+                       hidden_name=True)
+    assert r2.returncode != 0 and "Hidden Qux" in r2.stdout and not out2.exists()
+
+
+def test_make_public_sample_blanks_fields_and_memo_lines(tmp_path):
+    out, r = _sample(tmp_path)
+    assert r.returncode == 0, r.stderr
+    s = openpyxl.load_workbook(out)["Incident Summary"]
+    vals = {r[0].value: r[1].value for r in s.iter_rows() if r[0].value}
+    assert vals["Investigating Officer"] is None and vals["Supervisor at Time"] is None
+    text = " ".join(str(c.value) for r in s.iter_rows() for c in r if c.value)
+    assert "To:" not in text and "From:" not in text and "Cc:" not in text and "pump seal failed" in text
+    k = tmp_path / "k"
+    k.mkdir()
+    out2, r2 = _sample(k, "--keep-field", "Investigating Officer")
+    assert r2.returncode == 0, r2.stderr
+    s2 = openpyxl.load_workbook(out2)["Incident Summary"]
+    vals2 = {r[0].value: r[1].value for r in s2.iter_rows() if r[0].value}
+    assert vals2["Investigating Officer"] == "Qux Zorbin" and vals2["Supervisor at Time"] is None

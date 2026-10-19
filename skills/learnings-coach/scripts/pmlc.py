@@ -503,7 +503,47 @@ def ingest_target(a, fields: dict) -> Path:
     return root / RUNS_DIR / slug / "workspace"
 
 
+PERSONAL_FIELDS = ("Investigating Officer", "Supervisor at Time", "Investigation Team")
+REGULATOR_RX = re.compile(r"\b(?:regulator|enquiry|inquiry|statutory|ERDMP|OISD|PNGRB|HSE|OSHA)\b", re.I)
+
+
+def personal_fields_present(fields: dict) -> list:
+    return [k for k in PERSONAL_FIELDS if _s(fields.get(k))]
+
+
+def load_redact_map(path) -> dict:
+    """The --redact map: a flat JSON object of {name: replacement role}; anything else exits 1."""
+    try:
+        m = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        m = None
+    if not isinstance(m, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in m.items()):
+        sys.exit('--redact: expected a JSON object of "name": "role"')
+    return {k: v for k, v in m.items() if k.strip()}
+
+
+def redact_data(obj, rx, repl: dict):
+    """(redacted copy, count): every string value (not dict keys) passed through rx; repl maps the lower-cased
+    match (a name or one of its variants) to the role."""
+    n = [0]
+
+    def sub(m):
+        n[0] += 1
+        return repl.get(" ".join(m.group(0).lower().split()), "[redacted]")
+
+    def walk(x):
+        if isinstance(x, str):
+            return rx.sub(sub, x)
+        if isinstance(x, list):
+            return [walk(i) for i in x]
+        if isinstance(x, dict):
+            return {k: walk(v) for k, v in x.items()}
+        return x
+    return walk(obj), n[0]
+
+
 def cmd_ingest(a):
+    redact = load_redact_map(a.redact) if a.redact else None
     openpyxl = _need_openpyxl()
     wb = openpyxl.load_workbook(a.xlsx, read_only=True, data_only=True)
     names = {n.strip().lower() for n in wb.sheetnames}
@@ -612,12 +652,30 @@ def cmd_ingest(a):
     out = ingest_target(a, incident["fields"])
     if is_standard_ws(out) and (out / "findings.json").exists() and not a.force:
         sys.exit(f"{out} already holds a workspace. Pass --force to overwrite it.")
+    redactions = None
+    if redact is not None:
+        repl = {}
+        for name, role in redact.items():
+            for v in privacy.name_variants(name):
+                repl.setdefault(" ".join(v.lower().split()), role)
+            repl[" ".join(name.lower().split())] = role
+        rx = privacy.name_pattern(list(redact), variants=True)
+        redactions = 0
+        if rx:
+            findings, c1 = redact_data(findings, rx, repl)
+            evidence, c2 = redact_data(evidence, rx, repl)
+            incident, c3 = redact_data(incident, rx, repl)
+            redactions = c1 + c2 + c3
     write_json(out / "findings.json", findings)
     write_json(out / "evidence.json", evidence)
     write_json(out / "incident.json", incident)
     record_export(out, a.xlsx)
     for n in ("findings.json", "evidence.json", "incident.json"):
         record_derived(out, n, {"export": file_sha256(a.xlsx)})
+    if redactions is not None:
+        m = load_manifest(out)
+        m["redactions"] = redactions
+        _save_manifest(out, m)
     print(f"Ingested {len(findings)} findings, {len(evidence)} evidence items, "
           f"{len(causal_sheet)} causal-chain rows -> {out}")
     print(f"schema: fingerprint {schema['fingerprint']}; missing: {_fmt_cols(schema['missing'])}; "
@@ -628,6 +686,11 @@ def cmd_ingest(a):
         print(f"cross-check: Analysis Statistics agrees ({stats['total']})")
     else:
         print(f"warning: Analysis Statistics says {stats['total']} findings, ingested {len(findings)}")
+    if redactions is not None:
+        print(f"redacted {redactions} name occurrence(s) from the workspace")
+    pf = personal_fields_present(incident["fields"])
+    if pf:
+        print(f"note: personal fields present ({', '.join(pf)}): they are not quoted in outputs")
     if is_standard_ws(out):
         outputs_dir(out).mkdir(parents=True, exist_ok=True)
         print(f"Run folder: {out.parent}\n  workspace: {out}\n  outputs:   {outputs_dir(out)}")
@@ -707,6 +770,16 @@ def cmd_profile(a):
                      + ". Exclude or flag these findings in learnings.")
     if fields.get("Investigation Status", "").lower().startswith("in_progress"):
         flags.append("Investigation Status is 'in_progress'; label outputs as draft learnings.")
+    rep = _s(fields.get("Reportable to Regulator"))
+    if rep.lower() in ("", "no"):
+        blob = " ".join([inc.get("narrative", "")] + [e.get("description", "") + " " + " ".join(
+            lk.get("reference", "") for lk in e.get("links", [])) for e in E.values()])
+        if REGULATOR_RX.search(blob):
+            flags.append(f'Regulator involvement is mentioned but "Reportable to Regulator" is "{rep}": '
+                         "confirm reporting status")
+    pf = personal_fields_present(fields)
+    if pf:
+        flags.append(f"Personal fields present: do not quote {', '.join(pf)}")
     L.append("\n## Data-quality flags\n")
     L += [f"- {x}" for x in flags] or ["- None."]
     L.append(f"\n---\n*{BRAND}*")
@@ -2145,6 +2218,8 @@ def build_parser():
     where.add_argument("--legacy-out", help="write the workspace to any folder (pre-0.2 layout; not for new runs)")
     s.add_argument("--force", action="store_true", help="overwrite an existing workspace in the run folder")
     s.add_argument("--strict", action="store_true", help="exit 1 when a required column is missing")
+    s.add_argument("--redact", metavar="MAP.json",
+                   help='JSON object {"name": "role"}; each name (and its variants) is replaced in the workspace')
     s.set_defaults(fn=cmd_ingest)
 
     s = sp.add_parser("profile", help="Markdown profile")
