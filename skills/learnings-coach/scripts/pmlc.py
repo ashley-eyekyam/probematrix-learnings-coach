@@ -2061,6 +2061,17 @@ _META_PART = re.compile(r"(?i)^docProps/.*\.xml$|(?:^|/)(?:threaded|modern)?comm
 _BODY_PART = re.compile(r"(?i)^(?:word/document|ppt/slides/slide\d+)\.xml$")
 
 
+_NAME_ATTR = re.compile(r"""(?:\b[\w.-]+:)?(?:author|name|initials|creator|lastModifiedBy)\s*=\s*(?:"([^"]*)"|'([^']*)')""",
+                        re.I)
+
+
+def _xml_attr_names(raw: str) -> str:
+    """The values of author, name, initials, creator and lastModifiedBy attributes (any namespace prefix), one per
+    line: comment and people parts often hold a name only in an attribute."""
+    return "\n".join(html.unescape(m.group(1) if m.group(1) is not None else m.group(2))
+                      for m in _NAME_ATTR.finditer(raw))
+
+
 def _xml_text(raw: str) -> str:
     """Plain text of an Office XML part. Run text inside a paragraph is joined with no separator, so a name split
     across runs ('Ra' + 'vi Sharma') is whole again; a paragraph end is a newline; other tags become a space."""
@@ -2086,7 +2097,11 @@ def _office_xml_texts(path: Path, unread: list):
                     print(f"warning: {path}:{n} is over 50 MB and was skipped")
                     unread.append(str(path))
                     continue
-                yield f"{path}:{n}", _xml_text(z.read(n).decode("utf-8", errors="ignore"))
+                raw = z.read(n).decode("utf-8", errors="ignore")
+                text = _xml_text(raw)
+                if _META_PART.search(n):
+                    text += "\n" + _xml_attr_names(raw)
+                yield f"{path}:{n}", text
     except Exception as e:
         print(f"warning: {path} could not be read ({type(e).__name__})")
         unread.append(str(path))

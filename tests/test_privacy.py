@@ -257,11 +257,18 @@ def test_scan_names_split_runs_and_body(tmp_path):
     assert _scan(tmp_path, "R&D\n", e).returncode == 1  # entity unescaped
 
 
-def test_scan_names_people_and_modern_comments(tmp_path):
-    for part in ("word/people.xml", "ppt/comments/comment1.xml", "ppt/comments/modernComment_1_2.xml"):
-        z = _zip(tmp_path / ("p" + part.replace("/", "_") + ".pptx"), {part: "<p:author name=\"Ravi Sharma\"/>"
-                                                                       "<t>Ravi Sharma</t>"})
-        assert _scan(tmp_path, "Ravi Sharma\n", z).returncode == 1, part
+def test_scan_names_names_only_in_attributes(tmp_path):
+    cases = {
+        "a.docx": ("word/comments.xml", '<w:comment w:id="0" w:author="Ravi Sharma" w:initials="RS"><w:p/></w:comment>'),
+        "b.docx": ("word/people.xml", '<w15:person w15:author="Ravi Sharma"><w15:presenceInfo/></w15:person>'),
+        "c.pptx": ("ppt/commentAuthors.xml", '<p:cmAuthor id="0" name="Ravi Sharma" initials="RS"/>'),
+        "d.pptx": ("ppt/comments/modernComment_1_2.xml", "<p188:cm author='Ravi Sharma'/>"),
+    }
+    for nm, (part, xml) in cases.items():
+        r = _scan(tmp_path, "Ravi Sharma\n", _zip(tmp_path / nm, {part: xml}))
+        assert r.returncode == 1 and part in r.stdout, nm
+    z = _zip(tmp_path / "e.docx", {"word/comments.xml": '<w:comment w:author="A &amp; Ravi Sharma"/>'})
+    assert _scan(tmp_path, "A & Ravi Sharma\n", z).returncode == 1
 
 
 def test_scan_names_oversize_member(tmp_path, monkeypatch):
