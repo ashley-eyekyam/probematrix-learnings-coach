@@ -4,18 +4,22 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 from pathlib import Path
 
 # Equipment tags such as AO-101 or PSV12A: letters then digits. Finding, Evidence, LR and ML IDs are not tags.
 TAG_RX = re.compile(r"\b(?!(?:FND|EVD|LR|ML)-)[A-Z]{1,5}-?\d{2,6}[A-Z]?\b")
 
 
-def _list_file(path, env) -> list:
+def _list_file(path, env, flag) -> list:
     """Stripped lines of a text file, skipping blank lines and lines starting with '#'. A staff ID is written
-    'ID #4471', so it is kept. The path falls back to the environment variable env; neither gives []."""
+    'ID #4471', so it is kept. The path falls back to the environment variable env; neither gives []. A missing
+    file exits with a one-line message naming the flag (or the variable) it came from."""
     p = path or os.environ.get(env)
     if not p:
         return []
+    if not Path(p).is_file():
+        sys.exit(f"{flag if path else env}: file not found: {p}")
     out = []
     for line in Path(p).read_text(encoding="utf-8").splitlines():
         s = line.strip()
@@ -26,9 +30,9 @@ def _list_file(path, env) -> list:
 
 def load_names(path=None) -> list:
     """Names from a names file (one per line), falling back to PMLC_NAMES."""
-    return _list_file(path, "PMLC_NAMES")
+    return _list_file(path, "PMLC_NAMES", "--names")
 
 
 def load_orgs(path=None) -> list:
     """Organisation names from an orgs file (one per line), falling back to PMLC_ORGS."""
-    return _list_file(path, "PMLC_ORGS")
+    return _list_file(path, "PMLC_ORGS", "--orgs")

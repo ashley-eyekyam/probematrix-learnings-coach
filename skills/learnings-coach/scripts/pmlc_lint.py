@@ -94,7 +94,7 @@ class _Ctx:
             fl = 0 if spec.get("case") == "sensitive" else re.I
             self.rx[rule] = [re.compile(p, fl) for p in spec.get("patterns", [])]
         hon = "|".join(map(re.escape, t["honorifics"]))
-        self.hon_rx = re.compile(r"\b(?:" + hon + r")\b\.?(?:\s+(?:[A-Z]\.?(?![\w])|[A-Z][\w'’-]+))+")
+        self.hon_rx = re.compile(r"\b(?:" + hon + r")\b\.?(?:\s+(?:[A-Z][\w'’-]+|[A-Z]\.?(?![\w])))+")
         self.names_rx = self._list_rx(names)
         self.orgs_rx = self._list_rx(orgs)
         self.allow = [re.compile(r"\b" + re.escape(a) + r"\b", re.I) for a in t.get("allow", [])]
@@ -250,10 +250,10 @@ def _units(doc, kind):
 
 
 def _retrain_only(c, unit, tiers, path, t1):
-    """JC6: every hoc_tier is training or administrative, and at least one is training, while a cited finding
-    sits at level 3 or 4. A purely administrative system change (a CMMS escalation, a controlled drawing) passes."""
+    """JC6: every hoc_tier is training or administrative while a cited finding sits at level 3 or 4. An
+    administrative change that is itself the system fix is cleared with the item's lint_ok."""
     tiers = [core.norm_hoc(x) for x in tiers]
-    if "training" not in tiers or any(x not in RETRAIN_ONLY for x in tiers):
+    if not tiers or any(x not in RETRAIN_ONLY for x in tiers):
         return
     if any(c.levels.get(x) in (3, 4) for x in _ids_of(unit)):
         c.hit("JC6", path, ", ".join(dict.fromkeys(tiers)), severity="error" if t1 else None,

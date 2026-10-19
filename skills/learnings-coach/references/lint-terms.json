@@ -56,7 +56,7 @@
   "JC6": {
    "severity": "warning",
    "patterns": [],
-   "hint": "the cited cause sits at level 3 or 4: add a change at its level (engineering, substitution, elimination, or a resourced organisational change), not training or procedure alone"
+   "hint": "the cited cause sits at level 3 or 4 and every control here is training or administrative: add a change at the cause's level (elimination, substitution or engineering), or, if the administrative change is itself the system fix, add lint_ok with the reason"
   },
   "JC7": {
    "severity": "warning",
@@ -103,7 +103,9 @@
  },
  "allow": [
   "accountable owner",
-  "accountable owners"
+  "accountable owners",
+  "consequences of",
+  "consequence of"
  ],
  "honorifics": [
   "Mr",
@@ -468,7 +470,6 @@
   "map",
   "mar",
   "march",
-  "mark",
   "matrix",
   "may",
   "measure",
@@ -794,7 +795,6 @@
   "who",
   "whose",
   "why",
-  "will",
   "with",
   "within",
   "without",

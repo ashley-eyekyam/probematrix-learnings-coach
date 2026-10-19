@@ -276,12 +276,53 @@ def test_lint_survives_malformed_documents(w):
     assert STATUS in pl.STATUS_PHRASE
 
 
-def test_jc6_needs_training_and_skips_indicator_targets(w):
-    # Calibration on Hazira: an administrative system change alone (a CMMS escalation) is not "retraining only",
-    # and a target in an indicator is a proposal, not a fact about the incident.
+def test_jc6_administrative_only_fires_and_lint_ok_clears_it(w):
+    # Ruling X12: the literal rule. An administrative-only change citing a level-3 finding is a JC6 warning; when the
+    # administrative change is itself the system fix, the item's lint_ok clears it. A target in an indicator is a
+    # proposal, not a fact about the incident, so JC8 does not check it.
     admin = item("recommendation", change="Escalate overdue inspections in the CMMS", hoc_tier="administrative",
                  indicator="Overdue inspections closed within 30 days (target 100%)", cites=["FND-0002"])
+    assert [(h.rule, h.path) for h in pl.lint(pack_with(admin), w, kind="pack")] == [
+        ("JC6", "$.sections[0].items[0].hoc_tier")]
+    admin["lint_ok"] = {"rule": "JC6", "reason": "the CMMS escalation is the system fix at the level of the cause"}
     assert pl.lint(pack_with(admin), w, kind="pack") == []
-    mixed = [item("recommendation", change="Add a decision aid", hoc_tier="administrative", cites=["FND-0002"]),
-             item("recommendation", change="Run a refresher", hoc_tier="training", cites=["FND-0001"])]
-    assert rules(pl.lint(pack_with(*mixed), w, kind="pack")) == []      # FND-0001 sits at level 1
+    low = item("recommendation", change="Run a refresher", hoc_tier="training", cites=["FND-0001"])
+    assert pl.lint(pack_with(low), w, kind="pack") == []                # FND-0001 sits at level 1
+    eng = item("recommendation", change="Interlock the restart", hoc_tier="engineering", cites=["FND-0002"])
+    assert pl.lint(pack_with(eng), w, kind="pack") == []
+
+
+def test_jc6_hint_matches_the_rule():
+    h = pl.load_terms()["rules"]["JC6"]["hint"]
+    assert "training or administrative" in h and "lint_ok" in h
+
+
+@pytest.mark.parametrize("text", ["Mark Taylor restarted it.", "Will Jones restarted it."])
+def test_jc1_first_names_that_are_words(w, text):
+    hits = pl.lint(para_pack(text), w, kind="pack")
+    assert rules(hits, "error") == ["JC1"], pl.format_hits(hits)
+
+
+def test_jc1_apostrophe_surname_is_the_match(w):
+    hits = pl.lint(para_pack("The permit was signed by Ms. O'Brien at the gate."), w, kind="pack")
+    assert [(h.rule, h.match) for h in hits] == [("JC1", "Ms. O'Brien")]
+
+
+@pytest.mark.parametrize("text, n", [("The consequences of a loss of containment are severe.", 0),
+                                     ("The worst consequence of a seal failure is a fire.", 0),
+                                     ("Crews who skip the test will face consequences.", 1),
+                                     ("There will be consequences.", 1)])
+def test_jc2_consequences(w, text, n):
+    assert rules(pl.lint(para_pack(text), w, kind="pack"), "error") == ["JC2"] * n
+
+
+@pytest.mark.parametrize("flag, env", [("--names", "PMLC_NAMES"), ("--orgs", "PMLC_ORGS")])
+def test_missing_names_or_orgs_file_exits_cleanly(ws, tmp_path, flag, env):  # noqa: F811
+    missing = tmp_path / "nope.txt"
+    r = subprocess.run([sys.executable, str(PMLC), "check-language", str(ws), str(BAD), flag, str(missing)],
+                       capture_output=True, text=True)
+    assert r.returncode == 1 and r.stderr.strip() == f"{flag}: file not found: {missing}", r.stderr
+    assert "Traceback" not in r.stderr
+    r = subprocess.run([sys.executable, str(PMLC), "check-pack", str(ws), str(BAD)], capture_output=True, text=True,
+                       env=dict(__import__("os").environ, **{env: str(missing)}))
+    assert r.returncode == 1 and r.stderr.strip() == f"{env}: file not found: {missing}", r.stderr
