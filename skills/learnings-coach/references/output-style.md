@@ -43,3 +43,7 @@ elimination → substitution → engineering → administrative (procedures, che
 ## Leading indicators
 
 Measurable, forward-looking, and owned by the audience reading it: e.g. "% of pressure-boundary jobs released with a documented design-pressure test", "time from confirmed gas release to first isolation in drills", "overdue critical PM notifications older than 30 days".
+
+## Converted files
+
+When converting a pack to .pdf or .docx, blank the author field (and the creator and last-modified-by properties) so the file carries no personal name.

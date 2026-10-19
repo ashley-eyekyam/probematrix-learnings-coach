@@ -142,3 +142,97 @@ def test_scan_names_uses_privacy_core(tmp_path):
     import sys
     r = subprocess.run([sys.executable, str(PMLC), "scan-names", str(n), str(t)], capture_output=True, text=True)
     assert r.returncode == 1 and "1 hit" in r.stdout
+
+
+# ---- Task 10: scan-names hardening and private-output ignore rules ----------------------------------------------
+def _scan(tmp_path, names, *args, env=None):
+    import subprocess
+    import sys
+    from test_pmlc import PMLC
+    n = tmp_path / "names10.txt"
+    n.write_text(names, encoding="utf-8")
+    return subprocess.run([sys.executable, str(PMLC), "scan-names", str(n), *map(str, args)],
+                          capture_output=True, text=True, env=env)
+
+
+def _zip(path, members):
+    import zipfile
+    with zipfile.ZipFile(path, "w") as z:
+        for k, v in members.items():
+            z.writestr(k, v)
+    return path
+
+
+def test_scan_names_variants(tmp_path):
+    t = tmp_path / "t.md"
+    t.write_text("Mr Sharma signed. Checked by R. Sharma.\n", encoding="utf-8")
+    assert _scan(tmp_path, "Ravi Sharma\n", t).returncode == 0
+    r = _scan(tmp_path, "Ravi Sharma\n", t, "--variants")
+    assert r.returncode == 1 and "2 hit" in r.stdout and "Mr Sharma" in r.stdout and "R. Sharma" in r.stdout
+
+
+def test_scan_names_docprops_and_comments(tmp_path):
+    d = _zip(tmp_path / "a.docx", {
+        "word/document.xml": "<w:t>clean</w:t>",
+        "docProps/core.xml": "<dc:creator>Ravi Sharma</dc:creator>",
+        "word/comments.xml": "<w:t>ask Ravi Sharma</w:t>",
+        "word/header1.xml": "<w:t>Ravi Sharma</w:t>"})
+    r = _scan(tmp_path, "Ravi Sharma\n", d)
+    assert r.returncode == 1 and "3 hit" in r.stdout and "docProps/core.xml" in r.stdout
+    assert "word/comments.xml" in r.stdout and "word/header1.xml" in r.stdout
+    x = tmp_path / "b.xlsx"
+    wb = openpyxl.Workbook()
+    wb.properties.creator = "Ravi Sharma"
+    wb.save(x)
+    r = _scan(tmp_path, "Ravi Sharma\n", x)
+    assert r.returncode == 1 and "docProps/core.xml" in r.stdout
+    p = _zip(tmp_path / "c.pptx", {"docProps/core.xml": "<dc:creator>Ravi Sharma</dc:creator>"})
+    assert _scan(tmp_path, "Ravi Sharma\n", p).returncode == 1
+
+
+def test_scan_names_patterns(tmp_path):
+    t = tmp_path / "t.md"
+    t.write_text("mail a.b@x.org or call +91 98765 43210; Staff No. 4471\n", encoding="utf-8")
+    assert _scan(tmp_path, "Nobody Here\n", t).returncode == 0
+    r = _scan(tmp_path, "Nobody Here\n", t, "--patterns")
+    assert r.returncode == 1
+    for lab in ("pattern:email", "pattern:phone", "pattern:staff_no"):
+        assert lab in r.stdout
+
+
+def test_scan_names_pdf_metadata(tmp_path):
+    import shutil
+    if not shutil.which("pdfinfo"):
+        pytest.skip("pdfinfo not installed")
+    pdf = tmp_path / "m.pdf"
+    pdf.write_bytes(
+        b"%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n"
+        b"3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 10 10]>>endobj\n"
+        b"4 0 obj<</Author(Ravi Sharma)/Creator(Writer)>>endobj\n"
+        b"trailer<</Root 1 0 R/Info 4 0 R/Size 5>>\n%%EOF\n")
+    r = _scan(tmp_path, "Ravi Sharma\n", pdf)
+    assert "pdf:Author" in r.stdout and "1 hit" in r.stdout and r.returncode == 1
+
+
+def test_scan_names_pdf_without_pdfinfo(tmp_path):
+    import os
+    pdf = tmp_path / "m.pdf"
+    pdf.write_bytes(b"%PDF-1.4\n")
+    env = dict(os.environ, PATH=str(tmp_path / "empty"))
+    r = _scan(tmp_path, "Ravi Sharma\n", pdf, env=env)
+    assert "note: pdfinfo not found: PDF metadata not checked" in r.stdout
+
+
+def test_gitignore_private_outputs():
+    import shutil
+    import subprocess
+    if not shutil.which("git"):
+        pytest.skip("git not installed")
+    root = pmlc.HERE.parent.parent.parent
+
+    def ignored(p):
+        return subprocess.run(["git", "check-ignore", "-q", p], cwd=root).returncode == 0
+    for p in ("pmlc-runs/x/outputs/a.pdf", "docs/x.docx", "x.pptx"):
+        assert ignored(p), p
+    for p in ("samples/x/a.pdf", "docs/briefs/a.pdf", "samples/x/outputs/a.docx"):
+        assert not ignored(p), p

@@ -9,6 +9,16 @@ outputs/
 !samples/**/*.xlsx
 !docs/uat/inputs/uat-*.xlsx
 ~$*
+# converted documents may carry author metadata: keep them out unless published as a sample or brief
+*.pdf
+*.docx
+*.pptx
+!samples/**/*.pdf
+!samples/**/*.docx
+!samples/**/*.pptx
+!docs/briefs/**/*.pdf
+!docs/briefs/**/*.docx
+!docs/briefs/**/*.pptx
 # python
 __pycache__/
 *.pyc

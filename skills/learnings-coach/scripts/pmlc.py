@@ -2048,12 +2048,36 @@ def _scan_files(path: Path):
     return [path]
 
 
+_OFFICE_ZIP = (".docx", ".pptx", ".xlsx", ".xlsm")
+_XML_TAG = re.compile(r"<[^>]+>")
+# Parts that can carry a name beyond the cell/body text: properties, comments, headers/footers, notes, footnotes.
+_META_PART = re.compile(r"(?i)^docProps/.*\.xml$|(?:^|/)(?:threaded)?comments[^/]*\.xml$|/(?:header|footer)\d*\.xml$"
+                        r"|/(?:footnotes|endnotes|notesSlide\d*)\.xml$")
+_BODY_PART = re.compile(r"(?i)^(?:word/document|ppt/slides/slide\d+)\.xml$")
+
+
+def _office_xml_texts(path: Path):
+    """(location, text) for the metadata, comment, header/footer parts of an Office zip, plus the body of a .docx or
+    .pptx (an .xlsx body is read cell by cell). XML tags are stripped; each part is scanned as one text."""
+    import zipfile
+    body = path.suffix.lower() in (".docx", ".pptx")
+    try:
+        with zipfile.ZipFile(path) as z:
+            for n in z.namelist():
+                if _META_PART.search(n) or (body and _BODY_PART.search(n)):
+                    raw = z.read(n).decode("utf-8", errors="ignore")
+                    yield f"{path}:{n}", _XML_TAG.sub(" ", raw)
+    except zipfile.BadZipFile:
+        print(f"warning: {path} is not a readable Office file")
+
+
 def _iter_texts(path: Path):
     if path.is_dir():
         for p in _scan_files(path):
             yield from _iter_texts(p)
         return
-    if path.suffix.lower() in (".xlsx", ".xlsm"):
+    ext = path.suffix.lower()
+    if ext in (".xlsx", ".xlsm"):
         openpyxl = _need_openpyxl()
         wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
         for ws in wb.worksheets:
@@ -2061,26 +2085,64 @@ def _iter_texts(path: Path):
                 for c in row:
                     if isinstance(c.value, str):
                         yield f"{path}:{ws.title}!{c.coordinate}", c.value
-    elif path.suffix.lower() in TEXT_TYPES:
+    if ext in _OFFICE_ZIP:
+        yield from _office_xml_texts(path)
+    elif ext in TEXT_TYPES:
         for i, line in enumerate(path.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
             yield f"{path}:{i}", line
+
+
+def _pdf_meta(path: Path):
+    """(location, text) for the Author and Creator lines of a PDF, from pdfinfo. None when pdfinfo is absent."""
+    import shutil
+    import subprocess
+    exe = shutil.which("pdfinfo")
+    if not exe:
+        return None
+    r = subprocess.run([exe, str(path)], capture_output=True, text=True, errors="ignore")
+    out = []
+    for line in r.stdout.splitlines():
+        k, _, v = line.partition(":")
+        if k.strip() in ("Author", "Creator"):
+            out.append((f"{path}:pdf:{k.strip()}", v.strip()))
+    return out
 
 
 def cmd_scan_names(a):
     names = privacy.load_names(a.names)
     if not names:
         sys.exit("Names file is empty.")
-    rx = privacy.name_pattern(names)
+    scans = [("", privacy.name_pattern(names, variants=a.variants))]
+    if a.patterns:
+        scans += [(f"pattern:{k}", re.compile(v)) for k, v in privacy.PATTERNS.items()]
     hits = 0
-    for target in a.paths:
-        for loc, text in _iter_texts(Path(target)):
+
+    def check(loc, text):
+        nonlocal hits
+        for label, rx in scans:
             for m in rx.finditer(text):
                 hits += 1
                 if hits <= a.show:
-                    print(f"HIT {loc}: '{m.group(0)}' … {text[max(0, m.start()-50):m.end()+50]!r}")
+                    tag = f" [{label}]" if label else ""
+                    print(f"HIT{tag} {loc}: '{m.group(0)}' … {text[max(0, m.start()-50):m.end()+50]!r}")
+
+    pdf_missing = False
+    for target in a.paths:
+        for loc, text in _iter_texts(Path(target)):
+            check(loc, text)
+        for f in _scan_files(Path(target)):
+            if f.suffix.lower() == ".pdf":
+                meta = _pdf_meta(f)
+                if meta is None:
+                    pdf_missing = True
+                else:
+                    for loc, text in meta:
+                        check(loc, text)
+    if pdf_missing:
+        print("note: pdfinfo not found: PDF metadata not checked")
     print(f"\n{hits} hit(s).")
-    unread = [str(f) for t in a.paths for f in _scan_files(Path(t))
-              if f.suffix.lower() not in TEXT_TYPES + (".xlsx", ".xlsm")]
+    readable = TEXT_TYPES + _OFFICE_ZIP
+    unread = [str(f) for t in a.paths for f in _scan_files(Path(t)) if f.suffix.lower() not in readable]
     if unread:
         print(f"{len(unread)} file(s) not scanned (this type cannot be read), so zero hits does not cover them:")
         for f in unread:
@@ -2290,6 +2352,10 @@ def build_parser():
     s.add_argument("names", help="text file, one name per line")
     s.add_argument("paths", nargs="+")
     s.add_argument("--show", type=int, default=50)
+    s.add_argument("--variants", action="store_true",
+                   help="also match surname, initial + surname and honorific + surname for each name")
+    s.add_argument("--patterns", action="store_true",
+                   help="also flag email, phone and staff-number patterns (an aid, not proof of de-identification)")
     s.set_defaults(fn=cmd_scan_names)
 
     return p
