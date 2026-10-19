@@ -35,8 +35,11 @@ GROUP_RX = re.compile(r"(?i)\b(?:operators|crew|team|staff|workers|personnel)\s*
 TAG_RX = re.compile(r"\b(?!(?:FND|EVD|LR|ML)-)(?!(?:F\d{2}|T\d)\b)[A-Z]{1,5}-?\d{2,6}[A-Z]?\b")
 # Keys whose values are IDs or taxonomy labels, not prose: share_doc keeps them as they are (and the lint skips them).
 ID_KEYS = {"id", "kind", "pack", "schema", "cites", "supporting_cites", "row_cites", "row_supporting_cites",
-           "finding_ids", "evidence_ids", "lr_id", "ml_id", "owner_entity", "entities", "scope", "clusters",
-           "content_hash"}
+           "finding_ids", "evidence_ids", "lr_id", "ml_id", "owner_entity", "entities", "scope", "content_hash"}
+# Inside a graph item's edges, from and to are node IDs (elsewhere `to` is display text, e.g. a message's audience).
+EDGE_ID_KEYS = ("from", "to")
+# Dicts whose keys are role strings (clusters.json role_map): share_doc masks their keys as well as their values.
+ROLE_KEYED = {"role_map"}
 
 
 def _list_file(path, env, flag) -> list:
@@ -152,13 +155,19 @@ def load_singletons(w) -> dict:
 ShareCtx = collections.namedtuple("ShareCtx", "mode names orgs singletons")
 SHARE_MASKED = ("external", "public")
 # Keys share_doc removes at any depth (compared after lower-casing and joining words with "_").
-SHARE_DROP_KEYS = {"suggested_interviews", "key_questions", "generated", "run"}
+SHARE_DROP_KEYS = {"suggested_interviews", "key_questions", "causal_hypothesis", "evidence_to_collect", "generated",
+                   "run"}
 NAME_MASK, ORG_MASK, TAG_MASK = "[name]", "[organisation]", "[equipment tag]"
 MONTH_NAMES = list(calendar.month_name)[1:]
 _MON = {m[:3].lower(): i for i, m in enumerate(MONTH_NAMES, 1)}
 _MON_RX = r"(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?"
-# A clock time, with the "at" (or "at about") that introduces it, so "restarted at 14:05 on" reads "restarted on".
-TIME_RX = re.compile(r"(?:\bat\s+(?:about\s+|around\s+|approximately\s+)?)?(?<![\w:.])(?:[01]?\d|2[0-3]):[0-5]\d(?::[0-5]\d)?(?:\s*(?:hrs?|hours?)\b)?(?![\d:])", re.I)
+# A clock time, with the "at" (or "at about") that introduces it, so "restarted at 14:05 on" reads "restarted on":
+# HH:MM (optional :SS, optional hrs), H:MM only with am/pm or hrs (so a ratio such as 1:10 stays), and HHMM only
+# with hrs or hours ("1405 hrs").
+TIME_RX = re.compile(r"(?:\bat\s+(?:about\s+|around\s+|approximately\s+)?)?(?<![\w:.])"
+                     r"(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?(?:\s*(?:hrs?|hours?)\b)?(?![\d:])"
+                     r"|\d:[0-5]\d(?::[0-5]\d)?\s*(?:hrs?\b|hours?\b|[ap]\.?m\b\.?)"
+                     r"|(?:[01]\d|2[0-3])[0-5]\d\s*(?:hrs?|hours?)\b)", re.I)
 ISO_DATE_RX = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})(?:[T ](?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?"
                          r"(?:Z|[+-]\d{2}:?\d{2})?)?(?![\d-])")
 DMY_TEXT_RX = re.compile(r"\b(\d{1,2})(?:st|nd|rd|th)?[ -]" + _MON_RX + r",?[ -](\d{4})\b", re.I)
@@ -204,7 +213,9 @@ def _share_rxs(ctx):
     key = (tuple(ctx.names), tuple(ctx.orgs), tuple(sorted(ctx.singletons.items())))
     if key not in _RX_CACHE:
         hon = "|".join(map(re.escape, _terms()["honorifics"]))
-        hon_rx = re.compile(r"\b(?:" + hon + r")\b\.?(?:\s+(?:[A-Z][\w'’-]+|[A-Z]\.?(?![\w])))+")
+        # An honorific with the name after it, including a name step 1 already masked ("Mr [name]" -> "[name]").
+        hon_rx = re.compile(r"\b(?:" + hon + r")\b\.?(?:\s+(?:" + re.escape(NAME_MASK)
+                            + r"|[A-Z][\w'’-]+|[A-Z]\.?(?![\w])))+")
         names_rx, orgs_rx = name_pattern(ctx.names, variants=True), name_pattern(ctx.orgs)
         # A singleton role is matched as it reads after the earlier steps, so a role holding a tag still matches.
         singles = {}
@@ -263,10 +274,14 @@ def share_doc(obj, ctx, owners=None):
         if isinstance(v, list):
             if _norm(key) == "votes":
                 v = [{k: x for k, x in d.items() if k != "reason"} if isinstance(d, dict) else d for d in v]
+            if key == "edges":
+                return [dict(walk(d), **{k: copy.deepcopy(d[k]) for k in EDGE_ID_KEYS if k in d})
+                        if isinstance(d, dict) else walk(d) for d in v]
             return [walk(x) for x in v]
         if isinstance(v, dict):
-            return {k: copy.deepcopy(x) if k in ID_KEYS else walk(owner(x) if k == "owner" else x, k)
-                    for k, x in v.items() if _norm(k) not in SHARE_DROP_KEYS}
+            out = {k: copy.deepcopy(x) if k in ID_KEYS else walk(owner(x) if k == "owner" else x, k)
+                   for k, x in v.items() if _norm(k) not in SHARE_DROP_KEYS}
+            return {share_text(k, ctx): x for k, x in out.items()} if key in ROLE_KEYED else out
         return copy.deepcopy(v)
 
     return walk(obj)

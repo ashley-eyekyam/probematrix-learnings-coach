@@ -245,10 +245,14 @@ def shws(tmp_path):
 def test_share_text_masks_in_order():
     ctx = pv.ShareCtx("external", ["R. K. Sharma"], ["Bharat Seals"], {SINGLE: "Security (Frontline)"})
     t = pv.share_text("R. K. Sharma and Mr Fictional Person of Bharat Seals and Acme Pumps Ltd checked P-101 "
-                      f"and PSV12A; the {SINGLE} saw it at 14:05 hrs, 14:05:30 and 9:15. FND-0001 EVD-0001 F02 LR-01 "
-                      "T4.", ctx)
+                      f"and PSV12A; the {SINGLE} saw it at 14:05 hrs, 14:05:30 and 1405 hrs. FND-0001 EVD-0001 F02 "
+                      "LR-01 T4.", ctx)
     assert t == ("[name] and [name] of [organisation] and [organisation] checked [equipment tag] and [equipment tag]; "
                  "the Security (Frontline) saw it, and. FND-0001 EVD-0001 F02 LR-01 T4.")
+    for raw, want in [("a 1:10 slope and 3:2 odds", "a 1:10 slope and 3:2 odds"), ("at 9:15 am the alarm", "the alarm"),
+                      ("1405 hours", ""), ("1405 tonnes", "1405 tonnes"), ("Mr R. K. Sharma", "[name]"),
+                      ("Shri Sharma left", "[name] left")]:
+        assert pv.share_text(raw, ctx) == want, raw
     for raw, want in [("on 2024-03-12.", "on March 2024."), ("at 2024-03-12T14:05:00Z", "at March 2024"),
                       ("12 March 2024", "March 2024"), ("3rd Sept 2019", "September 2019"),
                       ("March 12, 2024", "March 2024"), ("12/03/2024", "March 2024"), ("2024-03", "2024-03"),
@@ -263,6 +267,7 @@ def test_share_text_masks_in_order():
 def test_share_doc_drops_keys_and_generalises_owners():
     ctx = pv.ShareCtx("external", [], ["Bharat Seals"], {})
     doc = {"text": "Bharat Seals at 14:05", "suggested_interviews": ["x"], "Key Questions": "q", "generated": "d",
+           "causal_hypothesis": "h", "Evidence to Collect": "e",
            "run": SLUG, "votes": [{"vote": "downgrade", "reason": "the Plant Head said so", "voted_at": "2024-03-21"}],
            "owner": "Plant Manager", "items": [{"owner": "Shift Supervisor"}, {"owner": ["Plant Manager"]}], "n": 3}
     before = copy.deepcopy(doc)
@@ -272,6 +277,51 @@ def test_share_doc_drops_keys_and_generalises_owners():
                    "owner": "Plant & Asset Leadership",
                    "items": [{"owner": "Shift Supervisor"}, {"owner": ["Plant & Asset Leadership"]}], "n": 3}
     assert pv.share_doc(doc, ctx._replace(mode="internal")) == doc
+
+
+def test_share_doc_edges_keep_node_ids_and_role_map_keys_are_masked():
+    ctx = pv.ShareCtx("external", [], ["Bharat Seals"], {})
+    g = {"kind": "graph", "nodes": [{"id": "N10", "label": "P-101 leak"}, {"id": "N11", "label": "Fire"}],
+         "edges": [{"from": "N10", "to": "N11", "label": "at 14:05"}],
+         "items": [{"kind": "message", "to": "Bharat Seals crew"}]}
+    out = pv.share_doc(g, ctx)
+    assert out["nodes"] == [{"id": "N10", "label": "[equipment tag] leak"}, {"id": "N11", "label": "Fire"}]
+    assert out["edges"] == [{"from": "N10", "to": "N11", "label": ""}]
+    assert out["items"][0]["to"] == "[organisation] crew"
+    cl = {"clusters": {"role_map": {"Bharat Seals fitter": {"F": ["F02"], "T": "T1"}},
+                       "unresolved_roles": ["Bharat Seals clerk"], "findings": {"FND-0001": {"F": ["F02"]}}}}
+    out = pv.share_doc(cl, ctx)["clusters"]
+    assert out == {"role_map": {"[organisation] fitter": {"F": ["F02"], "T": "T1"}},
+                   "unresolved_roles": ["[organisation] clerk"], "findings": {"FND-0001": {"F": ["F02"]}}}
+
+
+def test_share_graph_item_renders(tmp_path, shws):
+    ws, orgs = shws
+    doc = copy.deepcopy(SPACK)
+    doc["sections"][0]["items"].append({"kind": "graph", "nodes": [{"id": "N10", "label": "Seal fitted"},
+                                                                   {"id": "N11", "label": "Leak"}],
+                                        "edges": [{"from": "N10", "to": "N11"}]})
+    p = sign(ws, write_doc(tmp_path, doc), "--classification", "external", "--legal-review", "cleared")
+    r = _cli("pack", str(ws), str(p), "--share", "external", "--orgs", str(orgs), "--out", str(tmp_path / "out"))
+    assert r.returncode == 0, r.stderr
+    t = (tmp_path / "out" / "test-pack.external.html").read_text(encoding="utf-8")
+    assert "Seal fitted → Leak" in t
+
+
+def test_shared_copies_drop_investigative_follow_up(tmp_path):
+    ws, orgs = share_ws(tmp_path)
+    fp = ws / "findings.json"
+    F = json.loads(fp.read_text())
+    F[0].update(causal_hypothesis="HYPO-MARK", evidence_to_collect="COLLECT-MARK")
+    fp.write_text(json.dumps(F), encoding="utf-8")
+    for cls in ("external", "public"):
+        p = sign(ws, write_doc(tmp_path, SPACK, f"{cls}.json"), "--classification", cls, "--legal-review", "cleared")
+        out = tmp_path / cls
+        r = _cli("pack", str(ws), str(p), "--share", cls, "--orgs", str(orgs), "--out", str(out))
+        assert r.returncode == 0, r.stderr
+        t = (out / f"test-pack.{cls}.html").read_text(encoding="utf-8")
+        for x in ("HYPO-MARK", "COLLECT-MARK", "causal_hypothesis", "evidence_to_collect"):
+            assert x not in t, (cls, x)
 
 
 def test_owner_generaliser_maps_t4_t5_only(shws):
@@ -426,6 +476,7 @@ def test_share_dashboard_external(tmp_path, shws):
     for leak in ("ACME", "Bharat Seals", "P-101", "AO-101", SINGLE, "2024-03-12", "2024-03-20", "Acme Pumps"):
         assert leak not in t, leak
     assert not TIME_RX.search(t) and SHARED.format("external") in t and "[organisation]" in t
+    assert "export.xlsx" not in t and "learnings-register.xlsx" not in t and "learnings-register.json" not in t
 
 
 def test_register_xlsx_share_external(tmp_path, shws):
@@ -445,7 +496,7 @@ def test_register_xlsx_share_external(tmp_path, shws):
     cells = " ".join(str(c) for s in wb.worksheets for row in s.iter_rows(values_only=True) for c in row if c)
     for leak in ("ACME", "14:05", "2024-03-12", "P-101", "2026-10-19"):
         assert leak not in cells, leak
-    assert "[organisation]" in cells and SHARED.format("external") in cells
+    assert "[organisation]" in cells and SHARED.format("external") in cells and "export.xlsx" not in cells
     rp2 = write_doc(tmp_path, reg, "reg2.json")            # no workspace can be found: refused
     r = _cli("register-xlsx", str(rp2), "--share", "external")
     assert r.returncode == 1 and "no workspace (pass --ws)" in r.stderr
@@ -475,6 +526,16 @@ def test_render_name_guard(tmp_path, shws):
     assert r.returncode == 1 and msg.search(r.stderr) and files(out) == []
     # Without the names file the same pack renders.
     assert _cli("pack", str(ws), str(p), "--out", str(out)).returncode == 0
+    # A name that HTML escaping changes (an apostrophe) is still caught, with no Markdown written.
+    names.write_text("Fictional O'Brien\n", encoding="utf-8")
+    doc = copy.deepcopy(SPACK)
+    doc["sections"][0]["items"][0].update(text="Fictional O'Brien tested the seal.",
+                                          lint_ok={"rule": "JC1", "reason": "test of the render guard"})
+    p = write_doc(tmp_path, doc)
+    out2 = tmp_path / "out2"
+    r = _cli("pack", str(ws), str(p), "--out", str(out2), "--no-md", "--names", str(names))
+    assert r.returncode == 1 and msg.search(r.stderr) and files(out2) == []
+    names.write_text("# staff\nFictional Person\n", encoding="utf-8")
     # The dashboard has the same guard.
     reg = copy.deepcopy(MINI_REG)
     reg["entries"][0]["lesson"] += " Fictional Person saw it."

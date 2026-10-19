@@ -546,6 +546,7 @@ NAME_GUARD = "refused: a listed name appears in the output ({n} times); fix the 
 # mode removes exact quotes only, and these fields can paraphrase a witness. Labels and IDs stay.
 PUBLIC_DROP_KEYS = ("justification", "causal")
 OWNER_TIERS = ("T4", "T5")
+SHARED_SOURCE = "a ProbeMatrix investigation export"      # replaces a register's source file name in shared copies
 
 
 def share_mode(a) -> str:
@@ -641,7 +642,8 @@ def shared_name(path: Path, mode: str) -> Path:
 def name_guard(texts, a) -> None:
     """L5-03 part 2: exit 1 when a name from --names or PMLC_NAMES appears in any rendered text (in any mode)."""
     rx = privacy.name_pattern(privacy.load_names(getattr(a, "names", None)))
-    n = sum(len(rx.findall(t)) for t in texts) if rx else 0
+    # HTML escaping changes a name ("O'Brien" -> "O&#x27;Brien"), so the unescaped text is searched as well.
+    n = sum(max(len(rx.findall(t)), len(rx.findall(html.unescape(t)))) for t in texts) if rx else 0
     if n:
         sys.exit(NAME_GUARD.format(n=n))
 
@@ -2160,6 +2162,8 @@ def cmd_dashboard(a):
     share = share_ctx(a, w, mode) if mode != "internal" else None
     if share:
         w, reg0 = shared_copy(w, share, w), shared_copy(reg0, share, w)
+        if isinstance(reg0, dict) and reg0.get("source"):
+            reg0["source"] = SHARED_SOURCE
     F = {f["id"]: f for f in w["findings"]}
     cl = w["clusters"]
     names, tiers = cl["taxonomy"]["entities"], cl["taxonomy"]["tiers"]
@@ -2263,6 +2267,8 @@ def cmd_dashboard(a):
 <div class="wrap">{table(ent_ids, [1, 2, 3, 4], lvl_lab, el, mx_el)}</div>
 <h2>Most frequent factors</h2>
 <div class="wrap" style="padding:12px">{bars}</div>"""
+    noscript_where = ("The same data is in the shared Learnings Register." if share else
+                      "The same data is in learnings-register.xlsx and learnings-register.json.")
     if detail is not None:
         body = f"""<nav class="tabbar" role="tablist" aria-label="Views">
 <button type="button" role="tab" id="t-overview" aria-controls="tab-overview" aria-selected="true">Overview</button>
@@ -2272,7 +2278,7 @@ def cmd_dashboard(a):
 {overview}
 </section>
 <section id="tab-detail" role="tabpanel" aria-labelledby="t-detail" hidden>
-<noscript><p class="m">The detailed register needs JavaScript. The same data is in learnings-register.xlsx and learnings-register.json.</p></noscript>
+<noscript><p class="m">The detailed register needs JavaScript. {noscript_where}</p></noscript>
 </section>"""
         extra_css = (DASHBOARD_ASSETS / "detail.css").read_text(encoding="utf-8")
         scripts = (f'<script type="application/json" id="pmlc-data">{embed_json(detail)}</script>\n'
@@ -2397,6 +2403,8 @@ def cmd_register_xlsx(a):
     share = share_ctx(a, rw, mode) if mode != "internal" else None
     if share:
         reg = shared_copy(reg, share, rw)
+        if isinstance(reg, dict) and reg.get("source"):
+            reg["source"] = SHARED_SOURCE
     entries = reg["entries"] if isinstance(reg, dict) else reg
     wb = openpyxl.Workbook()
     head_fill = PatternFill("solid", fgColor="0B3954")
