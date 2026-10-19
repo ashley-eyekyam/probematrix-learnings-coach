@@ -49,8 +49,8 @@ The four classifications, from narrowest to widest:
 
 The coach will not let anything be reviewed or approved while either of these is true of the export:
 
-- **"the investigation status is in progress"**: the export's Investigation Status starts with `in_progress`;
-- **"no finding is marked as edited by a person"**: not one finding has `User Edited` set.
+- **the investigation is not completed**: the export's Investigation Status is anything but `completed` (capitals, spaces and hyphens do not matter). The reason reads "the investigation status is in progress" for `in_progress` (or "In Progress", "in-progress"), and "the investigation status is not completed" for anything else, such as `draft` or a blank status;
+- **"no finding is marked as edited by a person"**: not one finding has `User Edited` set to `Yes` (`y`, `true` and `1` count too; `No`, `N`, `false` or a blank do not).
 
 There is no override. The fix is in ProbeMatrix, not in the coach: finish the investigation (a person reviews and edits the findings, and the status moves on), then export again and re-run the analysis.
 

@@ -414,3 +414,44 @@ def test_register_xlsx_outside_run_layout_without_ws_is_draft(tmp_path, okws):
     about = {r[0]: r[1] for r in wb["About"].iter_rows(values_only=True) if len(r) > 1 and r[1] is not None}
     assert about["Review status"] == "draft. Draft because: no workspace to check"
     assert all(s.oddHeader.center.text == f"{STATUS} · DRAFT" for s in wb.worksheets)
+
+
+# ----------------------------------------------------------------------------- final review I2: forced draft (X26)
+
+def _ws_fields(status, edited):
+    return {"incident": {"fields": {"Investigation Status": status}},
+            "findings": [{"id": "FND-0001", "user_edited": edited}]}
+
+
+@pytest.mark.parametrize("status,reason", [
+    ("draft", "the investigation status is not completed"),
+    ("In Progress", "the investigation status is in progress"),
+    ("in-progress", "the investigation status is in progress"),
+    ("in_progress", "the investigation status is in progress"),
+    ("", "the investigation status is not completed"),
+    (None, "the investigation status is not completed"),
+    ("closed", "the investigation status is not completed"),
+])
+def test_forced_draft_unless_completed(status, reason):
+    assert pmlc.forced_draft_reasons(_ws_fields(status, "Yes")) == [reason]
+
+
+@pytest.mark.parametrize("status", ["completed", "Completed", " COMPLETED "])
+def test_completed_is_not_forced(status):
+    assert pmlc.forced_draft_reasons(_ws_fields(status, "Yes")) == []
+
+
+@pytest.mark.parametrize("edited,forced", [("N", True), ("false", True), ("No", True), ("", True), (None, True),
+                                           ("maybe", True), ("Yes", False), ("y", False), ("TRUE", False),
+                                           ("1", False), (True, False), (1, False)])
+def test_user_edited_counts_only_yes(edited, forced):
+    got = pmlc.forced_draft_reasons(_ws_fields("completed", edited))
+    assert got == (["no finding is marked as edited by a person"] if forced else [])
+
+
+def test_sign_off_refused_on_draft_status(tmp_path):
+    ws = build(tmp_path, status="draft", edited={"FND-0001": "Yes"}, name="wsd")
+    p = write(tmp_path, PACK)
+    r = cli("sign-off", str(ws), str(p), "--role", "HSE manager")
+    assert r.returncode == 1
+    assert r.stderr.strip() == "cannot sign off: the investigation status is not completed"

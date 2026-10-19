@@ -353,6 +353,8 @@ HANDLING_ENUMS = {"status": ("draft", "reviewed", "approved"),
                   "legal_review": ("not-required", "requested", "cleared")}
 REASON_IN_PROGRESS = "the investigation status is in progress"
 REASON_UNEDITED = "no finding is marked as edited by a person"
+REASON_NOT_COMPLETED = "the investigation status is not completed"
+EDITED_YES = ("yes", "y", "true", "1")
 REASON_EDITED_SINCE = "edited since sign-off"
 REASON_NOT_SIGNED = "not signed off"
 REASON_INVALID = "invalid handling block"
@@ -363,14 +365,28 @@ WARN_NOT_SIGNED = "not signed off in this workspace: status is draft until sign-
 _HASH_RX = re.compile(r"sha256:[0-9a-f]{64}")
 
 
+def _norm_status(v) -> str:
+    """An Investigation Status as a key: lower case, stripped, spaces and hyphens as underscores."""
+    return re.sub(r"[\s-]+", "_", _s(v).strip().lower())
+
+
+def is_edited(v) -> bool:
+    """A User Edited cell marks a finding as edited by a person only when it reads yes, y, true or 1."""
+    return _s(v).strip().lower() in EDITED_YES
+
+
 def forced_draft_reasons(w) -> list:
-    """Why nothing from this workspace may be reviewed or approved yet (empty when it may be)."""
+    """Why nothing from this workspace may be reviewed or approved yet (empty when it may be). X26: anything but a
+    completed investigation is forced (ProbeMatrix statuses are draft, in_progress and completed), and only an
+    explicit yes in User Edited counts. No workspace ({}) gives no reasons: there is nothing to read."""
+    if not w:
+        return []
     out = []
-    status = _s(((w.get("incident") or {}).get("fields") or {}).get("Investigation Status"))
-    if status.lower().startswith("in_progress"):
-        out.append(REASON_IN_PROGRESS)
+    status = _norm_status(((w.get("incident") or {}).get("fields") or {}).get("Investigation Status"))
+    if status != "completed":
+        out.append(REASON_IN_PROGRESS if status == "in_progress" else REASON_NOT_COMPLETED)
     F = w.get("findings") or []
-    if F and all(_s(f.get("user_edited")).lower() in ("", "no") for f in F):
+    if F and not any(is_edited(f.get("user_edited")) for f in F):
         out.append(REASON_UNEDITED)
     return out
 
@@ -1159,7 +1175,7 @@ def cmd_profile(a):
             flags.append(f"Column '{lab}' is empty on every finding (the investigator-coach skill can draft it).")
     if not inc.get("causal_chain_sheet"):
         flags.append("Causal Chain sheet is empty; use `pmlc.py causal` to extract links from the causal explanations.")
-    if n and all(f["user_edited"].lower() in ("", "no") for f in F):
+    if n and not any(is_edited(f["user_edited"]) for f in F):
         flags.append("No finding is marked 'User Edited'. Confirm the human review status before publishing learnings.")
     narr = inc.get("narrative", "")[:4000]
     sdate = fields.get("Date", "")
@@ -1180,8 +1196,9 @@ def cmd_profile(a):
     if downs:
         flags.append("Reviewer downgrade votes on: " + "; ".join(f"{v.get('finding')} ({v.get('reason', '')})" for v in downs)
                      + ". Exclude or flag these findings in learnings.")
-    if fields.get("Investigation Status", "").lower().startswith("in_progress"):
-        flags.append("Investigation Status is 'in_progress'; label outputs as draft learnings.")
+    if _norm_status(fields.get("Investigation Status")) != "completed":
+        flags.append(f"Investigation Status is '{_s(fields.get('Investigation Status')) or 'blank'}'; "
+                     "label outputs as draft learnings.")
     rep = _s(fields.get("Reportable to Regulator"))
     if rep.lower() in ("", "no"):
         blob = " ".join([inc.get("narrative", "")] + [e.get("description", "") + " " + " ".join(

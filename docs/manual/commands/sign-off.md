@@ -20,7 +20,7 @@ The fingerprint matters: **if anyone edits the file after sign-off, even by one 
 
 sign-off refuses, and changes nothing, when:
 
-- the investigation is not finished in ProbeMatrix: its status is in progress, or no finding is marked as edited by a person. There is no override; finish the review in ProbeMatrix and export again;
+- the investigation is not finished in ProbeMatrix: its status is anything but completed ("the investigation status is in progress", or "the investigation status is not completed" for a draft or blank status), or no finding is marked as edited by a person. There is no override; finish the review in ProbeMatrix and export again;
 - the file has problems in its own check ([check-pack](check-pack.md) or [check-register](check-register.md));
 - the file is a register written as a bare list. Wrap it as `{"entries": [...]}` first.
 
@@ -79,7 +79,7 @@ On a finished investigation, a successful sign-off prints one line in the form `
 
 ## Common problems
 
-- **"cannot sign off: the investigation status is in progress …".** Finish the investigation in ProbeMatrix (status completed, findings reviewed and edited by a person), export again, [ingest](ingest.md) with `ingest --force`, then sign off.
+- **"cannot sign off: the investigation status is in progress …" or "… is not completed".** Finish the investigation in ProbeMatrix (status completed, findings reviewed and edited by a person), export again, [ingest](ingest.md) with `ingest --force`, then sign off.
 - **"cannot sign off: the file has problems; run the check and fix them first".** The lines below it list the problems. Run [check-pack](check-pack.md) or [check-register](check-register.md).
 - **'wrap the entries as {"entries": [...]} before signing off'.** A register written as a bare list cannot carry a handling block.
 - **"… is neither a pack (no 'pack' key) nor a register (no 'entries')".** The wrong file was given.

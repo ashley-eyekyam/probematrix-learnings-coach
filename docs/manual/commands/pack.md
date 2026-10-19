@@ -138,7 +138,7 @@ warning: no handling block: rendered as draft (internal)
 ## Common problems
 
 - **"Nothing written."** The pack failed its check. Fix the problems listed above that line, then run pack again.
-- **The page says DRAFT.** It will until a reviewer signs it off with [sign-off](sign-off.md), and always while the investigation is in progress or no finding has been edited by a person in ProbeMatrix.
+- **The page says DRAFT.** It will until a reviewer signs it off with [sign-off](sign-off.md), and always while the investigation is not completed or no finding has been edited by a person in ProbeMatrix.
 - **Old HTML after an edit.** pack does not watch the file. Run it again after each change.
 - **"cannot share externally: …" or "cannot share publicly: …".** Each condition after the colon is one that is not met. Sign the pack off with the right classification and legal review (`sign-off --classification external --legal-review cleared`), and leave `--embed` out (or give `summary`). Edit nothing after the sign-off: any change turns the pack back into a draft.
 - **A shared copy is refused by the language check.** At the external level the check is stricter: an organisation's name or a singleton role in the pack's own text is an error. Masking covers the embedded export records, not your wording; rewrite the text with roles and functions.

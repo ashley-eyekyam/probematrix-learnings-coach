@@ -103,6 +103,8 @@ assert.deepStrictEqual(p, {{banner: brand.export_banner, chip: brand.ai_chip, la
 assert.strictEqual(d.provenance({{user_edited:'no'}}, brand).chip, brand.ai_chip);
 assert.strictEqual(d.provenance({{}}, brand).chip, brand.ai_chip);
 assert.strictEqual(d.provenance({{user_edited:'Yes'}}, brand).chip, null);
+for (const ue of ['N', 'false', 'maybe']) assert.strictEqual(d.provenance({{user_edited: ue}}, brand).chip, brand.ai_chip);
+for (const ue of ['y', 'TRUE', '1']) assert.strictEqual(d.provenance({{user_edited: ue}}, brand).chip, null);
 assert.strictEqual(d.provenance({{user_edited:''}}, undefined).label, 'Justification');
 """)
 
