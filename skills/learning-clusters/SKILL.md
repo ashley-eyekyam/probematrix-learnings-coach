@@ -15,7 +15,7 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this ski
 PMLC classify <ws>
 ```
 
-This writes `<ws>/clusters.json` and lists roles with no entity (F99) or no tier (T9) in `<ws>/unresolved_roles.json`.
+This writes `<ws>/clusters.json` and lists roles with no entity (F99) or no tier (T9) in `<ws>/unresolved_roles.json`. It also writes `<ws>/singleton_roles.json`: roles that could identify one person, each with a generalised label to use instead.
 
 ## 2. Resolve the leftovers (the LLM pass)
 

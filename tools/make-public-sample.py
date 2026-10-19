@@ -19,12 +19,12 @@ Usage
 Only publish exports of incidents that are public record and that you have the right to publish.
 """
 import argparse
-import re
 import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "skills" / "learnings-coach" / "scripts"))
+import pmlc_privacy as privacy  # noqa: E402
 from pmlc import valid_run_slug  # noqa: E402
 
 KEEP = ["Incident Summary", "Identified Findings", "Evidence Links", "Causal Chain", "Analysis Statistics"]
@@ -62,10 +62,10 @@ def main():
                 row[1].value = overrides[row[0].value]
     names = []
     if a.names:
-        names = [n.strip() for n in open(a.names, encoding="utf-8") if n.strip() and not n.startswith("#")]
+        names = privacy.load_names(a.names)
     else:
         print("No names file given: name scan skipped (samples may include ProbeMatrix material unmodified, per the sample rules).")
-    rx = re.compile(r"\b(" + "|".join(re.escape(n) for n in names) + r")\b", re.I) if names else None
+    rx = privacy.name_pattern(names)
     hits = 0
     if rx:
         for ws in wb.worksheets:

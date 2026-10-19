@@ -80,3 +80,6 @@ For investigators and auditors who plan interviews from these outputs:
 - **Hindsight check.** Use the counterfactual-language exercise: take a draft question and rewrite any "should have", "failed to" or "why didn't you" using the table in section 1a.
 - **Follow-up tables.** Suggested-interview columns name roles only and run through `check-language` like any other text.
 
+## Quasi-identifiers
+
+A role string can point to one person even with no name in it: a post or gate number, a shift, a grade, or a top post with a single holder ("Plant Head"). `classify` lists these in `<ws>/singleton_roles.json` with a generalised label such as "Operations & Control Room (Supervisors)". Use the generalised label in any output that leaves the investigating team; the language check flags the raw role string (JC7, an error when sharing outside the organisation).
