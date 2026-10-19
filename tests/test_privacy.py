@@ -132,6 +132,358 @@ def test_patterns_and_suffix():
     assert re.search(pv.PATTERNS["staff_no"], "Staff No. 4471") and pv.ORG_SUFFIX_RX.search("Acme Pumps Ltd")
 
 
+# ----------------------------------------------------------------------------- ruling X21: tag and phone shapes
+
+@pytest.mark.parametrize("tag", ["P-101", "AO-101", "PSV-2301", "PSV12A", "F123"])
+def test_tag_rx_matches_equipment_tags(tag):
+    assert pv.TAG_RX.fullmatch(tag)
+
+
+@pytest.mark.parametrize("ident", ["F02", "F14", "F99", "F09b", "T4", "T9", "FND-0001", "EVD-0001", "LR-01", "ML-02"])
+def test_tag_rx_skips_entity_tier_and_record_ids(ident):
+    assert not pv.TAG_RX.search(ident)
+
+
+def test_entity_ids_neither_masked_nor_flagged(tmp_path):
+    ctx = pv.ShareCtx("external", [], [], {})
+    assert pv.share_text("F02 and F14 own it; T4 and F99; P-101, AO-101 and PSV-2301 leaked.", ctx) == \
+        "F02 and F14 own it; T4 and F99; [equipment tag], [equipment tag] and [equipment tag] leaked."
+    doc = {"owner_entity": "F02 Mechanical Maintenance AO-101", "entities": ["F14"], "text": "AO-101"}
+    assert pv.share_doc(doc, ctx) == {"owner_entity": "F02 Mechanical Maintenance AO-101", "entities": ["F14"],
+                                      "text": "[equipment tag]"}
+    reg = {"entries": [{"lr_id": "LR-01", "owner_entity": "F02 Mechanical Maintenance",
+                        "lesson": "F02 owns the change; the P-101 seal leaked."}]}
+    hits = [h for h in pl.lint(reg, {"findings": []}, kind="register", share="external") if h.rule == "JC10"]
+    assert [h.match for h in hits] == ["P-101"]
+
+
+@pytest.mark.parametrize("phone", ["+91 98765 43210", "022-2345-6789", "98765 43210", "+44 20 7946 0958"])
+def test_phone_pattern_matches_phones(phone):
+    assert re.search(pv.PATTERNS["phone"], phone).group(0) == phone
+
+
+@pytest.mark.parametrize("text", ["2020-09-24", "on 2020-09-24 and 2020-10-01", "24-09-2020", "24/09/2020",
+                                  "2020-09-24T14:05:00", "from 2020-09-24 2020-09-25"])
+def test_phone_pattern_skips_dates(text):
+    assert not re.search(pv.PATTERNS["phone"], text), text
+
+
+# ----------------------------------------------------------------------------- Task 8: --share and the render guard
+
+import copy  # noqa: E402
+
+from test_pmlc import MINI_REG, PMLC  # noqa: E402
+
+SLUG = "2024-03-20-acme-pump-fire"
+ORGS = ("Bharat Seals", "ACME")
+SINGLE = "Security Guard - Gate 3"
+SEED = {"Short Description": "Pump P-101 restarted at 14:05 hrs on 2024-03-12 after the Acme Pumps Ltd seal change.",
+        "AI Justification": "Work order of 12 March 2024 shows no test at 14:05:30 by Bharat Seals [EVD-0001].",
+        "Causal Explanation": "Bharat Seals supplied the seal; enabled by SV 1.4.",
+        "Individuals Involved": f"{SINGLE}, Pump Technician (seal change crew)"}
+SPACK = {"pack": "test-pack", "schema": 1, "title": "Test pack: synthetic pump fire", "audience": "Testers",
+         "status": "Learning purposes: not a statutory document",
+         "bottom_line": [{"text": "Test before service.", "cites": ["FND-0002"]}],
+         "sections": [{"id": "s1", "heading": "Section one", "items": [
+             {"kind": "para", "text": "Test before service.", "cites": ["FND-0001"]},
+             {"kind": "recommendation", "change": "Interlock the restart on a test record", "indicator": "Restarts tested",
+              "hoc_tier": "engineering", "owner": "Plant Manager", "cites": ["FND-0001"]}]}]}
+SHARED = "Shared {}: identifying details are masked"
+TIME_RX = re.compile(r"\b\d{2}:\d{2}\b")
+
+
+def _cli(*args, env=None):
+    import os
+    import subprocess
+    import sys
+    return subprocess.run([sys.executable, str(PMLC), *args], capture_output=True, text=True,
+                          env=None if env is None else {**os.environ, **env})
+
+
+def share_ws(tmp_path, status="completed", edited=None):
+    """An approvable synthetic run (completed, one finding edited) whose FND-0001 carries an org, a tag, a time, full
+    dates and a singleton role; and an orgs file. Returns (ws, orgs file)."""
+    d = tmp_path / "exp"
+    d.mkdir()
+    x = make_export(d, status=status, edited={"FND-0001": "Yes"} if edited is None else edited,
+                    summary=[("Location", "Bharat Seals yard, unit AO-101")])
+    wb = openpyxl.load_workbook(x)
+    ws = wb["Identified Findings"]
+    head = [c.value for c in ws[1]]
+    for k, v in SEED.items():
+        ws.cell(row=2, column=head.index(k) + 1).value = v
+    wb.save(x)
+    run("ingest", str(x), "--slug", "acme-pump-fire", "--root", str(tmp_path))
+    w = tmp_path / "pmlc-runs" / SLUG / "workspace"
+    run("classify", str(w))
+    orgs = tmp_path / "orgs.txt"
+    orgs.write_text("\n".join(ORGS) + "\n", encoding="utf-8")
+    return w, orgs
+
+
+def write_doc(tmp_path, doc, name="pack.json"):
+    p = tmp_path / name
+    p.write_text(json.dumps(doc), encoding="utf-8")
+    return p
+
+
+def sign(ws, p, *extra):
+    r = _cli("sign-off", str(ws), str(p), "--status", "approved", "--role", "HSE manager", "--date", "2026-10-19", *extra)
+    assert r.returncode == 0, r.stderr
+    return p
+
+
+def files(d):
+    return sorted(x.name for x in d.iterdir()) if d.exists() else []
+
+
+@pytest.fixture()
+def shws(tmp_path):
+    return share_ws(tmp_path)
+
+
+def test_share_text_masks_in_order():
+    ctx = pv.ShareCtx("external", ["R. K. Sharma"], ["Bharat Seals"], {SINGLE: "Security (Frontline)"})
+    t = pv.share_text("R. K. Sharma and Mr Fictional Person of Bharat Seals and Acme Pumps Ltd checked P-101 "
+                      f"and PSV12A; the {SINGLE} saw it at 14:05 hrs, 14:05:30 and 9:15. FND-0001 EVD-0001 F02 LR-01 "
+                      "T4.", ctx)
+    assert t == ("[name] and [name] of [organisation] and [organisation] checked [equipment tag] and [equipment tag]; "
+                 "the Security (Frontline) saw it, and. FND-0001 EVD-0001 F02 LR-01 T4.")
+    for raw, want in [("on 2024-03-12.", "on March 2024."), ("at 2024-03-12T14:05:00Z", "at March 2024"),
+                      ("12 March 2024", "March 2024"), ("3rd Sept 2019", "September 2019"),
+                      ("March 12, 2024", "March 2024"), ("12/03/2024", "March 2024"), ("2024-03", "2024-03"),
+                      ("March 2024", "March 2024")]:
+        assert pv.share_text(raw, ctx) == want, raw
+    assert pv.share_text("Restarted at about 14:05 hrs on 2 May 2024 by ACME Pumps Ltd and ACME.",
+                         ctx._replace(orgs=["ACME"])) == "Restarted on May 2024 by [organisation] and [organisation]."
+    assert pv.share_text("R. K. Sharma at 14:05 on 2024-03-12", ctx._replace(mode="internal")) == \
+        "R. K. Sharma at 14:05 on 2024-03-12"
+
+
+def test_share_doc_drops_keys_and_generalises_owners():
+    ctx = pv.ShareCtx("external", [], ["Bharat Seals"], {})
+    doc = {"text": "Bharat Seals at 14:05", "suggested_interviews": ["x"], "Key Questions": "q", "generated": "d",
+           "run": SLUG, "votes": [{"vote": "downgrade", "reason": "the Plant Head said so", "voted_at": "2024-03-21"}],
+           "owner": "Plant Manager", "items": [{"owner": "Shift Supervisor"}, {"owner": ["Plant Manager"]}], "n": 3}
+    before = copy.deepcopy(doc)
+    out = pv.share_doc(doc, ctx, owners=lambda o: "Plant & Asset Leadership" if "Plant" in o else None)
+    assert doc == before
+    assert out == {"text": "[organisation]", "votes": [{"vote": "downgrade", "voted_at": "March 2024"}],
+                   "owner": "Plant & Asset Leadership",
+                   "items": [{"owner": "Shift Supervisor"}, {"owner": ["Plant & Asset Leadership"]}], "n": 3}
+    assert pv.share_doc(doc, ctx._replace(mode="internal")) == doc
+
+
+def test_owner_generaliser_maps_t4_t5_only(shws):
+    g = pmlc.owner_generaliser(pmlc.load_ws(shws[0]))
+    assert g("Plant Manager") and g("Plant Manager") != "Plant Manager"
+    assert g("Corporate HSE Director")
+    assert g("Maintenance Supervisor") is None and g("Pump Technician") is None
+
+
+def test_share_refused_without_legal_clearance(tmp_path, shws):
+    ws, orgs = shws
+    p = sign(ws, write_doc(tmp_path, SPACK), "--classification", "external")
+    out = tmp_path / "out"
+    r = _cli("pack", str(ws), str(p), "--share", "external", "--orgs", str(orgs), "--out", str(out))
+    assert r.returncode == 1
+    assert r.stderr.strip().splitlines()[-1] == 'cannot share externally: legal_review is not "cleared"'
+    assert files(out) == []
+
+
+def test_share_refusal_lists_every_unmet_condition(tmp_path, shws):
+    ws, _ = shws
+    p = write_doc(tmp_path, SPACK)
+    out = tmp_path / "out"
+    r = _cli("pack", str(ws), str(p), "--share", "public", "--embed", "full", "--out", str(out))
+    assert r.returncode == 1
+    assert r.stderr.strip().splitlines()[-1] == (
+        'cannot share publicly: review is draft; classification is "internal" (needs "public"); '
+        'legal_review is not "cleared"; --embed full is refused (use --embed summary)')
+    assert files(out) == []
+    sign(ws, p, "--classification", "external", "--legal-review", "cleared")
+    r = _cli("pack", str(ws), str(p), "--share", "public", "--out", str(out))
+    assert r.returncode == 1 and r.stderr.strip().endswith('classification is "external" (needs "public")')
+    r = _cli("sign-off", str(ws), str(p), "--role", "HSE manager", "--classification", "public")
+    assert r.returncode == 0
+    r = _cli("pack", str(ws), str(p), "--share", "public", "--out", str(out))
+    assert r.returncode == 1                      # sign-off keeps the earlier legal_review, so only the status is unmet
+    assert r.stderr.strip().splitlines()[-1] == "cannot share publicly: review is reviewed (needs approved)"
+    assert files(out) == []
+
+
+def test_share_refused_on_forced_draft(tmp_path):
+    ws, orgs = share_ws(tmp_path, status="in_progress", edited={})
+    doc = dict(copy.deepcopy(SPACK), handling={"status": "approved", "reviewer_role": "HSE manager",
+                                               "reviewed_on": "2026-10-19", "classification": "external",
+                                               "legal_review": "cleared"})
+    doc["handling"]["content_hash"] = pmlc.content_hash(doc)
+    p = write_doc(tmp_path, doc)
+    out = tmp_path / "out"
+    r = _cli("pack", str(ws), str(p), "--share", "external", "--out", str(out))
+    assert r.returncode == 1
+    assert r.stderr.strip().splitlines()[-1] == (
+        "cannot share externally: review is draft (the investigation status is in progress, "
+        "no finding is marked as edited by a person)")
+    assert files(out) == []
+
+
+def test_share_refused_after_edit(tmp_path, shws):
+    """Review Focus 2: one character changed after sign-off, and the external copy is refused."""
+    ws, orgs = shws
+    p = sign(ws, write_doc(tmp_path, SPACK), "--classification", "external", "--legal-review", "cleared")
+    ok = _cli("pack", str(ws), str(p), "--share", "external", "--orgs", str(orgs), "--out", str(tmp_path / "ok"))
+    assert ok.returncode == 0, ok.stderr
+    doc = json.loads(p.read_text())
+    doc["sections"][0]["items"][0]["text"] = "Test before service!"
+    p.write_text(json.dumps(doc), encoding="utf-8")
+    out = tmp_path / "out"
+    r = _cli("pack", str(ws), str(p), "--share", "external", "--orgs", str(orgs), "--out", str(out))
+    assert r.returncode == 1
+    assert r.stderr.strip().splitlines()[-1] == "cannot share externally: review is draft (edited since sign-off)"
+    assert files(out) == []
+
+
+def _escaped(s):
+    return [s, json.dumps(s, ensure_ascii=False)[1:-1].replace("&", "\\u0026")]
+
+
+def test_share_external_masks(tmp_path, shws):
+    ws, orgs = shws
+    p = sign(ws, write_doc(tmp_path, SPACK), "--classification", "external", "--legal-review", "cleared")
+    raw = p.read_bytes()
+    out = tmp_path / "out"
+    r = _cli("pack", str(ws), str(p), "--share", "external", "--orgs", str(orgs), "--out", str(out))
+    assert r.returncode == 0, r.stderr
+    assert files(out) == ["test-pack.external.html", "test-pack.external.md"]
+    assert p.read_bytes() == raw
+    t = (out / "test-pack.external.html").read_text(encoding="utf-8")
+    md = (out / "test-pack.external.md").read_text(encoding="utf-8")
+    for leak in ("Bharat Seals", "Acme Pumps", "P-101", SINGLE, "14:05", "2024-03-12", "12 March 2024", "2024-03-20",
+                 "2026-10-19", SLUG, "Plant Manager", "suggested_interviews", "key_questions"):
+        assert leak not in t and leak not in md, leak
+    assert not TIME_RX.search(t)
+    for mark in ("[organisation]", "[equipment tag]", "March 2024"):
+        assert mark in t, mark
+    label = pv.load_singletons(pmlc.load_ws(ws))[SINGLE]
+    assert any(x in t for x in _escaped(label))
+    assert SHARED.format("external") in t and SHARED.format("external") in md
+    assert "Review: approved by HSE manager on October 2026" in t
+    assert "Work order of" in t                       # external keeps the justification, masked
+
+
+def test_share_public_leaks_nothing(tmp_path, shws):
+    """Review Focus 5: the whole HTML string (payload, print trail, <title>) carries no identifying detail."""
+    ws, orgs = shws
+    p = sign(ws, write_doc(tmp_path, SPACK), "--classification", "public", "--legal-review", "cleared")
+    out = tmp_path / "out"
+    r = _cli("pack", str(ws), str(p), "--share", "public", "--orgs", str(orgs), "--out", str(out))
+    assert r.returncode == 0, r.stderr
+    t = (out / "test-pack.public.html").read_text(encoding="utf-8")
+    assert SLUG not in t and "acme-pump-fire" not in t
+    assert not TIME_RX.search(t), TIME_RX.search(t)
+    for leak in ("P-101", "AO-101", "Bharat Seals", "Acme Pumps", SINGLE):
+        assert leak not in t, leak
+    assert not re.search(r"\b\d{4}-\d{2}-\d{2}\b", t), re.search(r"\b\d{4}-\d{2}-\d{2}\b", t)
+    assert not re.search(r"\b\d{1,2}(?:st|nd|rd|th)? (?:January|February|March|April|May|June|July|August|September|"
+                         r"October|November|December) \d{4}\b", t)
+    assert "Work order of" not in t and "supplied the seal" not in t      # AI justification and causal text dropped
+    data = json.loads(re.search(r'id="pmlc-pack-data">(.*?)</script>', t, re.S).group(1))
+    f1 = data["findings"]["FND-0001"]
+    assert f1["label"] == "Pump restarted without leak test" and "justification" not in f1 and "causal" not in f1
+    assert "run" not in data and SHARED.format("public") in t
+    assert (out / "test-pack.public.md").exists() and not (out / "test-pack.html").exists()
+
+
+def test_share_embed_full_refused(tmp_path, shws):
+    ws, orgs = shws
+    p = sign(ws, write_doc(tmp_path, SPACK), "--classification", "external", "--legal-review", "cleared")
+    for mode in ("full", "cited"):
+        out = tmp_path / mode
+        r = _cli("pack", str(ws), str(p), "--share", "external", "--embed", mode, "--out", str(out))
+        assert r.returncode == 1
+        assert r.stderr.strip().splitlines()[-1] == (f"cannot share externally: --embed {mode} is refused "
+                                                     "(use --embed summary)")
+        assert files(out) == []
+    r = _cli("pack", str(ws), str(p), "--share", "external", "--embed", "summary", "--orgs", str(orgs),
+             "--out", str(tmp_path / "summary"))
+    assert r.returncode == 0, r.stderr
+
+
+def test_share_dashboard_external(tmp_path, shws):
+    ws, orgs = shws
+    reg = copy.deepcopy(MINI_REG)
+    reg["entries"][0]["context"] = "At 14:05 on 2024-03-12 the ACME crew restarted P-101."
+    rp = write_doc(tmp_path, reg, "reg.json")
+    r = _cli("dashboard", str(ws), "--register", str(rp), "--share", "external")
+    assert r.returncode == 1 and "cannot share externally: review is draft" in r.stderr
+    sign(ws, rp, "--classification", "external", "--legal-review", "cleared")
+    r = _cli("dashboard", str(ws), "--register", str(rp), "--share", "external", "--orgs", str(orgs))
+    assert r.returncode == 0, r.stderr
+    outs = ws.parent / "outputs"
+    assert files(outs) == ["organisation-learning-map.external.html"]
+    t = (outs / "organisation-learning-map.external.html").read_text(encoding="utf-8")
+    for leak in ("ACME", "Bharat Seals", "P-101", "AO-101", SINGLE, "2024-03-12", "2024-03-20", "Acme Pumps"):
+        assert leak not in t, leak
+    assert not TIME_RX.search(t) and SHARED.format("external") in t and "[organisation]" in t
+
+
+def test_register_xlsx_share_external(tmp_path, shws):
+    ws, orgs = shws
+    reg = copy.deepcopy(MINI_REG)
+    reg["entries"][0]["context"] = "At 14:05 on 2024-03-12 the ACME crew restarted P-101."
+    rp = write_doc(tmp_path, reg, "reg.json")
+    r = _cli("register-xlsx", str(rp), "--ws", str(ws), "--share", "external")
+    assert r.returncode == 1 and "cannot share externally: review is draft" in r.stderr
+    assert files(tmp_path / "reg-out") == [] and not (tmp_path / "learnings-register.external.xlsx").exists()
+    sign(ws, rp, "--classification", "external", "--legal-review", "cleared")
+    r = _cli("register-xlsx", str(rp), "--ws", str(ws), "--share", "external", "--orgs", str(orgs))
+    assert r.returncode == 0, r.stderr
+    x = tmp_path / "learnings-register.external.xlsx"
+    assert x.exists() and not (tmp_path / "learnings-register.xlsx").exists()
+    wb = openpyxl.load_workbook(x)
+    cells = " ".join(str(c) for s in wb.worksheets for row in s.iter_rows(values_only=True) for c in row if c)
+    for leak in ("ACME", "14:05", "2024-03-12", "P-101", "2026-10-19"):
+        assert leak not in cells, leak
+    assert "[organisation]" in cells and SHARED.format("external") in cells
+    rp2 = write_doc(tmp_path, reg, "reg2.json")            # no workspace can be found: refused
+    r = _cli("register-xlsx", str(rp2), "--share", "external")
+    assert r.returncode == 1 and "no workspace (pass --ws)" in r.stderr
+
+
+def test_render_name_guard(tmp_path, shws):
+    ws, _ = shws
+    names = tmp_path / "names.txt"
+    names.write_text("# staff\nFictional Person\n", encoding="utf-8")
+    env = {"PMLC_NAMES": str(names)}
+    msg = re.compile(r"refused: a listed name appears in the output \((\d+) times\); fix the pack text or use "
+                     r"ingest --redact")
+    # A name in the pack text, accepted by lint_ok, is still caught in the rendered page (internal mode).
+    doc = copy.deepcopy(SPACK)
+    doc["sections"][0]["items"][0].update(text="Fictional Person tested the seal.",
+                                          lint_ok={"rule": "JC1", "reason": "test of the render guard"})
+    p = write_doc(tmp_path, doc)
+    out = tmp_path / "out"
+    r = _cli("pack", str(ws), str(p), "--out", str(out), env=env)
+    assert r.returncode == 1 and msg.search(r.stderr) and int(msg.search(r.stderr).group(1)) >= 2
+    assert files(out) == []
+    # A name the pack text does not carry: the cited record's roles hold it.
+    doc = copy.deepcopy(SPACK)
+    doc["sections"][0]["items"][0]["cites"] = ["FND-0004"]
+    p = write_doc(tmp_path, doc)
+    r = _cli("pack", str(ws), str(p), "--out", str(out), "--names", str(names))
+    assert r.returncode == 1 and msg.search(r.stderr) and files(out) == []
+    # Without the names file the same pack renders.
+    assert _cli("pack", str(ws), str(p), "--out", str(out)).returncode == 0
+    # The dashboard has the same guard.
+    reg = copy.deepcopy(MINI_REG)
+    reg["entries"][0]["lesson"] += " Fictional Person saw it."
+    rp = write_doc(tmp_path, reg, "reg.json")
+    dash = tmp_path / "map.html"
+    r = _cli("dashboard", str(ws), "--register", str(rp), "--out", str(dash), env=env)
+    assert r.returncode == 1 and msg.search(r.stderr) and not dash.exists()
+
+
 def test_scan_names_uses_privacy_core(tmp_path):
     n = tmp_path / "names.txt"
     n.write_text("# list\n\nR. K. Sharma\n", encoding="utf-8")
@@ -142,3 +494,4 @@ def test_scan_names_uses_privacy_core(tmp_path):
     import sys
     r = subprocess.run([sys.executable, str(PMLC), "scan-names", str(n), str(t)], capture_output=True, text=True)
     assert r.returncode == 1 and "1 hit" in r.stdout
+

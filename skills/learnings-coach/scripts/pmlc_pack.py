@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pmlc as core
 import pmlc_lint
+import pmlc_privacy as privacy
 
 SCHEMA_VERSION = 1
 STATUS_PHRASE = core.STATUS_PHRASE
@@ -946,13 +947,22 @@ def _md_block(it, inc_date=None) -> str:
     return out + _md_lint_ok(it, "\n  " if it["kind"] == "check" else "\n\n")
 
 
-def render_pack_md(pack, w) -> str:
-    """The pack as Markdown: generated, never hand-written, so it always agrees with the HTML."""
+def _handling_lines(eh, share):
+    """The handling lines, masked for a shared copy, then the 'Shared <mode>' line."""
+    if not share:
+        return core.handling_lines(eh)
+    return [privacy.share_text(x, share) for x in core.handling_lines(eh)] + [core.SHARED_LINE.format(mode=share.mode)]
+
+
+def render_pack_md(pack, w, eh=None, share=None) -> str:
+    """The pack as Markdown: generated, never hand-written, so it always agrees with the HTML. eh is the effective
+    handling when the caller computed it on the unmasked pack; share is the ShareCtx of a shared copy (pack and w
+    are then already masked)."""
     inc_date = _pack_incident_date(pack, w)
-    eh = core.effective_handling(pack, w)
+    eh = eh or core.effective_handling(pack, w)
     cov = coverage(w, pack)
     out = [f"# {pack['title']}"] + ([f"**{core.DRAFT_LABEL}**"] if core.is_draft(eh) else [])
-    out += core.handling_lines(eh) + [f"*{core.status_line(pack['status'])}*", f"**Audience:** {pack['audience']}"]
+    out += _handling_lines(eh, share) + [f"*{core.status_line(pack['status'])}*", f"**Audience:** {pack['audience']}"]
     fields, inc = w.get("incident", {}).get("fields", {}), pack.get("incident") or {}
     shown = [str(x) for x in (inc.get("title") or fields.get("Incident Title"), inc.get("date") or fields.get("Date")) if x]
     if shown:
@@ -1178,7 +1188,7 @@ def _section_items(items, graphs, inc_date=None) -> str:
     return "".join(out)
 
 
-def build_pack_data(w, pack, run, embed=core.EMBED_DEFAULT) -> dict:
+def build_pack_data(w, pack, run, embed=core.EMBED_DEFAULT, share=None) -> dict:
     """What the page script needs, as --embed says (core.embedded_records). cited: full records of the cited
     findings and evidence, and the relevant findings the pack leaves uncited or excludes as {id, label, rating},
     so the coverage list can still expand them. summary: cited without quotes. full: full records of all of them
@@ -1186,8 +1196,12 @@ def build_pack_data(w, pack, run, embed=core.EMBED_DEFAULT) -> dict:
     fids, eids = cited_ids(pack)
     uncited = [x for x in relevant_findings(w, pack.get("scope")) if x not in fids]
     findings, evidence = core.embedded_records(w, fids, eids, uncited + excluded_ids(pack), embed, linked=False)
-    return {"pack": pack["pack"], "run": run, "findings": findings, "evidence": evidence,
-            "brand": core.brand_payload()}
+    if share and share.mode == "public":
+        findings = core.public_records(findings)
+    data = {"pack": pack["pack"], "run": run, "findings": findings, "evidence": evidence, "brand": core.brand_payload()}
+    if share:
+        data.pop("run")              # a shared copy carries no run slug (share_doc drops the key anywhere else)
+    return data
 
 
 def _trail(data, pack) -> str:
@@ -1201,14 +1215,14 @@ def _trail(data, pack) -> str:
     return f'<section class="trail"><h2>Evidence trail</h2><dl>{"".join(rows)}</dl></section>'
 
 
-def render_pack_html(w, pack, run, generated, embed=core.EMBED_DEFAULT) -> str:
+def render_pack_html(w, pack, run, generated, embed=core.EMBED_DEFAULT, eh=None, share=None) -> str:
     """One self-contained offline page: server-rendered content, with pack.js adding behaviour. embed: see
-    build_pack_data."""
+    build_pack_data. eh and share: see render_pack_md; a shared copy shows no run slug or generated date."""
     inc_date = _pack_incident_date(pack, w)
-    eh = core.effective_handling(pack, w)        # before with_item_ids, which would change the content hash
+    eh = eh or core.effective_handling(pack, w)  # before with_item_ids, which would change the content hash
     pack = with_item_ids(pack)
     fields = w.get("incident", {}).get("fields", {})
-    data = build_pack_data(w, pack, run, embed)
+    data = build_pack_data(w, pack, run, embed, share)
     cov = coverage(w, pack)
     graphs = {it["id"]: layout_graph(it["nodes"], it["edges"], uid=it["id"])
               for s in pack["sections"] for it in s["items"] if it["kind"] == "graph"}
@@ -1239,12 +1253,13 @@ def render_pack_html(w, pack, run, generated, embed=core.EMBED_DEFAULT) -> str:
                      for b in pack["bottom_line"])
     clear = '<button type="button" id="clear-ticks">Clear ticks</button>' if has_checks else ""
     inc = pack.get("incident") or {}
+    trace = () if share else (f"run {run}", f"generated {generated}")
     meta = " · ".join(_h(x) for x in (pack["audience"], inc.get("title") or fields.get("Incident Title"),
-                                      inc.get("date") or fields.get("Date"), f"run {run}", f"generated {generated}") if x)
+                                      inc.get("date") or fields.get("Date"), *trace) if x)
     title = _h(pack["title"])
     status = _h(core.status_line(pack["status"]))
     ribbon = core.RIBBON_HTML + "\n" if core.is_draft(eh) else ""
-    handling = "".join(f'<p class="handling">{_h(x)}</p>' for x in core.handling_lines(eh))
+    handling = "".join(f'<p class="handling">{_h(x)}</p>' for x in _handling_lines(eh, share))
     css = (core.DASHBOARD_ASSETS / "pack.css").read_text(encoding="utf-8")
     js = (core.DASHBOARD_ASSETS / "pack.js").read_text(encoding="utf-8")
     payload = core.embed_json(data)
@@ -1300,22 +1315,33 @@ def follow_up(pack) -> dict:
 
 
 def cmd_pack(a):
+    """Render a checked pack. --share external|public: the share gate first (P2-9), then the page is rendered from
+    masked copies of the pack and the workspace. In any mode the render name guard runs before anything is written."""
     w, pack, _ = _checked(a)
     core.warn_stale(a.ws)
+    mode = core.share_gate(pack, w, a)
     ws = core._abs(a.ws)
     run = ws.parent.name if core.is_standard_ws(ws) else ws.name
+    embed = core.resolve_embed(a)
+    eh = core.effective_handling(pack, w)
+    share = core.share_ctx(a, w, mode) if mode != "internal" else None
+    rw, rpack = (core.shared_copy(w, share, w), core.shared_copy(pack, share, w)) if share else (w, pack)
+    page_html = render_pack_html(rw, rpack, run, dt.date.today().isoformat(), embed, eh=eh, share=share)
+    md_text = None if a.no_md else render_pack_md(rpack, rw, eh=eh, share=share)
+    core.name_guard([page_html, md_text or ""], a)
     out = Path(a.out) if a.out else core.outputs_dir(ws)
     out.mkdir(parents=True, exist_ok=True)
-    embed = core.resolve_embed(a)
-    page = out / f"{pack['pack']}.html"
-    page.write_text(render_pack_html(w, pack, run, dt.date.today().isoformat(), embed), encoding="utf-8")
-    core.print_witness_note(core.embedded_records(w, *cited_ids(pack), (), embed, linked=False)[1], embed)
+    page = core.shared_name(out / f"{pack['pack']}.html", mode)
+    page.write_text(page_html, encoding="utf-8")
+    core.print_witness_note(core.embedded_records(rw, *cited_ids(pack), (), embed, linked=False)[1], embed)
     print(f"HTML written to {page}")
-    if not a.no_md:
-        md = out / f"{pack['pack']}.md"
-        md.write_text(render_pack_md(pack, w), encoding="utf-8")
+    if md_text is not None:
+        md = core.shared_name(out / f"{pack['pack']}.md", mode)
+        md.write_text(md_text, encoding="utf-8")
         print(f"Markdown written to {md}")
-    if pack["pack"] == "investigator-coach":
+    if mode != "internal":
+        print(core.SHARED_LINE.format(mode=mode))
+    if pack["pack"] == "investigator-coach" and mode == "internal":   # interview plans never leave the team
         fu = out / "follow-up.json"
         core.write_json(fu, follow_up(pack))
         print(f"Follow-up fields written to {fu}")

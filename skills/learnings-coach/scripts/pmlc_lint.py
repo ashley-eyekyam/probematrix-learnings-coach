@@ -15,7 +15,8 @@ STATUS_PHRASE = core.STATUS_PHRASE
 TERMS_FILE = core.REFS / "lint-terms.json"
 Hit = collections.namedtuple("Hit", "rule severity path match hint")
 SKIP_KEYS = {"kind", "id", "cites", "supporting_cites", "row_cites", "row_supporting_cites", "lr_id", "ml_id",
-             "finding_ids", "evidence_ids", "hfacs_level", "performance_mode", "handling", "scope", "lint_ok"}
+             "finding_ids", "evidence_ids", "hfacs_level", "performance_mode", "handling", "scope", "lint_ok",
+             "owner_entity", "entities"}
 RETRAIN_ONLY = {"training", "administrative"}
 # Targets and measures are the coach's proposals, not claims about the incident, so JC8 does not check them.
 JC8_SKIP_FIELDS = {"leading_indicator", "indicator", "measure", "deterioration"}

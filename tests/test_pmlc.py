@@ -57,13 +57,21 @@ MINI_REG = {"title": "Synthetic register", "source": "export.xlsx", "entries": [
           "leading_indicator": "i"}]}]}
 
 
-def make_export(d: Path, status: str = "completed", edited=None) -> Path:
+def make_export(d: Path, status: str = "completed", edited=None, summary=(), narrative=None,
+                name="export.xlsx") -> Path:
+    """summary adds (field, value) rows to the Incident Summary; narrative adds an INCIDENT NARRATIVE block.
+    The defaults give the unchanged export."""
     wb = openpyxl.Workbook()
     s = wb.active
     s.title = "Incident Summary"
     for r in [("INCIDENT SUMMARY", None), (None, None), ("Field", "Value"), ("Incident Title", "Synthetic pump fire"),
               ("Date", "2024-03-20"), ("Investigation Status", status)]:
         s.append(r)
+    for r in summary:
+        s.append(tuple(r))
+    if narrative:
+        s.append(("INCIDENT NARRATIVE", None))
+        s.append((narrative, None))
     f = wb.create_sheet("Identified Findings")
     f.append(FIND_COLS)
     ue = FIND_COLS.index("User Edited")
@@ -81,7 +89,7 @@ def make_export(d: Path, status: str = "completed", edited=None) -> Path:
     c = wb.create_sheet("Causal Chain")
     c.append(["Link ID", "From Code", "From Level", "To Code"])
     c.append(["No causal links found", None, None, None])
-    x = d / "export.xlsx"
+    x = d / name
     wb.save(x)
     return x
 

@@ -69,6 +69,20 @@ Recommendations say **what should change**, the **barrier** it strengthens, the 
 
 **Owner wording.** Separate "owns the change" from "was involved". A learning's `owner` or recommendation's `owner` names the role that **owns the change** (holds the authority to change the system), never the role that was involved in the event. At site-leadership and board level a role can be one person, so "learning owner" reads as an accusation: write the function ("Maintenance function") rather than the post, and say "owns the change", not "was involved" or "responsible". Never write a named person; owners and due dates are still the organisation's decision.
 
+## 7. Sharing outside the organisation
+
+A copy for a regulator, client, contractor, insurer, sister company or the public is the organisation's decision, never the coach's. Do not offer it unprompted. A copy may leave the organisation only when **all** of these hold:
+
+1. **Legal review.** The organisation's legal adviser has reviewed the copy and cleared it. Record this as `legal_review: cleared` with `sign-off --legal-review cleared`. These outputs create no legal privilege: a pack, register or dashboard is not a privileged document, and writing it does not make anything privileged. Whether to share, and on what terms, is for legal review.
+2. **Approved sign-off at the right classification.** A person who reviewed the file signs it off as `approved`, with `--classification external` (or `public` for a public copy). Any edit after sign-off returns the file to draft. Nothing from an investigation still in progress, or with no finding edited by a person, can be approved.
+3. **`--share external`** (or `--share public`) on `pack`, `dashboard` or `register-xlsx`. The engine refuses, listing every unmet condition and writing nothing, unless conditions 1 and 2 hold. The shared copy is written as `<name>.external.html` (or `.public.html`) beside the internal one, and it says `Shared external: identifying details are masked`.
+4. **`--embed summary`.** The page carries no evidence descriptions, quotes, interview plans, key questions or reviewer-vote reasons. Sharing uses `summary` when `--embed` is left out, and refuses `cited` or `full`. A public copy also drops the AI justification and causal text of each finding, keeping its label and ID.
+5. **A client-safe (or regulator-safe) variant.** Write the pack for that reader: functions instead of posts, no company names (JC9), no equipment tags (JC10), no role string that points to one person (JC7), and nothing the reader does not need to learn. Run `check-pack --share external` and fix every error before signing off.
+
+What the engine masks in a shared copy: listed names (`--names` or `PMLC_NAMES`) and honorific forms become `[name]`; listed organisations (`--orgs` or `PMLC_ORGS`) and company-suffix names become `[organisation]`; equipment tags become `[equipment tag]`; singleton roles become their generalised label; a site-leadership or board `owner` becomes its function; clock times are removed and full dates become the month and year; the run slug and generated date are left out. Masking is a safety net, not the review: read the shared copy before it leaves.
+
+In every mode, `pack` and `dashboard` refuse to write a page in which a listed name appears. Fix the pack text, or redact the workspace with `ingest --redact`.
+
 ## Interviews in a just culture
 
 For investigators and auditors who plan interviews from these outputs:
