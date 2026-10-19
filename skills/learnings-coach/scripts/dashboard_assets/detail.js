@@ -211,11 +211,20 @@
     return list.length ? list : Object.keys(e.tier_messages || {}).sort();
   }
 
+  /* --embed cited and summary: a finding no learning covers travels as {id, label, rating} only. */
+  var STUB_KEYS = ["id", "label", "rating"];
+  var STUB_NOTE = "Only the label and rating are embedded in this page.";
+  function isStub(f) {
+    var keys = f && typeof f === "object" ? Object.keys(f) : [];
+    return keys.length === STUB_KEYS.length && keys.every(function (k) { return STUB_KEYS.indexOf(k) !== -1; });
+  }
+
   /* The AI-provenance labels of one finding record: the export-language banner, the justification label, and the
-     AI chip unless the export marks the finding edited by a person. */
+     AI chip unless the export marks the finding edited by a person (a label-only record claims neither). */
   function provenance(f, brand) {
     var b = brand || {}, ue = String((f && f.user_edited) || "").trim().toLowerCase();
-    return {banner: b.export_banner || null, chip: ue === "" || ue === "no" ? b.ai_chip || null : null,
+    var chip = !isStub(f) && (ue === "" || ue === "no") ? b.ai_chip || null : null;
+    return {banner: b.export_banner || null, chip: chip,
             label: b.ai_justification_label || "Justification"};
   }
 
@@ -237,7 +246,7 @@
         down ? chip("reviewer downgrade vote", "warn") : null,
         pv.chip ? chip(pv.chip, "ai") : null,
         h("span", {class: "lab", text: f.label || ""})]),
-      h("div", {class: "fbody"}, [
+      h("div", {class: "fbody"}, isStub(f) ? [h("p", {class: "m", text: STUB_NOTE})] : [
         pv.banner ? h("p", {class: "export-banner", text: pv.banner}) : null,
         f.short ? kv("Summary", f.short) : null,
         f.justification ? kv(pv.label, f.justification) : null,

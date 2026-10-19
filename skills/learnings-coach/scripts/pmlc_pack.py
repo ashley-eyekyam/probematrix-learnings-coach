@@ -22,6 +22,8 @@ SLUG_RX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 ID_RX = re.compile(r"\b(FND-[0-9A-Za-z]{4,}|EVD-\d{3,})\b")
 DATE_RX = re.compile(r"^\d{4}(?:-\d{2}(?:-\d{2})?)?$")
 MAX_BOTTOM_LINE = 7
+EMBED_MODES = core.EMBED_MODES
+UNCOVERED_PRINT_LINE = "{x} of {y} relevant findings cited"
 
 # Item kinds: required fields, optional fields, and whether at least one citation is required.
 KINDS = {
@@ -102,7 +104,7 @@ CITE_FIELDS = ["cites", "row_cites", "row_supporting_cites", "supporting_cites"]
 STRENGTHS = ("direct", "corroborated", "inferred")
 BARRIER_STATES = ("absent", "degraded", "defeated", "worked partly", "worked")
 TIME_RX = re.compile(r"(?:[01]\d|2[0-3]):[0-5]\d")          # used with fullmatch: "14:05", never "14:05\n"
-GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group")
+GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group", "lint_ok")
 
 
 def _pick(d, keys) -> dict:
@@ -915,6 +917,21 @@ def _md_item(it, inc_date=None) -> str:
     raise ValueError(f"unknown kind {k!r}")
 
 
+def lint_ok_notes(d) -> list:
+    """'Language check JCn accepted: <reason>' for each well-formed lint_ok on an item or bottom-line entry (the
+    spec renders the reason on the page). A malformed one is a check-pack problem, so it is not shown."""
+    ok = d.get("lint_ok") if isinstance(d, dict) else None
+    out = []
+    for x in ok if isinstance(ok, list) else [ok]:
+        if isinstance(x, dict) and _text(x.get("rule")) and _text(x.get("reason")):
+            out.append(f"Language check {x['rule']} accepted: {x['reason'].strip()}")
+    return out
+
+
+def _md_lint_ok(d, sep) -> str:
+    return "".join(f"{sep}*{n}*" for n in lint_ok_notes(d))
+
+
 def _md_extras(d) -> str:
     bits = ([f"evidence: {d['evidence_strength']}"] if d.get("evidence_strength") else []) + \
            ([f"+{len(d['supporting_cites'])} supporting"] if d.get("supporting_cites") else [])
@@ -923,9 +940,10 @@ def _md_extras(d) -> str:
 
 def _md_block(it, inc_date=None) -> str:
     x = _md_extras(it)
-    if not x:
-        return _md_item(it, inc_date)
-    return _md_item(it, inc_date) + (" " + x if it["kind"] in ("para", "check") else "\n\n" + x)
+    out = _md_item(it, inc_date)
+    if x:
+        out += " " + x if it["kind"] in ("para", "check") else "\n\n" + x
+    return out + _md_lint_ok(it, "\n  " if it["kind"] == "check" else "\n\n")
 
 
 def render_pack_md(pack, w) -> str:
@@ -944,7 +962,7 @@ def render_pack_md(pack, w) -> str:
                 "\n".join(f"- {n['text']}{_c(n.get('cites'))}" for n in pack["data_quality"])]
     out += ["## Bottom line",
            "\n".join(f"- {b['text']}{_c(b.get('cites'))}" + (" " + _md_extras(b) if _md_extras(b) else "")
-                     for b in pack["bottom_line"])]
+                     + _md_lint_ok(b, "\n  ") for b in pack["bottom_line"])]
     for s in pack["sections"]:
         out.append(f"## {s['heading']}")
         if s.get("intro"):
@@ -1033,6 +1051,10 @@ def _extras(d) -> str:
     sup = d.get("supporting_cites") or []
     more = f'<details class="more"><summary>+{len(sup)} supporting</summary>{_chips(sup)}</details>' if sup else ""
     return badge + more
+
+
+def _lint_ok_html(d) -> str:
+    return "".join(f'<p class="lint-ok">{_h(n)}</p>' for n in lint_ok_notes(d))
 
 
 def _html_item(it, graphs, inc_date=None) -> str:
@@ -1129,7 +1151,7 @@ def _html_item(it, graphs, inc_date=None) -> str:
                 + (_rich(it["explanation"]) if g("explanation") else "") + c)
     else:
         raise ValueError(f"unknown kind {k!r}")
-    return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}{_extras(it)}</div>'
+    return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}{_extras(it)}{_lint_ok_html(it)}</div>'
 
 
 def _section_items(items, graphs, inc_date=None) -> str:
@@ -1156,30 +1178,37 @@ def _section_items(items, graphs, inc_date=None) -> str:
     return "".join(out)
 
 
-def build_pack_data(w, pack, run) -> dict:
-    """What the page script needs: full records of every cited finding and evidence item, plus the
-    relevant findings the pack leaves uncited (so the coverage list can expand them too)."""
+def build_pack_data(w, pack, run, embed=core.EMBED_DEFAULT) -> dict:
+    """What the page script needs, as --embed says (core.embedded_records). cited: full records of the cited
+    findings and evidence, and the relevant findings the pack leaves uncited or excludes as {id, label, rating},
+    so the coverage list can still expand them. summary: cited without quotes. full: full records of all of them
+    plus the evidence the cited findings link."""
     fids, eids = cited_ids(pack)
     uncited = [x for x in relevant_findings(w, pack.get("scope")) if x not in fids]
-    findings, evidence = core.citation_records(w, fids + uncited + excluded_ids(pack), eids)
+    findings, evidence = core.embedded_records(w, fids, eids, uncited + excluded_ids(pack), embed, linked=False)
     return {"pack": pack["pack"], "run": run, "findings": findings, "evidence": evidence,
             "brand": core.brand_payload()}
 
 
-def _trail(data) -> str:
+def _trail(data, pack) -> str:
+    """The print-only evidence trail: the cited findings and evidence only (L4-01), in citation order."""
+    fids, eids = cited_ids(pack)
     rows = [f'<dt>{_h(i)}</dt><dd>{_h(f.get("label") or f.get("name"))} · L{_h(f.get("level"))} · '
-            f'rating {_h(f.get("rating"))}. {_h(f.get("short"))}</dd>' for i, f in data["findings"].items()]
-    rows += [f'<dt>{_h(i)}</dt><dd>{_h(e.get("type"))}: {_h(e.get("description"))}</dd>' for i, e in data["evidence"].items()]
+            f'rating {_h(f.get("rating"))}. {_h(f.get("short"))}</dd>'
+            for i, f in ((x, data["findings"].get(x)) for x in fids) if f]
+    rows += [f'<dt>{_h(i)}</dt><dd>{_h(e.get("type"))}' + (f': {_h(e["description"])}' if e.get("description") else "")
+             + "</dd>" for i, e in ((x, data["evidence"].get(x)) for x in eids) if e]
     return f'<section class="trail"><h2>Evidence trail</h2><dl>{"".join(rows)}</dl></section>'
 
 
-def render_pack_html(w, pack, run, generated) -> str:
-    """One self-contained offline page: server-rendered content, with pack.js adding behaviour."""
+def render_pack_html(w, pack, run, generated, embed=core.EMBED_DEFAULT) -> str:
+    """One self-contained offline page: server-rendered content, with pack.js adding behaviour. embed: see
+    build_pack_data."""
     inc_date = _pack_incident_date(pack, w)
     eh = core.effective_handling(pack, w)        # before with_item_ids, which would change the content hash
     pack = with_item_ids(pack)
     fields = w.get("incident", {}).get("fields", {})
-    data = build_pack_data(w, pack, run)
+    data = build_pack_data(w, pack, run, embed)
     cov = coverage(w, pack)
     graphs = {it["id"]: layout_graph(it["nodes"], it["edges"], uid=it["id"])
               for s in pack["sections"] for it in s["items"] if it["kind"] == "graph"}
@@ -1200,12 +1229,14 @@ def render_pack_html(w, pack, run, generated) -> str:
     unc = "".join(f'<li>{_chip(u["id"])} {_h(u["label"])} · rating {_h(u["rating"])} · L{_h(u["level"])} · '
                   f'{_h(u["reason"])}</li>' for u in cov["uncovered"])
     cov_html = ('<section class="coverage"><h2>Coverage</h2>'
-                f'<p>This pack cites {cov["cited"]} of {cov["relevant"]} relevant findings.</p>'
-                + (f'<details><summary>Not covered here ({len(cov["uncovered"])})</summary><ul>{unc}</ul></details>'
-                   if unc else "")
+                f'<p class="noprint">This pack cites {cov["cited"]} of {cov["relevant"]} relevant findings.</p>'
+                f'<p class="printonly">{_h(UNCOVERED_PRINT_LINE.format(x=cov["cited"], y=cov["relevant"]))}</p>'
+                + (f'<details class="noprint"><summary>Not covered here ({len(cov["uncovered"])})</summary>'
+                   f'<ul>{unc}</ul></details>' if unc else "")
                 + (f'<details><summary>Left out on purpose ({len(cov["excluded"])})</summary><ul>{exc}</ul></details>'
                    if exc else "") + "</section>")
-    bottom = "".join(f'<li>{_inline(b["text"])} {_chips(b.get("cites"))}{_extras(b)}</li>' for b in pack["bottom_line"])
+    bottom = "".join(f'<li>{_inline(b["text"])} {_chips(b.get("cites"))}{_extras(b)}{_lint_ok_html(b)}</li>'
+                     for b in pack["bottom_line"])
     clear = '<button type="button" id="clear-ticks">Clear ticks</button>' if has_checks else ""
     inc = pack.get("incident") or {}
     meta = " · ".join(_h(x) for x in (pack["audience"], inc.get("title") or fields.get("Incident Title"),
@@ -1219,7 +1250,7 @@ def render_pack_html(w, pack, run, generated) -> str:
     payload = core.embed_json(data)
     brand = _h(core.BRAND)
     tokens, wide = core.PAGE_TOKENS_CSS, core.WIDE_CSS
-    body = "".join(secs) + cov_html + _trail(data)
+    body = "".join(secs) + cov_html + _trail(data, pack)
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
 <style>
@@ -1275,8 +1306,10 @@ def cmd_pack(a):
     run = ws.parent.name if core.is_standard_ws(ws) else ws.name
     out = Path(a.out) if a.out else core.outputs_dir(ws)
     out.mkdir(parents=True, exist_ok=True)
+    embed = core.resolve_embed(a)
     page = out / f"{pack['pack']}.html"
-    page.write_text(render_pack_html(w, pack, run, dt.date.today().isoformat()), encoding="utf-8")
+    page.write_text(render_pack_html(w, pack, run, dt.date.today().isoformat(), embed), encoding="utf-8")
+    core.print_witness_note(core.embedded_records(w, *cited_ids(pack), (), embed, linked=False)[1], embed)
     print(f"HTML written to {page}")
     if not a.no_md:
         md = out / f"{pack['pack']}.md"

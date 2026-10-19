@@ -105,3 +105,17 @@ assert.strictEqual(d.provenance({{}}, brand).chip, brand.ai_chip);
 assert.strictEqual(d.provenance({{user_edited:'Yes'}}, brand).chip, null);
 assert.strictEqual(d.provenance({{user_edited:''}}, undefined).label, 'Justification');
 """)
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_detail_js_label_only_records():
+    node(f"""
+const assert = require('assert');
+const d = require({json.dumps(str(DETAIL_JS))});
+const brand = {{ai_chip:'AI-drafted, not human-edited', export_banner:'banner'}};
+assert.strictEqual(d.provenance({{id:'FND-0003', label:'Seals', rating:4}}, brand).chip, null);
+assert.strictEqual(d.provenance({{id:'FND-0003', label:'Seals', rating:4, short:'x'}}, brand).chip, brand.ai_chip);
+assert.deepStrictEqual(d.sortFindings(['FND-A', 'FND-B'], {{'FND-A': {{id:'FND-A', label:'a', rating:2}},
+  'FND-B': {{id:'FND-B', label:'b', rating:4}}}}), ['FND-B', 'FND-A']);
+""")
+    assert "Only the label and rating are embedded in this page." in DETAIL_JS.read_text(encoding="utf-8")
