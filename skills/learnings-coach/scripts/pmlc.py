@@ -564,13 +564,17 @@ def cmd_sign_off(a):
     reasons = forced_draft_reasons(w)
     if reasons:
         sys.exit("cannot sign off: " + "; ".join(reasons))
+    # M3: the check runs at the classification the file will have, so an external sign-off meets the external rules
+    old = doc.get("handling") if isinstance(doc.get("handling"), dict) else {}
+    target = a.classification or old.get("classification") or HANDLING_DEFAULTS["classification"]
+    names = privacy.load_names(getattr(a, "names", None))
     if "pack" in doc:
-        problems = _pack_module().check_pack(doc, w).problems
+        problems = _pack_module().check_pack(doc, w, share=target, names=names).problems
     elif "entries" in doc:
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             try:
-                cmd_check_register(argparse.Namespace(ws=a.ws, register=str(path)))
+                cmd_check_register(argparse.Namespace(ws=a.ws, register=str(path), share=target, names=a.names))
                 problems = []
             except SystemExit as e:
                 problems = [x for x in buf.getvalue().splitlines() if x.startswith(" - ")] if e.code else []
@@ -2340,6 +2344,7 @@ def cmd_dashboard(a):
         sys.exit("Needs clusters.json. Run: pmlc.py classify <ws>")
     warn_stale(ws)
     reg0 = json.loads(Path(a.register).read_text(encoding="utf-8")) if a.register else None
+    refuse_pack_as_register(reg0, a.register)
     hdoc0 = reg0 if isinstance(reg0, dict) else {}
     mode = share_gate(hdoc0, w, a, src=a.register, ws=ws)   # a dashboard without a signed register stays inside
     eh = effective_handling(hdoc0, w, src=a.register, ws=ws)
@@ -2566,6 +2571,24 @@ def _flat(v):
     return "" if v is None else str(v)
 
 
+def refuse_pack_as_register(doc, path) -> None:
+    """M9: a pack JSON given where a register goes exits 1 with one line, not a traceback."""
+    if isinstance(doc, dict) and "pack" in doc and "entries" not in doc:
+        sys.exit(f"{path} is a pack, not a register")
+
+
+FORMULA_LEAD = ("=", "+", "-", "@")
+
+
+def text_cells(wb) -> None:
+    """M6: every cell string that starts with = + - or @ is stored as text, so a spreadsheet never runs it."""
+    for sh in wb.worksheets:
+        for row in sh.iter_rows():
+            for c in row:
+                if isinstance(c.value, str) and c.value.startswith(FORMULA_LEAD):
+                    c.data_type = "s"
+
+
 def _register_ws(a) -> tuple:
     """(workspace, its folder) for a register's forced-draft and sign-off checks: --ws, else the run's workspace when
     the register sits in <run>/outputs/ of the standard layout, else ({}, None): nothing can be checked, so the
@@ -2583,6 +2606,7 @@ def cmd_register_xlsx(a):
     from openpyxl.styles import Alignment, Font, PatternFill
     from openpyxl.utils import get_column_letter
     reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
+    refuse_pack_as_register(reg, a.register)
     rw, rws = _register_ws(a)
     hdoc = reg if isinstance(reg, dict) else {}
     mode = share_gate(hdoc, rw, a, embeds=False, extra=[] if rw else ["no workspace (pass --ws)"],
@@ -2663,6 +2687,7 @@ def cmd_register_xlsx(a):
         sh.oddFooter.center.text = VERSION_STAMP
     out = Path(a.out) if a.out else shared_name(Path(a.register).resolve().parent / "learnings-register.xlsx", mode)
     out.parent.mkdir(parents=True, exist_ok=True)
+    text_cells(wb)
     wb.save(out)
     print(f"Register with {len(entries)} entries and {len(recs)} recommendations written to {out}")
 
@@ -2916,7 +2941,7 @@ def cmd_scan_names(a):
     names = privacy.load_names(a.names)
     if not names:
         sys.exit("Names file is empty.")
-    scans = [("", privacy.name_pattern(names, variants=a.variants))]
+    scans = [("", privacy.name_pattern(names, variants=a.variants, skip_role_words=True))]
     if a.patterns:
         scans += [(f"pattern:{k}", re.compile(v)) for k, v in privacy.PATTERNS.items()]
     hits = 0

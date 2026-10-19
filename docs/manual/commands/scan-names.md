@@ -59,7 +59,7 @@ python3 $E scan-names names.txt $OUT
 0 hit(s).
 ```
 
-With `--variants` the same scan gives 12 hits, all on the ordinary words "example" and "placeholder" in the page text: the fictional surnames are common words. Real surnames can do the same, so read the context of each hit.
+With `--variants`, a scan of the Hazira register and learning map gives 1 hit, on the ordinary word "placeholder" in the page's code: the fictional surname is a common word. "Example" alone is not matched, because a one-word variant that is a role noun or a language-check vocabulary word is skipped. Real surnames can still match ordinary words, so read the context of each hit.
 
 The test copy of a pack from [check-language](check-language.md), with one invented paragraph that uses the two fictional names:
 

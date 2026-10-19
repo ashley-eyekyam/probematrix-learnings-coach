@@ -37,7 +37,8 @@ TAG_RX = re.compile(r"\b(?<!FND-)(?<!EVD-)(?<!LR-)(?<!ML-)(?!(?:FND|EVD|LR|ML)-)
                     r"[A-Z]{1,5}-?\d{2,6}[A-Z]?\b")
 # Keys whose values are IDs or taxonomy labels, not prose: share_doc keeps them as they are (and the lint skips them).
 ID_KEYS = {"id", "kind", "pack", "schema", "cites", "supporting_cites", "row_cites", "row_supporting_cites",
-           "finding_ids", "evidence_ids", "lr_id", "ml_id", "owner_entity", "entities", "scope", "content_hash"}
+           "finding_ids", "evidence_ids", "lr_id", "ml_id", "owner_entity", "entities", "scope", "content_hash",
+           "rule"}                                       # a lint_ok rule ID (JC10) is not an equipment tag
 # Inside a graph item's edges, from and to are node IDs (elsewhere `to` is display text, e.g. a message's audience).
 EDGE_ID_KEYS = ("from", "to")
 # Dicts whose keys are role strings (clusters.json role_map): share_doc masks their keys as well as their values.
@@ -75,10 +76,12 @@ def _terms() -> dict:
     return json.loads(TERMS_FILE.read_text(encoding="utf-8"))
 
 
-def name_variants(name: str) -> list:
+def name_variants(name: str, skip_role_words=False) -> list:
     """The ways a person is named in text: the full name as given, surname only, initial plus surname, and an
     honorific plus surname for each honorific in lint-terms.json. 'Shri R. K. Sharma' gives 'Sharma', 'R. Sharma',
-    'R K Sharma', 'Shri Sharma', 'Shri. Sharma' and so on. A line with a digit (a staff ID) has no variants."""
+    'R K Sharma', 'Shri Sharma', 'Shri. Sharma' and so on. A line with a digit (a staff ID) has no variants.
+    skip_role_words=True (share masking and scan-names --variants, M1) leaves out a one-word variant that is a role
+    noun or a lint vocabulary word ('Officer', 'Field'), so it never masks a role; --redact keeps it and warns (X17)."""
     name = " ".join(name.split())
     out = [name]
     if not name or any(ch.isdigit() for ch in name):
@@ -99,7 +102,10 @@ def name_variants(name: str) -> list:
         forms += [" ".join(f"{i}." for i in ini) + " " + sur, " ".join(ini) + " " + sur]
     for h in _terms()["honorifics"]:
         forms += [f"{h} {sur}", f"{h}. {sur}"]
+    role_words = {x.lower() for x in _terms()["role_nouns"] + _terms()["name_vocabulary"]} if skip_role_words else ()
     for f in forms:
+        if " " not in f and f.lower() in role_words:     # M1: "Officer" alone is a role word, not this person
+            continue
         if f not in out:
             out.append(f)
     return out
@@ -118,13 +124,13 @@ def _alt(x: str) -> str:
     return "".join(out)
 
 
-def name_pattern(names, variants=False):
+def name_pattern(names, variants=False, skip_role_words=False):
     """One case-insensitive regex for a list of names (None for an empty list), bounded by (?<!\\w) and (?!\\w) so
     'Sharma' does not match inside 'Sharmaji' and a space matches any run of whitespace. variants=True adds the
-    name_variants of each name."""
+    name_variants of each name (skip_role_words: see name_variants)."""
     xs = []
     for n in names:
-        for v in (name_variants(n) if variants else [" ".join(n.split())]):
+        for v in (name_variants(n, skip_role_words) if variants else [" ".join(n.split())]):
             if v and v not in xs:
                 xs.append(v)
     if not xs:
@@ -268,7 +274,7 @@ def _share_rxs(ctx):
         # An honorific with the name after it, including a name step 1 already masked ("Mr [name]" -> "[name]").
         hon_rx = re.compile(r"\b(?:" + hon + r")\b\.?(?:\s+(?:" + re.escape(NAME_MASK)
                             + r"|[A-Z][\w'’-]+|[A-Z]\.?(?![\w])))+")
-        names_rx, orgs_rx = name_pattern(ctx.names, variants=True), name_pattern(ctx.orgs)
+        names_rx, orgs_rx = name_pattern(ctx.names, variants=True, skip_role_words=True), name_pattern(ctx.orgs)
         # A singleton role is matched as it reads after the earlier steps, so a role holding a tag still matches.
         singles = {}
         for role, label in ctx.singletons.items():

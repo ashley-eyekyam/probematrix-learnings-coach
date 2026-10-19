@@ -102,6 +102,23 @@ def test_name_variants():
     assert "Dr. Anand" in pv.name_variants("Anand")
 
 
+def test_name_variants_skip_role_words(tmp_path):
+    """Final review M1: a surname that is a role noun or a vocabulary word is no variant on its own, so the role
+    "Stores/Procurement Officer" survives a names file listing "Fictional Officer"."""
+    assert "Officer" in pv.name_variants("Fictional Officer")              # --redact keeps it, and warns (X17)
+    v = pv.name_variants("Fictional Officer", skip_role_words=True)
+    assert "Officer" not in v and "Fictional Officer" in v and "F. Officer" in v and "Mr Officer" in v
+    ctx = pv.ShareCtx("external", ["Fictional Officer"], [], {})
+    assert pv.share_text("The Stores/Procurement Officer told Fictional Officer.", ctx) == \
+        "The Stores/Procurement Officer told [name]."
+    names = tmp_path / "names.txt"
+    names.write_text("Fictional Officer\n", encoding="utf-8")
+    doc = tmp_path / "doc.txt"
+    doc.write_text("The Stores/Procurement Officer signed.", encoding="utf-8")
+    r = _cli("scan-names", str(names), str(doc), "--variants")
+    assert r.returncode == 0, r.stdout
+
+
 def test_name_pattern_boundaries():
     assert pv.name_pattern([]) is None
     rx = pv.name_pattern(["Shri R. K. Sharma", "Mr J Smith"], variants=True)
@@ -839,3 +856,55 @@ def test_keep_field_unknown_warns_and_label_tolerant(tmp_path):
     assert r.returncode == 0 and "--keep-field 'nonsense' matches none" in r.stderr
     s = openpyxl.load_workbook(out)["Incident Summary"]
     assert "Qux" not in " ".join(str(c.value) for row in s.iter_rows() for c in row if c.value)
+
+
+# ----------------------------------------------------------------------------- final review minors
+
+def test_lint_ok_rule_ids_survive_share_doc():
+    """M2: a lint_ok rule ID such as JC10 is an ID, not an equipment tag."""
+    ctx = pv.ShareCtx("external", [], [], {})
+    doc = {"kind": "para", "text": "P-101", "lint_ok": {"rule": "JC10", "reason": "a drawing number"}}
+    assert pv.share_doc(doc, ctx) == {"kind": "para", "text": "[equipment tag]",
+                                      "lint_ok": {"rule": "JC10", "reason": "a drawing number"}}
+
+
+def test_sign_off_lints_at_the_target_classification(shws, tmp_path):
+    shws = shws[0]
+    """M3: sign-off --classification external runs the external rules, so an organisation name (JC9, an error
+    outside) is refused at sign-off, not later at pack --share external."""
+    doc = copy.deepcopy(SPACK)
+    doc["sections"][0]["items"][0]["text"] += " Acme Pumps Ltd supplied the seal."
+    p = write_doc(tmp_path, doc)
+    r = _cli("sign-off", str(shws), str(p), "--role", "HSE manager", "--status", "approved",
+             "--classification", "external", "--legal-review", "cleared")
+    assert r.returncode == 1 and "JC9" in r.stderr, r.stderr
+    assert "handling" not in json.loads(p.read_text())
+    assert _cli("sign-off", str(shws), str(p), "--role", "HSE manager").returncode == 0   # internal: a warning only
+
+
+def test_register_xlsx_writes_formula_like_text_as_text(tmp_path):
+    """M6: a cell string starting with = + - or @ is text in the workbook, never a formula."""
+    reg = copy.deepcopy(MINI_REG)
+    reg["title"] = "=HYPERLINK(\"http://x\",\"t\")"
+    reg["entries"][0]["title"] = "=1+1"
+    reg["entries"][0]["lesson"] = "+cmd|' /C calc'!A0"
+    reg["entries"][0]["recommendations"][0]["what"] = "@SUM(A1)"
+    p = write_doc(tmp_path, reg, "reg.json")
+    out = tmp_path / "reg.xlsx"
+    run("register-xlsx", str(p), "--out", str(out))
+    wb = openpyxl.load_workbook(out)
+    cells = [c for s in wb.worksheets for row in s.iter_rows() for c in row if isinstance(c.value, str)]
+    risky = [c for c in cells if c.value[:1] in "=+-@"]
+    assert {c.value for c in risky} >= {"=1+1", "+cmd|' /C calc'!A0", "@SUM(A1)", reg["title"]}
+    assert all(c.data_type == "s" for c in risky), [(c.coordinate, c.data_type) for c in risky]
+
+
+def test_pack_given_as_register_is_refused(shws, tmp_path):
+    """M9: a pack JSON passed where a register goes gives one clear line, not a traceback."""
+    shws = shws[0]
+    p = write_doc(tmp_path, copy.deepcopy(SPACK))
+    for args in (("dashboard", str(shws), "--register", str(p), "--out", str(tmp_path / "m.html")),
+                 ("register-xlsx", str(p), "--out", str(tmp_path / "r.xlsx"))):
+        r = _cli(*args)
+        assert r.returncode == 1 and "Traceback" not in r.stderr, r.stderr
+        assert r.stderr.strip() == f"{p} is a pack, not a register"

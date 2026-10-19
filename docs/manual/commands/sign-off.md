@@ -21,7 +21,7 @@ The fingerprint matters: **if anyone edits the file after sign-off, even by one 
 sign-off refuses, and changes nothing, when:
 
 - the investigation is not finished in ProbeMatrix: its status is anything but completed ("the investigation status is in progress", or "the investigation status is not completed" for a draft or blank status), or no finding is marked as edited by a person. There is no override; finish the review in ProbeMatrix and export again;
-- the file has problems in its own check ([check-pack](check-pack.md) or [check-register](check-register.md));
+- the file has problems in its own check ([check-pack](check-pack.md) or [check-register](check-register.md)). The check runs at the classification the file will have, so `--classification external` or `public` applies the stricter rules for outside readers (an organisation name, JC9, is then an error);
 - the file is a register written as a bare list. Wrap it as `{"entries": [...]}` first;
 - `--role` or a `--distribution` value looks like a personal name: an honorific form ("Mr …", "Shri R. K. …"), two capitalised words that are not role words, or a name from the names file. The reviewer and the audiences are always roles.
 

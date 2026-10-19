@@ -1150,3 +1150,11 @@ def test_lint_ok_reason_is_rendered(w):
                    bottom_line=[{"text": "t", "cites": ["FND-0002"], "lint_ok": {"rule": "JC5", "reason": "why"}}])
     assert "Language check JC5 accepted: why" in pp.render_pack_html(w, bl, "r", "d")
     assert "Language check JC5 accepted: why" in pp.render_pack_md(bl, w)
+
+
+def test_readme_alpha_pin():
+    """M5: the alpha notice also says how to stay on the tested alpha.3."""
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    head = readme.split("\n\n", 2)[1]
+    assert "#v0.3.5" in head
+    assert "/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v2.0.0-alpha.3" in head
