@@ -378,7 +378,7 @@ def test_share_refused_on_forced_draft(tmp_path):
     assert r.returncode == 1
     assert r.stderr.strip().splitlines()[-1] == (
         "cannot share externally: review is draft (the investigation status is in progress, "
-        "no finding is marked as edited by a person)")
+        "no finding is marked as edited by a person, not signed off)")
     assert files(out) == []
 
 

@@ -73,7 +73,12 @@ Draft because: the investigation status is in progress; no finding is marked as 
 - Each sheet of the register workbook has the status phrase in its page header, followed by "· DRAFT" while it is a draft.
 - In print the ribbon keeps its border and text, so it does not depend on colour, and every printed page carries the status phrase in its footer.
 
-Other reasons you may see after "Draft because:" are "edited since sign-off", "not signed off" (the file claims a status but has no valid fingerprint) and "invalid handling block".
+Other reasons you may see after "Draft because:" are:
+
+- "edited since sign-off": the file changed after it was signed off;
+- "not signed off": the file claims `reviewed` or `approved`, but this workspace has no sign-off of it (the block was typed by hand, edited by hand, or the file was copied from another folder or workspace);
+- "no workspace to check": `register-xlsx` was given a register outside the run layout and no `--ws`, so nothing can be checked;
+- "invalid handling block": a key or value in the block is wrong.
 
 ## Sign-off
 
@@ -98,7 +103,13 @@ Rules the coach follows:
 What sign-off writes:
 
 - the `handling` block, with a `content_hash`: a fingerprint of everything in the file except the handling block;
-- an entry in the workspace manifest, which `pmlc status <ws>` lists with its status, role, date and whether the file has changed since.
+- an entry in the workspace manifest, which `pmlc status <ws>` lists with its status, role, date and whether the file has changed since. The entry holds the whole handling block and the file's full path.
+
+A status counts only when the manifest entry matches: the same file, at the same path, in the same workspace, with the same handling block. A handling block typed or changed by hand, or a signed file copied to another folder or workspace, is a draft with the reason "not signed off", and the check warns:
+
+```text
+not signed off in this workspace: status is draft until sign-off records it
+```
 
 Re-run `pack`, `dashboard` or `register-xlsx` after sign-off, so the pages show the new state.
 

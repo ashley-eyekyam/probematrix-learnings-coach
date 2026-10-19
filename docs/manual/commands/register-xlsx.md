@@ -28,7 +28,7 @@ pmlc register-xlsx register [--out OUT] [--ws WS] [--share {internal,external,pu
 | Flag | Value | Default | What it does |
 |---|---|---|---|
 | `--out` | file | `learnings-register.xlsx` next to the register JSON (`learnings-register.external.xlsx` or `.public.xlsx` when shared) | Where to write the workbook. A shared copy written with `--out` goes exactly where you say |
-| `--ws` | workspace folder | the run's workspace, when the register sits in `<run>/outputs/` | The workspace used to check whether the investigation is still unfinished (which forces draft). Give it when the register is not in a standard run folder. A shared copy needs a workspace, so without one `--share external` is refused |
+| `--ws` | workspace folder | the run's workspace, when the register sits in `<run>/outputs/` | The workspace used to check whether the investigation is still unfinished (which forces draft) and whether the register was signed off there. Give it when the register is not in a standard run folder: without a workspace the workbook is a draft ("no workspace to check"), and `--share external` is refused |
 | `--share` | `internal`, `external` or `public` | `internal` | Who the copy is for. `external` and `public` need the register signed off as approved, with a classification at that level or wider and `legal_review` cleared. Names, organisations, equipment tags, singleton roles, clock times and full dates are masked; the source file name becomes "a ProbeMatrix investigation export", and the About sheet gains a "Sharing" row. A workbook embeds no records, so there is no embed flag here |
 | `--names` | file | `$PMLC_NAMES` | A names file, one name per line. A shared copy masks these names |
 | `--orgs` | file | `$PMLC_ORGS` | An organisation names file, one per line. A shared copy masks these names |
@@ -81,13 +81,15 @@ python3 $E register-xlsx reg-elsewhere.json --share external
 ```
 
 ```text
-cannot share externally: no workspace (pass --ws)
+cannot share externally: no workspace (pass --ws); review is draft (no workspace to check)
 ```
+
+Without `--share`, the same copy is written, but as a draft: its sign-off is recorded in a workspace the engine cannot see. The About sheet reads `Review status: draft. Draft because: no workspace to check`, and every sheet's page header ends in "· DRAFT".
 
 ## Common problems
 
 - **The workbook is out of date.** It is a copy. Run register-xlsx again after every edit of the JSON.
-- **A register outside its run folder.** Without the workspace the engine cannot see that the investigation is unfinished, so it cannot force the draft status. Pass `--ws`.
+- **A register outside its run folder.** Without the workspace the engine cannot check the investigation status or the sign-off, so the workbook is a draft with the reason "no workspace to check". Pass `--ws`.
 - **"cannot share externally: …".** Each condition after the colon is unmet. Sign the register off for that audience (`sign-off --status approved --classification external --legal-review cleared`), and pass `--ws` when it is not in its run folder.
 - **The file is open in Excel.** Close the workbook first, or write to a new name with `--out`.
 

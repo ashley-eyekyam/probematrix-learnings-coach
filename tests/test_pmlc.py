@@ -1727,6 +1727,9 @@ def _check_phase2_uat_inputs(d, tmp_path):
     sp.write_bytes((d / "uat-shareable-pack.json").read_bytes())
     assert "Signed off" in run("sign-off", str(w), str(sp), "--role", "HSE Manager", "--status", "approved")
     assert json.loads(sp.read_text(encoding="utf-8"))["handling"]["status"] == "approved"
+    run("pack", str(w), str(sp), "--out", str(tmp_path / "signed"))    # the sign-off holds (X25): no ribbon
+    page = (tmp_path / "signed" / "uat-shareable-pack.html").read_text(encoding="utf-8")
+    assert 'class="ribbon"' not in page and "Review: approved by HSE Manager on " in page
 
 
 def test_dashboard_with_no_ratings(tmp_path):

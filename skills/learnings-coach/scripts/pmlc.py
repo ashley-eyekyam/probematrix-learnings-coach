@@ -33,6 +33,7 @@ from __future__ import annotations
 import argparse
 import collections
 import contextlib
+import copy
 import datetime as dt
 import hashlib
 import html
@@ -355,8 +356,10 @@ REASON_UNEDITED = "no finding is marked as edited by a person"
 REASON_EDITED_SINCE = "edited since sign-off"
 REASON_NOT_SIGNED = "not signed off"
 REASON_INVALID = "invalid handling block"
+REASON_NO_WORKSPACE = "no workspace to check"
 WARN_NO_HANDLING = "no handling block: rendered as draft (internal)"
 WARN_EDITED_SINCE = "edited since sign-off: status is draft until signed off again"
+WARN_NOT_SIGNED = "not signed off in this workspace: status is draft until sign-off records it"
 _HASH_RX = re.compile(r"sha256:[0-9a-f]{64}")
 
 
@@ -416,8 +419,27 @@ def check_handling(doc) -> tuple:
     return P, W
 
 
-def effective_handling(doc, w) -> dict:
-    """The handling that applies: defaults merged with the block, forced down to draft when it must be."""
+def sign_off_record(ws, src):
+    """The manifest's sign-off record for the file at src, or None: it must be under the file's name and carry the
+    file's resolved path (a copy elsewhere, or in another workspace, has no record)."""
+    if ws is None or src is None:
+        return None
+    rec = (load_manifest(Path(ws)).get("sign_offs") or {}).get(Path(src).name)
+    return rec if isinstance(rec, dict) and rec.get("path") == str(Path(src).resolve()) else None
+
+
+def _signed_here(h: dict, ws, src) -> bool:
+    """X25: a reviewed or approved block counts only when sign-off recorded this very block for this file in this
+    workspace. Every handling key must match the record, so a hand edit of classification or legal_review (which
+    the content hash leaves out) does not count either."""
+    rec = sign_off_record(ws, src)
+    return rec is not None and all(rec.get(k) == h.get(k) for k in HANDLING_KEYS)
+
+
+def effective_handling(doc, w, src=None, ws=None) -> dict:
+    """The handling that applies: defaults merged with the block, forced down to draft when it must be. src is the
+    document's file and ws its workspace folder: a reviewed or approved status holds only when the workspace's
+    manifest records a sign-off of this block for this file (X25). Without ws the reason is 'no workspace to check'."""
     h = doc.get("handling") if isinstance(doc, dict) else None
     out = {**HANDLING_DEFAULTS, **{k: v for k, v in (h if isinstance(h, dict) else {}).items() if k in HANDLING_KEYS}}
     out["distribution"] = list(out["distribution"]) if isinstance(out["distribution"], list) else []
@@ -434,10 +456,21 @@ def effective_handling(doc, w) -> dict:
             reasons.append(REASON_EDITED_SINCE)
         elif not (isinstance(h.get("content_hash"), str) and not problems):
             reasons.append(REASON_NOT_SIGNED)
+        elif ws is None:
+            reasons.append(REASON_NO_WORKSPACE)
+        elif not _signed_here(h, ws, src):
+            reasons.append(REASON_NOT_SIGNED)
     out["draft_reasons"] = list(dict.fromkeys(reasons))
     signed = claims and not reasons
     out["effective_status"] = h["status"] if signed else "draft"
     return out
+
+
+def unsigned_warning(doc, w, src, ws) -> list:
+    """[WARN_NOT_SIGNED] when the file claims reviewed or approved but this workspace has no sign-off record of it."""
+    if not (isinstance(doc, dict) and isinstance(doc.get("handling"), dict)):
+        return []
+    return [WARN_NOT_SIGNED] if REASON_NOT_SIGNED in effective_handling(doc, w, src=src, ws=ws)["draft_reasons"] else []
 
 
 RIBBON_HTML = f'<div class="ribbon" role="note">{DRAFT_LABEL}</div>'
@@ -480,10 +513,10 @@ def status_line(status="") -> str:
 
 
 def record_sign_off(ws, path, h: dict) -> None:
+    """The whole handling block sign-off wrote, with the file's resolved path (effective_handling checks both)."""
     m = load_manifest(Path(ws))
     m.setdefault("sign_offs", {})[Path(path).name] = {
-        **{k: h[k] for k in ("status", "reviewer_role", "reviewed_on", "content_hash") if k in h},
-        "path": str(Path(path).resolve())}
+        **{k: copy.deepcopy(h[k]) for k in HANDLING_KEYS if k in h}, "path": str(Path(path).resolve())}
     _save_manifest(ws, m)
 
 
@@ -554,11 +587,11 @@ def share_mode(a) -> str:
     return getattr(a, "share", None) or "internal"
 
 
-def share_unmet(doc, w, mode, embed=None, embeds=True) -> list:
+def share_unmet(doc, w, mode, embed=None, embeds=True, src=None, ws=None) -> list:
     """P2-9: every condition a --share external|public copy does not meet (empty when it may be shared). The doc's
     effective handling must be approved, its classification at the mode's level or higher, legal_review cleared,
     and (for pages that embed records) --embed omitted or summary."""
-    eh = effective_handling(doc if isinstance(doc, dict) else {}, w)
+    eh = effective_handling(doc if isinstance(doc, dict) else {}, w, src=src, ws=ws)
     out = []
     st = eh["effective_status"]
     if st == "draft":
@@ -575,12 +608,13 @@ def share_unmet(doc, w, mode, embed=None, embeds=True) -> list:
     return out
 
 
-def share_gate(doc, w, a, embeds=True, extra=()) -> str:
-    """The share mode, after exiting 1 with every unmet condition when a shared copy is refused."""
+def share_gate(doc, w, a, embeds=True, extra=(), src=None, ws=None) -> str:
+    """The share mode, after exiting 1 with every unmet condition when a shared copy is refused. src and ws: see
+    effective_handling."""
     mode = share_mode(a)
     if mode == "internal":
         return mode
-    unmet = list(extra) + share_unmet(doc, w, mode, getattr(a, "embed", None), embeds)
+    unmet = list(extra) + share_unmet(doc, w, mode, getattr(a, "embed", None), embeds, src=src, ws=ws)
     if unmet:
         sys.exit(f"cannot share {SHARE_ADVERB[mode]}: " + "; ".join(unmet))
     return mode
@@ -2276,8 +2310,8 @@ def cmd_dashboard(a):
     warn_stale(ws)
     reg0 = json.loads(Path(a.register).read_text(encoding="utf-8")) if a.register else None
     hdoc0 = reg0 if isinstance(reg0, dict) else {}
-    mode = share_gate(hdoc0, w, a)            # a dashboard without a signed register is never shared outside
-    eh = effective_handling(hdoc0, w)
+    mode = share_gate(hdoc0, w, a, src=a.register, ws=ws)   # a dashboard without a signed register stays inside
+    eh = effective_handling(hdoc0, w, src=a.register, ws=ws)
     share = share_ctx(a, w, mode) if mode != "internal" else None
     if share:
         w, reg0 = shared_copy(w, share, w), shared_copy(reg0, share, w)
@@ -2501,13 +2535,16 @@ def _flat(v):
     return "" if v is None else str(v)
 
 
-def _register_ws(a) -> dict:
-    """The workspace for a register's forced-draft check: --ws, else the run's workspace when the register sits in
-    <run>/outputs/ of the standard layout, else none (no forced-draft reasons can be read)."""
+def _register_ws(a) -> tuple:
+    """(workspace, its folder) for a register's forced-draft and sign-off checks: --ws, else the run's workspace when
+    the register sits in <run>/outputs/ of the standard layout, else ({}, None): nothing can be checked, so the
+    register stays draft with the reason 'no workspace to check'."""
     if getattr(a, "ws", None):
-        return load_ws(a.ws)
+        return load_ws(a.ws), Path(a.ws)
     guess = Path(a.register).resolve().parent.parent / "workspace"
-    return load_ws(guess) if is_standard_ws(guess) and (guess / "findings.json").exists() else {}
+    if is_standard_ws(guess) and (guess / "findings.json").exists():
+        return load_ws(guess), guess
+    return {}, None
 
 
 def cmd_register_xlsx(a):
@@ -2515,10 +2552,13 @@ def cmd_register_xlsx(a):
     from openpyxl.styles import Alignment, Font, PatternFill
     from openpyxl.utils import get_column_letter
     reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
-    rw = _register_ws(a)
+    rw, rws = _register_ws(a)
     hdoc = reg if isinstance(reg, dict) else {}
-    mode = share_gate(hdoc, rw, a, embeds=False, extra=[] if rw else ["no workspace (pass --ws)"])
-    eh = effective_handling(hdoc, rw)
+    mode = share_gate(hdoc, rw, a, embeds=False, extra=[] if rw else ["no workspace (pass --ws)"],
+                      src=a.register, ws=rws)
+    eh = effective_handling(hdoc, rw, src=a.register, ws=rws)
+    if rws is None and REASON_NO_WORKSPACE not in eh["draft_reasons"]:
+        eh["draft_reasons"].append(REASON_NO_WORKSPACE)
     share = share_ctx(a, rw, mode) if mode != "internal" else None
     if share:
         reg = shared_copy(reg, share, rw)
@@ -2704,6 +2744,7 @@ def cmd_check_register(a):
     uncovered = [fid for fid in F if fid not in covered and fid not in downs]
     hp, hw = check_handling(reg)
     problems += hp
+    hw += unsigned_warning(reg, w, a.register, a.ws)
     print(f"{_n(len(entries), 'learning')}; {len(covered)} of {_n(len(F), 'finding')} covered "
           f"({100*len(covered)/max(len(F),1):.0f}%); {len(problems)} problem(s).")
     for p in problems[:80]:
