@@ -236,3 +236,45 @@ def test_gitignore_private_outputs():
         assert ignored(p), p
     for p in ("samples/x/a.pdf", "docs/briefs/a.pdf", "samples/x/outputs/a.docx"):
         assert not ignored(p), p
+
+
+def test_scan_names_unreadable_office_files_are_unread(tmp_path):
+    for nm in ("bad.docx", "bad.xlsx", "bad.pptx"):
+        f = tmp_path / nm
+        f.write_text("not a zip", encoding="utf-8")
+        r = _scan(tmp_path, "Ravi Sharma\n", f)
+        assert r.returncode == 2 and nm in r.stdout and "not scanned" in r.stdout, nm
+
+
+def test_scan_names_split_runs_and_body(tmp_path):
+    d = _zip(tmp_path / "s.docx", {
+        "word/document.xml": "<w:p><w:r><w:t>Ra</w:t></w:r><w:r><w:rPr><w:b/></w:rPr><w:t>vi Sharma</w:t></w:r></w:p>"})
+    r = _scan(tmp_path, "Ravi Sharma\n", d)
+    assert r.returncode == 1 and "1 hit" in r.stdout and "word/document.xml" in r.stdout
+    e = _zip(tmp_path / "e.pptx", {"ppt/slides/slide1.xml": "<a:p><a:r><a:t>R&amp;D: Ravi</a:t></a:r></a:p>"
+                                   "<a:p><a:r><a:t>Sharma</a:t></a:r></a:p>"})
+    assert _scan(tmp_path, "Ravi Sharma\n", e).returncode == 1  # a paragraph break counts as whitespace (conservative)
+    assert _scan(tmp_path, "R&D\n", e).returncode == 1  # entity unescaped
+
+
+def test_scan_names_people_and_modern_comments(tmp_path):
+    for part in ("word/people.xml", "ppt/comments/comment1.xml", "ppt/comments/modernComment_1_2.xml"):
+        z = _zip(tmp_path / ("p" + part.replace("/", "_") + ".pptx"), {part: "<p:author name=\"Ravi Sharma\"/>"
+                                                                       "<t>Ravi Sharma</t>"})
+        assert _scan(tmp_path, "Ravi Sharma\n", z).returncode == 1, part
+
+
+def test_scan_names_oversize_member(tmp_path, monkeypatch):
+    monkeypatch.setattr(pmlc, "_MAX_MEMBER", 10)
+    d = _zip(tmp_path / "big.docx", {"docProps/core.xml": "<x>" + "a" * 50 + "</x>"})
+    out = list(pmlc._iter_texts(d, bad := []))
+    assert out == [] and bad == [str(d)]
+
+
+def test_pdf_meta_failure_is_not_checked(tmp_path):
+    import shutil
+    if not shutil.which("pdfinfo"):
+        pytest.skip("pdfinfo not installed")
+    f = tmp_path / "junk.pdf"
+    f.write_bytes(b"junk")
+    assert pmlc._pdf_meta(f) is False

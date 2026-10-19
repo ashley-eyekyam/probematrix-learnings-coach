@@ -2049,57 +2049,89 @@ def _scan_files(path: Path):
 
 
 _OFFICE_ZIP = (".docx", ".pptx", ".xlsx", ".xlsm")
+_MAX_MEMBER = 50 * 1024 * 1024
+_XML_BREAK = re.compile(r"<(?:w:(?:tab|br|cr)|a:br)\b[^>]*>")
+_XML_PARA_END = re.compile(r"</(?:w|a):p>")
+_XML_RUN_TAG = re.compile(r"</?(?:w|a):[^>]*>")
 _XML_TAG = re.compile(r"<[^>]+>")
-# Parts that can carry a name beyond the cell/body text: properties, comments, headers/footers, notes, footnotes.
-_META_PART = re.compile(r"(?i)^docProps/.*\.xml$|(?:^|/)(?:threaded)?comments[^/]*\.xml$|/(?:header|footer)\d*\.xml$"
-                        r"|/(?:footnotes|endnotes|notesSlide\d*)\.xml$")
+# Parts that can carry a name beyond the cell/body text: properties, comments, people, headers/footers, notes.
+_META_PART = re.compile(r"(?i)^docProps/.*\.xml$|(?:^|/)(?:threaded|modern)?comments?[^/]*\.xml$"
+                        r"|(?:^|/)modernComment_[^/]*\.xml$|^word/people\.xml$"
+                        r"|/(?:header|footer)\d*\.xml$|/(?:footnotes|endnotes|notesSlide\d*)\.xml$")
 _BODY_PART = re.compile(r"(?i)^(?:word/document|ppt/slides/slide\d+)\.xml$")
 
 
-def _office_xml_texts(path: Path):
+def _xml_text(raw: str) -> str:
+    """Plain text of an Office XML part. Run text inside a paragraph is joined with no separator, so a name split
+    across runs ('Ra' + 'vi Sharma') is whole again; a paragraph end is a newline; other tags become a space."""
+    raw = _XML_BREAK.sub(" ", raw)
+    raw = _XML_PARA_END.sub("\n", raw)
+    raw = _XML_RUN_TAG.sub("", raw)
+    return html.unescape(_XML_TAG.sub(" ", raw))
+
+
+def _office_xml_texts(path: Path, unread: list):
     """(location, text) for the metadata, comment, header/footer parts of an Office zip, plus the body of a .docx or
-    .pptx (an .xlsx body is read cell by cell). XML tags are stripped; each part is scanned as one text."""
+    .pptx (an .xlsx body is read cell by cell). A file that cannot be read, or has an oversize member, goes on
+    the unread list so it is never reported as clean."""
     import zipfile
     body = path.suffix.lower() in (".docx", ".pptx")
     try:
         with zipfile.ZipFile(path) as z:
-            for n in z.namelist():
-                if _META_PART.search(n) or (body and _BODY_PART.search(n)):
-                    raw = z.read(n).decode("utf-8", errors="ignore")
-                    yield f"{path}:{n}", _XML_TAG.sub(" ", raw)
-    except zipfile.BadZipFile:
-        print(f"warning: {path} is not a readable Office file")
+            for zi in z.infolist():
+                n = zi.filename
+                if not (_META_PART.search(n) or (body and _BODY_PART.search(n))):
+                    continue
+                if zi.file_size > _MAX_MEMBER:
+                    print(f"warning: {path}:{n} is over 50 MB and was skipped")
+                    unread.append(str(path))
+                    continue
+                yield f"{path}:{n}", _xml_text(z.read(n).decode("utf-8", errors="ignore"))
+    except Exception as e:
+        print(f"warning: {path} could not be read ({type(e).__name__})")
+        unread.append(str(path))
 
 
-def _iter_texts(path: Path):
+def _iter_texts(path: Path, unread: list):
     if path.is_dir():
         for p in _scan_files(path):
-            yield from _iter_texts(p)
+            yield from _iter_texts(p, unread)
         return
     ext = path.suffix.lower()
     if ext in (".xlsx", ".xlsm"):
-        openpyxl = _need_openpyxl()
-        wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
-        for ws in wb.worksheets:
-            for row in ws.iter_rows():
-                for c in row:
-                    if isinstance(c.value, str):
-                        yield f"{path}:{ws.title}!{c.coordinate}", c.value
+        try:
+            openpyxl = _need_openpyxl()
+            wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+            cells = [(f"{path}:{ws.title}!{c.coordinate}", c.value) for ws in wb.worksheets
+                     for row in ws.iter_rows() for c in row if isinstance(c.value, str)]
+        except SystemExit:
+            raise
+        except Exception as e:
+            print(f"warning: {path} could not be read ({type(e).__name__})")
+            unread.append(str(path))
+            cells = []
+        yield from cells
     if ext in _OFFICE_ZIP:
-        yield from _office_xml_texts(path)
+        yield from _office_xml_texts(path, unread)
     elif ext in TEXT_TYPES:
         for i, line in enumerate(path.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
             yield f"{path}:{i}", line
 
 
 def _pdf_meta(path: Path):
-    """(location, text) for the Author and Creator lines of a PDF, from pdfinfo. None when pdfinfo is absent."""
+    """(location, text) for the Author and Creator lines of a PDF, from pdfinfo. None when pdfinfo is absent,
+    False when it failed or timed out."""
     import shutil
     import subprocess
     exe = shutil.which("pdfinfo")
     if not exe:
         return None
-    r = subprocess.run([exe, str(path)], capture_output=True, text=True, errors="ignore")
+    try:
+        r = subprocess.run([exe, str(path.resolve())], capture_output=True, text=True, errors="ignore", timeout=30)
+    except (subprocess.TimeoutExpired, OSError):
+        return False
+    if r.returncode != 0:
+        return False
     out = []
     for line in r.stdout.splitlines():
         k, _, v = line.partition(":")
@@ -2127,14 +2159,17 @@ def cmd_scan_names(a):
                     print(f"HIT{tag} {loc}: '{m.group(0)}' … {text[max(0, m.start()-50):m.end()+50]!r}")
 
     pdf_missing = False
+    bad = []
     for target in a.paths:
-        for loc, text in _iter_texts(Path(target)):
+        for loc, text in _iter_texts(Path(target), bad):
             check(loc, text)
         for f in _scan_files(Path(target)):
             if f.suffix.lower() == ".pdf":
                 meta = _pdf_meta(f)
                 if meta is None:
                     pdf_missing = True
+                elif meta is False:
+                    print(f"note: pdfinfo failed or timed out on {f}: PDF metadata not checked")
                 else:
                     for loc, text in meta:
                         check(loc, text)
@@ -2143,6 +2178,7 @@ def cmd_scan_names(a):
     print(f"\n{hits} hit(s).")
     readable = TEXT_TYPES + _OFFICE_ZIP
     unread = [str(f) for t in a.paths for f in _scan_files(Path(t)) if f.suffix.lower() not in readable]
+    unread += [f for f in dict.fromkeys(bad) if f not in unread]
     if unread:
         print(f"{len(unread)} file(s) not scanned (this type cannot be read), so zero hits does not cover them:")
         for f in unread:
