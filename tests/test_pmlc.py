@@ -1651,6 +1651,10 @@ def _check_phase2_uat_inputs(d, tmp_path):
     out = run("check-register", str(w), str(d / "uat-register.json"))
     assert "0 problem(s)" in out and " JC" not in out, out
     assert run_fail("check-pack", str(w), str(d / "uat-bad-pack.json")).returncode == 1
+    sp = tmp_path / "shareable.json"                     # the approvable export can be signed off (C3 and section E)
+    sp.write_bytes((d / "uat-shareable-pack.json").read_bytes())
+    assert "Signed off" in run("sign-off", str(w), str(sp), "--role", "HSE Manager", "--status", "approved")
+    assert json.loads(sp.read_text(encoding="utf-8"))["handling"]["status"] == "approved"
 
 
 def test_dashboard_with_no_ratings(tmp_path):
