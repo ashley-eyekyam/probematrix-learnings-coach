@@ -28,7 +28,7 @@ Rewrite hindsight wording as a system statement:
 | "should have noticed / realised" | "the cue was [not] visible at that point; what made it hard to see" |
 | "ignored the warning" | "the warning reached [role] without a defined response" |
 | "did not follow the procedure" | "the procedure did not match the job as it was done, or was not available at the point of work" |
-| "Routine Violation" (HFACS label) | "a routine deviation from the written rule, shared by the crew and not corrected" |
+| "Routine Violation" (HFACS label) | "a routine deviation from the written rule, shared by the crew and not corrected" (in prose; keep the HFACS label in `hfacs_level`) |
 | "complacent" / "careless" | what the task, tools or pace made normal |
 
 Two further rules:

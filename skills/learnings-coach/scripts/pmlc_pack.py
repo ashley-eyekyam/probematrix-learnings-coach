@@ -491,6 +491,7 @@ def check_pack(pack, w) -> Result:
 
     secs = pack.get("sections") if isinstance(pack.get("sections"), list) else []
     seen, n_items = set(), 0
+    t1_pack = "T1" in tiers_in_scope(pack)
     for si, s in enumerate(secs):
         sp = f"sections[{si}]"
         if not isinstance(s, dict):
@@ -527,7 +528,7 @@ def check_pack(pack, w) -> Result:
                 seen.add(iid)
             _check_item(it, ip, bad, warn)
             if (isinstance(it, dict) and it.get("kind") == "card" and not it.get("organisation_changing")
-                    and "T1" in (tiers_in_scope(pack) or [])):
+                    and t1_pack):
                 warn(f"card {iid or ip}", "add organisation_changing (what the organisation is changing)")
     if pack.get("pack") == "investigator-coach":
         _check_follow_up(secs, bad)

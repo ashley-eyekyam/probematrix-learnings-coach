@@ -962,7 +962,7 @@ def test_register_trigger_no_regulator_invite():
     t = (SKILLS / "learnings-register" / "SKILL.md").read_text(encoding="utf-8")
     desc = re.search(r"^description:\s*(.+)$", t, re.M).group(1)
     assert not re.search(r"(?i)share with .*regulator", desc)
-    assert "regulator" not in desc.lower() or "not" in desc.lower()
+    assert "regulator" not in desc.lower()
     assert "Sharing outside the organisation" in t
 
 
