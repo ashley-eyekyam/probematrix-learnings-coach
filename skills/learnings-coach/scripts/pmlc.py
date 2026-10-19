@@ -2056,12 +2056,12 @@ _XML_RUN_TAG = re.compile(r"</?(?:w|a):[^>]*>")
 _XML_TAG = re.compile(r"<[^>]+>")
 # Parts that can carry a name beyond the cell/body text: properties, comments, people, headers/footers, notes.
 _META_PART = re.compile(r"(?i)^docProps/.*\.xml$|(?:^|/)(?:threaded|modern)?comments?[^/]*\.xml$"
-                        r"|(?:^|/)modernComment_[^/]*\.xml$|^word/people\.xml$"
+                        r"|(?:^|/)modernComment_[^/]*\.xml$|^word/people\.xml$|^ppt/authors\.xml$|^xl/persons/person[^/]*\.xml$"
                         r"|/(?:header|footer)\d*\.xml$|/(?:footnotes|endnotes|notesSlide\d*)\.xml$")
 _BODY_PART = re.compile(r"(?i)^(?:word/document|ppt/slides/slide\d+)\.xml$")
 
 
-_NAME_ATTR = re.compile(r"""(?:\b[\w.-]+:)?(?:author|name|initials|creator|lastModifiedBy)\s*=\s*(?:"([^"]*)"|'([^']*)')""",
+_NAME_ATTR = re.compile(r"""(?<![\w.:-])(?:[\w.-]+:)?(?:author|name|displayName|initials|creator|lastModifiedBy)\s*=\s*(?:"([^"]*)"|'([^']*)')""",
                         re.I)
 
 

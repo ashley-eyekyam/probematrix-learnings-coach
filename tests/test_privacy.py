@@ -262,11 +262,15 @@ def test_scan_names_names_only_in_attributes(tmp_path):
         "a.docx": ("word/comments.xml", '<w:comment w:id="0" w:author="Ravi Sharma" w:initials="RS"><w:p/></w:comment>'),
         "b.docx": ("word/people.xml", '<w15:person w15:author="Ravi Sharma"><w15:presenceInfo/></w15:person>'),
         "c.pptx": ("ppt/commentAuthors.xml", '<p:cmAuthor id="0" name="Ravi Sharma" initials="RS"/>'),
+        "f.pptx": ("ppt/authors.xml", '<p188:author id="{1}" name="Ravi Sharma" userId="x"/>'),
+        "g.xlsx": ("xl/persons/person.xml", '<person displayName="Ravi Sharma" id="{1}" userId="x"/>'),
         "d.pptx": ("ppt/comments/modernComment_1_2.xml", "<p188:cm author='Ravi Sharma'/>"),
     }
     for nm, (part, xml) in cases.items():
         r = _scan(tmp_path, "Ravi Sharma\n", _zip(tmp_path / nm, {part: xml}))
         assert r.returncode == 1 and part in r.stdout, nm
+    n = _zip(tmp_path / "h.docx", {"word/comments.xml": '<w:comment username="Ravi Sharma" filename="Ravi Sharma"/>'})
+    assert _scan(tmp_path, "Ravi Sharma\n", n).returncode == 0  # username= / filename= are not name attributes
     z = _zip(tmp_path / "e.docx", {"word/comments.xml": '<w:comment w:author="A &amp; Ravi Sharma"/>'})
     assert _scan(tmp_path, "A & Ravi Sharma\n", z).returncode == 1
 
