@@ -57,16 +57,20 @@ MINI_REG = {"title": "Synthetic register", "source": "export.xlsx", "entries": [
           "leading_indicator": "i"}]}]}
 
 
-def make_export(d: Path) -> Path:
+def make_export(d: Path, status: str = "completed", edited=None) -> Path:
     wb = openpyxl.Workbook()
     s = wb.active
     s.title = "Incident Summary"
     for r in [("INCIDENT SUMMARY", None), (None, None), ("Field", "Value"), ("Incident Title", "Synthetic pump fire"),
-              ("Date", "2024-03-20"), ("Investigation Status", "completed")]:
+              ("Date", "2024-03-20"), ("Investigation Status", status)]:
         s.append(r)
     f = wb.create_sheet("Identified Findings")
     f.append(FIND_COLS)
+    ue = FIND_COLS.index("User Edited")
     for r in ROWS:
+        r = list(r)
+        if edited and r[0] in edited:
+            r[ue] = edited[r[0]]
         f.append(r)
     e = wb.create_sheet("Evidence Links")
     e.append(["Finding Code", "Finding Name", "Evidence ID", "Evidence Type", "Relevance", "Specific Reference",

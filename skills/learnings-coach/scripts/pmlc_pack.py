@@ -558,6 +558,9 @@ def check_pack(pack, w) -> Result:
         got = len(set(rel) & ids)
         if rel and got * 4 < len(rel):
             W.append(f"coverage: cites {got} of {len(rel)} relevant findings (under a quarter)")
+    hp, hw = core.check_handling(pack)
+    P += hp
+    W += hw
     return Result(P, W, {"sections": len(secs), "items": n_items, "cited": len(ids)})
 
 

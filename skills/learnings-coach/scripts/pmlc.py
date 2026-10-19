@@ -16,6 +16,7 @@ Subcommands
   register-xlsx write a Learnings Register JSON to a formatted .xlsx
   scan-names    deterministic zero-hit name scan over files (de-identification check)
   check-pack    check a learning pack JSON against the workspace
+  sign-off      record a person's review of a pack or register (writes its handling block and content hash)
   check-register check a Learnings Register JSON against the workspace
   pack          learning pack JSON -> <run>/outputs/<pack>.html and .md
   causal-item   the top causal links as a ready graph item for a pack (JSON on stdout)
@@ -30,9 +31,11 @@ from __future__ import annotations
 
 import argparse
 import collections
+import contextlib
 import datetime as dt
 import hashlib
 import html
+import io
 import json
 import os
 import re
@@ -277,6 +280,162 @@ def cmd_status(a):
         p = Path(rec.get("path", ""))
         changed = "missing" if not p.is_file() else ("yes" if file_sha256(p) != rec.get("sha256") else "no")
         print(f"| {name} | {last} | {changed} |")
+    signed = m.get("sign_offs", {})
+    if signed:
+        print("\n| Signed off | Status | Role | Date | Changed since |\n|---|---|---|---|---|")
+        for name in sorted(signed):
+            r = signed[name]
+            f = Path(r.get("path") or out / name)
+            try:
+                d = json.loads(f.read_text(encoding="utf-8"))
+                changed = "yes" if _hash_mismatch(d) else "no"
+            except (OSError, ValueError):
+                changed = "missing"
+            print(f"| {name} | {r.get('status')} | {r.get('reviewer_role')} | {r.get('reviewed_on')} | {changed} |")
+
+
+# ----------------------------------------------------------------------------- handling and sign-off
+
+HANDLING_DEFAULTS = {"status": "draft", "classification": "internal", "legal_review": "not-required",
+                     "distribution": [], "version": "1.0"}
+HANDLING_KEYS = ("status", "reviewer_role", "reviewed_on", "classification", "legal_review", "distribution",
+                 "version", "retention_review", "content_hash")
+HANDLING_ENUMS = {"status": ("draft", "reviewed", "approved"),
+                  "classification": ("internal", "restricted", "external", "public"),
+                  "legal_review": ("not-required", "requested", "cleared")}
+REASON_IN_PROGRESS = "the investigation status is in progress"
+REASON_UNEDITED = "no finding is marked as edited by a person"
+REASON_EDITED_SINCE = "edited since sign-off"
+WARN_NO_HANDLING = "no handling block: rendered as draft (internal)"
+WARN_EDITED_SINCE = "edited since sign-off: status is draft until signed off again"
+_HASH_RX = re.compile(r"sha256:[0-9a-f]{64}")
+
+
+def forced_draft_reasons(w) -> list:
+    """Why nothing from this workspace may be reviewed or approved yet (empty when it may be)."""
+    out = []
+    status = _s(((w.get("incident") or {}).get("fields") or {}).get("Investigation Status"))
+    if status.lower().startswith("in_progress"):
+        out.append(REASON_IN_PROGRESS)
+    F = w.get("findings") or []
+    if F and all(_s(f.get("user_edited")).lower() in ("", "no") for f in F):
+        out.append(REASON_UNEDITED)
+    return out
+
+
+def content_hash(doc: dict) -> str:
+    """sha256 of the document without its handling block (key order and whitespace do not matter)."""
+    body = {k: v for k, v in doc.items() if k != "handling"}
+    raw = json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return "sha256:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _hash_mismatch(doc) -> bool:
+    h = doc.get("handling") if isinstance(doc, dict) else None
+    return isinstance(h, dict) and isinstance(h.get("content_hash"), str) and h["content_hash"] != content_hash(doc)
+
+
+def check_handling(doc) -> tuple:
+    """(problems, warnings) for a pack's or register's handling block."""
+    if not isinstance(doc, dict):
+        return [], []
+    if "handling" not in doc:
+        return [], [WARN_NO_HANDLING]
+    h = doc["handling"]
+    if not isinstance(h, dict):
+        return ["handling: must be an object"], []
+    P, W = [], []
+    for k, v in h.items():
+        if k not in HANDLING_KEYS:
+            P.append(f"handling.{k}: unknown key; use {', '.join(HANDLING_KEYS)}")
+        elif k in HANDLING_ENUMS and v not in HANDLING_ENUMS[k]:
+            P.append(f"handling.{k}: must be one of {', '.join(HANDLING_ENUMS[k])}")
+        elif k in ("reviewed_on", "retention_review") and not (isinstance(v, str) and iso_date(v) == v):
+            P.append(f"handling.{k}: must be YYYY-MM-DD")
+        elif k == "content_hash" and not (isinstance(v, str) and _HASH_RX.fullmatch(v)):
+            P.append(f"handling.{k}: must be sha256:<64 hex digits>")
+        elif k in ("reviewer_role", "version") and not (isinstance(v, str) and v.strip()):
+            P.append(f"handling.{k}: must be non-empty text")
+        elif k == "distribution" and not (isinstance(v, list) and all(isinstance(x, str) for x in v)):
+            P.append(f"handling.{k}: must be a list of audience names")
+    if h.get("status") in ("reviewed", "approved"):
+        for k in ("reviewer_role", "reviewed_on", "content_hash"):
+            if k not in h:
+                P.append(f"handling.{k}: required when status is {h['status']}")
+        if _hash_mismatch(doc):
+            W.append(WARN_EDITED_SINCE)
+    return P, W
+
+
+def effective_handling(doc, w) -> dict:
+    """The handling that applies: defaults merged with the block, forced down to draft when it must be."""
+    h = doc.get("handling") if isinstance(doc, dict) else None
+    out = {**HANDLING_DEFAULTS, **{k: v for k, v in (h if isinstance(h, dict) else {}).items() if k in HANDLING_KEYS}}
+    out["distribution"] = list(out["distribution"]) if isinstance(out["distribution"], list) else []
+    reasons = forced_draft_reasons(w)
+    mismatch = _hash_mismatch(doc)
+    if mismatch:
+        reasons.append(REASON_EDITED_SINCE)
+    out["draft_reasons"] = reasons
+    out["effective_status"] = "draft" if (not isinstance(h, dict) or out["status"] == "draft" or reasons) \
+        else out["status"]
+    return out
+
+
+def record_sign_off(ws, path, h: dict) -> None:
+    m = load_manifest(Path(ws))
+    m.setdefault("sign_offs", {})[Path(path).name] = {
+        **{k: h[k] for k in ("status", "reviewer_role", "reviewed_on", "content_hash") if k in h},
+        "path": str(Path(path).resolve())}
+    _save_manifest(ws, m)
+
+
+def cmd_sign_off(a):
+    w = load_ws(a.ws)
+    path = Path(a.file)
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        sys.exit(f"cannot read {path} as JSON ({e.__class__.__name__})")
+    if isinstance(doc, list):
+        sys.exit('wrap the entries as {"entries": [...]} before signing off')
+    if not isinstance(doc, dict):
+        sys.exit(f"{path} must be a JSON object")
+    reasons = forced_draft_reasons(w)
+    if reasons:
+        sys.exit("cannot sign off: " + "; ".join(reasons))
+    if "pack" in doc:
+        problems = _pack_module().check_pack(doc, w).problems
+    elif "entries" in doc:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            try:
+                cmd_check_register(argparse.Namespace(ws=a.ws, register=str(path)))
+                problems = []
+            except SystemExit as e:
+                problems = [x for x in buf.getvalue().splitlines() if x.startswith(" - ")] if e.code else []
+                if e.code and not problems:
+                    problems = [f"check-register failed ({e.code})"]
+    else:
+        sys.exit(f"{path} is neither a pack (no 'pack' key) nor a register (no 'entries')")
+    if problems:
+        sys.exit("cannot sign off: the file has problems; run the check and fix them first\n" + "\n".join(problems[:20]))
+    h = dict(doc.get("handling") or {}) if isinstance(doc.get("handling"), dict) else {}
+    h.pop("content_hash", None)
+    h.update(status=a.status, reviewer_role=a.role, reviewed_on=a.date or dt.date.today().isoformat())
+    for k in ("classification", "legal_review", "version", "retention_review"):
+        if getattr(a, k) is not None:
+            h[k] = getattr(a, k)
+    if a.distribution:
+        h["distribution"] = list(a.distribution)
+    doc["handling"] = h
+    h["content_hash"] = content_hash(doc)
+    bad, _ = check_handling(doc)
+    if bad:
+        sys.exit("cannot sign off: " + "; ".join(bad))
+    write_json(path, doc)
+    record_sign_off(a.ws, path, h)
+    print(f"Signed off {path}: {h['status']} by {h['reviewer_role']} on {h['reviewed_on']}")
 
 
 # ----------------------------------------------------------------------------- run folders
@@ -2008,6 +2167,8 @@ def cmd_check_register(a):
             problems.append(f"{lid}: owner {norm_entity(e.get('owner_entity'))} is not among the top entities of its "
                             f"findings ({', '.join(k for k, _ in cnt.most_common(3))})")
     uncovered = [fid for fid in F if fid not in covered and fid not in downs]
+    hp, hw = check_handling(reg)
+    problems += hp
     print(f"{len(entries)} learnings; {len(covered)} of {len(F)} findings covered "
           f"({100*len(covered)/max(len(F),1):.0f}%); {len(problems)} problem(s).")
     for p in problems[:80]:
@@ -2018,6 +2179,8 @@ def cmd_check_register(a):
             print(f"   {fid} {F[fid]['code']} r{F[fid]['rating']} {F[fid]['short'][:90]}")
     for line in register_warnings(entries, w):
         print(line)
+    for line in hw:
+        print(f"warning: {line}")
     sys.exit(1 if problems else 0)
 
 
@@ -2245,6 +2408,19 @@ def build_parser():
     s.add_argument("ws")
     s.add_argument("--top", type=int, default=40, help="links to keep (default 40)")
     s.set_defaults(fn=cmd_causal_item)
+
+    s = sp.add_parser("sign-off", help="record a person's review of a pack or register (writes its handling block)")
+    s.add_argument("ws")
+    s.add_argument("file")
+    s.add_argument("--role", required=True, help="the reviewer's role (never a name)")
+    s.add_argument("--status", choices=["reviewed", "approved"], default="reviewed")
+    s.add_argument("--classification", choices=list(HANDLING_ENUMS["classification"]))
+    s.add_argument("--legal-review", dest="legal_review", choices=list(HANDLING_ENUMS["legal_review"]))
+    s.add_argument("--distribution", nargs="+", metavar="AUDIENCE")
+    s.add_argument("--retention-review", dest="retention_review", metavar="YYYY-MM-DD")
+    s.add_argument("--version")
+    s.add_argument("--date", metavar="YYYY-MM-DD", help="review date (default: today)")
+    s.set_defaults(fn=cmd_sign_off)
 
     s = sp.add_parser("scan-names", help="zero-hit name scan (exit 1 on hits, 2 if a file could not be read)")
     s.add_argument("names", help="text file, one name per line")
