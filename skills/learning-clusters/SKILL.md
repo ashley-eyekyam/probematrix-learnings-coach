@@ -7,7 +7,7 @@ description: Classify every finding in a ProbeMatrix investigation export into L
 
 Step 1 of the Learnings Coach method: put every finding with the people who own its learning.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it) (`<skills-root>` is the folder that contains this skill). If the workspace does not exist yet, follow Step 1 of the `learnings-coach` skill. Read `learnings-coach/references/ontology.md` §3 for the taxonomy.
+Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it; `<skills-root>` is the folder that contains this skill). If the workspace does not exist yet, follow Step 1 of the `learnings-coach` skill. Read `learnings-coach/references/ontology.md` §3 for the taxonomy.
 
 ## 1. Run the rules
 

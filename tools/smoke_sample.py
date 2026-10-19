@@ -59,7 +59,12 @@ def main():
         if not re.search(r"; 0 problem\(s\)\.", out):
             fail("check-register did not report 0 problem(s):\n" + out)
 
-    print("smoke OK: %d findings, %d evidence, register 0 problems" % (EXPECT_FINDINGS, EXPECT_EVIDENCE))
+        out = pmlc("check-language", ws, REGISTER)
+        if not re.search(r"^check-language: 0 errors, \d+ warnings$", out, re.M):
+            fail("check-language did not report 0 errors on the sample register:\n" + out)
+
+    print("smoke OK: %d findings, %d evidence, register 0 problems, language 0 errors"
+          % (EXPECT_FINDINGS, EXPECT_EVIDENCE))
 
 
 if __name__ == "__main__":

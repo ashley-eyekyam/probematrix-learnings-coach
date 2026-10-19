@@ -128,7 +128,8 @@ def main():
                             print(f"HIT {ws.title}!{c.coordinate}: {m.group(0)!r} … {c.value[max(0, m.start()-40):m.end()+40]!r}")
     if hits:
         sys.exit(f"{hits} hit(s). Nothing written. Edit the source export and re-run.")
-    scan_note = f"Name scan passed ({len(names)} names). " if a.names else ""
+    scan_note = (f"Name scan passed (optional for public-record samples, D3): {len(names)} name(s) checked. "
+                 if a.names else "")
     dst.parent.mkdir(parents=True, exist_ok=True)
     wb.save(dst)
     print(f"{scan_note}Kept sheets: {wb.sheetnames}. Wrote {dst}")

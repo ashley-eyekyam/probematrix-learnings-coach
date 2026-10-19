@@ -5,25 +5,25 @@ Deterministic data work over a ProbeMatrix findings export (.xlsx), so that the
 LLM skills spend their effort on judgement, not counting.
 
 Subcommands
-  ingest        xlsx -> JSON workspace in <export-dir>/pmlc-runs/<date>-<site>-<event>/workspace
-  profile       Markdown profile of the workspace (counts, levels, roles, data-quality flags)
-  classify      map 'Individuals Involved' roles to Learning Clusters (entity x tier x relation)
-  select        compact Markdown/JSON bundle of findings for one audience or cluster
-  causal        causal graph extracted from the AI's causal explanations (+ Causal Chain sheet)
-  timeline      dated precursor candidates found in findings and evidence
-  interfaces    entity x entity interface matrix (shared findings + cross-entity causal links)
-  dashboard     self-contained HTML organisational learning dashboard
-  register-xlsx write a Learnings Register JSON to a formatted .xlsx
-  scan-names    deterministic zero-hit name scan over files (de-identification check)
-  check-pack    check a learning pack JSON against the workspace
-  sign-off      record a person's review of a pack or register (writes its handling block and content hash)
-  check-register check a Learnings Register JSON against the workspace
-  check-language just-culture and grounding lint (JC1-JC12) of a pack or register JSON
-  pack          learning pack JSON -> <run>/outputs/<pack>.html and .md
-  causal-item   the top causal links as a ready graph item for a pack (JSON on stdout)
-  status        which derived files are current or stale, and the last check of each pack
-  run-path      print a workspace's run folder, outputs folder and slug
-  check-samples check samples/<slug>/ folders follow the contribution layout
+  ingest          xlsx -> JSON workspace in <export-dir>/pmlc-runs/<date>-<site>-<event>/workspace
+  profile         Markdown profile of the workspace (counts, levels, roles, data-quality flags)
+  classify        map 'Individuals Involved' roles to Learning Clusters (entity x tier x relation)
+  select          compact Markdown/JSON bundle of findings for one audience or cluster
+  causal          causal graph extracted from the AI's causal explanations (+ Causal Chain sheet)
+  timeline        dated precursor candidates found in findings and evidence
+  interfaces      entity x entity interface matrix (shared findings + cross-entity causal links)
+  dashboard       self-contained HTML organisational learning dashboard
+  register-xlsx   write a Learnings Register JSON to a formatted .xlsx
+  scan-names      deterministic zero-hit name scan over files (de-identification check)
+  check-pack      check a learning pack JSON against the workspace
+  sign-off        record a person's review of a pack or register (writes its handling block and content hash)
+  check-register  check a Learnings Register JSON against the workspace
+  check-language  just-culture and grounding lint (JC1-JC12) of a pack or register JSON
+  pack            learning pack JSON -> <run>/outputs/<pack>.html and .md
+  causal-item     the top causal links as a ready graph item for a pack (JSON on stdout)
+  status          which derived files are current or stale, and the last check of each pack
+  run-path        print a workspace's run folder, outputs folder and slug
+  check-samples   check samples/<slug>/ folders follow the contribution layout
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -1601,19 +1601,52 @@ PRESET_FILE = REFS / "select-presets.json"
 SELECT_LINE = re.compile(r"PMLC select <ws>((?: [^`\n]*)?)")
 
 
+def strip_comment(line: str) -> str:
+    """The line before its shell comment: as in bash, `#` starts a comment only at the start of a word and outside
+    quotes, so `--text "a # b"` and `--text a#b` keep their `#`."""
+    quote, escaped, word_start = None, False, True
+    for i, ch in enumerate(line):
+        if escaped:  # the character after a backslash is literal
+            escaped, word_start = False, False
+        elif ch == "\\" and quote != "'":
+            escaped = True
+        elif quote:
+            quote = None if ch == quote else quote
+        elif ch in "'\"":
+            quote, word_start = ch, False
+        elif ch.isspace():
+            word_start = True
+        elif ch == "#" and word_start:
+            return line[:i]
+        else:
+            word_start = False
+    return line
+
+
+def split_command(line: str) -> list[str]:
+    """Shell-like split of one command line, without its trailing `# comment` (see strip_comment)."""
+    import shlex
+    return shlex.split(strip_comment(line))
+
+
 def skill_select_lines(text: str) -> list[list[str]]:
     """The argument lists of the `PMLC select <ws> ...` gather calls in a SKILL.md, in order.
 
-    Each call runs to the end of its line or its closing backtick. A trailing `# comment` and any `--out ...`
-    are dropped. A call with a `<...>` placeholder left (such as <F-id>) is a template, not a preset."""
-    import shlex
+    Each call runs to the end of its line or its closing backtick. A trailing `# comment` (outside quotes) and
+    any `--out ...` are dropped. A call with a `<...>` placeholder left (such as <F-id>) is a template, not a
+    preset. An unbalanced quote raises ValueError naming the call."""
     calls = []
     for m in SELECT_LINE.finditer(text):
-        rest = re.sub(r"\s+#.*$", "", m.group(1))
-        rest = re.sub(r"\s--out\s+\S+", "", rest)
-        if re.search(r"<[^>]*>", rest):
+        try:
+            args = split_command(m.group(1))
+        except ValueError as e:
+            raise ValueError(f"{e} in: PMLC select <ws>{m.group(1)}") from None
+        if "--out" in args:
+            i = args.index("--out")
+            del args[i:i + 2]
+        if any(re.search(r"<[^>]*>", t) for t in args):
             continue
-        calls.append(shlex.split(rest))
+        calls.append(args)
     return calls
 
 
@@ -1625,8 +1658,9 @@ def _select_presets(a):
     """select --preset skill[:name]: run the skill's recorded gather calls with the real select parser."""
     given = [t for t in getattr(a, "_argv", []) if t.split("=")[0] in SELECT_FILTER_FLAGS]
     changed = [k for k, v in SELECT_DEFAULTS.items() if getattr(a, k) != v]
-    if given or changed:
-        sys.exit("--preset cannot be combined with filters; edit the preset or drop --preset.")
+    if given or changed:  # a usage error, so exit 2 as argparse does
+        print("--preset cannot be combined with filters; edit the preset or drop --preset.", file=sys.stderr)
+        sys.exit(2)
     skill, _, name = a.preset.partition(":")
     presets = load_presets()
     if skill not in presets:
@@ -2920,11 +2954,12 @@ def add_embed_arg(s):
 
 
 def build_parser():
-    p = argparse.ArgumentParser(prog="pmlc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(prog="pmlc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
+                                allow_abbrev=False)
     p.add_argument("--version", action="version", version=f"pmlc {__version__}")
     sp = p.add_subparsers(dest="cmd", required=True)
 
-    s = sp.add_parser("ingest", help="xlsx export -> JSON workspace in <export-dir>/pmlc-runs/<slug>/workspace")
+    s = sp.add_parser("ingest", help="xlsx export -> JSON workspace in <export-dir>/pmlc-runs/<slug>/workspace", allow_abbrev=False)
     s.add_argument("xlsx")
     where = s.add_mutually_exclusive_group()
     where.add_argument("--slug", help="<site>-<event>: lowercase words joined by hyphens, e.g. hazira-gas-release-fire")
@@ -2938,13 +2973,13 @@ def build_parser():
                    help='JSON object {"name": "role"}; each name (and its variants) is replaced in the workspace')
     s.set_defaults(fn=cmd_ingest)
 
-    s = sp.add_parser("profile", help="Markdown profile")
+    s = sp.add_parser("profile", help="Markdown profile", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--top", type=int, default=15)
     s.add_argument("--out")
     s.set_defaults(fn=cmd_profile)
 
-    s = sp.add_parser("classify", help="roles -> Learning Clusters")
+    s = sp.add_parser("classify", help="roles -> Learning Clusters", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--taxonomy", help="alternative taxonomy.json")
     s.add_argument("--overlay", action="append", metavar="NAME_OR_PATH",
@@ -2958,7 +2993,7 @@ def build_parser():
     s.add_argument("--no-overrides", action="store_true", help="ignore any overrides file")
     s.set_defaults(fn=cmd_classify)
 
-    s = sp.add_parser("select", help="filtered findings bundle")
+    s = sp.add_parser("select", help="filtered findings bundle", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--entity", nargs="*", help="e.g. F02 F09b")
     s.add_argument("--tag", nargs="+", help="entity tags, e.g. emergency or supply contractor; unioned with --entity")
@@ -2996,13 +3031,13 @@ def build_parser():
                         "call with nothing left prints only its minimum output (with the below-minimum warning)")
     s.set_defaults(fn=cmd_select)
 
-    s = sp.add_parser("causal", help="extract causal graph")
+    s = sp.add_parser("causal", help="extract causal graph", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--top", type=int, default=60)
     s.add_argument("--include-justification", action="store_true")
     s.set_defaults(fn=cmd_causal)
 
-    s = sp.add_parser("timeline", help="dated precursor candidates")
+    s = sp.add_parser("timeline", help="dated precursor candidates", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--before", help="ISO date, or the word incident for the workspace's incident date; keep only events up to it")
     s.add_argument("--per-date", type=int, default=4)
@@ -3016,12 +3051,12 @@ def build_parser():
                    help="coarsest date precision to keep (year keeps everything)")
     s.set_defaults(fn=cmd_timeline)
 
-    s = sp.add_parser("interfaces", help="entity x entity interfaces")
+    s = sp.add_parser("interfaces", help="entity x entity interfaces", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--top", type=int, default=25)
     s.set_defaults(fn=cmd_interfaces)
 
-    s = sp.add_parser("dashboard", help="HTML organisational learning map")
+    s = sp.add_parser("dashboard", help="HTML organisational learning map", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--out", help="default: <run>/outputs/organisation-learning-map.html")
     s.add_argument("--register", help="Learnings Register JSON: adds learnings, tier plan and control-strength sections")
@@ -3032,44 +3067,44 @@ def build_parser():
     add_share_args(s)
     s.set_defaults(fn=cmd_dashboard)
 
-    s = sp.add_parser("check-register", help="validate a Learnings Register JSON against the workspace")
+    s = sp.add_parser("check-register", help="validate a Learnings Register JSON against the workspace", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("register")
     _lint_flags(s)
     s.set_defaults(fn=cmd_check_register)
 
-    s = sp.add_parser("check-language", help="just-culture and grounding lint (JC1-JC12) of a pack or register JSON")
+    s = sp.add_parser("check-language", help="just-culture and grounding lint (JC1-JC12) of a pack or register JSON", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("json", help="a learning pack or Learnings Register JSON")
     _lint_flags(s)
     s.set_defaults(fn=cmd_check_language)
 
-    s = sp.add_parser("register-xlsx", help="Learnings Register JSON -> xlsx")
+    s = sp.add_parser("register-xlsx", help="Learnings Register JSON -> xlsx", allow_abbrev=False)
     s.add_argument("register")
     s.add_argument("--out", help="default: learnings-register.xlsx next to the register JSON")
     s.add_argument("--ws", help="workspace for the review status (default: the run's workspace in the standard layout)")
     add_share_args(s)
     s.set_defaults(fn=cmd_register_xlsx)
 
-    s = sp.add_parser("status", help="show which workspace files are current or stale, and pack check history")
+    s = sp.add_parser("status", help="show which workspace files are current or stale, and pack check history", allow_abbrev=False)
     s.add_argument("ws")
     s.set_defaults(fn=cmd_status)
 
-    s = sp.add_parser("run-path", help="print the run folder, workspace, outputs folder and slug of a workspace")
+    s = sp.add_parser("run-path", help="print the run folder, workspace, outputs folder and slug of a workspace", allow_abbrev=False)
     s.add_argument("ws")
     s.set_defaults(fn=cmd_run_path)
 
-    s = sp.add_parser("check-samples", help="check samples/<slug>/ folders follow the contribution layout")
+    s = sp.add_parser("check-samples", help="check samples/<slug>/ folders follow the contribution layout", allow_abbrev=False)
     s.add_argument("dir", nargs="?", default=str(HERE.parents[2] / "samples"))
     s.set_defaults(fn=cmd_check_samples)
 
-    s = sp.add_parser("check-pack", help="check a learning pack JSON against the workspace")
+    s = sp.add_parser("check-pack", help="check a learning pack JSON against the workspace", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("pack")
     _lint_flags(s)
     s.set_defaults(fn=cmd_check_pack)
 
-    s = sp.add_parser("pack", help="learning pack JSON -> <run>/outputs/<pack>.html (and .md)")
+    s = sp.add_parser("pack", help="learning pack JSON -> <run>/outputs/<pack>.html (and .md)", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("pack")
     s.add_argument("--out", help="output folder (default: <run>/outputs)")
@@ -3078,12 +3113,12 @@ def build_parser():
     add_share_args(s)
     s.set_defaults(fn=cmd_pack)
 
-    s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)")
+    s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--top", type=int, default=40, help="links to keep (default 40)")
     s.set_defaults(fn=cmd_causal_item)
 
-    s = sp.add_parser("sign-off", help="record a person's review of a pack or register (writes its handling block)")
+    s = sp.add_parser("sign-off", help="record a person's review of a pack or register (writes its handling block)", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("file")
     s.add_argument("--role", required=True, help="the reviewer's role (never a name)")
@@ -3096,7 +3131,7 @@ def build_parser():
     s.add_argument("--date", metavar="YYYY-MM-DD", help="review date (default: today)")
     s.set_defaults(fn=cmd_sign_off)
 
-    s = sp.add_parser("scan-names", help="zero-hit name scan (exit 1 on hits, 2 if a file could not be read)")
+    s = sp.add_parser("scan-names", help="zero-hit name scan (exit 1 on hits, 2 if a file could not be read)", allow_abbrev=False)
     s.add_argument("names", help="text file, one name per line")
     s.add_argument("paths", nargs="+")
     s.add_argument("--show", type=int, default=50)

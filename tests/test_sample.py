@@ -280,3 +280,11 @@ def test_share_refused_on_hazira_draft(hz, tmp_path):
         last = r.stderr.strip().splitlines()[-1]
         assert last.startswith(f"cannot share {word}: review is draft (the investigation status is in progress"), last
         assert not out.exists() or not any(out.iterdir())
+
+
+def test_smoke_run_checks_language():
+    """tools/smoke_sample.py (the CI smoke job) also runs check-language on the sample register: 0 errors."""
+    r = subprocess.run([sys.executable, str(ROOT / "tools" / "smoke_sample.py")], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.strip().splitlines()[-1] == ("smoke OK: 436 findings, 46 evidence, register 0 problems, "
+                                                 "language 0 errors")
