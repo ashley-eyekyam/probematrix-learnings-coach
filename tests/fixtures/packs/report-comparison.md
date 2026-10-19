@@ -52,4 +52,4 @@ The other report here is fictional, for testing; counts are illustrative only.
 
 This pack cites 2 of 2 relevant findings.
 
-> Generated with ProbeMatrix Learnings Coach v2.0.0a3 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

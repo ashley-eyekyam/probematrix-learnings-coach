@@ -45,7 +45,7 @@ import sys
 import types
 from pathlib import Path
 
-__version__ = "2.0.0a3"
+__version__ = "2.0.0a4"
 
 HERE = Path(__file__).resolve().parent
 if str(HERE) not in sys.path:

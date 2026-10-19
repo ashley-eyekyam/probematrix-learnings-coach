@@ -25,7 +25,7 @@ Plugins do not update themselves unless you turn on auto-update. To get the late
 - **Claude Code:** `/plugin marketplace update probematrix`, then `/reload-plugins`.
 - **Claude app:** open the plugin settings, find the `probematrix` marketplace and choose Update.
 
-To check which version you have, ask the agent: *"Run the Learnings Coach engine with `--version` and tell me the result."* It prints, for example, `pmlc 2.0.0a3`.
+To check which version you have, ask the agent: *"Run the Learnings Coach engine with `--version` and tell me the result."* It prints, for example, `pmlc 2.0.0a4`.
 
 ## Pinning a version
 

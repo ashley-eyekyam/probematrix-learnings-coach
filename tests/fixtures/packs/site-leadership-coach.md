@@ -67,4 +67,4 @@ Buying seals locally without a specification had become routine; the findings re
 
 This pack cites 1 of 1 relevant findings.
 
-> Generated with ProbeMatrix Learnings Coach v2.0.0a3 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
