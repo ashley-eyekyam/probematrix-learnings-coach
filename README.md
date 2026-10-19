@@ -43,6 +43,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.3, Phase 1: correct and tested). 
 - Regulators, vendors and contractors now have their own functions, and site-specific role words (for Indian process sites) are an optional overlay you switch on.
 - Timelines show clock times and how long before the incident each signal appeared.
 - Automatic tests run on every change, so fixes stay fixed.
+- A user manual, [`docs/manual/`](docs/manual/Home.md), explains every engine command and flag with real examples from the Hazira sample. The full command list is in [Commands](docs/manual/Commands.md).
 
 ## The skills
 
