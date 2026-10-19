@@ -523,8 +523,9 @@ def check_pack(pack, w) -> Result:
 
     F = {f["id"] for f in w["findings"]}
     E = set(w.get("evidence", {}))
+    cit_all = _citable(pack)
     ids, cit = set(), set()
-    for path, x in _walk_ids(_citable(pack), ""):
+    for path, x in _walk_ids(cit_all, ""):
         ids.add(x)
         cit.add((path, x))
         if x not in (F if x.startswith("FND-") else E):
@@ -534,14 +535,13 @@ def check_pack(pack, w) -> Result:
         if (path, x) not in cit:
             warn(path, f"{x} is shown as plain text, not a citation; put it in cites")
     downs = core.downgraded_findings(w)
-    noted = {x for _, x in _walk_ids(_citable(pack)["data_quality"], "data_quality") if x.startswith("FND-")}
+    noted = {x for _, x in _walk_ids(cit_all["data_quality"], "data_quality") if x.startswith("FND-")}
     FM = {f["id"]: f for f in w["findings"]}
-    cit_all = _citable(pack)
     units = [(f"bottom_line[{i}]", e) for i, e in enumerate(cit_all["bottom_line"])]
     for si, s in enumerate(cit_all["sections"]):
         units += [(f"sections[{si}].items[{ii}]", it) for ii, it in enumerate(s.get("items", []))]
     for upath, unit in units:
-        found = [(p_, x) for p_, x in _walk_ids(unit, upath)]
+        found = list(_walk_ids(unit, upath))
         for p_, x in found:
             if x in downs and x not in noted:
                 bad(p_, f"cites {x}, which has a reviewer downgrade vote; add a data_quality note citing it, or leave it out")
