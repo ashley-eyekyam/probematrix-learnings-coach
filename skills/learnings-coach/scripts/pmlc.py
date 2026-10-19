@@ -61,10 +61,21 @@ def _need_openpyxl():
 
 
 def _int(v, default=None):
+    """An int from a cell: '436', 436 or the float cell '436.0'; anything else (4.5, nan, text) is `default`."""
     try:
         return int(str(v).strip())
     except (TypeError, ValueError):
+        pass
+    try:
+        f = float(str(v).strip())
+    except (TypeError, ValueError):
         return default
+    return int(f) if f == f and abs(f) != float("inf") and f == int(f) else default
+
+
+def _n(n, word) -> str:
+    """'1 finding', '2 findings'."""
+    return f"{n} {word}" if n == 1 else f"{n} {word}s"
 
 
 def _s(v) -> str:
@@ -107,8 +118,11 @@ def load_ws(ws_dir: Path) -> dict:
 
 
 def write_json(path: Path, obj) -> None:
+    path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, indent=1, ensure_ascii=False), encoding="utf-8")
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(obj, indent=1, ensure_ascii=False), encoding="utf-8")
+    os.replace(tmp, path)
 
 
 # ----------------------------------------------------------------------------- manifest
@@ -137,9 +151,16 @@ def _now() -> str:
 def load_manifest(ws) -> dict:
     try:
         m = json.loads((Path(ws) / MANIFEST).read_text(encoding="utf-8"))
-        return m if isinstance(m, dict) else {}
     except (OSError, ValueError):
         return {}
+    if not isinstance(m, dict):
+        return {}
+    files = m.get("files")
+    m["files"] = {k: {**v, **{x: {} for x in ("inputs", "sources") if x in v and not isinstance(v[x], dict)}}
+                  for k, v in (files if isinstance(files, dict) else {}).items() if isinstance(v, dict)}
+    packs = m.get("packs")
+    m["packs"] = {k: v for k, v in (packs if isinstance(packs, dict) else {}).items() if isinstance(v, dict)}
+    return m
 
 
 def _save_manifest(ws, m: dict) -> None:
@@ -421,13 +442,18 @@ def _header(ws) -> list[str]:
     return []
 
 
+def _known_sheet(wb, name):
+    """The sheet for a KNOWN_COLUMNS key, accepting the alias ingest accepts for the findings sheet."""
+    return find_sheet(wb, name, "Findings") if name == "Identified Findings" else find_sheet(wb, name)
+
+
 def schema_report(wb) -> dict:
     """Fingerprint plus missing and unknown columns for the three columnar sheets."""
-    headers = {n: _header(find_sheet(wb, n)) for n in KNOWN_COLUMNS}
+    headers = {n: _header(_known_sheet(wb, n)) for n in KNOWN_COLUMNS}
     canon = "\n".join(list(wb.sheetnames) + ["\t".join(headers[n]) for n in KNOWN_COLUMNS])
     missing, unknown = {}, {}
     for n, known in KNOWN_COLUMNS.items():
-        if find_sheet(wb, n) is None:
+        if _known_sheet(wb, n) is None:
             continue
         m = [c for c in known if c not in headers[n]]
         u = [c for c in headers[n] if c not in known]
@@ -730,11 +756,19 @@ def _load_taxonomy(path=None, overlays=()) -> dict:
         op = _overlay_path(x)
         if not op.exists():
             sys.exit(f"Overlay {x} not found at {op}. Pass a name from references/overlays/ or a path to a .json file.")
-        ov = json.loads(op.read_text(encoding="utf-8"))
+        try:
+            ov = json.loads(op.read_text(encoding="utf-8"))
+        except ValueError:
+            sys.exit(f"overlay {op.stem}: not valid JSON ({op}). Fix the file or pass another overlay.")
+        if not isinstance(ov, dict):
+            sys.exit(f"overlay {op.stem}: must be a JSON object with an `extend` block ({op}).")
         name = ov.get("name") or op.stem
-        for group in ("entities", "tiers"):
+        ext = ov.get("extend") or {}
+        if not isinstance(ext, dict):
+            sys.exit(f"overlay {name}: `extend` must be an object keyed by entities, tiers or relations.")
+        for group in ("entities", "tiers", "relations"):
             rules = {r["id"]: r for r in t[group]}
-            for rid, extra in (ov.get("extend", {}).get(group) or {}).items():
+            for rid, extra in (ext.get(group) or {}).items():
                 if rid not in rules:
                     sys.exit(f"Overlay {name} extends {rid}, which is not in the {group} of taxonomy {t['_file']}.")
                 rules[rid]["match"] = f"(?:{rules[rid]['match']})|(?:{extra})"
@@ -821,6 +855,13 @@ def load_overrides(path: Path, tax: dict | None = None) -> dict:
     return out
 
 
+def _same_taxonomy_file(ws, prev, taxonomy) -> bool:
+    """True when this classify's taxonomy file is the one the previous classify recorded (compared by real path)."""
+    src = load_manifest(ws).get("files", {}).get("clusters.json", {}).get("sources", {}).get("taxonomy") or []
+    now = Path(taxonomy) if taxonomy else REFS / "taxonomy.json"
+    return bool(src) and Path(src[0]).resolve() == now.resolve()
+
+
 def _previous_taxonomy(ws: Path, prev: dict):
     """(taxonomy path or None for the base one, [overlay names or paths]) that the last classify used. Prefers the
     manifest's absolute sources; a built-in overlay comes back as its bare name."""
@@ -828,7 +869,10 @@ def _previous_taxonomy(ws: Path, prev: dict):
     names = list(prev.get("overlays", []))
     file = prev.get("file")
     tax = None
-    if file and file != "taxonomy.json":
+    custom = bool(file) and file != "taxonomy.json"
+    if src and file == "taxonomy.json" and Path(src[0]).resolve() != (REFS / "taxonomy.json").resolve():
+        custom = True  # a custom file that happens to be called taxonomy.json, recorded by its absolute path
+    if custom:
         tax = src[0] if src and Path(src[0]).is_file() else file
     paths = src[1:] if len(src) == len(names) + 1 else [None] * len(names)
     builtin = (REFS / "overlays").resolve()
@@ -848,31 +892,42 @@ def cmd_classify(a):
         sys.exit("--no-overlay and --overlay cannot be combined; pass one or the other.")
     prev = w.get("clusters", {}).get("taxonomy", {})
     taxonomy, overlays = a.taxonomy, list(a.overlay or ())
-    reused = False
-    if not a.taxonomy and not a.overlay and "file" in prev:
-        taxonomy, rec_overlays = _previous_taxonomy(ws, prev)
-        if not a.no_overlay:
+    reused, reused_tax = False, False
+    if (not a.taxonomy or not a.overlay) and "file" in prev:
+        rec_tax, rec_overlays = _previous_taxonomy(ws, prev)
+        if not a.taxonomy:  # a flag for only one half keeps the other half from the previous classify
+            taxonomy, reused_tax = rec_tax, bool(rec_tax)
+        if not a.overlay and not a.no_overlay:
             overlays = rec_overlays
         if taxonomy and not Path(taxonomy).is_file():
             sys.exit(f"The previous classify used taxonomy {taxonomy}, which is no longer there. Pass --taxonomy "
                      f"<file> to choose one (the base taxonomy is {REFS / 'taxonomy.json'}).")
-        reused = bool(taxonomy or overlays)
+        reused = reused_tax or bool(overlays and not a.overlay)
         if reused:
             print(f"Reusing taxonomy {taxonomy or 'taxonomy.json'} and overlays {', '.join(overlays) or 'none'} "
                   "from the previous classify (pass --taxonomy/--overlay to change, --no-overlay for none).")
     tax = _load_taxonomy(taxonomy, overlays)
-    if reused and taxonomy:
+    if reused_tax:
         tax["_file"] = prev["file"]  # the same file under the name it was recorded with
     if "file" in prev:
         was, now = _taxonomy_label(prev["file"], prev.get("overlays", [])), _taxonomy_label(tax["_file"], tax["_overlays"])
+        if was != now and _same_taxonomy_file(ws, prev, taxonomy) and prev.get("overlays", []) == tax["_overlays"]:
+            was = now  # the same file reached by a relative path one time and an absolute one the next
         if was != now:
             print(f"warning: previous classify used {was}; this run uses {now}")
-    ov_path = None
+    ov_path, remembered = None, False
+    if a.no_overrides and a.overrides:
+        print("warning: --no-overrides wins: ignoring --overrides", file=sys.stderr)
     if not a.no_overrides:
         if a.overrides:
             ov_path = a.overrides
         elif (ws / "role_overrides.json").exists():
             ov_path = str(ws / "role_overrides.json")
+        else:  # an explicit --overrides file from the previous classify is remembered like the taxonomy is
+            rec = load_manifest(ws).get("files", {}).get("clusters.json", {}).get("sources", {})
+            if rec.get("overrides") and not rec.get("overrides_auto") and Path(rec["overrides"]).is_file():
+                ov_path = rec["overrides"]
+                remembered = True
     overrides = load_overrides(Path(ov_path), tax) if ov_path else {}
     role_map = {}
     for f in w["findings"]:
@@ -925,7 +980,7 @@ def cmd_classify(a):
                    {"findings.json": file_sha256(ws / "findings.json"), "taxonomy": taxonomy_hash(tpaths),
                     "overrides": file_sha256(ov_path) if ov_path else "none"},
                    {"taxonomy": [str(_abs(p)) for p in tpaths], "overrides": str(_abs(ov_path)) if ov_path else None,
-                    "overrides_auto": not a.no_overrides and not a.overrides})
+                    "overrides_auto": not a.no_overrides and not a.overrides and not remembered})
     if ov_path:
         print(f"Applied {applied} override(s) from {ov_path}")
     if stale:
@@ -1190,7 +1245,11 @@ def cmd_select(a):
             sys.exit(f"Unknown --fields value(s): {', '.join(sorted(bad))}. Allowed: {', '.join(SELECT_FIELDS)}")
     E = w.get("evidence", {})
     sel = _filter(w, a)
-    skipped = sorted(downgraded_findings(w) & {f["id"] for f in w["findings"]}) if a.exclude_downgraded else []
+    skipped = []
+    if a.exclude_downgraded:
+        would = {f["id"] for f, _ in _filter(w, types.SimpleNamespace(**{**vars(a), "exclude_downgraded": False,
+                                                                         "max": None}))}
+        skipped = sorted(downgraded_findings(w) & would)
     note = f"Excluded (reviewer downgrade): {', '.join(skipped) or 'none'}"
     nsel = len(sel)
     if a.count_by:
@@ -1201,7 +1260,7 @@ def cmd_select(a):
         counts = collections.Counter(k for f, c in sel for k in _group_keys(f, c, a.count_by))
         rows = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
         if a.format == "json":
-            text = json.dumps(dict(rows), indent=1, ensure_ascii=False)
+            text = json.dumps(dict(rows), indent=1, ensure_ascii=False) + "\n"
         else:
             text = "\n".join([f"# Findings by {a.count_by} ({nsel} selected)\n", f"| {a.count_by} | findings |",
                               "|---|---:|"] + [f"| {k} | {n} |" for k, n in rows] + [""])
@@ -1242,7 +1301,7 @@ def cmd_select(a):
         def dropped_line(k):
             ids = [f["id"] for f, _ in sel[k:]]
             low = sel[k - 1][0]["rating"] if k else "none"
-            return (f"Dropped for budget: {len(ids)} findings (lowest kept rating {low}): "
+            return (f"Dropped for budget: {_n(len(ids), 'finding')} (lowest kept rating {low}): "
                     f"{', '.join(ids[:20])}{'…' if len(ids) > 20 else ''}")
 
         def footers_for(k):
@@ -1267,10 +1326,10 @@ def cmd_select(a):
             text += note + "\n"
     if a.out:
         Path(a.out).write_text(text, encoding="utf-8")
-        print(f"Wrote {kept} findings to {a.out}")
+        print(f"Wrote {_n(kept, 'finding')} to {a.out}")
     else:
         sys.stdout.write(text)
-    print(f"select: {kept} findings, {len(text)} chars", file=sys.stderr)
+    print(f"select: {_n(kept, 'finding')}, {len(text)} chars", file=sys.stderr)
 
 
 # ----------------------------------------------------------------------------- causal
@@ -1363,7 +1422,7 @@ def _parse_dates(text):
     return hits
 
 
-CLOCK_RX = re.compile(r"\b([01]?\d|2[0-3])[:.]([0-5]\d)(?::[0-5]\d)?\s*(?:hrs?|h\b)?")
+CLOCK_RX = re.compile(r"\b([01]?\d|2[0-3])[:.]([0-5]\d)(?::[0-5]\d)?\s*(?:hours?\b|hrs?\b|h\b)?")
 PRECISION_RANK = {"day": 0, "month": 1, "year": 2}
 
 
@@ -1377,7 +1436,7 @@ def _clock_times(text, start=0, end=None):
     decimals and dd.mm.yyyy dates are not read as times."""
     out = []
     for m in CLOCK_RX.finditer(text, start, len(text) if end is None else end):
-        if text[m.end(1)] == "." and not re.search(r"h(rs?)?$", m.group(0).rstrip()):
+        if text[m.end(1)] == "." and not re.search(r"h(ours?|rs?)?$", m.group(0).rstrip()):
             continue
         out.append((m.start(), m.end(), f"{int(m.group(1)):02d}:{m.group(2)}"))
     return out
@@ -1413,6 +1472,9 @@ def cmd_timeline(a):
     w = load_ws(ws)
     inc_date = incident_date(w)
     before = a.before
+    if before and before != "incident" and not iso_date(before):
+        print('--before: use YYYY-MM-DD or "incident"', file=sys.stderr)
+        sys.exit(2)
     if before == "incident":
         before = inc_date
         if not before:
@@ -1922,14 +1984,15 @@ def _vals(v) -> list:
     return [x for x in (_s(i) for i in items if i is not None) if x]
 
 
-def _fold_spelling(s: str) -> str:
+def _fold_spelling(s) -> str:
+    s = _s(s)
     return re.sub(r"\s+", " ", s.lower().replace("isation", "ization")).strip()
 
 
 def register_warnings(entries: list, w: dict) -> list:
     """Controlled-vocabulary drift as 'warning: ...' lines. Absent or empty fields are not checked."""
     E = w.get("evidence", {})
-    subs = {_fold_spelling(f["subcategory"]) for f in w.get("findings", []) if f.get("subcategory")}
+    subs = {_fold_spelling(f["subcategory"]) for f in w.get("findings", []) if _s(f.get("subcategory"))}
     out = []
     for e in entries:
         lid = e.get("lr_id", "?")
@@ -1950,12 +2013,11 @@ def register_warnings(entries: list, w: dict) -> list:
         for eid in sorted({x for b in bases for v in _vals(b) for x in EVD_RX.findall(v)}):
             if eid not in E:
                 out.append(f"warning: {lid}: evidence_basis names {eid}, which is not in the workspace")
-        lvl = _vals(e.get("hfacs_level"))
-        if lvl and subs:
-            m = re.match(r"\s*L\s?[1-4]\b[\s:.\-]*(.*)$", lvl[0], re.I | re.S)
+        for lv in (_vals(e.get("hfacs_level")) if subs else []):
+            m = re.match(r"\s*L\s?[1-4]\b[\s:.\-]*(.*)$", lv, re.I | re.S)
             rest = _fold_spelling(m.group(1)) if m else ""
             if rest and not any(rest == x or re.match(re.escape(x) + r"[\s(:]", rest) for x in subs):
-                out.append(f"warning: {lid}: hfacs_level sub-category {lvl[0]!r} matches no sub-category in the export")
+                out.append(f"warning: {lid}: hfacs_level sub-category {lv!r} matches no sub-category in the export")
     return out
 
 def cmd_check_register(a):
@@ -2008,7 +2070,7 @@ def cmd_check_register(a):
             problems.append(f"{lid}: owner {norm_entity(e.get('owner_entity'))} is not among the top entities of its "
                             f"findings ({', '.join(k for k, _ in cnt.most_common(3))})")
     uncovered = [fid for fid in F if fid not in covered and fid not in downs]
-    print(f"{len(entries)} learnings; {len(covered)} of {len(F)} findings covered "
+    print(f"{_n(len(entries), 'learning')}; {len(covered)} of {_n(len(F), 'finding')} covered "
           f"({100*len(covered)/max(len(F),1):.0f}%); {len(problems)} problem(s).")
     for p in problems[:80]:
         print(" -", p)
@@ -2098,6 +2160,13 @@ def cmd_causal_item(a):
 
 # ----------------------------------------------------------------------------- main
 
+def _non_negative_int(v):
+    n = int(v)
+    if n < 0:
+        raise argparse.ArgumentTypeError("--budget-chars must be 0 or more")
+    return n
+
+
 def build_parser():
     p = argparse.ArgumentParser(prog="pmlc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--version", action="version", version=f"pmlc {__version__}")
@@ -2155,7 +2224,7 @@ def build_parser():
     s.add_argument("--text", help="regex over short/justification/causal/label")
     s.add_argument("--max", type=int)
     s.add_argument("--brief", action="store_true", help="omit justification, causal text and evidence quotes")
-    s.add_argument("--budget-chars", type=int, help="keep findings in rating order while the output stays within "
+    s.add_argument("--budget-chars", type=_non_negative_int, help="keep findings in rating order while the output stays within "
                                                     "N characters, and say how many were dropped; the header and "
                                                     "footer lines are always printed")
     s.add_argument("--fields", help="comma-separated: " + ", ".join(SELECT_FIELDS) + " (id is always kept)")

@@ -784,7 +784,8 @@ def test_custom_taxonomy_renamed_ids_still_select_by_tag(tmp_path, ws):
     p.write_text(json.dumps(tax), encoding="utf-8")
     w2 = tmp_path / "ws2"
     shutil.copytree(ws, w2)
-    run("classify", str(w2), "--taxonomy", str(p))
+    run("classify", str(w2), "--taxonomy", str(p), "--no-overlay",
+        "--no-overrides")
     cl = json.loads((w2 / "clusters.json").read_text())
     assert "F09b" not in cl["entities"] and cl["taxonomy"]["file"] == str(p)
     sel = lambda d: {x["id"] for x in json.loads(run("select", str(d), "--tag", "emergency", "--format", "json"))}  # noqa: E731
@@ -1590,3 +1591,230 @@ def test_dashboard_with_no_ratings(tmp_path):
     page = wsp.parent / "outputs" / "organisation-learning-map.html"
     assert page.is_file()
     assert "<b>0</b><span>Highest-rated findings" in page.read_text(encoding="utf-8")
+
+
+# ----------------------------------------------------------------------------- Phase 2 task 2: engine hygiene
+
+def test_overrides_and_no_overrides_warns(fresh_ws, tmp_path):
+    o = tmp_path / "o.json"
+    o.write_text(json.dumps({"Mr Fictional Person": {"F": ["F01"]}}))
+    r = subprocess.run([sys.executable, str(PMLC), "classify", str(fresh_ws), "--overrides", str(o),
+                        "--no-overrides"], capture_output=True, text=True)
+    assert r.returncode == 0 and "--no-overrides wins: ignoring --overrides" in r.stderr
+
+
+def test_overlay_malformed_json_message(tmp_path):
+    bad = tmp_path / "broken.json"
+    bad.write_text("{nope", encoding="utf-8")
+    with pytest.raises(SystemExit, match=r"overlay broken: not valid JSON"):
+        pmlc._load_taxonomy(overlays=[str(bad)])
+    w = tmp_path / "x"
+    run("ingest", str(make_export(tmp_path)), "--legacy-out", str(w))
+    r = run_fail("classify", str(w), "--overlay", str(bad))
+    assert r.returncode == 1 and "overlay broken: not valid JSON" in r.stderr and "Traceback" not in r.stderr
+
+
+def test_overlay_extend_null(tmp_path):
+    p = tmp_path / "n.json"
+    p.write_text(json.dumps({"name": "n", "extend": None}), encoding="utf-8")
+    t = pmlc._load_taxonomy(overlays=[str(p)])
+    assert t["_overlays"] == ["n"]
+
+
+def test_overlay_extend_relations_applied(tmp_path):
+    p = tmp_path / "rel.json"
+    p.write_text(json.dumps({"name": "rel", "extend": {"relations": {"approver": r"zzcheckerzz"}}}), encoding="utf-8")
+    base = pmlc._load_taxonomy()
+    ext = pmlc._load_taxonomy(overlays=[str(p)])
+    assert pmlc.map_role("Zzcheckerzz lead", base)["R"] != "approver"
+    assert pmlc.map_role("Zzcheckerzz lead", ext)["R"] == "approver"
+    p.write_text(json.dumps({"name": "rel", "extend": {"relations": {"nope": "x"}}}), encoding="utf-8")
+    with pytest.raises(SystemExit, match="nope"):
+        pmlc._load_taxonomy(overlays=[str(p)])
+
+
+def test_overlay_label_not_spurious_for_relative_path(fresh_ws, tmp_path):
+    tax = tmp_path / "t" / "tax.json"
+    tax.parent.mkdir()
+    tax.write_bytes((pmlc.REFS / "taxonomy.json").read_bytes())
+    run("classify", str(fresh_ws), "--taxonomy", str(tax))
+    r = subprocess.run([sys.executable, str(PMLC), "classify", str(fresh_ws), "--taxonomy", "tax.json"],
+                       capture_output=True, text=True, cwd=tax.parent)
+    assert r.returncode == 0 and "warning: previous classify" not in r.stdout, r.stdout + r.stderr
+
+
+def test_before_rejects_bad_value(ws):
+    r = run_fail("timeline", str(ws), "--before", "2020-13-99")
+    assert r.returncode == 2 and '--before: use YYYY-MM-DD or "incident"' in r.stderr
+    run("timeline", str(ws), "--before", "2024-03-20")
+
+
+def _votes_ws(tmp_path):
+    x = make_export(tmp_path)
+    wb = openpyxl.load_workbook(x)
+    c = wb.create_sheet("Collaboration Data")
+    for r in [("VOTES",), ("Finding ID", "Vote", "Reason"), ("FND-0004", "downgrade", "weak"),
+              ("FND-0001", "downgrade", "weak")]:
+        c.append(r)
+    wb.save(x)
+    w = tmp_path / "w"
+    run("ingest", str(x), "--legacy-out", str(w))
+    run("classify", str(w))
+    return w
+
+
+def test_excluded_downgrade_lists_only_matching(tmp_path):
+    w = _votes_ws(tmp_path)
+    md = run("select", str(w), "--exclude-downgraded", "--brief", "--level", "1")
+    assert md.rstrip().splitlines()[-1] == "Excluded (reviewer downgrade): FND-0001"
+    md = run("select", str(w), "--exclude-downgraded", "--brief", "--level", "3")
+    assert md.rstrip().splitlines()[-1] == "Excluded (reviewer downgrade): none"
+
+
+def test_entity_mode_all_with_tags(ws):
+    cl = json.loads((ws / "clusters.json").read_text())
+    tags = cl["taxonomy"]["tags"]
+    tag = next(t for ts in tags.values() for t in ts)
+    tagged = {e for e, ts in tags.items() if tag in ts}
+    ent = sorted(tagged)[0]
+    both = _ids("select", str(ws), "--entity", ent, "--tag", tag, "--entity-mode", "all")
+    only_ent = _ids("select", str(ws), "--entity", ent)
+    assert both == only_ent and both
+    other = next(e for e in cl["entities"] if e not in tagged)
+    inter = _ids("select", str(ws), "--entity", other, "--tag", tag, "--entity-mode", "all")
+    want = {i for i, c in cl["findings"].items() if other in c["F"] and set(c["F"]) & tagged}
+    assert inter == want
+
+
+def test_count_by_json_trailing_newline(ws):
+    out = run("select", str(ws), "--count-by", "level", "--format", "json")
+    assert out.endswith("}\n") and json.loads(out)
+
+
+def test_singular_finding_wording(ws, tmp_path):
+    assert pmlc._n(1, "finding") == "1 finding" and pmlc._n(2, "finding") == "2 findings"
+    assert pmlc._n(0, "finding") == "0 findings"
+    r = _select_proc(ws, "--max", "1")
+    assert "select: 1 finding, " in r.stderr and "1 findings" not in r.stderr
+    run("select", str(ws), "--max", "1", "--out", str(tmp_path / "o.md"))
+    assert (tmp_path / "o.md").exists()
+
+
+def test_negative_budget_rejected(ws):
+    r = run_fail("select", str(ws), "--budget-chars", "-5")
+    assert r.returncode == 2 and "budget" in r.stderr
+
+
+def test_budget_too_small_json_warns(ws):
+    j = _select_proc(ws, "--budget-chars", "1", "--format", "json")
+    assert "below the minimum output" in j.stderr or json.loads(j.stdout) == []
+    assert re.search(r"select: budget 1 is below the minimum output \(\d+ chars\); no findings kept", j.stderr)
+
+
+def test_schema_report_findings_alias_strict(tmp_path):
+    x = make_export(tmp_path)
+    wb = openpyxl.load_workbook(x)
+    sh = wb["Identified Findings"]
+    sh.title = "Findings"
+    for cell in sh[1]:
+        if cell.value == "Rating":
+            cell.value = "Score"
+    wb.save(x)
+    r = run_fail("ingest", str(x), "--legacy-out", str(tmp_path / "w"), "--strict")
+    assert "--strict" in r.stderr and "Rating" in r.stderr and "Traceback" not in r.stderr
+    run("ingest", str(x), "--legacy-out", str(tmp_path / "w2"))
+
+
+def test_int_accepts_float_cells():
+    assert pmlc._int("436.0") == 436 and pmlc._int(436.0) == 436 and pmlc._int("436") == 436
+    assert pmlc._int("4.5") is None and pmlc._int("x", 7) == 7 and pmlc._int(None) is None
+    assert pmlc._int("nan") is None and pmlc._int("inf") is None
+
+
+def test_corrupt_manifest_inner_shapes(fresh_ws):
+    (fresh_ws / "manifest.json").write_text(json.dumps({"files": None, "packs": []}))
+    m = pmlc.load_manifest(fresh_ws)
+    assert m["files"] == {} and m["packs"] == {}
+    (fresh_ws / "manifest.json").write_text(json.dumps({"files": {"findings.json": "x", "a.json": {"inputs": 3}},
+                                                        "packs": {"p": 5}}))
+    m = pmlc.load_manifest(fresh_ws)
+    assert isinstance(m["files"], dict) and isinstance(m["packs"], dict)
+    r = subprocess.run([sys.executable, str(PMLC), "status", str(fresh_ws)], capture_output=True, text=True)
+    assert r.returncode == 0 and "Traceback" not in r.stderr, r.stderr
+
+
+def test_write_json_is_atomic(tmp_path):
+    p = tmp_path / "sub" / "a.json"
+    pmlc.write_json(p, {"a": 1})
+    pmlc.write_json(p, {"a": 2})
+    assert json.loads(p.read_text()) == {"a": 2}
+    assert not list(p.parent.glob("*.tmp"))
+
+
+def test_clock_dotted_hours():
+    assert [t[2] for t in pmlc._clock_times("The fire began at 10.15 hours on site.")] == ["10:15"]
+    assert [t[2] for t in pmlc._clock_times("Alarm at 10.15 hrs and 11.30h.")] == ["10:15", "11:30"]
+    assert pmlc._clock_times("Pressure was 10.15 bar and 3.45 m.") == []
+
+
+def test_fold_spelling_non_string():
+    w = {"findings": [{"subcategory": 5}, {"subcategory": "Errors"}], "evidence": {}}
+    out = pmlc.register_warnings([{"lr_id": "LR-1", "hfacs_level": "L3 Bogus"}], w)
+    assert any("Bogus" in x for x in out)
+    out = pmlc.register_warnings([{"lr_id": "LR-1", "hfacs_level": 5}], w)
+    assert isinstance(out, list)
+
+
+def test_list_hfacs_level_all_checked():
+    w = {"findings": [{"subcategory": "Errors"}], "evidence": {}}
+    out = pmlc.register_warnings([{"lr_id": "LR-1", "hfacs_level": ["L1 Errors", "L2 Bogus thing"]}], w)
+    assert any("Bogus thing" in x for x in out) and not any("L1 Errors" in x for x in out)
+
+
+def test_previous_taxonomy_relative_custom(fresh_ws, tmp_path):
+    other = tmp_path / "other"
+    other.mkdir()
+    t = json.loads((pmlc.REFS / "taxonomy.json").read_text())
+    t["entities"][1]["name"] = "Custom Renamed Entity"
+    (other / "taxonomy.json").write_text(json.dumps(t))
+    r = subprocess.run([sys.executable, str(PMLC), "classify", str(fresh_ws), "--taxonomy", "taxonomy.json"],
+                       capture_output=True, text=True, cwd=other)
+    assert r.returncode == 0, r.stderr
+    out = run("classify", str(fresh_ws))
+    assert f"Reusing taxonomy {other / 'taxonomy.json'}" in out
+    cl = json.loads((fresh_ws / "clusters.json").read_text())
+    assert "Custom Renamed Entity" in cl["taxonomy"]["entities"].values()
+    assert cl["taxonomy"]["file"] == "taxonomy.json"
+
+
+def test_reclassify_keeps_other_flag_half(fresh_ws, tmp_path):
+    w = fresh_ws
+    o = tmp_path / "o.json"
+    o.write_text(json.dumps({"Mr Fictional Person": {"F": ["F01"], "T": "T1", "R": "actor"}}))
+    tax = tmp_path / "tax.json"
+    tax.write_bytes((pmlc.REFS / "taxonomy.json").read_bytes())
+    run("classify", str(w), "--taxonomy", str(tax), "--overrides", str(o))
+    # only --overlay: the remembered taxonomy file and overrides file stay
+    run("classify", str(w), "--overlay", "india-process-site")
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["taxonomy"]["file"] == str(tax) and cl["taxonomy"]["overlays"] == ["india-process-site"]
+    assert cl["overrides"]["file"] == str(o) and cl["overrides"]["applied"] == 1
+    # only --overrides: the remembered taxonomy and overlays stay
+    run("classify", str(w), "--overrides", str(o))
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["taxonomy"]["file"] == str(tax) and cl["taxonomy"]["overlays"] == ["india-process-site"]
+    # only --taxonomy: the remembered overlays stay
+    run("classify", str(w), "--taxonomy", str(tax))
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["taxonomy"]["overlays"] == ["india-process-site"] and cl["overrides"]["file"] == str(o)
+    # --no-overrides still wins
+    run("classify", str(w), "--no-overrides")
+    assert json.loads((w / "clusters.json").read_text())["overrides"]["file"] is None
+
+
+def test_check_pack_citable_once():
+    import inspect
+
+    import pmlc_pack
+    src = inspect.getsource(pmlc_pack.check_pack)
+    assert src.count("_citable(pack)") == 1
