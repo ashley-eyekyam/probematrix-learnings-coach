@@ -969,7 +969,7 @@ def test_register_trigger_no_regulator_invite():
 def test_hub_sign_off_rule():
     t = (SKILLS / "learnings-coach" / "SKILL.md").read_text(encoding="utf-8")
     assert "never run sign-off unless" in t
-    assert "check-language" in t and "--share" in t and "--embed summary" in t
+    assert "check-language" in t and "--share" in t and "--embed cited|full" in t
 
 
 def test_principles_sections():
