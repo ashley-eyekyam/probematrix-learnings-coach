@@ -256,7 +256,9 @@ def test_coverage_lists_uncited_relevant_findings(w):
 def test_markdown_per_kind(w):
     md = pp.render_pack_md(fixture("all-kinds"), w)
     for expected in [
-        "# All kinds: Synthetic pump fire\n\n*Learning purposes: not a statutory document*\n\n**Audience:** Test readers",
+        "# All kinds: Synthetic pump fire\n\n**DRAFT**\n\nReview: draft · Classification: internal · Version 1.0\n\n"
+        "Draft because: no finding is marked as edited by a person\n\n*Learning purposes: not a statutory document · "
+        "Learnings drafted by an AI agent from AI-assisted findings*\n\n**Audience:** Test readers",
         "## Bottom line\n\n- Test before service. [FND-0002]",
         "## Every item kind\n\nOne of each kind.",
         "- [ ] **Hold point:** Leak-test record attached. *(before return to service)* [FND-0001]",

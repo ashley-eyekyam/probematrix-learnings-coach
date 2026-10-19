@@ -432,6 +432,45 @@ def effective_handling(doc, w) -> dict:
     return out
 
 
+RIBBON_HTML = f'<div class="ribbon" role="note">{DRAFT_LABEL}</div>'
+# The per-page status in print: a page margin box, so every printed page carries it.
+PAGE_FOOTER_CSS = f'@page{{@bottom-center{{content:"{STATUS_PHRASE} · ProbeMatrix Learnings Coach"}}}}'
+# The DRAFT ribbon and handling line, shared by the pack page and the dashboard. In print the ribbon keeps a
+# border and its text, so it never depends on colour alone.
+HANDLING_CSS = PAGE_FOOTER_CSS + """
+.ribbon{display:inline-block;border:2px solid var(--warn,#c2410c);color:var(--warn,#c2410c);font-weight:700;letter-spacing:.12em;padding:2px 12px;border-radius:4px;margin:0 0 8px}
+p.handling{color:var(--mut);font-size:13px;margin:0 0 6px}
+@media print{.ribbon{border:2px solid #000;color:#000;background:none}}"""
+
+
+def is_draft(eh: dict) -> bool:
+    """True when the DRAFT ribbon must show: anything short of an effective approval."""
+    return eh["effective_status"] != "approved"
+
+
+def review_text(eh: dict) -> str:
+    """'approved by <role> on <date>', or the bare effective status (no reviewer for a status that does not hold)."""
+    st = eh["effective_status"]
+    who = (f" by {eh['reviewer_role']} on {eh['reviewed_on']}"
+           if st != "draft" and eh.get("reviewer_role") and eh.get("reviewed_on") else "")
+    return st + who
+
+
+def handling_lines(eh: dict) -> list:
+    """The handling line, then 'Draft because: ...' when there are reasons."""
+    out = [f"Review: {review_text(eh)} · Classification: {eh['classification']} · Version {eh['version']}"]
+    if eh["draft_reasons"]:
+        out.append("Draft because: " + "; ".join(eh["draft_reasons"]))
+    return out
+
+
+def status_line(status="") -> str:
+    """A document's status text, always carrying STATUS_PHRASE and AI_STATUS (each once)."""
+    s = _s(status)
+    bits = ([] if STATUS_PHRASE in s else [STATUS_PHRASE]) + ([s] if s else [])
+    return " · ".join(bits + ([] if AI_STATUS in s else [AI_STATUS]))
+
+
 def record_sign_off(ws, path, h: dict) -> None:
     m = load_manifest(Path(ws))
     m.setdefault("sign_offs", {})[Path(path).name] = {
@@ -1937,8 +1976,10 @@ def cmd_dashboard(a):
                    for k, c in top_codes) if top_codes else ""
     learn_html = ""
     detail = None
+    hdoc = {}
     if a.register:
         reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
+        hdoc = reg if isinstance(reg, dict) else {}
         entries = reg["entries"] if isinstance(reg, dict) else reg
         entries = sorted(entries, key=lambda e: (_int(e.get("priority"), 9), _s(e.get("lr_id"))))
         detail = build_detail_data(w, reg)
@@ -2005,6 +2046,9 @@ def cmd_dashboard(a):
         body = (overview + '\n<p class="m">Run <code>pmlc.py dashboard --register &lt;learnings-register.json&gt;</code> '
                 "to add the detailed register tab.</p>")
         extra_css = scripts = ""
+    eh = effective_handling(hdoc, w)
+    ribbon = RIBBON_HTML + "\n" if is_draft(eh) else ""
+    handling = "".join(f'<p class="handling">{html.escape(x)}</p>' for x in handling_lines(eh))
     doc = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Organisational Learning Map: {title}</title>
 <style>
@@ -2023,10 +2067,12 @@ td{{background:color-mix(in srgb,var(--acc) calc(var(--o,0)*100%),transparent)}}
 .bar i{{display:block;height:12px;background:var(--acc);border-radius:3px}} .bar b{{text-align:right}}
 .tiers details{{padding:8px 12px;border-bottom:1px solid var(--line)}} .tiers summary{{cursor:pointer;font-weight:600}} .tiers li{{margin:4px 0}}
 footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}}
+{HANDLING_CSS}
 {extra_css}
 </style></head><body><main>
-<h1>Organisational Learning Map</h1>
-<p class="m"><b>{html.escape(STATUS_PHRASE)}</b></p>
+{ribbon}<h1>Organisational Learning Map</h1>
+<p class="m"><b>{html.escape(status_line())}</b></p>
+{handling}
 <p class="m">{title} · {html.escape(fields.get('Location', ''))} · {html.escape(fields.get('Date', ''))}. Learnings from one ProbeMatrix investigation, distributed across the organisation by who owns them.</p>
 {body}
 <footer>{html.escape(BRAND)}</footer>
@@ -2090,12 +2136,22 @@ def _flat(v):
     return "" if v is None else str(v)
 
 
+def _register_ws(a) -> dict:
+    """The workspace for a register's forced-draft check: --ws, else the run's workspace when the register sits in
+    <run>/outputs/ of the standard layout, else none (no forced-draft reasons can be read)."""
+    if getattr(a, "ws", None):
+        return load_ws(a.ws)
+    guess = Path(a.register).resolve().parent.parent / "workspace"
+    return load_ws(guess) if is_standard_ws(guess) and (guess / "findings.json").exists() else {}
+
+
 def cmd_register_xlsx(a):
     openpyxl = _need_openpyxl()
     from openpyxl.styles import Alignment, Font, PatternFill
     from openpyxl.utils import get_column_letter
     reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
     entries = reg["entries"] if isinstance(reg, dict) else reg
+    eh = effective_handling(reg if isinstance(reg, dict) else {}, _register_ws(a))
     wb = openpyxl.Workbook()
     head_fill = PatternFill("solid", fgColor="0B3954")
     head_font = Font(color="FFFFFF", bold=True)
@@ -2148,9 +2204,15 @@ def cmd_register_xlsx(a):
                  "Lessons and recommendations only: no owners, due dates or action tracking.",
                  STATUS_PHRASE, BRAND]:
         ab.append([line])
+    review = review_text(eh) + (f". Draft because: {'; '.join(eh['draft_reasons'])}" if eh["draft_reasons"] else "")
+    for k, v in [("Review status", review), ("Classification", eh["classification"]),
+                 ("Legal review", eh["legal_review"]), ("Distribution", ", ".join(eh["distribution"]) or "not set"),
+                 ("Version", str(eh["version"])), ("Retention review", eh.get("retention_review") or "not set")]:
+        ab.append([k, v])
     ab.column_dimensions["A"].width = 120
+    ab.column_dimensions["B"].width = 60
     for sh in wb.worksheets:
-        sh.oddHeader.center.text = STATUS_PHRASE
+        sh.oddHeader.center.text = STATUS_PHRASE + (f" · {DRAFT_LABEL}" if is_draft(eh) else "")
         sh.oddFooter.center.text = VERSION_STAMP
     out = Path(a.out) if a.out else Path(a.register).resolve().parent / "learnings-register.xlsx"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -2480,6 +2542,7 @@ def build_parser():
     s = sp.add_parser("register-xlsx", help="Learnings Register JSON -> xlsx")
     s.add_argument("register")
     s.add_argument("--out", help="default: learnings-register.xlsx next to the register JSON")
+    s.add_argument("--ws", help="workspace for the review status (default: the run's workspace in the standard layout)")
     s.set_defaults(fn=cmd_register_xlsx)
 
     s = sp.add_parser("status", help="show which workspace files are current or stale, and pack check history")

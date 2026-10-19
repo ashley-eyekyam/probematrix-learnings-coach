@@ -80,6 +80,9 @@ button.cite[aria-expanded=true]{background:color-mix(in srgb,var(--acc) 16%,tran
 .coverage{margin-top:24px}
 .coverage li{margin:4px 0}
 .trail{display:none}
+.pfoot{display:none}
+.rec .export-banner{margin:0 0 6px;color:var(--mut);font-size:13px;font-style:italic}
+.chip-ai{display:inline-block;font-size:12px;line-height:1.6;padding:0 8px;border-radius:999px;border:1px dashed var(--warn,#c2410c);color:var(--warn,#c2410c);margin:0 0 6px}
 @media (max-width:600px){.rec dl{grid-template-columns:1fr}}
 @media print{
   :root:not(#_){--bg:#fff;--fg:#000;--mut:#444;--card:#fff;--line:#ccc;--acc:#0077b6;--warn:#c2410c}
@@ -91,4 +94,5 @@ button.cite[aria-expanded=true]{background:color-mix(in srgb,var(--acc) 16%,tran
   .check input{appearance:none;-webkit-appearance:none;border:1px solid #000;border-radius:2px;background:#fff}
   .card,.k-check,.k-question,.k-recommendation{break-inside:avoid}
   button.cite{color:#000;border-color:#999}
+  .pfoot{display:block;margin:8px 0 0;padding-top:4px;border-top:1px solid #ccc;font-size:10px;color:#444}
 }

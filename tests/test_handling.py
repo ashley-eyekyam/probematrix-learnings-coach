@@ -209,3 +209,127 @@ def test_valid_signed_block_still_approved(tmp_path, okws):
     assert cli("sign-off", str(okws), str(p), "--status", "approved", "--role", "R").returncode == 0
     eff = pmlc.effective_handling(json.loads(p.read_text()), pmlc.load_ws(okws))
     assert eff["effective_status"] == "approved" and eff["draft_reasons"] == []
+
+
+# ----------------------------------------------------------------------------- rendering (Task 6)
+
+import pmlc_pack as pp  # noqa: E402
+
+RIBBON = '<div class="ribbon" role="note">DRAFT</div>'
+AI_STATUS = "Learnings drafted by an AI agent from AI-assisted findings"
+
+
+def signed(tmp_path, ws, doc, name="pack.json", *extra):
+    p = write(tmp_path, doc, name)
+    r = cli("sign-off", str(ws), str(p), "--status", "approved", "--role", "HSE manager", "--date", "2026-10-19",
+            *extra)
+    assert r.returncode == 0, r.stderr
+    return json.loads(p.read_text())
+
+
+def test_pack_without_handling_renders_ribbon_and_handling_line(okws):
+    w = pmlc.load_ws(okws)
+    t = pp.render_pack_html(w, copy.deepcopy(PACK), "r", "d")
+    assert t.count(RIBBON) == 1
+    assert '<p class="handling">Review: draft · Classification: internal · Version 1.0</p>' in t
+    md = pp.render_pack_md(copy.deepcopy(PACK), w)
+    assert md.startswith(f"# {PACK['title']}\n\n**DRAFT**\n\nReview: draft · Classification: internal · Version 1.0\n\n")
+
+
+def test_html_ribbon_until_approved(tmp_path, okws):
+    w = pmlc.load_ws(okws)
+    draft = pp.render_pack_html(w, copy.deepcopy(PACK), "r", "d")
+    assert RIBBON in draft
+    doc = signed(tmp_path, okws, PACK)
+    t = pp.render_pack_html(w, doc, "r", "d")
+    assert RIBBON not in t and 'class="ribbon"' not in t
+    assert "Review: approved by HSE manager on 2026-10-19 · Classification: internal · Version 1.0" in t
+    assert "Draft because" not in t
+    doc["title"] += "!"                           # edited after sign-off: the ribbon comes back, with the reason
+    t = pp.render_pack_html(w, doc, "r", "d")
+    assert RIBBON in t and "Draft because: edited since sign-off" in t
+    assert "Review: draft · Classification" in t   # no reviewer shown for a status that no longer holds
+
+
+def test_html_draft_reasons_and_status_line(tmp_path):
+    w = pmlc.load_ws(build(tmp_path, status="in_progress"))
+    t = pp.render_pack_html(w, copy.deepcopy(PACK), "r", "d")
+    assert ('<p class="handling">Draft because: the investigation status is in progress; '
+            "no finding is marked as edited by a person</p>") in t
+    assert f'<p class="status">{STATUS} · {AI_STATUS}</p>' in t
+
+
+def test_md_handling_and_ai_status(tmp_path, okws):
+    w = pmlc.load_ws(build(tmp_path, status="in_progress", name="ws2"))
+    md = pp.render_pack_md(copy.deepcopy(PACK), w)
+    assert md.startswith(
+        f"# {PACK['title']}\n\n**DRAFT**\n\nReview: draft · Classification: internal · Version 1.0\n\n"
+        "Draft because: the investigation status is in progress; no finding is marked as edited by a person\n\n"
+        f"*{STATUS} · {AI_STATUS}*\n\n**Audience:** Testers")
+    doc = signed(tmp_path, okws, PACK)
+    md = pp.render_pack_md(doc, pmlc.load_ws(okws))
+    assert "**DRAFT**" not in md and "Draft because" not in md
+    assert f"Review: approved by HSE manager on 2026-10-19 · Classification: internal · Version 1.0\n\n*{STATUS}" in md
+    own = dict(copy.deepcopy(PACK), status=f"{STATUS}. {AI_STATUS}.")
+    assert md.count(AI_STATUS) == 1 and pp.render_pack_md(own, w).count(AI_STATUS) == 1
+
+
+def test_dashboard_ribbon_and_handling(tmp_path, okws):
+    run("classify", str(okws))
+    out = tmp_path / "map.html"
+    run("dashboard", str(okws), "--out", str(out))
+    t = out.read_text(encoding="utf-8")
+    assert RIBBON in t and "Review: draft · Classification: internal · Version 1.0" in t
+    assert AI_STATUS in t and "@bottom-center" in t
+    reg = signed(tmp_path, okws, copy.deepcopy(MINI_REG), "reg.json")
+    rp = write(tmp_path, reg, "reg.json")
+    run("dashboard", str(okws), "--register", str(rp), "--out", str(out))
+    t = out.read_text(encoding="utf-8")
+    assert RIBBON not in t and "Review: approved by HSE manager on 2026-10-19" in t
+
+
+def test_xlsx_about_handling_rows(tmp_path, okws):
+    openpyxl = pytest.importorskip("openpyxl")
+    run("classify", str(okws))
+    rp = write(tmp_path, copy.deepcopy(MINI_REG), "reg.json")
+    out = tmp_path / "reg.xlsx"
+    run("register-xlsx", str(rp), "--out", str(out), "--ws", str(okws))
+    wb = openpyxl.load_workbook(out)
+    about = {r[0]: r[1] for r in wb["About"].iter_rows(values_only=True) if len(r) > 1 and r[1] is not None}
+    assert about["Review status"].startswith("draft")
+    assert about["Classification"] == "internal" and about["Legal review"] == "not-required"
+    assert about["Distribution"] == "not set" and about["Version"] == "1.0" and about["Retention review"] == "not set"
+    for s in wb.worksheets:
+        assert s.oddHeader.center.text == f"{STATUS} · DRAFT", s.title
+    signed(tmp_path, okws, copy.deepcopy(MINI_REG), "reg.json", "--distribution", "board", "T2",
+           "--retention-review", "2027-10-19")
+    run("register-xlsx", str(rp), "--out", str(out), "--ws", str(okws))
+    wb = openpyxl.load_workbook(out)
+    about = {r[0]: r[1] for r in wb["About"].iter_rows(values_only=True) if len(r) > 1 and r[1] is not None}
+    assert about["Review status"] == "approved by HSE manager on 2026-10-19"
+    assert about["Distribution"] == "board, T2" and about["Retention review"] == "2027-10-19"
+    assert all(s.oddHeader.center.text == STATUS for s in wb.worksheets)
+
+
+def test_every_card_has_print_footer(okws):
+    w = pmlc.load_ws(okws)
+    card = {"kind": "card", "title": "t", "what_happened": "w", "warning_signs": ["s"], "good_looks_like": "g",
+            "cites": ["FND-0001"]}
+    tp = {"kind": "test_point", "requirement": "r", "sample": "s", "conformity_evidence": "c", "cites": ["EVD-0001"]}
+    doc = copy.deepcopy(PACK)
+    doc["sections"][0]["items"] += [dict(card), dict(card, title="u"), dict(tp)]
+    t = pp.render_pack_html(w, doc, "r", "d")
+    assert t.count('class="pfoot"') == 3
+    assert t.count(f'<p class="pfoot">{STATUS}</p>') == 3
+
+
+def test_page_margin_footer_css(okws):
+    t = pp.render_pack_html(pmlc.load_ws(okws), copy.deepcopy(PACK), "r", "d")
+    assert f'@page{{@bottom-center{{content:"{STATUS} · ProbeMatrix Learnings Coach"}}}}' in t
+    assert "@media print{.ribbon{border:2px solid #000;color:#000" in t   # border plus text, not colour alone
+    css = (pmlc.DASHBOARD_ASSETS / "pack.css").read_text(encoding="utf-8")
+    assert ".pfoot{display:none}" in css and ".pfoot{display:block" in css[css.index("@media print"):]
+
+
+def test_no_inc_date_global():
+    assert not hasattr(pp, "_INC_DATE")

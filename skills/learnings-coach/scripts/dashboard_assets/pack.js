@@ -39,6 +39,9 @@
     try { store.setItem(key, JSON.stringify(ticks)); return true; } catch (err) { return false; }
   }
 
+  /* A finding's text is the investigation's AI-drafted wording: true unless the export marks it edited by a person. */
+  function unedited(f) { return ["", "no"].indexOf(String(f.user_edited || "").trim().toLowerCase()) !== -1; }
+
   function nonEmpty(rows) { return rows.filter(function (r) { return r[1] && String(r[1]).trim() !== ""; }); }
 
   /* [label, value] rows describing one finding or evidence record, or null if it is not in the data. */
@@ -55,7 +58,7 @@
         ["Learning clusters", [(c.F || []).join(", "), (c.T || []).join(", "), (c.R || []).join(", ")]
           .filter(Boolean).join(" · ")],
         ["Description", f.short || ""],
-        ["Justification", f.justification || ""],
+        [(data.brand && data.brand.ai_justification_label) || "Justification", f.justification || ""],
         ["Causal explanation", f.causal || ""],
         ["Reviewer votes", (f.votes || []).map(function (v) { return v.vote + (v.reason ? ": " + v.reason : ""); }).join("; ")],
         ["Evidence", (f.evidence || []).join(", ")]]);
@@ -67,6 +70,15 @@
       rows.push(["Linked to " + l.code, [l.relevance, l.reference].filter(Boolean).join(": ")]);
     });
     return nonEmpty(rows);
+  }
+
+  /* What an expanded record shows: {banner, chip, rows}, or null if the ID is not in the data. A finding starts with
+     the export-language banner, and carries the AI chip when no person edited it; an evidence record has neither. */
+  function recordView(id, data) {
+    var rows = recordRows(id, data);
+    if (!rows) return null;
+    var f = data.findings && data.findings[id], b = data.brand || {};
+    return {banner: f ? b.export_banner || null : null, chip: f && unedited(f) ? b.ai_chip || null : null, rows: rows};
   }
 
   function el(tag, cls, text) {
@@ -83,11 +95,13 @@
       btn.setAttribute("aria-expanded", "false");
       return;
     }
-    var rows = recordRows(btn.getAttribute("data-id"), D), box = el("div", "rec");
-    if (!rows) box.appendChild(el("p", "m", "Not in this export."));
+    var v = recordView(btn.getAttribute("data-id"), D), box = el("div", "rec");
+    if (!v) box.appendChild(el("p", "m", "Not in this export."));
     else {
+      if (v.banner) box.appendChild(el("p", "export-banner", v.banner));
+      if (v.chip) box.appendChild(el("span", "chip-ai", v.chip));
       var dl = el("dl");
-      rows.forEach(function (r) { dl.appendChild(el("dt", null, r[0])); dl.appendChild(el("dd", null, r[1])); });
+      v.rows.forEach(function (r) { dl.appendChild(el("dt", null, r[0])); dl.appendChild(el("dd", null, r[1])); });
       box.appendChild(dl);
     }
     btn.insertAdjacentElement("afterend", box);
@@ -185,7 +199,7 @@
   }
 
   var API = {parseHash: parseHash, matches: matches, tickKey: tickKey, readTicks: readTicks, writeTicks: writeTicks,
-             isTicked: isTicked, recordRows: recordRows};
+             isTicked: isTicked, recordRows: recordRows, recordView: recordView};
   if (typeof module !== "undefined" && module.exports) { module.exports = API; return; }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();

@@ -781,9 +781,6 @@ def sorted_events(events) -> list:
     return sorted(events, key=lambda e: (e["date"], e.get("time") or ""))
 
 
-_INC_DATE = None      # the incident date of the pack being rendered; set by render_pack_md / render_pack_html
-
-
 def event_when(ev: dict, incident_date: str | None) -> str:
     """How a timeline event's date reads: 'c. 2015' (year only), '2019-03', '2019-03-04 14:05'. A date before the incident
     adds ' (N months before)', or ' (about N years before)' for a year-only date."""
@@ -832,7 +829,7 @@ def _cites_cell(cites, sup) -> str:
     return f"{s} ({more})" if s else more
 
 
-def _md_item(it) -> str:
+def _md_item(it, inc_date=None) -> str:
     k, c, g = it["kind"], _c(it.get("cites")), it.get
     if k == "para":
         return it["text"] + c
@@ -897,7 +894,7 @@ def _md_item(it) -> str:
     if k == "timeline":
         lines = []
         for e in sorted_events(it["events"]):
-            when = event_when(e, _INC_DATE)
+            when = event_when(e, inc_date)
             lines.append(f"- {when}: {e['text']}{' *(weak signal)*' if e.get('signal') else ''}{_c(e.get('cites'))}")
             lines += [f"  - {lab}: {e[f]}" for f, lab in (("received_by", "Received by"), ("response", "Response"))
                       if e.get(f)]
@@ -922,19 +919,20 @@ def _md_extras(d) -> str:
     return f"*({'; '.join(bits)})*" if bits else ""
 
 
-def _md_block(it) -> str:
+def _md_block(it, inc_date=None) -> str:
     x = _md_extras(it)
     if not x:
-        return _md_item(it)
-    return _md_item(it) + (" " + x if it["kind"] in ("para", "check") else "\n\n" + x)
+        return _md_item(it, inc_date)
+    return _md_item(it, inc_date) + (" " + x if it["kind"] in ("para", "check") else "\n\n" + x)
 
 
 def render_pack_md(pack, w) -> str:
     """The pack as Markdown: generated, never hand-written, so it always agrees with the HTML."""
-    global _INC_DATE
-    _INC_DATE = _pack_incident_date(pack, w)
+    inc_date = _pack_incident_date(pack, w)
+    eh = core.effective_handling(pack, w)
     cov = coverage(w, pack)
-    out = [f"# {pack['title']}", f"*{pack['status']}*", f"**Audience:** {pack['audience']}"]
+    out = [f"# {pack['title']}"] + ([f"**{core.DRAFT_LABEL}**"] if core.is_draft(eh) else [])
+    out += core.handling_lines(eh) + [f"*{core.status_line(pack['status'])}*", f"**Audience:** {pack['audience']}"]
     fields, inc = w.get("incident", {}).get("fields", {}), pack.get("incident") or {}
     shown = [str(x) for x in (inc.get("title") or fields.get("Incident Title"), inc.get("date") or fields.get("Date")) if x]
     if shown:
@@ -957,9 +955,9 @@ def render_pack_md(pack, w) -> str:
                 out.append(f"### {g}")
             prev = g
             if tick and it["kind"] == "check" and not head:       # consecutive checks: one tight list
-                out[-1] += "\n" + _md_block(it)
+                out[-1] += "\n" + _md_block(it, inc_date)
             else:
-                out.append(_md_block(it))
+                out.append(_md_block(it, inc_date))
             tick = it["kind"] == "check"
     sup = [f"- Bottom line › {i}: {'; '.join(b['supporting_cites'])}"
            for i, b in enumerate(pack["bottom_line"], 1) if b.get("supporting_cites")]
@@ -980,6 +978,7 @@ def render_pack_md(pack, w) -> str:
 # ----------------------------------------------------------------------------- HTML
 
 GRID_KINDS = {"card", "indicator", "test_point", "module"}
+PFOOT = f'<p class="pfoot">{html.escape(STATUS_PHRASE)}</p>'  # print-only status on each card
 STRONG_HOC = {"elimination", "substitution", "engineering"}
 
 
@@ -1034,7 +1033,7 @@ def _extras(d) -> str:
     return badge + more
 
 
-def _html_item(it, graphs) -> str:
+def _html_item(it, graphs, inc_date=None) -> str:
     k, g, c = it["kind"], it.get, _chips(it.get("cites"))
     if k == "para":
         body = _rich(it["text"]) + c
@@ -1066,7 +1065,7 @@ def _html_item(it, graphs) -> str:
                 + _labelled("Why it made sense at the time", g("why_made_sense"))
                 + _labelled("What the organisation is changing", g("organisation_changing"))
                 + '<span class="label">Warning signs</span>' + _list(it["warning_signs"])
-                + _labelled("What good looks like", it["good_looks_like"]) + disc + c + "</div>")
+                + _labelled("What good looks like", it["good_looks_like"]) + disc + c + PFOOT + "</div>")
     elif k == "scenario":
         body = (f'<p><b>Scenario.</b> {_inline(it["situation"])}</p><details><summary>Discussion prompts</summary>'
                 + _list(it["prompts"], "ol") + f"</details>{c}")
@@ -1092,7 +1091,7 @@ def _html_item(it, graphs) -> str:
         flags = ('<span class="label">Red flags seen in this investigation</span>' + _list(g("red_flags"))
                  if g("red_flags") else "")
         body = (f'<div class="card"><p><b>{_inline(it["requirement"])}</b></p>' + _labelled("What to sample", it["sample"])
-                + _labelled("Evidence of conformity", it["conformity_evidence"]) + flags + c + "</div>")
+                + _labelled("Evidence of conformity", it["conformity_evidence"]) + flags + c + PFOOT + "</div>")
     elif k == "module":
         meta = "".join(f'<span class="badge">{_h(g(f))}</span>' for f in ("audience", "duration") if g(f))
         assess = ("<details><summary>Assessment</summary>" + _list(g("assessment"), "ol") + "</details>"
@@ -1107,7 +1106,7 @@ def _html_item(it, graphs) -> str:
         lis = []
         for e in sorted_events(it["events"]):
             sig = '<span class="badge hold">Weak signal</span> ' if e.get("signal") else ""
-            when = _h(event_when(e, _INC_DATE))
+            when = _h(event_when(e, inc_date))
             more = "".join(f'<p class="m">{lab}: {_h(e[f])}</p>'
                            for f, lab in (("received_by", "Received by"), ("response", "Response")) if e.get(f))
             if "knowable_then" in e:
@@ -1131,7 +1130,7 @@ def _html_item(it, graphs) -> str:
     return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}{_extras(it)}</div>'
 
 
-def _section_items(items, graphs) -> str:
+def _section_items(items, graphs, inc_date=None) -> str:
     out, run, prev = [], [], None
 
     def flush():
@@ -1145,7 +1144,7 @@ def _section_items(items, graphs) -> str:
             flush()
             out.append(f'<h3 class="group">{_h(g)}</h3>')
         prev = g
-        h = _html_item(it, graphs)
+        h = _html_item(it, graphs, inc_date)
         if it["kind"] in GRID_KINDS:
             run.append(h)
             continue
@@ -1174,8 +1173,8 @@ def _trail(data) -> str:
 
 def render_pack_html(w, pack, run, generated) -> str:
     """One self-contained offline page: server-rendered content, with pack.js adding behaviour."""
-    global _INC_DATE
-    _INC_DATE = _pack_incident_date(pack, w)
+    inc_date = _pack_incident_date(pack, w)
+    eh = core.effective_handling(pack, w)        # before with_item_ids, which would change the content hash
     pack = with_item_ids(pack)
     fields = w.get("incident", {}).get("fields", {})
     data = build_pack_data(w, pack, run)
@@ -1191,7 +1190,7 @@ def render_pack_html(w, pack, run, generated) -> str:
         intro = f'<div class="intro">{_rich(s["intro"])}</div>' if s.get("intro") else ""
         secs.append(f'<details class="sec" id="s-{_h(s["id"])}" open><summary><h2>{_h(s["heading"])}</h2>'
                     f'<span class="n">{len(s["items"])}</span></summary><div class="sec-body">{intro}'
-                    f'{_section_items(s["items"], graphs)}</div></details>')
+                    f'{_section_items(s["items"], graphs, inc_date)}</div></details>')
     dq = pack.get("data_quality") or []
     dq_html = ('<section class="dq"><h2>Data quality and limits</h2><ul>'
                + "".join(f'<li>{_inline(n["text"])} {_chips(n.get("cites"))}</li>' for n in dq) + "</ul></section>") if dq else ""
@@ -1210,7 +1209,9 @@ def render_pack_html(w, pack, run, generated) -> str:
     meta = " · ".join(_h(x) for x in (pack["audience"], inc.get("title") or fields.get("Incident Title"),
                                       inc.get("date") or fields.get("Date"), f"run {run}", f"generated {generated}") if x)
     title = _h(pack["title"])
-    status = _h(pack["status"])
+    status = _h(core.status_line(pack["status"]))
+    ribbon = core.RIBBON_HTML + "\n" if core.is_draft(eh) else ""
+    handling = "".join(f'<p class="handling">{_h(x)}</p>' for x in core.handling_lines(eh))
     css = (core.DASHBOARD_ASSETS / "pack.css").read_text(encoding="utf-8")
     js = (core.DASHBOARD_ASSETS / "pack.js").read_text(encoding="utf-8")
     payload = core.embed_json(data)
@@ -1225,11 +1226,13 @@ main{{max-width:1180px;margin:0 auto;padding:24px 16px 48px}}
 {wide}
 h1{{font-size:24px;margin:0 0 4px}} p.m{{color:var(--mut);margin:0 0 8px}}
 footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}}
+{core.HANDLING_CSS}
 {css}
 </style></head><body><main>
-<h1>{title}</h1>
+{ribbon}<h1>{title}</h1>
 <p class="m">{meta}</p>
 <p class="status">{status}</p>
+{handling}
 {dq_html}
 <section class="bottom"><h2>Bottom line</h2><ul>{bottom}</ul></section>
 <div class="toolbar" role="search"><input id="q" type="search" placeholder="Search this pack" aria-label="Search this pack">

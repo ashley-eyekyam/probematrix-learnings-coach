@@ -1,6 +1,12 @@
 # Supply Chain and Contractor Learnings: Synthetic pump fire, 2024
 
-*Learning purposes: not a statutory document*
+**DRAFT**
+
+Review: draft · Classification: internal · Version 1.0
+
+Draft because: no finding is marked as edited by a person
+
+*Learning purposes: not a statutory document · Learnings drafted by an AI agent from AI-assisted findings*
 
 **Audience:** Procurement, stores, vendors and contractors
 
