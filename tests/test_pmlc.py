@@ -1687,6 +1687,46 @@ def test_make_uat_inputs(tmp_path, where):
     assert sheets == base + ["Corrective Actions", "Preventive Actions"] and head == FIND_COLS
     for n in ("uat-votes-pack.json", "uat-unlinked-pack.json"):
         assert json.loads((d / n).read_text(encoding="utf-8"))["schema"] == 1
+    _check_phase2_uat_inputs(d, tmp_path)
+
+
+def _check_phase2_uat_inputs(d, tmp_path):
+    """Phase 2 inputs: an approvable export, a bad, a shareable pack and a register, and the privacy files."""
+    wb = openpyxl.load_workbook(d / "uat-approvable.xlsx")
+    fields = {r[0]: r[1] for r in wb["Incident Summary"].iter_rows(values_only=True) if r[0]}
+    assert fields["Investigation Status"] == "completed" and fields["Investigating Officer"] == "Fictional Officer"
+    rows = {r[0]: dict(zip(FIND_COLS, r)) for r in wb["Identified Findings"].iter_rows(min_row=2, values_only=True)}
+    assert rows["FND-0001"]["User Edited"] == "Yes"
+    assert [k for k, r in rows.items() if r["User Edited"] == "Yes"] == ["FND-0001"]
+    just = rows["FND-0001"]["AI Justification"]
+    assert all(s in just for s in ("Acme Contractors Pvt Ltd", "P-101", "03:12", "2024-03-20"))
+    assert "Security Guard - Gate 3" in rows["FND-0004"]["Individuals Involved"]
+    names = [x for x in (d / "uat-names.txt").read_text(encoding="utf-8").splitlines() if x and not x.startswith("#")]
+    assert names == ["Fictional Officer", "Ms Jane Placeholder"]
+    assert "fictional" in (d / "uat-names.txt").read_text(encoding="utf-8").lower()
+    assert "Acme Contractors Pvt Ltd" in (d / "uat-orgs.txt").read_text(encoding="utf-8").splitlines()
+    assert set(json.loads((d / "uat-redact.json").read_text(encoding="utf-8"))) == set(names)
+    bad = json.loads((d / "uat-bad-pack.json").read_text(encoding="utf-8"))
+    assert bad["bottom_line"][0]["text"] == "John Smith was careless and should be disciplined"
+    # the shareable pack and the register pass their checks on the approvable export, with no language error
+    x = tmp_path / "approvable" / "uat-approvable.xlsx"
+    x.parent.mkdir()
+    x.write_bytes((d / "uat-approvable.xlsx").read_bytes())
+    run("ingest", str(x), "--slug", "uat-approvable")
+    w = next((x.parent / "pmlc-runs").glob("*/workspace"))
+    run("classify", str(w))
+    prof = run("profile", str(w))
+    assert "Regulator involvement is mentioned" in prof and "Personal fields present" in prof
+    for share in ("internal", "external"):
+        out = run("check-pack", str(w), str(d / "uat-shareable-pack.json"), "--share", share)
+        assert "OK:" in out and " JC" not in out, out
+    out = run("check-register", str(w), str(d / "uat-register.json"))
+    assert "0 problem(s)" in out and " JC" not in out, out
+    assert run_fail("check-pack", str(w), str(d / "uat-bad-pack.json")).returncode == 1
+    sp = tmp_path / "shareable.json"                     # the approvable export can be signed off (C3 and section E)
+    sp.write_bytes((d / "uat-shareable-pack.json").read_bytes())
+    assert "Signed off" in run("sign-off", str(w), str(sp), "--role", "HSE Manager", "--status", "approved")
+    assert json.loads(sp.read_text(encoding="utf-8"))["handling"]["status"] == "approved"
 
 
 def test_dashboard_with_no_ratings(tmp_path):

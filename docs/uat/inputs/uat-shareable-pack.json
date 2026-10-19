@@ -1,0 +1,62 @@
+{
+ "pack": "uat-shareable-pack",
+ "schema": 1,
+ "title": "UAT shareable pack: synthetic pump fire",
+ "audience": "Site leadership",
+ "status": "Learning purposes: not a statutory document",
+ "bottom_line": [
+  {
+   "text": "A pump went back into service after a seal change with no leak test.",
+   "cites": [
+    "FND-0001"
+   ]
+  },
+  {
+   "text": "No return-to-service checklist set a hold point for the test.",
+   "cites": [
+    "FND-0002"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "learnings",
+   "heading": "Learnings",
+   "items": [
+    {
+     "kind": "learning",
+     "lesson": "When a joint is disturbed, a leak test before restart is the barrier.",
+     "cites": [
+      "FND-0001",
+      "EVD-0001"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "Seals bought without a specification weaken every joint they go into.",
+     "cites": [
+      "FND-0003",
+      "EVD-0003"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "A gas alarm that only displays leaves the response to whoever sees it.",
+     "cites": [
+      "FND-0004"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "change": "Block restart until a signed leak-test record is attached.",
+     "indicator": "Share of restarts with a leak-test record",
+     "hoc_tier": "engineering",
+     "cites": [
+      "FND-0001",
+      "FND-0002"
+     ]
+    }
+   ]
+  }
+ ]
+}

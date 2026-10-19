@@ -1,0 +1,67 @@
+{
+ "title": "UAT register: synthetic pump fire",
+ "source": "uat-approvable.xlsx",
+ "status": "Learning purposes: not a statutory document",
+ "entries": [
+  {
+   "lr_id": "LR-01",
+   "title": "Return to service without a leak test",
+   "finding_ids": [
+    "FND-0001",
+    "FND-0002"
+   ],
+   "evidence_ids": [
+    "EVD-0001",
+    "EVD-0002"
+   ],
+   "priority": 1,
+   "owner_entity": "F02 Mechanical Maintenance",
+   "hfacs_level": "L3 Supervision Inadequate",
+   "tiers": [
+    "T1",
+    "T2"
+   ],
+   "lesson": "When a joint is disturbed, a leak test before restart is the barrier, and a checklist holds it.",
+   "context": "A pump went back into service after a seal change with no leak test recorded.",
+   "tier_messages": {
+    "T1": "Do not restart without the leak-test record.",
+    "T2": "Hold point before acceptance."
+   },
+   "recommendations": [
+    {
+     "what": "Block restart until a signed leak-test record is attached",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Share of restarts with a leak-test record"
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-02",
+   "title": "Seals without a specification",
+   "finding_ids": [
+    "FND-0003"
+   ],
+   "evidence_ids": [
+    "EVD-0003"
+   ],
+   "priority": 2,
+   "owner_entity": "F06 Materials Management",
+   "hfacs_level": "L4 Resource Management",
+   "tiers": [
+    "T3"
+   ],
+   "lesson": "Spares bought without a specification weaken every joint they go into.",
+   "context": "Seals were bought locally without a specification.",
+   "tier_messages": {
+    "T3": "Stock only seals that match the specification."
+   },
+   "recommendations": [
+    {
+     "what": "Stock only specification-approved seals, so a local substitute cannot be issued",
+     "hoc_tier": "substitution",
+     "leading_indicator": "Share of seal issues that match the specification"
+    }
+   ]
+  }
+ ]
+}
