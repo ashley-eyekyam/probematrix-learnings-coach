@@ -261,3 +261,22 @@ def test_hazira_2_card_prints_4_pages_or_fewer(two_card, tmp_path):
     else:
         pages = len(re.findall(rb"/Type\s*/Page(?!s)", pdf.read_bytes()))
     assert 1 <= pages <= 4, pages
+
+
+def test_share_refused_on_hazira_draft(hz, tmp_path):
+    """P2-7: the Hazira investigation is in progress, so no copy of it can leave the organisation, even with a
+    handling block typed in that claims approval, clearance and an external classification."""
+    doc = json.loads(PRINT_2_CARD.read_text(encoding="utf-8"))
+    doc["handling"] = {"status": "approved", "reviewer_role": "HSE manager", "reviewed_on": "2026-10-19",
+                       "classification": "public", "legal_review": "cleared"}
+    doc["handling"]["content_hash"] = pmlc.content_hash(doc)
+    p = tmp_path / "cards.json"
+    p.write_text(json.dumps(doc), encoding="utf-8")
+    out = tmp_path / "out"
+    for mode, word in (("external", "externally"), ("public", "publicly")):
+        r = subprocess.run([sys.executable, str(PMLC), "pack", str(hz.ws), str(p), "--share", mode, "--out", str(out)],
+                           capture_output=True, text=True)
+        assert r.returncode == 1
+        last = r.stderr.strip().splitlines()[-1]
+        assert last.startswith(f"cannot share {word}: review is draft (the investigation status is in progress"), last
+        assert not out.exists() or not any(out.iterdir())

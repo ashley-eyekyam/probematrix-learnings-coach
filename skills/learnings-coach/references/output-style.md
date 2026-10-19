@@ -40,6 +40,10 @@ In a pack these are the `card`, `question` and `test_point` item kinds. A learni
 
 elimination → substitution → engineering → administrative (procedures, checks, permits) → training/awareness → PPE. Name the tier on every recommendation. If the only fix offered is administrative or training, say why a stronger one is not available.
 
+## Shared copies
+
+A copy for outside the organisation is rendered with `--share external` or `--share public` (see `learning-principles.md` §7). It is written beside the internal copy as `<name>.external.html` and `.md` (`.public.` for public; `organisation-learning-map.external.html`, `learnings-register.external.xlsx`), and its handling lines end with `Shared external: identifying details are masked`. Write such a pack without names, company names, tags or one-person role strings in the first place; the masks (`[name]`, `[organisation]`, `[equipment tag]`) are a safety net, and a page full of them reads badly.
+
 ## Leading indicators
 
 Measurable, forward-looking, and owned by the audience reading it: e.g. "% of pressure-boundary jobs released with a documented design-pressure test", "time from confirmed gas release to first isolation in drills", "overdue critical PM notifications older than 30 days".

@@ -535,6 +535,119 @@ def cmd_sign_off(a):
     print(f"Signed off {path}: {h['status']} by {h['reviewer_role']} on {h['reviewed_on']}")
 
 
+# ----------------------------------------------------------------------------- --share (L5-08, L1-12, P2-9)
+
+SHARE_MODES = ("internal", "external", "public")
+SHARE_ADVERB = {"external": "externally", "public": "publicly"}
+SHARE_NEEDS = {"external": ("external", "public"), "public": ("public",)}
+SHARED_LINE = "Shared {mode}: identifying details are masked"
+NAME_GUARD = "refused: a listed name appears in the output ({n} times); fix the pack text or use ingest --redact"
+# --share public also drops the AI justification and causal free text from embedded finding records: summary
+# mode removes exact quotes only, and these fields can paraphrase a witness. Labels and IDs stay.
+PUBLIC_DROP_KEYS = ("justification", "causal")
+OWNER_TIERS = ("T4", "T5")
+SHARED_SOURCE = "a ProbeMatrix investigation export"      # replaces a register's source file name in shared copies
+
+
+def share_mode(a) -> str:
+    """The share mode a renderer uses: --share when given, else internal."""
+    return getattr(a, "share", None) or "internal"
+
+
+def share_unmet(doc, w, mode, embed=None, embeds=True) -> list:
+    """P2-9: every condition a --share external|public copy does not meet (empty when it may be shared). The doc's
+    effective handling must be approved, its classification at the mode's level or higher, legal_review cleared,
+    and (for pages that embed records) --embed omitted or summary."""
+    eh = effective_handling(doc if isinstance(doc, dict) else {}, w)
+    out = []
+    st = eh["effective_status"]
+    if st == "draft":
+        out.append("review is draft" + (f" ({', '.join(eh['draft_reasons'])})" if eh["draft_reasons"] else ""))
+    elif st != "approved":
+        out.append(f"review is {st} (needs approved)")
+    need = SHARE_NEEDS[mode]
+    if eh["classification"] not in need:
+        out.append(f'classification is "{eh["classification"]}" (needs ' + " or ".join(f'"{x}"' for x in need) + ")")
+    if eh["legal_review"] != "cleared":
+        out.append('legal_review is not "cleared"')
+    if embeds and embed not in (None, "summary"):
+        out.append(f"--embed {embed} is refused (use --embed summary)")
+    return out
+
+
+def share_gate(doc, w, a, embeds=True, extra=()) -> str:
+    """The share mode, after exiting 1 with every unmet condition when a shared copy is refused."""
+    mode = share_mode(a)
+    if mode == "internal":
+        return mode
+    unmet = list(extra) + share_unmet(doc, w, mode, getattr(a, "embed", None), embeds)
+    if unmet:
+        sys.exit(f"cannot share {SHARE_ADVERB[mode]}: " + "; ".join(unmet))
+    return mode
+
+
+def owner_generaliser(w):
+    """owners(value) for share_doc (L5-21): a role that maps to T4 or T5 becomes its function label,
+    '<entity> (<tier label>)', as singleton roles do; any other value gives None (kept). Roles classify mapped are
+    looked up; others are mapped with the taxonomy and the built-in overlays classify used."""
+    cl = w.get("clusters") or {}
+    rm = cl.get("role_map") or {}
+    names = (cl.get("taxonomy") or {}).get("entities") or {}
+    cache = {}
+
+    def tax():
+        if "t" not in cache:
+            ovs = [x for x in (cl.get("taxonomy") or {}).get("overlays", []) if _overlay_path(x).exists()]
+            cache["t"] = _load_taxonomy(None, ovs)
+        return cache["t"]
+
+    def label(role):
+        role = _s(role).strip()
+        if not role:
+            return None
+        m = rm.get(role) or map_role(role, tax())
+        if m.get("T") not in OWNER_TIERS:
+            return None
+        ents = [e for e in m.get("F") or [] if e != "F99"]
+        tier = TIER_LABELS.get(m["T"], m["T"])
+        if not ents:
+            return tier
+        ent = names.get(ents[0]) or next((e["name"] for e in tax()["entities"] if e["id"] == ents[0]), ents[0])
+        return f"{ent} ({tier})"
+
+    return label
+
+
+def share_ctx(a, w, mode):
+    return privacy.ShareCtx(mode, privacy.load_names(getattr(a, "names", None)),
+                            privacy.load_orgs(getattr(a, "orgs", None)), privacy.load_singletons(w))
+
+
+def shared_copy(obj, ctx, w):
+    """share_doc with the workspace's owner generaliser."""
+    return privacy.share_doc(obj, ctx, owners=owner_generaliser(w))
+
+
+def public_records(findings: dict) -> dict:
+    """--share public: embedded finding records without PUBLIC_DROP_KEYS."""
+    return {k: {x: v for x, v in r.items() if x not in PUBLIC_DROP_KEYS} if isinstance(r, dict) else r
+            for k, r in findings.items()}
+
+
+def shared_name(path: Path, mode: str) -> Path:
+    """<name>.<mode><suffix> for a shared copy, so the internal copy is never overwritten."""
+    return path if mode == "internal" else path.with_name(f"{path.stem}.{mode}{path.suffix}")
+
+
+def name_guard(texts, a) -> None:
+    """L5-03 part 2: exit 1 when a name from --names or PMLC_NAMES appears in any rendered text (in any mode)."""
+    rx = privacy.name_pattern(privacy.load_names(getattr(a, "names", None)))
+    # HTML escaping changes a name ("O'Brien" -> "O&#x27;Brien"), so the unescaped text is searched as well.
+    n = sum(max(len(rx.findall(t)), len(rx.findall(html.unescape(t)))) for t in texts) if rx else 0
+    if n:
+        sys.exit(NAME_GUARD.format(n=n))
+
+
 # ----------------------------------------------------------------------------- run folders
 
 RUNS_DIR = "pmlc-runs"
@@ -1986,9 +2099,9 @@ MIN_QUOTE = 12        # shorter evidence strings ("Index", "Work order") are lab
 
 
 def resolve_embed(a) -> str:
-    """The embed mode a renderer uses: --embed when given, else the default. The one place a later gate (for
-    example --share external) can force "summary"."""
-    return getattr(a, "embed", None) or EMBED_DEFAULT
+    """The embed mode a renderer uses: --embed when given; else summary for --share external|public (P2-9; the share
+    gate refuses an explicit cited or full), else the default."""
+    return getattr(a, "embed", None) or ("summary" if share_mode(a) != "internal" else EMBED_DEFAULT)
 
 
 def label_only(f: dict) -> dict:
@@ -2127,13 +2240,22 @@ def cmd_dashboard(a):
     if "clusters" not in w:
         sys.exit("Needs clusters.json. Run: pmlc.py classify <ws>")
     warn_stale(ws)
+    reg0 = json.loads(Path(a.register).read_text(encoding="utf-8")) if a.register else None
+    hdoc0 = reg0 if isinstance(reg0, dict) else {}
+    mode = share_gate(hdoc0, w, a)            # a dashboard without a signed register is never shared outside
+    eh = effective_handling(hdoc0, w)
+    share = share_ctx(a, w, mode) if mode != "internal" else None
+    if share:
+        w, reg0 = shared_copy(w, share, w), shared_copy(reg0, share, w)
+        if isinstance(reg0, dict) and reg0.get("source"):
+            reg0["source"] = SHARED_SOURCE
     F = {f["id"]: f for f in w["findings"]}
     cl = w["clusters"]
     names, tiers = cl["taxonomy"]["entities"], cl["taxonomy"]["tiers"]
     fields = dict(w.get("incident", {}).get("fields", {}))
     for k, v in (("Incident Title", a.title), ("Date", a.date), ("Location", a.location)):
         if v:
-            fields[k] = v
+            fields[k] = privacy.share_text(v, share) if share else v
     ent_ids = [e for e in cl["entities"] if e != "F99"] + (["F99"] if "F99" in cl["entities"] else [])
     tier_ids = ["T1", "T2", "T3", "T4", "T5", "T9"]
     et = collections.Counter()
@@ -2176,14 +2298,14 @@ def cmd_dashboard(a):
                    for k, c in top_codes) if top_codes else ""
     learn_html = ""
     detail = None
-    hdoc = {}
     if a.register:
-        reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
-        hdoc = reg if isinstance(reg, dict) else {}
+        reg = reg0
         entries = reg["entries"] if isinstance(reg, dict) else reg
         entries = sorted(entries, key=lambda e: (_int(e.get("priority"), 9), _s(e.get("lr_id"))))
         embed = resolve_embed(a)
         detail = build_detail_data(w, reg, embed)
+        if share and share.mode == "public":
+            detail["findings"] = public_records(detail["findings"])
         print_witness_note(detail["evidence"], embed)
         recs = [r for e in entries for r in (e.get("recommendations") or [])]
         strong = sum(1 for r in recs if norm_hoc(r.get("hoc_tier")) in ("elimination", "substitution", "engineering"))
@@ -2230,6 +2352,8 @@ def cmd_dashboard(a):
 <div class="wrap">{table(ent_ids, [1, 2, 3, 4], lvl_lab, el, mx_el)}</div>
 <h2>Most frequent factors</h2>
 <div class="wrap" style="padding:12px">{bars}</div>"""
+    noscript_where = ("The same data is in the shared Learnings Register." if share else
+                      "The same data is in learnings-register.xlsx and learnings-register.json.")
     if detail is not None:
         body = f"""<nav class="tabbar" role="tablist" aria-label="Views">
 <button type="button" role="tab" id="t-overview" aria-controls="tab-overview" aria-selected="true">Overview</button>
@@ -2239,7 +2363,7 @@ def cmd_dashboard(a):
 {overview}
 </section>
 <section id="tab-detail" role="tabpanel" aria-labelledby="t-detail" hidden>
-<noscript><p class="m">The detailed register needs JavaScript. The same data is in learnings-register.xlsx and learnings-register.json.</p></noscript>
+<noscript><p class="m">The detailed register needs JavaScript. {noscript_where}</p></noscript>
 </section>"""
         extra_css = (DASHBOARD_ASSETS / "detail.css").read_text(encoding="utf-8")
         scripts = (f'<script type="application/json" id="pmlc-data">{embed_json(detail)}</script>\n'
@@ -2248,9 +2372,11 @@ def cmd_dashboard(a):
         body = (overview + '\n<p class="m">Run <code>pmlc.py dashboard --register &lt;learnings-register.json&gt;</code> '
                 "to add the detailed register tab.</p>")
         extra_css = scripts = ""
-    eh = effective_handling(hdoc, w)
     ribbon = RIBBON_HTML + "\n" if is_draft(eh) else ""
-    handling = "".join(f'<p class="handling">{html.escape(x)}</p>' for x in handling_lines(eh))
+    lines = handling_lines(eh)
+    if share:
+        lines = [privacy.share_text(x, share) for x in lines] + [SHARED_LINE.format(mode=mode)]
+    handling = "".join(f'<p class="handling">{html.escape(x)}</p>' for x in lines)
     doc = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Organisational Learning Map: {title}</title>
 <style>
@@ -2281,10 +2407,13 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 </main>
 {scripts}
 </body></html>"""
-    out = Path(a.out) if a.out else outputs_dir(ws) / "organisation-learning-map.html"
+    name_guard([doc], a)
+    out = Path(a.out) if a.out else shared_name(outputs_dir(ws) / "organisation-learning-map.html", mode)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")
     print(f"Dashboard written to {out}")
+    if share:
+        print(SHARED_LINE.format(mode=mode))
 
 
 # ----------------------------------------------------------------------------- register-xlsx
@@ -2352,8 +2481,16 @@ def cmd_register_xlsx(a):
     from openpyxl.styles import Alignment, Font, PatternFill
     from openpyxl.utils import get_column_letter
     reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
+    rw = _register_ws(a)
+    hdoc = reg if isinstance(reg, dict) else {}
+    mode = share_gate(hdoc, rw, a, embeds=False, extra=[] if rw else ["no workspace (pass --ws)"])
+    eh = effective_handling(hdoc, rw)
+    share = share_ctx(a, rw, mode) if mode != "internal" else None
+    if share:
+        reg = shared_copy(reg, share, rw)
+        if isinstance(reg, dict) and reg.get("source"):
+            reg["source"] = SHARED_SOURCE
     entries = reg["entries"] if isinstance(reg, dict) else reg
-    eh = effective_handling(reg if isinstance(reg, dict) else {}, _register_ws(a))
     wb = openpyxl.Workbook()
     head_fill = PatternFill("solid", fgColor="0B3954")
     head_font = Font(color="FFFFFF", bold=True)
@@ -2407,16 +2544,19 @@ def cmd_register_xlsx(a):
                  STATUS_PHRASE, BRAND]:
         ab.append([line])
     review = review_text(eh) + (f". Draft because: {'; '.join(eh['draft_reasons'])}" if eh["draft_reasons"] else "")
-    for k, v in [("Review status", review), ("Classification", eh["classification"]),
-                 ("Legal review", eh["legal_review"]), ("Distribution", ", ".join(eh["distribution"]) or "not set"),
-                 ("Version", str(eh["version"])), ("Retention review", eh.get("retention_review") or "not set")]:
+    rows = [("Review status", review), ("Classification", eh["classification"]),
+            ("Legal review", eh["legal_review"]), ("Distribution", ", ".join(eh["distribution"]) or "not set"),
+            ("Version", str(eh["version"])), ("Retention review", eh.get("retention_review") or "not set")]
+    if share:
+        rows = [(k, privacy.share_text(v, share)) for k, v in rows] + [("Sharing", SHARED_LINE.format(mode=mode))]
+    for k, v in rows:
         ab.append([k, v])
     ab.column_dimensions["A"].width = 120
     ab.column_dimensions["B"].width = 60
     for sh in wb.worksheets:
         sh.oddHeader.center.text = STATUS_PHRASE + (f" · {DRAFT_LABEL}" if is_draft(eh) else "")
         sh.oddFooter.center.text = VERSION_STAMP
-    out = Path(a.out) if a.out else Path(a.register).resolve().parent / "learnings-register.xlsx"
+    out = Path(a.out) if a.out else shared_name(Path(a.register).resolve().parent / "learnings-register.xlsx", mode)
     out.parent.mkdir(parents=True, exist_ok=True)
     wb.save(out)
     print(f"Register with {len(entries)} entries and {len(recs)} recommendations written to {out}")
@@ -2761,6 +2901,17 @@ def _lint_flags(s):
     s.add_argument("--orgs", help="organisation names file, one per line (default: $PMLC_ORGS)")
 
 
+def add_share_args(s):
+    s.add_argument("--share", choices=SHARE_MODES, default=None,
+                   help="internal (default), or a copy for outside the organisation: external or public. A shared "
+                        "copy needs an approved sign-off with that classification, legal_review cleared and --embed "
+                        "summary; names, organisations, tags, singleton roles, times and full dates are masked, and "
+                        "the file is written as <name>.<mode>.<ext>")
+    s.add_argument("--names", help="names file, one per line (default: $PMLC_NAMES); masked when shared, and in any "
+                                   "mode the output is refused if one appears in it")
+    s.add_argument("--orgs", help="organisation names file, one per line (default: $PMLC_ORGS)")
+
+
 def add_embed_arg(s):
     s.add_argument("--embed", choices=EMBED_MODES, default=None,
                    help="records the page embeds: cited (default; uncovered findings as label and rating), "
@@ -2878,6 +3029,7 @@ def build_parser():
     s.add_argument("--date", help="override the incident date (use when the summary sheet is wrong)")
     s.add_argument("--location", help="override the location shown in the header")
     add_embed_arg(s)
+    add_share_args(s)
     s.set_defaults(fn=cmd_dashboard)
 
     s = sp.add_parser("check-register", help="validate a Learnings Register JSON against the workspace")
@@ -2896,6 +3048,7 @@ def build_parser():
     s.add_argument("register")
     s.add_argument("--out", help="default: learnings-register.xlsx next to the register JSON")
     s.add_argument("--ws", help="workspace for the review status (default: the run's workspace in the standard layout)")
+    add_share_args(s)
     s.set_defaults(fn=cmd_register_xlsx)
 
     s = sp.add_parser("status", help="show which workspace files are current or stale, and pack check history")
@@ -2922,6 +3075,7 @@ def build_parser():
     s.add_argument("--out", help="output folder (default: <run>/outputs)")
     s.add_argument("--no-md", action="store_true", help="write only the HTML")
     add_embed_arg(s)
+    add_share_args(s)
     s.set_defaults(fn=cmd_pack)
 
     s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)")
