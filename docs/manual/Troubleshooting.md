@@ -250,9 +250,29 @@ warning: no handling block: rendered as draft (internal)
 cannot sign off: the investigation status is in progress; no finding is marked as edited by a person
 ```
 
-**Why.** The export says the investigation is still in progress, or no person has edited any finding in ProbeMatrix. Nothing from such an export may be reviewed or approved. The Hazira sample is in this state.
+**Why.** The export says the investigation is still in progress, or no person has edited any finding in ProbeMatrix. Nothing from such an export may be reviewed or approved. The Hazira sample is in this state. Any status other than completed refuses too: a `draft` or blank status gives "the investigation status is not completed". Only `Yes` (or `y`, `true`, `1`) in User Edited counts as edited.
 
 **What to do.** Finish the investigation in ProbeMatrix, export again, re-run the analysis, then sign off. There is no override.
+
+## The check says the file is not signed off
+
+```text
+warning: not signed off in this workspace: status is draft until sign-off records it
+```
+
+**Why.** The file's handling block says `reviewed` or `approved`, but this workspace has no sign-off of it. The block was typed or changed by hand, or the file was copied from another folder or workspace. It counts as a draft, and the page says "Draft because: not signed off".
+
+**What to do.** Have a person review the file, then run `sign-off` on it in this workspace. Never write the handling block by hand.
+
+## Sign-off is refused because the role looks like a name
+
+```text
+--role: looks like a personal name ("Mr John Smith"); give a role
+```
+
+**Why.** The reviewer and the audiences are recorded as roles, never as people. The value has an honorific, two capitalised words that are not role words, or a name from the names file. The same message starts `--distribution:` for an audience.
+
+**What to do.** Give the role, such as "HSE manager" or "Site HSE lead". If a real role is caught, word it with a role noun ("Plant Manager", "Head of Safety").
 
 ## Sign-off is refused for a register saved as a list
 

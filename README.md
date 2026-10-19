@@ -3,6 +3,7 @@
 > **v2.0 alpha in testing.** The stable release is 0.3.5, and `main` now carries the alpha. To stay on 0.3.5:
 > - **Claude app:** in the app's plugin settings, leave auto-update off and do not choose Update for the `probematrix` marketplace. If you have already updated, remove that marketplace there, add `ashley-eyekyam/probematrix-learnings-coach#v0.3.5` and install the plugin again.
 > - **Claude Code:** pin the tag as in [Pinning a version](docs/INSTALL.md#pinning-a-version). Once you have installed the plugin the `probematrix` marketplace name is already taken, so pinning means removing the marketplace, adding it again with `#v0.3.5` and reinstalling the plugin; a single `marketplace add` is not enough.
+> - **To stay on the tested alpha.3** instead, pin that tag the same way: `/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v2.0.0-alpha.3`.
 
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE) ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)
 

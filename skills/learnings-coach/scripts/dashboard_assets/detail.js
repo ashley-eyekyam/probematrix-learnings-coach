@@ -223,7 +223,7 @@
      AI chip unless the export marks the finding edited by a person (a label-only record claims neither). */
   function provenance(f, brand) {
     var b = brand || {}, ue = String((f && f.user_edited) || "").trim().toLowerCase();
-    var chip = !isStub(f) && (ue === "" || ue === "no") ? b.ai_chip || null : null;
+    var chip = !isStub(f) && ["yes", "y", "true", "1"].indexOf(ue) === -1 ? b.ai_chip || null : null;
     return {banner: b.export_banner || null, chip: chip,
             label: b.ai_justification_label || "Justification"};
   }

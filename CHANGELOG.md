@@ -9,7 +9,7 @@
 Phase 2: trust gates and the user manual.
 
 - **Language checks.** New `check-language <ws> <json>` runs the just-culture rules JC1 to JC12 (names, punitive wording, counterfactuals, hindsight, legal conclusions, retraining as the only fix, roles that point to one person, numbers not in the cited findings, organisation names, equipment tags, the status phrase, appeals to "be more careful") and exits 1 on an error. `check-pack` and `check-register` run it too. `--share` checks at the sharing level; `--names` and `--orgs` (or `PMLC_NAMES` and `PMLC_ORGS`) add your own lists. An accepted exception is a `lint_ok` with a reason, and the page shows the reason.
-- **Review and sign-off.** New `sign-off <ws> <file> --role <role>` writes a `handling` block (status, reviewer role, date, classification, legal review, distribution, version, retention review) with a content hash, and `status` lists the sign-offs. An edit after sign-off turns the file back into a draft. Nothing can be reviewed or approved while the investigation status is in progress or no finding is marked as edited by a person.
+- **Review and sign-off.** New `sign-off <ws> <file> --role <role>` writes a `handling` block (status, reviewer role, date, classification, legal review, distribution, version, retention review) with a content hash, and `status` lists the sign-offs. An edit after sign-off turns the file back into a draft. Nothing can be reviewed or approved until the investigation status is completed, and while no finding is marked as edited by a person.
 - **Draft ribbon and provenance.** Packs, the learning map and the register workbook show DRAFT until approved, with a handling line and the reasons. The export's wording is labelled "AI justification (ProbeMatrix)", and a finding no person edited carries "AI-drafted, not human-edited". Every printed page and every workbook sheet carries the status phrase.
 - **`--embed cited|summary|full`** on `pack` and `dashboard`. `summary` also leaves out evidence descriptions, quotes, suggested interviews, key questions and vote reasons. A note suggests `summary` when witness statements would be embedded.
 - **Print.** The printed evidence trail lists only the cited findings and evidence, and it no longer starts on a new page. The uncovered findings print as one line, "x of y relevant findings cited".
@@ -25,6 +25,16 @@ Phase 2: trust gates and the user manual.
   - Equipment-tag matching skips Learning Cluster entity IDs (`F02`) and tier IDs (`T4`).
   - The phone-number pattern ignores dates such as `2020-09-24` and `24-09-2020`.
   - The Hazira sample's register workbook and learning map are rebuilt with this engine.
+  - A reviewed or approved status now counts only when `sign-off` recorded it in this workspace, for this file. A handling block typed or changed by hand, or a signed file copied to another folder or workspace, is a draft ("not signed off"), and the checks warn "not signed off in this workspace: status is draft until sign-off records it".
+  - `register-xlsx` on a register outside its run folder, with no `--ws`, writes a draft workbook ("no workspace to check").
+  - Forced draft now covers every unfinished investigation: any status other than "completed" (such as "draft", "In Progress" or a blank) is a draft, with the reason "the investigation status is not completed" (or "… is in progress"). Only Yes, Y, True or 1 in User Edited counts as edited by a person.
+  - `sign-off` refuses a personal name as `--role` or in `--distribution` ('--role: looks like a personal name ("…"); give a role'), and takes `--names`. It now checks the file at the classification it will have, so an external sign-off meets the external language rules.
+  - Shared copies keep finding and evidence IDs such as `FND-AE629313` whole (they were masked as equipment tags), and keep `lint_ok` rule IDs such as `JC10`.
+  - Shared copies also remove "At 0216"-style times after a preposition and dotted times such as "9.15 am" or "21.30 hrs". Years ("from 2017", "by 2020") and quantities ("at 1500 rpm") are kept.
+  - In shared copies and `scan-names --variants`, a surname that is also a role word ("Officer") is not matched on its own, so a role such as "Procurement Officer" is no longer masked.
+  - The register workbook stores text that starts with `=`, `+`, `-` or `@` as text, never as a formula.
+  - `dashboard --register` and `register-xlsx` given a pack JSON say "<file> is a pack, not a register" instead of failing with a traceback.
+  - The README says how to stay on the tested alpha.3.
 - **Migration notes.**
   - `--embed cited` is the new default for `pack` and `dashboard`. Pass `--embed full` for the v0.3 behaviour, where the page embeds every relevant record.
   - The `handling` block is optional. A pack or register without one still passes, with the warning "no handling block: rendered as draft (internal)", and renders as a draft. Do not write the block by hand; run `sign-off`.

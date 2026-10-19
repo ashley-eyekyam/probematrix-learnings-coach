@@ -49,8 +49,8 @@ The four classifications, from narrowest to widest:
 
 The coach will not let anything be reviewed or approved while either of these is true of the export:
 
-- **"the investigation status is in progress"**: the export's Investigation Status starts with `in_progress`;
-- **"no finding is marked as edited by a person"**: not one finding has `User Edited` set.
+- **the investigation is not completed**: the export's Investigation Status is anything but `completed` (capitals, spaces and hyphens do not matter). The reason reads "the investigation status is in progress" for `in_progress` (or "In Progress", "in-progress"), and "the investigation status is not completed" for anything else, such as `draft` or a blank status;
+- **"no finding is marked as edited by a person"**: not one finding has `User Edited` set to `Yes` (`y`, `true` and `1` count too; `No`, `N`, `false` or a blank do not).
 
 There is no override. The fix is in ProbeMatrix, not in the coach: finish the investigation (a person reviews and edits the findings, and the status moves on), then export again and re-run the analysis.
 
@@ -73,7 +73,12 @@ Draft because: the investigation status is in progress; no finding is marked as 
 - Each sheet of the register workbook has the status phrase in its page header, followed by "· DRAFT" while it is a draft.
 - In print the ribbon keeps its border and text, so it does not depend on colour, and every printed page carries the status phrase in its footer.
 
-Other reasons you may see after "Draft because:" are "edited since sign-off", "not signed off" (the file claims a status but has no valid fingerprint) and "invalid handling block".
+Other reasons you may see after "Draft because:" are:
+
+- "edited since sign-off": the file changed after it was signed off;
+- "not signed off": the file claims `reviewed` or `approved`, but this workspace has no sign-off of it (the block was typed by hand, edited by hand, or the file was copied from another folder or workspace);
+- "no workspace to check": `register-xlsx` was given a register outside the run layout and no `--ws`, so nothing can be checked;
+- "invalid handling block": a key or value in the block is wrong.
 
 ## Sign-off
 
@@ -93,12 +98,19 @@ Rules the coach follows:
 
 - **The agent never signs off on its own.** It runs `sign-off` only when you have said you reviewed the output and given your role. It never writes a reviewer's name, an owner or a due date.
 - **Sign-off is refused** while the export is forced to draft, and while the file has any problem in `check-pack` or `check-register`. Fix the problems first.
+- **The reviewer is a role.** A `--role` or `--distribution` value that looks like a personal name is refused with `--role: looks like a personal name ("…"); give a role`.
 - **A register must be an object.** A register saved as a bare list is refused with `wrap the entries as {"entries": [...]} before signing off`.
 
 What sign-off writes:
 
 - the `handling` block, with a `content_hash`: a fingerprint of everything in the file except the handling block;
-- an entry in the workspace manifest, which `pmlc status <ws>` lists with its status, role, date and whether the file has changed since.
+- an entry in the workspace manifest, which `pmlc status <ws>` lists with its status, role, date and whether the file has changed since. The entry holds the whole handling block and the file's full path.
+
+A status counts only when the manifest entry matches: the same file, at the same path, in the same workspace, with the same handling block. A handling block typed or changed by hand, or a signed file copied to another folder or workspace, is a draft with the reason "not signed off", and the check warns:
+
+```text
+not signed off in this workspace: status is draft until sign-off records it
+```
 
 Re-run `pack`, `dashboard` or `register-xlsx` after sign-off, so the pages show the new state.
 
@@ -182,12 +194,12 @@ pmlc pack <ws> <run>/outputs/board-brief.json --share external --names names.txt
 
 In `external` and `public` mode the copy is made from masked copies of the pack (or register) and of the workspace records it embeds. It:
 
-- replaces personal names with `[name]`: the names in `--names` or `PMLC_NAMES` with their common variants (surname, initials and surname, honorific and surname), and any honorific followed by a name, such as "Mr" or "Shri", even without a names file;
+- replaces personal names with `[name]`: the names in `--names` or `PMLC_NAMES` with their common variants (surname, initials and surname, honorific and surname; a surname that is also a role word, such as "Officer", is not masked on its own), and any honorific followed by a name, such as "Mr" or "Shri", even without a names file;
 - replaces organisation names with `[organisation]`: the names in `--orgs` or `PMLC_ORGS`, and any name ending in Ltd, Pvt, Inc, GmbH, LLC or Limited;
 - replaces equipment tags (letters then digits, such as `PSV-101` or `AO-101`) with `[equipment tag]`. Finding, evidence, LR and ML IDs, function IDs such as `F02` and tier IDs such as `T4` are not tags;
 - replaces roles that point to one person with their function and tier, for example "Security Guard - Gate 3" becomes "Security & Surveillance (Unresolved)". These are the roles in `singleton_roles.json`: a role with an instance number or letter (such as a gate, post, shift, desk or control room number), or the only role at its tier in Plant & Asset Leadership or Corporate & Board. Group roles such as "Control Room Operators" or "seal change crew" are never singletons;
 - replaces owners at site-leadership and board level (T4 and T5) with the function and tier;
-- removes clock times, such as "at 14:05", "14:05:30" or "1405 hrs". A ratio such as "a ratio of 1:10" is kept;
+- removes clock times, such as "at 14:05", "14:05:30", "1405 hrs", "9.15 am", "21.30 hrs", and a four-digit time after a preposition ("At 0216", "at about 0300", "from 0200 until 0415"). A ratio such as "a ratio of 1:10" is kept. Years are kept too: after "about", "around", "by", "from", "until" or "till", a number from 1900 to 2099 reads as a year ("from 2017", "by 2020"); only after "at" is it a time ("at 1930"). A number followed by a unit ("at 1500 rpm", "about 1200 m") is a quantity and is kept;
 - coarsens full dates to month and year: "2024-03-12", "12 March 2024" and "12/03/2024" all become "March 2024";
 - drops suggested interviews, key questions, causal hypotheses, evidence to collect and reviewers' vote reasons, and the run folder name and generation date;
 - in `public` mode, also drops the AI justification and the causal explanation from the embedded finding records;

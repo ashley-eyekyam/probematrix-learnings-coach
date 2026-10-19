@@ -185,7 +185,7 @@ pmlc check-pack <ws> <run>/outputs/board-brief.json      # runs the same check
 
 **What to check.**
 
-- A draft Hazira paragraph read "The maintenance crew failed to carry out a hydro test, which was obviously careless, and the team should have been held accountable." The check printed `check-language: 2 errors, 3 warnings`: JC2 for "careless" and "held accountable", JC3 for "failed to" and "should have", JC4 for "obviously".
+- An invented draft paragraph read "The maintenance crew failed to carry out a hydro test, which was obviously careless, and the team should have been held accountable." The check printed `check-language: 2 errors, 3 warnings`: JC2 for "careless" and "held accountable", JC3 for "failed to" and "should have", JC4 for "obviously".
 - The rewrite, "No hydro test was done after the gasket was replaced; the system was pressurised to operating pressure only. No return-to-service procedure required a design-pressure test.", gave `check-language: 0 errors, 0 warnings`.
 - Fix the wording first. Use `lint_ok` only when the wording is right and the rule does not apply, and always give the reason. See [Language checks](Language-checks.md).
 

@@ -598,6 +598,8 @@ def _checked(a):
     w = core.load_ws(a.ws)
     pack, err = load_pack(a.pack)
     res = Result([err], [], {}) if err else check_pack(pack, w, **pmlc_lint.cli_options(a))
+    if not err:
+        res.warnings.extend(core.unsigned_warning(pack, w, a.pack, a.ws))
     if not err and isinstance(pack, dict) and isinstance(pack.get("pack"), str):
         try:
             core.record_pack_check(a.ws, pack["pack"], a.pack, not res.problems, len(res.problems))
@@ -1319,11 +1321,11 @@ def cmd_pack(a):
     masked copies of the pack and the workspace. In any mode the render name guard runs before anything is written."""
     w, pack, _ = _checked(a)
     core.warn_stale(a.ws)
-    mode = core.share_gate(pack, w, a)
+    mode = core.share_gate(pack, w, a, src=a.pack, ws=a.ws)
     ws = core._abs(a.ws)
     run = ws.parent.name if core.is_standard_ws(ws) else ws.name
     embed = core.resolve_embed(a)
-    eh = core.effective_handling(pack, w)
+    eh = core.effective_handling(pack, w, src=a.pack, ws=a.ws)
     share = core.share_ctx(a, w, mode) if mode != "internal" else None
     rw, rpack = (core.shared_copy(w, share, w), core.shared_copy(pack, share, w)) if share else (w, pack)
     page_html = render_pack_html(rw, rpack, run, dt.date.today().isoformat(), embed, eh=eh, share=share)

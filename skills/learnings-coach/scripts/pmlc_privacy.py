@@ -31,11 +31,14 @@ QUALIFIER_RX = re.compile(r"\b(?i:post|gate|shift|grade|no\.?|desk|cabin|CR|cont
 GROUP_RX = re.compile(r"(?i)\b(?:operators|crew|team|staff|workers|personnel)\s*$")
 
 # Equipment tags such as AO-101 or PSV12A: letters then digits. Finding, Evidence, LR and ML IDs are not tags, and
-# neither are Learning Cluster entity IDs (F02, F99) or tier IDs (T4) (ruling X21).
-TAG_RX = re.compile(r"\b(?!(?:FND|EVD|LR|ML)-)(?!(?:F\d{2}|T\d)\b)[A-Z]{1,5}-?\d{2,6}[A-Z]?\b")
+# neither are Learning Cluster entity IDs (F02, F99) or tier IDs (T4) (ruling X21). The lookbehinds keep the tail of a
+# hex ID (FND-AE629313) from matching after its hyphen.
+TAG_RX = re.compile(r"\b(?<!FND-)(?<!EVD-)(?<!LR-)(?<!ML-)(?!(?:FND|EVD|LR|ML)-)(?!(?:F\d{2}|T\d)\b)"
+                    r"[A-Z]{1,5}-?\d{2,6}[A-Z]?\b")
 # Keys whose values are IDs or taxonomy labels, not prose: share_doc keeps them as they are (and the lint skips them).
 ID_KEYS = {"id", "kind", "pack", "schema", "cites", "supporting_cites", "row_cites", "row_supporting_cites",
-           "finding_ids", "evidence_ids", "lr_id", "ml_id", "owner_entity", "entities", "scope", "content_hash"}
+           "finding_ids", "evidence_ids", "lr_id", "ml_id", "owner_entity", "entities", "scope", "content_hash",
+           "rule"}                                       # a lint_ok rule ID (JC10) is not an equipment tag
 # Inside a graph item's edges, from and to are node IDs (elsewhere `to` is display text, e.g. a message's audience).
 EDGE_ID_KEYS = ("from", "to")
 # Dicts whose keys are role strings (clusters.json role_map): share_doc masks their keys as well as their values.
@@ -73,10 +76,12 @@ def _terms() -> dict:
     return json.loads(TERMS_FILE.read_text(encoding="utf-8"))
 
 
-def name_variants(name: str) -> list:
+def name_variants(name: str, skip_role_words=False) -> list:
     """The ways a person is named in text: the full name as given, surname only, initial plus surname, and an
     honorific plus surname for each honorific in lint-terms.json. 'Shri R. K. Sharma' gives 'Sharma', 'R. Sharma',
-    'R K Sharma', 'Shri Sharma', 'Shri. Sharma' and so on. A line with a digit (a staff ID) has no variants."""
+    'R K Sharma', 'Shri Sharma', 'Shri. Sharma' and so on. A line with a digit (a staff ID) has no variants.
+    skip_role_words=True (share masking and scan-names --variants, M1) leaves out a one-word variant that is a role
+    noun or a lint vocabulary word ('Officer', 'Field'), so it never masks a role; --redact keeps it and warns (X17)."""
     name = " ".join(name.split())
     out = [name]
     if not name or any(ch.isdigit() for ch in name):
@@ -97,7 +102,10 @@ def name_variants(name: str) -> list:
         forms += [" ".join(f"{i}." for i in ini) + " " + sur, " ".join(ini) + " " + sur]
     for h in _terms()["honorifics"]:
         forms += [f"{h} {sur}", f"{h}. {sur}"]
+    role_words = {x.lower() for x in _terms()["role_nouns"] + _terms()["name_vocabulary"]} if skip_role_words else ()
     for f in forms:
+        if " " not in f and f.lower() in role_words:     # M1: "Officer" alone is a role word, not this person
+            continue
         if f not in out:
             out.append(f)
     return out
@@ -116,13 +124,13 @@ def _alt(x: str) -> str:
     return "".join(out)
 
 
-def name_pattern(names, variants=False):
+def name_pattern(names, variants=False, skip_role_words=False):
     """One case-insensitive regex for a list of names (None for an empty list), bounded by (?<!\\w) and (?!\\w) so
     'Sharma' does not match inside 'Sharmaji' and a space matches any run of whitespace. variants=True adds the
-    name_variants of each name."""
+    name_variants of each name (skip_role_words: see name_variants)."""
     xs = []
     for n in names:
-        for v in (name_variants(n) if variants else [" ".join(n.split())]):
+        for v in (name_variants(n, skip_role_words) if variants else [" ".join(n.split())]):
             if v and v not in xs:
                 xs.append(v)
     if not xs:
@@ -177,10 +185,23 @@ _MON_RX = r"(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?"
 # A clock time, with the "at" (or "at about") that introduces it, so "restarted at 14:05 on" reads "restarted on":
 # H:MM or HH:MM (optional :SS, optional am/pm or hrs), and HHMM only with hrs or hours ("1405 hrs"). A colon time
 # with no seconds and no suffix ("bare") is kept when a ratio word sits next to it, e.g. "ratio 1:10" (X23).
+# H.MM or HH.MM counts only with am, pm or hrs ("9.15 am", "21.30 hrs"), so "2.50 hours" stays a duration.
 TIME_RX = re.compile(r"(?:\bat\s+(?:about\s+|around\s+|approximately\s+)?)?(?<![\w:.])"
                      r"(?:(?P<clock>(?:[01]?\d|2[0-3]):[0-5]\d)(?P<sec>:[0-5]\d)?"
                      r"(?P<suf>\s*(?:hrs?\b|hours?\b|[ap]\.?m\b\.?))?(?![\d:])"
-                     r"|(?:[01]\d|2[0-3])[0-5]\d\s*(?:hrs?|hours?)\b)", re.I)
+                     r"|(?:[01]\d|2[0-3])[0-5]\d\s*(?:hrs?|hours?)\b"
+                     r"|(?:[01]?\d|2[0-3])\.[0-5]\d\s*(?:hrs\b|[ap]\.?m\b\.?))", re.I)
+# A bare HHMM (0000-2359) after a preposition, which goes with it: "At 0216", "at about 0300", "from 0200 until 0415".
+# Years are kept: after about, around, approximately, by, from, until or till, 1900-2099 reads as a year ("from 2017",
+# "by 2020"); only "at" takes those as times ("at 1930"). "in" and "since" are never followed by a time. A following
+# unit ("at 1500 rpm", "about 1200 m") makes it a quantity, also kept.
+PREP_HHMM_RX = re.compile(r"\b(?P<prep>at\s+(?:about\s+|around\s+|approximately\s+|approx\.\s*)?"
+                          r"|(?:about|around|approximately|by|from|until|till)\s+|approx\.\s*)"
+                          r"(?P<hhmm>(?:[01]\d|2[0-3])[0-5]\d)(?:\s*[-–]\s*(?:[01]\d|2[0-3])[0-5]\d)?(?![-/:]|[.,]\d|\w)", re.I)
+_UNIT_AFTER = re.compile(r"\s*([A-Za-z]+\d?|%|°[CF]?)(?!\w)")
+UNIT_WORDS = {"rpm", "kpa", "mpa", "pa", "bar", "barg", "psi", "psig", "mm", "cm", "m", "km", "kg", "g", "t", "te",
+              "tonnes", "tons", "l", "litres", "liters", "ml", "m3", "nm3", "scm", "ppm", "kw", "mw", "w", "v", "kv",
+              "a", "hz", "metres", "meters", "feet", "ft", "units", "people", "%", "°", "°c", "c", "k"}
 RATIO_WORDS = {"ratio", "ratios", "slope", "slopes", "scale", "odds", "mix", "mixture", "dilution", "dilutions"}
 _WORD_BEFORE = re.compile(r"([A-Za-z]+)\W*(?:\bof\W*)?$")      # "ratio 1:10" and "a ratio of 1:10"
 _WORD_AFTER = re.compile(r"^\W*([A-Za-z]+)")
@@ -223,11 +244,23 @@ def strip_times(text: str) -> str:
                 return m.group(0)
         return ""
 
-    out = TIME_RX.sub(drop, text)
+    def drop_hhmm(m):
+        unit = _UNIT_AFTER.match(m.string, m.end())
+        if unit and unit.group(1).lower() in UNIT_WORDS:
+            return m.group(0)
+        if 1900 <= int(m.group("hhmm")) <= 2099 and not m.group("prep").lower().startswith("at"):
+            return m.group(0)
+        return ""
+
+    out = PREP_HHMM_RX.sub(drop_hhmm, TIME_RX.sub(drop, text))
     if out == text:
         return text
     out = re.sub(r"[ \t]{2,}", " ", out)
     out = re.sub(r"[ \t]+([,.;:)])", r"\1", out)
+    if not re.match(r"\s*[,.;:]", text):                 # "At 0216. He ..." reads "He ...", not ". He ..."
+        out = re.sub(r"^(\s*)[,.;:]+[ \t]*", r"\1", out)
+    if ".." not in text:                                    # "rang. At 0216. He" reads "rang. He"
+        out = re.sub(r"(?<!\.)([.!?])[ \t]*[.,;:](?!\.)", r"\1", out)
     return out.strip() if text == text.strip() else out
 
 
@@ -241,7 +274,7 @@ def _share_rxs(ctx):
         # An honorific with the name after it, including a name step 1 already masked ("Mr [name]" -> "[name]").
         hon_rx = re.compile(r"\b(?:" + hon + r")\b\.?(?:\s+(?:" + re.escape(NAME_MASK)
                             + r"|[A-Z][\w'’-]+|[A-Z]\.?(?![\w])))+")
-        names_rx, orgs_rx = name_pattern(ctx.names, variants=True), name_pattern(ctx.orgs)
+        names_rx, orgs_rx = name_pattern(ctx.names, variants=True, skip_role_words=True), name_pattern(ctx.orgs)
         # A singleton role is matched as it reads after the earlier steps, so a role holding a tag still matches.
         singles = {}
         for role, label in ctx.singletons.items():

@@ -149,6 +149,14 @@ def _jc1(c, s, path, quiet):
             c.hit("JC1", path, f"{a} {b}", quiet=quiet)
 
 
+def personal_name(text, w, names=()):
+    """The part of text that JC1 reads as a personal name (an honorific form, a listed name, or two capitalised words
+    outside the workspace's role vocabulary), or None. sign-off checks --role and --distribution with it."""
+    c = _Ctx(w, "pack", "internal", names, [])
+    _jc1(c, text, "$", ())
+    return c.hits[0].match if c.hits else None
+
+
 def _jc9(c, s, path, quiet, ext):
     seen = []
     for m in [*(c.orgs_rx.finditer(s) if c.orgs_rx else ()), *(m for rx in c.rx["JC9"] for m in rx.finditer(s))]:

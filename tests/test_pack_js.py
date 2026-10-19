@@ -117,6 +117,9 @@ assert.ok(v.rows.some(r => r[0] === brand.ai_justification_label && r[1] === 'no
 assert.ok(!v.rows.some(r => r[0] === 'Justification'));
 assert.strictEqual(p.recordView('FND-0002', D).chip, brand.ai_chip);
 assert.strictEqual(p.recordView('FND-0003', D).chip, null);
+D.findings['FND-0003'].user_edited = 'false';                     // only yes, y, true or 1 count as edited (X26)
+assert.strictEqual(p.recordView('FND-0003', D).chip, brand.ai_chip);
+D.findings['FND-0003'].user_edited = 'Yes';
 assert.strictEqual(p.recordView('FND-0003', D).banner, brand.export_banner);
 const e = p.recordView('EVD-0001', D);
 assert.strictEqual(e.banner, null);

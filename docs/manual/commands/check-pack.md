@@ -88,6 +88,7 @@ The exit code is 1, so a script or agent stops here.
 - **"… is shown as plain text, not a citation; put it in cites".** An ID in the text is not in the item's `cites` list, so the reader cannot follow it.
 - **"coverage: cites X of Y relevant findings (under a quarter)".** A warning only. Either cite more of the relevant findings, narrow the pack's `scope`, or list deliberate omissions under `exclusions` with a reason.
 - **"no handling block: rendered as draft (internal)".** Expected until a reviewer runs [sign-off](sign-off.md).
+- **"not signed off in this workspace: status is draft until sign-off records it".** The file claims `reviewed` or `approved`, but this workspace has no sign-off of it: the block was written or changed by hand, or the file was copied. Have it reviewed and run [sign-off](sign-off.md) here.
 - **Language errors (JC1, JC2, JC11 …).** See [check-language](check-language.md) for each rule and how to fix it.
 
 ## Related

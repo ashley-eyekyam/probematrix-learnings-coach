@@ -33,6 +33,7 @@ from __future__ import annotations
 import argparse
 import collections
 import contextlib
+import copy
 import datetime as dt
 import hashlib
 import html
@@ -352,22 +353,40 @@ HANDLING_ENUMS = {"status": ("draft", "reviewed", "approved"),
                   "legal_review": ("not-required", "requested", "cleared")}
 REASON_IN_PROGRESS = "the investigation status is in progress"
 REASON_UNEDITED = "no finding is marked as edited by a person"
+REASON_NOT_COMPLETED = "the investigation status is not completed"
+EDITED_YES = ("yes", "y", "true", "1")
 REASON_EDITED_SINCE = "edited since sign-off"
 REASON_NOT_SIGNED = "not signed off"
 REASON_INVALID = "invalid handling block"
+REASON_NO_WORKSPACE = "no workspace to check"
 WARN_NO_HANDLING = "no handling block: rendered as draft (internal)"
 WARN_EDITED_SINCE = "edited since sign-off: status is draft until signed off again"
+WARN_NOT_SIGNED = "not signed off in this workspace: status is draft until sign-off records it"
 _HASH_RX = re.compile(r"sha256:[0-9a-f]{64}")
 
 
+def _norm_status(v) -> str:
+    """An Investigation Status as a key: lower case, stripped, spaces and hyphens as underscores."""
+    return re.sub(r"[\s-]+", "_", _s(v).strip().lower())
+
+
+def is_edited(v) -> bool:
+    """A User Edited cell marks a finding as edited by a person only when it reads yes, y, true or 1."""
+    return _s(v).strip().lower() in EDITED_YES
+
+
 def forced_draft_reasons(w) -> list:
-    """Why nothing from this workspace may be reviewed or approved yet (empty when it may be)."""
+    """Why nothing from this workspace may be reviewed or approved yet (empty when it may be). X26: anything but a
+    completed investigation is forced (ProbeMatrix statuses are draft, in_progress and completed), and only an
+    explicit yes in User Edited counts. No workspace ({}) gives no reasons: there is nothing to read."""
+    if not w:
+        return []
     out = []
-    status = _s(((w.get("incident") or {}).get("fields") or {}).get("Investigation Status"))
-    if status.lower().startswith("in_progress"):
-        out.append(REASON_IN_PROGRESS)
+    status = _norm_status(((w.get("incident") or {}).get("fields") or {}).get("Investigation Status"))
+    if status != "completed":
+        out.append(REASON_IN_PROGRESS if status == "in_progress" else REASON_NOT_COMPLETED)
     F = w.get("findings") or []
-    if F and all(_s(f.get("user_edited")).lower() in ("", "no") for f in F):
+    if F and not any(is_edited(f.get("user_edited")) for f in F):
         out.append(REASON_UNEDITED)
     return out
 
@@ -416,8 +435,27 @@ def check_handling(doc) -> tuple:
     return P, W
 
 
-def effective_handling(doc, w) -> dict:
-    """The handling that applies: defaults merged with the block, forced down to draft when it must be."""
+def sign_off_record(ws, src):
+    """The manifest's sign-off record for the file at src, or None: it must be under the file's name and carry the
+    file's resolved path (a copy elsewhere, or in another workspace, has no record)."""
+    if ws is None or src is None:
+        return None
+    rec = (load_manifest(Path(ws)).get("sign_offs") or {}).get(Path(src).name)
+    return rec if isinstance(rec, dict) and rec.get("path") == str(Path(src).resolve()) else None
+
+
+def _signed_here(h: dict, ws, src) -> bool:
+    """X25: a reviewed or approved block counts only when sign-off recorded this very block for this file in this
+    workspace. Every handling key must match the record, so a hand edit of classification or legal_review (which
+    the content hash leaves out) does not count either."""
+    rec = sign_off_record(ws, src)
+    return rec is not None and all(rec.get(k) == h.get(k) for k in HANDLING_KEYS)
+
+
+def effective_handling(doc, w, src=None, ws=None) -> dict:
+    """The handling that applies: defaults merged with the block, forced down to draft when it must be. src is the
+    document's file and ws its workspace folder: a reviewed or approved status holds only when the workspace's
+    manifest records a sign-off of this block for this file (X25). Without ws the reason is 'no workspace to check'."""
     h = doc.get("handling") if isinstance(doc, dict) else None
     out = {**HANDLING_DEFAULTS, **{k: v for k, v in (h if isinstance(h, dict) else {}).items() if k in HANDLING_KEYS}}
     out["distribution"] = list(out["distribution"]) if isinstance(out["distribution"], list) else []
@@ -434,10 +472,21 @@ def effective_handling(doc, w) -> dict:
             reasons.append(REASON_EDITED_SINCE)
         elif not (isinstance(h.get("content_hash"), str) and not problems):
             reasons.append(REASON_NOT_SIGNED)
+        elif ws is None:
+            reasons.append(REASON_NO_WORKSPACE)
+        elif not _signed_here(h, ws, src):
+            reasons.append(REASON_NOT_SIGNED)
     out["draft_reasons"] = list(dict.fromkeys(reasons))
     signed = claims and not reasons
     out["effective_status"] = h["status"] if signed else "draft"
     return out
+
+
+def unsigned_warning(doc, w, src, ws) -> list:
+    """[WARN_NOT_SIGNED] when the file claims reviewed or approved but this workspace has no sign-off record of it."""
+    if not (isinstance(doc, dict) and isinstance(doc.get("handling"), dict)):
+        return []
+    return [WARN_NOT_SIGNED] if REASON_NOT_SIGNED in effective_handling(doc, w, src=src, ws=ws)["draft_reasons"] else []
 
 
 RIBBON_HTML = f'<div class="ribbon" role="note">{DRAFT_LABEL}</div>'
@@ -480,15 +529,29 @@ def status_line(status="") -> str:
 
 
 def record_sign_off(ws, path, h: dict) -> None:
+    """The whole handling block sign-off wrote, with the file's resolved path (effective_handling checks both)."""
     m = load_manifest(Path(ws))
     m.setdefault("sign_offs", {})[Path(path).name] = {
-        **{k: h[k] for k in ("status", "reviewer_role", "reviewed_on", "content_hash") if k in h},
-        "path": str(Path(path).resolve())}
+        **{k: copy.deepcopy(h[k]) for k in HANDLING_KEYS if k in h}, "path": str(Path(path).resolve())}
     _save_manifest(ws, m)
+
+
+ROLE_NAME_REFUSAL = '{flag}: looks like a personal name ("{match}"); give a role'
+
+
+def _refuse_names_in_roles(a, w) -> None:
+    """D7 and just culture: the reviewer and the audiences are roles, never people (JC1, with --names)."""
+    names = privacy.load_names(getattr(a, "names", None))
+    for flag, vals in (("--role", [a.role]), ("--distribution", a.distribution or [])):
+        for v in vals:
+            hit = _lint_module().personal_name(v, w, names)
+            if hit:
+                sys.exit(ROLE_NAME_REFUSAL.format(flag=flag, match=hit))
 
 
 def cmd_sign_off(a):
     w = load_ws(a.ws)
+    _refuse_names_in_roles(a, w)
     path = Path(a.file)
     try:
         doc = json.loads(path.read_text(encoding="utf-8"))
@@ -501,13 +564,17 @@ def cmd_sign_off(a):
     reasons = forced_draft_reasons(w)
     if reasons:
         sys.exit("cannot sign off: " + "; ".join(reasons))
+    # M3: the check runs at the classification the file will have, so an external sign-off meets the external rules
+    old = doc.get("handling") if isinstance(doc.get("handling"), dict) else {}
+    target = a.classification or old.get("classification") or HANDLING_DEFAULTS["classification"]
+    names = privacy.load_names(getattr(a, "names", None))
     if "pack" in doc:
-        problems = _pack_module().check_pack(doc, w).problems
+        problems = _pack_module().check_pack(doc, w, share=target, names=names).problems
     elif "entries" in doc:
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             try:
-                cmd_check_register(argparse.Namespace(ws=a.ws, register=str(path)))
+                cmd_check_register(argparse.Namespace(ws=a.ws, register=str(path), share=target, names=a.names))
                 problems = []
             except SystemExit as e:
                 problems = [x for x in buf.getvalue().splitlines() if x.startswith(" - ")] if e.code else []
@@ -554,11 +621,11 @@ def share_mode(a) -> str:
     return getattr(a, "share", None) or "internal"
 
 
-def share_unmet(doc, w, mode, embed=None, embeds=True) -> list:
+def share_unmet(doc, w, mode, embed=None, embeds=True, src=None, ws=None) -> list:
     """P2-9: every condition a --share external|public copy does not meet (empty when it may be shared). The doc's
     effective handling must be approved, its classification at the mode's level or higher, legal_review cleared,
     and (for pages that embed records) --embed omitted or summary."""
-    eh = effective_handling(doc if isinstance(doc, dict) else {}, w)
+    eh = effective_handling(doc if isinstance(doc, dict) else {}, w, src=src, ws=ws)
     out = []
     st = eh["effective_status"]
     if st == "draft":
@@ -575,12 +642,13 @@ def share_unmet(doc, w, mode, embed=None, embeds=True) -> list:
     return out
 
 
-def share_gate(doc, w, a, embeds=True, extra=()) -> str:
-    """The share mode, after exiting 1 with every unmet condition when a shared copy is refused."""
+def share_gate(doc, w, a, embeds=True, extra=(), src=None, ws=None) -> str:
+    """The share mode, after exiting 1 with every unmet condition when a shared copy is refused. src and ws: see
+    effective_handling."""
     mode = share_mode(a)
     if mode == "internal":
         return mode
-    unmet = list(extra) + share_unmet(doc, w, mode, getattr(a, "embed", None), embeds)
+    unmet = list(extra) + share_unmet(doc, w, mode, getattr(a, "embed", None), embeds, src=src, ws=ws)
     if unmet:
         sys.exit(f"cannot share {SHARE_ADVERB[mode]}: " + "; ".join(unmet))
     return mode
@@ -1125,7 +1193,7 @@ def cmd_profile(a):
             flags.append(f"Column '{lab}' is empty on every finding (the investigator-coach skill can draft it).")
     if not inc.get("causal_chain_sheet"):
         flags.append("Causal Chain sheet is empty; use `pmlc.py causal` to extract links from the causal explanations.")
-    if n and all(f["user_edited"].lower() in ("", "no") for f in F):
+    if n and not any(is_edited(f["user_edited"]) for f in F):
         flags.append("No finding is marked 'User Edited'. Confirm the human review status before publishing learnings.")
     narr = inc.get("narrative", "")[:4000]
     sdate = fields.get("Date", "")
@@ -1146,8 +1214,9 @@ def cmd_profile(a):
     if downs:
         flags.append("Reviewer downgrade votes on: " + "; ".join(f"{v.get('finding')} ({v.get('reason', '')})" for v in downs)
                      + ". Exclude or flag these findings in learnings.")
-    if fields.get("Investigation Status", "").lower().startswith("in_progress"):
-        flags.append("Investigation Status is 'in_progress'; label outputs as draft learnings.")
+    if _norm_status(fields.get("Investigation Status")) != "completed":
+        flags.append(f"Investigation Status is '{_s(fields.get('Investigation Status')) or 'blank'}'; "
+                     "label outputs as draft learnings.")
     rep = _s(fields.get("Reportable to Regulator"))
     if rep.lower() in ("", "no"):
         blob = " ".join([inc.get("narrative", "")] + [e.get("description", "") + " " + " ".join(
@@ -2275,9 +2344,10 @@ def cmd_dashboard(a):
         sys.exit("Needs clusters.json. Run: pmlc.py classify <ws>")
     warn_stale(ws)
     reg0 = json.loads(Path(a.register).read_text(encoding="utf-8")) if a.register else None
+    refuse_pack_as_register(reg0, a.register)
     hdoc0 = reg0 if isinstance(reg0, dict) else {}
-    mode = share_gate(hdoc0, w, a)            # a dashboard without a signed register is never shared outside
-    eh = effective_handling(hdoc0, w)
+    mode = share_gate(hdoc0, w, a, src=a.register, ws=ws)   # a dashboard without a signed register stays inside
+    eh = effective_handling(hdoc0, w, src=a.register, ws=ws)
     share = share_ctx(a, w, mode) if mode != "internal" else None
     if share:
         w, reg0 = shared_copy(w, share, w), shared_copy(reg0, share, w)
@@ -2501,13 +2571,34 @@ def _flat(v):
     return "" if v is None else str(v)
 
 
-def _register_ws(a) -> dict:
-    """The workspace for a register's forced-draft check: --ws, else the run's workspace when the register sits in
-    <run>/outputs/ of the standard layout, else none (no forced-draft reasons can be read)."""
+def refuse_pack_as_register(doc, path) -> None:
+    """M9: a pack JSON given where a register goes exits 1 with one line, not a traceback."""
+    if isinstance(doc, dict) and "pack" in doc and "entries" not in doc:
+        sys.exit(f"{path} is a pack, not a register")
+
+
+FORMULA_LEAD = ("=", "+", "-", "@")
+
+
+def text_cells(wb) -> None:
+    """M6: every cell string that starts with = + - or @ is stored as text, so a spreadsheet never runs it."""
+    for sh in wb.worksheets:
+        for row in sh.iter_rows():
+            for c in row:
+                if isinstance(c.value, str) and c.value.startswith(FORMULA_LEAD):
+                    c.data_type = "s"
+
+
+def _register_ws(a) -> tuple:
+    """(workspace, its folder) for a register's forced-draft and sign-off checks: --ws, else the run's workspace when
+    the register sits in <run>/outputs/ of the standard layout, else ({}, None): nothing can be checked, so the
+    register stays draft with the reason 'no workspace to check'."""
     if getattr(a, "ws", None):
-        return load_ws(a.ws)
+        return load_ws(a.ws), Path(a.ws)
     guess = Path(a.register).resolve().parent.parent / "workspace"
-    return load_ws(guess) if is_standard_ws(guess) and (guess / "findings.json").exists() else {}
+    if is_standard_ws(guess) and (guess / "findings.json").exists():
+        return load_ws(guess), guess
+    return {}, None
 
 
 def cmd_register_xlsx(a):
@@ -2515,10 +2606,14 @@ def cmd_register_xlsx(a):
     from openpyxl.styles import Alignment, Font, PatternFill
     from openpyxl.utils import get_column_letter
     reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
-    rw = _register_ws(a)
+    refuse_pack_as_register(reg, a.register)
+    rw, rws = _register_ws(a)
     hdoc = reg if isinstance(reg, dict) else {}
-    mode = share_gate(hdoc, rw, a, embeds=False, extra=[] if rw else ["no workspace (pass --ws)"])
-    eh = effective_handling(hdoc, rw)
+    mode = share_gate(hdoc, rw, a, embeds=False, extra=[] if rw else ["no workspace (pass --ws)"],
+                      src=a.register, ws=rws)
+    eh = effective_handling(hdoc, rw, src=a.register, ws=rws)
+    if rws is None and REASON_NO_WORKSPACE not in eh["draft_reasons"]:
+        eh["draft_reasons"].append(REASON_NO_WORKSPACE)
     share = share_ctx(a, rw, mode) if mode != "internal" else None
     if share:
         reg = shared_copy(reg, share, rw)
@@ -2592,6 +2687,7 @@ def cmd_register_xlsx(a):
         sh.oddFooter.center.text = VERSION_STAMP
     out = Path(a.out) if a.out else shared_name(Path(a.register).resolve().parent / "learnings-register.xlsx", mode)
     out.parent.mkdir(parents=True, exist_ok=True)
+    text_cells(wb)
     wb.save(out)
     print(f"Register with {len(entries)} entries and {len(recs)} recommendations written to {out}")
 
@@ -2704,6 +2800,7 @@ def cmd_check_register(a):
     uncovered = [fid for fid in F if fid not in covered and fid not in downs]
     hp, hw = check_handling(reg)
     problems += hp
+    hw += unsigned_warning(reg, w, a.register, a.ws)
     print(f"{_n(len(entries), 'learning')}; {len(covered)} of {_n(len(F), 'finding')} covered "
           f"({100*len(covered)/max(len(F),1):.0f}%); {len(problems)} problem(s).")
     for p in problems[:80]:
@@ -2844,7 +2941,7 @@ def cmd_scan_names(a):
     names = privacy.load_names(a.names)
     if not names:
         sys.exit("Names file is empty.")
-    scans = [("", privacy.name_pattern(names, variants=a.variants))]
+    scans = [("", privacy.name_pattern(names, variants=a.variants, skip_role_words=True))]
     if a.patterns:
         scans += [(f"pattern:{k}", re.compile(v)) for k, v in privacy.PATTERNS.items()]
     hits = 0
@@ -3129,6 +3226,8 @@ def build_parser():
     s.add_argument("--retention-review", dest="retention_review", metavar="YYYY-MM-DD")
     s.add_argument("--version")
     s.add_argument("--date", metavar="YYYY-MM-DD", help="review date (default: today)")
+    s.add_argument("--names", help="names file: --role and --distribution must not name a listed person "
+                                   "(default: $PMLC_NAMES)")
     s.set_defaults(fn=cmd_sign_off)
 
     s = sp.add_parser("scan-names", help="zero-hit name scan (exit 1 on hits, 2 if a file could not be read)", allow_abbrev=False)

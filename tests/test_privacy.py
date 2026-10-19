@@ -102,6 +102,23 @@ def test_name_variants():
     assert "Dr. Anand" in pv.name_variants("Anand")
 
 
+def test_name_variants_skip_role_words(tmp_path):
+    """Final review M1: a surname that is a role noun or a vocabulary word is no variant on its own, so the role
+    "Stores/Procurement Officer" survives a names file listing "Fictional Officer"."""
+    assert "Officer" in pv.name_variants("Fictional Officer")              # --redact keeps it, and warns (X17)
+    v = pv.name_variants("Fictional Officer", skip_role_words=True)
+    assert "Officer" not in v and "Fictional Officer" in v and "F. Officer" in v and "Mr Officer" in v
+    ctx = pv.ShareCtx("external", ["Fictional Officer"], [], {})
+    assert pv.share_text("The Stores/Procurement Officer told Fictional Officer.", ctx) == \
+        "The Stores/Procurement Officer told [name]."
+    names = tmp_path / "names.txt"
+    names.write_text("Fictional Officer\n", encoding="utf-8")
+    doc = tmp_path / "doc.txt"
+    doc.write_text("The Stores/Procurement Officer signed.", encoding="utf-8")
+    r = _cli("scan-names", str(names), str(doc), "--variants")
+    assert r.returncode == 0, r.stdout
+
+
 def test_name_pattern_boundaries():
     assert pv.name_pattern([]) is None
     rx = pv.name_pattern(["Shri R. K. Sharma", "Mr J Smith"], variants=True)
@@ -153,6 +170,21 @@ def test_entity_ids_neither_masked_nor_flagged(tmp_path):
                                       "text": "[equipment tag]"}
     reg = {"entries": [{"lr_id": "LR-01", "owner_entity": "F02 Mechanical Maintenance",
                         "lesson": "F02 owns the change; the P-101 seal leaked."}]}
+    hits = [h for h in pl.lint(reg, {"findings": []}, kind="register", share="external") if h.rule == "JC10"]
+    assert [h.match for h in hits] == ["P-101"]
+
+
+@pytest.mark.parametrize("ident", ["FND-AE629313", "FND-3AB996FC", "EVD-AB1234", "LR-AB12", "ML-QX123"])
+def test_tag_rx_skips_hex_record_ids(ident):
+    """Final review I3: the ID guard holds after the hyphen too, so a hex ID's tail is not a tag."""
+    assert not pv.TAG_RX.search(ident), ident
+
+
+def test_hex_ids_survive_share_text_and_lint():
+    ctx = pv.ShareCtx("external", [], [], {})
+    text = "FND-AE629313 and EVD-AB1234 show pump P-101 leaked."
+    assert pv.share_text(text, ctx) == "FND-AE629313 and EVD-AB1234 show pump [equipment tag] leaked."
+    reg = {"entries": [{"lr_id": "LR-01", "lesson": text}]}
     hits = [h for h in pl.lint(reg, {"findings": []}, kind="register", share="external") if h.rule == "JC10"]
     assert [h.match for h in hits] == ["P-101"]
 
@@ -268,6 +300,36 @@ def test_share_text_masks_in_order():
         "R. K. Sharma at 14:05 on 2024-03-12"
 
 
+@pytest.mark.parametrize("raw,want", [
+    ("At 0216. He informed the operator.", "He informed the operator."),
+    ("At 0216 he informed the operator.", "he informed the operator."),
+    ("The leak started at about 0300 hrs near the pump.", "The leak started near the pump."),
+    ("The leak started at about 0300 near the pump.", "The leak started near the pump."),
+    ("Gas was seen around 0220 by the crew.", "Gas was seen by the crew."),
+    ("approx. 0235 the alarm sounded", "the alarm sounded"),
+    ("The line was open from 0200 until 0415 that night.", "The line was open that night."),
+    ("Isolated by 0330, as logged.", "Isolated, as logged."),
+    ("Readings at 9.15 am showed a drop.", "Readings showed a drop."),
+    ("At 21.30 hrs the valve closed.", "the valve closed."),
+    ("The pump stopped 9.15 p.m. on the day.", "The pump stopped on the day."),
+    ("The alarm rang. At 0216. He informed the shift.", "The alarm rang. He informed the shift."),
+    ("Hot work ran from 0200-0400 near the drain.", "Hot work ran near the drain."),
+])
+def test_share_text_strips_hhmm_after_a_preposition(raw, want):
+    """Final review I5: 'At 0216' and dotted times with am, pm or hrs are clock times too."""
+    assert pv.share_text(raw, pv.ShareCtx("external", [], [], {})) == want
+
+
+@pytest.mark.parametrize("raw", [
+    "in 2019 the gasket changed", "since 2018, leaving the gap", "from 2017 to 2020", "by 2020.", "from 2019",
+    "until 2021 the plan held", "about 1999 the plant opened", "ran at 1500 rpm", "about 1200 m of pipe",
+    "at 2500 kPa", "lasted 2.50 hours", "rated 4.20 bar", "at 2460", "At 0216x", "from 0200.5 m",
+    "from 2017-2019 the audits lapsed", "at 2024/25 rates", "Wait... at 1200 rpm.",
+])
+def test_share_text_keeps_years_and_quantities(raw):
+    assert pv.share_text(raw, pv.ShareCtx("external", [], [], {})) == raw
+
+
 def test_share_doc_drops_keys_and_generalises_owners():
     ctx = pv.ShareCtx("external", [], ["Bharat Seals"], {})
     doc = {"text": "Bharat Seals at 14:05", "suggested_interviews": ["x"], "Key Questions": "q", "generated": "d",
@@ -378,7 +440,7 @@ def test_share_refused_on_forced_draft(tmp_path):
     assert r.returncode == 1
     assert r.stderr.strip().splitlines()[-1] == (
         "cannot share externally: review is draft (the investigation status is in progress, "
-        "no finding is marked as edited by a person)")
+        "no finding is marked as edited by a person, not signed off)")
     assert files(out) == []
 
 
@@ -794,3 +856,55 @@ def test_keep_field_unknown_warns_and_label_tolerant(tmp_path):
     assert r.returncode == 0 and "--keep-field 'nonsense' matches none" in r.stderr
     s = openpyxl.load_workbook(out)["Incident Summary"]
     assert "Qux" not in " ".join(str(c.value) for row in s.iter_rows() for c in row if c.value)
+
+
+# ----------------------------------------------------------------------------- final review minors
+
+def test_lint_ok_rule_ids_survive_share_doc():
+    """M2: a lint_ok rule ID such as JC10 is an ID, not an equipment tag."""
+    ctx = pv.ShareCtx("external", [], [], {})
+    doc = {"kind": "para", "text": "P-101", "lint_ok": {"rule": "JC10", "reason": "a drawing number"}}
+    assert pv.share_doc(doc, ctx) == {"kind": "para", "text": "[equipment tag]",
+                                      "lint_ok": {"rule": "JC10", "reason": "a drawing number"}}
+
+
+def test_sign_off_lints_at_the_target_classification(shws, tmp_path):
+    shws = shws[0]
+    """M3: sign-off --classification external runs the external rules, so an organisation name (JC9, an error
+    outside) is refused at sign-off, not later at pack --share external."""
+    doc = copy.deepcopy(SPACK)
+    doc["sections"][0]["items"][0]["text"] += " Acme Pumps Ltd supplied the seal."
+    p = write_doc(tmp_path, doc)
+    r = _cli("sign-off", str(shws), str(p), "--role", "HSE manager", "--status", "approved",
+             "--classification", "external", "--legal-review", "cleared")
+    assert r.returncode == 1 and "JC9" in r.stderr, r.stderr
+    assert "handling" not in json.loads(p.read_text())
+    assert _cli("sign-off", str(shws), str(p), "--role", "HSE manager").returncode == 0   # internal: a warning only
+
+
+def test_register_xlsx_writes_formula_like_text_as_text(tmp_path):
+    """M6: a cell string starting with = + - or @ is text in the workbook, never a formula."""
+    reg = copy.deepcopy(MINI_REG)
+    reg["title"] = "=HYPERLINK(\"http://x\",\"t\")"
+    reg["entries"][0]["title"] = "=1+1"
+    reg["entries"][0]["lesson"] = "+cmd|' /C calc'!A0"
+    reg["entries"][0]["recommendations"][0]["what"] = "@SUM(A1)"
+    p = write_doc(tmp_path, reg, "reg.json")
+    out = tmp_path / "reg.xlsx"
+    run("register-xlsx", str(p), "--out", str(out))
+    wb = openpyxl.load_workbook(out)
+    cells = [c for s in wb.worksheets for row in s.iter_rows() for c in row if isinstance(c.value, str)]
+    risky = [c for c in cells if c.value[:1] in "=+-@"]
+    assert {c.value for c in risky} >= {"=1+1", "+cmd|' /C calc'!A0", "@SUM(A1)", reg["title"]}
+    assert all(c.data_type == "s" for c in risky), [(c.coordinate, c.data_type) for c in risky]
+
+
+def test_pack_given_as_register_is_refused(shws, tmp_path):
+    """M9: a pack JSON passed where a register goes gives one clear line, not a traceback."""
+    shws = shws[0]
+    p = write_doc(tmp_path, copy.deepcopy(SPACK))
+    for args in (("dashboard", str(shws), "--register", str(p), "--out", str(tmp_path / "m.html")),
+                 ("register-xlsx", str(p), "--out", str(tmp_path / "r.xlsx"))):
+        r = _cli(*args)
+        assert r.returncode == 1 and "Traceback" not in r.stderr, r.stderr
+        assert r.stderr.strip() == f"{p} is a pack, not a register"

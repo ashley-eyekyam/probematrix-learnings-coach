@@ -34,7 +34,7 @@ pmlc scan-names names paths [paths ...] [--show SHOW] [--variants] [--patterns]
 | Flag | Value | Default | What it does |
 |---|---|---|---|
 | `--show` | number | 50 | Print at most this many hits. The count at the end is always the full number |
-| `--variants` | none | off | Also match each name's surname, initial and surname, and honorific and surname (for the fictional "Jane Placeholder": "Placeholder", "J. Placeholder", "Ms Placeholder") |
+| `--variants` | none | off | Also match each name's surname, initial and surname, and honorific and surname (for the fictional "Jane Placeholder": "Placeholder", "J. Placeholder", "Ms Placeholder"). A one-word variant that is a role noun or a vocabulary word (the surname of "Fictional Officer") is skipped, so roles such as "Procurement Officer" are not hits |
 | `--patterns` | none | off | Also flag e-mail addresses, phone-like numbers and staff-number patterns. An aid only: it gives false hits (dates and long record numbers look like phone numbers) and is not proof of de-identification |
 | `-h`, `--help` | none | | Show the flags and stop |
 
@@ -59,7 +59,7 @@ python3 $E scan-names names.txt $OUT
 0 hit(s).
 ```
 
-With `--variants` the same scan gives 12 hits, all on the ordinary words "example" and "placeholder" in the page text: the fictional surnames are common words. Real surnames can do the same, so read the context of each hit.
+With `--variants`, a scan of the Hazira register and learning map gives 1 hit, on the ordinary word "placeholder" in the page's code: the fictional surname is a common word. "Example" alone is not matched, because a one-word variant that is a role noun or a language-check vocabulary word is skipped. Real surnames can still match ordinary words, so read the context of each hit.
 
 The test copy of a pack from [check-language](check-language.md), with one invented paragraph that uses the two fictional names:
 

@@ -80,7 +80,7 @@ One factor the investigation identified, at one HFACS level, with its rating, de
 
 ### Forced draft
 
-The rule that nothing may be reviewed or approved while the investigation status is in progress, or while no finding is marked as edited by a person. There is no override.
+The rule that nothing may be reviewed or approved until the investigation status is completed, and while no finding is marked as edited by a person. There is no override.
 
 ## G to I
 

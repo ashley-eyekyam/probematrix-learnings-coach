@@ -40,7 +40,7 @@
   }
 
   /* A finding's text is the investigation's AI-drafted wording: true unless the export marks it edited by a person. */
-  function unedited(f) { return ["", "no"].indexOf(String(f.user_edited || "").trim().toLowerCase()) !== -1; }
+  function unedited(f) { return ["yes", "y", "true", "1"].indexOf(String(f.user_edited || "").trim().toLowerCase()) === -1; }
 
   /* --embed cited and summary: an uncovered or excluded finding travels as {id, label, rating} only. */
   var STUB_KEYS = ["id", "label", "rating"];
