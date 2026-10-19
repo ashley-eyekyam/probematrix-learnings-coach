@@ -179,10 +179,23 @@ _MON_RX = r"(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?"
 # A clock time, with the "at" (or "at about") that introduces it, so "restarted at 14:05 on" reads "restarted on":
 # H:MM or HH:MM (optional :SS, optional am/pm or hrs), and HHMM only with hrs or hours ("1405 hrs"). A colon time
 # with no seconds and no suffix ("bare") is kept when a ratio word sits next to it, e.g. "ratio 1:10" (X23).
+# H.MM or HH.MM counts only with am, pm or hrs ("9.15 am", "21.30 hrs"), so "2.50 hours" stays a duration.
 TIME_RX = re.compile(r"(?:\bat\s+(?:about\s+|around\s+|approximately\s+)?)?(?<![\w:.])"
                      r"(?:(?P<clock>(?:[01]?\d|2[0-3]):[0-5]\d)(?P<sec>:[0-5]\d)?"
                      r"(?P<suf>\s*(?:hrs?\b|hours?\b|[ap]\.?m\b\.?))?(?![\d:])"
-                     r"|(?:[01]\d|2[0-3])[0-5]\d\s*(?:hrs?|hours?)\b)", re.I)
+                     r"|(?:[01]\d|2[0-3])[0-5]\d\s*(?:hrs?|hours?)\b"
+                     r"|(?:[01]?\d|2[0-3])\.[0-5]\d\s*(?:hrs\b|[ap]\.?m\b\.?))", re.I)
+# A bare HHMM (0000-2359) after a preposition, which goes with it: "At 0216", "at about 0300", "from 0200 until 0415".
+# Years are kept: after about, around, approximately, by, from, until or till, 1900-2099 reads as a year ("from 2017",
+# "by 2020"); only "at" takes those as times ("at 1930"). "in" and "since" are never followed by a time. A following
+# unit ("at 1500 rpm", "about 1200 m") makes it a quantity, also kept.
+PREP_HHMM_RX = re.compile(r"\b(?P<prep>at\s+(?:about\s+|around\s+|approximately\s+|approx\.\s*)?"
+                          r"|(?:about|around|approximately|by|from|until|till)\s+|approx\.\s*)"
+                          r"(?P<hhmm>(?:[01]\d|2[0-3])[0-5]\d)(?:\s*[-–]\s*(?:[01]\d|2[0-3])[0-5]\d)?(?![-/:]|[.,]\d|\w)", re.I)
+_UNIT_AFTER = re.compile(r"\s*([A-Za-z]+\d?|%|°[CF]?)(?!\w)")
+UNIT_WORDS = {"rpm", "kpa", "mpa", "pa", "bar", "barg", "psi", "psig", "mm", "cm", "m", "km", "kg", "g", "t", "te",
+              "tonnes", "tons", "l", "litres", "liters", "ml", "m3", "nm3", "scm", "ppm", "kw", "mw", "w", "v", "kv",
+              "a", "hz", "metres", "meters", "feet", "ft", "units", "people", "%", "°", "°c", "c", "k"}
 RATIO_WORDS = {"ratio", "ratios", "slope", "slopes", "scale", "odds", "mix", "mixture", "dilution", "dilutions"}
 _WORD_BEFORE = re.compile(r"([A-Za-z]+)\W*(?:\bof\W*)?$")      # "ratio 1:10" and "a ratio of 1:10"
 _WORD_AFTER = re.compile(r"^\W*([A-Za-z]+)")
@@ -225,11 +238,23 @@ def strip_times(text: str) -> str:
                 return m.group(0)
         return ""
 
-    out = TIME_RX.sub(drop, text)
+    def drop_hhmm(m):
+        unit = _UNIT_AFTER.match(m.string, m.end())
+        if unit and unit.group(1).lower() in UNIT_WORDS:
+            return m.group(0)
+        if 1900 <= int(m.group("hhmm")) <= 2099 and not m.group("prep").lower().startswith("at"):
+            return m.group(0)
+        return ""
+
+    out = PREP_HHMM_RX.sub(drop_hhmm, TIME_RX.sub(drop, text))
     if out == text:
         return text
     out = re.sub(r"[ \t]{2,}", " ", out)
     out = re.sub(r"[ \t]+([,.;:)])", r"\1", out)
+    if not re.match(r"\s*[,.;:]", text):                 # "At 0216. He ..." reads "He ...", not ". He ..."
+        out = re.sub(r"^(\s*)[,.;:]+[ \t]*", r"\1", out)
+    if ".." not in text:                                    # "rang. At 0216. He" reads "rang. He"
+        out = re.sub(r"(?<!\.)([.!?])[ \t]*[.,;:](?!\.)", r"\1", out)
     return out.strip() if text == text.strip() else out
 
 

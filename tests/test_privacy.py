@@ -283,6 +283,36 @@ def test_share_text_masks_in_order():
         "R. K. Sharma at 14:05 on 2024-03-12"
 
 
+@pytest.mark.parametrize("raw,want", [
+    ("At 0216. He informed the operator.", "He informed the operator."),
+    ("At 0216 he informed the operator.", "he informed the operator."),
+    ("The leak started at about 0300 hrs near the pump.", "The leak started near the pump."),
+    ("The leak started at about 0300 near the pump.", "The leak started near the pump."),
+    ("Gas was seen around 0220 by the crew.", "Gas was seen by the crew."),
+    ("approx. 0235 the alarm sounded", "the alarm sounded"),
+    ("The line was open from 0200 until 0415 that night.", "The line was open that night."),
+    ("Isolated by 0330, as logged.", "Isolated, as logged."),
+    ("Readings at 9.15 am showed a drop.", "Readings showed a drop."),
+    ("At 21.30 hrs the valve closed.", "the valve closed."),
+    ("The pump stopped 9.15 p.m. on the day.", "The pump stopped on the day."),
+    ("The alarm rang. At 0216. He informed the shift.", "The alarm rang. He informed the shift."),
+    ("Hot work ran from 0200-0400 near the drain.", "Hot work ran near the drain."),
+])
+def test_share_text_strips_hhmm_after_a_preposition(raw, want):
+    """Final review I5: 'At 0216' and dotted times with am, pm or hrs are clock times too."""
+    assert pv.share_text(raw, pv.ShareCtx("external", [], [], {})) == want
+
+
+@pytest.mark.parametrize("raw", [
+    "in 2019 the gasket changed", "since 2018, leaving the gap", "from 2017 to 2020", "by 2020.", "from 2019",
+    "until 2021 the plan held", "about 1999 the plant opened", "ran at 1500 rpm", "about 1200 m of pipe",
+    "at 2500 kPa", "lasted 2.50 hours", "rated 4.20 bar", "at 2460", "At 0216x", "from 0200.5 m",
+    "from 2017-2019 the audits lapsed", "at 2024/25 rates", "Wait... at 1200 rpm.",
+])
+def test_share_text_keeps_years_and_quantities(raw):
+    assert pv.share_text(raw, pv.ShareCtx("external", [], [], {})) == raw
+
+
 def test_share_doc_drops_keys_and_generalises_owners():
     ctx = pv.ShareCtx("external", [], ["Bharat Seals"], {})
     doc = {"text": "Bharat Seals at 14:05", "suggested_interviews": ["x"], "Key Questions": "q", "generated": "d",
