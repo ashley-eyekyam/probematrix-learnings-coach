@@ -1626,6 +1626,11 @@ def test_ingest_redact_removes_names(tmp_path):
     assert man["redactions"] >= 4 and "Seeded" not in json.dumps(man)
     run("classify", str(ws))
     run("dashboard", str(ws))
+    from test_pack import item, pack_with
+    pj = ws.parent / "outputs" / "test-pack.json"
+    pj.write_text(json.dumps(pack_with(item("recommendation"), item("learning", cites=["FND-0001"]))))
+    run("pack", str(ws), str(pj))
+    assert list(ws.parent.glob("outputs/test-pack*.html"))
     html = "".join(p.read_text() for p in ws.parent.glob("outputs/*.html"))
     assert html and "Seeded" not in html and "Fakename" not in html
 
@@ -1674,3 +1679,22 @@ def test_profile_regulator_flag_hazira(tmp_path):
     run("ingest", str(haz), "--legacy-out", str(tmp_path / "h"))
     p = run("profile", str(tmp_path / "h"))
     assert "Regulator involvement is mentioned but" in p
+
+
+def test_redact_protects_role_text_and_warns(tmp_path):
+    x = make_export(tmp_path, summary=[], narrative="John Field and Mr. Field met the Field Operator. " * 6)
+    wb = openpyxl.load_workbook(x)
+    for row in wb["Identified Findings"].iter_rows(min_row=2):
+        if row[0].value == "FND-0001":
+            row[14].value = "Field Operator, John Field, R.K. Field"
+    wb.save(x)
+    mp = tmp_path / "map.json"
+    mp.write_text(json.dumps({"John Field": "Fitter", "R. K. Field": "Engineer"}))
+    ws = tmp_path / "w"
+    out = run("ingest", str(x), "--legacy-out", str(ws), "--redact", str(mp))
+    F = json.loads((ws / "findings.json").read_text())
+    assert F[0]["roles"] == ["Field Operator", "Fitter", "Engineer"]
+    narr = json.loads((ws / "incident.json").read_text())["narrative"]
+    assert "John Field" not in narr and "Mr. Field" not in narr and "Fitter" in narr
+    assert 'warning: surname-only match "Field" replaced 6 times: check the text reads correctly' in out
+    assert "redacted" in out

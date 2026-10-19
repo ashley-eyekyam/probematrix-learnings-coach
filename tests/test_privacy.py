@@ -189,8 +189,9 @@ def test_make_public_sample_strips_metadata(tmp_path):
     r = subprocess.run([sys.executable, str(PMLC), "scan-names", str(names), str(out)], capture_output=True, text=True)
     assert r.returncode == 0 and "0 hit" in r.stdout
     # a hidden row in a kept sheet is unhidden, so the --names scan sees it and refuses to write
-    out2, r2 = _sample(tmp_path / "h" if (tmp_path / "h").mkdir() is None else tmp_path, "--names", str(names),
-                       hidden_name=True)
+    h = tmp_path / "h"
+    h.mkdir()
+    out2, r2 = _sample(h, "--names", str(names), hidden_name=True)
     assert r2.returncode != 0 and "Hidden Qux" in r2.stdout and not out2.exists()
 
 
@@ -209,3 +210,23 @@ def test_make_public_sample_blanks_fields_and_memo_lines(tmp_path):
     s2 = openpyxl.load_workbook(out2)["Incident Summary"]
     vals2 = {r[0].value: r[1].value for r in s2.iter_rows() if r[0].value}
     assert vals2["Investigating Officer"] == "Qux Zorbin" and vals2["Supervisor at Time"] is None
+
+
+def test_initials_without_space_match(tmp_path):
+    rx = pv.name_pattern(["R. K. Sharma"], variants=True)
+    for t in ("R.K. Sharma", "R. K. Sharma", "R K Sharma", "Shri Sharma", "r.k. sharma"):
+        assert rx.fullmatch(t), t
+    assert not rx.search("RKSharmaji")
+
+
+def test_keep_field_unknown_warns_and_label_tolerant(tmp_path):
+    import subprocess
+    import sys
+    from test_pmlc import ROOT
+    x = make_export(tmp_path, summary=[(" investigating officer ", "Qux Zorbin")])
+    out = tmp_path / "o.xlsx"
+    r = subprocess.run([sys.executable, str(ROOT / "tools" / "make-public-sample.py"), str(x), str(out),
+                        "--keep-field", "Nonsense"], capture_output=True, text=True)
+    assert r.returncode == 0 and "--keep-field 'nonsense' matches none" in r.stderr
+    s = openpyxl.load_workbook(out)["Incident Summary"]
+    assert "Qux" not in " ".join(str(c.value) for row in s.iter_rows() for c in row if c.value)

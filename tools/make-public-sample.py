@@ -49,6 +49,9 @@ def strip_metadata(wb, keep_fields=()) -> None:
     for n in list(wb.defined_names):
         del wb.defined_names[n]
     keep = {k.strip().lower() for k in keep_fields}
+    fields = {f.lower() for f in PERSONAL_FIELDS}
+    for k in sorted(keep - fields):
+        print(f"warning: --keep-field {k!r} matches none of {', '.join(PERSONAL_FIELDS)}", file=sys.stderr)
     for ws in wb.worksheets:
         ws.sheet_state = "visible"
         for d in ws.row_dimensions.values():
@@ -67,7 +70,8 @@ def strip_metadata(wb, keep_fields=()) -> None:
                     c.hyperlink = None
         if ws.title == "Incident Summary":
             for row in ws.iter_rows():
-                if len(row) > 1 and row[0].value in PERSONAL_FIELDS and row[0].value.lower() not in keep:
+                if len(row) > 1 and str(row[0].value or "").strip().lower() in fields and \
+                        str(row[0].value).strip().lower() not in keep:
                     row[1].value = None
                 for c in row:
                     if isinstance(c.value, str) and re.search(r"(?im)^\s*(?:To|From|Cc)\s*:", c.value):

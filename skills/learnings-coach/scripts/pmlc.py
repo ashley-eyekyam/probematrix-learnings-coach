@@ -522,22 +522,30 @@ def load_redact_map(path) -> dict:
     return {k: v for k, v in m.items() if k.strip()}
 
 
-def redact_data(obj, rx, repl: dict):
-    """(redacted copy, count): every string value (not dict keys) passed through rx; repl maps the lower-cased
-    match (a name or one of its variants) to the role."""
+def _canon(x: str) -> str:
+    return re.sub(r"[\s.]+", "", x.lower())
+
+
+def redact_data(obj, rx, repl: dict, role_rx=None, single=None):
+    """(redacted copy, count): every string value (not dict keys) passed through rx; repl maps the canonical match
+    (lower case, no spaces or dots) to the role. Under a 'roles' key only role_rx (the multi-token forms) is used, so
+    'Field Operator' survives a map that names 'John Field'. single, when given, counts one-word matches by text."""
     n = [0]
 
     def sub(m):
         n[0] += 1
-        return repl.get(" ".join(m.group(0).lower().split()), "[redacted]")
+        if single is not None and len(re.findall(r"\w+", m.group(0))) == 1:
+            single[m.group(0)] = single.get(m.group(0), 0) + 1
+        return repl.get(_canon(m.group(0)), "[redacted]")
 
-    def walk(x):
+    def walk(x, key=None):
         if isinstance(x, str):
-            return rx.sub(sub, x)
+            r = role_rx if key == "roles" else rx
+            return r.sub(sub, x) if r else x
         if isinstance(x, list):
-            return [walk(i) for i in x]
+            return [walk(i, key) for i in x]
         if isinstance(x, dict):
-            return {k: walk(v) for k, v in x.items()}
+            return {k: walk(v, k) for k, v in x.items()}
         return x
     return walk(obj), n[0]
 
@@ -654,17 +662,19 @@ def cmd_ingest(a):
         sys.exit(f"{out} already holds a workspace. Pass --force to overwrite it.")
     redactions = None
     if redact is not None:
-        repl = {}
+        repl, multi = {}, []
         for name, role in redact.items():
-            for v in privacy.name_variants(name):
-                repl.setdefault(" ".join(v.lower().split()), role)
-            repl[" ".join(name.lower().split())] = role
+            for v in privacy.name_variants(name) + [name]:
+                repl[_canon(v)] = role
+                if len(v.split()) > 1:
+                    multi.append(v)
         rx = privacy.name_pattern(list(redact), variants=True)
-        redactions = 0
+        role_rx = privacy.name_pattern(multi)
+        redactions, single = 0, {}
         if rx:
-            findings, c1 = redact_data(findings, rx, repl)
-            evidence, c2 = redact_data(evidence, rx, repl)
-            incident, c3 = redact_data(incident, rx, repl)
+            findings, c1 = redact_data(findings, rx, repl, role_rx, single)
+            evidence, c2 = redact_data(evidence, rx, repl, role_rx, single)
+            incident, c3 = redact_data(incident, rx, repl, role_rx, single)
             redactions = c1 + c2 + c3
     write_json(out / "findings.json", findings)
     write_json(out / "evidence.json", evidence)
@@ -687,6 +697,8 @@ def cmd_ingest(a):
     else:
         print(f"warning: Analysis Statistics says {stats['total']} findings, ingested {len(findings)}")
     if redactions is not None:
+        for w_, c_ in sorted(single.items()):
+            print(f'warning: surname-only match "{w_}" replaced {c_} times: check the text reads correctly')
         print(f"redacted {redactions} name occurrence(s) from the workspace")
     pf = personal_fields_present(incident["fields"])
     if pf:
