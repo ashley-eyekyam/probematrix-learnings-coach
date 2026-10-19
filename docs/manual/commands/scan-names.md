@@ -34,7 +34,7 @@ pmlc scan-names names paths [paths ...] [--show SHOW] [--variants] [--patterns]
 | Flag | Value | Default | What it does |
 |---|---|---|---|
 | `--show` | number | 50 | Print at most this many hits. The count at the end is always the full number |
-| `--variants` | none | off | Also match each name's surname, initial and surname, and honorific and surname (for the fictional "Jane Placeholder": "Placeholder", "J. Placeholder", "Ms Placeholder") |
+| `--variants` | none | off | Also match each name's surname, initial and surname, and honorific and surname (for the fictional "Jane Placeholder": "Placeholder", "J. Placeholder", "Ms Placeholder"). A one-word variant that is a role noun or a vocabulary word (the surname of "Fictional Officer") is skipped, so roles such as "Procurement Officer" are not hits |
 | `--patterns` | none | off | Also flag e-mail addresses, phone-like numbers and staff-number patterns. An aid only: it gives false hits (dates and long record numbers look like phone numbers) and is not proof of de-identification |
 | `-h`, `--help` | none | | Show the flags and stop |
 

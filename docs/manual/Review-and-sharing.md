@@ -194,7 +194,7 @@ pmlc pack <ws> <run>/outputs/board-brief.json --share external --names names.txt
 
 In `external` and `public` mode the copy is made from masked copies of the pack (or register) and of the workspace records it embeds. It:
 
-- replaces personal names with `[name]`: the names in `--names` or `PMLC_NAMES` with their common variants (surname, initials and surname, honorific and surname), and any honorific followed by a name, such as "Mr" or "Shri", even without a names file;
+- replaces personal names with `[name]`: the names in `--names` or `PMLC_NAMES` with their common variants (surname, initials and surname, honorific and surname; a surname that is also a role word, such as "Officer", is not masked on its own), and any honorific followed by a name, such as "Mr" or "Shri", even without a names file;
 - replaces organisation names with `[organisation]`: the names in `--orgs` or `PMLC_ORGS`, and any name ending in Ltd, Pvt, Inc, GmbH, LLC or Limited;
 - replaces equipment tags (letters then digits, such as `PSV-101` or `AO-101`) with `[equipment tag]`. Finding, evidence, LR and ML IDs, function IDs such as `F02` and tier IDs such as `T4` are not tags;
 - replaces roles that point to one person with their function and tier, for example "Security Guard - Gate 3" becomes "Security & Surveillance (Unresolved)". These are the roles in `singleton_roles.json`: a role with an instance number or letter (such as a gate, post, shift, desk or control room number), or the only role at its tier in Plant & Asset Leadership or Corporate & Board. Group roles such as "Control Room Operators" or "seal change crew" are never singletons;
