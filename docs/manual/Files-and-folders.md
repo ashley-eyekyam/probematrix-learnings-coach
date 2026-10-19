@@ -63,7 +63,7 @@ These are the files in a fresh Hazira workspace after `ingest`, `profile` and `c
 | `organisation-learning-map.external.html`, `.public.html` | `dashboard --share external` or `--share public` | A masked copy of the learning map. It needs `--register` with a register approved for that audience. |
 | `learnings-register.external.xlsx`, `.public.xlsx` | `register-xlsx --share external` or `--share public` | A masked copy of the workbook, with a "Sharing" row on its About sheet. |
 
-A signed-off JSON file carries a `handling` block; the HTML and Markdown show it as the review line. See [Review and sharing](Review-and-sharing.md).
+A signed-off JSON file carries a `handling` block; the HTML and Markdown show it as the review line. The block counts only together with its sign-off record in this workspace's `manifest.json`, so a signed file copied to another folder or workspace is a draft there ("not signed off"). See [Review and sharing](Review-and-sharing.md).
 
 Converted files (PDF, Word, PowerPoint) are made only when you ask, with the host's own tools. Their author fields are left blank so they carry no personal name. This repository's git settings ignore such files outside the published samples.
 
