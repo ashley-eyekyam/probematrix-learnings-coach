@@ -28,7 +28,7 @@ pmlc check-pack <ws> <run>/outputs/organisation-learning-plan.json
 pmlc pack <ws> <run>/outputs/organisation-learning-plan.json
 ```
 
-- [dashboard](../commands/dashboard.md) writes `organisation-learning-map.html`. `--register` adds the learnings, the plan per level and the strength of fixes. `--date`, `--title` and `--location` correct the header when the summary sheet is wrong. `--out` writes the page elsewhere. From v2.0.0-alpha.4 it also takes `--embed` and `--share` (see [Review and sharing](../Review-and-sharing.md)).
+- [dashboard](../commands/dashboard.md) writes `organisation-learning-map.html`. `--register` adds the learnings, the plan per level and the strength of fixes. `--date`, `--title` and `--location` correct the header when the summary sheet is wrong. `--out` writes the page elsewhere. `--embed` sets how much of the records the page carries, and `--share` makes a masked copy for outside the organisation (see [Review and sharing](../Review-and-sharing.md)).
 - [interfaces](../commands/interfaces.md) gives the strongest pairs of functions for the plan.
 - [check-pack](../commands/check-pack.md) and [pack](../commands/pack.md) for the learning plan.
 

@@ -33,7 +33,7 @@ pmlc dashboard <ws> --register <run>/outputs/learnings-register.json [--date <co
 
 - [select](../commands/select.md): `--top-rated` keeps findings at the workspace's top rating, and `--brief` drops the long text. Then the agent sweeps the lower ratings for conditions not yet covered, especially at levels 3 and 4.
 - [check-register](../commands/check-register.md) checks IDs, evidence links, controlled values, tier messages and indicators. It flags findings with reviewer downgrade votes, lists high-rated findings no learning covers, and runs the language check. `--share`, `--names` and `--orgs` work as on [check-language](../commands/check-language.md).
-- [register-xlsx](../commands/register-xlsx.md) writes the workbook. `--out` names it, and `--ws` points to the workspace when the register is not in the standard run folder. From v2.0.0-alpha.4 it also takes `--share` (see [Review and sharing](../Review-and-sharing.md)).
+- [register-xlsx](../commands/register-xlsx.md) writes the workbook. `--out` names it, and `--ws` points to the workspace when the register is not in the standard run folder. It also takes `--share`, `--names` and `--orgs` for a masked copy (see [Review and sharing](../Review-and-sharing.md)).
 - [dashboard](../commands/dashboard.md) with `--register` is required for this skill.
 
 ## What you get

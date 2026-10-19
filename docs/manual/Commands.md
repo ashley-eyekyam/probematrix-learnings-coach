@@ -24,7 +24,7 @@ The examples ran from a folder holding `hazira/`, a copy of the Hazira sample ex
 
 | Flag | What it does |
 |---|---|
-| `--version` | Print the engine version, for example `pmlc 2.0.0a3`, and stop |
+| `--version` | Print the engine version, for example `pmlc 2.0.0a4`, and stop |
 | `-h`, `--help` | Print the list of commands. After a command name (`$E select -h`) it prints that command's flags |
 
 ```bash
@@ -32,7 +32,7 @@ python3 $E --version
 ```
 
 ```text
-pmlc 2.0.0a3
+pmlc 2.0.0a4
 ```
 
 ## Every command

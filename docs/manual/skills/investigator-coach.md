@@ -44,7 +44,7 @@ pmlc pack <ws> <run>/outputs/investigator-coach.json
 4. **method lessons**: where the analysis reached levels 3 and 4, where a finding may be coded too low, and where a finding rests on one source;
 5. three **training exercises** for investigators.
 
-Suggested interviews name roles only, and pass through the language check like any other text. From v2.0.0-alpha.4, sharing a pack outside the organisation drops the key questions and suggested interviews (see [Review and sharing](../Review-and-sharing.md)).
+Suggested interviews name roles only, and pass through the language check like any other text. Sharing a pack outside the organisation drops the key questions, suggested interviews, causal hypotheses and evidence to collect, and writes no `follow-up.json` (see [Review and sharing](../Review-and-sharing.md)).
 
 ## Worked example (Hazira)
 

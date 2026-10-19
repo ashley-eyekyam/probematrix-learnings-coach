@@ -60,7 +60,7 @@ The "DRAFT" label at the top of every page until the file is approved. In Markdo
 
 ### Embed mode (`--embed`)
 
-How much of the investigation's records a page carries: `cited` (the default: full records only for what the pack cites), `summary` (as cited, without quotes, evidence descriptions, interviews, key questions and vote reasons) or `full` (everything). From v2.0.0-alpha.4.
+How much of the investigation's records a page carries: `cited` (the default: full records only for what the pack cites), `summary` (as cited, without quotes, evidence descriptions, interviews, key questions and vote reasons) or `full` (everything). A flag of `pack` and `dashboard`.
 
 ### Entity
 
@@ -224,7 +224,7 @@ The part of a pack that says which findings it should cover, using the same filt
 
 ### Share mode (`--share`)
 
-Who a rendered copy is for: `internal` (the default), `external` or `public`. External and public copies need an approved, matching, legally cleared file, and mask identifying details. From v2.0.0-alpha.4.
+Who a rendered copy is for: `internal` (the default), `external` or `public`. External and public copies need an approved, matching, legally cleared file, and mask identifying details. A flag of `pack`, `dashboard` and `register-xlsx`.
 
 ### Sighted comparison
 

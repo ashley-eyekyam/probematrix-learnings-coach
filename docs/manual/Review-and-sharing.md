@@ -114,27 +114,33 @@ Review the change and sign off again. This is deliberate: an approval covers the
 
 ## How much evidence a page carries: `--embed`
 
-*This arrives with v2.0.0-alpha.4, on [pack](commands/pack.md) and [dashboard](commands/dashboard.md).*
+`--embed` is a flag of [pack](commands/pack.md) and [dashboard](commands/dashboard.md). A register workbook embeds no records, so [register-xlsx](commands/register-xlsx.md) has no such flag.
 
-A pack page carries the full records of the findings and evidence it cites, so a reader can check every sentence. `--embed` decides how much else it carries:
+A pack page carries the full records of the findings and evidence it cites, so a reader can check every sentence. `--embed` decides how much else it carries (for a dashboard, read "the register" for "the pack"):
 
 | Mode | What the page carries | Use it for |
 |---|---|---|
 | `cited` (the default) | Full records only for the cited findings and evidence. Findings the pack does not cite are listed by ID, label and rating only. | normal internal use |
 | `summary` | As `cited`, but without evidence descriptions, specific references (quotes), suggested interviews, key questions and reviewers' vote reasons. | anything shared outside; the default when sharing |
-| `full` | Every record in full, as in v0.3. | an internal working copy for the investigation team |
+| `full` | Every relevant record in full, as in v0.3. | an internal working copy for the investigation team |
 
 In `summary` mode, word-for-word repeats of an evidence description or reference elsewhere in the embedded text (for example inside an AI justification) are replaced with `[quote omitted]`.
 
-If a page would carry witness statements, the command notes `embedded evidence includes witness statements; consider --embed summary`.
+If a page would carry witness statements, the command prints this note (a reminder, not an error):
 
-**Print only what is cited.** In print, the evidence trail lists only the cited IDs. The findings the pack does not cite print as one line, "x of y relevant findings cited", while the screen keeps the full list you can open.
+```text
+note: embedded evidence includes witness statements; consider --embed summary
+```
+
+The Hazira learning map with the sample register prints it. On a small Hazira board brief that cites three findings, the page is about 205 KB with `cited`, 168 KB with `summary` and 1.2 MB with `full`.
+
+**Print only what is cited.** In print, the evidence trail lists only the cited IDs, in the order they are cited, and it follows the pack on the same page instead of starting a new one. The findings the pack does not cite print as one line, "x of y relevant findings cited", while the screen keeps the full list you can open.
 
 When an item has a `lint_ok` (an accepted language-check exception), its reason is shown on the page, so a reader can see why the wording was kept. See [Language checks](Language-checks.md#accepting-a-hit).
 
 ## Sharing outside the organisation: `--share`
 
-*This arrives with v2.0.0-alpha.4, on [pack](commands/pack.md), [dashboard](commands/dashboard.md) and [register-xlsx](commands/register-xlsx.md), with `--names FILE` and `--orgs FILE`.*
+`--share` is a flag of [pack](commands/pack.md), [dashboard](commands/dashboard.md) and [register-xlsx](commands/register-xlsx.md), together with `--names FILE` and `--orgs FILE` (or the `PMLC_NAMES` and `PMLC_ORGS` variables).
 
 A pack or register is written for the organisation's own learning. Before anything goes to a regulator, a client, an insurer or the public, it needs a separate, masked copy. `--share` has three modes:
 
@@ -149,9 +155,20 @@ A pack or register is written for the organisation's own learning. Before anythi
 1. The file's effective status is **approved**: signed off, not edited since, and not forced to draft.
 2. Its classification is at the sharing level or wider: `external` or `public` for external sharing, `public` for public sharing.
 3. Its `legal_review` is **`cleared`**. A person with legal responsibility has read it. The coach's outputs are learning material; they create no legal privilege.
-4. The embed mode is `summary`. It is the default when sharing; an explicit `--embed cited` or `--embed full` is refused.
+4. For a pack or a dashboard, the embed mode is `summary`. It is the default when sharing; an explicit `--embed cited` or `--embed full` is refused.
 
-If any condition fails, the command lists every unmet condition, exits, and writes nothing. On Hazira the first condition can never hold, so no Hazira output can be shared this way.
+Two more conditions apply to particular commands:
+
+- **dashboard** checks the register given with `--register`. Without a register there is nothing signed off, so the copy is refused.
+- **register-xlsx** needs the workspace, to see whether the investigation is finished. It finds it when the register sits in its run's `outputs/` folder; otherwise pass `--ws`, or the copy is refused with `no workspace (pass --ws)`.
+
+If any condition fails, the command lists every unmet condition after `cannot share externally:` (or `cannot share publicly:`), exits with code 1 and writes nothing. On Hazira the first condition can never hold, so no Hazira output can be shared this way:
+
+```text
+cannot share externally: review is draft (the investigation status is in progress, no finding is marked as edited by a person); classification is "internal" (needs "external" or "public"); legal_review is not "cleared"
+```
+
+The other messages you may see after the colon are `review is reviewed (needs approved)`, `classification is "external" (needs "public")` and `--embed full is refused (use --embed summary)` (or `--embed cited`).
 
 A typical sequence, once the investigation is complete in ProbeMatrix:
 
@@ -163,29 +180,44 @@ pmlc pack <ws> <run>/outputs/board-brief.json --share external --names names.txt
 
 ### What the shared copy masks
 
-In `external` and `public` mode the copy:
+In `external` and `public` mode the copy is made from masked copies of the pack (or register) and of the workspace records it embeds. It:
 
-- replaces personal names (from `--names` or `PMLC_NAMES`) with `[name]`;
-- replaces organisation names (from `--orgs` or `PMLC_ORGS`, and names ending in Ltd, Pvt, Inc, GmbH, LLC or Limited) with `[organisation]`;
-- replaces equipment tags such as `PSV-101` with `[equipment tag]`;
-- replaces roles that point to one person (from `singleton_roles.json`) with their general label;
-- replaces owners at site-leadership and board level with the general function;
-- removes clock times (`HH:MM`);
-- coarsens exact dates to month and year, for example "September 2020";
-- drops suggested interviews, key questions and reviewers' vote reasons, and the run folder name and generation time.
+- replaces personal names with `[name]`: the names in `--names` or `PMLC_NAMES` with their common variants (surname, initials and surname, honorific and surname), and any honorific followed by a name, such as "Mr" or "Shri", even without a names file;
+- replaces organisation names with `[organisation]`: the names in `--orgs` or `PMLC_ORGS`, and any name ending in Ltd, Pvt, Inc, GmbH, LLC or Limited;
+- replaces equipment tags (letters then digits, such as `PSV-101` or `AO-101`) with `[equipment tag]`. Finding, evidence, LR and ML IDs, function IDs such as `F02` and tier IDs such as `T4` are not tags;
+- replaces roles that point to one person with their function and tier, for example "Security Guard - Gate 3" becomes "Security & Surveillance (Unresolved)". These are the roles in `singleton_roles.json`: a role with an instance number or letter (such as a gate, post, shift, desk or control room number), or the only role at its tier in Plant & Asset Leadership or Corporate & Board. Group roles such as "Control Room Operators" or "seal change crew" are never singletons;
+- replaces owners at site-leadership and board level (T4 and T5) with the function and tier;
+- removes clock times, such as "at 14:05", "14:05:30" or "1405 hrs". A ratio such as "a ratio of 1:10" is kept;
+- coarsens full dates to month and year: "2024-03-12", "12 March 2024" and "12/03/2024" all become "March 2024";
+- drops suggested interviews, key questions, causal hypotheses, evidence to collect and reviewers' vote reasons, and the run folder name and generation date;
+- in `public` mode, also drops the AI justification and the causal explanation from the embedded finding records;
+- for a register, replaces the source file name with "a ProbeMatrix investigation export".
 
-The page then says "Shared external: identifying details are masked" (or "public").
+`pack` on the investigator-coach pack writes `follow-up.json` only for the internal copy: interview plans stay with the investigation team.
+
+The page then says "Shared external: identifying details are masked" (or "Shared public: …"), and `pack` and `dashboard` print the same line when they finish. The workbook carries it as a "Sharing" row on its About sheet.
+
+Masking covers the export's own text that the page embeds. The language check covers your wording: at the external level, an organisation's name or a singleton role in the pack's own text is an error, so fix the wording before you share.
 
 ### The shared files
 
 The masked copy is written beside the internal one, so the internal copy is never overwritten:
 
-- `<pack>.external.html` and `<pack>.external.md`;
-- `<pack>.public.html` and `<pack>.public.md`.
+- `<pack>.external.html` and `<pack>.external.md`, or `<pack>.public.html` and `<pack>.public.md`;
+- `organisation-learning-map.external.html` or `organisation-learning-map.public.html`;
+- `learnings-register.external.xlsx` or `learnings-register.public.xlsx`.
+
+With `--out`, the dashboard and the workbook go exactly where you say, so choose a name that cannot overwrite the internal copy. For `pack`, `--out` is a folder and the `.external` or `.public` name is kept.
 
 ### The name guard
 
-In any mode, `pack` and `dashboard` refuse to write a page that still contains a name from your names file. They exit and write nothing. Fix the pack text, or redact the name at ingest.
+In any mode, `pack` and `dashboard` refuse to write a page that still contains a name from your names file. They exit with code 1, write nothing, and print:
+
+```text
+refused: a listed name appears in the output (<n> times); fix the pack text or use ingest --redact
+```
+
+Fix the pack text, or redact the name at ingest.
 
 ## Keeping names out from the start
 

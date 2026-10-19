@@ -59,7 +59,9 @@ These are the files in a fresh Hazira workspace after `ingest`, `profile` and `c
 | `learnings-register.xlsx` | `register-xlsx` | The workbook: Learnings Register, Recommendations, Learning Plan, Summary and About. |
 | `learnings-register.md` | learnings-register | Summary tables and the learnings in Markdown. |
 | `organisation-learning-map.html` | `dashboard` | The dashboard, with the Detailed register tab when built with `--register`. |
-| `<pack>.external.html`, `<pack>.public.html` (and `.md`) | `pack --share external` or `--share public` | Masked copies for sharing outside the organisation, from v2.0.0-alpha.4. The internal copy is kept. |
+| `<pack>.external.html`, `<pack>.public.html` (and `.md`) | `pack --share external` or `--share public` | Masked copies of a pack for sharing outside the organisation. The internal copy is kept. |
+| `organisation-learning-map.external.html`, `.public.html` | `dashboard --share external` or `--share public` | A masked copy of the learning map. It needs `--register` with a register approved for that audience. |
+| `learnings-register.external.xlsx`, `.public.xlsx` | `register-xlsx --share external` or `--share public` | A masked copy of the workbook, with a "Sharing" row on its About sheet. |
 
 A signed-off JSON file carries a `handling` block; the HTML and Markdown show it as the review line. See [Review and sharing](Review-and-sharing.md).
 
@@ -69,7 +71,7 @@ Converted files (PDF, Word, PowerPoint) are made only when you ask, with the hos
 
 | Variable | Used by | What it does |
 |---|---|---|
-| `PMLC_NAMES` | `check-language`, `check-pack`, `check-register` (and, from v2.0.0-alpha.4, `pack`, `dashboard` and `register-xlsx`) | Path to a names file used when `--names` is not given. One name per line; blank lines and lines starting with `#` are skipped. |
+| `PMLC_NAMES` | `check-language`, `check-pack`, `check-register`, `pack`, `dashboard` and `register-xlsx` | Path to a names file used when `--names` is not given. One name per line; blank lines and lines starting with `#` are skipped. |
 | `PMLC_ORGS` | the same commands | Path to an organisation names file used when `--orgs` is not given. Same format. |
 | `PMLC_UPDATE_GOLDEN` | the repository's test suite (contributors only; `tools/release.py` prints the reminder) | Set to `1` to regenerate the golden Markdown fixtures. Not used when you analyse an investigation. |
 

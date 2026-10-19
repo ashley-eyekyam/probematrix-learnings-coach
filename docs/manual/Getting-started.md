@@ -37,7 +37,7 @@ Clone the repository and run Codex inside it: Codex reads `AGENTS.md` and the sk
 
 ### Check the version
 
-Ask the agent: *"Run the Learnings Coach engine with `--version` and tell me the result."* It prints, for example, `pmlc 2.0.0a3`. This manual describes v2.0.0-alpha.4.
+Ask the agent: *"Run the Learnings Coach engine with `--version` and tell me the result."* It prints `pmlc` and the version number. This manual describes v2.0.0-alpha.4, which prints `pmlc 2.0.0a4`.
 
 ## Your first run, step by step (Hazira)
 

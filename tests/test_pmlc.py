@@ -1,6 +1,7 @@
 """Engine tests on a small synthetic export (fictional event, no real data)."""
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -529,6 +530,7 @@ def test_make_public_sample_slug(tmp_path):
     r = subprocess.run([sys.executable, str(tool), str(x), "--slug", "2024-03-20-pump-fire", "--names", str(names),
                         "--samples-root", str(root)], capture_output=True, text=True)
     assert r.returncode == 0, r.stderr + r.stdout
+    assert r.stdout.startswith("Name scan passed (optional for public-record samples, D3): 1 name(s) checked. ")
     assert (root / "2024-03-20-pump-fire" / "2024-03-20-pump-fire_probematrix-findings.xlsx").exists()
 
 
@@ -1340,6 +1342,51 @@ def test_installer_checks_python(tmp_path):
     assert r.returncode == 1
     assert "3.9" in r.stdout + r.stderr
     assert not dest.exists()
+
+
+def _tool_path(tmp_path, tools=("dirname", "basename", "mkdir", "cp", "rm")):
+    """A PATH folder holding only the shell tools install-codex.sh uses, and no python3 (ledger line 119)."""
+    bindir = tmp_path / "onlytools"
+    bindir.mkdir()
+    for t in tools:
+        src = shutil.which(t)
+        if not src:
+            pytest.skip(f"{t} not available")
+        (bindir / t).symlink_to(src)
+    return bindir
+
+
+def test_installer_without_python3(tmp_path):
+    bash = shutil.which("bash")
+    if not bash:
+        pytest.skip("bash not available")
+    dest = tmp_path / "dest"
+    env = {"PATH": str(_tool_path(tmp_path)), "CODEX_SKILLS_DIR": str(dest), "HOME": str(tmp_path)}
+    r = subprocess.run([bash, str(ROOT / "tools" / "install-codex.sh")], env=env, capture_output=True, text=True)
+    assert r.returncode == 1
+    assert "python3 was not found or is older than 3.9" in r.stderr
+    assert not dest.exists()
+
+
+def test_installer_post_copy_check_and_success(tmp_path):
+    """The installer refuses a skills folder without learnings-coach (after copying), and installs the real one."""
+    bash = shutil.which("bash")
+    if not bash or not shutil.which("python3"):
+        pytest.skip("bash or python3 not available")
+    repo = tmp_path / "repo"
+    (repo / "tools").mkdir(parents=True)
+    shutil.copy(ROOT / "tools" / "install-codex.sh", repo / "tools" / "install-codex.sh")
+    (repo / "skills" / "board-brief").mkdir(parents=True)
+    (repo / "skills" / "board-brief" / "SKILL.md").write_text("x", encoding="utf-8")
+    env = {**os.environ, "CODEX_SKILLS_DIR": str(tmp_path / "d1"), "HOME": str(tmp_path)}
+    r = subprocess.run([bash, str(repo / "tools" / "install-codex.sh")], env=env, capture_output=True, text=True)
+    assert r.returncode == 1 and "installed board-brief" in r.stdout
+    assert "learnings-coach was not copied" in r.stderr
+    env["CODEX_SKILLS_DIR"] = str(tmp_path / "d2")
+    r = subprocess.run([bash, str(ROOT / "tools" / "install-codex.sh")], env=env, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert (tmp_path / "d2" / "learnings-coach" / "scripts" / "pmlc.py").is_file()
+    assert r.stdout.strip().splitlines()[-1].startswith("Done. Skills are in")
 
 
 def _variant(tmp_path, edit):

@@ -44,7 +44,7 @@ python3 tools/make-public-sample.py samples/2020-09-24-hazira-gas-release-fire/2
 ```
 
 ```text
-Name scan passed (1 names). Kept sheets: ['Incident Summary', 'Identified Findings', 'Evidence Links', 'Causal Chain', 'Analysis Statistics']. Wrote pubsamples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx
+Name scan passed (optional for public-record samples, D3): 1 name(s) checked. Kept sheets: ['Incident Summary', 'Identified Findings', 'Evidence Links', 'Causal Chain', 'Analysis Statistics']. Wrote pubsamples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx
 ```
 
 Only publish exports of incidents that are public record and that you have the right to publish.
@@ -137,7 +137,7 @@ python3 tools/sync-wiki.py --wiki-dir DIR [--manual-dir docs/manual] [--version 
 | `--check` | none | off | Write nothing; exit 1 if anything would change. Use it in a release check |
 | `--adopt` | page names | none | Take over existing wiki pages this tool does not own, for example `--adopt Home` |
 
-The first sync into an empty wiki clone. Without `--version`, the pages name the engine's own version, the one `pmlc --version` prints (here `pmlc 2.0.0a3`), so every page starts `> Documents ProbeMatrix Learnings Coach v2.0.0a3.`:
+The first sync into an empty wiki clone. Without `--version`, the pages name the engine's own version (the one `pmlc --version` prints), so every page starts `> Documents ProbeMatrix Learnings Coach v<version>.`:
 
 ```bash
 python3 tools/sync-wiki.py --wiki-dir wiki

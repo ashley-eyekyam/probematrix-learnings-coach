@@ -9,6 +9,11 @@ Turns a learning pack JSON into the files people read:
 
 It first runs the full [check-pack](check-pack.md). If the check finds a problem, nothing is written. A pack that has not been signed off renders with a **DRAFT** label.
 
+Two flags decide what the page carries and who it is for:
+
+- `--embed` sets how much of the investigation's records the page embeds. The default, `cited`, embeds the full records only for the findings and evidence the pack cites.
+- `--share external` or `--share public` writes a separate, masked copy for people outside the organisation. It works only for an approved pack; see [Review and sharing](../Review-and-sharing.md#sharing-outside-the-organisation---share).
+
 ## When to use it
 
 After [check-pack](check-pack.md) passes. Run it again after every edit of the JSON; the HTML is rebuilt each time.
@@ -16,7 +21,8 @@ After [check-pack](check-pack.md) passes. Run it again after every edit of the J
 ## Synopsis
 
 ```text
-pmlc pack ws pack [--out OUT] [--no-md]
+pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
+          [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
 ```
 
 ## Arguments
@@ -32,6 +38,10 @@ pmlc pack ws pack [--out OUT] [--no-md]
 |---|---|---|---|
 | `--out` | folder | the run's outputs folder | Where to write the HTML and Markdown |
 | `--no-md` | none | off | Write only the HTML |
+| `--embed` | `cited`, `summary` or `full` | `cited` (`summary` when sharing outside) | How much of the investigation's records the page embeds. `cited`: full records for the cited findings and evidence; the findings the pack does not cite travel as ID, label and rating only. `summary`: as `cited`, without evidence descriptions, specific references (quotes), suggested interviews, key questions or reviewers' vote reasons. `full`: every relevant record in full, as in v0.3 |
+| `--share` | `internal`, `external` or `public` | `internal` | Who the copy is for. `external` (named people outside, such as a regulator) and `public` write a masked copy named `<pack>.external.html` or `<pack>.public.html` (and `.md`), and need an approved sign-off with that classification or wider, `legal_review` cleared and `--embed summary` |
+| `--names` | file | `$PMLC_NAMES` | A names file, one name per line (blank lines and lines starting with `#` are skipped). A shared copy masks these names. In every mode the page is refused if one of them still appears in it |
+| `--orgs` | file | `$PMLC_ORGS` | An organisation names file, one per line. A shared copy masks these names |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples
@@ -61,6 +71,58 @@ warning: no handling block: rendered as draft (internal)
 HTML written to print/board-brief.html
 ```
 
+A smaller page for an internal working group, without quotes or evidence descriptions. On this pack the page drops from about 205 KB (`cited`) to about 168 KB; with `--embed full` it is about 1.2 MB:
+
+```bash
+python3 $E pack $WS $OUT/board-brief.json --embed summary --no-md --out e-summary
+```
+
+```text
+warning: coverage: cites 3 of 308 relevant findings (under a quarter)
+warning: no handling block: rendered as draft (internal)
+HTML written to e-summary/board-brief.html
+```
+
+A copy for a regulator cannot be made from Hazira. The investigation is still in progress and no finding was edited by a person, so the pack stays a draft, and the command lists every condition it does not meet. Nothing is written:
+
+```bash
+python3 $E pack $WS $OUT/board-brief.json --share external
+```
+
+```text
+warning: coverage: cites 3 of 308 relevant findings (under a quarter)
+warning: no handling block: rendered as draft (internal)
+cannot share externally: review is draft (the investigation status is in progress, no finding is marked as edited by a person); classification is "internal" (needs "external" or "public"); legal_review is not "cleared"
+```
+
+The same pack asked for a public copy with `--embed cited` also gets the embed condition:
+
+```text
+cannot share publicly: review is draft (the investigation status is in progress, no finding is marked as edited by a person); classification is "internal" (needs "public"); legal_review is not "cleared"; --embed cited is refused (use --embed summary)
+```
+
+A shared copy that works, on a synthetic, completed investigation where a person edited a finding (`SW` and `SO` are its workspace and outputs folders; `orgs.txt` lists the fictional organisation "Acme"). First a reviewer approves the brief for external readers, with legal review cleared:
+
+```bash
+python3 $E sign-off $SW $SO/board-brief.json --role "HSE manager" --status approved --classification external --legal-review cleared --date 2026-10-19
+python3 $E pack $SW $SO/board-brief.json --share external --orgs $SO/orgs.txt
+```
+
+```text
+Signed off synth/pmlc-runs/2024-03-20-plant-pump-fire/outputs/board-brief.json: approved by HSE manager on 2026-10-19
+HTML written to synth/pmlc-runs/2024-03-20-plant-pump-fire/outputs/board-brief.external.html
+Markdown written to synth/pmlc-runs/2024-03-20-plant-pump-fire/outputs/board-brief.external.md
+Shared external: identifying details are masked
+```
+
+In that copy the export's "Pump P-101 restarted at 14:05 hrs on 2024-03-12 after the Acme Pumps Ltd seal change." reads "Pump [equipment tag] restarted on March 2024 after the [organisation] seal change.", the role "Security Guard - Gate 3" reads "Security & Surveillance (Unresolved)", and the handling line reads "Review: approved by HSE manager on October 2026 · Classification: external · Version 1.0". The shared copy has its own name, so it never overwrites the internal `board-brief.html`.
+
+Before the sign-off, the same command lists all three unmet conditions:
+
+```text
+cannot share externally: review is draft; classification is "internal" (needs "external" or "public"); legal_review is not "cleared"
+```
+
 A pack with a problem is not rendered:
 
 ```bash
@@ -78,6 +140,9 @@ warning: no handling block: rendered as draft (internal)
 - **"Nothing written."** The pack failed its check. Fix the problems listed above that line, then run pack again.
 - **The page says DRAFT.** It will until a reviewer signs it off with [sign-off](sign-off.md), and always while the investigation is in progress or no finding has been edited by a person in ProbeMatrix.
 - **Old HTML after an edit.** pack does not watch the file. Run it again after each change.
+- **"cannot share externally: …" or "cannot share publicly: …".** Each condition after the colon is one that is not met. Sign the pack off with the right classification and legal review (`sign-off --classification external --legal-review cleared`), and leave `--embed` out (or give `summary`). Edit nothing after the sign-off: any change turns the pack back into a draft.
+- **A shared copy is refused by the language check.** At the external level the check is stricter: an organisation's name or a singleton role in the pack's own text is an error. Masking covers the embedded export records, not your wording; rewrite the text with roles and functions.
+- **"refused: a listed name appears in the output".** A name from `--names` (or `PMLC_NAMES`) is still on the page. Fix the pack text, or redact the name when you ingest (`ingest --redact`).
 - **Where did the files go?** Without `--out`, into the run's outputs folder; [run-path](run-path.md) prints it.
 
 ## Related

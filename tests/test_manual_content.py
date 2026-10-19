@@ -24,8 +24,6 @@ SUBCOMMANDS = ["ingest", "profile", "classify", "select", "causal", "timeline", 
                "check-register", "check-language", "register-xlsx", "status", "run-path", "check-samples",
                "check-pack", "pack", "causal-item", "sign-off", "scan-names"]
 T13_PAGES = {"Home.md", "Commands.md", "Developer-tools.md"} | {f"commands/{c}.md" for c in SUBCOMMANDS}
-# Flags of the same alpha that land with Tasks 7 and 8, so the manual may describe them now.
-IN_FLIGHT_FLAGS = {"--embed", "--share", "--names", "--orgs"}
 # Flags of other programs the pages quote (pip).
 OTHER_FLAGS = {"--user"}
 STUB = "This page is being written."
@@ -130,7 +128,7 @@ def test_skill_page_names_its_select_filters_and_preset(skill):
 
 
 def test_no_stub_pages_left():
-    stubs = [p.relative_to(MANUAL).as_posix() for p in owned_pages() if p.is_file() and STUB in read(p)]
+    stubs = [p.relative_to(MANUAL).as_posix() for p in sorted(MANUAL.rglob("*.md")) if STUB in read(p)]
     assert not stubs, stubs
 
 
@@ -231,15 +229,48 @@ def test_owned_page_links_resolve():
     assert not bad, bad
 
 
+FLAG_RX = re.compile(r"(?<![\w-])--[a-z][a-z-]*[a-z]")
+# Ways a line names the subcommand its flags belong to: a command line, a link to its page, or a code span that
+# starts with its name (`select --tier T2`).
+CMD_RXS = [re.compile(r"(?:\$E|\bpmlc(?:\.py)?)\s+([a-z][a-z-]*)"), re.compile(r"\(\.?\.?/?commands/([a-z-]+)\.md"),
+           re.compile(r"`([a-z][a-z-]*)[ `]")]
+
+
+def line_flag_problems(line: str, flags: dict) -> list:
+    """Flags on one line that are not engine flags; when the line names subcommands, flags that none of them has."""
+    every = set().union(*flags.values()) | OTHER_FLAGS | {"--help", "--version"}
+    named = {c for rx in CMD_RXS for c in rx.findall(line) if c in flags}
+    allowed = set().union(*(flags[c] for c in named)) | OTHER_FLAGS | {"--help", "--version"} if named else every
+    out = []
+    for f in sorted(set(FLAG_RX.findall(line))):
+        if f not in every:
+            out.append(f)
+        elif f not in allowed:
+            out.append(f"{f} (not a flag of {', '.join(sorted(named))})")
+    return out
+
+
 def test_owned_pages_name_only_real_flags():
-    """Every `--flag` written on these pages is an engine flag (or one of the in-flight sharing flags)."""
-    real = set().union(*parser_flags().values()) | IN_FLIGHT_FLAGS | OTHER_FLAGS | {"--help", "--version"}
-    bad = []
+    """Every `--flag` written on these pages is an engine flag. On a line that names its subcommand (a command
+    line, a link to the command's page, or a code span starting with its name), the flag belongs to that
+    subcommand, or to one of them when the line names several."""
+    flags, bad = parser_flags(), []
     for p in owned_pages():
-        for f in set(re.findall(r"(?<![\w-])--[a-z][a-z-]*[a-z]", read(p))):
-            if f not in real:
-                bad.append(f"{p.relative_to(MANUAL).as_posix()}: {f}")
-    assert not bad, sorted(bad)
+        for n, line in enumerate(read(p).splitlines(), 1):
+            bad += [f"{p.relative_to(MANUAL).as_posix()}:{n}: {x}" for x in line_flag_problems(line, flags)]
+    assert not bad, bad
+
+
+@pytest.mark.parametrize("line,bad", [
+    ("`select --tier T2`", []),
+    ("`select --share external`", ["--share (not a flag of select)"]),
+    ("[pack](commands/pack.md) takes `--embed summary`", []),
+    ("[register-xlsx](commands/register-xlsx.md) takes `--embed summary`", ["--embed (not a flag of register-xlsx)"]),
+    ("Use `--nope`.", ["--nope"]),
+    ("Both take `--share`: [pack](commands/pack.md) and [select](commands/select.md).", []),
+])
+def test_line_flag_problems(line, bad):
+    assert line_flag_problems(line, parser_flags()) == bad
 
 
 def test_owned_pages_use_no_blame_words():

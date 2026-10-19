@@ -53,7 +53,7 @@ pmlc pack <ws> <run>/outputs/emergency-response-learnings.json
 
 One response learning could rest on the evidence that the emergency isolation valves had "no remote operation from control room during emergency" (FND-7D28BE30, EVD-3932).
 
-These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, they will be higher (the overlay figures above).
+These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, they will be higher, as the overlay figures in the worked example above show (F09b 16 to 43).
 
 ## Related skills
 

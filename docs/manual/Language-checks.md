@@ -53,10 +53,10 @@ The examples below were run through `check-language` on the Hazira workspace.
 
 Looks for a personal name: an honorific followed by a name or initials (Mr, Mrs, Ms, Dr, Shri, Smt and others), any entry in your names file, and two capitalised words together when neither is a known word: a role, a function, an HFACS term, a month or day, or a word from the incident's title or location. Learnings use roles only.
 
-> Example of wording the check flags: "Shri R. K. Sharma replaced the gasket." and "John Smith released the meter."
+> Example of wording the check flags (invented names, about no one in the Hazira enquiry): "Shri A. B. Example replaced the gasket." and "Jane Placeholder released the meter."
 
 ```text
-ERROR JC1 $.sections[0].items[0].text: "Shri R. K. Sharma": use the role, not the person, e.g. "the fitter" or "the shift supervisor"; if this is not a person, add lint_ok with the reason
+ERROR JC1 $.sections[0].items[0].text: "Shri A. B. Example": use the role, not the person, e.g. "the fitter" or "the shift supervisor"; if this is not a person, add lint_ok with the reason
 ```
 
 **Rewrite:** "The fitter replaced the gasket." Two capitalised words that are not a person, such as the name of a pipeline header, can be accepted with `lint_ok` (see below). Ordinary safety words such as "Control Room Operator" or "Hazira Gas Terminal" pass without one.

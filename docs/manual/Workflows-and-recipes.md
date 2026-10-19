@@ -51,7 +51,7 @@ Then open `frontline-learning-cards.html` and use the page's **Print** button (o
 
 - Each card says what the organisation is changing. Not one ends with "be careful" or "stay vigilant": in a frontline pack the language check treats that as an error.
 - No card singles out "the" operator of a small crew.
-- In print, each card stays on one page and carries the status line. From v2.0.0-alpha.4 the printed evidence trail lists only the cited records, and the uncovered findings print as one line, "x of y relevant findings cited", with the pack's own numbers.
+- In print, each card stays on one page and carries the status line. The printed evidence trail lists only the cited records and follows on the same page, and the uncovered findings print as one line, "x of y relevant findings cited", with the pack's own numbers.
 - Consult the people involved before wide release.
 
 ## A learnings register to Excel
@@ -215,7 +215,7 @@ pmlc status <ws>
 
 ## Make a version safe to share outside
 
-**Goal.** A copy of an approved pack, dashboard or register for a regulator, a client or the public, with identifying details masked. This arrives in v2.0.0-alpha.4.
+**Goal.** A copy of an approved pack, dashboard or register for a regulator, a client or the public, with identifying details masked.
 
 **Prompt.**
 
@@ -231,10 +231,11 @@ pmlc pack <ws> <run>/outputs/board-brief.json --share external --names names.txt
 
 **What to check.**
 
-- The pack must be approved, classified `external` or `public`, and have `legal_review` set to `cleared`. Otherwise the command refuses, lists every unmet condition and writes nothing.
+- The pack must be approved, classified `external` or `public`, and have `legal_review` set to `cleared`. Otherwise the command refuses, lists every unmet condition and writes nothing, for example `cannot share externally: classification is "internal" (needs "external" or "public"); legal_review is not "cleared"`. A Hazira pack is always refused, because the investigation is unfinished.
 - Sharing outside uses `--embed summary`. An explicit `--embed cited` or `--embed full` is refused.
-- The output is a separate file, `board-brief.external.html`, so the internal copy is kept.
-- Read the masked copy: names, organisations, equipment tags, single-holder roles, clock times and exact dates should all be gone or generalised. Details in [Review and sharing](Review-and-sharing.md).
+- The output is a separate file, `board-brief.external.html` (and `.md`), so the internal copy is kept. The command ends with `Shared external: identifying details are masked`.
+- The language check runs at the external level first, so a name, an organisation or a singleton role in the pack's own wording stops the copy. Rewrite it with roles and functions.
+- Read the masked copy: names, organisations, equipment tags, singleton roles, clock times and full dates should all be gone or generalised. Details in [Review and sharing](Review-and-sharing.md).
 
 ## Redact names at ingest
 
@@ -247,7 +248,7 @@ pmlc pack <ws> <run>/outputs/board-brief.json --share external --names names.txt
 **Engine commands.**
 
 ```bash
-# names-map.json:  {"R. K. Sharma": "shift engineer", "Smt. Patel": "control room operator"}
+# names-map.json (fictional names):  {"A. B. Example": "shift engineer", "Jane Placeholder": "control room operator"}
 pmlc ingest <export.xlsx> --slug <site>-<event> --redact names-map.json
 pmlc scan-names names.txt <run>/outputs --variants
 ```

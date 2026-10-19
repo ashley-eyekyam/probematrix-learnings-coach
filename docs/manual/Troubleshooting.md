@@ -64,7 +64,7 @@ No valid incident date from <source>: <value>. Pass --date YYYY-MM-DD.
 
 **Why.** The run folder for this date and slug already holds an analysis, and the engine will not overwrite it by accident.
 
-**What to do.** If you are loading a new export of the same investigation, add `--force`. It replaces the findings, evidence and incident files and keeps `clusters.json` and `role_overrides.json`. Then run `classify` again and check `pmlc status <ws>`. If it is a different investigation, use a different slug.
+**What to do.** If you are loading a new export of the same investigation, run it again as `ingest --force`. It replaces the findings, evidence and incident files and keeps `clusters.json` and `role_overrides.json`. Then run `classify` again and check `pmlc status <ws>`. If it is a different investigation, use a different slug.
 
 ## The file is a CAPA Planner export
 
@@ -290,7 +290,7 @@ edited since sign-off: status is draft until signed off again
 --redact: expected a JSON object of "name": "role"
 ```
 
-**Why.** `ingest --redact` needs a JSON object whose keys are names and whose values are the roles to use instead, such as `{"R. K. Sharma": "shift engineer"}`. A list, or a value that is not text, is refused.
+**Why.** `ingest --redact` needs a JSON object whose keys are names and whose values are the roles to use instead, such as `{"Jane Placeholder": "the shift supervisor"}` (a fictional name). A list, or a value that is not text, is refused.
 
 **What to do.** Rewrite the file in that shape.
 

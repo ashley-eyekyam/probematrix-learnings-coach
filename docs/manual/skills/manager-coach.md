@@ -53,7 +53,7 @@ A summary table closes the pack: function, top learning, top recommendation and 
 
 `select --tier T3 --brief` returned 211 findings; `--tier T3 --level 3 4 --top-rated` returned 60; and `--relation owner absent --brief` returned 75. `interfaces --top 15` lists the seams to agree between managers; the strongest is between Operations & Control Room and Mechanical Maintenance.
 
-These counts are from the base classification, before the resolution pass. After you place the remaining roles they will be somewhat higher, most for T3 (in a trial resolution pass on Hazira: T1 222→231, T2 237→238, T3 211→257).
+These counts are from the base classification, before the resolution pass. After you place the remaining roles they will be higher, most for T3 (in one trial pass on Hazira, roughly T1 222→231, T2 237→238, T3 211→257; your numbers depend on how you place roles).
 
 ## Related skills
 

@@ -53,7 +53,7 @@ If you ask for a translation, the text is translated and every ID stays the same
 
 `select --tier T1 --brief` returned 222 findings; `--tier T1 --level 1 2` returned 94; and `--tier T1 --top-rated` returned 83. From these the agent picks five to eight learnings a crew member can notice or act on, such as a test after a gasket change that must not be skipped (FND-3AB996FC). It leaves out learnings only managers can act on.
 
-These counts are from the base classification, before the resolution pass. After you place the remaining roles they will be somewhat higher, most for T3 (in a trial resolution pass on Hazira: T1 222→231, T2 237→238, T3 211→257).
+These counts are from the base classification, before the resolution pass. After you place the remaining roles they will be higher, most for T3 (in one trial pass on Hazira, roughly T1 222→231, T2 237→238, T3 211→257; your numbers depend on how you place roles).
 
 ## Related skills
 
