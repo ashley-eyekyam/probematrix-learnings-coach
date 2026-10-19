@@ -88,4 +88,20 @@ def test_assets_are_inline_safe():
 @pytest.mark.skipif(not NODE, reason="node not installed")
 def test_detail_js_loads_without_dom():
     out = node(f"const d = require({json.dumps(str(DETAIL_JS))}); console.log(Object.keys(d).sort().join(','));")
-    assert out.strip() == "evidenceIdsFor,lensSpec,lensesFor,matches,parseHash,sortEntries,sortFindings,summarise,tokenize"
+    assert out.strip() == "evidenceIdsFor,lensSpec,lensesFor,matches,parseHash,provenance,sortEntries,sortFindings,summarise,tokenize"
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_detail_js_provenance_labels():
+    node(f"""
+const assert = require('assert');
+const d = require({json.dumps(str(DETAIL_JS))});
+const brand = {{ai_justification_label:'AI justification (ProbeMatrix)', ai_chip:'AI-drafted, not human-edited',
+  export_banner:"This is the investigation's AI-drafted wording, shown as evidence; it is not the coach's learning."}};
+const p = d.provenance({{id:'FND-A', justification:'valve was manual', user_edited:''}}, brand);
+assert.deepStrictEqual(p, {{banner: brand.export_banner, chip: brand.ai_chip, label: brand.ai_justification_label}});
+assert.strictEqual(d.provenance({{user_edited:'no'}}, brand).chip, brand.ai_chip);
+assert.strictEqual(d.provenance({{}}, brand).chip, brand.ai_chip);
+assert.strictEqual(d.provenance({{user_edited:'Yes'}}, brand).chip, null);
+assert.strictEqual(d.provenance({{user_edited:''}}, undefined).label, 'Justification');
+""")

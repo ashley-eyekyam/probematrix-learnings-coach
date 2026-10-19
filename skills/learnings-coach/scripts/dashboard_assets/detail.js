@@ -211,6 +211,14 @@
     return list.length ? list : Object.keys(e.tier_messages || {}).sort();
   }
 
+  /* The AI-provenance labels of one finding record: the export-language banner, the justification label, and the
+     AI chip unless the export marks the finding edited by a person. */
+  function provenance(f, brand) {
+    var b = brand || {}, ue = String((f && f.user_edited) || "").trim().toLowerCase();
+    return {banner: b.export_banner || null, chip: ue === "" || ue === "no" ? b.ai_chip || null : null,
+            label: b.ai_justification_label || "Justification"};
+  }
+
   function findingNode(fid, lr) {
     var f = D.findings[fid];
     if (!f) return h("p", {class: "missing", "data-ref": fid}, [h("span", {class: "id", text: fid}), " not in workspace"]);
@@ -218,6 +226,7 @@
     var down = votes.some(function (v) { return DOWN_RX.test(String(v.vote || "")); });
     var also = (D.byFinding[fid] || []).filter(function (x) { return x !== lr; });
     var extra = Object.keys(f).filter(function (k) { return FND_SHOWN.indexOf(k) < 0; });
+    var pv = provenance(f, D.brand);
     return h("details", {class: "fnd", "data-ref": fid}, [
       h("summary", null, [
         h("span", {class: "id", text: fid}),
@@ -226,10 +235,12 @@
         f.rating !== null && f.rating !== undefined ? chip("rating " + f.rating) : null,
         f.classification ? chip(f.classification) : null,
         down ? chip("reviewer downgrade vote", "warn") : null,
+        pv.chip ? chip(pv.chip, "ai") : null,
         h("span", {class: "lab", text: f.label || ""})]),
       h("div", {class: "fbody"}, [
+        pv.banner ? h("p", {class: "export-banner", text: pv.banner}) : null,
         f.short ? kv("Summary", f.short) : null,
-        f.justification ? kv("Justification", f.justification) : null,
+        f.justification ? kv(pv.label, f.justification) : null,
         f.causal ? kv("Causal reasoning", f.causal) : null,
         (f.roles || []).length ? kv("Roles", f.roles.join("; ")) : null,
         (cl.F || []).length ? kv("Entities", cl.F.map(entityName).join("; ")) : null,
@@ -550,7 +561,8 @@
   }
 
   var API = {tokenize: tokenize, parseHash: parseHash, lensSpec: lensSpec, lensesFor: lensesFor, matches: matches,
-             sortEntries: sortEntries, sortFindings: sortFindings, summarise: summarise, evidenceIdsFor: evidenceIdsFor};
+             sortEntries: sortEntries, sortFindings: sortFindings, summarise: summarise, evidenceIdsFor: evidenceIdsFor,
+             provenance: provenance};
   if (typeof module !== "undefined" && module.exports) { module.exports = API; return; }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();
