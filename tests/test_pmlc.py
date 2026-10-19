@@ -1440,11 +1440,14 @@ def test_presets_match_skill_lines():
 def test_skill_select_lines_parsing():
     t = ('`PMLC select <ws> --code "<code>"`\n'
          'PMLC select <ws> --text "a|b c" --brief   # why\n'
+         'PMLC select <ws> --text "x # y" --max 3  # quoted hash kept\n'
          'PMLC select <ws> --top-rated --format json --out <ws>/top.json\n'
          'see (`PMLC select <ws> --level 4`) now\n'
          'PMLC select <ws> --entity <F-id> --brief\n')
-    assert pmlc.skill_select_lines(t) == [["--text", "a|b c", "--brief"], ["--top-rated", "--format", "json"],
-                                          ["--level", "4"]]
+    assert pmlc.skill_select_lines(t) == [["--text", "a|b c", "--brief"], ["--text", "x # y", "--max", "3"],
+                                          ["--top-rated", "--format", "json"], ["--level", "4"]]
+    with pytest.raises(ValueError, match='No closing quotation in: PMLC select <ws> --text "open'):
+        pmlc.skill_select_lines('PMLC select <ws> --text "open --brief\n')
 
 
 def test_preset_runs(ws):
@@ -1459,7 +1462,8 @@ def test_preset_runs(ws):
 
 def test_preset_out_and_unknown(ws, tmp_path):
     f = tmp_path / "p.md"
-    run("select", str(ws), "--preset", "frontline-learning-cards", "--out", str(f), "--format", "json")
+    out = run("select", str(ws), "--preset", "frontline-learning-cards", "--out", str(f), "--format", "json")
+    assert out.strip() == f"Wrote 3 preset bundle(s) to {f}"
     assert f.read_text().count("# Preset frontline-learning-cards:") == 3
     assert "Unknown preset skill" in run_fail("select", str(ws), "--preset", "nope").stderr
     assert "Unknown preset" in run_fail("select", str(ws), "--preset", "manager-coach:nope").stderr
@@ -1511,12 +1515,14 @@ _NUMERIC_FLAGS = {"--level", "--top", "--max", "--min-rating", "--per-date", "--
 
 def _skill_argv(line: str) -> list[str]:
     import shlex
-    line = re.sub(r"\s+#.*$", "", line.strip())
-    line = re.sub(r"\[(--[^\]]*)\]", r"\1", line)  # [--opt value] marks an optional part
+    line = re.sub(r"\[(--[^\]]*)\]", r"\1", line.strip())  # [--opt value] marks an optional part
     flags = "|".join(re.escape(f) for f in sorted(_NUMERIC_FLAGS))
     line = re.sub(rf"({flags})(\s+)<[^>]*>", r"\1\g<2>1", line)
     line = re.sub(r"(--format\s+)<[^>]*>", r"\1md", line)
-    return shlex.split(re.sub(r"<[^>]*>", "X", line))[1:]
+    lex = shlex.shlex(re.sub(r"<[^>]*>", "X", line), posix=True)  # a quoted "#" is not a comment
+    lex.whitespace_split = True
+    lex.commenters = "#"
+    return list(lex)[1:]
 
 
 def _skill_command_lines():
@@ -1548,11 +1554,21 @@ def test_skill_commands_parse(capsys):
         except SystemExit:
             err = capsys.readouterr().err.strip().splitlines()
             pytest.fail(f"{md.relative_to(ROOT)}:{n}: {line.strip()}\n  {err[-1] if err else 'parse error'}")
-    assert seen > 30
+    assert seen > 98  # 103 command lines when the floor was set (Phase 2 Task 13), minus 5
 
 
 def test_skill_argv_placeholders():
     assert _skill_argv("PMLC select <ws> --level <n> --format <f>  # c") == ["select", "X", "--level", "1", "--format", "md"]
+    assert _skill_argv('PMLC select <ws> --text "a # b" --brief  # c') == ["select", "X", "--text", "a # b", "--brief"]
+
+
+def test_equals_form_validated(ws):
+    """The --flag=value form is checked like --flag value: refused next to --preset, and choices still apply."""
+    r = subprocess.run([sys.executable, str(PMLC), "select", str(ws), "--preset", "supervisor-coach", "--tier=T9"],
+                       capture_output=True, text=True)
+    assert r.returncode == 2 and "--preset cannot be combined with filters" in r.stderr
+    r = subprocess.run([sys.executable, str(PMLC), "select", str(ws), "--entity-mode=some"], capture_output=True, text=True)
+    assert r.returncode == 2 and "invalid choice" in r.stderr
 
 
 # ----------------------------------------------------------------------------- UAT inputs (tools/make-uat-inputs.py)

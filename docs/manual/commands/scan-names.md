@@ -1,0 +1,103 @@
+# scan-names
+
+## What it does
+
+Searches files for a list of **personal names**, as a de-identification check before anything leaves the team. It reads text files, JSON, Markdown and HTML, and inside Word, Excel and PowerPoint files (including comments and author fields), and PDF metadata when `pdfinfo` is installed. Every hit is printed with the file, the line and the words around it.
+
+The goal is **zero hits**. The exit code says how it went:
+
+| Code | Meaning |
+|---|---|
+| 0 | No hits, and every file could be read |
+| 1 | At least one hit |
+| 2 | No hits, but some files could not be read, so zero hits does not cover them |
+
+## When to use it
+
+Before sharing any output outside the people who already know the names, and before publishing a sample. Use it on the outputs folder and on any PDF text you have extracted.
+
+## Synopsis
+
+```text
+pmlc scan-names names paths [paths ...] [--show SHOW] [--variants] [--patterns]
+```
+
+## Arguments
+
+| Argument | What it is |
+|---|---|
+| `names` | A text file with one name per line. Blank lines and lines starting with `#` are skipped, so you can add comments. Keep it outside the repository |
+| `paths` | One or more files or folders to scan. Folders are scanned with everything inside them |
+
+## Flags
+
+| Flag | Value | Default | What it does |
+|---|---|---|---|
+| `--show` | number | 50 | Print at most this many hits. The count at the end is always the full number |
+| `--variants` | none | off | Also match each name's surname, initial and surname, and honorific and surname ("Sharma", "R. Sharma", "Shri Sharma") |
+| `--patterns` | none | off | Also flag e-mail addresses, phone-like numbers and staff-number patterns. An aid only: it gives false hits (dates and long record numbers look like phone numbers) and is not proof of de-identification |
+| `-h`, `--help` | none | | Show the flags and stop |
+
+## Examples
+
+A names file (fictional names, for the example):
+
+```text
+# people named in the enquiry report
+R. K. Sharma
+```
+
+The Hazira outputs, which name roles only:
+
+```bash
+python3 $E scan-names names.txt $OUT --variants
+```
+
+```text
+
+0 hit(s).
+```
+
+A test copy of a pack paragraph that names a person:
+
+```bash
+python3 $E scan-names names.txt lint-demo.json --variants
+```
+
+```text
+HIT lint-demo.json:40: 'R. K. Sharma' … '     "text": "Shri R. K. Sharma was careless and should be disciplined for the re'
+
+1 hit(s).
+```
+
+With `--patterns`, the Hazira outputs give many false hits, which shows why it is only an aid:
+
+```bash
+python3 $E scan-names names.txt $OUT --variants --patterns
+```
+
+```text
+HIT [pattern:phone] hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.html:118: '2020-09-24' … 'm">Board and its safety committee · Hazira 2020 · 2020-09-24 · run 2020-09-24-hazira-gas-release-fire · genera'
+…
+HIT [pattern:phone] hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.html:127: '3800419840' … 'E93</button> SAP notification closure oversight - 3800419840 left open · rating 3 · L3 · not cited in this pac'
+…
+HIT [pattern:email] hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.html:128: 'ashley@eyekyam.com' … 'an-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com</footer>'
+…
+225 hit(s).
+```
+
+The dates, the maintenance notification number and the ProbeMatrix contact address are not personal data. Read each pattern hit; do not treat the count as a score.
+
+## Common problems
+
+- **"Names file is empty."** The file has only comments or blank lines.
+- **"… file(s) not scanned (this type cannot be read)".** Exit code 2. The list names them. Extract their text (for a PDF: `pdftotext -layout report.pdf report.txt`) and scan the text file.
+- **"note: pdfinfo not found: PDF metadata not checked".** Install poppler-utils to check PDF metadata, or extract the text as above.
+- **A hit inside a longer word.** Names are matched as whole words, but a common surname can still match an ordinary word or place. Read the context printed with each hit.
+- **Zero hits is not the whole check.** A person can be identified by a role only one person holds, a date and a shift. [check-language](check-language.md) (`check-language --share external`) warns about some of these.
+
+## Related
+
+- [ingest](ingest.md) with `ingest --redact` replaces names while reading the export.
+- [check-language](check-language.md) catches names and honorifics in packs and registers.
+- [Review and sharing](../Review-and-sharing.md) and [Developer tools](../Developer-tools.md) (`tools/make-public-sample.py`).
