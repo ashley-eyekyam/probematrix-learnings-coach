@@ -120,3 +120,99 @@ def test_grade_fails_and_ids_force(tmp_path):
 def test_grade_needs_a_run_folder(tmp_path):
     r = runner("grade", str(tmp_path / "nope"))
     assert r.returncode != 0 and "workspace" in r.stderr
+
+
+def _one_eval(tmp_path, exps):
+    data = {"skill_name": "probematrix-learnings-coach", "evals": [
+        {"id": 7, "owner": "supervisor-coach", "skill": "supervisor-coach", "kind": "trigger", "prompt": "p",
+         "files": [], "expectations": exps}]}
+    f = tmp_path / "evals-one.json"
+    f.write_text(json.dumps(data))
+    return f
+
+
+def test_language_clean_expectation(tmp_path):
+    rd = _run_folder(tmp_path)
+    f = _one_eval(tmp_path, [{"type": "language_clean", "pack": "supervisor-coach"}])
+    r = runner("grade", str(rd), "--file", str(f))
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "language_clean supervisor-coach | pass" in r.stdout
+    pack = json.loads((rd / "outputs" / "supervisor-coach.json").read_text(encoding="utf-8"))
+    pack["bottom_line"] = "John Smith was careless and should be disciplined."
+    (rd / "outputs" / "supervisor-coach.json").write_text(json.dumps(pack), encoding="utf-8")
+    r = runner("grade", str(rd), "--file", str(f))
+    assert r.returncode == 1 and "language_clean supervisor-coach | fail" in r.stdout
+
+
+def test_pack_absent_expectation(tmp_path):
+    rd = _run_folder(tmp_path)
+    f = _one_eval(tmp_path, [{"type": "pack_absent", "pack": "board-brief"},
+                             {"type": "pack_absent", "pack": "supervisor-coach"}])
+    r = runner("grade", str(rd), "--file", str(f), "--ids", "7")
+    assert "pack_absent board-brief | pass" in r.stdout
+    assert "pack_absent supervisor-coach | fail" in r.stdout and r.returncode == 1
+
+
+def test_card_fields_expectation(tmp_path):
+    rd = _run_folder(tmp_path)
+    out = rd / "outputs"
+    card = {"kind": "card", "title": "t", "why_made_sense": "w", "organisation_changing": "o"}
+    pack = {"sections": [{"id": "c", "heading": "Cards", "items": [card, dict(card)]}]}
+    (out / "cards-ok.json").write_text(json.dumps(pack), encoding="utf-8")
+    del pack["sections"][0]["items"][1]["organisation_changing"]
+    (out / "cards-bad.json").write_text(json.dumps(pack), encoding="utf-8")
+    (out / "cards-none.json").write_text(json.dumps({"sections": []}), encoding="utf-8")
+    fields = ["why_made_sense", "organisation_changing"]
+    f = _one_eval(tmp_path, [{"type": "card_fields", "pack": p, "fields": fields}
+                             for p in ("cards-ok", "cards-bad", "cards-none")])
+    r = runner("grade", str(rd), "--file", str(f), "--ids", "7")
+    assert "card_fields cards-ok | pass" in r.stdout
+    assert "card_fields cards-bad | fail: 1 of 2 cards lack organisation_changing" in r.stdout
+    assert "card_fields cards-none | fail: no cards" in r.stdout
+
+
+def test_grade_zero_outputs_fails(tmp_path):
+    rd = _run_folder(tmp_path)
+    (rd / "outputs" / "supervisor-coach.json").unlink()
+    r = runner("grade", str(rd), "--file", str(_evals_file(tmp_path, {"tiers": ["T2"]})))
+    assert r.returncode == 1 and "no outputs graded" in r.stdout
+
+
+def test_grader_survives_bad_pack(tmp_path):
+    rd = _run_folder(tmp_path)
+    f = _evals_file(tmp_path, {"tiers": ["T2"]})
+    p = rd / "outputs" / "supervisor-coach.json"
+    for text in ("[1, 2]", json.dumps({"scope": "T2", "sections": "x"})):
+        p.write_text(text, encoding="utf-8")
+        r = runner("grade", str(rd), "--file", str(f))
+        assert "Traceback" not in r.stderr, r.stderr
+        assert r.returncode == 1
+        assert "| 7 | supervisor-coach | scope_equals supervisor-coach | fail" in r.stdout
+        assert "| 7 | supervisor-coach | coverage_min supervisor-coach >= 0.25 | fail" in r.stdout
+
+
+def test_check_enforces_owner_and_files(tmp_path):
+    sample = json.loads(EVALS.read_text(encoding="utf-8"))["sample"]
+
+    def ev(i, **kw):
+        base = {"id": i, "owner": "board-brief", "skill": "board-brief", "kind": "trigger", "prompt": "p",
+                "files": [sample], "expectations": [{"type": "routes_to", "skill": "board-brief"}]}
+        base.update(kw)
+        return base
+    bad = {"skill_name": "probematrix-learnings-coach", "sample": sample, "evals": [
+        ev(1, skill="manager-coach"),
+        ev(2, expectations=[{"type": "routes_to", "skill": "manager-coach"}]),
+        ev(3, files=[]),
+        ev(4, kind="no-trigger", skill=None, not_skill="board-brief", expectations=[]),
+        ev(5, files=[str((ROOT / sample).resolve())]),
+        ev(6, prompt="Use /home/someone/export.xlsx please"),
+    ]}
+    f = tmp_path / "evals.json"
+    f.write_text(json.dumps(bad))
+    r = runner("check", "--file", str(f))
+    out = r.stdout + r.stderr
+    for msg in ["eval 1: a trigger eval's skill must equal its owner",
+                "eval 1: routes_to must name the eval's skill", "eval 2: routes_to must name the eval's skill",
+                "eval 3: a trigger eval needs files", "eval 4: a no-trigger eval has no files",
+                "eval 5: files: absolute path", "eval 6: prompt: absolute path"]:
+        assert msg in out, msg

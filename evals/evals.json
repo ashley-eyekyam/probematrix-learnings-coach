@@ -21,6 +21,10 @@
      "pack": "auditor-assurance-pack"
     },
     {
+     "type": "language_clean",
+     "pack": "auditor-assurance-pack"
+    },
+    {
      "type": "scope_equals",
      "pack": "auditor-assurance-pack",
      "scope": {
@@ -77,6 +81,10 @@
      "pack": "auditor-assurance-pack"
     },
     {
+     "type": "language_clean",
+     "pack": "auditor-assurance-pack"
+    },
+    {
      "type": "routes_to",
      "skill": "auditor-assurance-pack"
     }
@@ -98,6 +106,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "barrier-learnings"
+    },
+    {
+     "type": "language_clean",
      "pack": "barrier-learnings"
     },
     {
@@ -153,6 +165,10 @@
      "pack": "barrier-learnings"
     },
     {
+     "type": "language_clean",
+     "pack": "barrier-learnings"
+    },
+    {
      "type": "routes_to",
      "skill": "barrier-learnings"
     }
@@ -174,6 +190,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "board-brief"
+    },
+    {
+     "type": "language_clean",
      "pack": "board-brief"
     },
     {
@@ -233,6 +253,10 @@
      "pack": "board-brief"
     },
     {
+     "type": "language_clean",
+     "pack": "board-brief"
+    },
+    {
      "type": "routes_to",
      "skill": "board-brief"
     }
@@ -254,6 +278,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "causal-map"
+    },
+    {
+     "type": "language_clean",
      "pack": "causal-map"
     },
     {
@@ -302,6 +330,14 @@
      "pack": "causal-map"
     },
     {
+     "type": "language_clean",
+     "pack": "causal-map"
+    },
+    {
+     "type": "pack_absent",
+     "pack": "interface-learnings"
+    },
+    {
      "type": "routes_to",
      "skill": "causal-map"
     }
@@ -323,6 +359,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "dossier-F02"
+    },
+    {
+     "type": "language_clean",
      "pack": "dossier-F02"
     },
     {
@@ -380,6 +420,10 @@
      "pack": "dossier-F02"
     },
     {
+     "type": "language_clean",
+     "pack": "dossier-F02"
+    },
+    {
      "type": "routes_to",
      "skill": "cluster-learning-dossier"
     }
@@ -401,6 +445,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "emergency-response-learnings"
+    },
+    {
+     "type": "language_clean",
      "pack": "emergency-response-learnings"
     },
     {
@@ -458,6 +506,10 @@
      "pack": "emergency-response-learnings"
     },
     {
+     "type": "language_clean",
+     "pack": "emergency-response-learnings"
+    },
+    {
      "type": "routes_to",
      "skill": "emergency-response-learnings"
     }
@@ -479,6 +531,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "engineering-integrity-learnings"
+    },
+    {
+     "type": "language_clean",
      "pack": "engineering-integrity-learnings"
     },
     {
@@ -536,6 +592,10 @@
      "pack": "engineering-integrity-learnings"
     },
     {
+     "type": "language_clean",
+     "pack": "engineering-integrity-learnings"
+    },
+    {
      "type": "routes_to",
      "skill": "engineering-integrity-learnings"
     }
@@ -560,6 +620,10 @@
      "pack": "frontline-learning-cards"
     },
     {
+     "type": "language_clean",
+     "pack": "frontline-learning-cards"
+    },
+    {
      "type": "scope_equals",
      "pack": "frontline-learning-cards",
      "scope": {
@@ -572,6 +636,14 @@
      "type": "coverage_min",
      "pack": "frontline-learning-cards",
      "ratio": 0.25
+    },
+    {
+     "type": "card_fields",
+     "pack": "frontline-learning-cards",
+     "fields": [
+      "why_made_sense",
+      "organisation_changing"
+     ]
     },
     {
      "type": "routes_to",
@@ -598,6 +670,10 @@
      "pack": "frontline-learning-cards"
     },
     {
+     "type": "language_clean",
+     "pack": "frontline-learning-cards"
+    },
+    {
      "type": "scope_equals",
      "pack": "frontline-learning-cards",
      "scope": {
@@ -610,6 +686,14 @@
      "type": "coverage_min",
      "pack": "frontline-learning-cards",
      "ratio": 0.25
+    },
+    {
+     "type": "card_fields",
+     "pack": "frontline-learning-cards",
+     "fields": [
+      "why_made_sense",
+      "organisation_changing"
+     ]
     },
     {
      "type": "routes_to",
@@ -652,6 +736,18 @@
      "pack": "frontline-learning-cards"
     },
     {
+     "type": "language_clean",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "card_fields",
+     "pack": "frontline-learning-cards",
+     "fields": [
+      "why_made_sense",
+      "organisation_changing"
+     ]
+    },
+    {
      "type": "routes_to",
      "skill": "frontline-learning-cards"
     }
@@ -673,6 +769,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "interface-learnings"
+    },
+    {
+     "type": "language_clean",
      "pack": "interface-learnings"
     },
     {
@@ -721,6 +821,10 @@
      "pack": "interface-learnings"
     },
     {
+     "type": "language_clean",
+     "pack": "interface-learnings"
+    },
+    {
      "type": "routes_to",
      "skill": "interface-learnings"
     }
@@ -742,6 +846,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "investigator-coach"
+    },
+    {
+     "type": "language_clean",
      "pack": "investigator-coach"
     },
     {
@@ -790,6 +898,10 @@
      "pack": "investigator-coach"
     },
     {
+     "type": "language_clean",
+     "pack": "investigator-coach"
+    },
+    {
      "type": "routes_to",
      "skill": "investigator-coach"
     }
@@ -800,7 +912,7 @@
    "owner": "learning-clusters",
    "skill": "learning-clusters",
    "kind": "trigger",
-   "prompt": "Classify every finding in this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) by department, the level that must learn and the role's relation to the factor, and resolve any roles the rules can't place.",
+   "prompt": "Sort every finding in this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) by department and by the level of the organisation that has to learn from it, and show how each role relates to the factor. Where the usual rules cannot place a role, help me decide where it belongs.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -811,6 +923,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "learning-clusters"
+    },
+    {
+     "type": "language_clean",
      "pack": "learning-clusters"
     },
     {
@@ -856,6 +972,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "learning-clusters"
+    },
+    {
+     "type": "language_clean",
      "pack": "learning-clusters"
     },
     {
@@ -923,6 +1043,10 @@
    ],
    "expectations": [
     {
+     "type": "pack_absent",
+     "pack": "organisation-learning-plan"
+    },
+    {
      "type": "routes_to",
      "skill": "learnings-coach"
     }
@@ -944,6 +1068,10 @@
     },
     {
      "type": "check_register_ok",
+     "pack": "learnings-register"
+    },
+    {
+     "type": "language_clean",
      "pack": "learnings-register"
     },
     {
@@ -987,6 +1115,10 @@
      "pack": "learnings-register"
     },
     {
+     "type": "language_clean",
+     "pack": "learnings-register"
+    },
+    {
      "type": "routes_to",
      "skill": "learnings-register"
     }
@@ -1008,6 +1140,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "manager-coach"
+    },
+    {
+     "type": "language_clean",
      "pack": "manager-coach"
     },
     {
@@ -1065,6 +1201,10 @@
      "pack": "manager-coach"
     },
     {
+     "type": "language_clean",
+     "pack": "manager-coach"
+    },
+    {
      "type": "routes_to",
      "skill": "manager-coach"
     }
@@ -1086,6 +1226,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "organisation-learning-plan"
+    },
+    {
+     "type": "language_clean",
      "pack": "organisation-learning-plan"
     },
     {
@@ -1134,6 +1278,10 @@
      "pack": "organisation-learning-plan"
     },
     {
+     "type": "language_clean",
+     "pack": "organisation-learning-plan"
+    },
+    {
      "type": "routes_to",
      "skill": "organisation-learning-map"
     }
@@ -1155,6 +1303,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "precursor-timeline"
+    },
+    {
+     "type": "language_clean",
      "pack": "precursor-timeline"
     },
     {
@@ -1203,6 +1355,10 @@
      "pack": "precursor-timeline"
     },
     {
+     "type": "language_clean",
+     "pack": "precursor-timeline"
+    },
+    {
      "type": "routes_to",
      "skill": "precursor-timeline"
     }
@@ -1225,6 +1381,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "report-comparison"
+    },
+    {
+     "type": "language_clean",
      "pack": "report-comparison"
     },
     {
@@ -1274,6 +1434,10 @@
      "pack": "report-comparison"
     },
     {
+     "type": "language_clean",
+     "pack": "report-comparison"
+    },
+    {
      "type": "routes_to",
      "skill": "report-comparison"
     }
@@ -1295,6 +1459,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "safety-committee-guide"
+    },
+    {
+     "type": "language_clean",
      "pack": "safety-committee-guide"
     },
     {
@@ -1353,6 +1521,10 @@
      "pack": "safety-committee-guide"
     },
     {
+     "type": "language_clean",
+     "pack": "safety-committee-guide"
+    },
+    {
      "type": "routes_to",
      "skill": "safety-committee-guide"
     }
@@ -1374,6 +1546,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "site-leadership-coach"
+    },
+    {
+     "type": "language_clean",
      "pack": "site-leadership-coach"
     },
     {
@@ -1431,6 +1607,10 @@
      "pack": "site-leadership-coach"
     },
     {
+     "type": "language_clean",
+     "pack": "site-leadership-coach"
+    },
+    {
      "type": "routes_to",
      "skill": "site-leadership-coach"
     }
@@ -1452,6 +1632,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "supervisor-coach"
+    },
+    {
+     "type": "language_clean",
      "pack": "supervisor-coach"
     },
     {
@@ -1509,6 +1693,10 @@
      "pack": "supervisor-coach"
     },
     {
+     "type": "language_clean",
+     "pack": "supervisor-coach"
+    },
+    {
      "type": "routes_to",
      "skill": "supervisor-coach"
     }
@@ -1530,6 +1718,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "supply-chain-contractor-learnings"
+    },
+    {
+     "type": "language_clean",
      "pack": "supply-chain-contractor-learnings"
     },
     {
@@ -1588,6 +1780,10 @@
      "pack": "supply-chain-contractor-learnings"
     },
     {
+     "type": "language_clean",
+     "pack": "supply-chain-contractor-learnings"
+    },
+    {
      "type": "routes_to",
      "skill": "supply-chain-contractor-learnings"
     }
@@ -1609,6 +1805,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "top-management-brief"
+    },
+    {
+     "type": "language_clean",
      "pack": "top-management-brief"
     },
     {
@@ -1667,6 +1867,10 @@
      "pack": "top-management-brief"
     },
     {
+     "type": "language_clean",
+     "pack": "top-management-brief"
+    },
+    {
      "type": "routes_to",
      "skill": "top-management-brief"
     }
@@ -1688,6 +1892,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "training-designer"
+    },
+    {
+     "type": "language_clean",
      "pack": "training-designer"
     },
     {
@@ -1743,6 +1951,10 @@
     },
     {
      "type": "check_pack_ok",
+     "pack": "training-designer"
+    },
+    {
+     "type": "language_clean",
      "pack": "training-designer"
     },
     {

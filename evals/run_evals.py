@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from collections import Counter
@@ -31,7 +32,11 @@ EXPECT = {                                   # expectation type -> its required 
     "scope_equals": ("pack", "scope"),
     "coverage_min": ("pack", "ratio"),
     "routes_to": ("skill",),
+    "language_clean": ("pack",),
+    "pack_absent": ("pack",),
+    "card_fields": ("pack", "fields"),
 }
+ABS_PATH = re.compile(r"(?:^|[\s\"'(])(?:/(?:home|Users|tmp|var|mnt|opt|etc|root)/|[A-Za-z]:[\\/])")
 MIN_EVALS, MIN_NO_TRIGGER, MIN_COLLISION = 3, 1, 1
 
 
@@ -62,6 +67,8 @@ def _check_eval(e, seen, bad):
         bad(f"{tag}: owner: {e['owner']} is not a skill folder")
     if not isinstance(e.get("prompt"), str) or not e.get("prompt", "").strip():
         bad(f"{tag}: prompt must be non-empty text")
+    if kind == "trigger" and "owner" in e and e.get("skill") != e["owner"]:
+        bad(f"{tag}: a trigger eval's skill must equal its owner")
     if kind == "no-trigger":
         if e.get("skill") is not None:
             bad(f"{tag}: a no-trigger eval has skill null")
@@ -83,9 +90,17 @@ def _check_eval(e, seen, bad):
     if not isinstance(files, list):
         bad(f"{tag}: files must be a list")
         files = []
+    if kind == "trigger" and not files:
+        bad(f"{tag}: a trigger eval needs files")
+    if kind == "no-trigger" and files:
+        bad(f"{tag}: a no-trigger eval has no files")
     for f in files:
-        if not isinstance(f, str) or not (ROOT / f).exists():
+        if isinstance(f, str) and (Path(f).is_absolute() or ABS_PATH.search(f)):
+            bad(f"{tag}: files: absolute path {f}")
+        elif not isinstance(f, str) or not (ROOT / f).exists():
             bad(f"{tag}: files: {f} does not exist")
+    if isinstance(e.get("prompt"), str) and ABS_PATH.search(e["prompt"]):
+        bad(f"{tag}: prompt: absolute path")
     exps = e.get("expectations", [])
     if not isinstance(exps, list):
         bad(f"{tag}: expectations must be a list")
@@ -98,8 +113,14 @@ def _check_eval(e, seen, bad):
         for p in EXPECT[t]:
             if p not in x:
                 bad(f"{tag}: {t} needs {p}")
-        if t == "routes_to" and x.get("skill") is not None and x.get("skill") not in SKILLS:
-            bad(f"{tag}: routes_to: {x.get('skill')} is not a skill folder")
+        if t == "routes_to":
+            if x.get("skill") is not None and x.get("skill") not in SKILLS:
+                bad(f"{tag}: routes_to: {x.get('skill')} is not a skill folder")
+            if "skill" in e and x.get("skill") != e.get("skill"):
+                bad(f"{tag}: routes_to must name the eval's skill")
+        if t == "card_fields" and not (isinstance(x.get("fields"), list) and x["fields"]
+                                       and all(isinstance(f, str) for f in x["fields"])):
+            bad(f"{tag}: card_fields needs a non-empty list of field names")
         if t == "coverage_min" and not (isinstance(x.get("ratio"), (int, float)) and 0 <= x.get("ratio", -1) <= 1):
             bad(f"{tag}: coverage_min ratio must be between 0 and 1")
 
@@ -153,12 +174,30 @@ def _engine(cmd, ws, path) -> tuple:
     return r.returncode == 0, (last[-1] if last else f"exit {r.returncode}")
 
 
-def _coverage(ws, pack) -> float:
-    sys.path.insert(0, str(SCRIPTS))
+_COV = {}                                    # (workspace, pack file) -> ratio; cleared by grade()
+
+
+def _coverage(ws, pack, key=None) -> float:
+    if key is not None and key in _COV:
+        return _COV[key]
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
     import pmlc
     import pmlc_pack
     cov = pmlc_pack.coverage(pmlc.load_ws(ws), pack)
-    return 1.0 if not cov["relevant"] else cov["cited"] / cov["relevant"]
+    ratio = 1.0 if not cov["relevant"] else cov["cited"] / cov["relevant"]
+    if key is not None:
+        _COV[key] = ratio
+    return ratio
+
+
+def _cards(pack) -> list:
+    secs = pack.get("sections") if isinstance(pack, dict) else None
+    out = []
+    for sec in secs if isinstance(secs, list) else []:
+        items = sec.get("items") if isinstance(sec, dict) else None
+        out += [i for i in items if isinstance(i, dict) and i.get("kind") == "card"] if isinstance(items, list) else []
+    return out
 
 
 def grade_one(x, ws, out) -> tuple:
@@ -167,21 +206,41 @@ def grade_one(x, ws, out) -> tuple:
     if t == "routes_to":
         return "manual", ""
     path = out / f"{x['pack']}.json"
+    if t == "pack_absent":
+        return ("fail", f"{path.name} exists") if path.exists() else ("pass", "")
     if not path.exists():
         return "fail", f"{path.name} not found"
     if t == "pack_exists":
         return "pass", ""
-    if t in ("check_pack_ok", "check_register_ok"):
-        ok, msg = _engine("check-pack" if t == "check_pack_ok" else "check-register", ws, path)
+    if t in ("check_pack_ok", "check_register_ok", "language_clean"):
+        cmd = {"check_pack_ok": "check-pack", "check_register_ok": "check-register",
+               "language_clean": "check-language"}[t]
+        ok, msg = _engine(cmd, ws, path)
         return ("pass", "") if ok else ("fail", msg)
     try:
         pack = json.loads(path.read_text(encoding="utf-8"))
     except ValueError as e:
         return "fail", f"{path.name} is not JSON: {e}"
+    if not isinstance(pack, dict):
+        return "fail", f"{path.name} is not a JSON object"
     if t == "scope_equals":
         got = pack.get("scope")
         return ("pass", "") if got == x["scope"] else ("fail", f"scope is {json.dumps(got)}")
-    ratio = _coverage(ws, pack)
+    if t == "card_fields":
+        cards = _cards(pack)
+        if not cards:
+            return "fail", "no cards"
+        for f in x["fields"]:
+            n = sum(1 for c in cards if not c.get(f))
+            if n:
+                return "fail", f"{n} of {len(cards)} cards lack {f}"
+        return "pass", ""
+    if not isinstance(pack.get("scope"), (dict, type(None))):
+        return "fail", "scope is not an object"
+    try:
+        ratio = _coverage(ws, pack, (str(ws), str(path)))
+    except Exception as e:                   # a malformed pack must fail the check, not crash the grader
+        return "fail", f"cannot compute coverage ({e.__class__.__name__})"
     return ("pass" if ratio >= x["ratio"] else "fail"), f"{ratio:.2f}"
 
 
@@ -195,6 +254,7 @@ def _label(x) -> str:
 
 
 def grade(run_dir, path, ids=None) -> int:
+    _COV.clear()
     run_dir = Path(run_dir)
     ws, out = run_dir / "workspace", run_dir / "outputs"
     if not (ws / "findings.json").exists():
@@ -219,7 +279,10 @@ def grade(run_dir, path, ids=None) -> int:
                 passed += res == "pass"
             cell = f"{res}: {detail}" if detail else res
             print(f"| {e['id']} | {e.get('skill') or '(none)'} | {_label(x)} | {cell.replace('|', '/')} |")
-    rate = f"{100 * passed / total:.0f}%" if total else "n/a"
+    if not total:
+        print("\nno outputs graded")
+        return 1
+    rate = f"{100 * passed / total:.0f}%"
     print(f"\nGraded {len(chosen)} eval(s). Pass rate: {passed}/{total} machine checks ({rate}); routes_to is manual.")
     return 0 if passed == total else 1
 
