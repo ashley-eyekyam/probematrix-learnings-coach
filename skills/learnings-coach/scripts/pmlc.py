@@ -1488,13 +1488,32 @@ PRESET_FILE = REFS / "select-presets.json"
 SELECT_LINE = re.compile(r"PMLC select <ws>((?: [^`\n]*)?)")
 
 
+def strip_comment(line: str) -> str:
+    """The line before its shell comment: as in bash, `#` starts a comment only at the start of a word and outside
+    quotes, so `--text "a # b"` and `--text a#b` keep their `#`."""
+    quote, escaped, word_start = None, False, True
+    for i, ch in enumerate(line):
+        if escaped:  # the character after a backslash is literal
+            escaped, word_start = False, False
+        elif ch == "\\" and quote != "'":
+            escaped = True
+        elif quote:
+            quote = None if ch == quote else quote
+        elif ch in "'\"":
+            quote, word_start = ch, False
+        elif ch.isspace():
+            word_start = True
+        elif ch == "#" and word_start:
+            return line[:i]
+        else:
+            word_start = False
+    return line
+
+
 def split_command(line: str) -> list[str]:
-    """Shell-like split of one command line; a `#` outside quotes starts a comment that runs to the end."""
+    """Shell-like split of one command line, without its trailing `# comment` (see strip_comment)."""
     import shlex
-    lex = shlex.shlex(line, posix=True)
-    lex.whitespace_split = True
-    lex.commenters = "#"
-    return list(lex)
+    return shlex.split(strip_comment(line))
 
 
 def skill_select_lines(text: str) -> list[list[str]]:

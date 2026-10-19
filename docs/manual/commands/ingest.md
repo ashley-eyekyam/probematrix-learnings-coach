@@ -67,10 +67,10 @@ Run folder: hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire
   outputs:   hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs
 ```
 
-Replace names with roles while reading. The map below names a person from a fictional list; the Hazira export names roles only, so nothing is replaced:
+Replace names with roles while reading. The name in the map below is fictional ("Ms Jane Placeholder"); the Hazira export names roles only, so nothing is replaced:
 
 ```bash
-echo '{"R. K. Sharma": "the maintenance supervisor"}' > redact.json
+echo '{"Jane Placeholder": "the shift supervisor"}' > redact.json
 python3 $E ingest hazira/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx --slug hazira-gas-release-fire --force --redact redact.json
 ```
 

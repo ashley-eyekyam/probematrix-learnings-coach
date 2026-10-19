@@ -116,10 +116,21 @@ def test_every_flag_documented():
                     problems.append(f"{name}: flag {o}")
             if not a.option_strings and f"`{a.dest}`" not in page:
                 problems.append(f"{name}: argument {a.dest}")
-            for c in a.choices or ():
-                if not re.search(rf"(?<![\w-]){re.escape(str(c))}(?![\w-])", page):
+            for c in a.choices or ():  # the value must be in the Flags section, not just anywhere on the page
+                if not re.search(rf"(?<![\w-]){re.escape(str(c))}(?![\w-])", _section(page, "Flags")):
                     problems.append(f"{name}: {a.option_strings[0] if a.option_strings else a.dest} value {c}")
     assert not problems, "undocumented in docs/manual/commands/: " + "; ".join(problems)
+
+
+def _section(page: str, heading: str) -> str:
+    """The text of one `## heading` section, up to the next H2."""
+    return re.split(r"^## ", page.split(f"\n## {heading}\n", 1)[-1], maxsplit=1, flags=re.M)[0]
+
+
+def _synopsis_flags(name: str) -> list:
+    """Flags in the Synopsis section's fenced block that the subcommand does not have."""
+    block = _section(_page(name), "Synopsis")
+    return [f"{name} synopsis {f}" for f in FLAG_RX.findall(block) if f not in _options(name) | ALWAYS_OK]
 
 
 def _stale(text: str, default: str) -> list:
@@ -145,7 +156,7 @@ def _stale(text: str, default: str) -> list:
 def test_no_stale_flags():
     problems = []
     for name in SUBS:
-        problems += [f"commands/{name}.md: {b}" for b in _stale(_page(name), name)]
+        problems += [f"commands/{name}.md: {b}" for b in _stale(_page(name), name) + _synopsis_flags(name)]
     for p in _pages():
         if p.parent.name != "commands":
             problems += [f"{p.relative_to(MANUAL)}: {b}" for b in _stale(p.read_text(encoding="utf-8"), None)]
@@ -262,6 +273,13 @@ def test_allow_abbrev_disabled(tmp_path):
                                       ("`tools/release.py --root x`", [])])
 def test_stale_checker(text, bad):
     assert _stale(text, "select") == bad
+
+
+def test_section_and_synopsis_checks(monkeypatch):
+    page = "# x\n\n## Synopsis\n\n```text\npmlc select ws [--tier T] [--nope]\n```\n\n## Flags\n\n`any`\n"
+    assert _section(page, "Flags").strip() == "`any`" and "--nope" in _section(page, "Synopsis")
+    monkeypatch.setattr(sys.modules[__name__], "_page", lambda name: page)
+    assert _synopsis_flags("select") == ["select synopsis --nope"]
 
 
 def test_slug_rules():

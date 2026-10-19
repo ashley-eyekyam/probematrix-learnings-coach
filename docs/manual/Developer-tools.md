@@ -137,10 +137,10 @@ python3 tools/sync-wiki.py --wiki-dir DIR [--manual-dir docs/manual] [--version 
 | `--check` | none | off | Write nothing; exit 1 if anything would change. Use it in a release check |
 | `--adopt` | page names | none | Take over existing wiki pages this tool does not own, for example `--adopt Home` |
 
-The first sync into an empty wiki clone:
+The first sync into an empty wiki clone. Without `--version`, the pages name the engine's own version, the one `pmlc --version` prints (here `pmlc 2.0.0a3`), so every page starts `> Documents ProbeMatrix Learnings Coach v2.0.0a3.`:
 
 ```bash
-python3 tools/sync-wiki.py --wiki-dir wiki --version 2.0.0a4
+python3 tools/sync-wiki.py --wiki-dir wiki
 ```
 
 ```text
@@ -154,7 +154,7 @@ write Command-check-pack
 Checking again with nothing changed exits 0:
 
 ```bash
-python3 tools/sync-wiki.py --wiki-dir wiki --version 2.0.0a4 --check
+python3 tools/sync-wiki.py --wiki-dir wiki --check
 ```
 
 ```text

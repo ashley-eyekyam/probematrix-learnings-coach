@@ -1514,15 +1514,11 @@ _NUMERIC_FLAGS = {"--level", "--top", "--max", "--min-rating", "--per-date", "--
 
 
 def _skill_argv(line: str) -> list[str]:
-    import shlex
     line = re.sub(r"\[(--[^\]]*)\]", r"\1", line.strip())  # [--opt value] marks an optional part
     flags = "|".join(re.escape(f) for f in sorted(_NUMERIC_FLAGS))
     line = re.sub(rf"({flags})(\s+)<[^>]*>", r"\1\g<2>1", line)
     line = re.sub(r"(--format\s+)<[^>]*>", r"\1md", line)
-    lex = shlex.shlex(re.sub(r"<[^>]*>", "X", line), posix=True)  # a quoted "#" is not a comment
-    lex.whitespace_split = True
-    lex.commenters = "#"
-    return list(lex)[1:]
+    return pmlc.split_command(re.sub(r"<[^>]*>", "X", line))[1:]  # shlex; a "#" inside a word or quotes is kept
 
 
 def _skill_command_lines():
@@ -1560,6 +1556,19 @@ def test_skill_commands_parse(capsys):
 def test_skill_argv_placeholders():
     assert _skill_argv("PMLC select <ws> --level <n> --format <f>  # c") == ["select", "X", "--level", "1", "--format", "md"]
     assert _skill_argv('PMLC select <ws> --text "a # b" --brief  # c') == ["select", "X", "--text", "a # b", "--brief"]
+
+
+@pytest.mark.parametrize("line,args", [
+    ("--text a#b --brief", ["--text", "a#b", "--brief"]),
+    ('--text "a # b" # note', ["--text", "a # b"]),
+    ("--text 'x #y' --max 2  # c", ["--text", "x #y", "--max", "2"]),
+    ("--level 3 #c", ["--level", "3"]),
+    ("#all comment", []),
+    (r'--text "say \"#\" ok" #x', ["--text", 'say "#" ok']),
+    (r"--text a\ #b", ["--text", "a #b"]),
+])
+def test_split_command_comments(line, args):
+    assert pmlc.split_command(line) == args
 
 
 def test_equals_form_validated(ws):

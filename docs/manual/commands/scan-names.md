@@ -34,23 +34,24 @@ pmlc scan-names names paths [paths ...] [--show SHOW] [--variants] [--patterns]
 | Flag | Value | Default | What it does |
 |---|---|---|---|
 | `--show` | number | 50 | Print at most this many hits. The count at the end is always the full number |
-| `--variants` | none | off | Also match each name's surname, initial and surname, and honorific and surname ("Sharma", "R. Sharma", "Shri Sharma") |
+| `--variants` | none | off | Also match each name's surname, initial and surname, and honorific and surname (for the fictional "Jane Placeholder": "Placeholder", "J. Placeholder", "Ms Placeholder") |
 | `--patterns` | none | off | Also flag e-mail addresses, phone-like numbers and staff-number patterns. An aid only: it gives false hits (dates and long record numbers look like phone numbers) and is not proof of de-identification |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples
 
-A names file (fictional names, for the example):
+A names file. Both names are fictional:
 
 ```text
-# people named in the enquiry report
-R. K. Sharma
+# fictional names for this example
+A. B. Example
+Jane Placeholder
 ```
 
 The Hazira outputs, which name roles only:
 
 ```bash
-python3 $E scan-names names.txt $OUT --variants
+python3 $E scan-names names.txt $OUT
 ```
 
 ```text
@@ -58,22 +59,25 @@ python3 $E scan-names names.txt $OUT --variants
 0 hit(s).
 ```
 
-A test copy of a pack paragraph that names a person:
+With `--variants` the same scan gives 12 hits, all on the ordinary words "example" and "placeholder" in the page text: the fictional surnames are common words. Real surnames can do the same, so read the context of each hit.
+
+The test copy of a pack from [check-language](check-language.md), with one invented paragraph that uses the two fictional names:
 
 ```bash
 python3 $E scan-names names.txt lint-demo.json --variants
 ```
 
 ```text
-HIT lint-demo.json:40: 'R. K. Sharma' … '     "text": "Shri R. K. Sharma was careless and should be disciplined for the re'
+HIT lint-demo.json:40: 'A. B. Example' … '     "text": "Shri A. B. Example was careless and should be disciplined; Ms Jane P'
+HIT lint-demo.json:40: 'Jane Placeholder' … 'xample was careless and should be disciplined; Ms Jane Placeholder agreed."'
 
-1 hit(s).
+2 hit(s).
 ```
 
 With `--patterns`, the Hazira outputs give many false hits, which shows why it is only an aid:
 
 ```bash
-python3 $E scan-names names.txt $OUT --variants --patterns
+python3 $E scan-names names.txt $OUT --patterns
 ```
 
 ```text

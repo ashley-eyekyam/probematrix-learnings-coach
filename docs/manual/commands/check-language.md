@@ -6,7 +6,7 @@ Reads a learning pack or a Learnings Register and checks its **wording** against
 
 | Rule | Looks for | Severity |
 |---|---|---|
-| JC1 | A person's name: an honorific with a name ("Shri R. K. Sharma", "Mr J Smith"), a name from `--names`, or two capitalised words that are not role or place words | error |
+| JC1 | A person's name: an honorific with a name (fictional examples: "Shri A. B. Example", "Ms Jane Placeholder"), a name from `--names`, or two capitalised words that are not role or place words | error |
 | JC2 | Blame or sanction words ("careless", "disciplined") | error |
 | JC3 | Counterfactual framing: "failed to", "should have", "would have", "could have prevented" | warning |
 | JC4 | Hindsight: "obviously", "clearly should", "simply needed to" | warning |
@@ -77,31 +77,34 @@ WARNING JC10 $.source: "INC-2026": describe the equipment generically, e.g. "the
 check-language: 0 errors, 74 warnings
 ```
 
-A pack paragraph written with a name and blame words (a test copy, not a real output):
+A test copy of the pack with one added paragraph that uses two fictional names and blame words. The sentence is invented for this example; it says nothing about anyone in the Hazira enquiry:
 
 ```bash
 python3 $E check-language $WS lint-demo.json
 ```
 
 ```text
-ERROR JC1 $.sections[0].items[1].text: "Shri R. K. Sharma": use the role, not the person, e.g. "the fitter" or "the shift supervisor"; if this is not a person, add lint_ok with the reason
+ERROR JC1 $.sections[0].items[1].text: "Shri A. B. Example": use the role, not the person, e.g. "the fitter" or "the shift supervisor"; if this is not a person, add lint_ok with the reason
+ERROR JC1 $.sections[0].items[1].text: "Ms Jane Placeholder": use the role, not the person, e.g. "the fitter" or "the shift supervisor"; if this is not a person, add lint_ok with the reason
 ERROR JC2 $.sections[0].items[1].text: "disciplined": describe what the organisation will change so the work is safer (a check, a design change, a resourced task), not a sanction
 ERROR JC2 $.sections[0].items[1].text: "careless": describe what the organisation will change so the work is safer (a check, a design change, a resourced task), not a sanction
-check-language: 3 errors, 0 warnings
+check-language: 4 errors, 0 warnings
 ```
 
-With a names file, the bare name is caught too:
+With a names file of the same fictional names, the bare names are caught too:
 
 ```bash
-printf '# people named in the enquiry report\nR. K. Sharma\n' > names.txt
+printf '# fictional names for this example\nA. B. Example\nJane Placeholder\n' > names.txt
 python3 $E check-language $WS lint-demo.json --names names.txt
 ```
 
 ```text
-ERROR JC1 $.sections[0].items[1].text: "Shri R. K. Sharma": …
-ERROR JC1 $.sections[0].items[1].text: "R. K. Sharma": use the role, not the person, …
+ERROR JC1 $.sections[0].items[1].text: "Shri A. B. Example": …
+ERROR JC1 $.sections[0].items[1].text: "Ms Jane Placeholder": …
+ERROR JC1 $.sections[0].items[1].text: "A. B. Example": use the role, not the person, …
+ERROR JC1 $.sections[0].items[1].text: "Jane Placeholder": use the role, not the person, …
 …
-check-language: 4 errors, 0 warnings
+check-language: 6 errors, 0 warnings
 ```
 
 Setting `PMLC_NAMES=names.txt` in the environment gives the same result without the flag.
