@@ -20,7 +20,8 @@ Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this ski
 4. **Map both ways** (yes / partial / none) with reason classes for "none".
 5. **Compare dimensions**: level reached, ownership (entity and tier named?), actionability, control tier of recommendations, evidence basis, interfaces.
 6. **Cross-tabulate** the other report's discipline groups against Learning Clusters to show where each concentrates.
-7. **Say where the other report is stronger.** Specific engineering recommendations, site findings, primary evidence: credit them.
+7. **Names do not bleed in.** Replace personal names in quoted comparator text with roles (and company names with their function) before they reach a table; see the name-bleed rule in `comparison-method.md`. Check with `scan-names` or `check-language --names` using the comparator's names. Put a conflict-of-interest line on page 1 when the commissioning organisation is one of the compared parties.
+8. **Say where the other report is stronger.** Specific engineering recommendations, site findings, primary evidence: credit them.
 
 ## Output
 

@@ -19,7 +19,7 @@ Outputs `<ws>/causal_graph.json` (nodes, edges with mention counts and supportin
 ## Interpret
 
 1. **Hubs.** Rank nodes by out-degree from L4 and L3. These are the organisational and supervisory conditions that fed many downstream factors: the most valuable learnings.
-2. **Pathways.** Trace three to six chains from an L4 node to an L1 node through the strongest edges. For each, read the supporting findings (`PMLC select <ws> --code "<code>"`) and write the pathway as a story in four sentences, one per level, with evidence IDs.
+2. **Pathways.** Trace three to six chains from an L4 node to an L1 node through the strongest edges. For each, read the supporting findings (`PMLC select <ws> --code "<code>"`) and write the pathway as a story in four sentences, one per level, with evidence IDs. **Read it top-down and end on a condition, never on a person:** start at the L4 condition, pass through supervision and preconditions, and finish on the sharp-end condition (for example "the replacement was returned to service without a design-pressure test"), not on someone's act or character.
 3. **Breaks.** Where the narrative needs a link the graph lacks, say so as a gap. Do not invent the link.
 4. **Event sequence.** If the export narrative or evidence gives times, align the pathways to the event sequence (latent conditions → trigger → escalation → response).
 

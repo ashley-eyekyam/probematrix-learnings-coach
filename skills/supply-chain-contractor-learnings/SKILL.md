@@ -46,4 +46,6 @@ Set `"scope": {"tags": ["supply", "contractor"]}`. Put data-quality corrections 
  "response": "No technical approval recorded", "cites": ["FND-…"]}]}
 ```
 
+**Contractor just-culture rule.** The host organisation's system owns contractor and vendor learnings: its selection, briefing, supervision and interfaces. Write "the contractor's task was not covered by the host's permit briefing", not "the contractor failed". When the pack is shared outside the organisation, use no company names: write the function ("the maintenance contractor"); `check-language --share external` flags organisation names (JC9).
+
 If the export has few supply-chain findings, say so in a `para` and keep the pack short.

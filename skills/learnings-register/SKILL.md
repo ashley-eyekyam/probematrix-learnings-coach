@@ -1,6 +1,6 @@
 ---
 name: learnings-register
-description: Build a formal Learnings Register (lessons-learned register) from a ProbeMatrix investigation export - one row per learning with evidence, HFACS level, barrier, organisational system, audiences, priority and recommendations rated on the hierarchy of controls with leading indicators - and write it to Markdown and a formatted Excel workbook. Use when someone asks for a lessons-learned register, a learnings log, an Excel of learnings, a register to share with management or a regulator, or "turn these findings into lessons and recommendations".
+description: Build a formal Learnings Register (lessons-learned register) from a ProbeMatrix investigation export - one row per learning with evidence, HFACS level, barrier, organisational system, audiences, priority and recommendations rated on the hierarchy of controls with leading indicators - and write it to Markdown and a formatted Excel workbook. Use when someone asks for a lessons-learned register, a learnings log, an Excel of learnings, a register to take to management, or "turn these findings into lessons and recommendations".
 ---
 
 # Learnings Register
@@ -31,6 +31,10 @@ All files go to `<run>/outputs/` (see the folder rule in `learnings-coach/SKILL.
   - It is required for this skill.
   - Do not hand-edit the HTML: change the JSON and re-run.
 - `<run>/outputs/learnings-register.md`: summary tables (counts by entity, level, organisational system, HoC tier), the priority-1 learnings in full, then the rest in a compact table.
+
+## Sharing outside the organisation
+
+A register is for the organisation's own learning. Do not send it to a regulator, client or the public from here. Sharing outside needs legal review, an approved sign-off, and `--share external`; follow "Sharing outside the organisation" in `learnings-coach/references/learning-principles.md` (§7) and the hub's step 4.
 
 ## Checks before handing over
 

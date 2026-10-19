@@ -22,7 +22,7 @@ Read the incident narrative in `<ws>/incident.json` and the evidence description
 
 1. **Evidence base audit**: evidence items by type; which kinds of evidence are absent (e.g. no maintenance-fitter statement, no procurement records, no calibration master data); conflicts between sources (dates, times, identifiers) and how they were resolved or not.
 2. **Follow-up per high-rated finding** (one table row each): evidence to collect · key questions · suggested interviews (by role) · causal hypothesis to test. Keep it specific to the finding's evidence.
-3. **Interview plan**: roles to interview that the evidence never heard from, ordered by how much they could change the analysis, each with five questions.
+3. **Interview plan** (follow "Interviews in a just culture" in `learnings-coach/references/learning-principles.md`: non-disciplinary, a representative present, local rationality, no leading questions): roles to interview that the evidence never heard from, ordered by how much they could change the analysis, each with five questions.
 4. **Method lessons**: where the analysis reached L3–L4 and how; where findings may be coded at too low a level (an organisational condition recorded as an individual act); where a finding rests on a single source.
 5. **Training use**: three exercises from this case for investigator training (e.g. "move this L1 finding to the level where it belongs").
 
