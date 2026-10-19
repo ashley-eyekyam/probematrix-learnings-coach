@@ -44,6 +44,10 @@ from pathlib import Path
 __version__ = "2.0.0a3"
 
 HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import pmlc_privacy as privacy  # noqa: E402  (the shared privacy core, next to this file)
+
 REFS = HERE.parent / "references"
 BRAND = (f"Generated with ProbeMatrix Learnings Coach v{__version__} (open source, MIT) from a ProbeMatrix "
          "four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com")
@@ -102,6 +106,8 @@ def load_ws(ws_dir: Path) -> dict:
         p = ws_dir / f"{name}.json"
         if p.exists():
             out[name] = json.loads(p.read_text(encoding="utf-8"))
+    sp = ws_dir / "singleton_roles.json"
+    out["singletons"] = json.loads(sp.read_text(encoding="utf-8")).get("roles", []) if sp.exists() else []
     if "findings" not in out:
         sys.exit(f"No findings.json in {ws_dir}. Run: pmlc.py ingest <export.xlsx> --slug <site>-<event>")
     return out
@@ -115,10 +121,11 @@ def write_json(path: Path, obj) -> None:
 # ----------------------------------------------------------------------------- manifest
 
 MANIFEST = "manifest.json"
-KNOWN_DERIVED = ("findings.json", "evidence.json", "incident.json", "clusters.json", "causal_graph.json",
+KNOWN_DERIVED = ("findings.json", "evidence.json", "incident.json", "clusters.json", "singleton_roles.json",
+                 "causal_graph.json",
                  "causal_graph.mmd", "timeline_candidates.json", "timeline_event_day.json", "interfaces.json")
 REBUILD = {"findings.json": "ingest", "evidence.json": "ingest", "incident.json": "ingest",
-           "clusters.json": "classify", "causal_graph.json": "causal", "causal_graph.mmd": "causal",
+           "clusters.json": "classify", "singleton_roles.json": "classify", "causal_graph.json": "causal", "causal_graph.mmd": "causal",
            "timeline_candidates.json": "timeline", "timeline_event_day.json": "timeline",
            "interfaces.json": "interfaces"}
 
@@ -921,12 +928,15 @@ def cmd_classify(a):
            "entities": entities, "findings": per_f, "role_map": role_map, "unresolved_roles": unresolved,
            "overrides": {"file": ov_path, "applied": applied, "stale": stale}}
     write_json(ws / "clusters.json", out)
+    write_json(ws / "singleton_roles.json", privacy.build_singletons(role_map, w["findings"], tax, TIER_LABELS))
     tpaths = taxonomy_sources(taxonomy, overlays)
-    record_derived(ws, "clusters.json",
-                   {"findings.json": file_sha256(ws / "findings.json"), "taxonomy": taxonomy_hash(tpaths),
-                    "overrides": file_sha256(ov_path) if ov_path else "none"},
-                   {"taxonomy": [str(_abs(p)) for p in tpaths], "overrides": str(_abs(ov_path)) if ov_path else None,
-                    "overrides_auto": not a.no_overrides and not a.overrides})
+    for derived in ("clusters.json", "singleton_roles.json"):
+        record_derived(ws, derived,
+                       {"findings.json": file_sha256(ws / "findings.json"), "taxonomy": taxonomy_hash(tpaths),
+                        "overrides": file_sha256(ov_path) if ov_path else "none"},
+                       {"taxonomy": [str(_abs(p)) for p in tpaths],
+                        "overrides": str(_abs(ov_path)) if ov_path else None,
+                        "overrides_auto": not a.no_overrides and not a.overrides})
     if ov_path:
         print(f"Applied {applied} override(s) from {ov_path}")
     if stale:
@@ -2057,11 +2067,10 @@ def _iter_texts(path: Path):
 
 
 def cmd_scan_names(a):
-    names = [n.strip() for n in Path(a.names).read_text(encoding="utf-8").splitlines()
-             if n.strip() and not n.startswith("#")]
+    names = privacy.load_names(a.names)
     if not names:
         sys.exit("Names file is empty.")
-    rx = re.compile(r"\b(" + "|".join(re.escape(n) for n in names) + r")\b", re.I)
+    rx = privacy.name_pattern(names)
     hits = 0
     for target in a.paths:
         for loc, text in _iter_texts(Path(target)):

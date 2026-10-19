@@ -41,3 +41,7 @@ and at the end the branding line from `output-style.md`.
 ## 6. Recommendations, not action plans
 
 Recommendations say **what should change**, the **barrier** it strengthens, the **evidence basis**, the **hierarchy-of-controls tier**, and a **leading indicator** that would show the change is working. They do not assign named owners or due dates unless the user asks; the organisation decides and implements.
+
+## Quasi-identifiers
+
+A role string can point to one person even with no name in it: a post or gate number, a shift, a grade, or a top post with a single holder ("Plant Head"). `classify` lists these in `<ws>/singleton_roles.json` with a generalised label such as "Operations & Control Room (Supervisors)". Use the generalised label in any output that leaves the investigating team; the language check flags the raw role string (JC7, an error when sharing outside the organisation).
