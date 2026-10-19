@@ -123,3 +123,25 @@ assert.strictEqual(e.banner, null);
 assert.strictEqual(e.chip, null);
 assert.strictEqual(p.recordView('FND-9999', D), null);
 """)
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_pack_js_label_only_records():
+    """--embed cited: uncovered and excluded findings travel as {id, label, rating}; summary drops quotes."""
+    node(f"""
+const assert = require('assert');
+const p = require({json.dumps(str(PACK_JS))});
+const brand = {{ai_chip:'AI-drafted, not human-edited', export_banner:'banner'}};
+const D = {{brand: brand, findings: {{
+  'FND-0003': {{id:'FND-0003', label:'Seals bought locally', rating:4}},
+  'FND-0004': {{id:'FND-0004', label:'Alarm display only', rating:null}}}},
+  evidence: {{'EVD-0001': {{id:'EVD-0001', type:'document', links:[{{code:'AB 1.1', relevance:'Shows no test'}}]}}}}}};
+assert.deepStrictEqual(p.recordRows('FND-0003', D),
+  [['Finding','Seals bought locally'],['Rating','4'],['Detail','Only the label and rating are embedded in this page.']]);
+assert.deepStrictEqual(p.recordRows('FND-0004', D),
+  [['Finding','Alarm display only'],['Detail','Only the label and rating are embedded in this page.']]);
+const v = p.recordView('FND-0003', D);
+assert.strictEqual(v.chip, null);                 // user_edited is not embedded: claim nothing
+assert.strictEqual(v.banner, 'banner');           // the label is still the investigation's wording
+assert.deepStrictEqual(p.recordRows('EVD-0001', D), [['Type','document'],['Linked to AB 1.1','Shows no test']]);
+""")

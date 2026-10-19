@@ -326,3 +326,21 @@ def test_missing_names_or_orgs_file_exits_cleanly(ws, tmp_path, flag, env):  # n
     r = subprocess.run([sys.executable, str(PMLC), "check-pack", str(ws), str(BAD)], capture_output=True, text=True,
                        env=dict(__import__("os").environ, **{env: str(missing)}))
     assert r.returncode == 1 and r.stderr.strip() == f"{env}: file not found: {missing}", r.stderr
+
+
+def test_lint_ok_reason_is_scanned_for_names_and_orgs(w):
+    """X14: a name or organisation cannot reach the page through a lint_ok reason; the reason cannot quiet itself."""
+    p = para_pack("The restart was unlawful under the plant rules.")
+    p["sections"][0]["items"][0]["lint_ok"] = {"rule": "JC1", "reason": "Shri R. K. Sharma approved this wording"}
+    hits = pl.lint(p, w, kind="pack")
+    assert ("JC1", "$.sections[0].items[0].lint_ok.reason") in [(h.rule, h.path) for h in hits]
+    assert "JC5" in rules(hits)                          # JC1 accepted, so JC5 on the text still fires
+    p["sections"][0]["items"][0]["lint_ok"] = [{"rule": "JC5", "reason": "as agreed with Acme Pumps Ltd"}]
+    hits = pl.lint(p, w, kind="pack", orgs=["Acme Pumps"])
+    assert [(h.rule, h.path) for h in hits] == [("JC9", "$.sections[0].items[0].lint_ok[0].reason")]
+    assert pl.lint(p, w, kind="pack", share="external", orgs=["Acme Pumps"])[0].severity == "error"
+    p["sections"][0]["items"][0]["lint_ok"] = {"rule": "JC5", "reason": "quoting the standard's title"}
+    assert pl.lint(p, w, kind="pack") == []
+    assert any("lint_ok.reason: JC1" in x
+               for x in pp.check_pack(dict(p, sections=[dict(p["sections"][0], items=[dict(
+                   p["sections"][0]["items"][0], lint_ok={"rule": "JC5", "reason": "per Mr J Smith"})])]), w).problems)

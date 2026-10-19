@@ -1,6 +1,7 @@
 """Tests on the committed Hazira sample (public record). Later tasks reuse the module fixture `hz`."""
 import json
 import re
+import shutil
 import subprocess
 import sys
 import types
@@ -193,3 +194,70 @@ def test_hazira_register_lint_calibration(hz):
     assert r.returncode == 0 and r.stdout.strip().splitlines()[-1].startswith("check-language: 0 errors"), r.stdout
     md = (SAMPLE / "outputs" / "learnings-register.md").read_text(encoding="utf-8").splitlines()
     assert md[2] == "*" + reg["status"] + "*"
+
+
+# ----------------------------------------------------------------------------- Task 7: the 2-card print budget
+
+PRINT_2_CARD = Path(__file__).resolve().parent / "fixtures" / "hazira" / "print-2-card.json"
+CHROME = next((shutil.which(x) for x in ("google-chrome", "chromium", "chromium-browser") if shutil.which(x)), None)
+
+
+@pytest.fixture(scope="module")
+def two_card(hz, tmp_path_factory):
+    out = tmp_path_factory.mktemp("two-card")
+    for mode in ("cited", "summary"):
+        run("pack", str(hz.ws), str(PRINT_2_CARD), "--out", str(out / mode), "--embed", mode)
+    pack = json.loads(PRINT_2_CARD.read_text(encoding="utf-8"))
+    return types.SimpleNamespace(pack=pack, out=out,
+                                 html=(out / "cited" / "frontline-learning-cards.html"),
+                                 summary=(out / "summary" / "frontline-learning-cards.html"))
+
+
+def test_hazira_2_card_fixture_passes_check_pack(hz):
+    r = subprocess.run([sys.executable, str(PMLC), "check-pack", str(hz.ws), str(PRINT_2_CARD)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    pack = json.loads(PRINT_2_CARD.read_text(encoding="utf-8"))
+    cards = [it for s in pack["sections"] for it in s["items"] if it["kind"] == "card"]
+    assert len(cards) == 2 and pack["scope"] == {"tiers": ["T1"]} and pack["pack"] == "frontline-learning-cards"
+    assert all(c.get("organisation_changing") and c.get("why_made_sense") for c in cards)
+
+
+def test_hazira_2_card_print_budget(two_card):
+    import pmlc_pack as pp
+    raw = two_card.html.read_bytes()
+    assert len(raw) < 200_000, len(raw)
+    t = raw.decode("utf-8")
+    trail = re.search(r'<section class="trail">(.*?)</section>', t, re.S).group(1)
+    fids, eids = pp.cited_ids(two_card.pack)
+    assert re.findall(r"<dt>([^<]+)</dt>", trail) == fids + eids
+    assert '<p class="printonly">2 of 227 relevant findings cited</p>' in t
+
+
+def test_hazira_2_card_summary_leaks_no_quotes(hz, two_card):
+    """Review Focus 5 on real data: no evidence description or Specific Reference of a cited record anywhere."""
+    import pmlc_pack as pp
+    t = two_card.summary.read_text(encoding="utf-8")
+    ev = json.loads((hz.ws / "evidence.json").read_text(encoding="utf-8"))
+    findings = {f["id"]: f for f in json.loads((hz.ws / "findings.json").read_text(encoding="utf-8"))}
+    fids, eids = pp.cited_ids(two_card.pack)
+    linked = [x for f in fids for x in findings[f]["evidence"]]
+    quotes = [ev[x]["description"] for x in dict.fromkeys(eids + linked) if x in ev]
+    quotes += [ln["reference"] for x in dict.fromkeys(eids + linked) if x in ev for ln in ev[x]["links"] if ln["reference"]]
+    assert quotes
+    escaped = [q for q in quotes if q and (q in t or json.dumps(q, ensure_ascii=False)[1:-1] in t)]
+    assert escaped == []
+
+
+@pytest.mark.skipif(not CHROME, reason="no headless Chrome or Chromium")
+def test_hazira_2_card_prints_4_pages_or_fewer(two_card, tmp_path):
+    pdf = tmp_path / "two-card.pdf"
+    r = subprocess.run([CHROME, "--headless", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer",
+                        f"--print-to-pdf={pdf}", two_card.html.as_uri()], capture_output=True, text=True, timeout=120)
+    assert pdf.exists(), r.stderr
+    if shutil.which("pdfinfo"):
+        info = subprocess.run(["pdfinfo", str(pdf)], capture_output=True, text=True).stdout
+        pages = int(re.search(r"^Pages:\s+(\d+)", info, re.M).group(1))
+    else:
+        pages = len(re.findall(rb"/Type\s*/Page(?!s)", pdf.read_bytes()))
+    assert 1 <= pages <= 4, pages

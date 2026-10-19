@@ -42,11 +42,23 @@
   /* A finding's text is the investigation's AI-drafted wording: true unless the export marks it edited by a person. */
   function unedited(f) { return ["", "no"].indexOf(String(f.user_edited || "").trim().toLowerCase()) !== -1; }
 
+  /* --embed cited and summary: an uncovered or excluded finding travels as {id, label, rating} only. */
+  var STUB_KEYS = ["id", "label", "rating"];
+  var STUB_NOTE = "Only the label and rating are embedded in this page.";
+  function isStub(f) {
+    var keys = f && typeof f === "object" ? Object.keys(f) : [];
+    return keys.length === STUB_KEYS.length && keys.every(function (k) { return STUB_KEYS.indexOf(k) !== -1; });
+  }
+
   function nonEmpty(rows) { return rows.filter(function (r) { return r[1] && String(r[1]).trim() !== ""; }); }
 
   /* [label, value] rows describing one finding or evidence record, or null if it is not in the data. */
   function recordRows(id, data) {
     var f = data && data.findings && data.findings[id];
+    if (f && isStub(f)) {
+      return nonEmpty([["Finding", f.label || ""],
+        ["Rating", f.rating === null || f.rating === undefined ? "" : String(f.rating)], ["Detail", STUB_NOTE]]);
+    }
     if (f) {
       var c = f.clusters || {};
       return nonEmpty([
@@ -78,7 +90,8 @@
     var rows = recordRows(id, data);
     if (!rows) return null;
     var f = data.findings && data.findings[id], b = data.brand || {};
-    return {banner: f ? b.export_banner || null : null, chip: f && unedited(f) ? b.ai_chip || null : null, rows: rows};
+    return {banner: f ? b.export_banner || null : null, chip: f && !isStub(f) && unedited(f) ? b.ai_chip || null : null,
+            rows: rows};
   }
 
   function el(tag, cls, text) {
@@ -126,6 +139,11 @@
 
   function setAll(open) {
     document.querySelectorAll("main details:not(.rail)").forEach(function (d) { d.open = open; });
+  }
+
+  /* Print opens what prints; the uncovered list (.noprint) prints as one line instead (L4-01). */
+  function openForPrint() {
+    document.querySelectorAll("main details:not(.rail):not(.noprint)").forEach(function (d) { d.open = true; });
   }
 
   function route() {
@@ -180,7 +198,7 @@
     on("expand-all", function () { setAll(true); });
     on("collapse-all", function () { setAll(false); });
     on("print", function () { window.print(); });
-    window.addEventListener("beforeprint", function () { setAll(true); });
+    window.addEventListener("beforeprint", openForPrint);
     window.addEventListener("hashchange", route);
   }
 

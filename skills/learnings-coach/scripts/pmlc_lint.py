@@ -133,8 +133,7 @@ def _t1(doc) -> bool:
     return isinstance(sc, dict) and sc.get("tiers") == ["T1"]
 
 
-def _lint_string(c, s, path, ids, quiet, t1):
-    ext = c.share == "external"
+def _jc1(c, s, path, quiet):
     spans = []
     for rx in (c.hon_rx, c.names_rx):
         for m in rx.finditer(s) if rx else ():
@@ -147,6 +146,19 @@ def _lint_string(c, s, path, ids, quiet, t1):
             continue
         if not any(tok.lower() in c.vocab or re.sub("s$", "", tok.lower()) in c.vocab for tok in (a, b)):
             c.hit("JC1", path, f"{a} {b}", quiet=quiet)
+
+
+def _jc9(c, s, path, quiet, ext):
+    seen = []
+    for m in [*(c.orgs_rx.finditer(s) if c.orgs_rx else ()), *(m for rx in c.rx["JC9"] for m in rx.finditer(s))]:
+        if not any(x < m.end() and m.start() < y for x, y in seen):     # one hit per organisation name
+            seen.append((m.start(), m.end()))
+            c.hit("JC9", path, m.group(0).strip(), severity="error" if ext else "warning", quiet=quiet)
+
+
+def _lint_string(c, s, path, ids, quiet, t1):
+    ext = c.share == "external"
+    _jc1(c, s, path, quiet)
     for rule in ("JC2", "JC3", "JC4", "JC5", "JC12"):
         for rx in c.rx[rule]:
             for m in rx.finditer(s):
@@ -161,20 +173,16 @@ def _lint_string(c, s, path, ids, quiet, t1):
             num = re.match(r"\d+(?:\.\d+)?", m.group(0)).group(0)
             if not c.number_known(num, ids):
                 c.hit("JC8", path, m.group(0), quiet=quiet)
-    seen = []
-    for m in [*(c.orgs_rx.finditer(s) if c.orgs_rx else ()), *(m for rx in c.rx["JC9"] for m in rx.finditer(s))]:
-        if not any(x < m.end() and m.start() < y for x, y in seen):     # one hit per organisation name
-            seen.append((m.start(), m.end()))
-            c.hit("JC9", path, m.group(0).strip(), severity="error" if ext else "warning", quiet=quiet)
+    _jc9(c, s, path, quiet, ext)
     if ext:
         for m in privacy.TAG_RX.finditer(s):
             c.hit("JC10", path, m.group(0), quiet=quiet)
 
 
 def _lint_ok(c, d, path):
-    """(rules an item's lint_ok suppresses, problem hits): {rule, reason}, or a list of them; an empty reason or an
-    unknown rule suppresses nothing and is an error."""
-    ok, rules, bad = d.get("lint_ok"), set(), []
+    """(rules an item's lint_ok suppresses, problem hits, [(path, reason)]): {rule, reason}, or a list of them; an
+    empty reason or an unknown rule suppresses nothing and is an error."""
+    ok, rules, bad, reasons = d.get("lint_ok"), set(), [], []
     for i, x in enumerate(ok if isinstance(ok, list) else [] if ok is None else [ok]):
         p = f"{path}.lint_ok" + (f"[{i}]" if isinstance(ok, list) else "")
         rule = x.get("rule") if isinstance(x, dict) else None
@@ -185,12 +193,18 @@ def _lint_ok(c, d, path):
             bad.append(Hit("lint_ok", "error", f"{p}.reason", "", "give the reason the rule does not apply here"))
         else:
             rules.add(rule)
-    return rules, bad
+            reasons.append((f"{p}.reason", reason))
+    return rules, bad, reasons
 
 
 def _suppressed(c, d, path, quiet) -> frozenset:
-    rules, bad = _lint_ok(c, d, path)
+    """The rules this dict's lint_ok adds to quiet. The reason is rendered on the page, so it is checked for names
+    (JC1) and organisations (JC9) itself, and no lint_ok quiets that check (ruling X14)."""
+    rules, bad, reasons = _lint_ok(c, d, path)
     c.hits += bad
+    for rp, reason in reasons:
+        _jc1(c, reason, rp, ())
+        _jc9(c, reason, rp, (), c.share == "external")
     return quiet | frozenset(rules)
 
 

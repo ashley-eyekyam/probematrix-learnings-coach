@@ -427,7 +427,8 @@ def test_detail_data(ws):
     assert set(d["findings"]) == {"FND-0001", "FND-0002", "FND-0003", "FND-0004"}
     assert d["findings"]["FND-0001"]["clusters"]["F"]
     assert d["findings"]["FND-0001"]["votes"] == []
-    assert set(d["evidence"]) == {"EVD-0001", "EVD-0002", "EVD-0003"}
+    assert set(d["evidence"]) == {"EVD-0001", "EVD-0002"}           # --embed cited: EVD-0003 only backs FND-0003
+    assert set(pmlc.build_detail_data(w, MINI_REG, embed="full")["evidence"]) == {"EVD-0001", "EVD-0002", "EVD-0003"}
     assert {u["id"]: u["reason"] for u in d["uncovered"]} == {
         "FND-0003": "not covered by any learning", "FND-0004": "not covered by any learning"}
     assert d["derived"]["LR-01"] == {"level": "L3 Supervision", "entity": "F02",
@@ -438,7 +439,38 @@ def test_detail_data(ws):
     w2 = dict(w, incident=dict(w["incident"], review_votes=[{"finding": "FND-0004", "vote": "downgrade", "reason": "r"}]))
     d2 = pmlc.build_detail_data(w2, MINI_REG)
     assert {u["id"]: u["reason"] for u in d2["uncovered"]}["FND-0004"] == "reviewer downgrade vote"
-    assert d2["findings"]["FND-0004"]["votes"][0]["vote"] == "downgrade"
+    assert pmlc.build_detail_data(w2, MINI_REG, embed="full")["findings"]["FND-0004"]["votes"][0]["vote"] == "downgrade"
+
+
+def test_detail_data_embed_modes(ws):
+    w = pmlc.load_ws(ws)
+    w["incident"] = dict(w["incident"], review_votes=[{"finding": "FND-0001", "vote": "upgrade", "reason": "seen it"}])
+    d = pmlc.build_detail_data(w, MINI_REG)
+    assert d == pmlc.build_detail_data(w, MINI_REG, embed="cited")
+    assert set(d["findings"]["FND-0003"]) == {"id", "label", "rating"} and "short" in d["findings"]["FND-0001"]
+    assert "key_questions" in d["findings"]["FND-0001"]          # cited keeps the full record
+    s = pmlc.build_detail_data(w, MINI_REG, embed="summary")
+    assert "description" not in s["evidence"]["EVD-0001"] and s["evidence"]["EVD-0001"]["type"] == "document"
+    assert all("reference" not in ln for ln in s["evidence"]["EVD-0001"]["links"])
+    assert not {"key_questions", "suggested_interviews"} & set(s["findings"]["FND-0001"])
+    assert s["findings"]["FND-0001"]["votes"] == [{"finding": "FND-0001", "vote": "upgrade"}]
+    assert w["incident"]["review_votes"][0]["reason"] == "seen it"          # the workspace is not changed
+    full = pmlc.build_detail_data(w, MINI_REG, embed="full")
+    assert "short" in full["findings"]["FND-0003"] and full["uncovered"] == d["uncovered"]
+
+
+def test_dashboard_embed_flag(ws, tmp_path):
+    reg = tmp_path / "r.json"
+    reg.write_text(json.dumps(MINI_REG))
+    for mode, stub in (("cited", True), ("summary", True), ("full", False)):
+        out = tmp_path / f"{mode}.html"
+        run("dashboard", str(ws), "--register", str(reg), "--out", str(out), "--embed", mode)
+        d = _data_block(out.read_text(encoding="utf-8"))
+        assert (set(d["findings"]["FND-0003"]) == {"id", "label", "rating"}) is stub, mode
+        assert ("description" in d["evidence"]["EVD-0001"]) is (mode != "summary"), mode
+    out = tmp_path / "default.html"
+    run("dashboard", str(ws), "--register", str(reg), "--out", str(out))
+    assert set(_data_block(out.read_text(encoding="utf-8"))["findings"]["FND-0003"]) == {"id", "label", "rating"}
 
 
 def test_detail_data_minimal_workspace(ws):
