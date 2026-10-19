@@ -14,9 +14,13 @@ PATTERNS = {"email": r"[\w.+-]+@[\w-]+\.[\w.-]+", "phone": r"\+?\d[\d\s-]{8,}\d"
             "staff_no": r"(?i)\b(staff|emp(loyee)?|CPF|badge|ID)\s*(no\.?|number|#)\s*\w+"}
 # An organisation name ends in a company suffix: "Acme Pumps Ltd".
 ORG_SUFFIX_RX = re.compile(r"\b(?:[A-Z][\w&'-]*\s+){1,4}(?:Ltd|Pvt|Inc|GmbH|LLC|Limited)\b\.?")
-# A role string with a grade, post or location qualifier, or a trailing ' - word' / '(word)'.
-QUALIFIER_RX = re.compile(r"(?i)\b(post|gate|shift|grade|no\.?|desk|cabin|CR|control room)\b|#\s*\d"
-                          r"|\s-\s[\w.]+\s*$|\(\w[\w.]*\)\s*$")
+# A role string that carries an instance identifier: a qualifier word plus a number or letter id ('Gate 3',
+# 'CR-2', 'Shift A', 'No. 4'), '#<digits>', or a ' - X' / '(X)' suffix that contains a digit. A bare 'control room',
+# 'shift', '(owner)' or '- Operations' does not identify one person.
+QUALIFIER_RX = re.compile(r"\b(?i:post|gate|shift|grade|no\.?|desk|cabin|CR|control room)[\s-]*(?:\d+|[A-Z]\b)"
+                          r"|#\s*\d|\s-\s[^()]*\d[^()]*$|\([^()]*\d[^()]*\)\s*$")
+# A group role (the crew, not a person) is never a singleton.
+GROUP_RX = re.compile(r"(?i)\b(?:operators|crew|team|staff|workers|personnel)\s*$")
 
 # Equipment tags such as AO-101 or PSV12A: letters then digits. Finding, Evidence, LR and ML IDs are not tags.
 TAG_RX = re.compile(r"\b(?!(?:FND|EVD|LR|ML)-)[A-Z]{1,5}-?\d{2,6}[A-Z]?\b")
@@ -110,6 +114,8 @@ def build_singletons(role_map: dict, findings: list, tax: dict, tier_labels: dic
     sole = {rs[0]: slot for slot, rs in by_slot.items() if len(rs) == 1}
     roles = []
     for r in sorted(role_map):
+        if GROUP_RX.search(re.split(r"\s-\s|\(", r)[0].strip()):
+            continue
         reason = "qualifier" if QUALIFIER_RX.search(r) else "single-holder" if r in sole else None
         if not reason:
             continue

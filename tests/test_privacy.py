@@ -11,7 +11,7 @@ import pmlc  # noqa: E402
 import pmlc_lint as pl  # noqa: E402
 import pmlc_privacy as pv  # noqa: E402
 
-ROLES = "Security Guard - Gate 3, Shift Engineer (CR), Operator"
+ROLES = "Security Guard - Gate 3, Shift A Engineer (CR 2), Operator"
 
 
 @pytest.fixture(scope="module")
@@ -34,16 +34,35 @@ def test_singletons_written_by_classify(sws):
     assert doc["version"] == 1
     by = {e["role"]: e for e in doc["roles"]}
     assert by["Security Guard - Gate 3"]["reason"] == "qualifier"
-    assert by["Shift Engineer (CR)"]["reason"] == "qualifier"
+    assert by["Shift A Engineer (CR 2)"]["reason"] == "qualifier"
     assert "Operator" not in by
     for e in doc["roles"]:
         assert set(e) == {"role", "reason", "findings", "generalised"}
         assert e["findings"] >= 1 and re.fullmatch(r".+ \(.+\)", e["generalised"])
-    assert pv.load_singletons(pmlc.load_ws(sws))["Shift Engineer (CR)"] == by["Shift Engineer (CR)"]["generalised"]
+    assert pv.load_singletons(pmlc.load_ws(sws))["Shift A Engineer (CR 2)"] == by["Shift A Engineer (CR 2)"]["generalised"]
     p.unlink()
     assert pmlc.load_ws(sws)["singletons"] == []
     run("classify", str(sws))
     assert p.exists()
+
+
+def _qual(role):
+    tax = {"entities": [{"id": "F01", "name": "Ops"}]}
+    out = pv.build_singletons({role: {"F": ["F01"], "T": "T1", "R": "actor"}}, [{"roles": [role]}], tax, {"T1": "Frontline"})
+    return [e["role"] for e in out["roles"]]
+
+
+@pytest.mark.parametrize("role", ["Control Room Operator", "Control Room Operators", "Shift Supervisor",
+                                  "Maintenance Planner (owner)", "Field Operator - Operations",
+                                  "Gas Terminal Control Room Operators (Gas Terminal CR 2)"])
+def test_crew_and_bare_qualifiers_are_not_singletons(role):
+    assert _qual(role) == []
+
+
+@pytest.mark.parametrize("role", ["Security Guard - Gate 3", "Panel Operator CR-2", "Shift A Supervisor",
+                                  "Clerk #4", "Welder (Bay 7)", "Desk B Clerk", "Control Room 2 Operator"])
+def test_instance_ids_are_singletons(role):
+    assert _qual(role) == [role]
 
 
 def test_single_holder_role():
@@ -64,6 +83,8 @@ def test_jc7_uses_singletons(sws):
     external = [h for h in pl.lint(p, w, kind="pack", share="external") if h.rule == "JC7"]
     assert [h.severity for h in internal] == ["warning"]
     assert [h.severity for h in external] == ["error"]
+    ordinary = pack_with(item("para", text="The Control Room Operator closed the valve.", cites=["FND-0001"]))
+    assert not [h for h in pl.lint(ordinary, w, kind="pack", share="external") if h.rule == "JC7"]
     clean = pack_with(item("para", text="The Operator closed the valve.", cites=["FND-0001"]))
     assert not [h for h in pl.lint(clean, w, kind="pack", share="external") if h.rule == "JC7"]
 
