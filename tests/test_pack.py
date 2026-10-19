@@ -920,3 +920,67 @@ def test_pack_downgraded_needs_note(w):
     assert not any("downgrade vote" in x for x in pp.check_pack(p, w2).problems)
     p2 = pack_with(item("learning"), bottom_line=[{"text": "x", "cites": ["FND-0004"]}])
     assert any("bottom_line" in x and "downgrade vote" in x for x in pp.check_pack(p2, w2).problems)
+
+
+# ---- phase 2, task 11: wording and the two new optional fields
+SKILLS = ROOT / "skills"
+
+
+def test_card_organisation_changing_warning(w):
+    t1 = pack_with(item("card"), scope={"tiers": ["T1"]})
+    res = pp.check_pack(t1, w)
+    assert res.problems == []
+    assert any(x.startswith("card ") and x.endswith(": add organisation_changing (what the organisation is changing)")
+               for x in res.warnings), res.warnings
+    ok = pack_with(item("card", organisation_changing="Procedures now require a design-pressure test."),
+                   scope={"tiers": ["T1"]})
+    assert not any("organisation_changing" in x for x in pp.check_pack(ok, w).warnings)
+    t2 = pack_with(item("card"), scope={"tiers": ["T2"]})
+    assert not any("organisation_changing" in x for x in pp.check_pack(t2, w).warnings)
+    assert problems(pack_with(item("card", organisation_changing="")), w)
+    md = pp.render_pack_md(ok, w)
+    assert "**What the organisation is changing:** Procedures now require a design-pressure test." in md
+    assert "What the organisation is changing" in pp.render_pack_html(w, ok, "r", "d")
+
+
+def test_timeline_knowable_then_accepted_and_rendered(w):
+    ev = [{"date": "2022-03", "text": "Local seal purchases begin", "knowable_then": "Stores held the purchase record.",
+           "cites": ["FND-0003"]},
+          {"date": "2024-03-12", "text": "Seal changed", "knowable_then": False, "cites": ["FND-0003"]}]
+    p = pack_with(item("timeline", events=ev))
+    assert pp.check_pack(p, w).problems == []
+    md = pp.render_pack_md(p, w)
+    assert "Knowable then: Stores held the purchase record." in md and "Knowable then: no" in md
+    h = pp.render_pack_html(w, p, "r", "d")
+    assert "Knowable then: Stores held the purchase record." in h and "Knowable then: no" in h
+    for bad_v in ("", 3):
+        q = pack_with(item("timeline", events=[{"date": "2022", "text": "x", "knowable_then": bad_v}]))
+        assert any("events[0].knowable_then: must be true, false or text" in x for x in problems(q, w))
+
+
+def test_register_trigger_no_regulator_invite():
+    t = (SKILLS / "learnings-register" / "SKILL.md").read_text(encoding="utf-8")
+    desc = re.search(r"^description:\s*(.+)$", t, re.M).group(1)
+    assert not re.search(r"(?i)share with .*regulator", desc)
+    assert "regulator" not in desc.lower() or "not" in desc.lower()
+    assert "Sharing outside the organisation" in t
+
+
+def test_hub_sign_off_rule():
+    t = (SKILLS / "learnings-coach" / "SKILL.md").read_text(encoding="utf-8")
+    assert "never run sign-off unless" in t
+    assert "check-language" in t and "--share" in t and "--embed summary" in t
+
+
+def test_principles_sections():
+    t = (SKILLS / "learnings-coach" / "references" / "learning-principles.md").read_text(encoding="utf-8")
+    for h in ("1a. Hindsight", "Interviews in a just culture"):
+        assert re.search(rf"^#+ .*{re.escape(h)}", t, re.M), h
+    assert '"failed to X" | "X was not done; the system did not require or support X"' in t
+    assert "owns the change" in t
+
+
+def test_supervisor_no_enforce_habit():
+    t = (SKILLS / "supervisor-coach" / "SKILL.md").read_text(encoding="utf-8")
+    assert not re.search(r"(?i)\benforce\b", t)
+    assert "Make the safe way the easy way" in t

@@ -25,7 +25,7 @@ Pick five to eight learnings that a frontline person can **notice or act on** du
 
 ## Write
 
-One **Learning Card** per learning (title, what happened, why it made sense at the time, warning signs, what good looks like, three discussion questions, evidence trail). Use the words crews use. Roles only, no names. Keep each card under 250 words.
+One **Learning Card** per learning (title, what happened, why it made sense at the time, what the organisation is changing, warning signs, what good looks like, three discussion questions, evidence trail). Use the words crews use. Roles only, no names. Keep each card under 250 words.
 
 Then two or three **toolbox talks** (five minutes each) that group the cards by task (e.g. "returning equipment to service", "first minutes of a gas release").
 
@@ -41,7 +41,7 @@ PMLC pack <ws> <run>/outputs/frontline-learning-cards.json         # -> frontlin
 ```
 
 Sections → kinds:
-- Learning Cards: `card` ×5–8 (title, what_happened, why_made_sense, warning_signs, good_looks_like, discussion ×3; **must cite**).
+- Learning Cards: `card` ×5–8 (title, what_happened, **why_made_sense** and **organisation_changing** (both required in this skill; `check-pack` warns when `organisation_changing` is missing in a T1 pack), warning_signs, good_looks_like, discussion ×3; **must cite**).
 - Toolbox talks: one `para` per talk, with `group` = the talk's task, then a `scenario` for its discussion.
 - "Stop and ask": `check` items, with `when` = the situation.
 
@@ -49,7 +49,9 @@ Set `"scope": {"tiers": ["T1"]}`. Put data-quality corrections in `data_quality`
 
 ```json
 {"kind": "card", "title": "Test what you disturb", "what_happened": "…", "why_made_sense": "…",
- "warning_signs": ["…"], "good_looks_like": "…", "discussion": ["…", "…", "…"], "cites": ["FND-…"]}
+ "organisation_changing": "…", "warning_signs": ["…"], "good_looks_like": "…", "discussion": ["…", "…", "…"], "cites": ["FND-…"]}
 ```
+
+**Facilitator note (put it in a `para` before the cards).** These cards are read by the people whose acts appear in the findings. Consult those involved before wide release. Never single out "the" operator of a small crew: if only one person held a role, write the task, not the post. Do not close a card with "be more careful" or "stay vigilant"; say what the organisation is changing instead (`organisation_changing`).
 
 If translation is requested, translate the text fields and keep every ID unchanged.

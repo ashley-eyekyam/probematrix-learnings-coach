@@ -30,7 +30,7 @@ KINDS = {
     "recommendation": {"req": ["change", "indicator", "hoc_tier"], "opt": ["barrier", "owner", "by_when"], "cite": True},
     "decision": {"req": ["decision"], "opt": ["options", "trade_offs", "owner", "by_when"]},
     "indicator": {"req": ["name", "measure"], "opt": ["deterioration", "owner"]},
-    "card": {"req": ["title", "what_happened", "warning_signs", "good_looks_like"], "opt": ["why_made_sense", "discussion"],
+    "card": {"req": ["title", "what_happened", "warning_signs", "good_looks_like"], "opt": ["why_made_sense", "organisation_changing", "discussion"],
              "cite": True},
     "scenario": {"req": ["situation", "prompts"], "opt": []},
     "table": {"req": ["columns", "rows"], "opt": ["row_cites", "row_supporting_cites", "finding_notes"]},
@@ -91,7 +91,7 @@ INLINE_FIELDS = {
     "para": ["text"], "check": ["text"], "question": ["question", "why", "answer", "good_evidence"],
     "recommendation": ["change", "indicator"], "decision": ["decision", "options", "trade_offs"],
     "indicator": ["name", "measure", "deterioration", "owner"],
-    "card": ["what_happened", "why_made_sense", "warning_signs", "good_looks_like", "discussion"],
+    "card": ["what_happened", "why_made_sense", "organisation_changing", "warning_signs", "good_looks_like", "discussion"],
     "scenario": ["situation", "prompts"], "table": ["rows"],
     "test_point": ["requirement", "sample", "conformity_evidence", "red_flags"],
     "module": ["objective", "content", "assessment"], "barrier": ["barrier", "failure_mode", "fix", "indicator"],
@@ -240,6 +240,8 @@ def _check_timeline(it, ip, bad):
             bad(f"{ep}.signal", "must be true or false")
         if "time" in ev and not (isinstance(ev["time"], str) and TIME_RX.fullmatch(ev["time"])):
             bad(f"{ep}.time", "must be HH:MM (24-hour)")
+        if "knowable_then" in ev and not (isinstance(ev["knowable_then"], bool) or _text(ev["knowable_then"])):
+            bad(f"{ep}.knowable_then", "must be true, false or text")
         for f in ("received_by", "response"):
             if f in ev and not _text(ev[f]):
                 bad(f"{ep}.{f}", "must be non-empty text")
@@ -431,6 +433,12 @@ def _check_follow_up(secs, bad):
             seen.add(x)
 
 
+def tiers_in_scope(pack) -> list:
+    sc = pack.get("scope") if isinstance(pack, dict) else None
+    t = sc.get("tiers") if isinstance(sc, dict) else None
+    return t if isinstance(t, list) else []
+
+
 def check_pack(pack, w) -> Result:
     """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings)."""
     P, W = [], []
@@ -518,6 +526,9 @@ def check_pack(pack, w) -> Result:
                     bad(f"{ip}.id", f"duplicate id {iid!r}")
                 seen.add(iid)
             _check_item(it, ip, bad, warn)
+            if (isinstance(it, dict) and it.get("kind") == "card" and not it.get("organisation_changing")
+                    and "T1" in (tiers_in_scope(pack) or [])):
+                warn(f"card {iid or ip}", "add organisation_changing (what the organisation is changing)")
     if pack.get("pack") == "investigator-coach":
         _check_follow_up(secs, bad)
 
@@ -756,6 +767,11 @@ def coverage(w, pack) -> dict:
     return {"relevant": len(rel), "cited": len(rel) - len(unc), "uncovered": unc, "excluded": excl}
 
 
+def _knowable(v) -> str:
+    """How a timeline event's knowable_then reads: text as written, or yes / no for a bool."""
+    return ("yes" if v else "no") if isinstance(v, bool) else str(v)
+
+
 def sorted_events(events) -> list:
     """By date, then time; events with the same date and no time keep the author's order (sorted is stable)."""
     return sorted(events, key=lambda e: (e["date"], e.get("time") or ""))
@@ -839,6 +855,8 @@ def _md_item(it) -> str:
         parts = [f"### {it['title']}{c}", f"**What happened:** {it['what_happened']}"]
         if g("why_made_sense"):
             parts.append(f"**Why it made sense at the time:** {it['why_made_sense']}")
+        if g("organisation_changing"):
+            parts.append(f"**What the organisation is changing:** {it['organisation_changing']}")
         parts.append("**Warning signs:**\n" + "\n".join(f"- {x}" for x in it["warning_signs"]))
         parts.append(f"**What good looks like:** {it['good_looks_like']}")
         if g("discussion"):
@@ -879,6 +897,8 @@ def _md_item(it) -> str:
             lines.append(f"- {when}: {e['text']}{' *(weak signal)*' if e.get('signal') else ''}{_c(e.get('cites'))}")
             lines += [f"  - {lab}: {e[f]}" for f, lab in (("received_by", "Received by"), ("response", "Response"))
                       if e.get(f)]
+            if "knowable_then" in e:
+                lines.append(f"  - Knowable then: {_knowable(e['knowable_then'])}")
         return (f"Sources:{c}\n\n" if c else "") + "\n".join(lines)
     if k == "graph":
         lab = {n["id"]: n["label"] for n in it["nodes"]}
@@ -1040,6 +1060,7 @@ def _html_item(it, graphs) -> str:
         disc = '<span class="label">Questions for discussion</span>' + _list(g("discussion"), "ol") if g("discussion") else ""
         body = (f'<div class="card"><h3>{_h(it["title"])}</h3>' + _labelled("What happened", it["what_happened"])
                 + _labelled("Why it made sense at the time", g("why_made_sense"))
+                + _labelled("What the organisation is changing", g("organisation_changing"))
                 + '<span class="label">Warning signs</span>' + _list(it["warning_signs"])
                 + _labelled("What good looks like", it["good_looks_like"]) + disc + c + "</div>")
     elif k == "scenario":
@@ -1085,6 +1106,8 @@ def _html_item(it, graphs) -> str:
             when = _h(event_when(e, _INC_DATE))
             more = "".join(f'<p class="m">{lab}: {_h(e[f])}</p>'
                            for f, lab in (("received_by", "Received by"), ("response", "Response")) if e.get(f))
+            if "knowable_then" in e:
+                more += f'<p class="m">Knowable then: {_h(_knowable(e["knowable_then"]))}</p>'
             lis.append(f'<li><time>{when}</time>{sig}{_inline(e["text"])} {_chips(e.get("cites"))}{more}</li>')
         body = f'<ol class="timeline">{"".join(lis)}</ol>{c}'
     elif k == "graph":

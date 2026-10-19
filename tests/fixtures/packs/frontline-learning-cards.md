@@ -18,6 +18,8 @@
 
 **Why it made sense at the time:** There was no return-to-service checklist, so the test was easy to miss [FND-0002].
 
+**What the organisation is changing:** Work orders now require a recorded leak test before the pump is released.
+
 **Warning signs:**
 - No test record on the work order
 - A seal that looks different from the usual part
@@ -32,6 +34,10 @@
 ### Know what the gas alarm does [FND-0004]
 
 **What happened:** The gas alarm showed on the display but did not shut anything down.
+
+**Why it made sense at the time:** The alarm looked like every other display alert, and nothing told the crew it did not trip equipment [FND-0004].
+
+**What the organisation is changing:** Alarm labels will say whether the alarm trips equipment or needs a person to act.
 
 **Warning signs:**
 - An alarm that only shows on a screen

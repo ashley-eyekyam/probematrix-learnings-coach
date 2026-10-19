@@ -49,4 +49,4 @@ Set `"scope": {"tags": ["engineering"]}`. Put data-quality corrections in `data_
  "state": "absent", "failure_mode": "…", "hoc_tier": "engineering", "fix": "…", "indicator": "…", "cites": ["FND-…"]}
 ```
 
-Do not specify engineering values (pressures, thicknesses, intervals) beyond what the evidence states; make them `decision` items for the technical authority.
+**Numbers rule.** Do not specify engineering values (pressures, thicknesses, intervals, percentages, durations) beyond what the cited records state; never add a figure from outside the export; make them `decision` items for the technical authority.

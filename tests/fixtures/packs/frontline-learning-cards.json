@@ -6,11 +6,14 @@
   {"id": "cards", "heading": "Learning Cards", "items": [
    {"kind": "card", "title": "Test what you disturb", "what_happened": "The pump was restarted after a seal change without a leak test.",
     "why_made_sense": "There was no return-to-service checklist, so the test was easy to miss [FND-0002].",
+    "organisation_changing": "Work orders now require a recorded leak test before the pump is released.",
     "warning_signs": ["No test record on the work order", "A seal that looks different from the usual part"],
     "good_looks_like": "No restart until the leak-test record is signed.",
     "discussion": ["Where is the test record kept?", "Who signs it?", "What do you do if the test rig is not available?"],
     "cites": ["FND-0001", "EVD-0001"]},
    {"kind": "card", "title": "Know what the gas alarm does", "what_happened": "The gas alarm showed on the display but did not shut anything down.",
+    "why_made_sense": "The alarm looked like every other display alert, and nothing told the crew it did not trip equipment [FND-0004].",
+    "organisation_changing": "Alarm labels will say whether the alarm trips equipment or needs a person to act.",
     "warning_signs": ["An alarm that only shows on a screen"],
     "good_looks_like": "Crews know which alarms trip equipment and which need a person to act.", "cites": ["FND-0004"]}]},
   {"id": "toolbox-talks", "heading": "Toolbox talks", "items": [

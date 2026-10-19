@@ -22,7 +22,7 @@ PMLC select <ws> --text "record|log|register|sign|closure|overdue|schedule|audit
 1. **Why existing assurance did not catch it**: what the findings say about audits, inspections and records before the event (generic checklists, open recommendations, closures without data). Factual, no blame.
 2. **Audit test points**: twelve to twenty, grouped by management-system element (maintenance and testing, change management, materials and spares, permits, competence, emergency preparedness, records, audit follow-up). Each: expectation → what to sample (and how many) → evidence of conformity → red flags seen in this event → evidence trail.
 3. **Cross-site verification protocol**: a short plan to test whether the top five conditions exist at other sites (sampling approach, records to pull, interviews by role, a site visit walk-path).
-4. **Evidence request list**: the documents and records an auditor should request, by function.
+4. **Evidence request list** (interviews follow "Interviews in a just culture" in `learnings-coach/references/learning-principles.md`): the documents and records an auditor should request, by function.
 5. **Reporting**: a grading scale (conforming / partly / not / not tested) and a results table template.
 
 ## Output

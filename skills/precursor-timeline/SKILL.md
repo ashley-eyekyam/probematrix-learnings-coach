@@ -17,7 +17,7 @@ This lists every dated mention in findings and evidence (`<ws>/timeline_candidat
 
 ## Curate
 
-For each candidate keep it only if it is a **signal**: something that could have told someone the risk was rising. Examples: an inspection that found degradation, a repeated repair on the same item, a skipped or overdue maintenance schedule, an audit recommendation left open, a procedure published but not used, a configuration change not documented. Record:
+For each candidate keep it only if it is a **signal**: something that could have told someone the risk was rising **and that they could actually see then** (see the knowable-then test in `learning-principles.md` §1a). Examples: an inspection that found degradation, a repeated repair on the same item, a skipped or overdue maintenance schedule, an audit recommendation left open, a procedure published but not used, a configuration change not documented. Record:
 
 | Field | Content |
 |---|---|
@@ -25,6 +25,7 @@ For each candidate keep it only if it is a **signal**: something that could have
 | Signal | what happened, in one line |
 | Received by | entity and tier (from `clusters.json` of the citing findings) |
 | Response | what was done with it, per the evidence ("none recorded" is an answer) |
+| Knowable then | `knowable_then`: what the receiver could know at that moment, or true/false; leave out hindsight-only signals |
 | Distance to event | months or years before the incident |
 | Evidence | finding and evidence IDs |
 
@@ -50,6 +51,7 @@ Sections and the kinds that fill them:
   - `signal: true`
   - Received by → `received_by`
   - Response → `response` ("None recorded" is an answer)
+  - Knowable then → `knowable_then` (optional text, or true or false)
   - Evidence → `cites`
 - **Event sequence on the day:** a second `timeline`, in its own section.
 - **Signal learnings:** `learning` ×3–6, with `owner` = the entity and tier that must change. Follow each with its `indicator`.

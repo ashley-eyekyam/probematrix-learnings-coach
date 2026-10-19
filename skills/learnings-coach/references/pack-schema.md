@@ -56,13 +56,13 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 | `recommendation` | change*, indicator*, hoc_tier*, barrier, owner, by_when; **must cite** | what should change, with its leading indicator and hierarchy-of-controls tier |
 | `decision` | decision*, options[], trade_offs, owner, by_when | decisions for leaders, pending engineering decisions |
 | `indicator` | name*, measure*, deterioration, owner | leading indicators, readiness indicators |
-| `card` | title*, what_happened*, why_made_sense, warning_signs[]*, good_looks_like*, discussion[]; **must cite** | Learning Cards (`output-style.md`) |
+| `card` | title*, what_happened*, why_made_sense, organisation_changing (what the organisation is changing; `check-pack` warns when a pack for tier T1 omits it), warning_signs[]*, good_looks_like*, discussion[]; **must cite** | Learning Cards (`output-style.md`) |
 | `scenario` | situation*, prompts[]* | coaching conversations, drills, exercises |
 | `table` | columns[]*, rows[][]*, row_cites[][], row_supporting_cites[][] | anything tabular; each row has as many cells as there are columns |
 | `test_point` | requirement*, sample*, conformity_evidence*, red_flags[]; **must cite** | audit test points |
 | `module` | title*, objective*, audience, duration, content[]*, assessment[] | training modules |
 | `barrier` | barrier*, failure_mode*, hoc_tier*, type, fix, owner, state (absent, degraded, defeated, worked partly, worked), indicator; **must cite** | barrier analysis |
-| `timeline` | events[]*: {date* (YYYY-MM-DD, YYYY-MM or YYYY), time (HH:MM), text*, signal (true/false), received_by, response, cites[]} | precursors, response timelines; events sort by date then time, and same-date events without a time keep your order |
+| `timeline` | events[]*: {date* (YYYY-MM-DD, YYYY-MM or YYYY), time (HH:MM), text*, signal (true/false), knowable_then (true, false or text: what could be known at that moment), received_by, response, cites[]} | precursors, response timelines; events sort by date then time, and same-date events without a time keep your order |
 | `graph` | nodes[]*: {id*, label*}; edges[]*: {from*, to*, label} | causal maps, interfaces; drawn as SVG with a text list of links. `PMLC causal-item <ws> --top 40` prints a ready graph item from `causal_graph.json` (run `PMLC causal` first) |
 | `learning` | lesson* (one sentence), explanation (two to four sentences), owner (who must learn it); **must cite** | a learning: the lesson, why, and its evidence (dossiers, manager and leadership coaches, signal and interface learnings) |
 

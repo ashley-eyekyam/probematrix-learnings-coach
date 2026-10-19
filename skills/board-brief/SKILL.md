@@ -44,4 +44,4 @@ Sections → kinds: 1 and 2 `para` · 3 `question` ×8–12 (question, why, good
  "why": "…", "good_evidence": "…", "to": "Chief Executive", "cites": ["FND-…"]}
 ```
 
-Neutral, factual tone; no blame of management or staff; roles only.
+Neutral, factual tone; no blame of management or staff; roles only. Any `owner` is the function that **owns the change**, not who "was involved" (`learning-principles.md`).

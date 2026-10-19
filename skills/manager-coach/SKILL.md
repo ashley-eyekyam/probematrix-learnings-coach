@@ -38,7 +38,7 @@ PMLC pack <ws> <run>/outputs/manager-coach.json         # -> manager-coach.html 
 ```
 
 Sections → kinds. Write one section per function (`id` = the function, e.g. `mechanical-maintenance`), with each part as a `group`:
-- What your system allowed: `learning` ×3–6 (`owner` = the role that owns the system).
+- What your system allowed: `learning` ×3–6 (`owner` = the function that **owns the change**, not who "was involved"; see `learning-principles.md`).
 - Interfaces you share: `para`.
 - Recommendations: `recommendation` (change, hoc_tier, barrier, indicator).
 - Leading indicators: `indicator` ×2–4.
@@ -50,5 +50,5 @@ Set `"scope": {"tiers": ["T3"]}`. Put data-quality corrections in `data_quality`
 
 ```json
 {"kind": "learning", "group": "What your system allowed", "lesson": "Return to service relied on memory, not a checklist.",
- "explanation": "…", "owner": "Maintenance manager", "cites": ["FND-…"]}
+ "explanation": "…", "owner": "Maintenance function", "cites": ["FND-…"]}
 ```

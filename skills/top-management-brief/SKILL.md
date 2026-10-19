@@ -43,7 +43,7 @@ Sections → kinds:
 4. `decision` ×4–6. Follow each one with its enterprise `indicator`, in the same `group`.
 5. `question`, with `to` = the role asked.
 
-Set `"scope": {"levels": [4], "min_rating": "top"}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. Use board-ready language.
+Set `"scope": {"levels": [4], "min_rating": "top"}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. Use board-ready language. Neutral, factual tone; no blame of management or staff; roles only. Name the function that owns the change, not the post (see owner wording in `learning-principles.md`).
 
 ```json
 {"kind": "table", "columns": ["Learning", "Transferability", "Reason"],
