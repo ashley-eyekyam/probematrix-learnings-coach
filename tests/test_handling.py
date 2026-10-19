@@ -165,12 +165,12 @@ def test_sign_off_register_refused_with_problems_then_signs_when_sound(tmp_path,
     r = cli("sign-off", str(okws), str(p), "--role", "HSE manager")
     assert r.returncode == 1 and "FND-9999" in r.stderr
     good = write(tmp_path, copy.deepcopy(MINI_REG), "reg2.json")
-    if cli("check-register", str(okws), str(good)).returncode == 0:
-        assert cli("sign-off", str(okws), str(good), "--role", "HSE manager").returncode == 0
-        reg = json.loads(good.read_text())
-        reg["entries"][0]["title"] += "x"
-        good.write_text(json.dumps(reg), encoding="utf-8")
-        assert "edited since sign-off" in cli("check-register", str(okws), str(good)).stdout
+    assert cli("check-register", str(okws), str(good)).returncode == 0  # precondition: MINI_REG is sound
+    assert cli("sign-off", str(okws), str(good), "--role", "HSE manager").returncode == 0
+    reg = json.loads(good.read_text())
+    reg["entries"][0]["title"] += "x"
+    good.write_text(json.dumps(reg), encoding="utf-8")
+    assert "edited since sign-off" in cli("check-register", str(okws), str(good)).stdout
 
 
 def test_sign_off_rejects_unknown_documents(tmp_path, okws):
@@ -185,3 +185,27 @@ def test_sign_off_bad_date_refused(tmp_path, okws):
     p = write(tmp_path, PACK)
     r = cli("sign-off", str(okws), str(p), "--role", "R", "--date", "19/10/2026")
     assert r.returncode == 1 and "handling.reviewed_on" in r.stderr
+
+
+def test_typed_in_status_without_sign_off_is_draft(okws):
+    w = pmlc.load_ws(okws)
+    doc = {**PACK, "handling": {"status": "approved"}}
+    eff = pmlc.effective_handling(doc, w)
+    assert eff["effective_status"] == "draft"
+    assert "invalid handling block" in eff["draft_reasons"]
+    full = {**PACK, "handling": {"status": "approved", "reviewer_role": "R", "reviewed_on": "2026-10-19"}}
+    assert pmlc.effective_handling(full, w)["effective_status"] == "draft"
+
+
+def test_invalid_handling_values_do_not_pass_through(okws):
+    w = pmlc.load_ws(okws)
+    eff = pmlc.effective_handling({**PACK, "handling": {"status": "validated", "classification": "confidential"}}, w)
+    assert eff["effective_status"] == "draft" and eff["classification"] == "internal"
+    assert "invalid handling block" in eff["draft_reasons"]
+
+
+def test_valid_signed_block_still_approved(tmp_path, okws):
+    p = write(tmp_path, PACK)
+    assert cli("sign-off", str(okws), str(p), "--status", "approved", "--role", "R").returncode == 0
+    eff = pmlc.effective_handling(json.loads(p.read_text()), pmlc.load_ws(okws))
+    assert eff["effective_status"] == "approved" and eff["draft_reasons"] == []

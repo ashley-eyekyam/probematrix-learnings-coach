@@ -306,6 +306,8 @@ HANDLING_ENUMS = {"status": ("draft", "reviewed", "approved"),
 REASON_IN_PROGRESS = "the investigation status is in progress"
 REASON_UNEDITED = "no finding is marked as edited by a person"
 REASON_EDITED_SINCE = "edited since sign-off"
+REASON_NOT_SIGNED = "not signed off"
+REASON_INVALID = "invalid handling block"
 WARN_NO_HANDLING = "no handling block: rendered as draft (internal)"
 WARN_EDITED_SINCE = "edited since sign-off: status is draft until signed off again"
 _HASH_RX = re.compile(r"sha256:[0-9a-f]{64}")
@@ -372,13 +374,22 @@ def effective_handling(doc, w) -> dict:
     h = doc.get("handling") if isinstance(doc, dict) else None
     out = {**HANDLING_DEFAULTS, **{k: v for k, v in (h if isinstance(h, dict) else {}).items() if k in HANDLING_KEYS}}
     out["distribution"] = list(out["distribution"]) if isinstance(out["distribution"], list) else []
+    for k, ok in HANDLING_ENUMS.items():  # an invalid value never passes through as effective
+        if out.get(k) not in ok:
+            out[k] = HANDLING_DEFAULTS[k]
     reasons = forced_draft_reasons(w)
-    mismatch = _hash_mismatch(doc)
-    if mismatch:
-        reasons.append(REASON_EDITED_SINCE)
-    out["draft_reasons"] = reasons
-    out["effective_status"] = "draft" if (not isinstance(h, dict) or out["status"] == "draft" or reasons) \
-        else out["status"]
+    problems = check_handling(doc)[0] if isinstance(h, dict) else []
+    claims = isinstance(h, dict) and h.get("status") in ("reviewed", "approved")
+    if problems:
+        reasons.append(REASON_INVALID)
+    if claims:
+        if _hash_mismatch(doc):
+            reasons.append(REASON_EDITED_SINCE)
+        elif not (isinstance(h.get("content_hash"), str) and not problems):
+            reasons.append(REASON_NOT_SIGNED)
+    out["draft_reasons"] = list(dict.fromkeys(reasons))
+    signed = claims and not reasons
+    out["effective_status"] = h["status"] if signed else "draft"
     return out
 
 
