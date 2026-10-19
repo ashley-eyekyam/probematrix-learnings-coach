@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 
 import pmlc as core
+import pmlc_lint
 
 SCHEMA_VERSION = 1
 STATUS_PHRASE = core.STATUS_PHRASE
@@ -439,7 +440,7 @@ def tiers_in_scope(pack) -> list:
     return t if isinstance(t, list) else []
 
 
-def check_pack(pack, w) -> Result:
+def check_pack(pack, w, *, names=(), orgs=(), share=None) -> Result:
     """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings)."""
     P, W = [], []
 
@@ -462,8 +463,6 @@ def check_pack(pack, w) -> Result:
         bad("schema", f"must be {SCHEMA_VERSION}")
     if _text(pack.get("pack")) and not PACK_NAME_RX.fullmatch(pack["pack"]):
         bad("pack", "must be lowercase words joined by hyphens (or dossier-F<nn>)")
-    if _text(pack.get("status")) and STATUS_PHRASE not in pack["status"]:
-        bad("status", f'must contain "{STATUS_PHRASE}"')
     inc = pack.get("incident")
     if inc is not None:
         if not isinstance(inc, dict):
@@ -573,6 +572,9 @@ def check_pack(pack, w) -> Result:
     hp, hw = core.check_handling(pack)
     P += hp
     W += hw
+    for h in pmlc_lint.lint(pack, w, kind="pack", share=share, names=names, orgs=orgs):   # JC11 owns the status check
+        if h.rule != "JC11" or _text(pack.get("status")):
+            (P if h.severity == "error" else W).append(pmlc_lint.as_problem(h))
     return Result(P, W, {"sections": len(secs), "items": n_items, "cited": len(ids)})
 
 
@@ -592,7 +594,7 @@ def _checked(a):
     """Load the workspace and pack, print warnings, exit listing every problem; else return (w, pack, result)."""
     w = core.load_ws(a.ws)
     pack, err = load_pack(a.pack)
-    res = Result([err], [], {}) if err else check_pack(pack, w)
+    res = Result([err], [], {}) if err else check_pack(pack, w, **pmlc_lint.cli_options(a))
     if not err and isinstance(pack, dict) and isinstance(pack.get("pack"), str):
         try:
             core.record_pack_check(a.ws, pack["pack"], a.pack, not res.problems, len(res.problems))

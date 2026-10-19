@@ -18,6 +18,7 @@ Subcommands
   check-pack    check a learning pack JSON against the workspace
   sign-off      record a person's review of a pack or register (writes its handling block and content hash)
   check-register check a Learnings Register JSON against the workspace
+  check-language just-culture and grounding lint (JC1-JC12) of a pack or register JSON
   pack          learning pack JSON -> <run>/outputs/<pack>.html and .md
   causal-item   the top causal links as a ready graph item for a pack (JSON on stdout)
   status        which derived files are current or stale, and the last check of each pack
@@ -2323,6 +2324,8 @@ def cmd_check_register(a):
         if cnt and norm_entity(e.get("owner_entity")) not in [k for k, _ in cnt.most_common(3)]:
             problems.append(f"{lid}: owner {norm_entity(e.get('owner_entity'))} is not among the top entities of its "
                             f"findings ({', '.join(k for k, _ in cnt.most_common(3))})")
+    lint_hits = _lint_module().lint(reg, w, kind="register", **_lint_module().cli_options(a))
+    problems += [_lint_module().as_problem(h) for h in lint_hits if h.severity == "error"]
     uncovered = [fid for fid in F if fid not in covered and fid not in downs]
     hp, hw = check_handling(reg)
     problems += hp
@@ -2338,6 +2341,9 @@ def cmd_check_register(a):
         print(line)
     for line in hw:
         print(f"warning: {line}")
+    for h in lint_hits:
+        if h.severity != "error":
+            print("warning: " + _lint_module().as_problem(h))
     sys.exit(1 if problems else 0)
 
 
@@ -2404,8 +2410,18 @@ def _pack_module():
     return pmlc_pack
 
 
+def _lint_module():
+    _pack_module()
+    import pmlc_lint
+    return pmlc_lint
+
+
 def cmd_check_pack(a):
     _pack_module().cmd_check_pack(a)
+
+
+def cmd_check_language(a):
+    _lint_module().cmd_check_language(a)
 
 
 def cmd_pack(a):
@@ -2423,6 +2439,13 @@ def _non_negative_int(v):
     if n < 0:
         raise argparse.ArgumentTypeError("--budget-chars must be 0 or more")
     return n
+
+
+def _lint_flags(s):
+    s.add_argument("--share", choices=["internal", "external", "public"],
+                   help="lint for this audience (default: the handling classification, else internal)")
+    s.add_argument("--names", help="names file, one per line (default: $PMLC_NAMES)")
+    s.add_argument("--orgs", help="organisation names file, one per line (default: $PMLC_ORGS)")
 
 
 def build_parser():
@@ -2537,7 +2560,14 @@ def build_parser():
     s = sp.add_parser("check-register", help="validate a Learnings Register JSON against the workspace")
     s.add_argument("ws")
     s.add_argument("register")
+    _lint_flags(s)
     s.set_defaults(fn=cmd_check_register)
+
+    s = sp.add_parser("check-language", help="just-culture and grounding lint (JC1-JC12) of a pack or register JSON")
+    s.add_argument("ws")
+    s.add_argument("json", help="a learning pack or Learnings Register JSON")
+    _lint_flags(s)
+    s.set_defaults(fn=cmd_check_language)
 
     s = sp.add_parser("register-xlsx", help="Learnings Register JSON -> xlsx")
     s.add_argument("register")
@@ -2560,6 +2590,7 @@ def build_parser():
     s = sp.add_parser("check-pack", help="check a learning pack JSON against the workspace")
     s.add_argument("ws")
     s.add_argument("pack")
+    _lint_flags(s)
     s.set_defaults(fn=cmd_check_pack)
 
     s = sp.add_parser("pack", help="learning pack JSON -> <run>/outputs/<pack>.html (and .md)")
