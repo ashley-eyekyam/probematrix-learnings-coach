@@ -88,4 +88,36 @@ def test_assets_are_inline_safe():
 @pytest.mark.skipif(not NODE, reason="node not installed")
 def test_detail_js_loads_without_dom():
     out = node(f"const d = require({json.dumps(str(DETAIL_JS))}); console.log(Object.keys(d).sort().join(','));")
-    assert out.strip() == "evidenceIdsFor,lensSpec,lensesFor,matches,parseHash,sortEntries,sortFindings,summarise,tokenize"
+    assert out.strip() == "evidenceIdsFor,lensSpec,lensesFor,matches,parseHash,provenance,sortEntries,sortFindings,summarise,tokenize"
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_detail_js_provenance_labels():
+    node(f"""
+const assert = require('assert');
+const d = require({json.dumps(str(DETAIL_JS))});
+const brand = {{ai_justification_label:'AI justification (ProbeMatrix)', ai_chip:'AI-drafted, not human-edited',
+  export_banner:"This is the investigation's AI-drafted wording, shown as evidence; it is not the coach's learning."}};
+const p = d.provenance({{id:'FND-A', justification:'valve was manual', user_edited:''}}, brand);
+assert.deepStrictEqual(p, {{banner: brand.export_banner, chip: brand.ai_chip, label: brand.ai_justification_label}});
+assert.strictEqual(d.provenance({{user_edited:'no'}}, brand).chip, brand.ai_chip);
+assert.strictEqual(d.provenance({{}}, brand).chip, brand.ai_chip);
+assert.strictEqual(d.provenance({{user_edited:'Yes'}}, brand).chip, null);
+for (const ue of ['N', 'false', 'maybe']) assert.strictEqual(d.provenance({{user_edited: ue}}, brand).chip, brand.ai_chip);
+for (const ue of ['y', 'TRUE', '1']) assert.strictEqual(d.provenance({{user_edited: ue}}, brand).chip, null);
+assert.strictEqual(d.provenance({{user_edited:''}}, undefined).label, 'Justification');
+""")
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_detail_js_label_only_records():
+    node(f"""
+const assert = require('assert');
+const d = require({json.dumps(str(DETAIL_JS))});
+const brand = {{ai_chip:'AI-drafted, not human-edited', export_banner:'banner'}};
+assert.strictEqual(d.provenance({{id:'FND-0003', label:'Seals', rating:4}}, brand).chip, null);
+assert.strictEqual(d.provenance({{id:'FND-0003', label:'Seals', rating:4, short:'x'}}, brand).chip, brand.ai_chip);
+assert.deepStrictEqual(d.sortFindings(['FND-A', 'FND-B'], {{'FND-A': {{id:'FND-A', label:'a', rating:2}},
+  'FND-B': {{id:'FND-B', label:'b', rating:4}}}}), ['FND-B', 'FND-A']);
+""")
+    assert "Only the label and rating are embedded in this page." in DETAIL_JS.read_text(encoding="utf-8")

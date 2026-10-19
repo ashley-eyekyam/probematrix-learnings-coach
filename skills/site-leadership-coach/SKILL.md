@@ -47,9 +47,9 @@ Sections → kinds:
 
 Close with a `workshop` section: one `table` with columns Time, Activity and Built on, for a two-hour agenda built on sections 2, 4 and 5.
 
-Set `"scope": {"tiers": ["T4"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+Set `"scope": {"tiers": ["T4"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. Owner wording: `owner` is the function that **owns the change**, not who "was involved" (`learning-principles.md`).
 
 ```json
 {"kind": "decision", "group": "Spares specification", "decision": "Require a specification for every critical-spares order",
- "options": ["…", "…"], "trade_offs": "…", "owner": "Plant manager", "cites": ["FND-…"]}
+ "options": ["…", "…"], "trade_offs": "…", "owner": "Site operations function", "cites": ["FND-…"]}
 ```

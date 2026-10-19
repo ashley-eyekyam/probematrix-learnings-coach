@@ -81,7 +81,7 @@ def test_pack_assets_are_inline_safe():
 @pytest.mark.skipif(not NODE, reason="node not installed")
 def test_pack_js_loads_without_dom():
     out = node(f"const p = require({json.dumps(str(PACK_JS))}); console.log(Object.keys(p).sort().join(','));")
-    assert out.strip() == "isTicked,matches,parseHash,readTicks,recordRows,tickKey,writeTicks"
+    assert out.strip() == "isTicked,matches,parseHash,readTicks,recordRows,recordView,tickKey,writeTicks"
 
 
 @pytest.mark.skipif(not NODE, reason="node not installed")
@@ -96,3 +96,55 @@ assert.strictEqual(p.isTicked({{'leak-test':0}}, 'leak-test'), false);
     js = PACK_JS.read_text(encoding="utf-8")
     assert 'querySelectorAll("main details:not(.rail)")' in js                   # review 3
     assert 'closest("[hidden]")' in js                                            # review 4
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_pack_js_provenance_labels():
+    node(f"""
+const assert = require('assert');
+const p = require({json.dumps(str(PACK_JS))});
+const brand = {{ai_justification_label:'AI justification (ProbeMatrix)', ai_chip:'AI-drafted, not human-edited',
+  export_banner:"This is the investigation's AI-drafted wording, shown as evidence; it is not the coach's learning."}};
+const D = {{brand: brand, findings: {{
+  'FND-0001': {{id:'FND-0001', label:'Pump restarted', justification:'no test', user_edited:''}},
+  'FND-0002': {{id:'FND-0002', label:'Seal', justification:'local buy', user_edited:'No'}},
+  'FND-0003': {{id:'FND-0003', label:'Edited', justification:'checked', user_edited:'Yes'}}}},
+  evidence: {{'EVD-0001': {{id:'EVD-0001', type:'document', description:'Work order'}}}}}};
+const v = p.recordView('FND-0001', D);
+assert.strictEqual(v.banner, brand.export_banner);
+assert.strictEqual(v.chip, brand.ai_chip);
+assert.ok(v.rows.some(r => r[0] === brand.ai_justification_label && r[1] === 'no test'));
+assert.ok(!v.rows.some(r => r[0] === 'Justification'));
+assert.strictEqual(p.recordView('FND-0002', D).chip, brand.ai_chip);
+assert.strictEqual(p.recordView('FND-0003', D).chip, null);
+D.findings['FND-0003'].user_edited = 'false';                     // only yes, y, true or 1 count as edited (X26)
+assert.strictEqual(p.recordView('FND-0003', D).chip, brand.ai_chip);
+D.findings['FND-0003'].user_edited = 'Yes';
+assert.strictEqual(p.recordView('FND-0003', D).banner, brand.export_banner);
+const e = p.recordView('EVD-0001', D);
+assert.strictEqual(e.banner, null);
+assert.strictEqual(e.chip, null);
+assert.strictEqual(p.recordView('FND-9999', D), null);
+""")
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_pack_js_label_only_records():
+    """--embed cited: uncovered and excluded findings travel as {id, label, rating}; summary drops quotes."""
+    node(f"""
+const assert = require('assert');
+const p = require({json.dumps(str(PACK_JS))});
+const brand = {{ai_chip:'AI-drafted, not human-edited', export_banner:'banner'}};
+const D = {{brand: brand, findings: {{
+  'FND-0003': {{id:'FND-0003', label:'Seals bought locally', rating:4}},
+  'FND-0004': {{id:'FND-0004', label:'Alarm display only', rating:null}}}},
+  evidence: {{'EVD-0001': {{id:'EVD-0001', type:'document', links:[{{code:'AB 1.1', relevance:'Shows no test'}}]}}}}}};
+assert.deepStrictEqual(p.recordRows('FND-0003', D),
+  [['Finding','Seals bought locally'],['Rating','4'],['Detail','Only the label and rating are embedded in this page.']]);
+assert.deepStrictEqual(p.recordRows('FND-0004', D),
+  [['Finding','Alarm display only'],['Detail','Only the label and rating are embedded in this page.']]);
+const v = p.recordView('FND-0003', D);
+assert.strictEqual(v.chip, null);                 // user_edited is not embedded: claim nothing
+assert.strictEqual(v.banner, 'banner');           // the label is still the investigation's wording
+assert.deepStrictEqual(p.recordRows('EVD-0001', D), [['Type','document'],['Linked to AB 1.1','Shows no test']]);
+""")

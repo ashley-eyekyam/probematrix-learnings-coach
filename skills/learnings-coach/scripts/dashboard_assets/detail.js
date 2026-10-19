@@ -211,6 +211,23 @@
     return list.length ? list : Object.keys(e.tier_messages || {}).sort();
   }
 
+  /* --embed cited and summary: a finding no learning covers travels as {id, label, rating} only. */
+  var STUB_KEYS = ["id", "label", "rating"];
+  var STUB_NOTE = "Only the label and rating are embedded in this page.";
+  function isStub(f) {
+    var keys = f && typeof f === "object" ? Object.keys(f) : [];
+    return keys.length === STUB_KEYS.length && keys.every(function (k) { return STUB_KEYS.indexOf(k) !== -1; });
+  }
+
+  /* The AI-provenance labels of one finding record: the export-language banner, the justification label, and the
+     AI chip unless the export marks the finding edited by a person (a label-only record claims neither). */
+  function provenance(f, brand) {
+    var b = brand || {}, ue = String((f && f.user_edited) || "").trim().toLowerCase();
+    var chip = !isStub(f) && ["yes", "y", "true", "1"].indexOf(ue) === -1 ? b.ai_chip || null : null;
+    return {banner: b.export_banner || null, chip: chip,
+            label: b.ai_justification_label || "Justification"};
+  }
+
   function findingNode(fid, lr) {
     var f = D.findings[fid];
     if (!f) return h("p", {class: "missing", "data-ref": fid}, [h("span", {class: "id", text: fid}), " not in workspace"]);
@@ -218,6 +235,7 @@
     var down = votes.some(function (v) { return DOWN_RX.test(String(v.vote || "")); });
     var also = (D.byFinding[fid] || []).filter(function (x) { return x !== lr; });
     var extra = Object.keys(f).filter(function (k) { return FND_SHOWN.indexOf(k) < 0; });
+    var pv = provenance(f, D.brand);
     return h("details", {class: "fnd", "data-ref": fid}, [
       h("summary", null, [
         h("span", {class: "id", text: fid}),
@@ -226,10 +244,12 @@
         f.rating !== null && f.rating !== undefined ? chip("rating " + f.rating) : null,
         f.classification ? chip(f.classification) : null,
         down ? chip("reviewer downgrade vote", "warn") : null,
+        pv.chip ? chip(pv.chip, "ai") : null,
         h("span", {class: "lab", text: f.label || ""})]),
-      h("div", {class: "fbody"}, [
+      h("div", {class: "fbody"}, isStub(f) ? [h("p", {class: "m", text: STUB_NOTE})] : [
+        pv.banner ? h("p", {class: "export-banner", text: pv.banner}) : null,
         f.short ? kv("Summary", f.short) : null,
-        f.justification ? kv("Justification", f.justification) : null,
+        f.justification ? kv(pv.label, f.justification) : null,
         f.causal ? kv("Causal reasoning", f.causal) : null,
         (f.roles || []).length ? kv("Roles", f.roles.join("; ")) : null,
         (cl.F || []).length ? kv("Entities", cl.F.map(entityName).join("; ")) : null,
@@ -361,7 +381,7 @@
     var reg = D.register || {};
     var extra = Object.keys(reg).filter(function (k) { return k !== "title" && k !== "source"; });
     return h("div", {class: "banner"}, [
-      h("p", null, [h("b", {text: "Learning purposes: not a statutory document. "}), reg.title || "Learnings Register"]),
+      h("p", null, [h("b", {text: ((D.brand || {}).status_phrase || "") + ". "}), reg.title || "Learnings Register"]),
       reg.source ? h("p", {class: "src"}, ["Source: ", rich(reg.source)]) : null,
       extra.length ? h("details", null, [h("summary", {text: "Register details"}), fieldList(reg, extra, humanKey)]) : null]);
   }
@@ -550,7 +570,8 @@
   }
 
   var API = {tokenize: tokenize, parseHash: parseHash, lensSpec: lensSpec, lensesFor: lensesFor, matches: matches,
-             sortEntries: sortEntries, sortFindings: sortFindings, summarise: summarise, evidenceIdsFor: evidenceIdsFor};
+             sortEntries: sortEntries, sortFindings: sortFindings, summarise: summarise, evidenceIdsFor: evidenceIdsFor,
+             provenance: provenance};
   if (typeof module !== "undefined" && module.exports) { module.exports = API; return; }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();

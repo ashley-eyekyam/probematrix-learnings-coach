@@ -3,13 +3,21 @@
 
 Run from the repository root:  python3 tools/make-uat-inputs.py [--out DIR]   (default: docs/uat/inputs)
 
-It writes three synthetic ProbeMatrix findings exports, each testing one ingest or check path:
+It writes four synthetic ProbeMatrix findings exports, each testing one ingest, check or sign-off path:
   uat-votes.xlsx           Collaboration Data VOTES with a reviewer downgrade on FND-0004
   uat-renamed-header.xlsx  the Identified Findings column "Rating" renamed to "Score"
   uat-capa-planner.xlsx    Corrective Actions and Preventive Actions sheets (a CAPA Planner export)
-and two small learning packs to check against the uat-votes workspace:
+  uat-approvable.xlsx      Phase 2: completed, FND-0001 edited by a person (so sign-off is allowed), with fictional
+                           names, an organisation, a tag, a clock time, a full date, a numbered role, an email and a
+                           staff number for the privacy and sharing tests
+two small learning packs to check against the uat-votes workspace:
   uat-votes-pack.json      cites the downgraded FND-0004 without a data_quality note (check-pack fails)
   uat-unlinked-pack.json   cites EVD-0003 next to FND-0002, which does not link it (check-pack warns)
+and, for Phase 2, against the uat-approvable workspace:
+  uat-bad-pack.json        the L3-01 test pack (tests/fixtures/packs/bad-l3-01.json): fails the language check
+  uat-shareable-pack.json  a clean pack that can be signed off and shared
+  uat-register.json        a clean two-learning register that can be signed off and shared
+  uat-names.txt, uat-orgs.txt, uat-redact.json  names, organisations and a redaction map (all fictional)
 
 The export shape follows tests/test_pmlc.py (FIND_COLS, ROWS, make_export), duplicated here so this tool
 needs only the standard library and openpyxl. The workbooks are rebuilt from scratch on every run.
@@ -26,7 +34,8 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "uat" / "inputs"
-STATUS = "Learning purposes: not a statutory document"
+sys.path.insert(0, str(ROOT / "skills" / "learnings-coach" / "scripts"))
+from pmlc import STATUS_PHRASE as STATUS  # noqa: E402
 
 FIND_COLS = ["Finding ID", "Nanocode", "Name", "Level", "Level Name", "Category", "Subcategory", "Classification",
              "Rating", "Instance ID", "Instance Label", "Short Description", "AI Justification", "Causal Explanation",
@@ -57,13 +66,16 @@ ROWS = [
 ]
 
 
-def base_workbook():
+def base_workbook(summary=(), narrative=None):
     wb = openpyxl.Workbook()
     s = wb.active
     s.title = "Incident Summary"
     for r in [("INCIDENT SUMMARY", None), (None, None), ("Field", "Value"), ("Incident Title", "Synthetic pump fire"),
-              ("Date", "2024-03-20"), ("Investigation Status", "completed")]:
+              ("Date", "2024-03-20"), ("Investigation Status", "completed"), *summary]:
         s.append(r)
+    if narrative:
+        s.append(("INCIDENT NARRATIVE", None))
+        s.append((narrative, None))
     f = wb.create_sheet("Identified Findings")
     f.append(FIND_COLS)
     for r in ROWS:
@@ -98,7 +110,37 @@ def capa_planner(wb):
     wb.create_sheet("Preventive Actions")
 
 
-WORKBOOKS = {"uat-votes.xlsx": votes, "uat-renamed-header.xlsx": renamed_header, "uat-capa-planner.xlsx": capa_planner}
+# Fictional people (no real person, and no one connected with the Hazira incident). The redaction map gives each a role.
+NAMES = ["Fictional Officer", "Ms Jane Placeholder"]
+REDACT = {"Fictional Officer": "Investigating Officer", "Ms Jane Placeholder": "Document Controller"}
+ORGS = ["Acme Contractors Pvt Ltd", "Acme Contractors"]
+APPROVABLE_SUMMARY = [("Investigating Officer", "Fictional Officer")]
+APPROVABLE_NARRATIVE = (  # over 200 characters, so ingest reads it as the narrative
+    "A seal on a transfer pump was changed on the night shift. The pump was restarted without a leak test, the new "
+    "seal leaked, and the vapour found an ignition source near the pump. The fire was put out by the site fire team. "
+    "The regulator was told the same morning.")
+
+
+def approvable(wb):
+    """Completed, FND-0001 edited by a person, plus the fictional identifying details the Phase 2 tests mask."""
+    f = wb["Identified Findings"]
+    col = {c.value: c.column for c in f[1]}
+    rows = {f.cell(r, 1).value: r for r in range(2, f.max_row + 1)}
+    f.cell(rows["FND-0001"], col["User Edited"]).value = "Yes"
+    f.cell(rows["FND-0001"], col["AI Justification"]).value = (
+        "Work order from Acme Contractors Pvt Ltd shows pump P-101 restarted at 03:12 on 2024-03-20 with no leak "
+        "test recorded [EVD-0001].")
+    f.cell(rows["FND-0002"], col["AI Justification"]).value = (
+        "Procedure index has no entry [EVD-0002]; Ms Jane Placeholder confirmed the gap.")
+    f.cell(rows["FND-0004"], col["Individuals Involved"]).value = (
+        "Control Room Operators, Emergency Response planners, Security Guard - Gate 3")
+    e = wb["Evidence Links"]
+    e.cell(3, 7).value = "Index; queries to docs.control@example.com, staff no. 4471"
+
+
+WORKBOOKS = {"uat-votes.xlsx": votes, "uat-renamed-header.xlsx": renamed_header, "uat-capa-planner.xlsx": capa_planner,
+             "uat-approvable.xlsx": approvable}
+SUMMARY = {"uat-approvable.xlsx": (APPROVABLE_SUMMARY, APPROVABLE_NARRATIVE)}
 
 
 def pack(name, title, items, **top):
@@ -118,6 +160,62 @@ PACKS = {
          "cites": ["FND-0002", "EVD-0003"]}]),
 }
 
+# The L3-01 test pack, as tests/fixtures/packs/bad-l3-01.json: a name, blame words, an outside fact, a percentage
+# and a retraining fix.
+BAD_PACK = {
+    "pack": "uat-bad-pack", "schema": 1, "title": "UAT bad pack: the L3-01 test pack", "audience": "Site leadership",
+    "status": STATUS,
+    "bottom_line": [{"text": "John Smith was careless and should be disciplined", "cites": ["FND-0001"]}],
+    "sections": [{"id": "what-to-change", "heading": "What to change", "items": [
+        {"kind": "para", "text": "As at the Northfield refinery fire, 80% of such fires start at flanges",
+         "cites": ["FND-0001"]},
+        {"kind": "recommendation", "change": "Retrain the fitter and hold him accountable",
+         "indicator": "Share of fitters retrained", "hoc_tier": "training", "cites": ["FND-0002"]}]}]}
+
+SHAREABLE_PACK = {
+    "pack": "uat-shareable-pack", "schema": 1, "title": "UAT shareable pack: synthetic pump fire",
+    "audience": "Site leadership", "status": STATUS,
+    "bottom_line": [
+        {"text": "A pump went back into service after a seal change with no leak test.", "cites": ["FND-0001"]},
+        {"text": "No return-to-service checklist set a hold point for the test.", "cites": ["FND-0002"]}],
+    "sections": [{"id": "learnings", "heading": "Learnings", "items": [
+        {"kind": "learning", "lesson": "When a joint is disturbed, a leak test before restart is the barrier.",
+         "cites": ["FND-0001", "EVD-0001"]},
+        {"kind": "learning", "lesson": "Seals bought without a specification weaken every joint they go into.",
+         "cites": ["FND-0003", "EVD-0003"]},
+        {"kind": "learning", "lesson": "A gas alarm that only displays leaves the response to whoever sees it.",
+         "cites": ["FND-0004"]},
+        {"kind": "recommendation", "change": "Block restart until a signed leak-test record is attached.",
+         "indicator": "Share of restarts with a leak-test record", "hoc_tier": "engineering",
+         "cites": ["FND-0001", "FND-0002"]}]}]}
+
+REGISTER = {"title": "UAT register: synthetic pump fire", "source": "uat-approvable.xlsx", "status": STATUS,
+            "entries": [
+    {"lr_id": "LR-01", "title": "Return to service without a leak test", "finding_ids": ["FND-0001", "FND-0002"],
+     "evidence_ids": ["EVD-0001", "EVD-0002"], "priority": 1, "owner_entity": "F02 Mechanical Maintenance",
+     "hfacs_level": "L3 Supervision Inadequate", "tiers": ["T1", "T2"],
+     "lesson": "When a joint is disturbed, a leak test before restart is the barrier, and a checklist holds it.",
+     "context": "A pump went back into service after a seal change with no leak test recorded.",
+     "tier_messages": {"T1": "Do not restart without the leak-test record.", "T2": "Hold point before acceptance."},
+     "recommendations": [{"what": "Block restart until a signed leak-test record is attached",
+                          "hoc_tier": "engineering", "leading_indicator": "Share of restarts with a leak-test record"}]},
+    {"lr_id": "LR-02", "title": "Seals without a specification", "finding_ids": ["FND-0003"],
+     "evidence_ids": ["EVD-0003"], "priority": 2, "owner_entity": "F06 Materials Management",
+     "hfacs_level": "L4 Resource Management", "tiers": ["T3"],
+     "lesson": "Spares bought without a specification weaken every joint they go into.",
+     "context": "Seals were bought locally without a specification.",
+     "tier_messages": {"T3": "Stock only seals that match the specification."},
+     "recommendations": [{"what": "Stock only specification-approved seals, so a local substitute cannot be issued",
+                          "hoc_tier": "substitution", "leading_indicator": "Share of seal issues that match the specification"}]}]}
+
+PHASE2_JSON = {"uat-bad-pack.json": BAD_PACK, "uat-shareable-pack.json": SHAREABLE_PACK, "uat-register.json": REGISTER,
+               "uat-redact.json": REDACT}
+TEXT_FILES = {
+    "uat-names.txt": "# Fictional names for the UAT (no real person). One name per line; # starts a comment.\n"
+                     + "\n".join(NAMES) + "\n",
+    "uat-orgs.txt": "# Fictional organisation names for the UAT. One per line.\n" + "\n".join(ORGS) + "\n",
+}
+
 
 def main():
     ap = argparse.ArgumentParser(description="Write the UAT input files.")
@@ -125,12 +223,15 @@ def main():
     out = ap.parse_args().out
     out.mkdir(parents=True, exist_ok=True)
     for name, edit in WORKBOOKS.items():
-        wb = base_workbook()
+        wb = base_workbook(*SUMMARY.get(name, ()))
         edit(wb)
         wb.save(out / name)
         print(f"wrote {out / name}")
-    for name, p in PACKS.items():
+    for name, p in {**PACKS, **PHASE2_JSON}.items():
         (out / name).write_text(json.dumps(p, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {out / name}")
+    for name, text in TEXT_FILES.items():
+        (out / name).write_text(text, encoding="utf-8")
         print(f"wrote {out / name}")
 
 

@@ -1,6 +1,7 @@
 """Tests on the committed Hazira sample (public record). Later tasks reuse the module fixture `hz`."""
 import json
 import re
+import shutil
 import subprocess
 import sys
 import types
@@ -173,3 +174,117 @@ def test_sample_register_vocab(hz, capsys):
         print(f"\nHazira vocabulary warnings: {len(warns)}")
         for ln in warns:
             print("  " + ln)
+
+
+def test_hazira_register_lint_calibration(hz):
+    import time
+    import pmlc_lint
+    w = pmlc.load_ws(hz.ws)
+    reg = json.loads(REGISTER.read_text(encoding="utf-8"))
+    t0 = time.perf_counter()
+    hits = pmlc_lint.lint(reg, w, kind="register")
+    took = time.perf_counter() - t0
+    report = pmlc_lint.format_hits(hits)
+    assert [h for h in hits if h.severity == "error"] == [], report
+    assert len(hits) <= 3, report
+    assert took < 2, took
+    assert reg["status"].startswith("Learning purposes: not a statutory document; draft")
+    r = subprocess.run([sys.executable, str(PMLC), "check-language", str(hz.ws), str(REGISTER)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0 and r.stdout.strip().splitlines()[-1].startswith("check-language: 0 errors"), r.stdout
+    md = (SAMPLE / "outputs" / "learnings-register.md").read_text(encoding="utf-8").splitlines()
+    assert md[2] == "*" + reg["status"] + "*"
+
+
+# ----------------------------------------------------------------------------- Task 7: the 2-card print budget
+
+PRINT_2_CARD = Path(__file__).resolve().parent / "fixtures" / "hazira" / "print-2-card.json"
+CHROME = next((shutil.which(x) for x in ("google-chrome", "chromium", "chromium-browser") if shutil.which(x)), None)
+
+
+@pytest.fixture(scope="module")
+def two_card(hz, tmp_path_factory):
+    out = tmp_path_factory.mktemp("two-card")
+    for mode in ("cited", "summary"):
+        run("pack", str(hz.ws), str(PRINT_2_CARD), "--out", str(out / mode), "--embed", mode)
+    pack = json.loads(PRINT_2_CARD.read_text(encoding="utf-8"))
+    return types.SimpleNamespace(pack=pack, out=out,
+                                 html=(out / "cited" / "frontline-learning-cards.html"),
+                                 summary=(out / "summary" / "frontline-learning-cards.html"))
+
+
+def test_hazira_2_card_fixture_passes_check_pack(hz):
+    r = subprocess.run([sys.executable, str(PMLC), "check-pack", str(hz.ws), str(PRINT_2_CARD)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    pack = json.loads(PRINT_2_CARD.read_text(encoding="utf-8"))
+    cards = [it for s in pack["sections"] for it in s["items"] if it["kind"] == "card"]
+    assert len(cards) == 2 and pack["scope"] == {"tiers": ["T1"]} and pack["pack"] == "frontline-learning-cards"
+    assert all(c.get("organisation_changing") and c.get("why_made_sense") for c in cards)
+
+
+def test_hazira_2_card_print_budget(two_card):
+    import pmlc_pack as pp
+    raw = two_card.html.read_bytes()
+    assert len(raw) < 200_000, len(raw)
+    t = raw.decode("utf-8")
+    trail = re.search(r'<section class="trail">(.*?)</section>', t, re.S).group(1)
+    fids, eids = pp.cited_ids(two_card.pack)
+    assert re.findall(r"<dt>([^<]+)</dt>", trail) == fids + eids
+    assert '<p class="printonly">2 of 227 relevant findings cited</p>' in t
+
+
+def test_hazira_2_card_summary_leaks_no_quotes(hz, two_card):
+    """Review Focus 5 on real data: no evidence description or Specific Reference of a cited record anywhere."""
+    import pmlc_pack as pp
+    t = two_card.summary.read_text(encoding="utf-8")
+    ev = json.loads((hz.ws / "evidence.json").read_text(encoding="utf-8"))
+    findings = {f["id"]: f for f in json.loads((hz.ws / "findings.json").read_text(encoding="utf-8"))}
+    fids, eids = pp.cited_ids(two_card.pack)
+    linked = [x for f in fids for x in findings[f]["evidence"]]
+    quotes = [ev[x]["description"] for x in dict.fromkeys(eids + linked) if x in ev]
+    quotes += [ln["reference"] for x in dict.fromkeys(eids + linked) if x in ev for ln in ev[x]["links"] if ln["reference"]]
+    assert quotes
+    escaped = [q for q in quotes if q and (q in t or json.dumps(q, ensure_ascii=False)[1:-1] in t)]
+    assert escaped == []
+
+
+@pytest.mark.skipif(not CHROME, reason="no headless Chrome or Chromium")
+def test_hazira_2_card_prints_4_pages_or_fewer(two_card, tmp_path):
+    pdf = tmp_path / "two-card.pdf"
+    r = subprocess.run([CHROME, "--headless", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer",
+                        f"--print-to-pdf={pdf}", two_card.html.as_uri()], capture_output=True, text=True, timeout=120)
+    assert pdf.exists(), r.stderr
+    if shutil.which("pdfinfo"):
+        info = subprocess.run(["pdfinfo", str(pdf)], capture_output=True, text=True).stdout
+        pages = int(re.search(r"^Pages:\s+(\d+)", info, re.M).group(1))
+    else:
+        pages = len(re.findall(rb"/Type\s*/Page(?!s)", pdf.read_bytes()))
+    assert 1 <= pages <= 4, pages
+
+
+def test_share_refused_on_hazira_draft(hz, tmp_path):
+    """P2-7: the Hazira investigation is in progress, so no copy of it can leave the organisation, even with a
+    handling block typed in that claims approval, clearance and an external classification."""
+    doc = json.loads(PRINT_2_CARD.read_text(encoding="utf-8"))
+    doc["handling"] = {"status": "approved", "reviewer_role": "HSE manager", "reviewed_on": "2026-10-19",
+                       "classification": "public", "legal_review": "cleared"}
+    doc["handling"]["content_hash"] = pmlc.content_hash(doc)
+    p = tmp_path / "cards.json"
+    p.write_text(json.dumps(doc), encoding="utf-8")
+    out = tmp_path / "out"
+    for mode, word in (("external", "externally"), ("public", "publicly")):
+        r = subprocess.run([sys.executable, str(PMLC), "pack", str(hz.ws), str(p), "--share", mode, "--out", str(out)],
+                           capture_output=True, text=True)
+        assert r.returncode == 1
+        last = r.stderr.strip().splitlines()[-1]
+        assert last.startswith(f"cannot share {word}: review is draft (the investigation status is in progress"), last
+        assert not out.exists() or not any(out.iterdir())
+
+
+def test_smoke_run_checks_language():
+    """tools/smoke_sample.py (the CI smoke job) also runs check-language on the sample register: 0 errors."""
+    r = subprocess.run([sys.executable, str(ROOT / "tools" / "smoke_sample.py")], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.strip().splitlines()[-1] == ("smoke OK: 436 findings, 46 evidence, register 0 problems, "
+                                                 "language 0 errors")

@@ -25,10 +25,14 @@ python3 $E classify $WS
 python3 $E status $WS                          # which derived files are stale after a re-ingest
 python3 $E dashboard $WS                       # -> <run>/outputs/organisation-learning-map.html
 python3 $E select $WS --tier T2 --level 3 --brief      # feed an audience skill
-python3 $E pack $WS <run>/outputs/board-brief.json  # -> board-brief.html + .md
+python3 $E check-language $WS <run>/outputs/board-brief.json   # just-culture language check (check-pack runs it too)
+python3 $E pack $WS <run>/outputs/board-brief.json  # -> board-brief.html + .md (DRAFT until signed off)
+python3 $E sign-off $WS <run>/outputs/board-brief.json --role "<reviewer's role>" --status approved   # only after a person says they reviewed it
 ```
 
-Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write its pack JSON to `<run>/outputs/<skill>.json`, then run `python3 $E check-pack $WS <pack>` and `python3 $E pack $WS <pack>` (`python3 $E run-path $WS` prints the folder). `learnings-register` writes a register JSON instead: check it with `python3 $E check-register $WS <register.json>`, then `python3 $E register-xlsx <register.json>` writes the workbook. `python3 $E causal-item $WS` prints the top causal links as a ready graph item for a pack.
+The user manual, `docs/manual/Home.md` (repository only; also on the project wiki), documents every skill, command and flag with Hazira examples, including sharing a masked copy outside the organisation (`--share external|public`).
+
+Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write its pack JSON to `<run>/outputs/<skill>.json`, then run `python3 $E check-pack $WS <pack>` and `python3 $E pack $WS <pack>` (`python3 $E run-path $WS` prints the folder). `learnings-register` writes a register JSON instead: check it with `python3 $E check-register $WS <register.json>`, then `python3 $E register-xlsx <register.json>` writes the workbook. `python3 $E causal-item $WS` prints the top causal links as a ready graph item for a pack. Both checks also run the just-culture language lint (rules JC1 to JC12); `python3 $E check-language $WS <json>` runs it alone. After a person has reviewed a pack or register, `python3 $E sign-off $WS <file> --role "<their role>"` records it (`handling` block with a content hash; refused until the investigation status is completed, and while no finding is marked as edited by a person; any later edit reverts it to draft).
 
 ## Rules for agents
 

@@ -25,6 +25,7 @@ PMLC select <ws> --relation norm_setter learner challenger --brief
 3. **Questions to raise with management**: ten, about staffing, training, procedures, equipment, authority to stop work, and how concerns are handled.
 4. **What to look for on site**: a walk-round prompt list drawn from the conditions in the findings.
 5. **Running the discussion**: a 60-minute agenda, ground rules (no names, no blame, focus on conditions), and how to record and send concerns to management.
+   - **Anonymity and confidentiality.** Offer an anonymous route for concerns. Record concerns by topic, not by who raised them. Do not name or describe a person so that the crew can tell who it is (a small crew's single operator is identifiable by role alone). Minutes and the concern log go to management without names.
 6. **Follow-up**: what the committee should ask to see at 30, 60 and 90 days.
 
 ## Output

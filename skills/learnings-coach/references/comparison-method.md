@@ -8,6 +8,8 @@ Use this when an organisation has an official or conventional report on the same
 - **Sighted or blind.** If the ProbeMatrix evidence pack included the other report's own recommendations or lessons, the comparison is **sighted**: report coverage, not independent discovery. Check by searching findings for quotations of the other report's recommendation sections. If they were withheld, it is **blind**.
 - **Method, not verdict.** No blame. Never use the word "deficiency". The original team worked under its own terms of reference.
 
+- **Names do not bleed in.** Official reports often name people and companies. Replace every personal name in quoted or paraphrased comparator text with the role, and company names with their function ("the contractor"), before it reaches a table or an example. Run `scan-names` or `check-language --names` with the comparator's names as the check. Put a conflict-of-interest line on page 1 if the compared parties include the commissioning organisation.
+
 ## 2. Build the comparator inventory
 
 Number every item in the other report: observations (`OBS-nn`), root causes (`RC-nn`), recommendations (`REC-nn`). Keep its own grouping (usually by discipline) as a column.

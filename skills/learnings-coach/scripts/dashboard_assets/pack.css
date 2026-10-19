@@ -80,15 +80,33 @@ button.cite[aria-expanded=true]{background:color-mix(in srgb,var(--acc) 16%,tran
 .coverage{margin-top:24px}
 .coverage li{margin:4px 0}
 .trail{display:none}
+.pfoot{display:none}
+.printonly{display:none}
+.lint-ok{color:var(--mut);font-size:12px;font-style:italic;margin:4px 0}
+.rec .export-banner{margin:0 0 6px;color:var(--mut);font-size:13px;font-style:italic}
+.chip-ai{display:inline-block;font-size:12px;line-height:1.6;padding:0 8px;border-radius:999px;border:1px dashed var(--warn,#c2410c);color:var(--warn,#c2410c);margin:0 0 6px}
 @media (max-width:600px){.rec dl{grid-template-columns:1fr}}
 @media print{
   :root:not(#_){--bg:#fff;--fg:#000;--mut:#444;--card:#fff;--line:#ccc;--acc:#0077b6;--warn:#c2410c}
-  body{background:#fff;color:#000}
+  body{background:#fff;color:#000;font-size:12px;line-height:1.4}
+  .item h3{font-size:14px}
+  .label{margin-top:4px}
+  .card{padding:8px}
+  .grid{gap:8px;margin:4px 0}
+  .sec-body{padding:0 8px 4px}
+  details.sec>summary{padding:6px 8px}
+  .trail{font-size:11px}
+  .trail dd{margin:0 0 4px 16px}
   .toolbar,.rail,.rec{display:none!important}
   .layout{display:block}
-  .trail{display:block;break-before:page}
+  .trail{display:block}
+  .trail h2{break-after:avoid}
+  details.sec>summary,.coverage h2{break-after:avoid}
+  .noprint{display:none!important}
+  .printonly{display:block}
   details.sec{border:0}
   .check input{appearance:none;-webkit-appearance:none;border:1px solid #000;border-radius:2px;background:#fff}
   .card,.k-check,.k-question,.k-recommendation{break-inside:avoid}
   button.cite{color:#000;border-color:#999}
+  .pfoot{display:block;margin:8px 0 0;padding-top:4px;border-top:1px solid #ccc;font-size:10px;color:#444}
 }

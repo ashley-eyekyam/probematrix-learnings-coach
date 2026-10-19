@@ -29,6 +29,8 @@
 .chip.p1{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:700}
 .chip.p2{border-color:var(--acc);color:var(--fg)}
 .chip.hoc.elimination,.chip.hoc.substitution,.chip.hoc.engineering,.chip.acc{border-color:var(--acc);color:var(--fg);background:color-mix(in srgb,var(--acc) 16%,transparent)}
+.chip.ai{border-style:dashed;border-color:var(--warn,#c2410c);color:var(--warn,#c2410c)}
+.fbody .export-banner{margin:4px 0 6px;color:var(--mut);font-size:13px;font-style:italic}
 .chip.warn{border-color:var(--warn,#c2410c);color:var(--warn,#c2410c);font-weight:600}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--warn:#fb923c}}
 :root[data-theme=dark]{--warn:#fb923c}

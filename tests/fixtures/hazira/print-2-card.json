@@ -1,0 +1,26 @@
+{"pack": "frontline-learning-cards", "schema": 1,
+ "title": "Frontline Learning Cards: Hazira gas release and fire, 2020",
+ "audience": "Frontline crews (T1)", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [
+  {"text": "A metering line went back into service after a gasket change without a test at design pressure.",
+   "cites": ["FND-3AB996FC", "EVD-2894"]},
+  {"text": "The gas detectors showed an alarm on a panel but did not shut the plant down.",
+   "cites": ["FND-01C3DE98", "EVD-8657"]}],
+ "scope": {"tiers": ["T1"]},
+ "sections": [
+  {"id": "cards", "heading": "Learning Cards", "items": [
+   {"kind": "card", "title": "Test at design pressure before return to service",
+    "what_happened": "After the gasket on the meter was replaced, the system was only pressurised to operating pressure and the meter went back online the next day [EVD-2894] [EVD-0185].",
+    "why_made_sense": "There was no written procedure for calibrating these meters and taking them back into service, so a check at operating pressure looked like enough [EVD-2894].",
+    "organisation_changing": "The committee pointed to a written return-to-service procedure that includes a test at design pressure before a high-pressure meter is put back in line [EVD-2894].",
+    "warning_signs": ["A seal or gasket that is not the original part", "A return to service with no test record at design pressure"],
+    "good_looks_like": "No high-pressure meter goes back in line until the test at design pressure is recorded.",
+    "discussion": ["Where is the test record for a meter you put back in line?", "Who can stop a return to service when the test is missing?"],
+    "cites": ["FND-3AB996FC", "EVD-2894"]},
+   {"kind": "card", "title": "Know what the gas alarm does",
+    "what_happened": "Hydrocarbon detectors were wired to an annunciator panel for display only, with no automatic shutdown or fire suppression [EVD-8657].",
+    "why_made_sense": "An alarm on the panel looked like a working safeguard, and nothing on the panel said that it would not trip the plant [EVD-8657].",
+    "organisation_changing": "The committee recommended interlocking the detection system to automatic plant shutdown and fire suppression [EVD-3452].",
+    "warning_signs": ["A gas alarm that only shows on a panel", "No automatic action after a gas alarm"],
+    "good_looks_like": "Crews know which alarms trip equipment and which need a person to act at once.",
+    "cites": ["FND-01C3DE98", "EVD-8657"]}]}]}

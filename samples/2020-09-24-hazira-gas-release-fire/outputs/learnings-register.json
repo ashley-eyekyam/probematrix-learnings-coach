@@ -1,6 +1,7 @@
 {
  "title": "Learnings Register: Hazira gas terminal condensate release and fire, 24 September 2020 (draft)",
  "source": "2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx (ProbeMatrix INC-2026-031). Draft learnings: investigation status in_progress; summary-sheet date (2020-08-24) and type (aviation) corrected to 24 Sep 2020, hydrocarbon release and fire. FND-44219027 excluded (reviewer downgrade).",
+ "status": "Learning purposes: not a statutory document; draft: the investigation status is in progress",
  "entries": [
   {
    "lr_id": "LR-01",
@@ -352,7 +353,7 @@
    "tier_messages": {
     "T2": "Close every notification you raise or work, with what was found, what was done and how it was tested.",
     "T3": "Report open notifications on returned-to-service equipment weekly and review a sample of closures.",
-    "T4": "Make notification close-out quality part of maintenance performance reviews."
+    "T4": "Add notification close-out quality to the maintenance KPI review."
    },
    "recommendations": [
     {
@@ -1522,6 +1523,7 @@
   {
    "lr_id": "LR-18",
    "ml_id": "",
+   "lint_ok": {"rule": "JC6", "reason": "the administrative change is the system fix at the level of the cause: the CMMS schedules the inspections and escalates overdue ones, owned by the integrity function"},
    "title": "The four-year thickness inspection cycle slipped to six years, and original baseline data and pipe schedules were missing",
    "owner_entity": "F05 Asset Integrity, Corrosion & Inspection (co-owners: F07, F02)",
    "tiers": [
@@ -1597,6 +1599,7 @@
   {
    "lr_id": "LR-19",
    "ml_id": "",
+   "lint_ok": {"rule": "JC6", "reason": "the administrative change is the system fix at the level of the cause: a field-verified, controlled drawing set owned by the engineering documents function"},
    "title": "The metering P&ID was a lost original replaced by an unapproved vendor drawing that did not match the field",
    "owner_entity": "F07 Engineering, Design, Documents & MOC (co-owners: F02, F14)",
    "tiers": [
@@ -1667,6 +1670,7 @@
   {
    "lr_id": "LR-20",
    "ml_id": "",
+   "lint_ok": {"rule": "JC6", "reason": "the administrative change is the system fix at the level of the cause: the audit protocol itself is redesigned to require site evidence, owned by the assurance function"},
    "title": "Safety audits used generic checklists and recorded compliance without site data, so they could not find plant-specific defects",
    "owner_entity": "F11 HSE, Process Safety & Audit (co-owners: F13, F01)",
    "tiers": [
@@ -1970,6 +1974,7 @@
   {
    "lr_id": "LR-24",
    "ml_id": "",
+   "lint_ok": {"rule": "JC6", "reason": "the administrative change is the system fix at the level of the cause: one drill record with timings and tracked actions, owned by the emergency planning function"},
    "title": "Fire drill records held no actions or observations, so drills could not show whether readiness was improving",
    "owner_entity": "F11 HSE, Process Safety & Audit (co-owners: F09b, F12)",
    "tiers": [

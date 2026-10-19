@@ -1,6 +1,12 @@
 # Precursor Timeline: Synthetic pump fire, 2024
 
-*Learning purposes: not a statutory document*
+**DRAFT**
+
+Review: draft · Classification: internal · Version 1.0
+
+Draft because: no finding is marked as edited by a person
+
+*Learning purposes: not a statutory document · Learnings drafted by an AI agent from AI-assisted findings*
 
 **Audience:** Site leaders and auditors
 
@@ -15,6 +21,7 @@
 - 2022-03 (24 months before): Seals bought locally without a specification *(weak signal)* [FND-0003; EVD-0003]
   - Received by: Materials Management (F06, T1)
   - Response: None recorded
+  - Knowable then: The purchase record was visible to Stores at the time, but no check asked for a specification.
 
 ## The event sequence
 
@@ -35,4 +42,4 @@ The reliability engineer role that would review it was absent [FND-0003].
 
 This pack cites 1 of 2 relevant findings.
 
-> Generated with ProbeMatrix Learnings Coach v2.0.0a3 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

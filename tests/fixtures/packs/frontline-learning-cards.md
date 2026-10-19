@@ -1,6 +1,12 @@
 # Frontline Learning Cards: Synthetic pump fire, 2024
 
-*Learning purposes: not a statutory document*
+**DRAFT**
+
+Review: draft · Classification: internal · Version 1.0
+
+Draft because: no finding is marked as edited by a person
+
+*Learning purposes: not a statutory document · Learnings drafted by an AI agent from AI-assisted findings*
 
 **Audience:** Frontline crews (T1)
 
@@ -18,6 +24,8 @@
 
 **Why it made sense at the time:** There was no return-to-service checklist, so the test was easy to miss [FND-0002].
 
+**What the organisation is changing:** Work orders now require a recorded leak test before the pump is released.
+
 **Warning signs:**
 - No test record on the work order
 - A seal that looks different from the usual part
@@ -32,6 +40,10 @@
 ### Know what the gas alarm does [FND-0004]
 
 **What happened:** The gas alarm showed on the display but did not shut anything down.
+
+**Why it made sense at the time:** The alarm looked like every other display alert, and nothing told the crew it did not trip equipment [FND-0004].
+
+**What the organisation is changing:** Alarm labels will say whether the alarm trips equipment or needs a person to act.
 
 **Warning signs:**
 - An alarm that only shows on a screen
@@ -58,4 +70,4 @@ Five minutes on the leak test: why it matters and where the record goes [FND-000
 
 This pack cites 2 of 3 relevant findings.
 
-> Generated with ProbeMatrix Learnings Coach v2.0.0a3 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

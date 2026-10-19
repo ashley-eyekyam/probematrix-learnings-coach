@@ -1,0 +1,39 @@
+{
+ "pack": "uat-bad-pack",
+ "schema": 1,
+ "title": "UAT bad pack: the L3-01 test pack",
+ "audience": "Site leadership",
+ "status": "Learning purposes: not a statutory document",
+ "bottom_line": [
+  {
+   "text": "John Smith was careless and should be disciplined",
+   "cites": [
+    "FND-0001"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "what-to-change",
+   "heading": "What to change",
+   "items": [
+    {
+     "kind": "para",
+     "text": "As at the Northfield refinery fire, 80% of such fires start at flanges",
+     "cites": [
+      "FND-0001"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "change": "Retrain the fitter and hold him accountable",
+     "indicator": "Share of fitters retrained",
+     "hoc_tier": "training",
+     "cites": [
+      "FND-0002"
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,6 +1,7 @@
 """Engine tests on a small synthetic export (fictional event, no real data)."""
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -57,16 +58,28 @@ MINI_REG = {"title": "Synthetic register", "source": "export.xlsx", "entries": [
           "leading_indicator": "i"}]}]}
 
 
-def make_export(d: Path) -> Path:
+def make_export(d: Path, status: str = "completed", edited=None, summary=(), narrative=None,
+                name="export.xlsx") -> Path:
+    """summary adds (field, value) rows to the Incident Summary; narrative adds an INCIDENT NARRATIVE block.
+    The defaults give the unchanged export."""
     wb = openpyxl.Workbook()
     s = wb.active
     s.title = "Incident Summary"
     for r in [("INCIDENT SUMMARY", None), (None, None), ("Field", "Value"), ("Incident Title", "Synthetic pump fire"),
-              ("Date", "2024-03-20"), ("Investigation Status", "completed")]:
+              ("Date", "2024-03-20"), ("Investigation Status", status)]:
         s.append(r)
+    for r in summary:
+        s.append(tuple(r))
+    if narrative:
+        s.append(("INCIDENT NARRATIVE", None))
+        s.append((narrative, None))
     f = wb.create_sheet("Identified Findings")
     f.append(FIND_COLS)
+    ue = FIND_COLS.index("User Edited")
     for r in ROWS:
+        r = list(r)
+        if edited and r[0] in edited:
+            r[ue] = edited[r[0]]
         f.append(r)
     e = wb.create_sheet("Evidence Links")
     e.append(["Finding Code", "Finding Name", "Evidence ID", "Evidence Type", "Relevance", "Specific Reference",
@@ -77,7 +90,7 @@ def make_export(d: Path) -> Path:
     c = wb.create_sheet("Causal Chain")
     c.append(["Link ID", "From Code", "From Level", "To Code"])
     c.append(["No causal links found", None, None, None])
-    x = d / "export.xlsx"
+    x = d / name
     wb.save(x)
     return x
 
@@ -423,7 +436,8 @@ def test_detail_data(ws):
     assert set(d["findings"]) == {"FND-0001", "FND-0002", "FND-0003", "FND-0004"}
     assert d["findings"]["FND-0001"]["clusters"]["F"]
     assert d["findings"]["FND-0001"]["votes"] == []
-    assert set(d["evidence"]) == {"EVD-0001", "EVD-0002", "EVD-0003"}
+    assert set(d["evidence"]) == {"EVD-0001", "EVD-0002"}           # --embed cited: EVD-0003 only backs FND-0003
+    assert set(pmlc.build_detail_data(w, MINI_REG, embed="full")["evidence"]) == {"EVD-0001", "EVD-0002", "EVD-0003"}
     assert {u["id"]: u["reason"] for u in d["uncovered"]} == {
         "FND-0003": "not covered by any learning", "FND-0004": "not covered by any learning"}
     assert d["derived"]["LR-01"] == {"level": "L3 Supervision", "entity": "F02",
@@ -434,7 +448,38 @@ def test_detail_data(ws):
     w2 = dict(w, incident=dict(w["incident"], review_votes=[{"finding": "FND-0004", "vote": "downgrade", "reason": "r"}]))
     d2 = pmlc.build_detail_data(w2, MINI_REG)
     assert {u["id"]: u["reason"] for u in d2["uncovered"]}["FND-0004"] == "reviewer downgrade vote"
-    assert d2["findings"]["FND-0004"]["votes"][0]["vote"] == "downgrade"
+    assert pmlc.build_detail_data(w2, MINI_REG, embed="full")["findings"]["FND-0004"]["votes"][0]["vote"] == "downgrade"
+
+
+def test_detail_data_embed_modes(ws):
+    w = pmlc.load_ws(ws)
+    w["incident"] = dict(w["incident"], review_votes=[{"finding": "FND-0001", "vote": "upgrade", "reason": "seen it"}])
+    d = pmlc.build_detail_data(w, MINI_REG)
+    assert d == pmlc.build_detail_data(w, MINI_REG, embed="cited")
+    assert set(d["findings"]["FND-0003"]) == {"id", "label", "rating"} and "short" in d["findings"]["FND-0001"]
+    assert "key_questions" in d["findings"]["FND-0001"]          # cited keeps the full record
+    s = pmlc.build_detail_data(w, MINI_REG, embed="summary")
+    assert "description" not in s["evidence"]["EVD-0001"] and s["evidence"]["EVD-0001"]["type"] == "document"
+    assert all("reference" not in ln for ln in s["evidence"]["EVD-0001"]["links"])
+    assert not {"key_questions", "suggested_interviews"} & set(s["findings"]["FND-0001"])
+    assert s["findings"]["FND-0001"]["votes"] == [{"finding": "FND-0001", "vote": "upgrade"}]
+    assert w["incident"]["review_votes"][0]["reason"] == "seen it"          # the workspace is not changed
+    full = pmlc.build_detail_data(w, MINI_REG, embed="full")
+    assert "short" in full["findings"]["FND-0003"] and full["uncovered"] == d["uncovered"]
+
+
+def test_dashboard_embed_flag(ws, tmp_path):
+    reg = tmp_path / "r.json"
+    reg.write_text(json.dumps(MINI_REG))
+    for mode, stub in (("cited", True), ("summary", True), ("full", False)):
+        out = tmp_path / f"{mode}.html"
+        run("dashboard", str(ws), "--register", str(reg), "--out", str(out), "--embed", mode)
+        d = _data_block(out.read_text(encoding="utf-8"))
+        assert (set(d["findings"]["FND-0003"]) == {"id", "label", "rating"}) is stub, mode
+        assert ("description" in d["evidence"]["EVD-0001"]) is (mode != "summary"), mode
+    out = tmp_path / "default.html"
+    run("dashboard", str(ws), "--register", str(reg), "--out", str(out))
+    assert set(_data_block(out.read_text(encoding="utf-8"))["findings"]["FND-0003"]) == {"id", "label", "rating"}
 
 
 def test_detail_data_minimal_workspace(ws):
@@ -485,6 +530,7 @@ def test_make_public_sample_slug(tmp_path):
     r = subprocess.run([sys.executable, str(tool), str(x), "--slug", "2024-03-20-pump-fire", "--names", str(names),
                         "--samples-root", str(root)], capture_output=True, text=True)
     assert r.returncode == 0, r.stderr + r.stdout
+    assert r.stdout.startswith("Name scan passed (optional for public-record samples, D3): 1 name(s) checked. ")
     assert (root / "2024-03-20-pump-fire" / "2024-03-20-pump-fire_probematrix-findings.xlsx").exists()
 
 
@@ -784,7 +830,8 @@ def test_custom_taxonomy_renamed_ids_still_select_by_tag(tmp_path, ws):
     p.write_text(json.dumps(tax), encoding="utf-8")
     w2 = tmp_path / "ws2"
     shutil.copytree(ws, w2)
-    run("classify", str(w2), "--taxonomy", str(p))
+    run("classify", str(w2), "--taxonomy", str(p), "--no-overlay",
+        "--no-overrides")
     cl = json.loads((w2 / "clusters.json").read_text())
     assert "F09b" not in cl["entities"] and cl["taxonomy"]["file"] == str(p)
     sel = lambda d: {x["id"] for x in json.loads(run("select", str(d), "--tag", "emergency", "--format", "json"))}  # noqa: E731
@@ -1297,6 +1344,51 @@ def test_installer_checks_python(tmp_path):
     assert not dest.exists()
 
 
+def _tool_path(tmp_path, tools=("dirname", "basename", "mkdir", "cp", "rm")):
+    """A PATH folder holding only the shell tools install-codex.sh uses, and no python3 (ledger line 119)."""
+    bindir = tmp_path / "onlytools"
+    bindir.mkdir()
+    for t in tools:
+        src = shutil.which(t)
+        if not src:
+            pytest.skip(f"{t} not available")
+        (bindir / t).symlink_to(src)
+    return bindir
+
+
+def test_installer_without_python3(tmp_path):
+    bash = shutil.which("bash")
+    if not bash:
+        pytest.skip("bash not available")
+    dest = tmp_path / "dest"
+    env = {"PATH": str(_tool_path(tmp_path)), "CODEX_SKILLS_DIR": str(dest), "HOME": str(tmp_path)}
+    r = subprocess.run([bash, str(ROOT / "tools" / "install-codex.sh")], env=env, capture_output=True, text=True)
+    assert r.returncode == 1
+    assert "python3 was not found or is older than 3.9" in r.stderr
+    assert not dest.exists()
+
+
+def test_installer_post_copy_check_and_success(tmp_path):
+    """The installer refuses a skills folder without learnings-coach (after copying), and installs the real one."""
+    bash = shutil.which("bash")
+    if not bash or not shutil.which("python3"):
+        pytest.skip("bash or python3 not available")
+    repo = tmp_path / "repo"
+    (repo / "tools").mkdir(parents=True)
+    shutil.copy(ROOT / "tools" / "install-codex.sh", repo / "tools" / "install-codex.sh")
+    (repo / "skills" / "board-brief").mkdir(parents=True)
+    (repo / "skills" / "board-brief" / "SKILL.md").write_text("x", encoding="utf-8")
+    env = {**os.environ, "CODEX_SKILLS_DIR": str(tmp_path / "d1"), "HOME": str(tmp_path)}
+    r = subprocess.run([bash, str(repo / "tools" / "install-codex.sh")], env=env, capture_output=True, text=True)
+    assert r.returncode == 1 and "installed board-brief" in r.stdout
+    assert "learnings-coach was not copied" in r.stderr
+    env["CODEX_SKILLS_DIR"] = str(tmp_path / "d2")
+    r = subprocess.run([bash, str(ROOT / "tools" / "install-codex.sh")], env=env, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert (tmp_path / "d2" / "learnings-coach" / "scripts" / "pmlc.py").is_file()
+    assert r.stdout.strip().splitlines()[-1].startswith("Done. Skills are in")
+
+
 def _variant(tmp_path, edit):
     """Build the synthetic export, let edit(workbook) change it, ingest it, and return the workspace."""
     x = make_export(tmp_path)
@@ -1427,11 +1519,14 @@ def test_presets_match_skill_lines():
 def test_skill_select_lines_parsing():
     t = ('`PMLC select <ws> --code "<code>"`\n'
          'PMLC select <ws> --text "a|b c" --brief   # why\n'
+         'PMLC select <ws> --text "x # y" --max 3  # quoted hash kept\n'
          'PMLC select <ws> --top-rated --format json --out <ws>/top.json\n'
          'see (`PMLC select <ws> --level 4`) now\n'
          'PMLC select <ws> --entity <F-id> --brief\n')
-    assert pmlc.skill_select_lines(t) == [["--text", "a|b c", "--brief"], ["--top-rated", "--format", "json"],
-                                          ["--level", "4"]]
+    assert pmlc.skill_select_lines(t) == [["--text", "a|b c", "--brief"], ["--text", "x # y", "--max", "3"],
+                                          ["--top-rated", "--format", "json"], ["--level", "4"]]
+    with pytest.raises(ValueError, match='No closing quotation in: PMLC select <ws> --text "open'):
+        pmlc.skill_select_lines('PMLC select <ws> --text "open --brief\n')
 
 
 def test_preset_runs(ws):
@@ -1446,7 +1541,8 @@ def test_preset_runs(ws):
 
 def test_preset_out_and_unknown(ws, tmp_path):
     f = tmp_path / "p.md"
-    run("select", str(ws), "--preset", "frontline-learning-cards", "--out", str(f), "--format", "json")
+    out = run("select", str(ws), "--preset", "frontline-learning-cards", "--out", str(f), "--format", "json")
+    assert out.strip() == f"Wrote 3 preset bundle(s) to {f}"
     assert f.read_text().count("# Preset frontline-learning-cards:") == 3
     assert "Unknown preset skill" in run_fail("select", str(ws), "--preset", "nope").stderr
     assert "Unknown preset" in run_fail("select", str(ws), "--preset", "manager-coach:nope").stderr
@@ -1497,13 +1593,11 @@ _NUMERIC_FLAGS = {"--level", "--top", "--max", "--min-rating", "--per-date", "--
 
 
 def _skill_argv(line: str) -> list[str]:
-    import shlex
-    line = re.sub(r"\s+#.*$", "", line.strip())
-    line = re.sub(r"\[(--[^\]]*)\]", r"\1", line)  # [--opt value] marks an optional part
+    line = re.sub(r"\[(--[^\]]*)\]", r"\1", line.strip())  # [--opt value] marks an optional part
     flags = "|".join(re.escape(f) for f in sorted(_NUMERIC_FLAGS))
     line = re.sub(rf"({flags})(\s+)<[^>]*>", r"\1\g<2>1", line)
     line = re.sub(r"(--format\s+)<[^>]*>", r"\1md", line)
-    return shlex.split(re.sub(r"<[^>]*>", "X", line))[1:]
+    return pmlc.split_command(re.sub(r"<[^>]*>", "X", line))[1:]  # shlex; a "#" inside a word or quotes is kept
 
 
 def _skill_command_lines():
@@ -1535,11 +1629,34 @@ def test_skill_commands_parse(capsys):
         except SystemExit:
             err = capsys.readouterr().err.strip().splitlines()
             pytest.fail(f"{md.relative_to(ROOT)}:{n}: {line.strip()}\n  {err[-1] if err else 'parse error'}")
-    assert seen > 30
+    assert seen > 98  # 103 command lines when the floor was set (Phase 2 Task 13), minus 5
 
 
 def test_skill_argv_placeholders():
     assert _skill_argv("PMLC select <ws> --level <n> --format <f>  # c") == ["select", "X", "--level", "1", "--format", "md"]
+    assert _skill_argv('PMLC select <ws> --text "a # b" --brief  # c') == ["select", "X", "--text", "a # b", "--brief"]
+
+
+@pytest.mark.parametrize("line,args", [
+    ("--text a#b --brief", ["--text", "a#b", "--brief"]),
+    ('--text "a # b" # note', ["--text", "a # b"]),
+    ("--text 'x #y' --max 2  # c", ["--text", "x #y", "--max", "2"]),
+    ("--level 3 #c", ["--level", "3"]),
+    ("#all comment", []),
+    (r'--text "say \"#\" ok" #x', ["--text", 'say "#" ok']),
+    (r"--text a\ #b", ["--text", "a #b"]),
+])
+def test_split_command_comments(line, args):
+    assert pmlc.split_command(line) == args
+
+
+def test_equals_form_validated(ws):
+    """The --flag=value form is checked like --flag value: refused next to --preset, and choices still apply."""
+    r = subprocess.run([sys.executable, str(PMLC), "select", str(ws), "--preset", "supervisor-coach", "--tier=T9"],
+                       capture_output=True, text=True)
+    assert r.returncode == 2 and "--preset cannot be combined with filters" in r.stderr
+    r = subprocess.run([sys.executable, str(PMLC), "select", str(ws), "--entity-mode=some"], capture_output=True, text=True)
+    assert r.returncode == 2 and "invalid choice" in r.stderr
 
 
 # ----------------------------------------------------------------------------- UAT inputs (tools/make-uat-inputs.py)
@@ -1570,6 +1687,49 @@ def test_make_uat_inputs(tmp_path, where):
     assert sheets == base + ["Corrective Actions", "Preventive Actions"] and head == FIND_COLS
     for n in ("uat-votes-pack.json", "uat-unlinked-pack.json"):
         assert json.loads((d / n).read_text(encoding="utf-8"))["schema"] == 1
+    _check_phase2_uat_inputs(d, tmp_path)
+
+
+def _check_phase2_uat_inputs(d, tmp_path):
+    """Phase 2 inputs: an approvable export, a bad, a shareable pack and a register, and the privacy files."""
+    wb = openpyxl.load_workbook(d / "uat-approvable.xlsx")
+    fields = {r[0]: r[1] for r in wb["Incident Summary"].iter_rows(values_only=True) if r[0]}
+    assert fields["Investigation Status"] == "completed" and fields["Investigating Officer"] == "Fictional Officer"
+    rows = {r[0]: dict(zip(FIND_COLS, r)) for r in wb["Identified Findings"].iter_rows(min_row=2, values_only=True)}
+    assert rows["FND-0001"]["User Edited"] == "Yes"
+    assert [k for k, r in rows.items() if r["User Edited"] == "Yes"] == ["FND-0001"]
+    just = rows["FND-0001"]["AI Justification"]
+    assert all(s in just for s in ("Acme Contractors Pvt Ltd", "P-101", "03:12", "2024-03-20"))
+    assert "Security Guard - Gate 3" in rows["FND-0004"]["Individuals Involved"]
+    names = [x for x in (d / "uat-names.txt").read_text(encoding="utf-8").splitlines() if x and not x.startswith("#")]
+    assert names == ["Fictional Officer", "Ms Jane Placeholder"]
+    assert "fictional" in (d / "uat-names.txt").read_text(encoding="utf-8").lower()
+    assert "Acme Contractors Pvt Ltd" in (d / "uat-orgs.txt").read_text(encoding="utf-8").splitlines()
+    assert set(json.loads((d / "uat-redact.json").read_text(encoding="utf-8"))) == set(names)
+    bad = json.loads((d / "uat-bad-pack.json").read_text(encoding="utf-8"))
+    assert bad["bottom_line"][0]["text"] == "John Smith was careless and should be disciplined"
+    # the shareable pack and the register pass their checks on the approvable export, with no language error
+    x = tmp_path / "approvable" / "uat-approvable.xlsx"
+    x.parent.mkdir()
+    x.write_bytes((d / "uat-approvable.xlsx").read_bytes())
+    run("ingest", str(x), "--slug", "uat-approvable")
+    w = next((x.parent / "pmlc-runs").glob("*/workspace"))
+    run("classify", str(w))
+    prof = run("profile", str(w))
+    assert "Regulator involvement is mentioned" in prof and "Personal fields present" in prof
+    for share in ("internal", "external"):
+        out = run("check-pack", str(w), str(d / "uat-shareable-pack.json"), "--share", share)
+        assert "OK:" in out and " JC" not in out, out
+    out = run("check-register", str(w), str(d / "uat-register.json"))
+    assert "0 problem(s)" in out and " JC" not in out, out
+    assert run_fail("check-pack", str(w), str(d / "uat-bad-pack.json")).returncode == 1
+    sp = tmp_path / "shareable.json"                     # the approvable export can be signed off (C3 and section E)
+    sp.write_bytes((d / "uat-shareable-pack.json").read_bytes())
+    assert "Signed off" in run("sign-off", str(w), str(sp), "--role", "HSE Manager", "--status", "approved")
+    assert json.loads(sp.read_text(encoding="utf-8"))["handling"]["status"] == "approved"
+    run("pack", str(w), str(sp), "--out", str(tmp_path / "signed"))    # the sign-off holds (X25): no ribbon
+    page = (tmp_path / "signed" / "uat-shareable-pack.html").read_text(encoding="utf-8")
+    assert 'class="ribbon"' not in page and "Review: approved by HSE Manager on " in page
 
 
 def test_dashboard_with_no_ratings(tmp_path):
@@ -1590,3 +1750,407 @@ def test_dashboard_with_no_ratings(tmp_path):
     page = wsp.parent / "outputs" / "organisation-learning-map.html"
     assert page.is_file()
     assert "<b>0</b><span>Highest-rated findings" in page.read_text(encoding="utf-8")
+
+
+# ----------------------------------------------------------------------------- one brand module (Phase 2, Task 1)
+
+def test_status_phrase_single_source():
+    hits = []
+    for base in ("skills", "tools"):
+        for p in (ROOT / base).rglob("*"):
+            if p.suffix in (".py", ".js") and "Learning purposes" in p.read_text(encoding="utf-8"):
+                hits.append(p.relative_to(ROOT).as_posix())
+    assert hits == ["skills/learnings-coach/scripts/pmlc.py"]
+    import pmlc_pack
+    assert pmlc_pack.STATUS_PHRASE is pmlc.STATUS_PHRASE
+    b = pmlc.brand_payload()
+    assert b == {"status_phrase": pmlc.STATUS_PHRASE, "ai_status": pmlc.AI_STATUS,
+                 "ai_justification_label": pmlc.AI_JUSTIFICATION_LABEL, "ai_chip": pmlc.AI_CHIP,
+                 "export_banner": pmlc.EXPORT_BANNER, "draft_label": pmlc.DRAFT_LABEL, "brand": pmlc.BRAND}
+    assert pmlc.STATUS_PHRASE == "Learning purposes: not a statutory document"
+    assert pmlc.DRAFT_LABEL == "DRAFT"
+
+
+def test_xlsx_every_sheet_has_status(tmp_path):
+    openpyxl = pytest.importorskip("openpyxl")
+    reg = tmp_path / "reg.json"
+    reg.write_text(json.dumps(MINI_REG))
+    out = tmp_path / "reg.xlsx"
+    run("register-xlsx", str(reg), "--out", str(out))
+    wb = openpyxl.load_workbook(out)
+    assert len(wb.worksheets) >= 4
+    for s in wb.worksheets:
+        assert pmlc.STATUS_PHRASE in (s.oddHeader.center.text or ""), s.title
+        assert "ProbeMatrix Learnings Coach v" in (s.oddFooter.center.text or ""), s.title
+    about = [r[0].value for r in wb["About"].iter_rows()]
+    assert pmlc.STATUS_PHRASE in about
+    assert "Learning purposes. Not a statutory document." not in about
+
+
+def test_dashboard_overview_status_and_title(ws, tmp_path):
+    out = tmp_path / "map.html"
+    run("dashboard", str(ws), "--out", str(out))
+    t = out.read_text(encoding="utf-8")
+    assert pmlc.STATUS_PHRASE in t
+    assert re.search(r"<title>[^<]*Synthetic pump fire[^<]*</title>", t)
+    assert '"status_phrase"' not in t or "Detailed register" in t   # brand payload only with the register tab
+
+
+def test_dashboard_with_register_embeds_brand(ws, tmp_path):
+    reg = tmp_path / "reg.json"
+    reg.write_text(json.dumps(MINI_REG))
+    out = tmp_path / "map.html"
+    run("dashboard", str(ws), "--register", str(reg), "--out", str(out))
+    m = re.search(r'id="pmlc-data">(.*?)</script>', out.read_text(encoding="utf-8"), re.S)
+    assert json.loads(m.group(1))["brand"]["status_phrase"] == pmlc.STATUS_PHRASE
+
+
+def test_release_bad_version_leaves_files_unchanged(tmp_path):
+    files = ["skills/learnings-coach/scripts/pmlc.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
+    for f in files:
+        (tmp_path / f).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(ROOT / f, tmp_path / f)
+    before = {f: (tmp_path / f).read_bytes() for f in files}
+    r = subprocess.run([sys.executable, str(ROOT / "tools" / "release.py"), "2.0", "--root", str(tmp_path)],
+                       capture_output=True, text=True)
+    assert r.returncode != 0
+    assert {f: (tmp_path / f).read_bytes() for f in files} == before
+
+
+def test_release_prints_golden_reminder(tmp_path):
+    files = ["skills/learnings-coach/scripts/pmlc.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
+    for f in files:
+        (tmp_path / f).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(ROOT / f, tmp_path / f)
+    r = subprocess.run([sys.executable, str(ROOT / "tools" / "release.py"), "2.0.0a9", "--root", str(tmp_path)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert "PMLC_UPDATE_GOLDEN=1" in r.stdout
+
+
+# ----------------------------------------------------------------------------- Phase 2 task 2: engine hygiene
+
+def test_overrides_and_no_overrides_warns(fresh_ws, tmp_path):
+    o = tmp_path / "o.json"
+    o.write_text(json.dumps({"Mr Fictional Person": {"F": ["F01"]}}))
+    r = subprocess.run([sys.executable, str(PMLC), "classify", str(fresh_ws), "--overrides", str(o),
+                        "--no-overrides"], capture_output=True, text=True)
+    assert r.returncode == 0 and "--no-overrides wins: ignoring --overrides" in r.stderr
+
+
+def test_overlay_malformed_json_message(tmp_path):
+    bad = tmp_path / "broken.json"
+    bad.write_text("{nope", encoding="utf-8")
+    with pytest.raises(SystemExit, match=r"overlay broken: not valid JSON"):
+        pmlc._load_taxonomy(overlays=[str(bad)])
+    w = tmp_path / "x"
+    run("ingest", str(make_export(tmp_path)), "--legacy-out", str(w))
+    r = run_fail("classify", str(w), "--overlay", str(bad))
+    assert r.returncode == 1 and "overlay broken: not valid JSON" in r.stderr and "Traceback" not in r.stderr
+
+
+def test_overlay_extend_null(tmp_path):
+    p = tmp_path / "n.json"
+    p.write_text(json.dumps({"name": "n", "extend": None}), encoding="utf-8")
+    t = pmlc._load_taxonomy(overlays=[str(p)])
+    assert t["_overlays"] == ["n"]
+
+
+def test_overlay_extend_relations_applied(tmp_path):
+    p = tmp_path / "rel.json"
+    p.write_text(json.dumps({"name": "rel", "extend": {"relations": {"approver": r"zzcheckerzz"}}}), encoding="utf-8")
+    base = pmlc._load_taxonomy()
+    ext = pmlc._load_taxonomy(overlays=[str(p)])
+    assert pmlc.map_role("Zzcheckerzz lead", base)["R"] != "approver"
+    assert pmlc.map_role("Zzcheckerzz lead", ext)["R"] == "approver"
+    p.write_text(json.dumps({"name": "rel", "extend": {"relations": {"nope": "x"}}}), encoding="utf-8")
+    with pytest.raises(SystemExit, match="nope"):
+        pmlc._load_taxonomy(overlays=[str(p)])
+
+
+def test_overlay_label_not_spurious_for_relative_path(fresh_ws, tmp_path):
+    tax = tmp_path / "t" / "tax.json"
+    tax.parent.mkdir()
+    tax.write_bytes((pmlc.REFS / "taxonomy.json").read_bytes())
+    run("classify", str(fresh_ws), "--taxonomy", str(tax))
+    r = subprocess.run([sys.executable, str(PMLC), "classify", str(fresh_ws), "--taxonomy", "tax.json"],
+                       capture_output=True, text=True, cwd=tax.parent)
+    assert r.returncode == 0 and "warning: previous classify" not in r.stdout, r.stdout + r.stderr
+
+
+def test_before_rejects_bad_value(ws):
+    r = run_fail("timeline", str(ws), "--before", "2020-13-99")
+    assert r.returncode == 2 and '--before: use YYYY-MM-DD or "incident"' in r.stderr
+    run("timeline", str(ws), "--before", "2024-03-20")
+
+
+def _votes_ws(tmp_path):
+    x = make_export(tmp_path)
+    wb = openpyxl.load_workbook(x)
+    c = wb.create_sheet("Collaboration Data")
+    for r in [("VOTES",), ("Finding ID", "Vote", "Reason"), ("FND-0004", "downgrade", "weak"),
+              ("FND-0001", "downgrade", "weak")]:
+        c.append(r)
+    wb.save(x)
+    w = tmp_path / "w"
+    run("ingest", str(x), "--legacy-out", str(w))
+    run("classify", str(w))
+    return w
+
+
+def test_excluded_downgrade_lists_only_matching(tmp_path):
+    w = _votes_ws(tmp_path)
+    md = run("select", str(w), "--exclude-downgraded", "--brief", "--level", "1")
+    assert md.rstrip().splitlines()[-1] == "Excluded (reviewer downgrade): FND-0001"
+    md = run("select", str(w), "--exclude-downgraded", "--brief", "--level", "3")
+    assert md.rstrip().splitlines()[-1] == "Excluded (reviewer downgrade): none"
+
+
+def test_entity_mode_all_with_tags(ws):
+    cl = json.loads((ws / "clusters.json").read_text())
+    tags = cl["taxonomy"]["tags"]
+    tag = next(t for ts in tags.values() for t in ts)
+    tagged = {e for e, ts in tags.items() if tag in ts}
+    ent = sorted(tagged)[0]
+    both = _ids("select", str(ws), "--entity", ent, "--tag", tag, "--entity-mode", "all")
+    only_ent = _ids("select", str(ws), "--entity", ent)
+    assert both == only_ent and both
+    other = next(e for e in cl["entities"] if e not in tagged)
+    inter = _ids("select", str(ws), "--entity", other, "--tag", tag, "--entity-mode", "all")
+    want = {i for i, c in cl["findings"].items() if other in c["F"] and set(c["F"]) & tagged}
+    assert inter == want
+
+
+def test_count_by_json_trailing_newline(ws):
+    out = run("select", str(ws), "--count-by", "level", "--format", "json")
+    assert out.endswith("}\n") and json.loads(out)
+
+
+def test_singular_finding_wording(ws, tmp_path):
+    assert pmlc._n(1, "finding") == "1 finding" and pmlc._n(2, "finding") == "2 findings"
+    assert pmlc._n(0, "finding") == "0 findings"
+    r = _select_proc(ws, "--max", "1")
+    assert "select: 1 finding, " in r.stderr and "1 findings" not in r.stderr
+    run("select", str(ws), "--max", "1", "--out", str(tmp_path / "o.md"))
+    assert (tmp_path / "o.md").exists()
+
+
+def test_negative_budget_rejected(ws):
+    r = run_fail("select", str(ws), "--budget-chars", "-5")
+    assert r.returncode == 2 and "budget" in r.stderr
+
+
+def test_budget_too_small_json_warns(ws):
+    j = _select_proc(ws, "--budget-chars", "1", "--format", "json")
+    assert "below the minimum output" in j.stderr or json.loads(j.stdout) == []
+    assert re.search(r"select: budget 1 is below the minimum output \(\d+ chars\); no findings kept", j.stderr)
+
+
+def test_schema_report_findings_alias_strict(tmp_path):
+    x = make_export(tmp_path)
+    wb = openpyxl.load_workbook(x)
+    sh = wb["Identified Findings"]
+    sh.title = "Findings"
+    for cell in sh[1]:
+        if cell.value == "Rating":
+            cell.value = "Score"
+    wb.save(x)
+    r = run_fail("ingest", str(x), "--legacy-out", str(tmp_path / "w"), "--strict")
+    assert "--strict" in r.stderr and "Rating" in r.stderr and "Traceback" not in r.stderr
+    run("ingest", str(x), "--legacy-out", str(tmp_path / "w2"))
+
+
+def test_int_accepts_float_cells():
+    assert pmlc._int("436.0") == 436 and pmlc._int(436.0) == 436 and pmlc._int("436") == 436
+    assert pmlc._int("4.5") is None and pmlc._int("x", 7) == 7 and pmlc._int(None) is None
+    assert pmlc._int("nan") is None and pmlc._int("inf") is None
+
+
+def test_corrupt_manifest_inner_shapes(fresh_ws):
+    (fresh_ws / "manifest.json").write_text(json.dumps({"files": None, "packs": []}))
+    m = pmlc.load_manifest(fresh_ws)
+    assert m["files"] == {} and m["packs"] == {}
+    (fresh_ws / "manifest.json").write_text(json.dumps({"files": {"findings.json": "x", "a.json": {"inputs": 3}},
+                                                        "packs": {"p": 5}}))
+    m = pmlc.load_manifest(fresh_ws)
+    assert isinstance(m["files"], dict) and isinstance(m["packs"], dict)
+    r = subprocess.run([sys.executable, str(PMLC), "status", str(fresh_ws)], capture_output=True, text=True)
+    assert r.returncode == 0 and "Traceback" not in r.stderr, r.stderr
+
+
+def test_write_json_is_atomic(tmp_path):
+    p = tmp_path / "sub" / "a.json"
+    pmlc.write_json(p, {"a": 1})
+    pmlc.write_json(p, {"a": 2})
+    assert json.loads(p.read_text()) == {"a": 2}
+    assert not list(p.parent.glob("*.tmp"))
+
+
+def test_clock_dotted_hours():
+    assert [t[2] for t in pmlc._clock_times("The fire began at 10.15 hours on site.")] == ["10:15"]
+    assert [t[2] for t in pmlc._clock_times("Alarm at 10.15 hrs and 11.30h.")] == ["10:15", "11:30"]
+    assert pmlc._clock_times("Pressure was 10.15 bar and 3.45 m.") == []
+
+
+def test_fold_spelling_non_string():
+    w = {"findings": [{"subcategory": 5}, {"subcategory": "Errors"}], "evidence": {}}
+    out = pmlc.register_warnings([{"lr_id": "LR-1", "hfacs_level": "L3 Bogus"}], w)
+    assert any("Bogus" in x for x in out)
+    out = pmlc.register_warnings([{"lr_id": "LR-1", "hfacs_level": 5}], w)
+    assert isinstance(out, list)
+
+
+def test_list_hfacs_level_all_checked():
+    w = {"findings": [{"subcategory": "Errors"}], "evidence": {}}
+    out = pmlc.register_warnings([{"lr_id": "LR-1", "hfacs_level": ["L1 Errors", "L2 Bogus thing"]}], w)
+    assert any("Bogus thing" in x for x in out) and not any("L1 Errors" in x for x in out)
+
+
+def test_previous_taxonomy_relative_custom(fresh_ws, tmp_path):
+    other = tmp_path / "other"
+    other.mkdir()
+    t = json.loads((pmlc.REFS / "taxonomy.json").read_text())
+    t["entities"][1]["name"] = "Custom Renamed Entity"
+    (other / "taxonomy.json").write_text(json.dumps(t))
+    r = subprocess.run([sys.executable, str(PMLC), "classify", str(fresh_ws), "--taxonomy", "taxonomy.json"],
+                       capture_output=True, text=True, cwd=other)
+    assert r.returncode == 0, r.stderr
+    out = run("classify", str(fresh_ws))
+    assert f"Reusing taxonomy {other / 'taxonomy.json'}" in out
+    cl = json.loads((fresh_ws / "clusters.json").read_text())
+    assert "Custom Renamed Entity" in cl["taxonomy"]["entities"].values()
+    assert cl["taxonomy"]["file"] == "taxonomy.json"
+
+
+def test_reclassify_keeps_other_flag_half(fresh_ws, tmp_path):
+    w = fresh_ws
+    o = tmp_path / "o.json"
+    o.write_text(json.dumps({"Mr Fictional Person": {"F": ["F01"], "T": "T1", "R": "actor"}}))
+    tax = tmp_path / "tax.json"
+    tax.write_bytes((pmlc.REFS / "taxonomy.json").read_bytes())
+    run("classify", str(w), "--taxonomy", str(tax), "--overrides", str(o))
+    # only --overlay: the remembered taxonomy file and overrides file stay
+    run("classify", str(w), "--overlay", "india-process-site")
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["taxonomy"]["file"] == str(tax) and cl["taxonomy"]["overlays"] == ["india-process-site"]
+    assert cl["overrides"]["file"] == str(o) and cl["overrides"]["applied"] == 1
+    # only --overrides: the remembered taxonomy and overlays stay
+    run("classify", str(w), "--overrides", str(o))
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["taxonomy"]["file"] == str(tax) and cl["taxonomy"]["overlays"] == ["india-process-site"]
+    # only --taxonomy: the remembered overlays stay
+    run("classify", str(w), "--taxonomy", str(tax))
+    cl = json.loads((w / "clusters.json").read_text())
+    assert cl["taxonomy"]["overlays"] == ["india-process-site"] and cl["overrides"]["file"] == str(o)
+    # --no-overrides still wins
+    run("classify", str(w), "--no-overrides")
+    assert json.loads((w / "clusters.json").read_text())["overrides"]["file"] is None
+
+
+def test_check_pack_citable_once():
+    import inspect
+
+    import pmlc_pack
+    src = inspect.getsource(pmlc_pack.check_pack)
+    assert src.count("_citable(pack)") == 1
+
+
+# ----------------------------------------------------------------------------- privacy at ingest (Task 9)
+
+PERSONAL = [("Investigating Officer", "R. K. Sharma"), ("Supervisor at Time", "Joan Fakename"),
+            ("Investigation Team", "A. Nobody, B. Nobody")]
+
+
+def test_ingest_redact_removes_names(tmp_path):
+    x = make_export(tmp_path, summary=PERSONAL, narrative="Joan Fakename saw the leak. " * 12 + "Sharma was told.")
+    wb = openpyxl.load_workbook(x)
+    for row in wb["Identified Findings"].iter_rows(min_row=2):
+        if row[0].value == "FND-0001":
+            row[14].value = "Pump Technician, Zed Seeded"
+            row[12].value = "Zed Seeded did not test; zed seeded signed."
+    wb.save(x)
+    mp = tmp_path / "map.json"
+    mp.write_text(json.dumps({"Zed Seeded": "Fitter", "Joan Fakename": "Shift lead", "R. K. Sharma": "Officer"}))
+    ws = tmp_path / "pmlc-runs" / "2024-03-20-pump-fire" / "workspace"
+    out = run("ingest", str(x), "--out", str(ws), "--redact", str(mp))
+    assert "redacted" in out
+    blob = "".join(p.read_text() for p in ws.glob("*.json"))
+    for n in ("Zed Seeded", "zed seeded", "Joan Fakename", "Sharma"):
+        assert n not in blob
+    assert "Fitter" in blob
+    man = json.loads((ws / "manifest.json").read_text())
+    assert man["redactions"] >= 4 and "Seeded" not in json.dumps(man)
+    run("classify", str(ws))
+    run("dashboard", str(ws))
+    from test_pack import item, pack_with
+    pj = ws.parent / "outputs" / "test-pack.json"
+    pj.write_text(json.dumps(pack_with(item("recommendation"), item("learning", cites=["FND-0001"]))))
+    run("pack", str(ws), str(pj))
+    assert list(ws.parent.glob("outputs/test-pack*.html"))
+    html = "".join(p.read_text() for p in ws.parent.glob("outputs/*.html"))
+    assert html and "Seeded" not in html and "Fakename" not in html
+
+
+def test_ingest_redact_bad_map(tmp_path):
+    x = make_export(tmp_path)
+    for body in ('["a"]', "not json", '{"a": 1}'):
+        mp = tmp_path / "bad.json"
+        mp.write_text(body)
+        r = run_fail("ingest", str(x), "--legacy-out", str(tmp_path / "w"), "--redact", str(mp))
+        assert r.returncode == 1 and '--redact: expected a JSON object of "name": "role"' in r.stderr
+
+
+def test_ingest_personal_field_note(tmp_path):
+    x = make_export(tmp_path, summary=PERSONAL[:2])
+    out = run("ingest", str(x), "--legacy-out", str(tmp_path / "w"))
+    assert ("note: personal fields present (Investigating Officer, Supervisor at Time): "
+            "they are not quoted in outputs") in out
+    assert "personal fields" not in run("ingest", str(make_export(tmp_path, name="b.xlsx")), "--legacy-out",
+                                        str(tmp_path / "w2"))
+
+
+def test_profile_personal_fields_flag(tmp_path):
+    x = make_export(tmp_path, summary=PERSONAL)
+    w = tmp_path / "w"
+    run("ingest", str(x), "--legacy-out", str(w))
+    assert ("Personal fields present: do not quote Investigating Officer, Supervisor at Time, "
+            "Investigation Team") in run("profile", str(w))
+
+
+def test_profile_regulator_mention_flag(tmp_path):
+    x = make_export(tmp_path, summary=[("Reportable to Regulator", "No")],
+                    narrative="The statutory regulator was told at once. " * 8)
+    w = tmp_path / "w"
+    run("ingest", str(x), "--legacy-out", str(w))
+    assert ('Regulator involvement is mentioned but "Reportable to Regulator" is "No": '
+            "confirm reporting status") in run("profile", str(w))
+    y = make_export(tmp_path, summary=[("Reportable to Regulator", "Yes")],
+                    narrative="The statutory regulator was told at once. " * 8, name="y.xlsx")
+    run("ingest", str(y), "--legacy-out", str(tmp_path / "w2"))
+    assert "Regulator involvement" not in run("profile", str(tmp_path / "w2"))
+
+
+def test_profile_regulator_flag_hazira(tmp_path):
+    haz = next((ROOT / "samples").glob("2020-09-24-hazira*/*findings.xlsx"))
+    run("ingest", str(haz), "--legacy-out", str(tmp_path / "h"))
+    p = run("profile", str(tmp_path / "h"))
+    assert "Regulator involvement is mentioned but" in p
+
+
+def test_redact_protects_role_text_and_warns(tmp_path):
+    x = make_export(tmp_path, summary=[], narrative="John Field and Mr. Field met the Field Operator. " * 6)
+    wb = openpyxl.load_workbook(x)
+    for row in wb["Identified Findings"].iter_rows(min_row=2):
+        if row[0].value == "FND-0001":
+            row[14].value = "Field Operator, John Field, R.K. Field"
+    wb.save(x)
+    mp = tmp_path / "map.json"
+    mp.write_text(json.dumps({"John Field": "Fitter", "R. K. Field": "Engineer"}))
+    ws = tmp_path / "w"
+    out = run("ingest", str(x), "--legacy-out", str(ws), "--redact", str(mp))
+    F = json.loads((ws / "findings.json").read_text())
+    assert F[0]["roles"] == ["Field Operator", "Fitter", "Engineer"]
+    narr = json.loads((ws / "incident.json").read_text())["narrative"]
+    assert "John Field" not in narr and "Mr. Field" not in narr and "Fitter" in narr
+    assert 'warning: surname-only match "Field" replaced 6 times: check the text reads correctly' in out
+    assert "redacted" in out

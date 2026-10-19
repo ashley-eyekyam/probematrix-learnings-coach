@@ -32,6 +32,28 @@ Controlled values (keep to these so summaries count cleanly; put detail in anoth
 
 Organisational systems vocabulary: procedures; training and competence; supervision; staffing and fatigue; communication and handover; design and human–machine interface; maintenance regime; management of change; contractor and supply chain; emergency preparedness; resourcing; safety culture; assurance and audit.
 
+## Handling and sign-off
+
+Every pack and register may carry a top-level `handling` object. It is optional: without one the document is treated as `draft` / `internal` and `check-pack` (or `check-register`) passes with the warning `no handling block: rendered as draft (internal)`.
+
+| Key | Values | Default |
+|---|---|---|
+| `status` | `draft`, `reviewed`, `approved` | `draft` |
+| `reviewer_role` | the reviewer's role, never a name | none |
+| `reviewed_on` | `YYYY-MM-DD` | none |
+| `classification` | `internal`, `restricted`, `external`, `public` | `internal` |
+| `legal_review` | `not-required`, `requested`, `cleared` | `not-required` |
+| `distribution` | list of audience names | `[]` |
+| `version` | text | `1.0` |
+| `retention_review` | `YYYY-MM-DD` | none |
+| `content_hash` | `sha256:` and 64 hex digits | none |
+
+Unknown keys, bad values and `reviewed` or `approved` without `reviewer_role`, `reviewed_on` and `content_hash` are problems.
+
+**Forced draft.** Nothing may be reviewed or approved unless the export's Investigation Status is `completed` (compared in lower case, with spaces and hyphens read as underscores): `in_progress` gives "the investigation status is in progress", and anything else, including `draft` or a blank, gives "the investigation status is not completed". Nor while no finding is marked as edited by a person ("no finding is marked as edited by a person"): only `yes`, `y`, `true` or `1` in User Edited counts. There is no override: finish the investigation in ProbeMatrix first.
+
+**Sign-off.** After a person has reviewed the document and given their role, run `pmlc sign-off <ws> <file> --role "<role>" [--status reviewed|approved] [--classification ...] [--legal-review ...] [--distribution AUDIENCE ...] [--retention-review YYYY-MM-DD] [--version V] [--date YYYY-MM-DD]`. It refuses on forced-draft reasons and on any check problem, writes the `handling` block into the file with a `content_hash` of everything except `handling`, and records the whole block and the file's resolved path in the manifest (`status` lists it). The block is written by `sign-off` only: never write or edit it by hand. A `reviewed` or `approved` status holds only when this workspace's manifest records that sign-off for this file (same block, same path); a hand-written, hand-edited or copied block is `draft` ("not signed off", with the check warning `not signed off in this workspace: status is draft until sign-off records it`). Any later edit, even one character, changes the hash: the effective status falls back to `draft` and the check warns `edited since sign-off: status is draft until signed off again`. A bare-list register cannot be signed off; wrap it as `{"entries": [...]}`.
+
 ## JSON shape for `pmlc.py register-xlsx`
 
 ```json

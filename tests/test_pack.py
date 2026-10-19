@@ -3,6 +3,7 @@ import copy
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -224,8 +225,8 @@ VERSION = pmlc.__version__
 
 
 def pack_fixtures() -> list:
-    """Every per-skill fixture pack (tests/fixtures/packs/<pack>.json), all-kinds excepted."""
-    return sorted(p.stem for p in FIX.glob("*.json") if p.stem != "all-kinds")
+    """Every per-skill fixture pack (tests/fixtures/packs/<pack>.json), all-kinds and the bad L3-01 pack excepted."""
+    return sorted(p.stem for p in FIX.glob("*.json") if p.stem not in ("all-kinds", "bad-l3-01"))
 
 
 def skill_of(pack) -> str:
@@ -256,7 +257,9 @@ def test_coverage_lists_uncited_relevant_findings(w):
 def test_markdown_per_kind(w):
     md = pp.render_pack_md(fixture("all-kinds"), w)
     for expected in [
-        "# All kinds: Synthetic pump fire\n\n*Learning purposes: not a statutory document*\n\n**Audience:** Test readers",
+        "# All kinds: Synthetic pump fire\n\n**DRAFT**\n\nReview: draft · Classification: internal · Version 1.0\n\n"
+        "Draft because: no finding is marked as edited by a person\n\n*Learning purposes: not a statutory document · "
+        "Learnings drafted by an AI agent from AI-assisted findings*\n\n**Audience:** Test readers",
         "## Bottom line\n\n- Test before service. [FND-0002]",
         "## Every item kind\n\nOne of each kind.",
         "- [ ] **Hold point:** Leak-test record attached. *(before return to service)* [FND-0001]",
@@ -920,3 +923,238 @@ def test_pack_downgraded_needs_note(w):
     assert not any("downgrade vote" in x for x in pp.check_pack(p, w2).problems)
     p2 = pack_with(item("learning"), bottom_line=[{"text": "x", "cites": ["FND-0004"]}])
     assert any("bottom_line" in x and "downgrade vote" in x for x in pp.check_pack(p2, w2).problems)
+
+
+# ---- phase 2, task 11: wording and the two new optional fields
+SKILLS = ROOT / "skills"
+
+
+def test_card_organisation_changing_warning(w):
+    t1 = pack_with(item("card"), scope={"tiers": ["T1"]})
+    res = pp.check_pack(t1, w)
+    assert res.problems == []
+    assert any(x.startswith("card ") and x.endswith(": add organisation_changing (what the organisation is changing)")
+               for x in res.warnings), res.warnings
+    ok = pack_with(item("card", organisation_changing="Procedures now require a design-pressure test."),
+                   scope={"tiers": ["T1"]})
+    assert not any("organisation_changing" in x for x in pp.check_pack(ok, w).warnings)
+    t2 = pack_with(item("card"), scope={"tiers": ["T2"]})
+    assert not any("organisation_changing" in x for x in pp.check_pack(t2, w).warnings)
+    assert problems(pack_with(item("card", organisation_changing="")), w)
+    md = pp.render_pack_md(ok, w)
+    assert "**What the organisation is changing:** Procedures now require a design-pressure test." in md
+    assert "What the organisation is changing" in pp.render_pack_html(w, ok, "r", "d")
+
+
+def test_timeline_knowable_then_accepted_and_rendered(w):
+    ev = [{"date": "2022-03", "text": "Local seal purchases begin", "knowable_then": "Stores held the purchase record.",
+           "cites": ["FND-0003"]},
+          {"date": "2024-03-12", "text": "Seal changed", "knowable_then": False, "cites": ["FND-0003"]}]
+    p = pack_with(item("timeline", events=ev))
+    assert pp.check_pack(p, w).problems == []
+    md = pp.render_pack_md(p, w)
+    assert "Knowable then: Stores held the purchase record." in md and "Knowable then: no" in md
+    h = pp.render_pack_html(w, p, "r", "d")
+    assert "Knowable then: Stores held the purchase record." in h and "Knowable then: no" in h
+    for bad_v in ("", 3):
+        q = pack_with(item("timeline", events=[{"date": "2022", "text": "x", "knowable_then": bad_v}]))
+        assert any("events[0].knowable_then: must be true, false or text" in x for x in problems(q, w))
+
+
+def test_register_trigger_no_regulator_invite():
+    t = (SKILLS / "learnings-register" / "SKILL.md").read_text(encoding="utf-8")
+    desc = re.search(r"^description:\s*(.+)$", t, re.M).group(1)
+    assert not re.search(r"(?i)share with .*regulator", desc)
+    assert "regulator" not in desc.lower()
+    assert "Sharing outside the organisation" in t
+
+
+def test_hub_sign_off_rule():
+    t = (SKILLS / "learnings-coach" / "SKILL.md").read_text(encoding="utf-8")
+    assert "never run sign-off unless" in t
+    assert "check-language" in t and "--share" in t and "--embed cited|full" in t
+
+
+def test_principles_sections():
+    t = (SKILLS / "learnings-coach" / "references" / "learning-principles.md").read_text(encoding="utf-8")
+    for h in ("1a. Hindsight", "Interviews in a just culture"):
+        assert re.search(rf"^#+ .*{re.escape(h)}", t, re.M), h
+    assert '"failed to X" | "X was not done; the system did not require or support X"' in t
+    assert "owns the change" in t
+    heads = re.findall(r"^## (.+)$", t, re.M)
+    assert "7. Sharing outside the organisation" in heads
+    i = heads.index("7. Sharing outside the organisation")
+    assert heads[i - 1].startswith("6. ") and heads[i + 1:] == ["Interviews in a just culture", "Quasi-identifiers"]
+    sec = t.split("## 7. Sharing outside the organisation", 1)[1].split("\n## ", 1)[0]
+    for x in ("legal review", "--share external", "--embed summary", "client-safe", "privilege"):
+        assert x in sec, x
+
+
+def test_supervisor_no_enforce_habit():
+    t = (SKILLS / "supervisor-coach" / "SKILL.md").read_text(encoding="utf-8")
+    assert not re.search(r"(?i)\benforce\b", t)
+    assert "Make the safe way the easy way" in t
+
+
+# ----------------------------------------------------------------------------- Task 7: --embed and print only cited
+
+STUB_KEYS = {"id", "label", "rating"}
+
+
+def _trail_ids(t):
+    m = re.search(r'<section class="trail">(.*?)</section>', t, re.S)
+    assert m, "no print trail"
+    return re.findall(r"<dt>([^<]+)</dt>", m.group(1))
+
+
+def test_embed_default_is_cited(w):
+    p = pack_with(item("para", cites=["FND-0002"]), exclusions=[{"id": "FND-0004", "reason": "out of scope"}])
+    d = pp.build_pack_data(w, p, "r")
+    assert d == pp.build_pack_data(w, p, "r", embed="cited")
+    assert list(d["findings"]) == ["FND-0002", "FND-0003", "FND-0004"]
+    assert "short" in d["findings"]["FND-0002"] and "clusters" in d["findings"]["FND-0002"]
+    for x in ("FND-0003", "FND-0004"):                    # uncovered and excluded: label-only stubs
+        assert set(d["findings"][x]) == STUB_KEYS, d["findings"][x]
+    assert d["findings"]["FND-0003"]["label"] == "Seals bought locally without specification"
+    assert list(d["evidence"]) == []                      # nothing cited, nothing embedded
+    q = pack_with(item("para", cites=["FND-0002", "EVD-0001"]))
+    assert list(pp.build_pack_data(w, q, "r")["evidence"]) == ["EVD-0001"]
+    assert _pack_data(pp.render_pack_html(w, p, "r", "d"))["findings"]["FND-0003"].keys() == STUB_KEYS
+
+
+def test_embed_full_matches_previous_behaviour(w):
+    p = pack_with(item("para", cites=["FND-0002", "EVD-0001"]), exclusions=[{"id": "FND-0004", "reason": "x"}])
+    fids, eids = pp.cited_ids(p)
+    uncited = [x for x in pp.relevant_findings(w, p.get("scope")) if x not in fids]
+    f, e = pmlc.citation_records(w, fids + uncited + pp.excluded_ids(p), eids)
+    assert pp.build_pack_data(w, p, "r", embed="full") == {"pack": "test-pack", "run": "r", "findings": f,
+                                                          "evidence": e, "brand": pmlc.brand_payload()}
+    with pytest.raises(ValueError):
+        pp.build_pack_data(w, p, "r", embed="everything")
+
+
+def _marked(w):
+    """A copy of the workspace with unique markers in every field --embed summary must drop."""
+    w2 = copy.deepcopy(w)
+    for e in w2["evidence"].values():
+        e["description"] = f"MARK-DESC-{e['id']}"
+        for n, ln in enumerate(e["links"]):
+            ln["reference"] = f"MARK-REF-{e['id']}-{n}"
+        e["Specific Reference"] = f"MARK-SR-{e['id']}"
+    for f in w2["findings"]:
+        f["key_questions"], f["suggested_interviews"] = f"MARK-KQ-{f['id']}", f"MARK-SI-{f['id']}"
+        f["specific_reference"] = f"MARK-SR-{f['id']}"
+        f["justification"] += " Source: MARK-REF-EVD-0001-0 (p.3)."     # AI justifications quote the evidence
+        f["justification"] += " Source: MARK-REF-EVD-0001-0 (p.3)."     # AI justifications quote the evidence
+    w2["incident"]["review_votes"] = [{"finding": "FND-0002", "vote": "upgrade", "reason": "MARK-VOTE-reason"}]
+    return w2
+
+
+def test_embed_summary_leaks_no_quotes(w):
+    """Review Focus 5: the whole HTML string (JSON payload, print trail, title) holds no description or quote."""
+    w2 = _marked(w)
+    p = pack_with(item("para", cites=["FND-0002", "EVD-0001", "EVD-0002"]),
+                  item("card", cites=["FND-0001", "EVD-0001"]))
+    cited = pp.render_pack_html(w2, p, "r", "d")
+    assert "MARK-DESC-EVD-0001" in cited and "MARK-REF-EVD-0001-0" in cited and "MARK-VOTE-reason" in cited
+    assert "MARK-KQ-FND-0002" in cited                    # cited mode keeps them: the markers are reachable
+    t = pp.render_pack_html(w2, p, "r", "d", embed="summary")
+    assert "MARK-" not in t, re.findall(r"MARK-[\w-]+", t)
+    d = _pack_data(t)
+    assert set(d["evidence"]) == {"EVD-0001", "EVD-0002"} and d["evidence"]["EVD-0001"]["type"] == "document"
+    assert d["findings"]["FND-0002"]["votes"] == [{"finding": "FND-0002", "vote": "upgrade"}]
+    assert "MARK-" not in pp.render_pack_md(p, w2)
+    assert d["findings"]["FND-0002"]["justification"].endswith(f"Source: {pmlc.QUOTE_OMITTED} (p.3).")
+    assert d["findings"]["FND-0002"]["justification"].endswith(f"Source: {pmlc.QUOTE_OMITTED} (p.3).")
+    assert set(_trail_ids(t)) == {"FND-0002", "FND-0001", "EVD-0001", "EVD-0002"}
+
+
+def test_print_trail_only_cited(w):
+    p = pack_with(item("para", cites=["FND-0002", "EVD-0002"]), exclusions=[{"id": "FND-0004", "reason": "x"}])
+    for mode in pp.EMBED_MODES:
+        t = pp.render_pack_html(w, p, "r", "d", embed=mode)
+        assert _trail_ids(t) == ["FND-0002", "EVD-0002"], mode
+
+
+def test_uncovered_print_line(w):
+    t = pp.render_pack_html(w, pack_with(item("para", cites=["FND-0002"])), "r", "d")
+    assert '<p class="printonly">1 of 2 relevant findings cited</p>' in t
+    assert '<details class="noprint"><summary>Not covered here (1)</summary>' in t     # the screen keeps the list
+    assert '<p class="noprint">This pack cites 1 of 2 relevant findings.</p>' in t
+    js = (pmlc.DASHBOARD_ASSETS / "pack.js").read_text(encoding="utf-8")
+    assert 'querySelectorAll("main details:not(.rail):not(.noprint)")' in js
+    css = (pmlc.DASHBOARD_ASSETS / "pack.css").read_text(encoding="utf-8")
+    assert ".printonly{display:none}" in css and ".noprint{display:none!important}" in css
+    assert "1 of 1 relevant findings cited" in pp.render_pack_html(w, pack_with(item("para", cites=["FND-0002"]),
+                                                                              exclusions=EX), "r", "d")
+
+
+def _run_with_evidence_type(tmp_path, etype, *flags):
+    tmp_path.mkdir(parents=True)
+    x = make_export(tmp_path)
+    run("ingest", str(x), "--slug", "pump-fire")
+    ws_ = tmp_path / "pmlc-runs" / "2024-03-20-pump-fire" / "workspace"
+    run("classify", str(ws_))
+    ev = json.loads((ws_ / "evidence.json").read_text(encoding="utf-8"))
+    ev["EVD-0001"]["type"] = etype
+    (ws_ / "evidence.json").write_text(json.dumps(ev), encoding="utf-8")
+    src = tmp_path / "p.json"
+    src.write_text(json.dumps(pack_with(item("para", cites=["FND-0001", "EVD-0001"]))), encoding="utf-8")
+    return subprocess.run([sys.executable, str(ROOT / "skills" / "learnings-coach" / "scripts" / "pmlc.py"), "pack",
+                           str(ws_), str(src), "--no-md", *flags], capture_output=True, text=True)
+
+
+WITNESS_NOTE = "note: embedded evidence includes witness statements; consider --embed summary"
+
+
+def test_witness_note(tmp_path):
+    r = _run_with_evidence_type(tmp_path / "a", "Witness_Statement")
+    assert r.returncode == 0, r.stderr
+    assert WITNESS_NOTE in r.stderr
+    r = _run_with_evidence_type(tmp_path / "b", "document")
+    assert r.returncode == 0 and WITNESS_NOTE not in r.stderr
+    r = _run_with_evidence_type(tmp_path / "c", "witness statement", "--embed", "summary")
+    assert r.returncode == 0 and WITNESS_NOTE not in r.stderr     # summary drops the statements' text
+    assert pmlc.witness_note({"E": {"type": "WITNESS"}}) and not pmlc.witness_note({"E": {"type": None}})
+
+
+def test_pack_cli_embed_flag(ws, tmp_path):  # noqa: F811
+    good = tmp_path / "p.json"
+    good.write_text(json.dumps(pack_with(item("para", cites=["FND-0002"]))), encoding="utf-8")
+    run("pack", str(ws), str(good), "--out", str(tmp_path / "o"), "--no-md", "--embed", "full")
+    d = _pack_data((tmp_path / "o" / "test-pack.html").read_text(encoding="utf-8"))
+    assert "short" in d["findings"]["FND-0003"]
+    run("pack", str(ws), str(good), "--out", str(tmp_path / "o"), "--no-md")
+    d = _pack_data((tmp_path / "o" / "test-pack.html").read_text(encoding="utf-8"))
+    assert set(d["findings"]["FND-0003"]) == STUB_KEYS
+    r = run_fail("pack", str(ws), str(good), "--embed", "all")
+    assert "invalid choice" in r.stderr
+
+
+def test_lint_ok_reason_is_rendered(w):
+    it = item("para", text="The restart was unlawful under the plant rules.", cites=["FND-0002"],
+              lint_ok={"rule": "JC5", "reason": "quoting the <b>rule</b> title & number"})
+    p = pack_with(it)
+    r = pp.check_pack(p, w)
+    assert r.problems == [] and not [x for x in r.warnings if "unknown field" in x], r
+    t = pp.render_pack_html(w, p, "r", "d")
+    assert ('<p class="lint-ok">Language check JC5 accepted: quoting the &lt;b&gt;rule&lt;/b&gt; title &amp; number</p>'
+            in t)
+    md = pp.render_pack_md(p, w)
+    assert "*Language check JC5 accepted: quoting the <b>rule</b> title & number*" in md
+    two = pack_with(item("para", text="x", cites=["FND-0002"], lint_ok=[{"rule": "JC5", "reason": "a"},
+                                                                       {"rule": "JC1", "reason": "b"}]))
+    t2 = pp.render_pack_html(w, two, "r", "d")
+    assert "Language check JC5 accepted: a" in t2 and "Language check JC1 accepted: b" in t2
+    bl = pack_with(item("para", cites=["FND-0002"]),
+                   bottom_line=[{"text": "t", "cites": ["FND-0002"], "lint_ok": {"rule": "JC5", "reason": "why"}}])
+    assert "Language check JC5 accepted: why" in pp.render_pack_html(w, bl, "r", "d")
+    assert "Language check JC5 accepted: why" in pp.render_pack_md(bl, w)
+
+
+def test_readme_alpha_pin():
+    """M5: the alpha notice also says how to stay on the tested alpha.3."""
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    head = readme.split("\n\n", 2)[1]
+    assert "#v0.3.5" in head
+    assert "/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v2.0.0-alpha.3" in head

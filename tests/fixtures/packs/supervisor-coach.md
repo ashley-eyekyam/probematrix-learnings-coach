@@ -1,6 +1,12 @@
 # Supervisor Coach: Synthetic pump fire, 2024
 
-*Learning purposes: not a statutory document*
+**DRAFT**
+
+Review: draft · Classification: internal · Version 1.0
+
+Draft because: no finding is marked as edited by a person
+
+*Learning purposes: not a statutory document · Learnings drafted by an AI agent from AI-assisted findings*
 
 **Audience:** T2 first-line supervision
 
@@ -51,4 +57,4 @@ A repeat seal leak on the same pump is a signal to escalate to the maintenance m
 
 This pack cites 3 of 3 relevant findings.
 
-> Generated with ProbeMatrix Learnings Coach v2.0.0a3 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

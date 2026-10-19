@@ -56,13 +56,13 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 | `recommendation` | change*, indicator*, hoc_tier*, barrier, owner, by_when; **must cite** | what should change, with its leading indicator and hierarchy-of-controls tier |
 | `decision` | decision*, options[], trade_offs, owner, by_when | decisions for leaders, pending engineering decisions |
 | `indicator` | name*, measure*, deterioration, owner | leading indicators, readiness indicators |
-| `card` | title*, what_happened*, why_made_sense, warning_signs[]*, good_looks_like*, discussion[]; **must cite** | Learning Cards (`output-style.md`) |
+| `card` | title*, what_happened*, why_made_sense, organisation_changing (what the organisation is changing; `check-pack` warns when a pack for tier T1 omits it), warning_signs[]*, good_looks_like*, discussion[]; **must cite** | Learning Cards (`output-style.md`) |
 | `scenario` | situation*, prompts[]* | coaching conversations, drills, exercises |
 | `table` | columns[]*, rows[][]*, row_cites[][], row_supporting_cites[][] | anything tabular; each row has as many cells as there are columns |
 | `test_point` | requirement*, sample*, conformity_evidence*, red_flags[]; **must cite** | audit test points |
 | `module` | title*, objective*, audience, duration, content[]*, assessment[] | training modules |
 | `barrier` | barrier*, failure_mode*, hoc_tier*, type, fix, owner, state (absent, degraded, defeated, worked partly, worked), indicator; **must cite** | barrier analysis |
-| `timeline` | events[]*: {date* (YYYY-MM-DD, YYYY-MM or YYYY), time (HH:MM), text*, signal (true/false), received_by, response, cites[]} | precursors, response timelines; events sort by date then time, and same-date events without a time keep your order |
+| `timeline` | events[]*: {date* (YYYY-MM-DD, YYYY-MM or YYYY), time (HH:MM), text*, signal (true/false), knowable_then (true, false or text: what could be known at that moment), received_by, response, cites[]} | precursors, response timelines; events sort by date then time, and same-date events without a time keep your order |
 | `graph` | nodes[]*: {id*, label*}; edges[]*: {from*, to*, label} | causal maps, interfaces; drawn as SVG with a text list of links. `PMLC causal-item <ws> --top 40` prints a ready graph item from `causal_graph.json` (run `PMLC causal` first) |
 | `learning` | lesson* (one sentence), explanation (two to four sentences), owner (who must learn it); **must cite** | a learning: the lesson, why, and its evidence (dossiers, manager and leadership coaches, signal and interface learnings) |
 
@@ -80,6 +80,28 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 A table's `row_cites` appear as an extra last column labelled **Cites**; `row_supporting_cites` (one list per row, may be empty) add a collapsed "+N supporting" to that cell and count for coverage. `check-pack` warns when a pack cites fewer than a quarter of its relevant findings; the page always shows the count and lists the rest.
 
 `hoc_tier` must name one of: elimination, substitution, engineering, administrative, training, ppe. Free wording such as "Engineering control: interlock" is fine.
+
+## Handling and sign-off
+
+Every pack and register may carry a top-level `handling` object. It is optional: without one the document is treated as `draft` / `internal` and `check-pack` (or `check-register`) passes with the warning `no handling block: rendered as draft (internal)`.
+
+| Key | Values | Default |
+|---|---|---|
+| `status` | `draft`, `reviewed`, `approved` | `draft` |
+| `reviewer_role` | the reviewer's role, never a name | none |
+| `reviewed_on` | `YYYY-MM-DD` | none |
+| `classification` | `internal`, `restricted`, `external`, `public` | `internal` |
+| `legal_review` | `not-required`, `requested`, `cleared` | `not-required` |
+| `distribution` | list of audience names | `[]` |
+| `version` | text | `1.0` |
+| `retention_review` | `YYYY-MM-DD` | none |
+| `content_hash` | `sha256:` and 64 hex digits | none |
+
+Unknown keys, bad values and `reviewed` or `approved` without `reviewer_role`, `reviewed_on` and `content_hash` are problems.
+
+**Forced draft.** Nothing may be reviewed or approved unless the export's Investigation Status is `completed` (compared in lower case, with spaces and hyphens read as underscores): `in_progress` gives "the investigation status is in progress", and anything else, including `draft` or a blank, gives "the investigation status is not completed". Nor while no finding is marked as edited by a person ("no finding is marked as edited by a person"): only `yes`, `y`, `true` or `1` in User Edited counts. There is no override: finish the investigation in ProbeMatrix first.
+
+**Sign-off.** After a person has reviewed the document and given their role, run `pmlc sign-off <ws> <file> --role "<role>" [--status reviewed|approved] [--classification ...] [--legal-review ...] [--distribution AUDIENCE ...] [--retention-review YYYY-MM-DD] [--version V] [--date YYYY-MM-DD]`. It refuses on forced-draft reasons and on any check problem, writes the `handling` block into the file with a `content_hash` of everything except `handling`, and records the whole block and the file's resolved path in the manifest (`status` lists it). The block is written by `sign-off` only: never write or edit it by hand. A `reviewed` or `approved` status holds only when this workspace's manifest records that sign-off for this file (same block, same path); a hand-written, hand-edited or copied block is `draft` ("not signed off", with the check warning `not signed off in this workspace: status is draft until sign-off records it`). Any later edit, even one character, changes the hash: the effective status falls back to `draft` and the check warns `edited since sign-off: status is draft until signed off again`. A bare-list register cannot be signed off; wrap it as `{"entries": [...]}`.
 
 ## Examples
 

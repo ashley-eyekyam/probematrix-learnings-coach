@@ -16,4 +16,6 @@ Contributions are welcome: new audience skills, taxonomies for other sectors (he
 4. **Tests.** Run `.venv/bin/python -m pytest tests` and, if you changed samples, `python3 skills/learnings-coach/scripts/pmlc.py check-samples`.
 5. **Pull request.** Open it against `main` using the template, with "Closes #N" in the body. Pull requests are merged with a merge commit.
 
+The de-identification tools (`scan-names`, `--names`) stay available for organisations' own runs.
+
 Questions: ashley@eyekyam.com

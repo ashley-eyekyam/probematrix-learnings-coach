@@ -3,6 +3,7 @@
 > **v2.0 alpha in testing.** The stable release is 0.3.5, and `main` now carries the alpha. To stay on 0.3.5:
 > - **Claude app:** in the app's plugin settings, leave auto-update off and do not choose Update for the `probematrix` marketplace. If you have already updated, remove that marketplace there, add `ashley-eyekyam/probematrix-learnings-coach#v0.3.5` and install the plugin again.
 > - **Claude Code:** pin the tag as in [Pinning a version](docs/INSTALL.md#pinning-a-version). Once you have installed the plugin the `probematrix` marketplace name is already taken, so pinning means removing the marketplace, adding it again with `#v0.3.5` and reinstalling the plugin; a single `marketplace add` is not enough.
+> - **To stay on the tested alpha.3** instead, pin that tag the same way: `/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v2.0.0-alpha.3`.
 
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE) ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)
 
@@ -11,6 +12,8 @@
 An open-source plugin of 23 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
 
 Works with **Claude Code**, **Claude (Cowork / desktop)** and **OpenAI Codex**, and any agent that reads the Agent Skills format or `AGENTS.md`.
+
+**User manual:** [`docs/manual/Home.md`](docs/manual/Home.md), also on the [project wiki](https://github.com/ashley-eyekyam/probematrix-learnings-coach/wiki). It covers every skill, command and flag, with worked examples from the Hazira sample.
 
 ---
 
@@ -34,7 +37,18 @@ Audit test points · Investigator follow-up · Training modules · ER drills · 
 
 ## What's new in v2.0 so far
 
-v2.0 is in testing (current build: 2.0.0-alpha.3, Phase 1: correct and tested). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+v2.0 is in testing (current build: 2.0.0-alpha.4, Phase 2: trust gates and the user manual). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+
+**Phase 2 (2.0.0-alpha.4):**
+
+- **Language checks.** `check-language` reads a pack or register the way a just-culture reviewer would: personal names, punitive wording, counterfactuals and hindsight, legal conclusions, retraining as the only fix, numbers that are not in the cited findings, organisation names, equipment tags, roles that point to one person and appeals to "be more careful". `check-pack` and `check-register` run it too, and stop on an error.
+- **Review and sign-off.** A person who has reviewed an output tells the agent their role, and `sign-off` records it in the file with a fingerprint of the text. Any later edit turns the file back into a draft. Nothing can be approved while the investigation is still in progress in ProbeMatrix or no finding has been edited by a person.
+- **The draft ribbon.** Every page shows DRAFT until it is approved, says why, and labels the AI-drafted wording from the export as such.
+- **Safer sharing.** `--share external` or `--share public` writes a separate copy for a regulator, a client or the public, with names, organisations, equipment tags, one-person roles, clock times and full dates masked. It needs an approval, a matching classification and a cleared legal review.
+- **Smaller pages.** Packs and the learning map now carry full records only for what they cite (`--embed cited`), and print only the cited evidence trail. A small Hazira board brief fell from about 1.2 MB to about 205 KB.
+- **The user manual.** [`docs/manual/`](docs/manual/Home.md) explains every skill, engine command and flag with real examples from the Hazira sample, plus recipes, troubleshooting and a glossary. The full command list is in [Commands](docs/manual/Commands.md).
+
+**Phase 1 (2.0.0-alpha.1 to alpha.3):**
 
 - The coach no longer forgets your role corrections when you re-run the analysis.
 - Questions about where two departments meet now use only the findings both share, so the numbers are small and meaningful (27 on the Hazira sample, not 196).

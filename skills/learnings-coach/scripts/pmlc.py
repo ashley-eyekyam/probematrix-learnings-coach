@@ -5,23 +5,25 @@ Deterministic data work over a ProbeMatrix findings export (.xlsx), so that the
 LLM skills spend their effort on judgement, not counting.
 
 Subcommands
-  ingest        xlsx -> JSON workspace in <export-dir>/pmlc-runs/<date>-<site>-<event>/workspace
-  profile       Markdown profile of the workspace (counts, levels, roles, data-quality flags)
-  classify      map 'Individuals Involved' roles to Learning Clusters (entity x tier x relation)
-  select        compact Markdown/JSON bundle of findings for one audience or cluster
-  causal        causal graph extracted from the AI's causal explanations (+ Causal Chain sheet)
-  timeline      dated precursor candidates found in findings and evidence
-  interfaces    entity x entity interface matrix (shared findings + cross-entity causal links)
-  dashboard     self-contained HTML organisational learning dashboard
-  register-xlsx write a Learnings Register JSON to a formatted .xlsx
-  scan-names    deterministic zero-hit name scan over files (de-identification check)
-  check-pack    check a learning pack JSON against the workspace
-  check-register check a Learnings Register JSON against the workspace
-  pack          learning pack JSON -> <run>/outputs/<pack>.html and .md
-  causal-item   the top causal links as a ready graph item for a pack (JSON on stdout)
-  status        which derived files are current or stale, and the last check of each pack
-  run-path      print a workspace's run folder, outputs folder and slug
-  check-samples check samples/<slug>/ folders follow the contribution layout
+  ingest          xlsx -> JSON workspace in <export-dir>/pmlc-runs/<date>-<site>-<event>/workspace
+  profile         Markdown profile of the workspace (counts, levels, roles, data-quality flags)
+  classify        map 'Individuals Involved' roles to Learning Clusters (entity x tier x relation)
+  select          compact Markdown/JSON bundle of findings for one audience or cluster
+  causal          causal graph extracted from the AI's causal explanations (+ Causal Chain sheet)
+  timeline        dated precursor candidates found in findings and evidence
+  interfaces      entity x entity interface matrix (shared findings + cross-entity causal links)
+  dashboard       self-contained HTML organisational learning dashboard
+  register-xlsx   write a Learnings Register JSON to a formatted .xlsx
+  scan-names      deterministic zero-hit name scan over files (de-identification check)
+  check-pack      check a learning pack JSON against the workspace
+  sign-off        record a person's review of a pack or register (writes its handling block and content hash)
+  check-register  check a Learnings Register JSON against the workspace
+  check-language  just-culture and grounding lint (JC1-JC12) of a pack or register JSON
+  pack            learning pack JSON -> <run>/outputs/<pack>.html and .md
+  causal-item     the top causal links as a ready graph item for a pack (JSON on stdout)
+  status          which derived files are current or stale, and the last check of each pack
+  run-path        print a workspace's run folder, outputs folder and slug
+  check-samples   check samples/<slug>/ folders follow the contribution layout
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -30,9 +32,12 @@ from __future__ import annotations
 
 import argparse
 import collections
+import contextlib
+import copy
 import datetime as dt
 import hashlib
 import html
+import io
 import json
 import os
 import re
@@ -40,12 +45,34 @@ import sys
 import types
 from pathlib import Path
 
-__version__ = "2.0.0a3"
+__version__ = "2.0.0a4"
 
 HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import pmlc_privacy as privacy  # noqa: E402  (the shared privacy core, next to this file)
+
 REFS = HERE.parent / "references"
 BRAND = (f"Generated with ProbeMatrix Learnings Coach v{__version__} (open source, MIT) from a ProbeMatrix "
          "four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com")
+# Fixed copy: this module is the only place these strings are written; renderers import them, and the
+# dashboard JS reads them from the embedded `brand` payload (brand_payload()).
+STATUS_PHRASE = "Learning purposes: not a statutory document"
+AI_STATUS = "Learnings drafted by an AI agent from AI-assisted findings"
+AI_JUSTIFICATION_LABEL = "AI justification (ProbeMatrix)"
+AI_CHIP = "AI-drafted, not human-edited"
+EXPORT_BANNER = ("This is the investigation's AI-drafted wording, shown as evidence; "
+                 "it is not the coach's learning.")
+DRAFT_LABEL = "DRAFT"
+VERSION_STAMP = f"ProbeMatrix Learnings Coach v{__version__}"
+
+
+def brand_payload() -> dict:
+    """The fixed strings, for embedding in HTML data blocks as `data.brand`."""
+    return {"status_phrase": STATUS_PHRASE, "ai_status": AI_STATUS, "ai_justification_label": AI_JUSTIFICATION_LABEL,
+            "ai_chip": AI_CHIP, "export_banner": EXPORT_BANNER, "draft_label": DRAFT_LABEL, "brand": BRAND}
+
+
 LEVEL_NAMES = {1: "Unsafe Acts", 2: "Preconditions", 3: "Supervision", 4: "Organisational Influences"}
 CODE_RX = re.compile(r"\b([A-Z]{2,5})\s?(\d{1,2}\.\d{1,2})\b")
 
@@ -61,10 +88,21 @@ def _need_openpyxl():
 
 
 def _int(v, default=None):
+    """An int from a cell: '436', 436 or the float cell '436.0'; anything else (4.5, nan, text) is `default`."""
     try:
         return int(str(v).strip())
     except (TypeError, ValueError):
+        pass
+    try:
+        f = float(str(v).strip())
+    except (TypeError, ValueError):
         return default
+    return int(f) if f == f and abs(f) != float("inf") and f == int(f) else default
+
+
+def _n(n, word) -> str:
+    """'1 finding', '2 findings'."""
+    return f"{n} {word}" if n == 1 else f"{n} {word}s"
 
 
 def _s(v) -> str:
@@ -101,23 +139,29 @@ def load_ws(ws_dir: Path) -> dict:
         p = ws_dir / f"{name}.json"
         if p.exists():
             out[name] = json.loads(p.read_text(encoding="utf-8"))
+    sp = ws_dir / "singleton_roles.json"
+    out["singletons"] = json.loads(sp.read_text(encoding="utf-8")).get("roles", []) if sp.exists() else []
     if "findings" not in out:
         sys.exit(f"No findings.json in {ws_dir}. Run: pmlc.py ingest <export.xlsx> --slug <site>-<event>")
     return out
 
 
 def write_json(path: Path, obj) -> None:
+    path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, indent=1, ensure_ascii=False), encoding="utf-8")
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(obj, indent=1, ensure_ascii=False), encoding="utf-8")
+    os.replace(tmp, path)
 
 
 # ----------------------------------------------------------------------------- manifest
 
 MANIFEST = "manifest.json"
-KNOWN_DERIVED = ("findings.json", "evidence.json", "incident.json", "clusters.json", "causal_graph.json",
+KNOWN_DERIVED = ("findings.json", "evidence.json", "incident.json", "clusters.json", "singleton_roles.json",
+                 "causal_graph.json",
                  "causal_graph.mmd", "timeline_candidates.json", "timeline_event_day.json", "interfaces.json")
 REBUILD = {"findings.json": "ingest", "evidence.json": "ingest", "incident.json": "ingest",
-           "clusters.json": "classify", "causal_graph.json": "causal", "causal_graph.mmd": "causal",
+           "clusters.json": "classify", "singleton_roles.json": "classify", "causal_graph.json": "causal", "causal_graph.mmd": "causal",
            "timeline_candidates.json": "timeline", "timeline_event_day.json": "timeline",
            "interfaces.json": "interfaces"}
 
@@ -137,9 +181,16 @@ def _now() -> str:
 def load_manifest(ws) -> dict:
     try:
         m = json.loads((Path(ws) / MANIFEST).read_text(encoding="utf-8"))
-        return m if isinstance(m, dict) else {}
     except (OSError, ValueError):
         return {}
+    if not isinstance(m, dict):
+        return {}
+    files = m.get("files")
+    m["files"] = {k: {**v, **{x: {} for x in ("inputs", "sources") if x in v and not isinstance(v[x], dict)}}
+                  for k, v in (files if isinstance(files, dict) else {}).items() if isinstance(v, dict)}
+    packs = m.get("packs")
+    m["packs"] = {k: v for k, v in (packs if isinstance(packs, dict) else {}).items() if isinstance(v, dict)}
+    return m
 
 
 def _save_manifest(ws, m: dict) -> None:
@@ -277,6 +328,392 @@ def cmd_status(a):
         p = Path(rec.get("path", ""))
         changed = "missing" if not p.is_file() else ("yes" if file_sha256(p) != rec.get("sha256") else "no")
         print(f"| {name} | {last} | {changed} |")
+    signed = m.get("sign_offs", {})
+    if signed:
+        print("\n| Signed off | Status | Role | Date | Changed since |\n|---|---|---|---|---|")
+        for name in sorted(signed):
+            r = signed[name]
+            f = Path(r.get("path") or out / name)
+            try:
+                d = json.loads(f.read_text(encoding="utf-8"))
+                changed = "yes" if _hash_mismatch(d) else "no"
+            except (OSError, ValueError):
+                changed = "missing"
+            print(f"| {name} | {r.get('status')} | {r.get('reviewer_role')} | {r.get('reviewed_on')} | {changed} |")
+
+
+# ----------------------------------------------------------------------------- handling and sign-off
+
+HANDLING_DEFAULTS = {"status": "draft", "classification": "internal", "legal_review": "not-required",
+                     "distribution": [], "version": "1.0"}
+HANDLING_KEYS = ("status", "reviewer_role", "reviewed_on", "classification", "legal_review", "distribution",
+                 "version", "retention_review", "content_hash")
+HANDLING_ENUMS = {"status": ("draft", "reviewed", "approved"),
+                  "classification": ("internal", "restricted", "external", "public"),
+                  "legal_review": ("not-required", "requested", "cleared")}
+REASON_IN_PROGRESS = "the investigation status is in progress"
+REASON_UNEDITED = "no finding is marked as edited by a person"
+REASON_NOT_COMPLETED = "the investigation status is not completed"
+EDITED_YES = ("yes", "y", "true", "1")
+REASON_EDITED_SINCE = "edited since sign-off"
+REASON_NOT_SIGNED = "not signed off"
+REASON_INVALID = "invalid handling block"
+REASON_NO_WORKSPACE = "no workspace to check"
+WARN_NO_HANDLING = "no handling block: rendered as draft (internal)"
+WARN_EDITED_SINCE = "edited since sign-off: status is draft until signed off again"
+WARN_NOT_SIGNED = "not signed off in this workspace: status is draft until sign-off records it"
+_HASH_RX = re.compile(r"sha256:[0-9a-f]{64}")
+
+
+def _norm_status(v) -> str:
+    """An Investigation Status as a key: lower case, stripped, spaces and hyphens as underscores."""
+    return re.sub(r"[\s-]+", "_", _s(v).strip().lower())
+
+
+def is_edited(v) -> bool:
+    """A User Edited cell marks a finding as edited by a person only when it reads yes, y, true or 1."""
+    return _s(v).strip().lower() in EDITED_YES
+
+
+def forced_draft_reasons(w) -> list:
+    """Why nothing from this workspace may be reviewed or approved yet (empty when it may be). X26: anything but a
+    completed investigation is forced (ProbeMatrix statuses are draft, in_progress and completed), and only an
+    explicit yes in User Edited counts. No workspace ({}) gives no reasons: there is nothing to read."""
+    if not w:
+        return []
+    out = []
+    status = _norm_status(((w.get("incident") or {}).get("fields") or {}).get("Investigation Status"))
+    if status != "completed":
+        out.append(REASON_IN_PROGRESS if status == "in_progress" else REASON_NOT_COMPLETED)
+    F = w.get("findings") or []
+    if F and not any(is_edited(f.get("user_edited")) for f in F):
+        out.append(REASON_UNEDITED)
+    return out
+
+
+def content_hash(doc: dict) -> str:
+    """sha256 of the document without its handling block (key order and whitespace do not matter)."""
+    body = {k: v for k, v in doc.items() if k != "handling"}
+    raw = json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return "sha256:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _hash_mismatch(doc) -> bool:
+    h = doc.get("handling") if isinstance(doc, dict) else None
+    return isinstance(h, dict) and isinstance(h.get("content_hash"), str) and h["content_hash"] != content_hash(doc)
+
+
+def check_handling(doc) -> tuple:
+    """(problems, warnings) for a pack's or register's handling block."""
+    if not isinstance(doc, dict):
+        return [], []
+    if "handling" not in doc:
+        return [], [WARN_NO_HANDLING]
+    h = doc["handling"]
+    if not isinstance(h, dict):
+        return ["handling: must be an object"], []
+    P, W = [], []
+    for k, v in h.items():
+        if k not in HANDLING_KEYS:
+            P.append(f"handling.{k}: unknown key; use {', '.join(HANDLING_KEYS)}")
+        elif k in HANDLING_ENUMS and v not in HANDLING_ENUMS[k]:
+            P.append(f"handling.{k}: must be one of {', '.join(HANDLING_ENUMS[k])}")
+        elif k in ("reviewed_on", "retention_review") and not (isinstance(v, str) and iso_date(v) == v):
+            P.append(f"handling.{k}: must be YYYY-MM-DD")
+        elif k == "content_hash" and not (isinstance(v, str) and _HASH_RX.fullmatch(v)):
+            P.append(f"handling.{k}: must be sha256:<64 hex digits>")
+        elif k in ("reviewer_role", "version") and not (isinstance(v, str) and v.strip()):
+            P.append(f"handling.{k}: must be non-empty text")
+        elif k == "distribution" and not (isinstance(v, list) and all(isinstance(x, str) for x in v)):
+            P.append(f"handling.{k}: must be a list of audience names")
+    if h.get("status") in ("reviewed", "approved"):
+        for k in ("reviewer_role", "reviewed_on", "content_hash"):
+            if k not in h:
+                P.append(f"handling.{k}: required when status is {h['status']}")
+        if _hash_mismatch(doc):
+            W.append(WARN_EDITED_SINCE)
+    return P, W
+
+
+def sign_off_record(ws, src):
+    """The manifest's sign-off record for the file at src, or None: it must be under the file's name and carry the
+    file's resolved path (a copy elsewhere, or in another workspace, has no record)."""
+    if ws is None or src is None:
+        return None
+    rec = (load_manifest(Path(ws)).get("sign_offs") or {}).get(Path(src).name)
+    return rec if isinstance(rec, dict) and rec.get("path") == str(Path(src).resolve()) else None
+
+
+def _signed_here(h: dict, ws, src) -> bool:
+    """X25: a reviewed or approved block counts only when sign-off recorded this very block for this file in this
+    workspace. Every handling key must match the record, so a hand edit of classification or legal_review (which
+    the content hash leaves out) does not count either."""
+    rec = sign_off_record(ws, src)
+    return rec is not None and all(rec.get(k) == h.get(k) for k in HANDLING_KEYS)
+
+
+def effective_handling(doc, w, src=None, ws=None) -> dict:
+    """The handling that applies: defaults merged with the block, forced down to draft when it must be. src is the
+    document's file and ws its workspace folder: a reviewed or approved status holds only when the workspace's
+    manifest records a sign-off of this block for this file (X25). Without ws the reason is 'no workspace to check'."""
+    h = doc.get("handling") if isinstance(doc, dict) else None
+    out = {**HANDLING_DEFAULTS, **{k: v for k, v in (h if isinstance(h, dict) else {}).items() if k in HANDLING_KEYS}}
+    out["distribution"] = list(out["distribution"]) if isinstance(out["distribution"], list) else []
+    for k, ok in HANDLING_ENUMS.items():  # an invalid value never passes through as effective
+        if out.get(k) not in ok:
+            out[k] = HANDLING_DEFAULTS[k]
+    reasons = forced_draft_reasons(w)
+    problems = check_handling(doc)[0] if isinstance(h, dict) else []
+    claims = isinstance(h, dict) and h.get("status") in ("reviewed", "approved")
+    if problems:
+        reasons.append(REASON_INVALID)
+    if claims:
+        if _hash_mismatch(doc):
+            reasons.append(REASON_EDITED_SINCE)
+        elif not (isinstance(h.get("content_hash"), str) and not problems):
+            reasons.append(REASON_NOT_SIGNED)
+        elif ws is None:
+            reasons.append(REASON_NO_WORKSPACE)
+        elif not _signed_here(h, ws, src):
+            reasons.append(REASON_NOT_SIGNED)
+    out["draft_reasons"] = list(dict.fromkeys(reasons))
+    signed = claims and not reasons
+    out["effective_status"] = h["status"] if signed else "draft"
+    return out
+
+
+def unsigned_warning(doc, w, src, ws) -> list:
+    """[WARN_NOT_SIGNED] when the file claims reviewed or approved but this workspace has no sign-off record of it."""
+    if not (isinstance(doc, dict) and isinstance(doc.get("handling"), dict)):
+        return []
+    return [WARN_NOT_SIGNED] if REASON_NOT_SIGNED in effective_handling(doc, w, src=src, ws=ws)["draft_reasons"] else []
+
+
+RIBBON_HTML = f'<div class="ribbon" role="note">{DRAFT_LABEL}</div>'
+# The per-page status in print: a page margin box, so every printed page carries it.
+PAGE_FOOTER_CSS = f'@page{{@bottom-center{{content:"{STATUS_PHRASE} · ProbeMatrix Learnings Coach"}}}}'
+# The DRAFT ribbon and handling line, shared by the pack page and the dashboard. In print the ribbon keeps a
+# border and its text, so it never depends on colour alone.
+HANDLING_CSS = PAGE_FOOTER_CSS + """
+.ribbon{display:inline-block;border:2px solid var(--warn,#c2410c);color:var(--warn,#c2410c);font-weight:700;letter-spacing:.12em;padding:2px 12px;border-radius:4px;margin:0 0 8px}
+p.handling{color:var(--mut);font-size:13px;margin:0 0 6px}
+@media print{.ribbon{border:2px solid #000;color:#000;background:none}}"""
+
+
+def is_draft(eh: dict) -> bool:
+    """True when the DRAFT ribbon must show: anything short of an effective approval."""
+    return eh["effective_status"] != "approved"
+
+
+def review_text(eh: dict) -> str:
+    """'approved by <role> on <date>', or the bare effective status (no reviewer for a status that does not hold)."""
+    st = eh["effective_status"]
+    who = (f" by {eh['reviewer_role']} on {eh['reviewed_on']}"
+           if st != "draft" and eh.get("reviewer_role") and eh.get("reviewed_on") else "")
+    return st + who
+
+
+def handling_lines(eh: dict) -> list:
+    """The handling line, then 'Draft because: ...' when there are reasons."""
+    out = [f"Review: {review_text(eh)} · Classification: {eh['classification']} · Version {eh['version']}"]
+    if eh["draft_reasons"]:
+        out.append("Draft because: " + "; ".join(eh["draft_reasons"]))
+    return out
+
+
+def status_line(status="") -> str:
+    """A document's status text, always carrying STATUS_PHRASE and AI_STATUS (each once)."""
+    s = _s(status)
+    bits = ([] if STATUS_PHRASE in s else [STATUS_PHRASE]) + ([s] if s else [])
+    return " · ".join(bits + ([] if AI_STATUS in s else [AI_STATUS]))
+
+
+def record_sign_off(ws, path, h: dict) -> None:
+    """The whole handling block sign-off wrote, with the file's resolved path (effective_handling checks both)."""
+    m = load_manifest(Path(ws))
+    m.setdefault("sign_offs", {})[Path(path).name] = {
+        **{k: copy.deepcopy(h[k]) for k in HANDLING_KEYS if k in h}, "path": str(Path(path).resolve())}
+    _save_manifest(ws, m)
+
+
+ROLE_NAME_REFUSAL = '{flag}: looks like a personal name ("{match}"); give a role'
+
+
+def _refuse_names_in_roles(a, w) -> None:
+    """D7 and just culture: the reviewer and the audiences are roles, never people (JC1, with --names)."""
+    names = privacy.load_names(getattr(a, "names", None))
+    for flag, vals in (("--role", [a.role]), ("--distribution", a.distribution or [])):
+        for v in vals:
+            hit = _lint_module().personal_name(v, w, names)
+            if hit:
+                sys.exit(ROLE_NAME_REFUSAL.format(flag=flag, match=hit))
+
+
+def cmd_sign_off(a):
+    w = load_ws(a.ws)
+    _refuse_names_in_roles(a, w)
+    path = Path(a.file)
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        sys.exit(f"cannot read {path} as JSON ({e.__class__.__name__})")
+    if isinstance(doc, list):
+        sys.exit('wrap the entries as {"entries": [...]} before signing off')
+    if not isinstance(doc, dict):
+        sys.exit(f"{path} must be a JSON object")
+    reasons = forced_draft_reasons(w)
+    if reasons:
+        sys.exit("cannot sign off: " + "; ".join(reasons))
+    # M3: the check runs at the classification the file will have, so an external sign-off meets the external rules
+    old = doc.get("handling") if isinstance(doc.get("handling"), dict) else {}
+    target = a.classification or old.get("classification") or HANDLING_DEFAULTS["classification"]
+    names = privacy.load_names(getattr(a, "names", None))
+    if "pack" in doc:
+        problems = _pack_module().check_pack(doc, w, share=target, names=names).problems
+    elif "entries" in doc:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            try:
+                cmd_check_register(argparse.Namespace(ws=a.ws, register=str(path), share=target, names=a.names))
+                problems = []
+            except SystemExit as e:
+                problems = [x for x in buf.getvalue().splitlines() if x.startswith(" - ")] if e.code else []
+                if e.code and not problems:
+                    problems = [f"check-register failed ({e.code})"]
+    else:
+        sys.exit(f"{path} is neither a pack (no 'pack' key) nor a register (no 'entries')")
+    if problems:
+        sys.exit("cannot sign off: the file has problems; run the check and fix them first\n" + "\n".join(problems[:20]))
+    h = dict(doc.get("handling") or {}) if isinstance(doc.get("handling"), dict) else {}
+    h.pop("content_hash", None)
+    h.update(status=a.status, reviewer_role=a.role, reviewed_on=a.date or dt.date.today().isoformat())
+    for k in ("classification", "legal_review", "version", "retention_review"):
+        if getattr(a, k) is not None:
+            h[k] = getattr(a, k)
+    if a.distribution:
+        h["distribution"] = list(a.distribution)
+    doc["handling"] = h
+    h["content_hash"] = content_hash(doc)
+    bad, _ = check_handling(doc)
+    if bad:
+        sys.exit("cannot sign off: " + "; ".join(bad))
+    write_json(path, doc)
+    record_sign_off(a.ws, path, h)
+    print(f"Signed off {path}: {h['status']} by {h['reviewer_role']} on {h['reviewed_on']}")
+
+
+# ----------------------------------------------------------------------------- --share (L5-08, L1-12, P2-9)
+
+SHARE_MODES = ("internal", "external", "public")
+SHARE_ADVERB = {"external": "externally", "public": "publicly"}
+SHARE_NEEDS = {"external": ("external", "public"), "public": ("public",)}
+SHARED_LINE = "Shared {mode}: identifying details are masked"
+NAME_GUARD = "refused: a listed name appears in the output ({n} times); fix the pack text or use ingest --redact"
+# --share public also drops the AI justification and causal free text from embedded finding records: summary
+# mode removes exact quotes only, and these fields can paraphrase a witness. Labels and IDs stay.
+PUBLIC_DROP_KEYS = ("justification", "causal")
+OWNER_TIERS = ("T4", "T5")
+SHARED_SOURCE = "a ProbeMatrix investigation export"      # replaces a register's source file name in shared copies
+
+
+def share_mode(a) -> str:
+    """The share mode a renderer uses: --share when given, else internal."""
+    return getattr(a, "share", None) or "internal"
+
+
+def share_unmet(doc, w, mode, embed=None, embeds=True, src=None, ws=None) -> list:
+    """P2-9: every condition a --share external|public copy does not meet (empty when it may be shared). The doc's
+    effective handling must be approved, its classification at the mode's level or higher, legal_review cleared,
+    and (for pages that embed records) --embed omitted or summary."""
+    eh = effective_handling(doc if isinstance(doc, dict) else {}, w, src=src, ws=ws)
+    out = []
+    st = eh["effective_status"]
+    if st == "draft":
+        out.append("review is draft" + (f" ({', '.join(eh['draft_reasons'])})" if eh["draft_reasons"] else ""))
+    elif st != "approved":
+        out.append(f"review is {st} (needs approved)")
+    need = SHARE_NEEDS[mode]
+    if eh["classification"] not in need:
+        out.append(f'classification is "{eh["classification"]}" (needs ' + " or ".join(f'"{x}"' for x in need) + ")")
+    if eh["legal_review"] != "cleared":
+        out.append('legal_review is not "cleared"')
+    if embeds and embed not in (None, "summary"):
+        out.append(f"--embed {embed} is refused (use --embed summary)")
+    return out
+
+
+def share_gate(doc, w, a, embeds=True, extra=(), src=None, ws=None) -> str:
+    """The share mode, after exiting 1 with every unmet condition when a shared copy is refused. src and ws: see
+    effective_handling."""
+    mode = share_mode(a)
+    if mode == "internal":
+        return mode
+    unmet = list(extra) + share_unmet(doc, w, mode, getattr(a, "embed", None), embeds, src=src, ws=ws)
+    if unmet:
+        sys.exit(f"cannot share {SHARE_ADVERB[mode]}: " + "; ".join(unmet))
+    return mode
+
+
+def owner_generaliser(w):
+    """owners(value) for share_doc (L5-21): a role that maps to T4 or T5 becomes its function label,
+    '<entity> (<tier label>)', as singleton roles do; any other value gives None (kept). Roles classify mapped are
+    looked up; others are mapped with the taxonomy and the built-in overlays classify used."""
+    cl = w.get("clusters") or {}
+    rm = cl.get("role_map") or {}
+    names = (cl.get("taxonomy") or {}).get("entities") or {}
+    cache = {}
+
+    def tax():
+        if "t" not in cache:
+            ovs = [x for x in (cl.get("taxonomy") or {}).get("overlays", []) if _overlay_path(x).exists()]
+            cache["t"] = _load_taxonomy(None, ovs)
+        return cache["t"]
+
+    def label(role):
+        role = _s(role).strip()
+        if not role:
+            return None
+        m = rm.get(role) or map_role(role, tax())
+        if m.get("T") not in OWNER_TIERS:
+            return None
+        ents = [e for e in m.get("F") or [] if e != "F99"]
+        tier = TIER_LABELS.get(m["T"], m["T"])
+        if not ents:
+            return tier
+        ent = names.get(ents[0]) or next((e["name"] for e in tax()["entities"] if e["id"] == ents[0]), ents[0])
+        return f"{ent} ({tier})"
+
+    return label
+
+
+def share_ctx(a, w, mode):
+    return privacy.ShareCtx(mode, privacy.load_names(getattr(a, "names", None)),
+                            privacy.load_orgs(getattr(a, "orgs", None)), privacy.load_singletons(w))
+
+
+def shared_copy(obj, ctx, w):
+    """share_doc with the workspace's owner generaliser."""
+    return privacy.share_doc(obj, ctx, owners=owner_generaliser(w))
+
+
+def public_records(findings: dict) -> dict:
+    """--share public: embedded finding records without PUBLIC_DROP_KEYS."""
+    return {k: {x: v for x, v in r.items() if x not in PUBLIC_DROP_KEYS} if isinstance(r, dict) else r
+            for k, r in findings.items()}
+
+
+def shared_name(path: Path, mode: str) -> Path:
+    """<name>.<mode><suffix> for a shared copy, so the internal copy is never overwritten."""
+    return path if mode == "internal" else path.with_name(f"{path.stem}.{mode}{path.suffix}")
+
+
+def name_guard(texts, a) -> None:
+    """L5-03 part 2: exit 1 when a name from --names or PMLC_NAMES appears in any rendered text (in any mode)."""
+    rx = privacy.name_pattern(privacy.load_names(getattr(a, "names", None)))
+    # HTML escaping changes a name ("O'Brien" -> "O&#x27;Brien"), so the unescaped text is searched as well.
+    n = sum(max(len(rx.findall(t)), len(rx.findall(html.unescape(t)))) for t in texts) if rx else 0
+    if n:
+        sys.exit(NAME_GUARD.format(n=n))
 
 
 # ----------------------------------------------------------------------------- run folders
@@ -421,13 +858,18 @@ def _header(ws) -> list[str]:
     return []
 
 
+def _known_sheet(wb, name):
+    """The sheet for a KNOWN_COLUMNS key, accepting the alias ingest accepts for the findings sheet."""
+    return find_sheet(wb, name, "Findings") if name == "Identified Findings" else find_sheet(wb, name)
+
+
 def schema_report(wb) -> dict:
     """Fingerprint plus missing and unknown columns for the three columnar sheets."""
-    headers = {n: _header(find_sheet(wb, n)) for n in KNOWN_COLUMNS}
+    headers = {n: _header(_known_sheet(wb, n)) for n in KNOWN_COLUMNS}
     canon = "\n".join(list(wb.sheetnames) + ["\t".join(headers[n]) for n in KNOWN_COLUMNS])
     missing, unknown = {}, {}
     for n, known in KNOWN_COLUMNS.items():
-        if find_sheet(wb, n) is None:
+        if _known_sheet(wb, n) is None:
             continue
         m = [c for c in known if c not in headers[n]]
         u = [c for c in headers[n] if c not in known]
@@ -495,7 +937,55 @@ def ingest_target(a, fields: dict) -> Path:
     return root / RUNS_DIR / slug / "workspace"
 
 
+PERSONAL_FIELDS = ("Investigating Officer", "Supervisor at Time", "Investigation Team")
+REGULATOR_RX = re.compile(r"\b(?:regulator|enquiry|inquiry|statutory|ERDMP|OISD|PNGRB|HSE|OSHA)\b", re.I)
+
+
+def personal_fields_present(fields: dict) -> list:
+    return [k for k in PERSONAL_FIELDS if _s(fields.get(k))]
+
+
+def load_redact_map(path) -> dict:
+    """The --redact map: a flat JSON object of {name: replacement role}; anything else exits 1."""
+    try:
+        m = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        m = None
+    if not isinstance(m, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in m.items()):
+        sys.exit('--redact: expected a JSON object of "name": "role"')
+    return {k: v for k, v in m.items() if k.strip()}
+
+
+def _canon(x: str) -> str:
+    return re.sub(r"[\s.]+", "", x.lower())
+
+
+def redact_data(obj, rx, repl: dict, role_rx=None, single=None):
+    """(redacted copy, count): every string value (not dict keys) passed through rx; repl maps the canonical match
+    (lower case, no spaces or dots) to the role. Under a 'roles' key only role_rx (the multi-token forms) is used, so
+    'Field Operator' survives a map that names 'John Field'. single, when given, counts one-word matches by text."""
+    n = [0]
+
+    def sub(m):
+        n[0] += 1
+        if single is not None and len(re.findall(r"\w+", m.group(0))) == 1:
+            single[m.group(0)] = single.get(m.group(0), 0) + 1
+        return repl.get(_canon(m.group(0)), "[redacted]")
+
+    def walk(x, key=None):
+        if isinstance(x, str):
+            r = role_rx if key == "roles" else rx
+            return r.sub(sub, x) if r else x
+        if isinstance(x, list):
+            return [walk(i, key) for i in x]
+        if isinstance(x, dict):
+            return {k: walk(v, k) for k, v in x.items()}
+        return x
+    return walk(obj), n[0]
+
+
 def cmd_ingest(a):
+    redact = load_redact_map(a.redact) if a.redact else None
     openpyxl = _need_openpyxl()
     wb = openpyxl.load_workbook(a.xlsx, read_only=True, data_only=True)
     names = {n.strip().lower() for n in wb.sheetnames}
@@ -604,12 +1094,32 @@ def cmd_ingest(a):
     out = ingest_target(a, incident["fields"])
     if is_standard_ws(out) and (out / "findings.json").exists() and not a.force:
         sys.exit(f"{out} already holds a workspace. Pass --force to overwrite it.")
+    redactions = None
+    if redact is not None:
+        repl, multi = {}, []
+        for name, role in redact.items():
+            for v in privacy.name_variants(name) + [name]:
+                repl[_canon(v)] = role
+                if len(v.split()) > 1:
+                    multi.append(v)
+        rx = privacy.name_pattern(list(redact), variants=True)
+        role_rx = privacy.name_pattern(multi)
+        redactions, single = 0, {}
+        if rx:
+            findings, c1 = redact_data(findings, rx, repl, role_rx, single)
+            evidence, c2 = redact_data(evidence, rx, repl, role_rx, single)
+            incident, c3 = redact_data(incident, rx, repl, role_rx, single)
+            redactions = c1 + c2 + c3
     write_json(out / "findings.json", findings)
     write_json(out / "evidence.json", evidence)
     write_json(out / "incident.json", incident)
     record_export(out, a.xlsx)
     for n in ("findings.json", "evidence.json", "incident.json"):
         record_derived(out, n, {"export": file_sha256(a.xlsx)})
+    if redactions is not None:
+        m = load_manifest(out)
+        m["redactions"] = redactions
+        _save_manifest(out, m)
     print(f"Ingested {len(findings)} findings, {len(evidence)} evidence items, "
           f"{len(causal_sheet)} causal-chain rows -> {out}")
     print(f"schema: fingerprint {schema['fingerprint']}; missing: {_fmt_cols(schema['missing'])}; "
@@ -620,6 +1130,13 @@ def cmd_ingest(a):
         print(f"cross-check: Analysis Statistics agrees ({stats['total']})")
     else:
         print(f"warning: Analysis Statistics says {stats['total']} findings, ingested {len(findings)}")
+    if redactions is not None:
+        for w_, c_ in sorted(single.items()):
+            print(f'warning: surname-only match "{w_}" replaced {c_} times: check the text reads correctly')
+        print(f"redacted {redactions} name occurrence(s) from the workspace")
+    pf = personal_fields_present(incident["fields"])
+    if pf:
+        print(f"note: personal fields present ({', '.join(pf)}): they are not quoted in outputs")
     if is_standard_ws(out):
         outputs_dir(out).mkdir(parents=True, exist_ok=True)
         print(f"Run folder: {out.parent}\n  workspace: {out}\n  outputs:   {outputs_dir(out)}")
@@ -676,7 +1193,7 @@ def cmd_profile(a):
             flags.append(f"Column '{lab}' is empty on every finding (the investigator-coach skill can draft it).")
     if not inc.get("causal_chain_sheet"):
         flags.append("Causal Chain sheet is empty; use `pmlc.py causal` to extract links from the causal explanations.")
-    if n and all(f["user_edited"].lower() in ("", "no") for f in F):
+    if n and not any(is_edited(f["user_edited"]) for f in F):
         flags.append("No finding is marked 'User Edited'. Confirm the human review status before publishing learnings.")
     narr = inc.get("narrative", "")[:4000]
     sdate = fields.get("Date", "")
@@ -697,8 +1214,19 @@ def cmd_profile(a):
     if downs:
         flags.append("Reviewer downgrade votes on: " + "; ".join(f"{v.get('finding')} ({v.get('reason', '')})" for v in downs)
                      + ". Exclude or flag these findings in learnings.")
-    if fields.get("Investigation Status", "").lower().startswith("in_progress"):
-        flags.append("Investigation Status is 'in_progress'; label outputs as draft learnings.")
+    if _norm_status(fields.get("Investigation Status")) != "completed":
+        flags.append(f"Investigation Status is '{_s(fields.get('Investigation Status')) or 'blank'}'; "
+                     "label outputs as draft learnings.")
+    rep = _s(fields.get("Reportable to Regulator"))
+    if rep.lower() in ("", "no"):
+        blob = " ".join([inc.get("narrative", "")] + [e.get("description", "") + " " + " ".join(
+            lk.get("reference", "") for lk in e.get("links", [])) for e in E.values()])
+        if REGULATOR_RX.search(blob):
+            flags.append(f'Regulator involvement is mentioned but "Reportable to Regulator" is "{rep}": '
+                         "confirm reporting status")
+    pf = personal_fields_present(fields)
+    if pf:
+        flags.append(f"Personal fields present: do not quote {', '.join(pf)}")
     L.append("\n## Data-quality flags\n")
     L += [f"- {x}" for x in flags] or ["- None."]
     L.append(f"\n---\n*{BRAND}*")
@@ -730,11 +1258,19 @@ def _load_taxonomy(path=None, overlays=()) -> dict:
         op = _overlay_path(x)
         if not op.exists():
             sys.exit(f"Overlay {x} not found at {op}. Pass a name from references/overlays/ or a path to a .json file.")
-        ov = json.loads(op.read_text(encoding="utf-8"))
+        try:
+            ov = json.loads(op.read_text(encoding="utf-8"))
+        except ValueError:
+            sys.exit(f"overlay {op.stem}: not valid JSON ({op}). Fix the file or pass another overlay.")
+        if not isinstance(ov, dict):
+            sys.exit(f"overlay {op.stem}: must be a JSON object with an `extend` block ({op}).")
         name = ov.get("name") or op.stem
-        for group in ("entities", "tiers"):
+        ext = ov.get("extend") or {}
+        if not isinstance(ext, dict):
+            sys.exit(f"overlay {name}: `extend` must be an object keyed by entities, tiers or relations.")
+        for group in ("entities", "tiers", "relations"):
             rules = {r["id"]: r for r in t[group]}
-            for rid, extra in (ov.get("extend", {}).get(group) or {}).items():
+            for rid, extra in (ext.get(group) or {}).items():
                 if rid not in rules:
                     sys.exit(f"Overlay {name} extends {rid}, which is not in the {group} of taxonomy {t['_file']}.")
                 rules[rid]["match"] = f"(?:{rules[rid]['match']})|(?:{extra})"
@@ -821,6 +1357,13 @@ def load_overrides(path: Path, tax: dict | None = None) -> dict:
     return out
 
 
+def _same_taxonomy_file(ws, prev, taxonomy) -> bool:
+    """True when this classify's taxonomy file is the one the previous classify recorded (compared by real path)."""
+    src = load_manifest(ws).get("files", {}).get("clusters.json", {}).get("sources", {}).get("taxonomy") or []
+    now = Path(taxonomy) if taxonomy else REFS / "taxonomy.json"
+    return bool(src) and Path(src[0]).resolve() == now.resolve()
+
+
 def _previous_taxonomy(ws: Path, prev: dict):
     """(taxonomy path or None for the base one, [overlay names or paths]) that the last classify used. Prefers the
     manifest's absolute sources; a built-in overlay comes back as its bare name."""
@@ -828,7 +1371,10 @@ def _previous_taxonomy(ws: Path, prev: dict):
     names = list(prev.get("overlays", []))
     file = prev.get("file")
     tax = None
-    if file and file != "taxonomy.json":
+    custom = bool(file) and file != "taxonomy.json"
+    if src and file == "taxonomy.json" and Path(src[0]).resolve() != (REFS / "taxonomy.json").resolve():
+        custom = True  # a custom file that happens to be called taxonomy.json, recorded by its absolute path
+    if custom:
         tax = src[0] if src and Path(src[0]).is_file() else file
     paths = src[1:] if len(src) == len(names) + 1 else [None] * len(names)
     builtin = (REFS / "overlays").resolve()
@@ -848,31 +1394,42 @@ def cmd_classify(a):
         sys.exit("--no-overlay and --overlay cannot be combined; pass one or the other.")
     prev = w.get("clusters", {}).get("taxonomy", {})
     taxonomy, overlays = a.taxonomy, list(a.overlay or ())
-    reused = False
-    if not a.taxonomy and not a.overlay and "file" in prev:
-        taxonomy, rec_overlays = _previous_taxonomy(ws, prev)
-        if not a.no_overlay:
+    reused, reused_tax = False, False
+    if (not a.taxonomy or not a.overlay) and "file" in prev:
+        rec_tax, rec_overlays = _previous_taxonomy(ws, prev)
+        if not a.taxonomy:  # a flag for only one half keeps the other half from the previous classify
+            taxonomy, reused_tax = rec_tax, bool(rec_tax)
+        if not a.overlay and not a.no_overlay:
             overlays = rec_overlays
         if taxonomy and not Path(taxonomy).is_file():
             sys.exit(f"The previous classify used taxonomy {taxonomy}, which is no longer there. Pass --taxonomy "
                      f"<file> to choose one (the base taxonomy is {REFS / 'taxonomy.json'}).")
-        reused = bool(taxonomy or overlays)
+        reused = reused_tax or bool(overlays and not a.overlay)
         if reused:
             print(f"Reusing taxonomy {taxonomy or 'taxonomy.json'} and overlays {', '.join(overlays) or 'none'} "
                   "from the previous classify (pass --taxonomy/--overlay to change, --no-overlay for none).")
     tax = _load_taxonomy(taxonomy, overlays)
-    if reused and taxonomy:
+    if reused_tax:
         tax["_file"] = prev["file"]  # the same file under the name it was recorded with
     if "file" in prev:
         was, now = _taxonomy_label(prev["file"], prev.get("overlays", [])), _taxonomy_label(tax["_file"], tax["_overlays"])
+        if was != now and _same_taxonomy_file(ws, prev, taxonomy) and prev.get("overlays", []) == tax["_overlays"]:
+            was = now  # the same file reached by a relative path one time and an absolute one the next
         if was != now:
             print(f"warning: previous classify used {was}; this run uses {now}")
-    ov_path = None
+    ov_path, remembered = None, False
+    if a.no_overrides and a.overrides:
+        print("warning: --no-overrides wins: ignoring --overrides", file=sys.stderr)
     if not a.no_overrides:
         if a.overrides:
             ov_path = a.overrides
         elif (ws / "role_overrides.json").exists():
             ov_path = str(ws / "role_overrides.json")
+        else:  # an explicit --overrides file from the previous classify is remembered like the taxonomy is
+            rec = load_manifest(ws).get("files", {}).get("clusters.json", {}).get("sources", {})
+            if rec.get("overrides") and not rec.get("overrides_auto") and Path(rec["overrides"]).is_file():
+                ov_path = rec["overrides"]
+                remembered = True
     overrides = load_overrides(Path(ov_path), tax) if ov_path else {}
     role_map = {}
     for f in w["findings"]:
@@ -920,12 +1477,15 @@ def cmd_classify(a):
            "entities": entities, "findings": per_f, "role_map": role_map, "unresolved_roles": unresolved,
            "overrides": {"file": ov_path, "applied": applied, "stale": stale}}
     write_json(ws / "clusters.json", out)
+    write_json(ws / "singleton_roles.json", privacy.build_singletons(role_map, w["findings"], tax, TIER_LABELS))
     tpaths = taxonomy_sources(taxonomy, overlays)
-    record_derived(ws, "clusters.json",
-                   {"findings.json": file_sha256(ws / "findings.json"), "taxonomy": taxonomy_hash(tpaths),
-                    "overrides": file_sha256(ov_path) if ov_path else "none"},
-                   {"taxonomy": [str(_abs(p)) for p in tpaths], "overrides": str(_abs(ov_path)) if ov_path else None,
-                    "overrides_auto": not a.no_overrides and not a.overrides})
+    for derived in ("clusters.json", "singleton_roles.json"):
+        record_derived(ws, derived,
+                       {"findings.json": file_sha256(ws / "findings.json"), "taxonomy": taxonomy_hash(tpaths),
+                        "overrides": file_sha256(ov_path) if ov_path else "none"},
+                       {"taxonomy": [str(_abs(p)) for p in tpaths],
+                        "overrides": str(_abs(ov_path)) if ov_path else None,
+                        "overrides_auto": not a.no_overrides and not a.overrides and not remembered})
     if ov_path:
         print(f"Applied {applied} override(s) from {ov_path}")
     if stale:
@@ -1110,19 +1670,52 @@ PRESET_FILE = REFS / "select-presets.json"
 SELECT_LINE = re.compile(r"PMLC select <ws>((?: [^`\n]*)?)")
 
 
+def strip_comment(line: str) -> str:
+    """The line before its shell comment: as in bash, `#` starts a comment only at the start of a word and outside
+    quotes, so `--text "a # b"` and `--text a#b` keep their `#`."""
+    quote, escaped, word_start = None, False, True
+    for i, ch in enumerate(line):
+        if escaped:  # the character after a backslash is literal
+            escaped, word_start = False, False
+        elif ch == "\\" and quote != "'":
+            escaped = True
+        elif quote:
+            quote = None if ch == quote else quote
+        elif ch in "'\"":
+            quote, word_start = ch, False
+        elif ch.isspace():
+            word_start = True
+        elif ch == "#" and word_start:
+            return line[:i]
+        else:
+            word_start = False
+    return line
+
+
+def split_command(line: str) -> list[str]:
+    """Shell-like split of one command line, without its trailing `# comment` (see strip_comment)."""
+    import shlex
+    return shlex.split(strip_comment(line))
+
+
 def skill_select_lines(text: str) -> list[list[str]]:
     """The argument lists of the `PMLC select <ws> ...` gather calls in a SKILL.md, in order.
 
-    Each call runs to the end of its line or its closing backtick. A trailing `# comment` and any `--out ...`
-    are dropped. A call with a `<...>` placeholder left (such as <F-id>) is a template, not a preset."""
-    import shlex
+    Each call runs to the end of its line or its closing backtick. A trailing `# comment` (outside quotes) and
+    any `--out ...` are dropped. A call with a `<...>` placeholder left (such as <F-id>) is a template, not a
+    preset. An unbalanced quote raises ValueError naming the call."""
     calls = []
     for m in SELECT_LINE.finditer(text):
-        rest = re.sub(r"\s+#.*$", "", m.group(1))
-        rest = re.sub(r"\s--out\s+\S+", "", rest)
-        if re.search(r"<[^>]*>", rest):
+        try:
+            args = split_command(m.group(1))
+        except ValueError as e:
+            raise ValueError(f"{e} in: PMLC select <ws>{m.group(1)}") from None
+        if "--out" in args:
+            i = args.index("--out")
+            del args[i:i + 2]
+        if any(re.search(r"<[^>]*>", t) for t in args):
             continue
-        calls.append(shlex.split(rest))
+        calls.append(args)
     return calls
 
 
@@ -1134,8 +1727,9 @@ def _select_presets(a):
     """select --preset skill[:name]: run the skill's recorded gather calls with the real select parser."""
     given = [t for t in getattr(a, "_argv", []) if t.split("=")[0] in SELECT_FILTER_FLAGS]
     changed = [k for k, v in SELECT_DEFAULTS.items() if getattr(a, k) != v]
-    if given or changed:
-        sys.exit("--preset cannot be combined with filters; edit the preset or drop --preset.")
+    if given or changed:  # a usage error, so exit 2 as argparse does
+        print("--preset cannot be combined with filters; edit the preset or drop --preset.", file=sys.stderr)
+        sys.exit(2)
     skill, _, name = a.preset.partition(":")
     presets = load_presets()
     if skill not in presets:
@@ -1190,7 +1784,11 @@ def cmd_select(a):
             sys.exit(f"Unknown --fields value(s): {', '.join(sorted(bad))}. Allowed: {', '.join(SELECT_FIELDS)}")
     E = w.get("evidence", {})
     sel = _filter(w, a)
-    skipped = sorted(downgraded_findings(w) & {f["id"] for f in w["findings"]}) if a.exclude_downgraded else []
+    skipped = []
+    if a.exclude_downgraded:
+        would = {f["id"] for f, _ in _filter(w, types.SimpleNamespace(**{**vars(a), "exclude_downgraded": False,
+                                                                         "max": None}))}
+        skipped = sorted(downgraded_findings(w) & would)
     note = f"Excluded (reviewer downgrade): {', '.join(skipped) or 'none'}"
     nsel = len(sel)
     if a.count_by:
@@ -1201,7 +1799,7 @@ def cmd_select(a):
         counts = collections.Counter(k for f, c in sel for k in _group_keys(f, c, a.count_by))
         rows = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
         if a.format == "json":
-            text = json.dumps(dict(rows), indent=1, ensure_ascii=False)
+            text = json.dumps(dict(rows), indent=1, ensure_ascii=False) + "\n"
         else:
             text = "\n".join([f"# Findings by {a.count_by} ({nsel} selected)\n", f"| {a.count_by} | findings |",
                               "|---|---:|"] + [f"| {k} | {n} |" for k, n in rows] + [""])
@@ -1242,7 +1840,7 @@ def cmd_select(a):
         def dropped_line(k):
             ids = [f["id"] for f, _ in sel[k:]]
             low = sel[k - 1][0]["rating"] if k else "none"
-            return (f"Dropped for budget: {len(ids)} findings (lowest kept rating {low}): "
+            return (f"Dropped for budget: {_n(len(ids), 'finding')} (lowest kept rating {low}): "
                     f"{', '.join(ids[:20])}{'…' if len(ids) > 20 else ''}")
 
         def footers_for(k):
@@ -1267,10 +1865,10 @@ def cmd_select(a):
             text += note + "\n"
     if a.out:
         Path(a.out).write_text(text, encoding="utf-8")
-        print(f"Wrote {kept} findings to {a.out}")
+        print(f"Wrote {_n(kept, 'finding')} to {a.out}")
     else:
         sys.stdout.write(text)
-    print(f"select: {kept} findings, {len(text)} chars", file=sys.stderr)
+    print(f"select: {_n(kept, 'finding')}, {len(text)} chars", file=sys.stderr)
 
 
 # ----------------------------------------------------------------------------- causal
@@ -1363,7 +1961,7 @@ def _parse_dates(text):
     return hits
 
 
-CLOCK_RX = re.compile(r"\b([01]?\d|2[0-3])[:.]([0-5]\d)(?::[0-5]\d)?\s*(?:hrs?|h\b)?")
+CLOCK_RX = re.compile(r"\b([01]?\d|2[0-3])[:.]([0-5]\d)(?::[0-5]\d)?\s*(?:hours?\b|hrs?\b|h\b)?")
 PRECISION_RANK = {"day": 0, "month": 1, "year": 2}
 
 
@@ -1377,7 +1975,7 @@ def _clock_times(text, start=0, end=None):
     decimals and dd.mm.yyyy dates are not read as times."""
     out = []
     for m in CLOCK_RX.finditer(text, start, len(text) if end is None else end):
-        if text[m.end(1)] == "." and not re.search(r"h(rs?)?$", m.group(0).rstrip()):
+        if text[m.end(1)] == "." and not re.search(r"h(ours?|rs?)?$", m.group(0).rstrip()):
             continue
         out.append((m.start(), m.end(), f"{int(m.group(1)):02d}:{m.group(2)}"))
     return out
@@ -1413,6 +2011,9 @@ def cmd_timeline(a):
     w = load_ws(ws)
     inc_date = incident_date(w)
     before = a.before
+    if before and before != "incident" and not iso_date(before):
+        print('--before: use YYYY-MM-DD or "incident"', file=sys.stderr)
+        sys.exit(2)
     if before == "incident":
         before = inc_date
         if not before:
@@ -1589,9 +2190,113 @@ def citation_records(w: dict, finding_ids, evidence_ids=()) -> tuple:
     return findings, {x: E[x] for x in eids if x in E}
 
 
-def build_detail_data(w: dict, reg) -> dict:
-    """Everything the Detailed register tab shows: the register as given, plus the full workspace
-    records of every finding and evidence item it cites (each once) and the findings no learning covers."""
+# --embed (L4-17, L7-03): which workspace records an HTML page carries in its JSON payload.
+EMBED_MODES = ("cited", "summary", "full")
+EMBED_DEFAULT = "cited"
+# --embed summary drops every key whose normalised name is one of these, at any depth, plus the evidence
+# description, the Specific Reference quote of each evidence link (stored as links[].reference) and vote reasons.
+SUMMARY_DROP_KEYS = {"specific_reference", "suggested_interviews", "key_questions"}
+WITNESS_NOTE = "note: embedded evidence includes witness statements; consider --embed summary"
+QUOTE_OMITTED = "[quote omitted]"
+MIN_QUOTE = 12        # shorter evidence strings ("Index", "Work order") are labels, not quotes
+
+
+def resolve_embed(a) -> str:
+    """The embed mode a renderer uses: --embed when given; else summary for --share external|public (P2-9; the share
+    gate refuses an explicit cited or full), else the default."""
+    return getattr(a, "embed", None) or ("summary" if share_mode(a) != "internal" else EMBED_DEFAULT)
+
+
+def label_only(f: dict) -> dict:
+    """A finding as an uncovered or excluded entry travels under --embed cited: its label and rating only."""
+    return {"id": f["id"], "label": f.get("label", ""), "rating": f.get("rating")}
+
+
+def _norm_key(k) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", str(k).lower()).strip("_")
+
+
+def _strip_summary(v):
+    if isinstance(v, list):
+        return [_strip_summary(x) for x in v]
+    if isinstance(v, dict):
+        return {k: _strip_summary(x) for k, x in v.items() if _norm_key(k) not in SUMMARY_DROP_KEYS}
+    return v
+
+
+def quote_rx(w: dict):
+    """One pattern for every evidence description and Specific Reference in the workspace (longest first), or None.
+    --embed summary replaces them where a finding's text repeats them word for word, as AI justifications often do."""
+    qs = {_s(e.get("description")) for e in (w.get("evidence") or {}).values()}
+    qs |= {_s(ln.get("reference")) for e in (w.get("evidence") or {}).values() for ln in (e.get("links") or [])}
+    qs = sorted((q for q in qs if len(q) >= MIN_QUOTE), key=len, reverse=True)
+    return re.compile("|".join(map(re.escape, qs))) if qs else None
+
+
+def _omit_quotes(v, rx):
+    if isinstance(v, str):
+        return rx.sub(QUOTE_OMITTED, v)
+    if isinstance(v, list):
+        return [_omit_quotes(x, rx) for x in v]
+    if isinstance(v, dict):
+        return {k: _omit_quotes(x, rx) for k, x in v.items()}
+    return v
+
+
+def summary_record(rec: dict, evidence: bool = False, quotes=None) -> dict:
+    """A copy of one finding or evidence record without its quotes: see SUMMARY_DROP_KEYS. quotes (quote_rx)
+    also replaces any evidence description or Specific Reference the record repeats."""
+    out = _strip_summary(rec)
+    if isinstance(out.get("votes"), list):
+        out["votes"] = [{k: x for k, x in v.items() if k != "reason"} if isinstance(v, dict) else v
+                        for v in out["votes"]]
+    if evidence:
+        out.pop("description", None)
+        if isinstance(out.get("links"), list):
+            out["links"] = [{k: x for k, x in ln.items() if k != "reference"} if isinstance(ln, dict) else ln
+                            for ln in out["links"]]
+    return _omit_quotes(out, quotes) if quotes else out
+
+
+def embedded_records(w: dict, cited, evidence_ids, others=(), embed: str = EMBED_DEFAULT,
+                     linked: bool = True) -> tuple:
+    """(findings, evidence) a page embeds. full: citation_records of the cited and the other findings, as before
+    --embed existed. cited: full records of the cited findings and evidence only (plus, when linked, the evidence
+    the cited findings link), and the other findings (uncovered, excluded) as label-only stubs. summary: cited,
+    without quotes (summary_record), and with any evidence description or Specific Reference that a record repeats
+    word for word replaced by QUOTE_OMITTED."""
+    if embed not in EMBED_MODES:
+        raise ValueError(f"embed must be one of {', '.join(EMBED_MODES)}, not {embed!r}")
+    if embed == "full":
+        return citation_records(w, list(cited) + list(others), evidence_ids)
+    findings, evidence = citation_records(w, cited, evidence_ids)
+    if not linked:
+        evidence = {x: evidence[x] for x in dict.fromkeys(evidence_ids) if x in evidence}
+    F = {f["id"]: f for f in w["findings"]}
+    for x in others:
+        if x in F and x not in findings:
+            findings[x] = label_only(F[x])
+    if embed == "summary":
+        rx = quote_rx(w)
+        findings = {k: summary_record(v, quotes=rx) for k, v in findings.items()}
+        evidence = {k: summary_record(v, evidence=True, quotes=rx) for k, v in evidence.items()}
+    return findings, evidence
+
+
+def witness_note(evidence: dict) -> bool:
+    """True when an embedded evidence item's type names a witness statement (case-insensitive)."""
+    return any("witness" in _s(e.get("type")).lower() for e in evidence.values() if isinstance(e, dict))
+
+
+def print_witness_note(evidence: dict, embed: str):
+    """The stderr note for pages that carry witness statements' text (summary drops it, so no note)."""
+    if embed != "summary" and witness_note(evidence):
+        print(WITNESS_NOTE, file=sys.stderr)
+
+
+def build_detail_data(w: dict, reg, embed: str = EMBED_DEFAULT) -> dict:
+    """Everything the Detailed register tab shows: the register as given, plus the workspace records of every
+    finding and evidence item it cites (each once, as --embed says) and the findings no learning covers."""
     entries = reg["entries"] if isinstance(reg, dict) else reg
     meta = {k: v for k, v in reg.items() if k != "entries"} if isinstance(reg, dict) else {}
     F = {f["id"]: f for f in w["findings"]}
@@ -1609,12 +2314,12 @@ def build_detail_data(w: dict, reg) -> dict:
                   "reason": "reviewer downgrade vote" if fid in downs else "not covered by any learning"}
                  for fid, f in F.items() if fid not in cited]
 
-    findings, evidence = citation_records(w, cited + [u["id"] for u in uncovered],
-                                          [x for e in entries for x in (e.get("evidence_ids") or [])])
+    findings, evidence = embedded_records(w, cited, [x for e in entries for x in (e.get("evidence_ids") or [])],
+                                          [u["id"] for u in uncovered], embed)
     tax = w.get("clusters", {}).get("taxonomy", {})
     return {"register": meta, "entries": entries, "derived": derived, "findings": findings, "evidence": evidence,
             "taxonomy": {"entities": tax.get("entities", {}), "tiers": tax.get("tiers", {})},
-            "tier_labels": TIER_LABELS, "labels": dict(REG_COLS), "hoc_order": HOC_TIERS,
+            "brand": brand_payload(), "tier_labels": TIER_LABELS, "labels": dict(REG_COLS), "hoc_order": HOC_TIERS,
             "totals": {"findings": len(F), "evidence": len(w.get("evidence", {}))}, "uncovered": uncovered}
 
 
@@ -1638,13 +2343,23 @@ def cmd_dashboard(a):
     if "clusters" not in w:
         sys.exit("Needs clusters.json. Run: pmlc.py classify <ws>")
     warn_stale(ws)
+    reg0 = json.loads(Path(a.register).read_text(encoding="utf-8")) if a.register else None
+    refuse_pack_as_register(reg0, a.register)
+    hdoc0 = reg0 if isinstance(reg0, dict) else {}
+    mode = share_gate(hdoc0, w, a, src=a.register, ws=ws)   # a dashboard without a signed register stays inside
+    eh = effective_handling(hdoc0, w, src=a.register, ws=ws)
+    share = share_ctx(a, w, mode) if mode != "internal" else None
+    if share:
+        w, reg0 = shared_copy(w, share, w), shared_copy(reg0, share, w)
+        if isinstance(reg0, dict) and reg0.get("source"):
+            reg0["source"] = SHARED_SOURCE
     F = {f["id"]: f for f in w["findings"]}
     cl = w["clusters"]
     names, tiers = cl["taxonomy"]["entities"], cl["taxonomy"]["tiers"]
     fields = dict(w.get("incident", {}).get("fields", {}))
     for k, v in (("Incident Title", a.title), ("Date", a.date), ("Location", a.location)):
         if v:
-            fields[k] = v
+            fields[k] = privacy.share_text(v, share) if share else v
     ent_ids = [e for e in cl["entities"] if e != "F99"] + (["F99"] if "F99" in cl["entities"] else [])
     tier_ids = ["T1", "T2", "T3", "T4", "T5", "T9"]
     et = collections.Counter()
@@ -1688,10 +2403,14 @@ def cmd_dashboard(a):
     learn_html = ""
     detail = None
     if a.register:
-        reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
+        reg = reg0
         entries = reg["entries"] if isinstance(reg, dict) else reg
         entries = sorted(entries, key=lambda e: (_int(e.get("priority"), 9), _s(e.get("lr_id"))))
-        detail = build_detail_data(w, reg)
+        embed = resolve_embed(a)
+        detail = build_detail_data(w, reg, embed)
+        if share and share.mode == "public":
+            detail["findings"] = public_records(detail["findings"])
+        print_witness_note(detail["evidence"], embed)
         recs = [r for e in entries for r in (e.get("recommendations") or [])]
         strong = sum(1 for r in recs if norm_hoc(r.get("hoc_tier")) in ("elimination", "substitution", "engineering"))
         kpis = [("Learnings", len(entries)),
@@ -1737,6 +2456,8 @@ def cmd_dashboard(a):
 <div class="wrap">{table(ent_ids, [1, 2, 3, 4], lvl_lab, el, mx_el)}</div>
 <h2>Most frequent factors</h2>
 <div class="wrap" style="padding:12px">{bars}</div>"""
+    noscript_where = ("The same data is in the shared Learnings Register." if share else
+                      "The same data is in learnings-register.xlsx and learnings-register.json.")
     if detail is not None:
         body = f"""<nav class="tabbar" role="tablist" aria-label="Views">
 <button type="button" role="tab" id="t-overview" aria-controls="tab-overview" aria-selected="true">Overview</button>
@@ -1746,7 +2467,7 @@ def cmd_dashboard(a):
 {overview}
 </section>
 <section id="tab-detail" role="tabpanel" aria-labelledby="t-detail" hidden>
-<noscript><p class="m">The detailed register needs JavaScript. The same data is in learnings-register.xlsx and learnings-register.json.</p></noscript>
+<noscript><p class="m">The detailed register needs JavaScript. {noscript_where}</p></noscript>
 </section>"""
         extra_css = (DASHBOARD_ASSETS / "detail.css").read_text(encoding="utf-8")
         scripts = (f'<script type="application/json" id="pmlc-data">{embed_json(detail)}</script>\n'
@@ -1755,8 +2476,13 @@ def cmd_dashboard(a):
         body = (overview + '\n<p class="m">Run <code>pmlc.py dashboard --register &lt;learnings-register.json&gt;</code> '
                 "to add the detailed register tab.</p>")
         extra_css = scripts = ""
+    ribbon = RIBBON_HTML + "\n" if is_draft(eh) else ""
+    lines = handling_lines(eh)
+    if share:
+        lines = [privacy.share_text(x, share) for x in lines] + [SHARED_LINE.format(mode=mode)]
+    handling = "".join(f'<p class="handling">{html.escape(x)}</p>' for x in lines)
     doc = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Organisational Learning Map</title>
+<title>Organisational Learning Map: {title}</title>
 <style>
 {PAGE_TOKENS_CSS}
 main{{max-width:1180px;margin:0 auto;padding:24px 16px 48px}}
@@ -1773,19 +2499,25 @@ td{{background:color-mix(in srgb,var(--acc) calc(var(--o,0)*100%),transparent)}}
 .bar i{{display:block;height:12px;background:var(--acc);border-radius:3px}} .bar b{{text-align:right}}
 .tiers details{{padding:8px 12px;border-bottom:1px solid var(--line)}} .tiers summary{{cursor:pointer;font-weight:600}} .tiers li{{margin:4px 0}}
 footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}}
+{HANDLING_CSS}
 {extra_css}
 </style></head><body><main>
-<h1>Organisational Learning Map</h1>
+{ribbon}<h1>Organisational Learning Map</h1>
+<p class="m"><b>{html.escape(status_line())}</b></p>
+{handling}
 <p class="m">{title} · {html.escape(fields.get('Location', ''))} · {html.escape(fields.get('Date', ''))}. Learnings from one ProbeMatrix investigation, distributed across the organisation by who owns them.</p>
 {body}
 <footer>{html.escape(BRAND)}</footer>
 </main>
 {scripts}
 </body></html>"""
-    out = Path(a.out) if a.out else outputs_dir(ws) / "organisation-learning-map.html"
+    name_guard([doc], a)
+    out = Path(a.out) if a.out else shared_name(outputs_dir(ws) / "organisation-learning-map.html", mode)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")
     print(f"Dashboard written to {out}")
+    if share:
+        print(SHARED_LINE.format(mode=mode))
 
 
 # ----------------------------------------------------------------------------- register-xlsx
@@ -1839,11 +2571,54 @@ def _flat(v):
     return "" if v is None else str(v)
 
 
+def refuse_pack_as_register(doc, path) -> None:
+    """M9: a pack JSON given where a register goes exits 1 with one line, not a traceback."""
+    if isinstance(doc, dict) and "pack" in doc and "entries" not in doc:
+        sys.exit(f"{path} is a pack, not a register")
+
+
+FORMULA_LEAD = ("=", "+", "-", "@")
+
+
+def text_cells(wb) -> None:
+    """M6: every cell string that starts with = + - or @ is stored as text, so a spreadsheet never runs it."""
+    for sh in wb.worksheets:
+        for row in sh.iter_rows():
+            for c in row:
+                if isinstance(c.value, str) and c.value.startswith(FORMULA_LEAD):
+                    c.data_type = "s"
+
+
+def _register_ws(a) -> tuple:
+    """(workspace, its folder) for a register's forced-draft and sign-off checks: --ws, else the run's workspace when
+    the register sits in <run>/outputs/ of the standard layout, else ({}, None): nothing can be checked, so the
+    register stays draft with the reason 'no workspace to check'."""
+    if getattr(a, "ws", None):
+        return load_ws(a.ws), Path(a.ws)
+    guess = Path(a.register).resolve().parent.parent / "workspace"
+    if is_standard_ws(guess) and (guess / "findings.json").exists():
+        return load_ws(guess), guess
+    return {}, None
+
+
 def cmd_register_xlsx(a):
     openpyxl = _need_openpyxl()
     from openpyxl.styles import Alignment, Font, PatternFill
     from openpyxl.utils import get_column_letter
     reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
+    refuse_pack_as_register(reg, a.register)
+    rw, rws = _register_ws(a)
+    hdoc = reg if isinstance(reg, dict) else {}
+    mode = share_gate(hdoc, rw, a, embeds=False, extra=[] if rw else ["no workspace (pass --ws)"],
+                      src=a.register, ws=rws)
+    eh = effective_handling(hdoc, rw, src=a.register, ws=rws)
+    if rws is None and REASON_NO_WORKSPACE not in eh["draft_reasons"]:
+        eh["draft_reasons"].append(REASON_NO_WORKSPACE)
+    share = share_ctx(a, rw, mode) if mode != "internal" else None
+    if share:
+        reg = shared_copy(reg, share, rw)
+        if isinstance(reg, dict) and reg.get("source"):
+            reg["source"] = SHARED_SOURCE
     entries = reg["entries"] if isinstance(reg, dict) else reg
     wb = openpyxl.Workbook()
     head_fill = PatternFill("solid", fgColor="0B3954")
@@ -1895,11 +2670,24 @@ def cmd_register_xlsx(a):
     for line in [reg.get("title", "Learnings Register") if isinstance(reg, dict) else "Learnings Register",
                  reg.get("source", "") if isinstance(reg, dict) else "",
                  "Lessons and recommendations only: no owners, due dates or action tracking.",
-                 "Learning purposes. Not a statutory document.", BRAND]:
+                 STATUS_PHRASE, BRAND]:
         ab.append([line])
+    review = review_text(eh) + (f". Draft because: {'; '.join(eh['draft_reasons'])}" if eh["draft_reasons"] else "")
+    rows = [("Review status", review), ("Classification", eh["classification"]),
+            ("Legal review", eh["legal_review"]), ("Distribution", ", ".join(eh["distribution"]) or "not set"),
+            ("Version", str(eh["version"])), ("Retention review", eh.get("retention_review") or "not set")]
+    if share:
+        rows = [(k, privacy.share_text(v, share)) for k, v in rows] + [("Sharing", SHARED_LINE.format(mode=mode))]
+    for k, v in rows:
+        ab.append([k, v])
     ab.column_dimensions["A"].width = 120
-    out = Path(a.out) if a.out else Path(a.register).resolve().parent / "learnings-register.xlsx"
+    ab.column_dimensions["B"].width = 60
+    for sh in wb.worksheets:
+        sh.oddHeader.center.text = STATUS_PHRASE + (f" · {DRAFT_LABEL}" if is_draft(eh) else "")
+        sh.oddFooter.center.text = VERSION_STAMP
+    out = Path(a.out) if a.out else shared_name(Path(a.register).resolve().parent / "learnings-register.xlsx", mode)
     out.parent.mkdir(parents=True, exist_ok=True)
+    text_cells(wb)
     wb.save(out)
     print(f"Register with {len(entries)} entries and {len(recs)} recommendations written to {out}")
 
@@ -1922,14 +2710,15 @@ def _vals(v) -> list:
     return [x for x in (_s(i) for i in items if i is not None) if x]
 
 
-def _fold_spelling(s: str) -> str:
+def _fold_spelling(s) -> str:
+    s = _s(s)
     return re.sub(r"\s+", " ", s.lower().replace("isation", "ization")).strip()
 
 
 def register_warnings(entries: list, w: dict) -> list:
     """Controlled-vocabulary drift as 'warning: ...' lines. Absent or empty fields are not checked."""
     E = w.get("evidence", {})
-    subs = {_fold_spelling(f["subcategory"]) for f in w.get("findings", []) if f.get("subcategory")}
+    subs = {_fold_spelling(f["subcategory"]) for f in w.get("findings", []) if _s(f.get("subcategory"))}
     out = []
     for e in entries:
         lid = e.get("lr_id", "?")
@@ -1950,12 +2739,11 @@ def register_warnings(entries: list, w: dict) -> list:
         for eid in sorted({x for b in bases for v in _vals(b) for x in EVD_RX.findall(v)}):
             if eid not in E:
                 out.append(f"warning: {lid}: evidence_basis names {eid}, which is not in the workspace")
-        lvl = _vals(e.get("hfacs_level"))
-        if lvl and subs:
-            m = re.match(r"\s*L\s?[1-4]\b[\s:.\-]*(.*)$", lvl[0], re.I | re.S)
+        for lv in (_vals(e.get("hfacs_level")) if subs else []):
+            m = re.match(r"\s*L\s?[1-4]\b[\s:.\-]*(.*)$", lv, re.I | re.S)
             rest = _fold_spelling(m.group(1)) if m else ""
             if rest and not any(rest == x or re.match(re.escape(x) + r"[\s(:]", rest) for x in subs):
-                out.append(f"warning: {lid}: hfacs_level sub-category {lvl[0]!r} matches no sub-category in the export")
+                out.append(f"warning: {lid}: hfacs_level sub-category {lv!r} matches no sub-category in the export")
     return out
 
 def cmd_check_register(a):
@@ -2007,8 +2795,13 @@ def cmd_check_register(a):
         if cnt and norm_entity(e.get("owner_entity")) not in [k for k, _ in cnt.most_common(3)]:
             problems.append(f"{lid}: owner {norm_entity(e.get('owner_entity'))} is not among the top entities of its "
                             f"findings ({', '.join(k for k, _ in cnt.most_common(3))})")
+    lint_hits = _lint_module().lint(reg, w, kind="register", **_lint_module().cli_options(a))
+    problems += [_lint_module().as_problem(h) for h in lint_hits if h.severity == "error"]
     uncovered = [fid for fid in F if fid not in covered and fid not in downs]
-    print(f"{len(entries)} learnings; {len(covered)} of {len(F)} findings covered "
+    hp, hw = check_handling(reg)
+    problems += hp
+    hw += unsigned_warning(reg, w, a.register, a.ws)
+    print(f"{_n(len(entries), 'learning')}; {len(covered)} of {_n(len(F), 'finding')} covered "
           f"({100*len(covered)/max(len(F),1):.0f}%); {len(problems)} problem(s).")
     for p in problems[:80]:
         print(" -", p)
@@ -2018,6 +2811,11 @@ def cmd_check_register(a):
             print(f"   {fid} {F[fid]['code']} r{F[fid]['rating']} {F[fid]['short'][:90]}")
     for line in register_warnings(entries, w):
         print(line)
+    for line in hw:
+        print(f"warning: {line}")
+    for h in lint_hits:
+        if h.severity != "error":
+            print("warning: " + _lint_module().as_problem(h))
     sys.exit(1 if problems else 0)
 
 
@@ -2032,40 +2830,152 @@ def _scan_files(path: Path):
     return [path]
 
 
-def _iter_texts(path: Path):
+_OFFICE_ZIP = (".docx", ".pptx", ".xlsx", ".xlsm")
+_MAX_MEMBER = 50 * 1024 * 1024
+_XML_BREAK = re.compile(r"<(?:w:(?:tab|br|cr)|a:br)\b[^>]*>")
+_XML_PARA_END = re.compile(r"</(?:w|a):p>")
+_XML_RUN_TAG = re.compile(r"</?(?:w|a):[^>]*>")
+_XML_TAG = re.compile(r"<[^>]+>")
+# Parts that can carry a name beyond the cell/body text: properties, comments, people, headers/footers, notes.
+_META_PART = re.compile(r"(?i)^docProps/.*\.xml$|(?:^|/)(?:threaded|modern)?comments?[^/]*\.xml$"
+                        r"|(?:^|/)modernComment_[^/]*\.xml$|^word/people\.xml$|^ppt/authors\.xml$|^xl/persons/person[^/]*\.xml$"
+                        r"|/(?:header|footer)\d*\.xml$|/(?:footnotes|endnotes|notesSlide\d*)\.xml$")
+_BODY_PART = re.compile(r"(?i)^(?:word/document|ppt/slides/slide\d+)\.xml$")
+
+
+_NAME_ATTR = re.compile(r"""(?<![\w.:-])(?:[\w.-]+:)?(?:author|name|displayName|initials|creator|lastModifiedBy)\s*=\s*(?:"([^"]*)"|'([^']*)')""",
+                        re.I)
+
+
+def _xml_attr_names(raw: str) -> str:
+    """The values of author, name, initials, creator and lastModifiedBy attributes (any namespace prefix), one per
+    line: comment and people parts often hold a name only in an attribute."""
+    return "\n".join(html.unescape(m.group(1) if m.group(1) is not None else m.group(2))
+                      for m in _NAME_ATTR.finditer(raw))
+
+
+def _xml_text(raw: str) -> str:
+    """Plain text of an Office XML part. Run text inside a paragraph is joined with no separator, so a name split
+    across runs ('Ra' + 'vi Sharma') is whole again; a paragraph end is a newline; other tags become a space."""
+    raw = _XML_BREAK.sub(" ", raw)
+    raw = _XML_PARA_END.sub("\n", raw)
+    raw = _XML_RUN_TAG.sub("", raw)
+    return html.unescape(_XML_TAG.sub(" ", raw))
+
+
+def _office_xml_texts(path: Path, unread: list):
+    """(location, text) for the metadata, comment, header/footer parts of an Office zip, plus the body of a .docx or
+    .pptx (an .xlsx body is read cell by cell). A file that cannot be read, or has an oversize member, goes on
+    the unread list so it is never reported as clean."""
+    import zipfile
+    body = path.suffix.lower() in (".docx", ".pptx")
+    try:
+        with zipfile.ZipFile(path) as z:
+            for zi in z.infolist():
+                n = zi.filename
+                if not (_META_PART.search(n) or (body and _BODY_PART.search(n))):
+                    continue
+                if zi.file_size > _MAX_MEMBER:
+                    print(f"warning: {path}:{n} is over 50 MB and was skipped")
+                    unread.append(str(path))
+                    continue
+                raw = z.read(n).decode("utf-8", errors="ignore")
+                text = _xml_text(raw)
+                if _META_PART.search(n):
+                    text += "\n" + _xml_attr_names(raw)
+                yield f"{path}:{n}", text
+    except Exception as e:
+        print(f"warning: {path} could not be read ({type(e).__name__})")
+        unread.append(str(path))
+
+
+def _iter_texts(path: Path, unread: list):
     if path.is_dir():
         for p in _scan_files(path):
-            yield from _iter_texts(p)
+            yield from _iter_texts(p, unread)
         return
-    if path.suffix.lower() in (".xlsx", ".xlsm"):
-        openpyxl = _need_openpyxl()
-        wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
-        for ws in wb.worksheets:
-            for row in ws.iter_rows():
-                for c in row:
-                    if isinstance(c.value, str):
-                        yield f"{path}:{ws.title}!{c.coordinate}", c.value
-    elif path.suffix.lower() in TEXT_TYPES:
+    ext = path.suffix.lower()
+    if ext in (".xlsx", ".xlsm"):
+        try:
+            openpyxl = _need_openpyxl()
+            wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+            cells = [(f"{path}:{ws.title}!{c.coordinate}", c.value) for ws in wb.worksheets
+                     for row in ws.iter_rows() for c in row if isinstance(c.value, str)]
+        except SystemExit:
+            raise
+        except Exception as e:
+            print(f"warning: {path} could not be read ({type(e).__name__})")
+            unread.append(str(path))
+            cells = []
+        yield from cells
+    if ext in _OFFICE_ZIP:
+        yield from _office_xml_texts(path, unread)
+    elif ext in TEXT_TYPES:
         for i, line in enumerate(path.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
             yield f"{path}:{i}", line
 
 
+def _pdf_meta(path: Path):
+    """(location, text) for the Author and Creator lines of a PDF, from pdfinfo. None when pdfinfo is absent,
+    False when it failed or timed out."""
+    import shutil
+    import subprocess
+    exe = shutil.which("pdfinfo")
+    if not exe:
+        return None
+    try:
+        r = subprocess.run([exe, str(path.resolve())], capture_output=True, text=True, errors="ignore", timeout=30)
+    except (subprocess.TimeoutExpired, OSError):
+        return False
+    if r.returncode != 0:
+        return False
+    out = []
+    for line in r.stdout.splitlines():
+        k, _, v = line.partition(":")
+        if k.strip() in ("Author", "Creator"):
+            out.append((f"{path}:pdf:{k.strip()}", v.strip()))
+    return out
+
+
 def cmd_scan_names(a):
-    names = [n.strip() for n in Path(a.names).read_text(encoding="utf-8").splitlines()
-             if n.strip() and not n.startswith("#")]
+    names = privacy.load_names(a.names)
     if not names:
         sys.exit("Names file is empty.")
-    rx = re.compile(r"\b(" + "|".join(re.escape(n) for n in names) + r")\b", re.I)
+    scans = [("", privacy.name_pattern(names, variants=a.variants, skip_role_words=True))]
+    if a.patterns:
+        scans += [(f"pattern:{k}", re.compile(v)) for k, v in privacy.PATTERNS.items()]
     hits = 0
-    for target in a.paths:
-        for loc, text in _iter_texts(Path(target)):
+
+    def check(loc, text):
+        nonlocal hits
+        for label, rx in scans:
             for m in rx.finditer(text):
                 hits += 1
                 if hits <= a.show:
-                    print(f"HIT {loc}: '{m.group(0)}' … {text[max(0, m.start()-50):m.end()+50]!r}")
+                    tag = f" [{label}]" if label else ""
+                    print(f"HIT{tag} {loc}: '{m.group(0)}' … {text[max(0, m.start()-50):m.end()+50]!r}")
+
+    pdf_missing = False
+    bad = []
+    for target in a.paths:
+        for loc, text in _iter_texts(Path(target), bad):
+            check(loc, text)
+        for f in _scan_files(Path(target)):
+            if f.suffix.lower() == ".pdf":
+                meta = _pdf_meta(f)
+                if meta is None:
+                    pdf_missing = True
+                elif meta is False:
+                    print(f"note: pdfinfo failed or timed out on {f}: PDF metadata not checked")
+                else:
+                    for loc, text in meta:
+                        check(loc, text)
+    if pdf_missing:
+        print("note: pdfinfo not found: PDF metadata not checked")
     print(f"\n{hits} hit(s).")
-    unread = [str(f) for t in a.paths for f in _scan_files(Path(t))
-              if f.suffix.lower() not in TEXT_TYPES + (".xlsx", ".xlsm")]
+    readable = TEXT_TYPES + _OFFICE_ZIP
+    unread = [str(f) for t in a.paths for f in _scan_files(Path(t)) if f.suffix.lower() not in readable]
+    unread += [f for f in dict.fromkeys(bad) if f not in unread]
     if unread:
         print(f"{len(unread)} file(s) not scanned (this type cannot be read), so zero hits does not cover them:")
         for f in unread:
@@ -2084,8 +2994,18 @@ def _pack_module():
     return pmlc_pack
 
 
+def _lint_module():
+    _pack_module()
+    import pmlc_lint
+    return pmlc_lint
+
+
 def cmd_check_pack(a):
     _pack_module().cmd_check_pack(a)
+
+
+def cmd_check_language(a):
+    _lint_module().cmd_check_language(a)
 
 
 def cmd_pack(a):
@@ -2098,12 +3018,45 @@ def cmd_causal_item(a):
 
 # ----------------------------------------------------------------------------- main
 
+def _non_negative_int(v):
+    n = int(v)
+    if n < 0:
+        raise argparse.ArgumentTypeError("--budget-chars must be 0 or more")
+    return n
+
+
+def _lint_flags(s):
+    s.add_argument("--share", choices=["internal", "external", "public"],
+                   help="lint for this audience (default: the handling classification, else internal)")
+    s.add_argument("--names", help="names file, one per line (default: $PMLC_NAMES)")
+    s.add_argument("--orgs", help="organisation names file, one per line (default: $PMLC_ORGS)")
+
+
+def add_share_args(s):
+    s.add_argument("--share", choices=SHARE_MODES, default=None,
+                   help="internal (default), or a copy for outside the organisation: external or public. A shared "
+                        "copy needs an approved sign-off with that classification, legal_review cleared and --embed "
+                        "summary; names, organisations, tags, singleton roles, times and full dates are masked, and "
+                        "the file is written as <name>.<mode>.<ext>")
+    s.add_argument("--names", help="names file, one per line (default: $PMLC_NAMES); masked when shared, and in any "
+                                   "mode the output is refused if one appears in it")
+    s.add_argument("--orgs", help="organisation names file, one per line (default: $PMLC_ORGS)")
+
+
+def add_embed_arg(s):
+    s.add_argument("--embed", choices=EMBED_MODES, default=None,
+                   help="records the page embeds: cited (default; uncovered findings as label and rating), "
+                        "summary (cited, without evidence descriptions, quotes, interviews, key questions or vote "
+                        "reasons) or full (every relevant record)")
+
+
 def build_parser():
-    p = argparse.ArgumentParser(prog="pmlc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(prog="pmlc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
+                                allow_abbrev=False)
     p.add_argument("--version", action="version", version=f"pmlc {__version__}")
     sp = p.add_subparsers(dest="cmd", required=True)
 
-    s = sp.add_parser("ingest", help="xlsx export -> JSON workspace in <export-dir>/pmlc-runs/<slug>/workspace")
+    s = sp.add_parser("ingest", help="xlsx export -> JSON workspace in <export-dir>/pmlc-runs/<slug>/workspace", allow_abbrev=False)
     s.add_argument("xlsx")
     where = s.add_mutually_exclusive_group()
     where.add_argument("--slug", help="<site>-<event>: lowercase words joined by hyphens, e.g. hazira-gas-release-fire")
@@ -2113,15 +3066,17 @@ def build_parser():
     where.add_argument("--legacy-out", help="write the workspace to any folder (pre-0.2 layout; not for new runs)")
     s.add_argument("--force", action="store_true", help="overwrite an existing workspace in the run folder")
     s.add_argument("--strict", action="store_true", help="exit 1 when a required column is missing")
+    s.add_argument("--redact", metavar="MAP.json",
+                   help='JSON object {"name": "role"}; each name (and its variants) is replaced in the workspace')
     s.set_defaults(fn=cmd_ingest)
 
-    s = sp.add_parser("profile", help="Markdown profile")
+    s = sp.add_parser("profile", help="Markdown profile", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--top", type=int, default=15)
     s.add_argument("--out")
     s.set_defaults(fn=cmd_profile)
 
-    s = sp.add_parser("classify", help="roles -> Learning Clusters")
+    s = sp.add_parser("classify", help="roles -> Learning Clusters", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--taxonomy", help="alternative taxonomy.json")
     s.add_argument("--overlay", action="append", metavar="NAME_OR_PATH",
@@ -2135,7 +3090,7 @@ def build_parser():
     s.add_argument("--no-overrides", action="store_true", help="ignore any overrides file")
     s.set_defaults(fn=cmd_classify)
 
-    s = sp.add_parser("select", help="filtered findings bundle")
+    s = sp.add_parser("select", help="filtered findings bundle", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--entity", nargs="*", help="e.g. F02 F09b")
     s.add_argument("--tag", nargs="+", help="entity tags, e.g. emergency or supply contractor; unioned with --entity")
@@ -2155,7 +3110,7 @@ def build_parser():
     s.add_argument("--text", help="regex over short/justification/causal/label")
     s.add_argument("--max", type=int)
     s.add_argument("--brief", action="store_true", help="omit justification, causal text and evidence quotes")
-    s.add_argument("--budget-chars", type=int, help="keep findings in rating order while the output stays within "
+    s.add_argument("--budget-chars", type=_non_negative_int, help="keep findings in rating order while the output stays within "
                                                     "N characters, and say how many were dropped; the header and "
                                                     "footer lines are always printed")
     s.add_argument("--fields", help="comma-separated: " + ", ".join(SELECT_FIELDS) + " (id is always kept)")
@@ -2173,13 +3128,13 @@ def build_parser():
                         "call with nothing left prints only its minimum output (with the below-minimum warning)")
     s.set_defaults(fn=cmd_select)
 
-    s = sp.add_parser("causal", help="extract causal graph")
+    s = sp.add_parser("causal", help="extract causal graph", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--top", type=int, default=60)
     s.add_argument("--include-justification", action="store_true")
     s.set_defaults(fn=cmd_causal)
 
-    s = sp.add_parser("timeline", help="dated precursor candidates")
+    s = sp.add_parser("timeline", help="dated precursor candidates", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--before", help="ISO date, or the word incident for the workspace's incident date; keep only events up to it")
     s.add_argument("--per-date", type=int, default=4)
@@ -2193,63 +3148,96 @@ def build_parser():
                    help="coarsest date precision to keep (year keeps everything)")
     s.set_defaults(fn=cmd_timeline)
 
-    s = sp.add_parser("interfaces", help="entity x entity interfaces")
+    s = sp.add_parser("interfaces", help="entity x entity interfaces", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--top", type=int, default=25)
     s.set_defaults(fn=cmd_interfaces)
 
-    s = sp.add_parser("dashboard", help="HTML organisational learning map")
+    s = sp.add_parser("dashboard", help="HTML organisational learning map", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--out", help="default: <run>/outputs/organisation-learning-map.html")
     s.add_argument("--register", help="Learnings Register JSON: adds learnings, tier plan and control-strength sections")
     s.add_argument("--title", help="override the incident title shown in the header")
     s.add_argument("--date", help="override the incident date (use when the summary sheet is wrong)")
     s.add_argument("--location", help="override the location shown in the header")
+    add_embed_arg(s)
+    add_share_args(s)
     s.set_defaults(fn=cmd_dashboard)
 
-    s = sp.add_parser("check-register", help="validate a Learnings Register JSON against the workspace")
+    s = sp.add_parser("check-register", help="validate a Learnings Register JSON against the workspace", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("register")
+    _lint_flags(s)
     s.set_defaults(fn=cmd_check_register)
 
-    s = sp.add_parser("register-xlsx", help="Learnings Register JSON -> xlsx")
+    s = sp.add_parser("check-language", help="just-culture and grounding lint (JC1-JC12) of a pack or register JSON", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("json", help="a learning pack or Learnings Register JSON")
+    _lint_flags(s)
+    s.set_defaults(fn=cmd_check_language)
+
+    s = sp.add_parser("register-xlsx", help="Learnings Register JSON -> xlsx", allow_abbrev=False)
     s.add_argument("register")
     s.add_argument("--out", help="default: learnings-register.xlsx next to the register JSON")
+    s.add_argument("--ws", help="workspace for the review status (default: the run's workspace in the standard layout)")
+    add_share_args(s)
     s.set_defaults(fn=cmd_register_xlsx)
 
-    s = sp.add_parser("status", help="show which workspace files are current or stale, and pack check history")
+    s = sp.add_parser("status", help="show which workspace files are current or stale, and pack check history", allow_abbrev=False)
     s.add_argument("ws")
     s.set_defaults(fn=cmd_status)
 
-    s = sp.add_parser("run-path", help="print the run folder, workspace, outputs folder and slug of a workspace")
+    s = sp.add_parser("run-path", help="print the run folder, workspace, outputs folder and slug of a workspace", allow_abbrev=False)
     s.add_argument("ws")
     s.set_defaults(fn=cmd_run_path)
 
-    s = sp.add_parser("check-samples", help="check samples/<slug>/ folders follow the contribution layout")
+    s = sp.add_parser("check-samples", help="check samples/<slug>/ folders follow the contribution layout", allow_abbrev=False)
     s.add_argument("dir", nargs="?", default=str(HERE.parents[2] / "samples"))
     s.set_defaults(fn=cmd_check_samples)
 
-    s = sp.add_parser("check-pack", help="check a learning pack JSON against the workspace")
+    s = sp.add_parser("check-pack", help="check a learning pack JSON against the workspace", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("pack")
+    _lint_flags(s)
     s.set_defaults(fn=cmd_check_pack)
 
-    s = sp.add_parser("pack", help="learning pack JSON -> <run>/outputs/<pack>.html (and .md)")
+    s = sp.add_parser("pack", help="learning pack JSON -> <run>/outputs/<pack>.html (and .md)", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("pack")
     s.add_argument("--out", help="output folder (default: <run>/outputs)")
     s.add_argument("--no-md", action="store_true", help="write only the HTML")
+    add_embed_arg(s)
+    add_share_args(s)
     s.set_defaults(fn=cmd_pack)
 
-    s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)")
+    s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--top", type=int, default=40, help="links to keep (default 40)")
     s.set_defaults(fn=cmd_causal_item)
 
-    s = sp.add_parser("scan-names", help="zero-hit name scan (exit 1 on hits, 2 if a file could not be read)")
+    s = sp.add_parser("sign-off", help="record a person's review of a pack or register (writes its handling block)", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("file")
+    s.add_argument("--role", required=True, help="the reviewer's role (never a name)")
+    s.add_argument("--status", choices=["reviewed", "approved"], default="reviewed")
+    s.add_argument("--classification", choices=list(HANDLING_ENUMS["classification"]))
+    s.add_argument("--legal-review", dest="legal_review", choices=list(HANDLING_ENUMS["legal_review"]))
+    s.add_argument("--distribution", nargs="+", metavar="AUDIENCE")
+    s.add_argument("--retention-review", dest="retention_review", metavar="YYYY-MM-DD")
+    s.add_argument("--version")
+    s.add_argument("--date", metavar="YYYY-MM-DD", help="review date (default: today)")
+    s.add_argument("--names", help="names file: --role and --distribution must not name a listed person "
+                                   "(default: $PMLC_NAMES)")
+    s.set_defaults(fn=cmd_sign_off)
+
+    s = sp.add_parser("scan-names", help="zero-hit name scan (exit 1 on hits, 2 if a file could not be read)", allow_abbrev=False)
     s.add_argument("names", help="text file, one name per line")
     s.add_argument("paths", nargs="+")
     s.add_argument("--show", type=int, default=50)
+    s.add_argument("--variants", action="store_true",
+                   help="also match surname, initial + surname and honorific + surname for each name")
+    s.add_argument("--patterns", action="store_true",
+                   help="also flag email, phone and staff-number patterns (an aid, not proof of de-identification)")
     s.set_defaults(fn=cmd_scan_names)
 
     return p
