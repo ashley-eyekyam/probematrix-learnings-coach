@@ -2368,39 +2368,152 @@ def _scan_files(path: Path):
     return [path]
 
 
-def _iter_texts(path: Path):
+_OFFICE_ZIP = (".docx", ".pptx", ".xlsx", ".xlsm")
+_MAX_MEMBER = 50 * 1024 * 1024
+_XML_BREAK = re.compile(r"<(?:w:(?:tab|br|cr)|a:br)\b[^>]*>")
+_XML_PARA_END = re.compile(r"</(?:w|a):p>")
+_XML_RUN_TAG = re.compile(r"</?(?:w|a):[^>]*>")
+_XML_TAG = re.compile(r"<[^>]+>")
+# Parts that can carry a name beyond the cell/body text: properties, comments, people, headers/footers, notes.
+_META_PART = re.compile(r"(?i)^docProps/.*\.xml$|(?:^|/)(?:threaded|modern)?comments?[^/]*\.xml$"
+                        r"|(?:^|/)modernComment_[^/]*\.xml$|^word/people\.xml$|^ppt/authors\.xml$|^xl/persons/person[^/]*\.xml$"
+                        r"|/(?:header|footer)\d*\.xml$|/(?:footnotes|endnotes|notesSlide\d*)\.xml$")
+_BODY_PART = re.compile(r"(?i)^(?:word/document|ppt/slides/slide\d+)\.xml$")
+
+
+_NAME_ATTR = re.compile(r"""(?<![\w.:-])(?:[\w.-]+:)?(?:author|name|displayName|initials|creator|lastModifiedBy)\s*=\s*(?:"([^"]*)"|'([^']*)')""",
+                        re.I)
+
+
+def _xml_attr_names(raw: str) -> str:
+    """The values of author, name, initials, creator and lastModifiedBy attributes (any namespace prefix), one per
+    line: comment and people parts often hold a name only in an attribute."""
+    return "\n".join(html.unescape(m.group(1) if m.group(1) is not None else m.group(2))
+                      for m in _NAME_ATTR.finditer(raw))
+
+
+def _xml_text(raw: str) -> str:
+    """Plain text of an Office XML part. Run text inside a paragraph is joined with no separator, so a name split
+    across runs ('Ra' + 'vi Sharma') is whole again; a paragraph end is a newline; other tags become a space."""
+    raw = _XML_BREAK.sub(" ", raw)
+    raw = _XML_PARA_END.sub("\n", raw)
+    raw = _XML_RUN_TAG.sub("", raw)
+    return html.unescape(_XML_TAG.sub(" ", raw))
+
+
+def _office_xml_texts(path: Path, unread: list):
+    """(location, text) for the metadata, comment, header/footer parts of an Office zip, plus the body of a .docx or
+    .pptx (an .xlsx body is read cell by cell). A file that cannot be read, or has an oversize member, goes on
+    the unread list so it is never reported as clean."""
+    import zipfile
+    body = path.suffix.lower() in (".docx", ".pptx")
+    try:
+        with zipfile.ZipFile(path) as z:
+            for zi in z.infolist():
+                n = zi.filename
+                if not (_META_PART.search(n) or (body and _BODY_PART.search(n))):
+                    continue
+                if zi.file_size > _MAX_MEMBER:
+                    print(f"warning: {path}:{n} is over 50 MB and was skipped")
+                    unread.append(str(path))
+                    continue
+                raw = z.read(n).decode("utf-8", errors="ignore")
+                text = _xml_text(raw)
+                if _META_PART.search(n):
+                    text += "\n" + _xml_attr_names(raw)
+                yield f"{path}:{n}", text
+    except Exception as e:
+        print(f"warning: {path} could not be read ({type(e).__name__})")
+        unread.append(str(path))
+
+
+def _iter_texts(path: Path, unread: list):
     if path.is_dir():
         for p in _scan_files(path):
-            yield from _iter_texts(p)
+            yield from _iter_texts(p, unread)
         return
-    if path.suffix.lower() in (".xlsx", ".xlsm"):
-        openpyxl = _need_openpyxl()
-        wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
-        for ws in wb.worksheets:
-            for row in ws.iter_rows():
-                for c in row:
-                    if isinstance(c.value, str):
-                        yield f"{path}:{ws.title}!{c.coordinate}", c.value
-    elif path.suffix.lower() in TEXT_TYPES:
+    ext = path.suffix.lower()
+    if ext in (".xlsx", ".xlsm"):
+        try:
+            openpyxl = _need_openpyxl()
+            wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+            cells = [(f"{path}:{ws.title}!{c.coordinate}", c.value) for ws in wb.worksheets
+                     for row in ws.iter_rows() for c in row if isinstance(c.value, str)]
+        except SystemExit:
+            raise
+        except Exception as e:
+            print(f"warning: {path} could not be read ({type(e).__name__})")
+            unread.append(str(path))
+            cells = []
+        yield from cells
+    if ext in _OFFICE_ZIP:
+        yield from _office_xml_texts(path, unread)
+    elif ext in TEXT_TYPES:
         for i, line in enumerate(path.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
             yield f"{path}:{i}", line
+
+
+def _pdf_meta(path: Path):
+    """(location, text) for the Author and Creator lines of a PDF, from pdfinfo. None when pdfinfo is absent,
+    False when it failed or timed out."""
+    import shutil
+    import subprocess
+    exe = shutil.which("pdfinfo")
+    if not exe:
+        return None
+    try:
+        r = subprocess.run([exe, str(path.resolve())], capture_output=True, text=True, errors="ignore", timeout=30)
+    except (subprocess.TimeoutExpired, OSError):
+        return False
+    if r.returncode != 0:
+        return False
+    out = []
+    for line in r.stdout.splitlines():
+        k, _, v = line.partition(":")
+        if k.strip() in ("Author", "Creator"):
+            out.append((f"{path}:pdf:{k.strip()}", v.strip()))
+    return out
 
 
 def cmd_scan_names(a):
     names = privacy.load_names(a.names)
     if not names:
         sys.exit("Names file is empty.")
-    rx = privacy.name_pattern(names)
+    scans = [("", privacy.name_pattern(names, variants=a.variants))]
+    if a.patterns:
+        scans += [(f"pattern:{k}", re.compile(v)) for k, v in privacy.PATTERNS.items()]
     hits = 0
-    for target in a.paths:
-        for loc, text in _iter_texts(Path(target)):
+
+    def check(loc, text):
+        nonlocal hits
+        for label, rx in scans:
             for m in rx.finditer(text):
                 hits += 1
                 if hits <= a.show:
-                    print(f"HIT {loc}: '{m.group(0)}' … {text[max(0, m.start()-50):m.end()+50]!r}")
+                    tag = f" [{label}]" if label else ""
+                    print(f"HIT{tag} {loc}: '{m.group(0)}' … {text[max(0, m.start()-50):m.end()+50]!r}")
+
+    pdf_missing = False
+    bad = []
+    for target in a.paths:
+        for loc, text in _iter_texts(Path(target), bad):
+            check(loc, text)
+        for f in _scan_files(Path(target)):
+            if f.suffix.lower() == ".pdf":
+                meta = _pdf_meta(f)
+                if meta is None:
+                    pdf_missing = True
+                elif meta is False:
+                    print(f"note: pdfinfo failed or timed out on {f}: PDF metadata not checked")
+                else:
+                    for loc, text in meta:
+                        check(loc, text)
+    if pdf_missing:
+        print("note: pdfinfo not found: PDF metadata not checked")
     print(f"\n{hits} hit(s).")
-    unread = [str(f) for t in a.paths for f in _scan_files(Path(t))
-              if f.suffix.lower() not in TEXT_TYPES + (".xlsx", ".xlsm")]
+    readable = TEXT_TYPES + _OFFICE_ZIP
+    unread = [str(f) for t in a.paths for f in _scan_files(Path(t)) if f.suffix.lower() not in readable]
+    unread += [f for f in dict.fromkeys(bad) if f not in unread]
     if unread:
         print(f"{len(unread)} file(s) not scanned (this type cannot be read), so zero hits does not cover them:")
         for f in unread:
@@ -2631,6 +2744,10 @@ def build_parser():
     s.add_argument("names", help="text file, one name per line")
     s.add_argument("paths", nargs="+")
     s.add_argument("--show", type=int, default=50)
+    s.add_argument("--variants", action="store_true",
+                   help="also match surname, initial + surname and honorific + surname for each name")
+    s.add_argument("--patterns", action="store_true",
+                   help="also flag email, phone and staff-number patterns (an aid, not proof of de-identification)")
     s.set_defaults(fn=cmd_scan_names)
 
     return p
