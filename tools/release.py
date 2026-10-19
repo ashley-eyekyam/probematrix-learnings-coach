@@ -57,6 +57,7 @@ def main(argv=None):
         path.write_text(text, encoding="utf-8")
         print(f"updated {path}")
     print(f'\ngit tag -a v{tag} -m "ProbeMatrix Learnings Coach {tag}"')
+    print("Regenerate golden fixtures: PMLC_UPDATE_GOLDEN=1 .venv/bin/python -m pytest tests/test_pack.py -k golden")
 
 
 if __name__ == "__main__":

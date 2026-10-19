@@ -15,7 +15,7 @@ from pathlib import Path
 import pmlc as core
 
 SCHEMA_VERSION = 1
-STATUS_PHRASE = "Learning purposes: not a statutory document"
+STATUS_PHRASE = core.STATUS_PHRASE
 PACK_NAME_RX = re.compile(r"^(?:[a-z0-9]+(?:-[a-z0-9]+)*|dossier-F\d+[a-z]?)$")
 SLUG_RX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 ID_RX = re.compile(r"\b(FND-[0-9A-Za-z]{4,}|EVD-\d{3,})\b")
@@ -1134,7 +1134,8 @@ def build_pack_data(w, pack, run) -> dict:
     fids, eids = cited_ids(pack)
     uncited = [x for x in relevant_findings(w, pack.get("scope")) if x not in fids]
     findings, evidence = core.citation_records(w, fids + uncited + excluded_ids(pack), eids)
-    return {"pack": pack["pack"], "run": run, "findings": findings, "evidence": evidence}
+    return {"pack": pack["pack"], "run": run, "findings": findings, "evidence": evidence,
+            "brand": core.brand_payload()}
 
 
 def _trail(data) -> str:
