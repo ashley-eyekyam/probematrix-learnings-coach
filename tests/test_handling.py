@@ -455,3 +455,38 @@ def test_sign_off_refused_on_draft_status(tmp_path):
     r = cli("sign-off", str(ws), str(p), "--role", "HSE manager")
     assert r.returncode == 1
     assert r.stderr.strip() == "cannot sign off: the investigation status is not completed"
+
+
+# ----------------------------------------------------------------------------- final review I4: --role is a role
+
+@pytest.mark.parametrize("role,match", [("Mr John Smith", "Mr John Smith"), ("John Smith", "John Smith"),
+                                        ("Shri R. K. Sharma", "Shri R. K. Sharma"), ("Dr. Anand", "Dr. Anand")])
+def test_sign_off_refuses_a_name_as_role(tmp_path, okws, role, match):
+    p = write(tmp_path, PACK)
+    r = cli("sign-off", str(okws), str(p), "--role", role, "--status", "approved")
+    assert r.returncode == 1
+    assert r.stderr.strip() == f'--role: looks like a personal name ("{match}"); give a role'
+    assert "handling" not in json.loads(p.read_text())
+
+
+def test_sign_off_refuses_a_name_in_distribution(tmp_path, okws):
+    p = write(tmp_path, PACK)
+    r = cli("sign-off", str(okws), str(p), "--role", "HSE manager", "--distribution", "board", "Jane Placeholder")
+    assert r.returncode == 1
+    assert r.stderr.strip() == '--distribution: looks like a personal name ("Jane Placeholder"); give a role'
+
+
+def test_sign_off_role_checks_the_names_file(tmp_path, okws):
+    names = tmp_path / "names.txt"
+    names.write_text("# fictional\nOfficer Placeholder\n", encoding="utf-8")
+    p = write(tmp_path, PACK)
+    r = cli("sign-off", str(okws), str(p), "--role", "officer placeholder", "--names", str(names))
+    assert r.returncode == 1 and "--role: looks like a personal name" in r.stderr
+
+
+@pytest.mark.parametrize("role", ["HSE Manager", "Site HSE lead", "Shift Supervisor", "Plant Manager",
+                                  "Head of Safety", "Control Room Operator"])
+def test_sign_off_accepts_roles(tmp_path, okws, role):
+    p = write(tmp_path, PACK)
+    r = cli("sign-off", str(okws), str(p), "--role", role, "--distribution", "board", "T2", "site-leadership")
+    assert r.returncode == 0, r.stderr

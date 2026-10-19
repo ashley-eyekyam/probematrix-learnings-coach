@@ -264,6 +264,16 @@ warning: not signed off in this workspace: status is draft until sign-off record
 
 **What to do.** Have a person review the file, then run `sign-off` on it in this workspace. Never write the handling block by hand.
 
+## Sign-off is refused because the role looks like a name
+
+```text
+--role: looks like a personal name ("Mr John Smith"); give a role
+```
+
+**Why.** The reviewer and the audiences are recorded as roles, never as people. The value has an honorific, two capitalised words that are not role words, or a name from the names file. The same message starts `--distribution:` for an audience.
+
+**What to do.** Give the role, such as "HSE manager" or "Site HSE lead". If a real role is caught, word it with a role noun ("Plant Manager", "Head of Safety").
+
 ## Sign-off is refused for a register saved as a list
 
 ```text

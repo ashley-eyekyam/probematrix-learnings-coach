@@ -536,8 +536,22 @@ def record_sign_off(ws, path, h: dict) -> None:
     _save_manifest(ws, m)
 
 
+ROLE_NAME_REFUSAL = '{flag}: looks like a personal name ("{match}"); give a role'
+
+
+def _refuse_names_in_roles(a, w) -> None:
+    """D7 and just culture: the reviewer and the audiences are roles, never people (JC1, with --names)."""
+    names = privacy.load_names(getattr(a, "names", None))
+    for flag, vals in (("--role", [a.role]), ("--distribution", a.distribution or [])):
+        for v in vals:
+            hit = _lint_module().personal_name(v, w, names)
+            if hit:
+                sys.exit(ROLE_NAME_REFUSAL.format(flag=flag, match=hit))
+
+
 def cmd_sign_off(a):
     w = load_ws(a.ws)
+    _refuse_names_in_roles(a, w)
     path = Path(a.file)
     try:
         doc = json.loads(path.read_text(encoding="utf-8"))
@@ -3187,6 +3201,8 @@ def build_parser():
     s.add_argument("--retention-review", dest="retention_review", metavar="YYYY-MM-DD")
     s.add_argument("--version")
     s.add_argument("--date", metavar="YYYY-MM-DD", help="review date (default: today)")
+    s.add_argument("--names", help="names file: --role and --distribution must not name a listed person "
+                                   "(default: $PMLC_NAMES)")
     s.set_defaults(fn=cmd_sign_off)
 
     s = sp.add_parser("scan-names", help="zero-hit name scan (exit 1 on hits, 2 if a file could not be read)", allow_abbrev=False)

@@ -98,6 +98,7 @@ Rules the coach follows:
 
 - **The agent never signs off on its own.** It runs `sign-off` only when you have said you reviewed the output and given your role. It never writes a reviewer's name, an owner or a due date.
 - **Sign-off is refused** while the export is forced to draft, and while the file has any problem in `check-pack` or `check-register`. Fix the problems first.
+- **The reviewer is a role.** A `--role` or `--distribution` value that looks like a personal name is refused with `--role: looks like a personal name ("…"); give a role`.
 - **A register must be an object.** A register saved as a bare list is refused with `wrap the entries as {"entries": [...]} before signing off`.
 
 What sign-off writes:
