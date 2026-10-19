@@ -57,13 +57,21 @@ MINI_REG = {"title": "Synthetic register", "source": "export.xlsx", "entries": [
           "leading_indicator": "i"}]}]}
 
 
-def make_export(d: Path, status: str = "completed", edited=None) -> Path:
+def make_export(d: Path, status: str = "completed", edited=None, summary=(), narrative=None,
+                name="export.xlsx") -> Path:
+    """summary adds (field, value) rows to the Incident Summary; narrative adds an INCIDENT NARRATIVE block.
+    The defaults give the unchanged export."""
     wb = openpyxl.Workbook()
     s = wb.active
     s.title = "Incident Summary"
     for r in [("INCIDENT SUMMARY", None), (None, None), ("Field", "Value"), ("Incident Title", "Synthetic pump fire"),
               ("Date", "2024-03-20"), ("Investigation Status", status)]:
         s.append(r)
+    for r in summary:
+        s.append(tuple(r))
+    if narrative:
+        s.append(("INCIDENT NARRATIVE", None))
+        s.append((narrative, None))
     f = wb.create_sheet("Identified Findings")
     f.append(FIND_COLS)
     ue = FIND_COLS.index("User Edited")
@@ -81,7 +89,7 @@ def make_export(d: Path, status: str = "completed", edited=None) -> Path:
     c = wb.create_sheet("Causal Chain")
     c.append(["Link ID", "From Code", "From Level", "To Code"])
     c.append(["No causal links found", None, None, None])
-    x = d / "export.xlsx"
+    x = d / name
     wb.save(x)
     return x
 
@@ -1898,3 +1906,104 @@ def test_check_pack_citable_once():
     import pmlc_pack
     src = inspect.getsource(pmlc_pack.check_pack)
     assert src.count("_citable(pack)") == 1
+
+
+# ----------------------------------------------------------------------------- privacy at ingest (Task 9)
+
+PERSONAL = [("Investigating Officer", "R. K. Sharma"), ("Supervisor at Time", "Joan Fakename"),
+            ("Investigation Team", "A. Nobody, B. Nobody")]
+
+
+def test_ingest_redact_removes_names(tmp_path):
+    x = make_export(tmp_path, summary=PERSONAL, narrative="Joan Fakename saw the leak. " * 12 + "Sharma was told.")
+    wb = openpyxl.load_workbook(x)
+    for row in wb["Identified Findings"].iter_rows(min_row=2):
+        if row[0].value == "FND-0001":
+            row[14].value = "Pump Technician, Zed Seeded"
+            row[12].value = "Zed Seeded did not test; zed seeded signed."
+    wb.save(x)
+    mp = tmp_path / "map.json"
+    mp.write_text(json.dumps({"Zed Seeded": "Fitter", "Joan Fakename": "Shift lead", "R. K. Sharma": "Officer"}))
+    ws = tmp_path / "pmlc-runs" / "2024-03-20-pump-fire" / "workspace"
+    out = run("ingest", str(x), "--out", str(ws), "--redact", str(mp))
+    assert "redacted" in out
+    blob = "".join(p.read_text() for p in ws.glob("*.json"))
+    for n in ("Zed Seeded", "zed seeded", "Joan Fakename", "Sharma"):
+        assert n not in blob
+    assert "Fitter" in blob
+    man = json.loads((ws / "manifest.json").read_text())
+    assert man["redactions"] >= 4 and "Seeded" not in json.dumps(man)
+    run("classify", str(ws))
+    run("dashboard", str(ws))
+    from test_pack import item, pack_with
+    pj = ws.parent / "outputs" / "test-pack.json"
+    pj.write_text(json.dumps(pack_with(item("recommendation"), item("learning", cites=["FND-0001"]))))
+    run("pack", str(ws), str(pj))
+    assert list(ws.parent.glob("outputs/test-pack*.html"))
+    html = "".join(p.read_text() for p in ws.parent.glob("outputs/*.html"))
+    assert html and "Seeded" not in html and "Fakename" not in html
+
+
+def test_ingest_redact_bad_map(tmp_path):
+    x = make_export(tmp_path)
+    for body in ('["a"]', "not json", '{"a": 1}'):
+        mp = tmp_path / "bad.json"
+        mp.write_text(body)
+        r = run_fail("ingest", str(x), "--legacy-out", str(tmp_path / "w"), "--redact", str(mp))
+        assert r.returncode == 1 and '--redact: expected a JSON object of "name": "role"' in r.stderr
+
+
+def test_ingest_personal_field_note(tmp_path):
+    x = make_export(tmp_path, summary=PERSONAL[:2])
+    out = run("ingest", str(x), "--legacy-out", str(tmp_path / "w"))
+    assert ("note: personal fields present (Investigating Officer, Supervisor at Time): "
+            "they are not quoted in outputs") in out
+    assert "personal fields" not in run("ingest", str(make_export(tmp_path, name="b.xlsx")), "--legacy-out",
+                                        str(tmp_path / "w2"))
+
+
+def test_profile_personal_fields_flag(tmp_path):
+    x = make_export(tmp_path, summary=PERSONAL)
+    w = tmp_path / "w"
+    run("ingest", str(x), "--legacy-out", str(w))
+    assert ("Personal fields present: do not quote Investigating Officer, Supervisor at Time, "
+            "Investigation Team") in run("profile", str(w))
+
+
+def test_profile_regulator_mention_flag(tmp_path):
+    x = make_export(tmp_path, summary=[("Reportable to Regulator", "No")],
+                    narrative="The statutory regulator was told at once. " * 8)
+    w = tmp_path / "w"
+    run("ingest", str(x), "--legacy-out", str(w))
+    assert ('Regulator involvement is mentioned but "Reportable to Regulator" is "No": '
+            "confirm reporting status") in run("profile", str(w))
+    y = make_export(tmp_path, summary=[("Reportable to Regulator", "Yes")],
+                    narrative="The statutory regulator was told at once. " * 8, name="y.xlsx")
+    run("ingest", str(y), "--legacy-out", str(tmp_path / "w2"))
+    assert "Regulator involvement" not in run("profile", str(tmp_path / "w2"))
+
+
+def test_profile_regulator_flag_hazira(tmp_path):
+    haz = next((ROOT / "samples").glob("2020-09-24-hazira*/*findings.xlsx"))
+    run("ingest", str(haz), "--legacy-out", str(tmp_path / "h"))
+    p = run("profile", str(tmp_path / "h"))
+    assert "Regulator involvement is mentioned but" in p
+
+
+def test_redact_protects_role_text_and_warns(tmp_path):
+    x = make_export(tmp_path, summary=[], narrative="John Field and Mr. Field met the Field Operator. " * 6)
+    wb = openpyxl.load_workbook(x)
+    for row in wb["Identified Findings"].iter_rows(min_row=2):
+        if row[0].value == "FND-0001":
+            row[14].value = "Field Operator, John Field, R.K. Field"
+    wb.save(x)
+    mp = tmp_path / "map.json"
+    mp.write_text(json.dumps({"John Field": "Fitter", "R. K. Field": "Engineer"}))
+    ws = tmp_path / "w"
+    out = run("ingest", str(x), "--legacy-out", str(ws), "--redact", str(mp))
+    F = json.loads((ws / "findings.json").read_text())
+    assert F[0]["roles"] == ["Field Operator", "Fitter", "Engineer"]
+    narr = json.loads((ws / "incident.json").read_text())["narrative"]
+    assert "John Field" not in narr and "Mr. Field" not in narr and "Fitter" in narr
+    assert 'warning: surname-only match "Field" replaced 6 times: check the text reads correctly' in out
+    assert "redacted" in out

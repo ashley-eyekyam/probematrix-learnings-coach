@@ -88,6 +88,19 @@ def name_variants(name: str) -> list:
     return out
 
 
+def _alt(x: str) -> str:
+    """Regex for one name form. Whitespace matches any run; an initial ('R.' or 'R') has an optional dot and may
+    be followed directly by the next token, so 'R. K. Sharma' also matches 'R.K. Sharma' and 'R K Sharma'."""
+    out, prev_initial = [], False
+    for i, t in enumerate(x.split()):
+        initial = bool(re.fullmatch(r"[A-Za-z]\.?", t))
+        if i:
+            out.append(r"\s*" if prev_initial else r"\s+")
+        out.append(re.escape(t[0]) + r"\.?" if initial else re.escape(t))
+        prev_initial = initial
+    return "".join(out)
+
+
 def name_pattern(names, variants=False):
     """One case-insensitive regex for a list of names (None for an empty list), bounded by (?<!\\w) and (?!\\w) so
     'Sharma' does not match inside 'Sharmaji' and a space matches any run of whitespace. variants=True adds the
@@ -99,7 +112,7 @@ def name_pattern(names, variants=False):
                 xs.append(v)
     if not xs:
         return None
-    alts = "|".join(re.escape(x).replace("\\ ", r"\s+") for x in sorted(xs, key=len, reverse=True))
+    alts = "|".join(_alt(x) for x in sorted(xs, key=len, reverse=True))
     return re.compile(r"(?<!\w)(?:" + alts + r")(?!\w)", re.I)
 
 
