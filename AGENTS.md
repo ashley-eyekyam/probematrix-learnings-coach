@@ -28,7 +28,7 @@ python3 $E select $WS --tier T2 --level 3 --brief      # feed an audience skill
 python3 $E pack $WS <run>/outputs/board-brief.json  # -> board-brief.html + .md
 ```
 
-Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write its pack JSON to `<run>/outputs/<skill>.json`, then run `python3 $E check-pack $WS <pack>` and `python3 $E pack $WS <pack>` (`python3 $E run-path $WS` prints the folder). `learnings-register` writes a register JSON instead: check it with `python3 $E check-register $WS <register.json>`, then `python3 $E register-xlsx <register.json>` writes the workbook. `python3 $E causal-item $WS` prints the top causal links as a ready graph item for a pack.
+Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write its pack JSON to `<run>/outputs/<skill>.json`, then run `python3 $E check-pack $WS <pack>` and `python3 $E pack $WS <pack>` (`python3 $E run-path $WS` prints the folder). `learnings-register` writes a register JSON instead: check it with `python3 $E check-register $WS <register.json>`, then `python3 $E register-xlsx <register.json>` writes the workbook. `python3 $E causal-item $WS` prints the top causal links as a ready graph item for a pack. Both checks also run the just-culture language lint (rules JC1 to JC12); `python3 $E check-language $WS <json>` runs it alone.
 
 ## Rules for agents
 

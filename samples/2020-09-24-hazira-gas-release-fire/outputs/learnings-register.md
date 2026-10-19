@@ -1,5 +1,7 @@
 # Learnings Register: Hazira gas terminal condensate release and fire, 24 September 2020 (draft)
 
+*Learning purposes: not a statutory document; draft: the investigation status is in progress*
+
 **Source:** `2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx`. This is a desk analysis of the investigation export; it does not replace site access, interviews or physical examination.
 
 ## At a glance

@@ -173,3 +173,23 @@ def test_sample_register_vocab(hz, capsys):
         print(f"\nHazira vocabulary warnings: {len(warns)}")
         for ln in warns:
             print("  " + ln)
+
+
+def test_hazira_register_lint_calibration(hz):
+    import time
+    import pmlc_lint
+    w = pmlc.load_ws(hz.ws)
+    reg = json.loads(REGISTER.read_text(encoding="utf-8"))
+    t0 = time.perf_counter()
+    hits = pmlc_lint.lint(reg, w, kind="register")
+    took = time.perf_counter() - t0
+    report = pmlc_lint.format_hits(hits)
+    assert [h for h in hits if h.severity == "error"] == [], report
+    assert len(hits) <= 3, report
+    assert took < 2, took
+    assert reg["status"].startswith("Learning purposes: not a statutory document; draft")
+    r = subprocess.run([sys.executable, str(PMLC), "check-language", str(hz.ws), str(REGISTER)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0 and r.stdout.strip().splitlines()[-1].startswith("check-language: 0 errors"), r.stdout
+    md = (SAMPLE / "outputs" / "learnings-register.md").read_text(encoding="utf-8").splitlines()
+    assert md[2] == "*" + reg["status"] + "*"

@@ -224,8 +224,8 @@ VERSION = pmlc.__version__
 
 
 def pack_fixtures() -> list:
-    """Every per-skill fixture pack (tests/fixtures/packs/<pack>.json), all-kinds excepted."""
-    return sorted(p.stem for p in FIX.glob("*.json") if p.stem != "all-kinds")
+    """Every per-skill fixture pack (tests/fixtures/packs/<pack>.json), all-kinds and the bad L3-01 pack excepted."""
+    return sorted(p.stem for p in FIX.glob("*.json") if p.stem not in ("all-kinds", "bad-l3-01"))
 
 
 def skill_of(pack) -> str:

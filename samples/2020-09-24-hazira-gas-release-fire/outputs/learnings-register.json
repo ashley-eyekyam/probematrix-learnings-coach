@@ -1,6 +1,7 @@
 {
  "title": "Learnings Register: Hazira gas terminal condensate release and fire, 24 September 2020 (draft)",
  "source": "2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx (ProbeMatrix INC-2026-031). Draft learnings: investigation status in_progress; summary-sheet date (2020-08-24) and type (aviation) corrected to 24 Sep 2020, hydrocarbon release and fire. FND-44219027 excluded (reviewer downgrade).",
+ "status": "Learning purposes: not a statutory document; draft: the investigation status is in progress",
  "entries": [
   {
    "lr_id": "LR-01",
@@ -352,7 +353,7 @@
    "tier_messages": {
     "T2": "Close every notification you raise or work, with what was found, what was done and how it was tested.",
     "T3": "Report open notifications on returned-to-service equipment weekly and review a sample of closures.",
-    "T4": "Make notification close-out quality part of maintenance performance reviews."
+    "T4": "Add notification close-out quality to the maintenance KPI review."
    },
    "recommendations": [
     {
