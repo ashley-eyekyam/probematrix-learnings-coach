@@ -47,6 +47,8 @@ pmlc pack <ws> <run>/outputs/supply-chain-contractor-learnings.json
 
 `select --tag supply contractor --brief` returned 35 findings: F06 Materials Management has 29, F16 Vendors has 7 and F17 Contractors has 2, and some findings carry more than one. The supply-words search returned 178. The timeline of the part would start from the evidence that "there is no record of date or authority of the decision to switch over from OEM supplied gasket to locally purchased gasket" (FND-B86F67F0, EVD-8645).
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, they change: on Hazira the india-process-site overlay alone moves F09b Emergency Planning & Command from 16 to 43 findings.
+
 ## Related skills
 
 - [interface-learnings](interface-learnings.md): the maintenance and stores seam (27 shared findings on Hazira).

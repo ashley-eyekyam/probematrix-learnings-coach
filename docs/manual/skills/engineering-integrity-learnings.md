@@ -47,6 +47,8 @@ pmlc pack <ws> <run>/outputs/engineering-integrity-learnings.json
 
 `select --tag engineering --brief` returned 203 findings, `--tag engineering --level 3 4 --top-rated` returned 49, and the technical-words search returned 334. `timeline --before incident` picks up the pipeline thickness measurements of 2011 and 2017. A decision for the technical authority could rest on the finding that the gasket was replaced and the line pressurised to operating pressure only, with no hydro test (FND-3AB996FC, EVD-2894): what test should follow pressure-boundary work is the authority's decision, not the pack's.
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, they change: on Hazira the india-process-site overlay alone moves F09b Emergency Planning & Command from 16 to 43 findings.
+
 ## Related skills
 
 - [barrier-learnings](barrier-learnings.md): the barriers these learnings weaken.

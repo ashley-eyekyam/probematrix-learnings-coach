@@ -67,6 +67,8 @@ The profile reported that 308 of the 436 findings (71%) sit at the Supervision a
 
 `classify` placed 630 distinct role strings and reported that 96 still need resolution. `run-path` printed `top_rating: 4` and `incident_date: 2020-09-24`. The hub would then say what the export contains and suggest the [learning-clusters](learning-clusters.md) resolution pass before tier-based packs.
 
+The `classify` numbers are from the base classification; the resolution pass and an overlay lower the unresolved count (see [learning-clusters](learning-clusters.md)).
+
 ## Related skills
 
 - [learning-clusters](learning-clusters.md): resolves the roles the rules could not place.

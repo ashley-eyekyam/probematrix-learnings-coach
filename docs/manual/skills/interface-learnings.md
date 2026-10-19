@@ -46,6 +46,8 @@ pmlc pack <ws> <run>/outputs/interface-learnings.json
 
 For the seam between maintenance and stores, `select --entity F02 F06 --entity-mode all --brief` returned 27 findings: the ones that name both Mechanical Maintenance and Materials Management. That small, focused set is what the skill reads to write the seam, for example how the locally bought O-rings reached the job.
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, they change: on Hazira the india-process-site overlay alone moves F09b Emergency Planning & Command from 16 to 43 findings.
+
 ## Related skills
 
 - [cluster-learning-dossier](cluster-learning-dossier.md): S6 is this analysis for one function.

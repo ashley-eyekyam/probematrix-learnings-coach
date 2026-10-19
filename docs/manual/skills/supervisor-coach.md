@@ -53,6 +53,8 @@ Checks are grouped by four habits: oversee, plan, correct, and make the safe way
 
 `select --tier T2 --brief` returned 237 findings; `--level 3 --top-rated` returned 54; and `--tier T2 --relation approver` returned 28. A return-to-service hold point on Hazira would rest on the finding that the system was pressurised to operating pressure only after the gasket change, with no hydro test (FND-3AB996FC, EVD-2894).
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles they will be somewhat higher, most for T3 (in a trial resolution pass on Hazira: T1 222→231, T2 237→238, T3 211→257).
+
 ## Related skills
 
 - [frontline-learning-cards](frontline-learning-cards.md): what the crew sees at the same hold points.

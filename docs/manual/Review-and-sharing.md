@@ -124,6 +124,8 @@ A pack page carries the full records of the findings and evidence it cites, so a
 | `summary` | As `cited`, but without evidence descriptions, specific references (quotes), suggested interviews, key questions and reviewers' vote reasons. | anything shared outside; the default when sharing |
 | `full` | Every record in full, as in v0.3. | an internal working copy for the investigation team |
 
+In `summary` mode, word-for-word repeats of an evidence description or reference elsewhere in the embedded text (for example inside an AI justification) are replaced with `[quote omitted]`.
+
 If a page would carry witness statements, the command notes `embedded evidence includes witness statements; consider --embed summary`.
 
 **Print only what is cited.** In print, the evidence trail lists only the cited IDs. The findings the pack does not cite print as one line, "x of y relevant findings cited", while the screen keeps the full list you can open.

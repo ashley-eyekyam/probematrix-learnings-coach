@@ -50,6 +50,8 @@ If you ask for a spreadsheet, the agent builds it from the test points.
 
 `select --level 3 4 --top-rated --brief` returned 101 findings and `--tag assurance --brief` returned 80. The records search matched 429 of 436 findings, because these words are common in the findings' text: the agent treats it as a wide net and reads the strongest matches first. A test point on change control could rest on the evidence that "no more MOCs are implemented in the plant since 2018" (EVD-2986).
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, the tag counts can change: on Hazira the india-process-site overlay alone moves F09b Emergency Planning & Command from 16 to 43 findings.
+
 ## Related skills
 
 - [board-brief](board-brief.md): the assurance the board should request.

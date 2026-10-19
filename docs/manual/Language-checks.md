@@ -135,7 +135,7 @@ WARNING JC7 $.sections[0].items[7].text: "Director Offshore (approval authority)
 
 ## JC8: outside facts
 
-Looks for percentages and durations, and checks each number against the records the item cites. If the number is not there, it may be an outside fact. Leading indicators and targets are not checked, because they are proposals, not claims about the incident.
+Looks for percentages and durations, and checks each number against the records the item cites. If the number is not there, it may be an outside fact. Indicators and their measures (`leading_indicator`, `indicator`, `measure`, `deterioration`) are not checked for numbers, because they are proposals, not claims about the incident.
 
 > Example of wording the check flags: "The meter leaked within 45 minutes of the restart." and "80% of such joints fail."
 

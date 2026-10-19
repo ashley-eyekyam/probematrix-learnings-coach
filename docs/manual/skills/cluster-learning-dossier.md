@@ -52,6 +52,8 @@ For all clusters you also get `dossier-index`, a table of every dossier.
 
 On Hazira, `select --entity F02` returned 194 findings for Mechanical Maintenance, split 22, 36, 86 and 50 across levels 1 to 4. That is well over 60, so the skill works level by level: `select --entity F02 --level 1 --brief` returned the 22 Unsafe Acts findings. `timeline --before incident` wrote 92 dated precursor candidates for S8, and `interfaces` showed F02's strongest seam, with F01 Operations & Control Room (71 shared findings).
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, they change: on Hazira the india-process-site overlay alone moves F09b Emergency Planning & Command from 16 to 43 findings.
+
 ## Related skills
 
 - [learning-clusters](learning-clusters.md): makes the clusters this skill opens.

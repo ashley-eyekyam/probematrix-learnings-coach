@@ -51,6 +51,8 @@ pmlc pack <ws> <run>/outputs/safety-committee-guide.json
 
 `profile` showed 308 of 436 findings (71%) at the Supervision and Organisational levels, so the guide can say plainly that most causes sit above the frontline. `select --tier T1 T2 --brief` returned 347 findings, `--level 4 --top-rated --brief` returned 47, and the relation filter returned 4.
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles they will be somewhat higher, most for T3 (in a trial resolution pass on Hazira: T1 222→231, T2 237→238, T3 211→257).
+
 ## Related skills
 
 - [frontline-learning-cards](frontline-learning-cards.md): the material the crews will see.

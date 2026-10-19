@@ -52,6 +52,8 @@ The tone is neutral and factual, with roles only. Owners are named as functions.
 
 `select --tier T4 T5 --brief` returned 54 findings: only one finding on Hazira touches tier T5, so nearly all of these are site leadership findings. `--level 4 --top-rated` returned 47, and the tag call returned 40. A transferability row could rest on the finding that locally bought O-rings had become the regular practice, with no specification or quality control (FND-B86F67F0, EVD-8645): a condition worth checking at any site with legacy equipment.
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles they will be somewhat higher, most for T3 (in a trial resolution pass on Hazira: T1 222→231, T2 237→238, T3 211→257).
+
 ## Related skills
 
 - [board-brief](board-brief.md): the same event for the board's oversight role.

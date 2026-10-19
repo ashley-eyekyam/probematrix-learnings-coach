@@ -280,7 +280,7 @@ edited since sign-off: status is draft until signed off again
 --names: file not found: <path>
 ```
 
-**Why.** The path given with `--names` (or, with `PMLC_NAMES:` at the start, the environment variable) points to no file. The same message appears for `--orgs` and `PMLC_ORGS`.
+**Why.** The path given with `--names` points to no file. If the message starts `PMLC_NAMES:`, the path came from that environment variable. The same message appears for `--orgs` and `PMLC_ORGS`.
 
 **What to do.** Check the path. The file is plain text, one name per line.
 

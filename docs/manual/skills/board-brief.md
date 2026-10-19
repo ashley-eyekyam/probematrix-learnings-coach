@@ -56,6 +56,8 @@ The tone is neutral and factual: no blame of management or staff, and roles only
 
 A short Hazira board pack written for this manual passed `check-pack` with the line `OK: 3 sections, 3 items, 6 cited IDs` and two warnings: the coverage warning (`cites 3 of 101 relevant findings (under a quarter)`) and `no handling block: rendered as draft (internal)`. Its page carries the DRAFT ribbon and the line "Draft because: the investigation status is in progress; no finding is marked as edited by a person".
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, the tag and level counts can change: on Hazira the india-process-site overlay alone moves F09b Emergency Planning & Command from 16 to 43 findings.
+
 ## Related skills
 
 - [top-management-brief](top-management-brief.md): the executive committee's version.

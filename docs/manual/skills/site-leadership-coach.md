@@ -59,6 +59,8 @@ Owners are written as functions ("Site operations function"), because at this le
 
 `select --tier T4 --brief` returned 54 findings; `--level 4 --top-rated` returned 47; and the relation filter returned 9. `causal-item --top 20` gave a graph of 17 factors and 20 links. A decision on Hazira could rest on the finding that the change-control procedure had not been used since 2018 (FND-F7FE8463, EVD-2986), framed as a choice for leadership, not a verdict on anyone.
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles they will be somewhat higher, most for T3 (in a trial resolution pass on Hazira: T1 222→231, T2 237→238, T3 211→257). The india-process-site overlay, which places site ranks such as GM and CGM, raises the T4 count on Hazira from 54 to 78.
+
 ## Related skills
 
 - [causal-map](causal-map.md): the full causal picture behind section 2.

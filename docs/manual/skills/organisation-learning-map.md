@@ -49,6 +49,8 @@ With the sample register (25 learnings, 44 recommendations), `dashboard --regist
 
 The committed sample page is [organisation-learning-map.html](https://github.com/ashley-eyekyam/probematrix-learnings-coach/blob/main/samples/2020-09-24-hazira-gas-release-fire/outputs/organisation-learning-map.html) (download it and open it in a browser).
 
+These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, they change: on Hazira the india-process-site overlay alone moves F09b Emergency Planning & Command from 16 to 43 findings.
+
 ## Related skills
 
 - [learnings-register](learnings-register.md): the register the map is built on.
