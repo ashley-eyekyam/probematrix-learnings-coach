@@ -1590,3 +1590,79 @@ def test_dashboard_with_no_ratings(tmp_path):
     page = wsp.parent / "outputs" / "organisation-learning-map.html"
     assert page.is_file()
     assert "<b>0</b><span>Highest-rated findings" in page.read_text(encoding="utf-8")
+
+
+# ----------------------------------------------------------------------------- one brand module (Phase 2, Task 1)
+
+def test_status_phrase_single_source():
+    hits = []
+    for base in ("skills", "tools"):
+        for p in (ROOT / base).rglob("*"):
+            if p.suffix in (".py", ".js") and "Learning purposes" in p.read_text(encoding="utf-8"):
+                hits.append(p.relative_to(ROOT).as_posix())
+    assert hits == ["skills/learnings-coach/scripts/pmlc.py"]
+    import pmlc_pack
+    assert pmlc_pack.STATUS_PHRASE is pmlc.STATUS_PHRASE
+    b = pmlc.brand_payload()
+    assert b == {"status_phrase": pmlc.STATUS_PHRASE, "ai_status": pmlc.AI_STATUS,
+                 "ai_justification_label": pmlc.AI_JUSTIFICATION_LABEL, "ai_chip": pmlc.AI_CHIP,
+                 "export_banner": pmlc.EXPORT_BANNER, "draft_label": pmlc.DRAFT_LABEL, "brand": pmlc.BRAND}
+    assert pmlc.STATUS_PHRASE == "Learning purposes: not a statutory document"
+    assert pmlc.DRAFT_LABEL == "DRAFT"
+
+
+def test_xlsx_every_sheet_has_status(tmp_path):
+    openpyxl = pytest.importorskip("openpyxl")
+    reg = tmp_path / "reg.json"
+    reg.write_text(json.dumps(MINI_REG))
+    out = tmp_path / "reg.xlsx"
+    run("register-xlsx", str(reg), "--out", str(out))
+    wb = openpyxl.load_workbook(out)
+    assert len(wb.worksheets) >= 4
+    for s in wb.worksheets:
+        assert pmlc.STATUS_PHRASE in (s.oddHeader.center.text or ""), s.title
+        assert "ProbeMatrix Learnings Coach v" in (s.oddFooter.center.text or ""), s.title
+    about = [r[0].value for r in wb["About"].iter_rows()]
+    assert pmlc.STATUS_PHRASE in about
+    assert "Learning purposes. Not a statutory document." not in about
+
+
+def test_dashboard_overview_status_and_title(ws, tmp_path):
+    out = tmp_path / "map.html"
+    run("dashboard", str(ws), "--out", str(out))
+    t = out.read_text(encoding="utf-8")
+    assert pmlc.STATUS_PHRASE in t
+    assert re.search(r"<title>[^<]*Synthetic pump fire[^<]*</title>", t)
+    assert '"status_phrase"' not in t or "Detailed register" in t   # brand payload only with the register tab
+
+
+def test_dashboard_with_register_embeds_brand(ws, tmp_path):
+    reg = tmp_path / "reg.json"
+    reg.write_text(json.dumps(MINI_REG))
+    out = tmp_path / "map.html"
+    run("dashboard", str(ws), "--register", str(reg), "--out", str(out))
+    m = re.search(r'id="pmlc-data">(.*?)</script>', out.read_text(encoding="utf-8"), re.S)
+    assert json.loads(m.group(1))["brand"]["status_phrase"] == pmlc.STATUS_PHRASE
+
+
+def test_release_bad_version_leaves_files_unchanged(tmp_path):
+    files = ["skills/learnings-coach/scripts/pmlc.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
+    for f in files:
+        (tmp_path / f).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(ROOT / f, tmp_path / f)
+    before = {f: (tmp_path / f).read_bytes() for f in files}
+    r = subprocess.run([sys.executable, str(ROOT / "tools" / "release.py"), "2.0", "--root", str(tmp_path)],
+                       capture_output=True, text=True)
+    assert r.returncode != 0
+    assert {f: (tmp_path / f).read_bytes() for f in files} == before
+
+
+def test_release_prints_golden_reminder(tmp_path):
+    files = ["skills/learnings-coach/scripts/pmlc.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
+    for f in files:
+        (tmp_path / f).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(ROOT / f, tmp_path / f)
+    r = subprocess.run([sys.executable, str(ROOT / "tools" / "release.py"), "2.0.0a9", "--root", str(tmp_path)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert "PMLC_UPDATE_GOLDEN=1" in r.stdout

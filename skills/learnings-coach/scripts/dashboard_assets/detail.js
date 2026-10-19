@@ -361,7 +361,7 @@
     var reg = D.register || {};
     var extra = Object.keys(reg).filter(function (k) { return k !== "title" && k !== "source"; });
     return h("div", {class: "banner"}, [
-      h("p", null, [h("b", {text: "Learning purposes: not a statutory document. "}), reg.title || "Learnings Register"]),
+      h("p", null, [h("b", {text: ((D.brand || {}).status_phrase || "") + ". "}), reg.title || "Learnings Register"]),
       reg.source ? h("p", {class: "src"}, ["Source: ", rich(reg.source)]) : null,
       extra.length ? h("details", null, [h("summary", {text: "Register details"}), fieldList(reg, extra, humanKey)]) : null]);
   }

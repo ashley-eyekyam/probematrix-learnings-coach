@@ -46,6 +46,24 @@ HERE = Path(__file__).resolve().parent
 REFS = HERE.parent / "references"
 BRAND = (f"Generated with ProbeMatrix Learnings Coach v{__version__} (open source, MIT) from a ProbeMatrix "
          "four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com")
+# Fixed copy: this module is the only place these strings are written; renderers import them, and the
+# dashboard JS reads them from the embedded `brand` payload (brand_payload()).
+STATUS_PHRASE = "Learning purposes: not a statutory document"
+AI_STATUS = "Learnings drafted by an AI agent from AI-assisted findings"
+AI_JUSTIFICATION_LABEL = "AI justification (ProbeMatrix)"
+AI_CHIP = "AI-drafted, not human-edited"
+EXPORT_BANNER = ("This is the investigation's AI-drafted wording, shown as evidence; "
+                 "it is not the coach's learning.")
+DRAFT_LABEL = "DRAFT"
+VERSION_STAMP = f"ProbeMatrix Learnings Coach v{__version__}"
+
+
+def brand_payload() -> dict:
+    """The fixed strings, for embedding in HTML data blocks as `data.brand`."""
+    return {"status_phrase": STATUS_PHRASE, "ai_status": AI_STATUS, "ai_justification_label": AI_JUSTIFICATION_LABEL,
+            "ai_chip": AI_CHIP, "export_banner": EXPORT_BANNER, "draft_label": DRAFT_LABEL, "brand": BRAND}
+
+
 LEVEL_NAMES = {1: "Unsafe Acts", 2: "Preconditions", 3: "Supervision", 4: "Organisational Influences"}
 CODE_RX = re.compile(r"\b([A-Z]{2,5})\s?(\d{1,2}\.\d{1,2})\b")
 
@@ -1614,7 +1632,7 @@ def build_detail_data(w: dict, reg) -> dict:
     tax = w.get("clusters", {}).get("taxonomy", {})
     return {"register": meta, "entries": entries, "derived": derived, "findings": findings, "evidence": evidence,
             "taxonomy": {"entities": tax.get("entities", {}), "tiers": tax.get("tiers", {})},
-            "tier_labels": TIER_LABELS, "labels": dict(REG_COLS), "hoc_order": HOC_TIERS,
+            "brand": brand_payload(), "tier_labels": TIER_LABELS, "labels": dict(REG_COLS), "hoc_order": HOC_TIERS,
             "totals": {"findings": len(F), "evidence": len(w.get("evidence", {}))}, "uncovered": uncovered}
 
 
@@ -1756,7 +1774,7 @@ def cmd_dashboard(a):
                 "to add the detailed register tab.</p>")
         extra_css = scripts = ""
     doc = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Organisational Learning Map</title>
+<title>Organisational Learning Map: {title}</title>
 <style>
 {PAGE_TOKENS_CSS}
 main{{max-width:1180px;margin:0 auto;padding:24px 16px 48px}}
@@ -1776,6 +1794,7 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 {extra_css}
 </style></head><body><main>
 <h1>Organisational Learning Map</h1>
+<p class="m"><b>{html.escape(STATUS_PHRASE)}</b></p>
 <p class="m">{title} · {html.escape(fields.get('Location', ''))} · {html.escape(fields.get('Date', ''))}. Learnings from one ProbeMatrix investigation, distributed across the organisation by who owns them.</p>
 {body}
 <footer>{html.escape(BRAND)}</footer>
@@ -1895,9 +1914,12 @@ def cmd_register_xlsx(a):
     for line in [reg.get("title", "Learnings Register") if isinstance(reg, dict) else "Learnings Register",
                  reg.get("source", "") if isinstance(reg, dict) else "",
                  "Lessons and recommendations only: no owners, due dates or action tracking.",
-                 "Learning purposes. Not a statutory document.", BRAND]:
+                 STATUS_PHRASE, BRAND]:
         ab.append([line])
     ab.column_dimensions["A"].width = 120
+    for sh in wb.worksheets:
+        sh.oddHeader.center.text = STATUS_PHRASE
+        sh.oddFooter.center.text = VERSION_STAMP
     out = Path(a.out) if a.out else Path(a.register).resolve().parent / "learnings-register.xlsx"
     out.parent.mkdir(parents=True, exist_ok=True)
     wb.save(out)

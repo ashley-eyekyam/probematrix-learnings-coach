@@ -11,9 +11,9 @@ Skills that produce a learning pack write JSON (`pack-schema.md`) and render it 
 3. Bottom line first: the three to five things this audience must take away.
 4. Body: the skill's own structure.
 5. Evidence trail: Finding IDs and Evidence IDs inline in square brackets, e.g. `[FND-82761CC5; EVD-4052]`.
-6. Footer, verbatim:
+6. Footer. It carries the engine's version stamp (`__version__` in `pmlc.py`), where `aN` stands for the installed alpha number, for example:
 
-> Generated with ProbeMatrix Learnings Coach (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0aN (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
 
 ## Reusable blocks
 

@@ -26,7 +26,8 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "uat" / "inputs"
-STATUS = "Learning purposes: not a statutory document"
+sys.path.insert(0, str(ROOT / "skills" / "learnings-coach" / "scripts"))
+from pmlc import STATUS_PHRASE as STATUS  # noqa: E402
 
 FIND_COLS = ["Finding ID", "Nanocode", "Name", "Level", "Level Name", "Category", "Subcategory", "Classification",
              "Rating", "Instance ID", "Instance Label", "Short Description", "AI Justification", "Causal Explanation",
