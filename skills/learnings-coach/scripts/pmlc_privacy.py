@@ -31,8 +31,10 @@ QUALIFIER_RX = re.compile(r"\b(?i:post|gate|shift|grade|no\.?|desk|cabin|CR|cont
 GROUP_RX = re.compile(r"(?i)\b(?:operators|crew|team|staff|workers|personnel)\s*$")
 
 # Equipment tags such as AO-101 or PSV12A: letters then digits. Finding, Evidence, LR and ML IDs are not tags, and
-# neither are Learning Cluster entity IDs (F02, F99) or tier IDs (T4) (ruling X21).
-TAG_RX = re.compile(r"\b(?!(?:FND|EVD|LR|ML)-)(?!(?:F\d{2}|T\d)\b)[A-Z]{1,5}-?\d{2,6}[A-Z]?\b")
+# neither are Learning Cluster entity IDs (F02, F99) or tier IDs (T4) (ruling X21). The lookbehinds keep the tail of a
+# hex ID (FND-AE629313) from matching after its hyphen.
+TAG_RX = re.compile(r"\b(?<!FND-)(?<!EVD-)(?<!LR-)(?<!ML-)(?!(?:FND|EVD|LR|ML)-)(?!(?:F\d{2}|T\d)\b)"
+                    r"[A-Z]{1,5}-?\d{2,6}[A-Z]?\b")
 # Keys whose values are IDs or taxonomy labels, not prose: share_doc keeps them as they are (and the lint skips them).
 ID_KEYS = {"id", "kind", "pack", "schema", "cites", "supporting_cites", "row_cites", "row_supporting_cites",
            "finding_ids", "evidence_ids", "lr_id", "ml_id", "owner_entity", "entities", "scope", "content_hash"}

@@ -157,6 +157,21 @@ def test_entity_ids_neither_masked_nor_flagged(tmp_path):
     assert [h.match for h in hits] == ["P-101"]
 
 
+@pytest.mark.parametrize("ident", ["FND-AE629313", "FND-3AB996FC", "EVD-AB1234", "LR-AB12", "ML-QX123"])
+def test_tag_rx_skips_hex_record_ids(ident):
+    """Final review I3: the ID guard holds after the hyphen too, so a hex ID's tail is not a tag."""
+    assert not pv.TAG_RX.search(ident), ident
+
+
+def test_hex_ids_survive_share_text_and_lint():
+    ctx = pv.ShareCtx("external", [], [], {})
+    text = "FND-AE629313 and EVD-AB1234 show pump P-101 leaked."
+    assert pv.share_text(text, ctx) == "FND-AE629313 and EVD-AB1234 show pump [equipment tag] leaked."
+    reg = {"entries": [{"lr_id": "LR-01", "lesson": text}]}
+    hits = [h for h in pl.lint(reg, {"findings": []}, kind="register", share="external") if h.rule == "JC10"]
+    assert [h.match for h in hits] == ["P-101"]
+
+
 @pytest.mark.parametrize("phone", ["+91 98765 43210", "022-2345-6789", "98765 43210", "+44 20 7946 0958"])
 def test_phone_pattern_matches_phones(phone):
     assert re.search(pv.PATTERNS["phone"], phone).group(0) == phone
