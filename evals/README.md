@@ -33,11 +33,17 @@ one `no-trigger` and one `collision`.
 | `check_register_ok` | `pack` | `pmlc.py check-register <ws> <pack>.json` exits 0 (learnings-register) |
 | `scope_equals` | `pack`, `scope` | the pack's `scope` equals the one the SKILL.md fixes |
 | `coverage_min` | `pack`, `ratio` | cited relevant findings / relevant findings is at least `ratio` (0.25, the engine's warning line) |
+| `language_clean` | `pack` | `pmlc.py check-language <ws> <pack>.json` exits 0 (no lint errors; warnings are allowed) |
+| `pack_absent` | `pack` | `<run>/outputs/<pack>.json` does not exist (a collision eval uses it for the sibling skill's pack) |
+| `card_fields` | `pack`, `fields` | the pack has at least one `card` item and every card has each named field filled in |
 | `routes_to` | `skill` (or `null`) | judged by a person or from a transcript: reported as `manual` |
 
 Pack names follow each skill's SKILL.md: usually the skill name, `dossier-F02` for cluster-learning-dossier,
 `organisation-learning-plan` for organisation-learning-map, and `learnings-register` for the register.
 The hub (`learnings-coach`) writes no pack; its evals carry `routes_to` only.
+
+`check` also enforces: `skill` equals `owner` for trigger evals; a `routes_to` names the eval's `skill`; trigger evals
+list `files` and no-trigger evals list none; no absolute paths in `files` or `prompt`.
 
 ## Commands
 
@@ -48,6 +54,7 @@ python3 evals/run_evals.py grade <run-dir> --ids 3,7
 ```
 
 `grade` prints `| id | skill | expectation | pass/fail |` and the pass rate over machine checks, and exits 1 if any
-machine check fails. To grade a skill, run it on the sample (see `skills/learnings-coach/SKILL.md`), then point
+machine check fails, or when nothing was graded (it then prints `no outputs graded`). A pack that is not a JSON
+object, or whose `scope` is not an object, gives a failed expectation rather than a crash. To grade a skill, run it on the sample (see `skills/learnings-coach/SKILL.md`), then point
 `grade` at the run folder it printed (`<export-dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/`).
 Both commands take `--file <evals.json>` to use another eval file. Standard library only, Python 3.9+.
