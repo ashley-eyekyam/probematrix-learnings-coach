@@ -43,7 +43,7 @@ def main(argv=None) -> int:
     text = render(refs)
     md = refs / "audiences.md"
     if a.write:
-        md.write_text(text, encoding="utf-8", newline="\n")
+        md.write_bytes(text.encode("utf-8"))  # bytes: no newline= (Path.write_text needs 3.10+)
         print(f"wrote {md}")
         return 0
     if md.read_text(encoding="utf-8") == text:
