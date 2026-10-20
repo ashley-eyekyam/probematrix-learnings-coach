@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 import collections
+import datetime
 import json
+import re
 import sys
+import zipfile
 from pathlib import Path
 
 from .. import BRAND, DRAFT_LABEL, STATUS_PHRASE, VERSION_STAMP
@@ -12,7 +15,7 @@ from ..handling import (
     effective_handling, is_draft, REASON_NO_WORKSPACE, review_text, share_ctx, share_gate, shared_copy, SHARED_LINE,
     shared_name, SHARED_SOURCE
 )
-from ..register.check import norm_entity, norm_hoc, norm_level
+from ..register.check import HOC_TIERS, norm_entity, norm_hoc, norm_level
 from ..util import _flat, _need_openpyxl
 from ..workspace import is_standard_ws, load_ws
 from .. import privacy
@@ -32,6 +35,12 @@ REG_COLS = [
     ("worst_case", "Credible worst case"), ("transferability", "Transferability"), ("priority", "Priority"),
     ("audiences", "Audiences"), ("learning_level", "Learning level / loop"), ("formats", "Formats"),
 ]
+# Phase 3 fields: a column appears only when some entry carries the field, in this order, after the last column above.
+OPTIONAL_REG_COLS = [("urgency", "Urgency"), ("recommendation_class", "Recommendation class"),
+                     ("regulatory_touchpoint", "Regulatory touchpoint")]
+PRIORITIES = ("1", "2", "3")
+COMPARISONS = ("yes", "partial", "none", "not compared")
+SHARED_EPOCH = datetime.datetime(2000, 1, 1)
 REC_COLS = [("lr_id", "LR-ID"), ("what", "What should change"), ("level_barrier", "HFACS level and barrier"),
             ("evidence_basis", "Evidence basis"), ("hoc_tier", "Hierarchy-of-controls tier"),
             ("leading_indicator", "Leading indicator")]
@@ -61,16 +70,40 @@ def _register_ws(a) -> tuple:
     register stays draft with the reason 'no workspace to check'."""
     if getattr(a, "ws", None):
         return load_ws(a.ws), Path(a.ws)
-    guess = Path(a.register).resolve().parent.parent / "workspace"
-    if is_standard_ws(guess) and (guess / "findings.json").exists():
+    reg_dir = Path(a.register).resolve().parent
+    guess = reg_dir.parent / "workspace"
+    if reg_dir.name == "outputs" and is_standard_ws(guess) and (guess / "findings.json").exists():
         return load_ws(guess), guess
     return {}, None
+
+
+def reset_docprops(path) -> None:
+    """A shared workbook carries no author or timestamps. openpyxl stamps `modified` on save, so the saved file's
+    core properties are rewritten: creator and last-modified-by blank, both dates the fixed epoch."""
+    stamp = SHARED_EPOCH.strftime("%Y-%m-%dT%H:%M:%SZ")
+    tmp = Path(str(path) + ".tmp")
+    with zipfile.ZipFile(path) as zin, zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            data = zin.read(item.filename)
+            if item.filename == "docProps/core.xml":
+                t = data.decode("utf-8")
+                t = re.sub(r"(<dcterms:(?:created|modified)\b[^>]*>)[^<]*", lambda m: m.group(1) + stamp, t)
+                t = re.sub(r"<dc:creator>[^<]*</dc:creator>", "<dc:creator></dc:creator>", t)
+                t = re.sub(r"<cp:lastModifiedBy>[^<]*</cp:lastModifiedBy>", "", t)
+                data = t.encode("utf-8")
+            zout.writestr(item, data)
+    tmp.replace(path)
 
 
 def cmd_register_xlsx(a):
     openpyxl = _need_openpyxl()
     from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.packaging.core import DocumentProperties
     from openpyxl.utils import get_column_letter
+    from openpyxl.worksheet.datavalidation import DataValidation
+    from openpyxl.worksheet.hyperlink import Hyperlink
+    from openpyxl.worksheet.properties import PageSetupProperties
+    from openpyxl.worksheet.table import Table, TableStyleInfo
     reg = json.loads(Path(a.register).read_text(encoding="utf-8"))
     refuse_pack_as_register(reg, a.register)
     rw, rws = _register_ws(a)
@@ -90,7 +123,8 @@ def cmd_register_xlsx(a):
     head_fill = PatternFill("solid", fgColor="0B3954")
     head_font = Font(color="FFFFFF", bold=True)
 
-    def sheet(ws, cols, rows):
+    def sheet(ws, cols, rows, table=None, lists=()):
+        """One data sheet: header, rows, then (data sheets) an Excel Table, list validations {field: values}."""
         ws.append([c[1] for c in cols])
         for r in rows:
             ws.append([_flat(r.get(c[0])) for c in cols])
@@ -102,17 +136,38 @@ def cmd_register_xlsx(a):
             for cell in row:
                 cell.alignment = Alignment(wrap_text=True, vertical="top")
         ws.freeze_panes = "C2"
+        if table:
+            if ws.max_row > 1:      # a Table needs a data row; unique string headers are the columns' names
+                t = Table(displayName=table, ref=ws.dimensions)
+                t.tableStyleInfo = TableStyleInfo(name="TableStyleMedium2", showRowStripes=True)
+                ws.add_table(t)
+            ws.print_title_rows = "1:1"
+        last = max(ws.max_row, 2)
+        for field, values in lists:
+            i = next((n for n, c in enumerate(cols, 1) if c[0] == field), None)
+            if i:
+                dv = DataValidation(type="list", formula1='"' + ",".join(values) + '"', allow_blank=True)
+                dv.add(f"{get_column_letter(i)}2:{get_column_letter(i)}{last}")
+                ws.add_data_validation(dv)
 
     ws = wb.active
     ws.title = "Learnings Register"
-    sheet(ws, REG_COLS, entries)
+    reg_cols = REG_COLS + [c for c in OPTIONAL_REG_COLS if any(_flat(e.get(c[0])) for e in entries)]
+    sheet(ws, reg_cols, entries, "LearningsRegister", [("priority", PRIORITIES), ("comparison", COMPARISONS)])
+    lr_row = {e.get("lr_id"): n for n, e in enumerate(entries, 2)}
     recs = [dict(r, lr_id=e.get("lr_id")) for e in entries for r in (e.get("recommendations") or [])]
-    sheet(wb.create_sheet("Recommendations"), REC_COLS, recs)
+    rws = wb.create_sheet("Recommendations")
+    sheet(rws, REC_COLS, recs, "Recommendations", [("hoc_tier", HOC_TIERS)])
+    for n, r in enumerate(recs, 2):
+        if r.get("lr_id") in lr_row:
+            cell = rws.cell(n, 1)
+            cell.hyperlink = Hyperlink(ref=cell.coordinate, location=f"'Learnings Register'!A{lr_row[r['lr_id']]}")
+            cell.font = Font(color="0563C1", underline="single")
     plan_cols = [("lr_id", "LR-ID"), ("title", "Title"), ("priority", "Priority")] + \
                 [(t, f"{t} {TIER_LABELS[t]}") for t in TIER_LABELS]
     plan_rows = [dict({"lr_id": e.get("lr_id"), "title": e.get("title"), "priority": e.get("priority")},
                       **(e.get("tier_messages") or {})) for e in entries]
-    sheet(wb.create_sheet("Learning Plan"), plan_cols, plan_rows)
+    sheet(wb.create_sheet("Learning Plan"), plan_cols, plan_rows, "LearningPlan")
     s = wb.create_sheet("Summary")
     s.append(["Count by", "Value", "Count"])
     for c in s[1]:
@@ -151,8 +206,16 @@ def cmd_register_xlsx(a):
     for sh in wb.worksheets:
         sh.oddHeader.center.text = STATUS_PHRASE + (f" · {DRAFT_LABEL}" if is_draft(eh) else "")
         sh.oddFooter.center.text = VERSION_STAMP
+        sh.page_setup.orientation = "landscape"
+        sh.page_setup.fitToWidth, sh.page_setup.fitToHeight = 1, 0
+        sh.sheet_properties.pageSetUpPr = PageSetupProperties(fitToPage=True)
+    if share:
+        wb.properties = DocumentProperties(creator="", lastModifiedBy=None, created=SHARED_EPOCH,
+                                           modified=SHARED_EPOCH)
     out = Path(a.out) if a.out else shared_name(Path(a.register).resolve().parent / "learnings-register.xlsx", mode)
     out.parent.mkdir(parents=True, exist_ok=True)
     text_cells(wb)
     wb.save(out)
+    if share:
+        reset_docprops(out)
     print(f"Register with {len(entries)} entries and {len(recs)} recommendations written to {out}")
