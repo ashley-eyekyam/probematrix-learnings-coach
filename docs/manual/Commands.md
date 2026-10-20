@@ -75,6 +75,13 @@ pmlc 2.0.0a4
 | [dashboard](commands/dashboard.md) | Writes the self-contained organisation learning map (HTML) |
 | [register-xlsx](commands/register-xlsx.md) | Writes a Learnings Register JSON to a formatted Excel workbook |
 
+### Files for the organisation to fill in
+
+| Command | What it does |
+|---|---|
+| [templates](commands/templates.md) | Writes a blank adoption.csv, distribution.csv or verification.jsonl for your organisation to fill in |
+| [export-actions](commands/export-actions.md) | Writes actions.csv and actions.json (owner, due date and status left blank) for your action-tracking system |
+
 ### 5. Repository upkeep
 
 | Command | What it does |

@@ -23,6 +23,8 @@ Subcommands
   status          which derived files are current or stale, and the last check of each pack
   run-path        print a workspace's run folder, outputs folder and slug
   check-samples   check samples/<slug>/ folders follow the contribution layout
+  templates       blank adoption.csv, distribution.csv or verification.jsonl for the organisation to fill in
+  export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -50,6 +52,8 @@ from .profile import cmd_profile
 from .register.check import cmd_check_register
 from .register.xlsx import cmd_register_xlsx
 from .samples import cmd_check_samples
+from .templates import cmd_templates, FILES as TEMPLATE_FILES
+from .actions import cmd_export_actions, PROFILE_NAMES
 from .select import cmd_select, COUNT_BY, SELECT_FIELDS
 from .util import HERE
 from .workspace import cmd_run_path, cmd_status
@@ -278,6 +282,22 @@ def build_parser():
     s.add_argument("--patterns", action="store_true",
                    help="also flag email, phone and staff-number patterns (an aid, not proof of de-identification)")
     s.set_defaults(fn=cmd_scan_names)
+
+    s = sp.add_parser("templates", help="write adoption.csv, distribution.csv or verification.jsonl for the organisation to fill in", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("mode", choices=list(TEMPLATE_FILES))
+    s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json)")
+    s.add_argument("--out", help="file to write (default: <run>/outputs/<file>); never overwrites an existing file")
+    s.set_defaults(fn=cmd_templates)
+
+    s = sp.add_parser("export-actions", help="write actions.csv and actions.json from the packs and register", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--packs", nargs="+", metavar="PACK", help="pack names or JSON paths (default: every pack in <run>/outputs)")
+    s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json when present)")
+    s.add_argument("--profile", choices=PROFILE_NAMES, default="generic", help="column names for a target system (default generic)")
+    s.add_argument("--names", help="names file: nothing is written if one appears in the actions (default: $PMLC_NAMES)")
+    s.add_argument("--out-dir", dest="out_dir", help="folder to write into (default: <run>/outputs)")
+    s.set_defaults(fn=cmd_export_actions)
 
     return p
 

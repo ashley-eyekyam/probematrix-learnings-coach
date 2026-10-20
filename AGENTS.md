@@ -55,3 +55,5 @@ Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write it
 - Commit messages read `<type>(<area>): <what> (#N)`, for example `fix(engine): keep role overrides in classify (#1)`. Push after every task.
 - Each v2.0 phase ends with an annotated tag `v2.0.0-alpha.N` (version `2.0.0aN`), a CHANGELOG entry, the phase ticked in the issue and a summary comment. Merge `main` into the branch when it moves; never rebase.
 - The branch reaches `main` through one pull request ("Closes #1"), merged with a merge commit (not squash or rebase).
+
+Files the organisation fills in: `python3 $E templates $WS (adoption|distribution|verification)` writes a blank `adoption.csv`, `distribution.csv` or `verification.jsonl` (never overwrites). `python3 $E export-actions $WS [--profile generic|enablon|intelex|cority|sap-ehs] [--names FILE]` writes `actions.csv` and `actions.json` with the owner, due, status, CAPA and effectiveness columns left blank.
