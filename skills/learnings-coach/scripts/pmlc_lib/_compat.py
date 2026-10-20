@@ -31,6 +31,8 @@ MODULES = [
     "pmlc_lib.orchestrate",
     "pmlc_lib.templates",
     "pmlc_lib.actions",
+    "pmlc_lib.contracts",
+    "pmlc_lib.plan",
     "pmlc_lib.cli",
 ]
 PACK_MODULES = ["pmlc_lib.pack.schema", "pmlc_lib.pack.graph_layout", "pmlc_lib.pack.items", "pmlc_lib.pack.markdown",

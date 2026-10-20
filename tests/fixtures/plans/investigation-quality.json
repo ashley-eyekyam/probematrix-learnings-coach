@@ -1,0 +1,87 @@
+{
+ "plan_version": 1,
+ "request": {
+  "workflow": "investigation-quality",
+  "audiences": [],
+  "skills": []
+ },
+ "steps": [
+  {
+   "n": 1,
+   "skill": "evidence-strength-scorecard",
+   "status": "planned",
+   "planned_for": "Phase 5",
+   "produces": null,
+   "mode": null,
+   "when": null,
+   "commands": [],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 2,
+   "skill": "open-questions-register",
+   "status": "planned",
+   "planned_for": "Phase 5",
+   "produces": null,
+   "mode": null,
+   "when": null,
+   "commands": [],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 3,
+   "skill": "engine:ingest",
+   "status": "done",
+   "planned_for": null,
+   "produces": "workspace",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC ingest <export.xlsx> --slug <site>-<event>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 4,
+   "skill": "investigator-coach",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "investigator-coach",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset investigator-coach:top-json",
+    "PMLC check-pack <ws> <run>/outputs/investigator-coach.json --strict",
+    "PMLC pack <ws> <run>/outputs/investigator-coach.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 5,
+   "skill": "report-comparison",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "comparator",
+   "mode": null,
+   "when": "an official report is supplied",
+   "commands": [
+    "PMLC select <ws> --preset report-comparison:text",
+    "PMLC check-pack <ws> <run>/outputs/report-comparison.json --strict",
+    "PMLC pack <ws> <run>/outputs/report-comparison.json"
+   ],
+   "questions": [
+    "Which official or other report is being compared?"
+   ],
+   "gate": [
+    "check-pack --strict"
+   ]
+  }
+ ],
+ "next": 4
+}

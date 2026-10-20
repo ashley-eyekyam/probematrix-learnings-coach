@@ -32,6 +32,7 @@ Subcommands
   dossier-index   write outputs/dossier-index.json listing the dossier-F*.json packs
   templates       blank adoption.csv, distribution.csv or verification.jsonl for the organisation to fill in
   export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
+  plan            resolve a workflow preset, audiences or skills into an ordered plan (<ws>/plan.json)
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -55,6 +56,7 @@ from .orchestrate import cmd_check_all, cmd_dossier_index, cmd_index, cmd_render
 from .pack.html import cmd_pack
 from .pack.items import cmd_causal_item
 from .pack.schema import cmd_check_pack
+from .plan import cmd_plan
 from .privacy import cmd_scan_names
 from .profile import cmd_profile
 from .register.check import cmd_check_register
@@ -353,6 +355,17 @@ def build_parser():
     s.add_argument("--names", help="names file: nothing is written if one appears in the actions (default: $PMLC_NAMES)")
     s.add_argument("--out-dir", dest="out_dir", help="folder to write into (default: <run>/outputs)")
     s.set_defaults(fn=cmd_export_actions)
+    s = sp.add_parser("plan", help="resolve a workflow preset, audiences or skills into an ordered plan",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    what = s.add_mutually_exclusive_group(required=True)
+    what.add_argument("--workflow", metavar="NAME", help="a preset from references/workflows.json")
+    what.add_argument("--audiences", metavar="A,B", help="audience ids from references/audiences.json")
+    what.add_argument("--skills", metavar="S,T", help="skill names")
+    what.add_argument("--next", action="store_true",
+                      help="refresh the saved plan and print only its next step (exit 2 when the plan is complete)")
+    s.add_argument("--json", action="store_true", help="print the plan as one JSON object")
+    s.set_defaults(fn=cmd_plan)
 
     return p
 
