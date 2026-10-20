@@ -1,0 +1,28 @@
+{
+  "name": "report-comparison",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace"
+  ],
+  "optional_inputs": [
+    "register",
+    "comparator"
+  ],
+  "produces": {
+    "pack": "report-comparison",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": [
+    "Which official or other report is being compared?"
+  ]
+}

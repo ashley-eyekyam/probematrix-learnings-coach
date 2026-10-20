@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "skill.schema.json",
+  "title": "ProbeMatrix Learnings Coach skill manifest",
+  "description": "Machine-readable contract for one skill (skills/<name>/skill.json). Uses only the keyword subset the engine validates: type, enum, required, properties, additionalProperties, items, pattern, const.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "kind",
+    "audiences",
+    "scope",
+    "requires",
+    "optional_inputs",
+    "produces",
+    "share_default",
+    "embed_default",
+    "interactive",
+    "since"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Equals the skill folder name."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "hub",
+        "analysis",
+        "audience",
+        "register",
+        "dissemination",
+        "interactive",
+        "multi-incident"
+      ]
+    },
+    "audiences": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ids from references/audiences.json."
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tiers",
+        "levels",
+        "tags"
+      ],
+      "properties": {
+        "tiers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "T1",
+              "T2",
+              "T3",
+              "T4",
+              "T5"
+            ]
+          }
+        },
+        "levels": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "enum": [
+              1,
+              2,
+              3,
+              4
+            ]
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "min_rating": {
+          "type": "string",
+          "enum": [
+            "top"
+          ]
+        }
+      }
+    },
+    "requires": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Names from references/artefacts.json."
+    },
+    "optional_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Names from references/artefacts.json."
+    },
+    "produces": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pack",
+        "files"
+      ],
+      "properties": {
+        "pack": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Pack name, or null."
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "share_default": {
+      "type": "string",
+      "enum": [
+        "internal",
+        "external",
+        "public"
+      ]
+    },
+    "embed_default": {
+      "type": "string",
+      "enum": [
+        "cited"
+      ]
+    },
+    "interactive": {
+      "type": "boolean"
+    },
+    "since": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

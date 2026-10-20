@@ -1,0 +1,26 @@
+{
+  "name": "causal-map",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "causal_graph"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "causal-map",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

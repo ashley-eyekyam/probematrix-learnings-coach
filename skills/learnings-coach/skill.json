@@ -1,0 +1,23 @@
+{
+  "name": "learnings-coach",
+  "kind": "hub",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace"
+  ],
+  "optional_inputs": [],
+  "produces": {
+    "pack": null,
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": true,
+  "since": "0.1.0",
+  "questions": []
+}

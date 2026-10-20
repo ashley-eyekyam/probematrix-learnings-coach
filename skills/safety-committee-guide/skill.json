@@ -1,0 +1,32 @@
+{
+  "name": "safety-committee-guide",
+  "kind": "audience",
+  "audiences": [
+    "workforce-reps"
+  ],
+  "scope": {
+    "tiers": [
+      "T1",
+      "T2"
+    ],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "adoption"
+  ],
+  "produces": {
+    "pack": "safety-committee-guide",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

@@ -1,0 +1,31 @@
+{
+  "name": "emergency-response-learnings",
+  "kind": "audience",
+  "audiences": [
+    "emergency-response"
+  ],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": [
+      "emergency"
+    ]
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "timeline"
+  ],
+  "produces": {
+    "pack": "emergency-response-learnings",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

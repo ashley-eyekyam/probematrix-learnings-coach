@@ -1,0 +1,27 @@
+{
+  "name": "interface-learnings",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": [],
+    "entities": []
+  },
+  "requires": [
+    "workspace",
+    "interfaces"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "interface-learnings",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

@@ -49,6 +49,28 @@ Name scan passed (optional for public-record samples, D3): 1 name(s) checked. Ke
 
 Only publish exports of incidents that are public record and that you have the right to publish.
 
+## `tools/make-audiences-md.py`
+
+Regenerates `skills/learnings-coach/references/audiences.md` from `audiences.json`, the machine-readable audience list the router reads. Edit the JSON, never the Markdown. The output is byte for byte what is committed unless you change a row.
+
+```text
+python3 tools/make-audiences-md.py (--check | --write) [--refs DIR]
+```
+
+| Flag | Value | Default | What it does |
+|---|---|---|---|
+| `--check` | none | one of `--check` or `--write` is required | Exit 0 when `audiences.md` equals the regenerated text, 1 (with a hint on stderr) when it does not |
+| `--write` | none | one of `--check` or `--write` is required | Rewrite `audiences.md` |
+| `--refs` | folder | the repository's `skills/learnings-coach/references/` | Read `audiences.json` from, and compare or write `audiences.md` in, another folder |
+
+```bash
+python3 tools/make-audiences-md.py --check && echo up to date
+```
+
+```text
+up to date
+```
+
 ## `tools/release.py`
 
 Bumps the version everywhere it lives: `__version__` in the engine (the Python form, `2.0.0a4`) and `version` in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` (the semantic-version form, `2.0.0-alpha.4`). It prints the git tag command but never runs git. The version only ever changes through this tool.

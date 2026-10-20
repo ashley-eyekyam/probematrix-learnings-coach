@@ -1,0 +1,177 @@
+{
+  "first-48-hours": {
+    "title": "First 48 hours: a draft register, an alert and the supervisor briefing",
+    "steps": [
+      {
+        "skill": "learnings-register",
+        "mode": "draft"
+      },
+      {
+        "skill": "safety-alert",
+        "mode": "internal",
+        "planned": "Phase 6"
+      },
+      {
+        "skill": "supervisor-coach"
+      }
+    ]
+  },
+  "full-cascade": {
+    "title": "Full cascade: every level, frontline to board",
+    "steps": [
+      {
+        "skill": "learning-clusters"
+      },
+      {
+        "skill": "learnings-register"
+      },
+      {
+        "skill": "organisation-learning-map"
+      },
+      {
+        "skill": "frontline-learning-cards"
+      },
+      {
+        "skill": "supervisor-coach"
+      },
+      {
+        "skill": "manager-coach"
+      },
+      {
+        "skill": "site-leadership-coach"
+      },
+      {
+        "skill": "top-management-brief"
+      },
+      {
+        "skill": "board-brief"
+      },
+      {
+        "skill": "engine:templates"
+      }
+    ]
+  },
+  "leadership": {
+    "title": "Leadership: register, site leadership, top management and board",
+    "steps": [
+      {
+        "skill": "learnings-register"
+      },
+      {
+        "skill": "site-leadership-coach"
+      },
+      {
+        "skill": "top-management-brief"
+      },
+      {
+        "skill": "board-brief"
+      }
+    ]
+  },
+  "assurance": {
+    "title": "Assurance: register, evidence strength, standards crosswalk and auditor pack",
+    "steps": [
+      {
+        "skill": "learnings-register"
+      },
+      {
+        "skill": "evidence-strength-scorecard",
+        "planned": "Phase 5"
+      },
+      {
+        "skill": "compliance-crosswalk",
+        "planned": "Phase 5"
+      },
+      {
+        "skill": "auditor-assurance-pack"
+      }
+    ]
+  },
+  "investigation-quality": {
+    "title": "Investigation quality: evidence strength, open questions and investigator coaching",
+    "steps": [
+      {
+        "skill": "evidence-strength-scorecard",
+        "planned": "Phase 5"
+      },
+      {
+        "skill": "open-questions-register",
+        "planned": "Phase 5"
+      },
+      {
+        "skill": "investigator-coach"
+      },
+      {
+        "skill": "report-comparison",
+        "when": "an official report is supplied"
+      }
+    ]
+  },
+  "action-design": {
+    "title": "Action design: 9M analysis, recommendation strength and an action export",
+    "steps": [
+      {
+        "skill": "learnings-register"
+      },
+      {
+        "skill": "nine-m-analysis",
+        "planned": "Phase 5"
+      },
+      {
+        "skill": "recommendation-strength-review",
+        "planned": "Phase 5"
+      },
+      {
+        "skill": "engine:export-actions"
+      }
+    ]
+  },
+  "sister-sites": {
+    "title": "Sister sites: alert and could-it-happen-here",
+    "steps": [
+      {
+        "skill": "learnings-register"
+      },
+      {
+        "skill": "safety-alert",
+        "mode": "sister-site",
+        "planned": "Phase 6"
+      },
+      {
+        "skill": "could-it-happen-here",
+        "planned": "Phase 6"
+      }
+    ]
+  },
+  "training": {
+    "title": "Training: register, training design, frontline cards and safety-moment deck",
+    "steps": [
+      {
+        "skill": "learnings-register"
+      },
+      {
+        "skill": "training-designer"
+      },
+      {
+        "skill": "frontline-learning-cards"
+      },
+      {
+        "skill": "safety-moment-deck",
+        "planned": "Phase 6"
+      }
+    ]
+  },
+  "follow-up": {
+    "title": "Follow-up: effectiveness plan and verification log",
+    "steps": [
+      {
+        "skill": "learning-effectiveness-plan",
+        "planned": "Phase 6"
+      },
+      {
+        "skill": "engine:templates",
+        "mode": "verification"
+      }
+    ]
+  }
+}

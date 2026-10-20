@@ -1,0 +1,26 @@
+{
+  "name": "barrier-learnings",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": [],
+    "min_rating": "top"
+  },
+  "requires": [
+    "workspace"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "barrier-learnings",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

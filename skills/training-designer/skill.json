@@ -1,0 +1,31 @@
+{
+  "name": "training-designer",
+  "kind": "audience",
+  "audiences": [
+    "training"
+  ],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      1,
+      2
+    ],
+    "tags": []
+  },
+  "requires": [
+    "workspace"
+  ],
+  "optional_inputs": [
+    "register",
+    "adoption"
+  ],
+  "produces": {
+    "pack": "training-designer",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}
