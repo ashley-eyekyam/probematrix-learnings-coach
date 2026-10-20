@@ -1,5 +1,6 @@
 """Eval set tests: evals/evals.json structure and per-skill counts, and the grader on a synthetic run."""
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -390,3 +391,21 @@ def test_grade_section_exists(tmp_path):
     bad = dict(data, evals=[dict(data["evals"][0], expectations=[{"type": "section_exists", "pack": "x"}])])
     f.write_text(json.dumps(bad))
     assert "eval 9: section_exists needs section" in runner("check", "--file", str(f)).stdout
+
+
+def test_router_prompts_do_not_echo_the_hub_table():
+    """Task 24 m-1 / I-6: the analysis-route prompts 101-104 are in a user's own words. None shares a run of three
+    words with any cell of the hub's Step 2 routing tables, so a routing run is not a string match."""
+    hub = (ROOT / "skills" / "learnings-coach" / "SKILL.md").read_text(encoding="utf-8")
+    step2 = hub.split("## Step 2", 1)[1].split("## Step 3", 1)[0]
+    cells = [c.strip() for line in step2.splitlines() if line.startswith("| ") for c in line.strip("|").split("|")]
+
+    def words(s):
+        return re.findall(r"[a-z0-9]+", s.lower())
+
+    grams = {tuple(words(c)[i:i + 3]) for c in cells for i in range(len(words(c)) - 2)}
+    evals = {e["id"]: e for e in json.loads((ROOT / "evals" / "evals.json").read_text(encoding="utf-8"))["evals"]}
+    for n in (101, 102, 103, 104):
+        w = words(evals[n]["prompt"])
+        echo = [" ".join(w[i:i + 3]) for i in range(len(w) - 2) if tuple(w[i:i + 3]) in grams]
+        assert not echo, (n, echo)

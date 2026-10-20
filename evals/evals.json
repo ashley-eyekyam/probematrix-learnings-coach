@@ -2442,7 +2442,7 @@
    "id": 101,
    "owner": "learnings-coach",
    "kind": "router",
-   "prompt": "How do the factors in this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) connect, from the organisational influences down to the act? I want the causal chain.",
+   "prompt": "Using this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), trace for me how decisions made at company level led, step by step, to what the operators did on the night. Which upstream conditions sit behind the most findings?",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -2458,7 +2458,7 @@
    "id": 102,
    "owner": "learnings-coach",
    "kind": "router",
-   "prompt": "Were there warning signs before the Hazira fire that we missed? Use this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
+   "prompt": "Looking back over the months before 24 September 2020, were there earlier leaks, alarms or near-misses in this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) that should have told us something? Put them in date order.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -2467,13 +2467,14 @@
      "type": "routes_to",
      "value": "precursor-timeline"
     }
-   ]
+   ],
+   "sibling": "causal-map"
   },
   {
    "id": 103,
    "owner": "learnings-coach",
    "kind": "router",
-   "prompt": "What fell through the gaps between operations, maintenance and procurement in this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx)?",
+   "prompt": "Operations thought maintenance had it covered, and maintenance thought procurement did. Using this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), show me where the handovers between those teams broke down.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -2489,7 +2490,7 @@
    "id": 104,
    "owner": "learnings-coach",
    "kind": "router",
-   "prompt": "Which safeguards failed at Hazira and how strong should the fixes be? Use this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
+   "prompt": "Go through the protections that should have stopped the Hazira gas release becoming a fire (gas detection, isolation, the permit system) and tell me which ones did not hold and what kind of fix each one really needs. Use this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -2499,7 +2500,7 @@
      "value": "barrier-learnings"
     }
    ],
-   "sibling": "engineering-integrity-learnings"
+   "sibling": "action-design"
   },
   {
    "id": 105,
