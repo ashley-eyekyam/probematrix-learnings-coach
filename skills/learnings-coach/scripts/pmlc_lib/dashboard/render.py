@@ -80,7 +80,11 @@ def mask_org(org: dict, share) -> dict:
     if not share:
         return org
     t = lambda x: privacy.share_text(x, share)   # noqa: E731
-    return {**org, "warnings": [t(x) for x in org["warnings"]], "reach": {t(k): v for k, v in org["reach"].items()}}
+    mx = org["lr_pack_matrix"]
+    matrix = {"packs": [t(p) for p in mx["packs"]],
+              "rows": [{**r, "cells": {t(k): v for k, v in r["cells"].items()}} for r in mx["rows"]]}
+    return {**org, "warnings": [t(x) for x in org["warnings"]], "reach": {t(k): v for k, v in org["reach"].items()},
+            "lr_pack_matrix": matrix}
 
 
 def cmd_dashboard(a):

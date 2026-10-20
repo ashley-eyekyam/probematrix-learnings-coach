@@ -1164,3 +1164,26 @@ def test_pack_xlsx_share_gate_and_masking(tmp_path, shws):
     assert sh.is_file() and not (ws.parent / "outputs" / "test-pack-questions.xlsx").exists()
     cells = " ".join(str(c.value) for row in openpyxl.load_workbook(sh).active.iter_rows() for c in row if c.value)
     assert "P-101" not in cells and "14:05" not in cells and "[equipment tag]" in cells
+
+
+def test_share_dashboard_masks_matrix_packs_and_adoption_ids(tmp_path, shws):
+    """Fix round 1: matrix header pack names are masked; adoption.csv lr_id must look like LR-nn."""
+    ws, orgs = shws
+    reg = copy.deepcopy(MINI_REG)
+    rp = write_doc(tmp_path, reg, "reg.json")
+    sign(ws, rp, "--classification", "public", "--legal-review", "cleared")
+    names = tmp_path / "names.txt"
+    names.write_text("Quillon Vantress\n", encoding="utf-8")
+    outs = ws.parent / "outputs"
+    outs.mkdir(exist_ok=True)
+    pk = copy.deepcopy(SPACK)
+    pk["pack"] = "Quillon Vantress"
+    pk["sections"][0]["items"][0]["learning"] = reg["entries"][0]["lr_id"]
+    (outs / "Quillon-pack.json").write_text(json.dumps(pk), encoding="utf-8")
+    (outs / "adoption.csv").write_text("lr_id,title,response\nQuillon Vantress,t,accepted\nLR-01,t,accepted\n",
+                                       encoding="utf-8")
+    r = _cli("dashboard", str(ws), "--register", str(rp), "--share", "public", "--names", str(names))
+    assert r.returncode == 0, r.stderr
+    t = (outs / "organisation-learning-map.public.html").read_text(encoding="utf-8")
+    assert "Quillon" not in t and "Vantress" not in t and "Quillon" not in r.stderr
+    assert "row 2: lr_id is not an LR-nn identifier" in t

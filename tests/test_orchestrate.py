@@ -186,3 +186,39 @@ def test_render_all_register_skip_uses_manifest_record(setup_ws):
     d = dict(MINI_REG, title="Edited after the check")
     reg.write_text(json.dumps(d), encoding="utf-8")   # content changed: the record no longer matches
     assert "skipped learnings-register.json: run check-all first" in run("render-all", str(ws))
+
+
+def test_render_all_renders_register_and_pack_after_sign_off(setup_ws):
+    from test_pmlc import MINI_REG
+    ws, _ = setup_ws
+    outd = put(ws, "board-brief")
+    reg = outd / "learnings-register.json"
+    reg.write_text(json.dumps(MINI_REG), encoding="utf-8")
+    cp = subprocess.run([sys.executable, str(PMLC), "check-register", str(ws), str(reg)], capture_output=True, text=True)
+    if cp.returncode:
+        pytest.skip("synthetic register does not pass check-register")
+    run("check-pack", str(ws), str(outd / "board-brief.json"))
+    for f in (reg, outd / "board-brief.json"):   # what sign-off does: it rewrites the file with a handling block
+        d = json.loads(f.read_text())
+        from pmlc_lib.handling import content_hash
+        d["handling"] = {"status": "reviewed", "reviewer_role": "HSE manager", "reviewed_on": "2026-10-19",
+                         "content_hash": content_hash(d)}
+        f.write_text(json.dumps(d, indent=2), encoding="utf-8")
+    assert "handling" in json.loads(reg.read_text())
+    out = run("render-all", str(ws))
+    assert "skipped" not in out and (outd / "learnings-register.md").is_file() and (outd / "board-brief.html").is_file()
+    d = json.loads(reg.read_text())
+    d["title"] = "Edited after the check"
+    reg.write_text(json.dumps(d), encoding="utf-8")
+    assert "skipped learnings-register.json" in run("render-all", str(ws))
+
+
+def test_non_object_scope_fails_cleanly_with_old_message(setup_ws):
+    ws, _ = setup_ws
+    outd = put(ws, "board-brief")
+    d = json.loads((outd / "board-brief.json").read_text())
+    d["scope"] = "x"
+    (outd / "board-brief.json").write_text(json.dumps(d))
+    for cmd in (("check-pack",), ("pack",)):
+        r = run_fail(*cmd, str(ws), str(outd / "board-brief.json"))
+        assert r.returncode == 1 and "scope: must be an object" in r.stderr and "Traceback" not in r.stderr

@@ -150,6 +150,29 @@ def record_export(ws, xlsx) -> None:
     _save_manifest(ws, m)
 
 
+def _doc_hash(path) -> str:
+    """The handling-excluded content hash of the JSON document at path (what sign-off hashes), or ''."""
+    from .handling import content_hash   # handling imports this module
+    try:
+        d = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return ""
+    return content_hash(d) if isinstance(d, dict) else ""
+
+
+def check_current(manifest: dict, path) -> bool:
+    """True when the last recorded check of the file at path passed and the file's content is unchanged since. The
+    comparison is on the handling-excluded content hash, so a sign-off (which rewrites only the handling block) does
+    not make a check stale; a record without one (an older engine) falls back to the file sha256 (ruling X30)."""
+    path = Path(path)
+    rec = pack_record(manifest, path)
+    if not (path.is_file() and rec and rec.get("ok")):
+        return False
+    if rec.get("content_hash"):
+        return rec["content_hash"] == _doc_hash(path)
+    return rec.get("sha256") == file_sha256(path)
+
+
 def record_pack_check(ws, pack_name, pack_path, ok, n_problems, coverage=None) -> None:
     ws = Path(ws)
     m = load_manifest(ws)
@@ -157,7 +180,8 @@ def record_pack_check(ws, pack_name, pack_path, ok, n_problems, coverage=None) -
     table = m.setdefault("packs", {})
     drop_name_key(table, p, pack_name)
     table[_path_key(p)] = {
-        "pack": pack_name, "sha256": file_sha256(p) if p.is_file() else "", "path": _path_key(p),
+        "pack": pack_name, "sha256": file_sha256(p) if p.is_file() else "", "content_hash": _doc_hash(p),
+        "path": _path_key(p),
         "ok": bool(ok), "problems": n_problems, "checked": _now()}
     if isinstance(coverage, dict):
         table[_path_key(p)]["coverage"] = {k: coverage[k] for k in ("cited", "relevant", "top_cited", "top_relevant")

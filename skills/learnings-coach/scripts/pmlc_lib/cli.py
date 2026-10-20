@@ -442,8 +442,14 @@ def build_parser():
     s.add_argument("ws")
     s.add_argument("pack")
     s.add_argument("--kind", required=True, choices=list(XLSX_KINDS))
-    s.add_argument("--out", help="default: <run>/outputs/<pack>-test-points.xlsx or -questions.xlsx")
+    s.add_argument("--out", help="default: <run>/outputs/<pack>-test-points.xlsx or -questions.xlsx (.<mode>.xlsx when shared)")
     _lint_flags(s)
+    for act in s._actions:
+        if "--share" in act.option_strings:
+            act.help = ("internal (default), or a masked copy for outside the organisation: external or public. Needs "
+                        "an approved sign-off with that classification and legal_review cleared; names, organisations, "
+                        "tags, singleton roles, times and full dates are masked; written as <name>.<mode>.xlsx and never "
+                        "over the internal copy")
     s.set_defaults(fn=cmd_pack_xlsx)
 
     return p

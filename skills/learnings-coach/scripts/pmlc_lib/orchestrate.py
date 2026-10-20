@@ -14,7 +14,7 @@ from pathlib import Path
 from . import BRAND, DRAFT_LABEL, STATUS_PHRASE
 from .handling import effective_handling
 from .util import HERE, write_json
-from .workspace import file_sha256, load_manifest, load_ws, outputs_dir, pack_record
+from .workspace import check_current, load_manifest, load_ws, outputs_dir, pack_record
 
 REGISTER_NAME = "learnings-register.json"
 TEMPLATES = Path(__file__).resolve().parent / "dashboard" / "templates"
@@ -175,15 +175,13 @@ def cmd_render_all(a):
             print(f"failed {label}", file=sys.stderr)
 
     for p, _ in _pack_files(out):
-        rec = pack_record(m, p)
-        if not (rec and rec.get("ok") and rec.get("sha256") == file_sha256(p)):
+        if not check_current(m, p):
             print(f"skipped {p.name}: run check-all first")
             continue
         go(p.name, ["pack", str(ws), str(p)] + extra)
     reg = out / REGISTER_NAME
     if reg.is_file():
-        rec = pack_record(m, reg)
-        if not (rec and rec.get("ok") and rec.get("sha256") == file_sha256(reg)):
+        if not check_current(m, reg):
             print(f"skipped {reg.name}: run check-all first")
         else:
             # register-xlsx has no --embed

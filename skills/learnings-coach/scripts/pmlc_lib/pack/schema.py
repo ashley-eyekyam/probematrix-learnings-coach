@@ -778,11 +778,11 @@ def record_check(a, pack, res, w=None) -> None:
     if isinstance(pack, dict) and isinstance(pack.get("pack"), str):
         try:
             cov = None
-            if w is not None:
+            if w is not None and not res.problems:
                 from .markdown import coverage   # markdown imports this module
                 cov = coverage(w, pack)
             record_pack_check(a.ws, pack["pack"], a.pack, not res.problems, len(res.problems), coverage=cov)
-        except (OSError, KeyError, TypeError, ValueError):
+        except Exception:   # noqa: BLE001 - coverage is a nicety; it never blocks a check
             pass
 
 
