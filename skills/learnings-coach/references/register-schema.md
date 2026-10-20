@@ -16,6 +16,7 @@ One row per **learning** (`LR-nn`). Each learning carries its recommendations. L
 | H. Dissemination | `audiences`, `learning_level` (individual / team / organisational; single- or double-loop), `formats` (Brief, Card, toolbox talk, module) |
 | I. Recommendations | list of `{what, level_barrier, evidence_basis, hoc_tier, leading_indicator}` |
 | J. Tier messages | `tier_messages`: `{"T1": "...", "T2": "...", "T3": "...", "T4": "...", "T5": "..."}`, one short message per tier that must act (omit tiers with nothing to do). Feeds the Learning Plan sheet and the dashboard |
+| K. Spine fields (optional) | `urgency` (alert / notice / information), `recommendation_class` (recommendation / observation / action already taken, after HSSIB), `recipient_role` (a role, never a name), `regulatory_touchpoint` (free text naming the regime; counted by `check-register` as flagged for legal or compliance review), `nine_m` (`M1` to `M9`) and `nine_m_subcategory`, `verification` (an object: `method` and `indicator`), `why_not_stronger` (why a priority-1 learning has no fix above the administrative tier) |
 
 **Owner rule.** `owner_entity` is the entity with the most findings among the learning's findings (from `clusters.json`), written as `F-id Name`; list co-owners after it, e.g. `F02 Mechanical Maintenance (co-owners: F06, F07)`. Choose a different owner only when the learning is about a system another entity owns, and say why in `context`.
 
@@ -23,8 +24,11 @@ One row per **learning** (`LR-nn`). Each learning carries its recommendations. L
 
 Controlled values (keep to these so summaries count cleanly; put detail in another field):
 - `hfacs_level`: start with `L1`, `L2`, `L3` or `L4`, then the sub-category.
-- `hoc_tier`: one of `elimination`, `substitution`, `engineering`, `administrative`, `training`, `ppe`.
-- `priority`: `1`, `2` or `3`.
+- `hoc_tier`: one of `elimination`, `substitution`, `engineering`, `administrative`, `training`, `ppe` (a trailing "control" is fine). Free text is read by `norm_hoc`: text with an administrative cue (review, procedure, checklist, audit, permit, plan, instruction, sign) at the start of a word is `administrative`, otherwise one tier word gives that tier; anything else is ambiguous and warns.
+- `priority`: `1`, `2` or `3`. A priority-1 learning needs at least one recommendation above the administrative tier (`elimination`, `substitution` or `engineering`) or a non-empty `why_not_stronger`: `check-register` warns, and `check-register --strict` fails.
+- `urgency`, `recommendation_class` and `nine_m` take the values in section K; any other value is a problem.
+- `learning_level`: `single-loop` or `double-loop`, chosen by the written criteria in `indicators-and-effectiveness.md` section 7.
+- Recommendation `owner` is optional and must be a role; owners and due dates are set by the organisation (D7), so a `due` or a date value draws a warning.
 - `comparison`: `yes`, `partial`, `none`, `not compared`.
 - `evidence_strength`, `confidence`, `causal_role`, `transferability`, `performance_mode` (starts with `skill-based`, `rule-based`, `knowledge-based` or `n/a`), the `tier_messages` keys (`T1` to `T5`), the EVD IDs in `evidence_basis` and the `hfacs_level` sub-category (matching the export, `isation` and `ization` treated alike) use the values listed under Sections.
 
@@ -53,6 +57,8 @@ Unknown keys, bad values and `reviewed` or `approved` without `reviewer_role`, `
 **Forced draft.** Nothing may be reviewed or approved unless the export's Investigation Status is `completed` (compared in lower case, with spaces and hyphens read as underscores): `in_progress` gives "the investigation status is in progress", and anything else, including `draft` or a blank, gives "the investigation status is not completed". Nor while no finding is marked as edited by a person ("no finding is marked as edited by a person"): only `yes`, `y`, `true` or `1` in User Edited counts. There is no override: finish the investigation in ProbeMatrix first.
 
 **Sign-off.** After a person has reviewed the document and given their role, run `pmlc sign-off <ws> <file> --role "<role>" [--status reviewed|approved] [--classification ...] [--legal-review ...] [--distribution AUDIENCE ...] [--retention-review YYYY-MM-DD] [--version V] [--date YYYY-MM-DD]`. It refuses on forced-draft reasons and on any check problem, writes the `handling` block into the file with a `content_hash` of everything except `handling`, and records the whole block and the file's resolved path in the manifest (`status` lists it). The block is written by `sign-off` only: never write or edit it by hand. A `reviewed` or `approved` status holds only when this workspace's manifest records that sign-off for this file (same block, same path); a hand-written, hand-edited or copied block is `draft` ("not signed off", with the check warning `not signed off in this workspace: status is draft until sign-off records it`). Any later edit, even one character, changes the hash: the effective status falls back to `draft` and the check warns `edited since sign-off: status is draft until signed off again`. A bare-list register cannot be signed off; wrap it as `{"entries": [...]}`.
+
+**Never hand-write `learnings-register.md`.** Run `pmlc register-md <ws> <register>`; it writes `<run>/outputs/learnings-register.md`.
 
 ## JSON shape for `pmlc.py register-xlsx`
 

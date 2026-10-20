@@ -13,6 +13,7 @@ Subcommands
   interfaces      entity x entity interface matrix (shared findings + cross-entity causal links)
   dashboard       self-contained HTML organisational learning dashboard
   register-xlsx   write a Learnings Register JSON to a formatted .xlsx
+  register-md     write a Learnings Register JSON to learnings-register.md
   scan-names      deterministic zero-hit name scan over files (de-identification check)
   check-pack      check a learning pack JSON against the workspace
   sign-off        record a person's review of a pack or register (writes its handling block and content hash)
@@ -48,6 +49,7 @@ from .pack.schema import cmd_check_pack
 from .privacy import cmd_scan_names
 from .profile import cmd_profile
 from .register.check import cmd_check_register
+from .register.markdown import cmd_register_md
 from .register.xlsx import cmd_register_xlsx
 from .samples import cmd_check_samples
 from .select import cmd_select, COUNT_BY, SELECT_FIELDS
@@ -206,6 +208,8 @@ def build_parser():
     s = sp.add_parser("check-register", help="validate a Learnings Register JSON against the workspace", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("register")
+    s.add_argument("--strict", action="store_true", help="problems, not warnings, for the priority-1 rule")
+    s.add_argument("--json", action="store_true", help="print {ok, problems, warnings, stats} as JSON")
     _lint_flags(s)
     s.set_defaults(fn=cmd_check_register)
 
@@ -221,6 +225,12 @@ def build_parser():
     s.add_argument("--ws", help="workspace for the review status (default: the run's workspace in the standard layout)")
     add_share_args(s)
     s.set_defaults(fn=cmd_register_xlsx)
+
+    s = sp.add_parser("register-md", help="Learnings Register JSON -> learnings-register.md", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("register")
+    s.add_argument("--out", help="default: <run>/outputs/learnings-register.md")
+    s.set_defaults(fn=cmd_register_md)
 
     s = sp.add_parser("status", help="show which workspace files are current or stale, and pack check history", allow_abbrev=False)
     s.add_argument("ws")

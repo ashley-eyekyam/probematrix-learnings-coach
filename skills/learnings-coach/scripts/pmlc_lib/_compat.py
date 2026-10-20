@@ -26,6 +26,7 @@ MODULES = [
     "pmlc_lib.dashboard.render",
     "pmlc_lib.register.check",
     "pmlc_lib.register.xlsx",
+    "pmlc_lib.register.markdown",
     "pmlc_lib.samples",
     "pmlc_lib.cli",
 ]

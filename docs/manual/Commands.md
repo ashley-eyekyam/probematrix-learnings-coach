@@ -74,6 +74,7 @@ pmlc 2.0.0a4
 | [pack](commands/pack.md) | Turns a learning pack JSON into HTML and Markdown |
 | [dashboard](commands/dashboard.md) | Writes the self-contained organisation learning map (HTML) |
 | [register-xlsx](commands/register-xlsx.md) | Writes a Learnings Register JSON to a formatted Excel workbook |
+| [register-md](commands/register-md.md) | Writes a Learnings Register JSON to `learnings-register.md` |
 
 ### 5. Repository upkeep
 
@@ -91,7 +92,7 @@ pmlc 2.0.0a4
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,status,run-path,check-samples,check-pack,pack,causal-item,sign-off,scan-names} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,status,run-path,check-samples,check-pack,pack,causal-item,sign-off,scan-names} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

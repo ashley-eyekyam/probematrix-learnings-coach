@@ -55,6 +55,21 @@ def text_cells(wb) -> None:
                     c.data_type = "s"
 
 
+def summary_groups(entries, recs) -> tuple:
+    """The Summary counts shared by the xlsx Summary sheet and register-md: ([(label, Counter)], recommendations above
+    the administrative tier)."""
+    groups = [
+        ("Learnings by cluster", collections.Counter(norm_entity(e.get("owner_entity")) for e in entries)),
+        ("Learnings by HFACS level", collections.Counter(norm_level(e.get("hfacs_level")) for e in entries)),
+        ("Learnings by priority", collections.Counter(_flat(e.get("priority")) or "unset" for e in entries)),
+        ("Learnings by counterpart", collections.Counter(_flat(e.get("comparison")) or "not compared" for e in entries)),
+        ("Learnings by tier that must act", collections.Counter(t for e in entries for t in (e.get("tier_messages") or {}))),
+        ("Recommendations by control tier", collections.Counter(norm_hoc(r.get("hoc_tier")) for r in recs)),
+    ]
+    strong = sum(1 for r in recs if norm_hoc(r.get("hoc_tier")) in ("elimination", "substitution", "engineering"))
+    return groups, strong
+
+
 def _register_ws(a) -> tuple:
     """(workspace, its folder) for a register's forced-draft and sign-off checks: --ws, else the run's workspace when
     the register sits in <run>/outputs/ of the standard layout, else ({}, None): nothing can be checked, so the
@@ -117,18 +132,10 @@ def cmd_register_xlsx(a):
     s.append(["Count by", "Value", "Count"])
     for c in s[1]:
         c.fill, c.font = head_fill, head_font
-    groups = [
-        ("Learnings by cluster", collections.Counter(norm_entity(e.get("owner_entity")) for e in entries)),
-        ("Learnings by HFACS level", collections.Counter(norm_level(e.get("hfacs_level")) for e in entries)),
-        ("Learnings by priority", collections.Counter(_flat(e.get("priority")) or "unset" for e in entries)),
-        ("Learnings by counterpart", collections.Counter(_flat(e.get("comparison")) or "not compared" for e in entries)),
-        ("Learnings by tier that must act", collections.Counter(t for e in entries for t in (e.get("tier_messages") or {}))),
-        ("Recommendations by control tier", collections.Counter(norm_hoc(r.get("hoc_tier")) for r in recs)),
-    ]
+    groups, strong = summary_groups(entries, recs)
     for lab, cnt in groups:
         for v, c in sorted(cnt.items(), key=lambda kv: (str(kv[0]))):
             s.append([lab, v, c])
-    strong = sum(1 for r in recs if norm_hoc(r.get("hoc_tier")) in ("elimination", "substitution", "engineering"))
     s.append(["Recommendations above administrative tier", f"{strong} of {len(recs)}",
               f"{100*strong/max(len(recs),1):.0f}%"])
     s.column_dimensions["A"].width, s.column_dimensions["B"].width, s.column_dimensions["C"].width = 38, 46, 10

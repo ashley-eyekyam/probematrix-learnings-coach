@@ -4,9 +4,9 @@
 
 Checks a **Learnings Register**: the JSON file the learnings-register skill writes, with one entry per learning (its lesson, the findings and evidence behind it, its HFACS level, owner entity, audiences, priority and recommendations rated on the hierarchy of controls). It reports:
 
-- **problems**, which fail the check: an entry with no `finding_ids` or `evidence_ids`; an ID that is not in the workspace; an Evidence ID not linked to any of the entry's findings; a cited finding with a reviewer downgrade vote; an `hfacs_level` that does not start with L1 to L4; a `priority` other than 1, 2 or 3; no `tier_messages`; no recommendations; a recommendation whose `hoc_tier` is not a hierarchy-of-controls tier, or with no `leading_indicator`; an `owner_entity` that is not among the entry's main entities; and language errors;
+- **problems**, which fail the check: an entry with no `finding_ids` or `evidence_ids`; an ID that is not in the workspace; an Evidence ID not linked to any of the entry's findings; a cited finding with a reviewer downgrade vote; an `hfacs_level` that does not start with L1 to L4; a `priority` other than 1, 2 or 3; no `tier_messages`; no recommendations; a recommendation with no `hoc_tier` or no `leading_indicator`; a bad `urgency`, `recommendation_class` or `nine_m` value, or a `verification` that is not an object; language errors; and, under `--strict`, a priority-1 learning with no fix above the administrative tier;
 - **coverage**: how many of the investigation's findings the register cites, and which are left out, highest rated first;
-- **warnings**: an HFACS sub-category that matches nothing in the export, a missing handling block, and language warnings (rules JC1 to JC12, as in [check-language](check-language.md)).
+- **warnings**: a priority-1 learning with no fix above the administrative tier (silenced by a `why_not_stronger` on the entry); a `hoc_tier` text that is ambiguous; a recommendation `owner` that is not a role or looks like a personal name; a `due` date (owners and due dates are set by the organisation); an `owner_entity` that is not among the entry's main entities; an HFACS sub-category that matches nothing in the export, a missing handling block, and language warnings (rules JC1 to JC12, as in [check-language](check-language.md)).
 
 ## When to use it
 
@@ -15,7 +15,7 @@ Every time a register JSON is written or edited, before [register-xlsx](register
 ## Synopsis
 
 ```text
-pmlc check-register ws register [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
+pmlc check-register ws register [--strict] [--json] [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
 ```
 
 ## Arguments
@@ -29,6 +29,8 @@ pmlc check-register ws register [--share {internal,external,public}] [--names NA
 
 | Flag | Value | Default | What it does |
 |---|---|---|---|
+| `--strict` | none | off | Makes the priority-1 rule a problem instead of a warning |
+| `--json` | none | off | Prints `{"ok", "problems", "warnings", "stats"}` as JSON instead of the text report |
 | `--share` | `internal`, `external` or `public` | the register's `handling.classification`, else `internal` | Which language rules apply |
 | `--names` | file | `$PMLC_NAMES` | Personal names, one per line, that must not appear |
 | `--orgs` | file | `$PMLC_ORGS` | Organisation names, one per line |
@@ -65,6 +67,7 @@ Read it as: the register is valid (0 problems) and cites all but one finding. FN
 
 ## Related
 
+- [register-md](register-md.md) writes the checked register to Markdown.
 - [register-xlsx](register-xlsx.md) writes the checked register to Excel.
 - [dashboard](dashboard.md) adds it to the learning map.
 - [check-language](check-language.md) explains the language rules.
