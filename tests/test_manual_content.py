@@ -291,3 +291,12 @@ def test_owned_pages_use_no_blame_words():
             if rx.search(line):
                 bad.append(f"{p.name}:{n}: {line.strip()[:80]}")
     assert not bad, bad
+
+
+def test_commands_usage_example_lists_every_subcommand():
+    """The usage block in Commands.md is the parser's own list, once, in the parser's order."""
+    import argparse
+    text = (MANUAL / "Commands.md").read_text(encoding="utf-8")
+    groups = re.findall(r"\{([a-z0-9,-]+)\}", text.split("## Typing flags", 1)[1].split("## Exit codes", 1)[0])
+    sub = next(a for a in pmlc.build_parser()._actions if isinstance(a, argparse._SubParsersAction))
+    assert groups == [",".join(sub.choices)]
