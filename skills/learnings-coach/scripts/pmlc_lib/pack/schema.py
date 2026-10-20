@@ -104,7 +104,8 @@ CITE_FIELDS = ["cites", "row_cites", "row_supporting_cites", "supporting_cites"]
 STRENGTHS = ("direct", "corroborated", "inferred")
 BARRIER_STATES = ("absent", "degraded", "defeated", "worked partly", "worked")
 TIME_RX = re.compile(r"(?:[01]\d|2[0-3]):[0-5]\d")          # used with fullmatch: "14:05", never "14:05\n"
-GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group", "lint_ok")
+GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group", "lint_ok",
+                  "comparator_refs")
 
 
 def _pick(d, keys) -> dict:
@@ -442,6 +443,26 @@ def tiers_in_scope(pack) -> list:
     return t if isinstance(t, list) else []
 
 
+def _check_comparator_refs(pack, w, bad, warn):
+    """comparator_refs ids must exist in <ws>/comparator.json (a problem), or only warn when there is no such file."""
+    from ..compare import COMPARATOR_ITEM_RX
+    known = set(w["comparator_ids"]) if "comparator_ids" in w else None
+    for si, sec in enumerate(pack.get("sections") if isinstance(pack.get("sections"), list) else []):
+        for ii, it in enumerate(sec.get("items", []) if isinstance(sec, dict) and isinstance(sec.get("items"), list) else []):
+            refs = it.get("comparator_refs") if isinstance(it, dict) else None
+            if refs is None:
+                continue
+            ip = f"sections[{si}].items[{ii}].comparator_refs"
+            if not isinstance(refs, list) or not all(isinstance(x, str) and COMPARATOR_ITEM_RX.fullmatch(x) for x in refs):
+                bad(ip, "must be a list of comparator item ids such as OBS-01, RC-01, REC-01 or ACT-01")
+            elif known is None:
+                warn(ip, f"{', '.join(refs)} cannot be checked: no comparator.json in the workspace")
+            else:
+                for x in refs:
+                    if x not in known:
+                        bad(ip, f"{x} is not in comparator.json")
+
+
 def check_pack(pack, w, *, names=(), orgs=(), share=None) -> Result:
     """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings)."""
     P, W = [], []
@@ -571,6 +592,7 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None) -> Result:
         got = len(set(rel) & ids)
         if rel and got * 4 < len(rel):
             W.append(f"coverage: cites {got} of {len(rel)} relevant findings (under a quarter)")
+    _check_comparator_refs(pack, w, bad, warn)
     hp, hw = check_handling(pack)
     P += hp
     W += hw

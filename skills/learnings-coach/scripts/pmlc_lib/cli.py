@@ -7,6 +7,7 @@ Subcommands
   ingest          xlsx -> JSON workspace in <export-dir>/pmlc-runs/<date>-<site>-<event>/workspace
   profile         Markdown profile of the workspace (counts, levels, roles, data-quality flags)
   classify        map 'Individuals Involved' roles to Learning Clusters (entity x tier x relation)
+  compare         comparator inventory, both-direction coverage tables and checks (ready pack items)
   select          compact Markdown/JSON bundle of findings for one audience or cluster
   causal          causal graph extracted from the AI's causal explanations (+ Causal Chain sheet)
   timeline        dated precursor candidates found in findings and evidence
@@ -37,6 +38,7 @@ from .analysis.causal import cmd_causal
 from .analysis.interfaces import cmd_interfaces
 from .analysis.timeline import cmd_timeline
 from .classify import cmd_classify
+from .compare import cmd_compare
 from .dashboard.data import EMBED_MODES
 from .dashboard.render import cmd_dashboard
 from .handling import cmd_sign_off, HANDLING_ENUMS, SHARE_MODES
@@ -147,6 +149,8 @@ def build_parser():
     s.add_argument("--prefix", nargs="+", help="Nanocode prefix before the space, e.g. SV OR")
     s.add_argument("--code", nargs="*")
     s.add_argument("--text", help="regex over short/justification/causal/label")
+    s.add_argument("--in-evidence", action="store_true", dest="in_evidence",
+                   help="also search --text in the findings' linked evidence: Specific Reference and description")
     s.add_argument("--max", type=int)
     s.add_argument("--brief", action="store_true", help="omit justification, causal text and evidence quotes")
     s.add_argument("--budget-chars", type=_non_negative_int, help="keep findings in rating order while the output stays within "
@@ -278,6 +282,18 @@ def build_parser():
     s.add_argument("--patterns", action="store_true",
                    help="also flag email, phone and staff-number patterns (an aid, not proof of de-identification)")
     s.set_defaults(fn=cmd_scan_names)
+
+    s = sp.add_parser("compare", help="comparator inventory, both-direction coverage and tables (ready pack items)",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--comparator", help="default: <ws>/comparator.json")
+    s.add_argument("--mapping", help="default: <ws>/comparison-map.json")
+    s.add_argument("--register", help="Learnings Register JSON: adds the learnings with no match and the owner cross-tab")
+    s.add_argument("--client-safe", dest="client_safe", metavar="PACK",
+                   help="check this pack's section ids equal the main pack's (needs --main)")
+    s.add_argument("--main", metavar="PACK", help="the main pack to compare --client-safe against")
+    s.add_argument("--json", action="store_true", help="print the ready pack items as JSON instead of Markdown")
+    s.set_defaults(fn=cmd_compare)
 
     return p
 

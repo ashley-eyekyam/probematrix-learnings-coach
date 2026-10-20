@@ -22,6 +22,13 @@ def load_ws(ws_dir: Path) -> dict:
             out[name] = json.loads(p.read_text(encoding="utf-8"))
     sp = ws_dir / "singleton_roles.json"
     out["singletons"] = json.loads(sp.read_text(encoding="utf-8")).get("roles", []) if sp.exists() else []
+    cp = ws_dir / "comparator.json"   # the item ids check-pack validates comparator_refs against
+    if cp.is_file():
+        try:
+            items = json.loads(cp.read_text(encoding="utf-8")).get("items")
+            out["comparator_ids"] = sorted({i.get("id") for i in items if isinstance(i, dict)})
+        except (ValueError, AttributeError, OSError, TypeError):
+            pass
     if "findings" not in out:
         sys.exit(f"No findings.json in {ws_dir}. Run: pmlc.py ingest <export.xlsx> --slug <site>-<event>")
     return out

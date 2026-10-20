@@ -10,7 +10,7 @@ from pathlib import Path
 
 from .classify import entities_for_tags
 from .util import _n, REFS
-from .workspace import downgraded_findings, load_ws, top_rating
+from .workspace import downgraded_findings, linked_evidence, load_ws, top_rating
 
 
 # ----------------------------------------------------------------------------- select
@@ -28,9 +28,21 @@ def _evidence_for(f, E, max_quote=400):
     return out
 
 
+def _evidence_text(f, E):
+    """Descriptions and Specific References of the evidence a finding is linked to (its own link rows first)."""
+    out = []
+    for eid in sorted(linked_evidence(f)):
+        e = E.get(eid)
+        if not e:
+            continue
+        links = [lk for lk in e["links"] if lk["code"] == f["code"]] or e["links"]
+        out += [e.get("description", "")] + [lk.get("reference", "") for lk in links]
+    return out
+
+
 SELECT_DEFAULTS = dict(entity=None, tag=None, tier=None, relation=None, level=None, code=None, text=None,
                        subcategory=None, prefix=None, min_rating=None, top_rated=False, entity_mode="any",
-                       exclude_downgraded=False, max=None)
+                       exclude_downgraded=False, max=None, in_evidence=False)
 
 
 def select_args(**kw) -> types.SimpleNamespace:
@@ -81,8 +93,12 @@ def _filter(w, a):
             continue
         if f["id"] in dropped:
             continue
-        if a.text and not re.search(a.text, " ".join([f["short"], f["justification"], f["causal"], f["label"]]), re.I):
-            continue
+        if a.text:
+            blob = [f["short"], f["justification"], f["causal"], f["label"]]
+            if a.in_evidence:
+                blob += _evidence_text(f, w.get("evidence", {}))
+            if not re.search(a.text, " ".join(blob), re.I):
+                continue
         out.append((f, c))
     out.sort(key=lambda fc: (-(fc[0]["rating"] or 0), -(fc[0]["level"] or 0), fc[0]["code"]))
     return out[: a.max] if a.max else out
@@ -157,7 +173,7 @@ def _fit_count(n, fits):
 
 
 SELECT_FILTER_FLAGS = ("--entity", "--tier", "--relation", "--level", "--min-rating", "--top-rated", "--code",
-                       "--text", "--tag", "--subcategory", "--prefix", "--entity-mode", "--exclude-downgraded", "--max")
+                       "--text", "--tag", "--subcategory", "--prefix", "--entity-mode", "--exclude-downgraded", "--max", "--in-evidence")
 PRESET_FILE = REFS / "select-presets.json"
 SELECT_LINE = re.compile(r"PMLC select <ws>((?: [^`\n]*)?)")
 
@@ -263,6 +279,8 @@ def _select_presets(a):
 def cmd_select(a):
     if getattr(a, "preset", None):
         return _select_presets(a)
+    if getattr(a, "in_evidence", False) and not a.text:
+        sys.exit("--in-evidence extends --text; give --text too.")
     w = load_ws(a.ws)
     grouping = a.group_by or a.count_by
     if (a.entity or a.tag or a.tier or a.relation or grouping in ("entity", "tier", "relation")) \

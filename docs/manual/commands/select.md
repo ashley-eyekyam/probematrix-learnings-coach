@@ -19,7 +19,7 @@ pmlc select ws [--entity [ENTITY ...]] [--tag TAG [TAG ...]] [--tier [TIER ...]]
                [--relation [RELATION ...]] [--level [LEVEL ...]] [--min-rating MIN_RATING] [--top-rated]
                [--entity-mode {any,all}] [--exclude-downgraded]
                [--subcategory SUBCATEGORY [SUBCATEGORY ...]] [--prefix PREFIX [PREFIX ...]]
-               [--code [CODE ...]] [--text TEXT] [--max MAX] [--brief] [--budget-chars BUDGET_CHARS]
+               [--code [CODE ...]] [--text TEXT] [--in-evidence] [--max MAX] [--brief] [--budget-chars BUDGET_CHARS]
                [--fields FIELDS] [--group-by {level,subcategory,code,entity}]
                [--count-by {entity,tier,relation,level,subcategory,code}] [--format {md,json}]
                [--out OUT] [--preset SKILL[:NAME]]
@@ -54,6 +54,7 @@ pmlc select ws [--entity [ENTITY ...]] [--tag TAG [TAG ...]] [--tier [TIER ...]]
 | `--prefix` | prefixes, e.g. `SV OR` | all | The part of the factor code before the space |
 | `--code` | codes, e.g. `"SVF 3.1"` | all | Exact factor codes |
 | `--text` | pattern | none | A regular expression searched in the label, short description, justification and causal text, for example `"O-ring\|MOC"` |
+| `--in-evidence` | none | off | Search `--text` also in the Specific Reference and description of the evidence linked to each finding. Needs `--text` |
 | `--exclude-downgraded` | none | off | Drop findings a reviewer voted to downgrade, reject or remove, and print which were dropped |
 
 **How much to print:**

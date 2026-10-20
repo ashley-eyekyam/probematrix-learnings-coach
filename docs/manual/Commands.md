@@ -75,6 +75,12 @@ pmlc 2.0.0a4
 | [dashboard](commands/dashboard.md) | Writes the self-contained organisation learning map (HTML) |
 | [register-xlsx](commands/register-xlsx.md) | Writes a Learnings Register JSON to a formatted Excel workbook |
 
+### 4a. Compare with another report
+
+| Command | What it does |
+|---|---|
+| [compare](commands/compare.md) | Checks the comparator inventory and prints both-direction coverage tables as ready pack items |
+
 ### 5. Repository upkeep
 
 | Command | What it does |
@@ -91,7 +97,7 @@ pmlc 2.0.0a4
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,status,run-path,check-samples,check-pack,pack,causal-item,sign-off,scan-names} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,status,run-path,check-samples,check-pack,pack,causal-item,sign-off,scan-names,compare} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

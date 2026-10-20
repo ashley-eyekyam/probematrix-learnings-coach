@@ -27,6 +27,7 @@ MODULES = [
     "pmlc_lib.register.check",
     "pmlc_lib.register.xlsx",
     "pmlc_lib.samples",
+    "pmlc_lib.compare",
     "pmlc_lib.cli",
 ]
 PACK_MODULES = ["pmlc_lib.pack.schema", "pmlc_lib.pack.graph_layout", "pmlc_lib.pack.items", "pmlc_lib.pack.markdown",
