@@ -17,6 +17,7 @@ from ..workspace import (
     RUNS_DIR
 )
 from .. import privacy
+from ..retention import write_run_manifest
 
 
 # ----------------------------------------------------------------------------- ingest
@@ -231,6 +232,7 @@ def cmd_ingest(a):
         m = load_manifest(out)
         m["redactions"] = redactions
         _save_manifest(out, m)
+    write_run_manifest(out, file_sha256(a.xlsx))
     print(f"Ingested {len(findings)} findings, {len(evidence)} evidence items, "
           f"{len(causal_sheet)} causal-chain rows -> {out}")
     print(f"schema: fingerprint {schema['fingerprint']}; missing: {_fmt_cols(schema['missing'])}; "

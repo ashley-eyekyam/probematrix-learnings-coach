@@ -46,6 +46,8 @@ pmlc 2.0.0a4
 | [classify](commands/classify.md) | Maps the roles named in each finding to Learning Clusters (who: entity, tier, relation) |
 | [status](commands/status.md) | Shows which workspace files are current or stale, and the last check of each pack |
 | [run-path](commands/run-path.md) | Prints the run folder, workspace, outputs folder, slug, top rating and incident date |
+| [run-manifest](commands/run-manifest.md) | Sets a run's intended use, jurisdiction, retention review date and classification |
+| [purge](commands/purge.md) | Deletes a run's workspace (and outputs) after retention, keeping `run-manifest.json` |
 
 ### 2. Gather and analyse
 
@@ -91,7 +93,7 @@ pmlc 2.0.0a4
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,status,run-path,check-samples,check-pack,pack,causal-item,sign-off,scan-names} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,status,run-path,check-samples,check-pack,pack,causal-item,sign-off,scan-names,run-manifest,purge} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 
