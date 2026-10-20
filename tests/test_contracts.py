@@ -78,6 +78,26 @@ def test_clusters_required_where_filtering():
     assert "register" in load(SKILLS_DIR / "organisation-learning-map" / "skill.json")["requires"]
 
 
+# A Gather step that filters by tier, entity, relation or tag, or reads the classify outputs, needs clusters.json.
+CLUSTERS_USE = re.compile(r"--(?:tier|entity|relation|tag|owner)\b|clusters\.json|role_overrides\.json"
+                          r"|table-item <ws> (?:clusters|tiers|relations)")
+
+
+def test_clusters_required_where_gather_uses_it():
+    """I-5 (FR-2): any sub-skill whose SKILL.md or select presets use the classify outputs requires clusters."""
+    presets = load(REFS / "select-presets.json")
+    missing = []
+    for s in SKILLS:
+        if s == "learnings-coach":
+            continue
+        text = (SKILLS_DIR / s / "SKILL.md").read_text(encoding="utf-8")
+        pre = json.dumps(presets.get(s, []))
+        uses = CLUSTERS_USE.search(text) or re.search(r'"(?:tiers?|entit(?:y|ies)|relations?|tags?|owner)"', pre)
+        if uses and "clusters" not in load(SKILLS_DIR / s / "skill.json")["requires"]:
+            missing.append(s)
+    assert not missing, missing
+
+
 def test_schema_keyword_subset():
     def walk(node):
         assert isinstance(node, dict)

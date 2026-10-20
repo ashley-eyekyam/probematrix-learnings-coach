@@ -347,3 +347,11 @@ def test_plan_register_done_needs_strict_pass(hz, tmp_path):  # noqa: F811
     shutil.copy(sample / "learnings-register.json", out / "learnings-register.json")
     run("check-all", str(w), "--strict")
     assert dict(steps(plan_json(str(w), "--skills", "learnings-register")))["learnings-register"] == "done"
+
+
+def test_full_cascade_classifies_before_learning_clusters(fresh):
+    """I-5 (FR-2): learning-clusters and interface-learnings need clusters.json, so classify is planned first."""
+    names = [s["skill"] for s in plan_json(str(fresh), "--workflow", "full-cascade")["steps"]]
+    assert names.index("engine:classify") < names.index("learning-clusters")
+    names = [s["skill"] for s in plan_json(str(fresh), "--skills", "interface-learnings")["steps"]]
+    assert names.index("engine:classify") < names.index("interface-learnings")
