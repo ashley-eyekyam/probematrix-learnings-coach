@@ -132,3 +132,18 @@ assert.strictEqual(d.statusLead({{status_phrase: 'Learning purposes: not a statu
   'Learning purposes: not a statutory document. ');
 for (const b of [{{}}, {{status_phrase: ''}}, null, undefined]) assert.strictEqual(d.statusLead(b), '');
 """)
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_detail_js_compliance_filter():
+    node(f"""
+const assert = require('assert');
+const d = require({json.dumps(str(DETAIL_JS))});
+const data = {{entries: [
+  {{lr_id:'LR-01', priority:1, title:'A', regulatory_touchpoint:'Factories Act s.7A'}},
+  {{lr_id:'LR-02', priority:2, title:'B', regulatory_touchpoint:'  '}},
+  {{lr_id:'LR-03', priority:2, title:'C'}}], derived: {{}}, findings: {{}}, evidence: {{}}}};
+const on = data.entries.filter(e => d.matches(e, data, {{compliance: true}})).map(e => e.lr_id);
+assert.deepStrictEqual(on, ['LR-01']);
+assert.strictEqual(data.entries.filter(e => d.matches(e, data, {{compliance: false}})).length, 3);
+""")

@@ -76,3 +76,5 @@ a.ref{color:var(--acc);text-decoration:none;border-bottom:1px dotted var(--acc)}
   .fnd,.evd,.rec{break-inside:avoid}
   a.ref{color:inherit;border:0}
 }
+.filter-chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:700}
+.chip.resp{border-color:var(--acc);color:var(--fg)}

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from .. import BRAND, LEVEL_NAMES
 from ..classify import TIER_LABELS
-from ..dashboard.data import build_detail_data, DASHBOARD_ASSETS, embed_json, print_witness_note, resolve_embed
+from ..dashboard.data import build_detail_data, DASHBOARD_ASSETS, embed_json, org_data, print_witness_note, resolve_embed
 from ..handling import (
     effective_handling, HANDLING_CSS, handling_lines, is_draft, name_guard, public_records, RIBBON_HTML, share_ctx,
     share_gate, shared_copy, SHARED_LINE, shared_name, SHARED_SOURCE, status_line
@@ -36,6 +36,42 @@ def _render(name: str, **values) -> str:
     editor's, not the page's, so it is dropped."""
     text = (TEMPLATES / f"{name}.html").read_text(encoding="utf-8")
     return string.Template(text[:-1] if text.endswith("\n") else text).substitute(values)
+
+
+def org_section(org: dict) -> str:
+    """Learnings x packs, pack reach and any organisation-file warnings, as the overview's last block."""
+    esc = html.escape
+    warn = "".join(f'<p class="m warn" role="alert" style="color:#b45309;font-weight:600">Warning: {esc(x)}</p>' for x in org["warnings"])
+    packs = org["lr_pack_matrix"]["packs"]
+    rows = [r for r in org["lr_pack_matrix"]["rows"] if r["cells"]]
+    mx = max([v for r in rows for v in r["cells"].values()] or [1])
+    if rows:
+        matrix = ("<table><thead><tr><th>Learning</th>" + "".join(f"<th>{esc(p)}</th>" for p in packs)
+                  + "</tr></thead><tbody>"
+                  + "".join(f'<tr><th>{esc(r["lr_id"])} · {esc(r["title"][:90])}</th>'
+                            + "".join(f'<td style="--o:{0.15 + 0.85 * r["cells"][p] / mx:.2f}"><span>{r["cells"][p]}</span></td>'
+                                      if p in r["cells"] else '<td class="z">·</td>' for p in packs)
+                            + "</tr>" for r in rows) + "</tbody></table>")
+        matrix = f'<div class="wrap">{matrix}</div>'
+    else:
+        matrix = ('<p class="m">No pack item names a learning yet. Add a <code>learning</code> field (for example '
+                  "LR-01) to pack items to see which learning each pack carries.</p>")
+    names = packs + [p for p in org["reach"] if p not in packs]
+    linked = collections.Counter()
+    for r in org["lr_pack_matrix"]["rows"]:
+        for p in r["cells"]:
+            linked[p] += 1
+    if names:
+        def reach(p):
+            x = org["reach"].get(p)
+            return (f'{x["deliveries"]} deliveries · {x["attendees"]} attendees · {x["contractors_included"]} with contractors'
+                    if x else "Not yet delivered")
+        packlist = ('<div class="wrap"><table><thead><tr><th>Pack</th><th>Learnings</th><th>Reach</th></tr></thead><tbody>'
+                    + "".join(f"<tr><th>{esc(p)}</th><td>{linked.get(p, 0)}</td><td>{esc(reach(p))}</td></tr>" for p in names)
+                    + "</tbody></table></div>")
+    else:
+        packlist = '<p class="m">No learning packs have been written yet.</p>'
+    return _render("packs", warnings=warn, matrix=matrix, packlist=packlist)
 
 
 def cmd_dashboard(a):
@@ -103,12 +139,16 @@ def cmd_dashboard(a):
                    for k, c in top_codes) if top_codes else ""
     learn_html = ""
     detail = None
+    org = org_data(ws, [])
     if a.register:
         reg = reg0
         entries = reg["entries"] if isinstance(reg, dict) else reg
         entries = sorted(entries, key=lambda e: (_int(e.get("priority"), 9), _s(e.get("lr_id"))))
         embed = resolve_embed(a)
         detail = build_detail_data(w, reg, embed)
+        org = org_data(ws, entries)
+        detail["responses"], detail["closure"] = org["responses"], org["closure"]
+        detail["compliance_count"] = sum(1 for e in entries if _s(e.get("regulatory_touchpoint")))
         if share and share.mode == "public":
             detail["findings"] = public_records(detail["findings"])
         print_witness_note(detail["evidence"], embed)
@@ -141,7 +181,9 @@ def cmd_dashboard(a):
         hoc_bars = "".join(f'<div class="bar"><span>{t}</span><i style="width:{100*hoc[t]/max(hoc.values()):.0f}%"></i><b>{hoc[t]}</b></div>'
                            for t in HOC_TIERS + ["unclassified"] if hoc.get(t))
         learn_html = _render("learnings", matrix=matrix, per_tier="".join(per_tier), hoc_bars=hoc_bars)
-    overview = _render("overview", kpis="".join(f"<div><b>{v}</b><span>{html.escape(k)}</span></div>" for k, v in kpis),
+    for x in org["warnings"]:
+        print(f"warning: {x}", file=sys.stderr)
+    overview = _render("overview", org=org_section(org), kpis="".join(f"<div><b>{v}</b><span>{html.escape(k)}</span></div>" for k, v in kpis),
                        learnings=learn_html, entity_tier=table(ent_ids, tier_ids, tier_lab, et, mx_et),
                        entity_level=table(ent_ids, [1, 2, 3, 4], lvl_lab, el, mx_el), bars=bars)
     noscript_where = ("The same data is in the shared Learnings Register." if share else

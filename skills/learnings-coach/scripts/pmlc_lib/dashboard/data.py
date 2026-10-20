@@ -12,7 +12,7 @@ from ..handling import share_mode
 from ..register.check import HOC_TIERS, norm_entity, norm_hoc, norm_level
 from ..register.xlsx import REG_COLS
 from ..util import _s, HERE
-from ..workspace import downgraded_findings
+from ..workspace import downgraded_findings, outputs_dir
 
 
 # ----------------------------------------------------------------------------- dashboard
@@ -172,6 +172,60 @@ def build_detail_data(w: dict, reg, embed: str = EMBED_DEFAULT) -> dict:
             "taxonomy": {"entities": tax.get("entities", {}), "tiers": tax.get("tiers", {})},
             "brand": brand_payload(), "tier_labels": TIER_LABELS, "labels": dict(REG_COLS), "hoc_order": HOC_TIERS,
             "totals": {"findings": len(F), "evidence": len(w.get("evidence", {}))}, "uncovered": uncovered}
+
+
+CLOSURE_KEYS = ("capa_ref", "closure_evidence", "effectiveness_result")
+
+
+def _count(v) -> int:
+    m = re.match(r"\s*(\d+)", _s(v))
+    return int(m.group(1)) if m else 0
+
+
+def org_data(ws, entries) -> dict:
+    """The organisation-learning data a dashboard adds (Task 17): lr_pack_matrix (learnings x packs, counted from
+    the `learning` field of each pack item in outputs/*.json), reach (per pack, from distribution.csv rows with a
+    date), responses (adoption.csv) and closure (register fields). warnings holds one line per unreadable
+    organisation file; the dashboard shows them and never fails on them."""
+    from ..templates import load_adoption, load_distribution, OrgFileError, pack_files
+    out = outputs_dir(ws)
+    warnings = []
+    packs, counts = [], {}
+    for _, d in pack_files(out):
+        name = _s(d.get("pack"))
+        if name not in packs:
+            packs.append(name)
+        for sec in d.get("sections") or []:
+            for it in (sec.get("items") or []) if isinstance(sec, dict) else []:
+                lr = _s(it.get("learning")) if isinstance(it, dict) else ""
+                if lr:
+                    counts[(lr, name)] = counts.get((lr, name), 0) + 1
+    rows = [{"lr_id": _s(e.get("lr_id")), "title": _s(e.get("title")),
+             "cells": {p: counts[(_s(e.get("lr_id")), p)] for p in packs if (_s(e.get("lr_id")), p) in counts}}
+            for e in entries]
+    reach = {}
+    try:
+        for r in load_distribution(ws):
+            if not r.get("date"):
+                continue
+            x = reach.setdefault(r.get("pack", ""), {"deliveries": 0, "attendees": 0, "contractors_included": 0})
+            x["deliveries"] += 1
+            x["attendees"] += _count(r.get("attendees"))
+            x["contractors_included"] += 1 if r.get("contractors_included") == "yes" else 0
+    except OrgFileError as e:
+        warnings.append(str(e))
+    responses = {}
+    try:
+        responses = {r["lr_id"]: r["response"] for r in load_adoption(ws) if r.get("lr_id") and r.get("response")}
+    except OrgFileError as e:
+        warnings.append(str(e))
+    closure = {}
+    for e in entries:
+        c = {k: _s(e.get(k)) for k in CLOSURE_KEYS if _s(e.get(k))}
+        if c:
+            closure[_s(e.get("lr_id"))] = {k: _s(e.get(k)) for k in CLOSURE_KEYS}
+    return {"lr_pack_matrix": {"packs": packs, "rows": rows}, "reach": reach, "responses": responses,
+            "closure": closure, "warnings": warnings}
 
 
 def embed_json(obj) -> str:
