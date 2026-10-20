@@ -1,8 +1,8 @@
 # Evals
 
-`evals.json` holds the trigger evals for the 23 skills, written against the public Hazira sample
-(`samples/2020-09-24-hazira-gas-release-fire/`). Every skill owns at least three evals: at least one `trigger`,
-one `no-trigger` and one `collision`.
+`evals.json` holds the trigger evals for the 23 skills and the router evals for the hub, written against the public
+Hazira sample (`samples/2020-09-24-hazira-gas-release-fire/`). Every skill owns at least three evals: at least one
+`trigger`, one `no-trigger` and one `collision`. Router evals do not count towards that floor.
 
 ## Eval shape
 
@@ -10,7 +10,7 @@ one `no-trigger` and one `collision`.
 |---|---|
 | `id` | Unique integer |
 | `owner` | The skill whose eval set this belongs to (used for the per-skill counts) |
-| `kind` | `trigger`, `no-trigger` or `collision` |
+| `kind` | `trigger`, `no-trigger`, `collision` or `router` |
 | `skill` | The skill that should fire, or `null` for a `no-trigger` eval |
 | `not_skill` | `no-trigger` only: the skill that must not fire (equals `owner`) |
 | `sibling` | `collision` only: the sibling skill the prompt must not route to |
@@ -23,6 +23,11 @@ one `no-trigger` and one `collision`.
   (a toolbox talk, a bow-tie, an ERP). No learnings-coach skill should fire.
 - **collision**: a request that sits on a description overlap between two sibling skills (for example
   manager-coach and site-leadership-coach, or board-brief and top-management-brief); `skill` must win over `sibling`.
+- **router**: a request to the hub that it must turn into the right plan. Shape: `{"id", "owner": "learnings-coach",
+  "kind": "router", "prompt", "files", "expectations": [{"type": "routes_to", "value": "<preset or skill>"}]}`, with an
+  optional `sibling` (the preset or skill it must not pick). `value` is a preset in
+  `skills/learnings-coach/references/workflows.json` (planned with `plan --workflow`) or one of the 22 sub-skills
+  (`plan --skills`). A router eval has no `skill` field.
 
 ## Expectation types
 
@@ -36,14 +41,17 @@ one `no-trigger` and one `collision`.
 | `language_clean` | `pack` | `pmlc.py check-language <ws> <pack>.json` exits 0 (no lint errors; warnings are allowed) |
 | `pack_absent` | `pack` | `<run>/outputs/<pack>.json` does not exist (a collision eval uses it for the sibling skill's pack) |
 | `card_fields` | `pack`, `fields` | the pack has at least one `card` item and every card has each named field filled in |
-| `routes_to` | `skill` (or `null`) | judged by a person or from a transcript: reported as `manual` |
+| `routes_to` | `skill` (or `null`); `value` in a router eval | judged by a person or from a transcript: reported as `manual` by `grade`, scored by `routes` |
 
 Pack names follow each skill's SKILL.md: usually the skill name, `dossier-F02` for cluster-learning-dossier,
 `organisation-learning-plan` for organisation-learning-map, and `learnings-register` for the register.
 The hub (`learnings-coach`) writes no pack; its evals carry `routes_to` only.
 
 `check` also enforces: `skill` equals `owner` for trigger evals; a `routes_to` names the eval's `skill`; trigger evals
-list `files` and no-trigger evals list none; no absolute paths in `files` or `prompt`.
+list `files` and no-trigger evals list none; no absolute paths in `files` or `prompt`. For the router set
+(spec §2.5) it fails when there are fewer than 30 router evals, when a `routes_to` value or a `sibling` is neither a
+skill folder nor a `workflows.json` preset, when any of the 9 presets or 22 sub-skills has no router eval, or when
+fewer than 8 router evals carry a `sibling`.
 
 ## Commands
 
@@ -51,7 +59,13 @@ list `files` and no-trigger evals list none; no absolute paths in `files` or `pr
 python3 evals/run_evals.py check                  # structure, paths, kinds, per-skill counts (CI runs this)
 python3 evals/run_evals.py grade <run-dir>        # grade evals whose packs exist in <run-dir>/outputs
 python3 evals/run_evals.py grade <run-dir> --ids 3,7
+python3 evals/run_evals.py routes <answers.json>  # score the router evals; exit 1 below the 90% floor
 ```
+
+`routes` reads `{"<eval id>": "<preset or skill the agent picked>"}`, one entry per router eval (taken from
+transcripts: give the agent each router prompt and record the preset or skill its plan names). It prints
+`| id | expected | picked | pass/fail |` and `Routing: x/y router evals (z%); floor 90%.`, and exits 1 below 90%.
+A missing answer counts as a fail. The pass rate goes in the CHANGELOG at the phase review.
 
 `grade` prints `| id | skill | expectation | pass/fail |` and the pass rate over machine checks, and exits 1 if any
 machine check fails, or when nothing was graded (it then prints `no outputs graded`). A pack that is not a JSON

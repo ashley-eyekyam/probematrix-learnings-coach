@@ -28,7 +28,7 @@ def test_every_skill_has_three():
     data = json.loads(EVALS.read_text(encoding="utf-8"))
     assert data["skill_name"] == "probematrix-learnings-coach"
     assert (ROOT / data["sample"]).exists()
-    evals = data["evals"]
+    evals = [e for e in data["evals"] if e["kind"] != "router"]      # router evals: test_router_evals_min_30
     assert len(SKILLS) == 23 and len(evals) >= 69
     by = Counter(e["owner"] for e in evals)
     kinds = Counter((e["owner"], e["kind"]) for e in evals)
@@ -257,3 +257,117 @@ def test_coverage_cache_computes_once(monkeypatch):
     mod._coverage("ws", {})
     assert len(calls) == 4
     mod._COV.clear()
+
+
+# ---- phase 3, task 24: router evals and the per-skill floor
+PRESETS = sorted(json.loads((ROOT / "skills" / "learnings-coach" / "references" / "workflows.json")
+                            .read_text(encoding="utf-8")))
+SUB_SKILLS = [s for s in SKILLS if s != "learnings-coach"]
+
+
+def _router(evals):
+    return [e for e in evals if e.get("kind") == "router"]
+
+
+def _target(e):
+    return next(x.get("value") for x in e["expectations"] if x.get("type") == "routes_to")
+
+
+def _router_file(tmp_path, n, value="board-brief", sibling=None, extra=None):
+    sample = json.loads(EVALS.read_text(encoding="utf-8"))["sample"]
+    evals = []
+    for i in range(n):
+        e = {"id": 1000 + i, "owner": "learnings-coach", "kind": "router", "prompt": f"route {i}",
+             "files": [sample], "expectations": [{"type": "routes_to", "value": value}]}
+        if sibling:
+            e["sibling"] = sibling
+        evals.append(e)
+    evals += extra or []
+    f = tmp_path / "router.json"
+    f.write_text(json.dumps({"skill_name": "probematrix-learnings-coach", "sample": sample, "evals": evals}))
+    return f
+
+
+def test_router_evals_min_30(tmp_path):
+    evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
+    router = _router(evals)
+    assert len(router) >= 30, len(router)
+    for e in router:
+        assert e["owner"] == "learnings-coach" and "skill" not in e, e["id"]
+        assert [x["type"] for x in e["expectations"]] == ["routes_to"], e["id"]
+    r = runner("check")
+    assert r.returncode == 0, r.stdout
+    assert f"{len(router)} router" in r.stdout
+    r = runner("check", "--file", str(_router_file(tmp_path, 29)))
+    assert r.returncode == 1
+    assert "router: needs at least 30 router evals (has 29)" in r.stdout
+
+
+def test_routes_to_targets_exist(tmp_path):
+    router = _router(json.loads(EVALS.read_text(encoding="utf-8"))["evals"])
+    targets = [_target(e) for e in router]
+    assert all(t in PRESETS or t in SUB_SKILLS for t in targets), set(targets) - set(PRESETS) - set(SUB_SKILLS)
+    assert set(PRESETS) <= set(targets), set(PRESETS) - set(targets)            # all 9 presets
+    assert set(SUB_SKILLS) <= set(targets), set(SUB_SKILLS) - set(targets)      # all 22 sub-skills
+    sibs = [e for e in router if e.get("sibling")]
+    assert len(sibs) >= 8, len(sibs)
+    for e in sibs:
+        assert e["sibling"] in PRESETS or e["sibling"] in SUB_SKILLS, e["id"]
+        assert e["sibling"] != _target(e), e["id"]
+    bad = [{"id": 1, "owner": "learnings-coach", "kind": "router", "prompt": "p", "files": [],
+            "expectations": [{"type": "routes_to", "value": "no-such-thing"}]},
+           {"id": 2, "owner": "board-brief", "kind": "router", "prompt": "p", "files": [],
+            "expectations": [{"type": "routes_to", "skill": "board-brief"}], "sibling": "nope"},
+           {"id": 3, "owner": "learnings-coach", "kind": "router", "prompt": "p", "files": [],
+            "expectations": [{"type": "routes_to", "value": "leadership"}], "sibling": "leadership"}]
+    r = runner("check", "--file", str(_router_file(tmp_path, 30, extra=bad)))
+    assert r.returncode == 1
+    out = r.stdout
+    for msg in ["eval 1: routes_to: no-such-thing is neither a skill folder nor a workflows.json preset",
+                "eval 2: a router eval is owned by learnings-coach", "eval 2: routes_to needs value",
+                "eval 2: sibling: nope is neither a skill folder nor a workflows.json preset",
+                "eval 3: sibling must differ from the routes_to value",
+                "router: no router eval routes to full-cascade", "router: no router eval routes to causal-map",
+                "router: needs at least 8 sibling collisions (has 2)"]:
+        assert msg in out, msg
+    assert "router: no router eval routes to board-brief" not in out
+
+
+def test_each_skill_three_evals_with_no_trigger_and_collision(tmp_path):
+    evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
+    for s in SKILLS:
+        own = [e for e in evals if e["owner"] == s and e["kind"] != "router"]
+        assert len(own) >= 3, s
+        assert any(e["kind"] == "no-trigger" for e in own), s
+        assert any(e["kind"] == "collision" for e in own), s
+    # router evals are owned by the hub but never count towards a skill's floor
+    r = runner("check", "--file", str(_router_file(tmp_path, 30)))
+    out = r.stdout
+    assert r.returncode == 1
+    assert "learnings-coach: needs at least 3 evals (has 0)" in out
+    for s in SKILLS:
+        assert f"{s}: needs at least 1 no-trigger eval" in out, s
+        assert f"{s}: needs at least 1 collision eval" in out, s
+
+
+def test_routes_scores_against_the_floor(tmp_path):
+    router = _router(json.loads(EVALS.read_text(encoding="utf-8"))["evals"])
+    answers = {str(e["id"]): _target(e) for e in router}
+    f = tmp_path / "answers.json"
+    f.write_text(json.dumps(answers))
+    r = runner("routes", str(f))
+    assert r.returncode == 0, r.stdout + r.stderr
+    n = len(router)
+    assert f"Routing: {n}/{n} router evals (100%); floor 90%." in r.stdout
+    wrong = [str(e["id"]) for e in router[:4]]
+    for i in wrong[:3]:
+        answers[i] = "board-brief" if answers[i] != "board-brief" else "leadership"
+    del answers[wrong[3]]
+    f.write_text(json.dumps(answers))
+    r = runner("routes", str(f))
+    assert r.returncode == (0 if (n - 4) / n >= 0.9 else 1)
+    assert f"Routing: {n - 4}/{n} router evals" in r.stdout and "(no answer)" in r.stdout
+    assert f"| {wrong[0]} | {_target(router[0])} |" in r.stdout
+    f.write_text("[1]")
+    r = runner("routes", str(f))
+    assert r.returncode == 1 and "must be a JSON object" in r.stderr
