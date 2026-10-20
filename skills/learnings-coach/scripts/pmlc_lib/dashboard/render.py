@@ -13,7 +13,7 @@ from ..classify import TIER_LABELS
 from ..dashboard.data import build_detail_data, DASHBOARD_ASSETS, embed_json, print_witness_note, resolve_embed
 from ..handling import (
     effective_handling, HANDLING_CSS, handling_lines, is_draft, name_guard, public_records, RIBBON_HTML, share_ctx,
-    share_gate, shared_copy, SHARED_LINE, shared_name, SHARED_SOURCE, status_line
+    refuse_internal_overwrite, share_gate, shared_copy, SHARED_LINE, shared_name, SHARED_SOURCE, status_line
 )
 from ..register.check import HOC_TIERS, norm_entity, norm_hoc
 from ..register.xlsx import refuse_pack_as_register
@@ -166,6 +166,7 @@ def cmd_dashboard(a):
                   date=html.escape(fields.get("Date", "")), body=body, brand=html.escape(BRAND), scripts=scripts)
     name_guard([doc], a)
     out = Path(a.out) if a.out else shared_name(outputs_dir(ws) / "organisation-learning-map.html", mode)
+    refuse_internal_overwrite(out, outputs_dir(ws) / "organisation-learning-map.html", mode)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")
     print(f"Dashboard written to {out}")

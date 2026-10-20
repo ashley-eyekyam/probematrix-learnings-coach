@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from test_pmlc import ROOT, make_export, run, run_fail, ws  # noqa: F401  (ws is a module-scoped fixture)
+from test_pmlc import MINI_REG, ROOT, make_export, run, run_fail, ws  # noqa: F401  (ws is a module-scoped fixture)
 import pmlc  # noqa: E402  (test_pmlc put the engine folder on sys.path)
 import pmlc_pack as pp  # noqa: E402
 
@@ -1045,7 +1045,6 @@ def _marked(w):
         f["key_questions"], f["suggested_interviews"] = f"MARK-KQ-{f['id']}", f"MARK-SI-{f['id']}"
         f["specific_reference"] = f"MARK-SR-{f['id']}"
         f["justification"] += " Source: MARK-REF-EVD-0001-0 (p.3)."     # AI justifications quote the evidence
-        f["justification"] += " Source: MARK-REF-EVD-0001-0 (p.3)."     # AI justifications quote the evidence
     w2["incident"]["review_votes"] = [{"finding": "FND-0002", "vote": "upgrade", "reason": "MARK-VOTE-reason"}]
     return w2
 
@@ -1064,7 +1063,6 @@ def test_embed_summary_leaks_no_quotes(w):
     assert set(d["evidence"]) == {"EVD-0001", "EVD-0002"} and d["evidence"]["EVD-0001"]["type"] == "document"
     assert d["findings"]["FND-0002"]["votes"] == [{"finding": "FND-0002", "vote": "upgrade"}]
     assert "MARK-" not in pp.render_pack_md(p, w2)
-    assert d["findings"]["FND-0002"]["justification"].endswith(f"Source: {pmlc.QUOTE_OMITTED} (p.3).")
     assert d["findings"]["FND-0002"]["justification"].endswith(f"Source: {pmlc.QUOTE_OMITTED} (p.3).")
     assert set(_trail_ids(t)) == {"FND-0002", "FND-0001", "EVD-0001", "EVD-0002"}
 
@@ -1141,7 +1139,7 @@ def test_lint_ok_reason_is_rendered(w):
     assert ('<p class="lint-ok">Language check JC5 accepted: quoting the &lt;b&gt;rule&lt;/b&gt; title &amp; number</p>'
             in t)
     md = pp.render_pack_md(p, w)
-    assert "*Language check JC5 accepted: quoting the <b>rule</b> title & number*" in md
+    assert "*Language check JC5 accepted: quoting the \\<b\\>rule\\</b\\> title & number*" in md      # A42: escaped
     two = pack_with(item("para", text="x", cites=["FND-0002"], lint_ok=[{"rule": "JC5", "reason": "a"},
                                                                        {"rule": "JC1", "reason": "b"}]))
     t2 = pp.render_pack_html(w, two, "r", "d")
@@ -1158,3 +1156,49 @@ def test_readme_alpha_pin():
     head = readme.split("\n\n", 2)[1]
     assert "#v0.3.5" in head
     assert "/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v2.0.0-alpha.3" in head
+
+
+# ----------------------------------------------------------------------------- Task 19: markdown escaping, ribbon
+
+def _eh(status="approved", role="HSE manager"):
+    return {"effective_status": status, "reviewer_role": role, "reviewed_on": "2026-10-19", "classification": "internal",
+            "version": "1", "draft_reasons": [], "legal_review": "not set", "distribution": []}
+
+
+def test_handling_lines_escape_the_reviewer_role_in_markdown_only():
+    role = "HSE *lead* <b>[x]</b>"
+    assert role in pmlc.handling_lines(_eh(role=role))[0]                      # HTML escapes it itself
+    md = pmlc.handling_lines(_eh(role=role), markdown=True)[0]
+    assert "HSE \\*lead\\* \\<b\\>\\[x\\]\\</b\\>" in md and role not in md
+
+
+def test_markdown_pack_shows_the_escaped_reviewer(w):
+    md = pp.render_pack_md(pack_with(item("para", cites=["FND-0001"])), w, eh=_eh(role="HSE *lead*"))
+    assert "approved by HSE \\*lead\\* on 2026-10-19" in md
+
+
+def test_lint_ok_note_is_escaped_in_markdown(w):
+    p = pack_with(item("para", text="The restart was unlawful.", cites=["FND-0001"],
+                       lint_ok={"rule": "JC5", "reason": "quotes the *title* of <the> rule"}))
+    md = pp.render_pack_md(p, w)
+    assert "*Language check JC5 accepted: quotes the \\*title\\* of \\<the\\> rule*" in md
+
+
+def test_reviewed_status_still_shows_the_ribbon(w):
+    """A34: only an effective approval hides the DRAFT ribbon; a 'reviewed' document is not approved."""
+    p = pack_with(item("para", cites=["FND-0001"]))
+    for st, ribbon in (("reviewed", True), ("draft", True), ("approved", False)):
+        page = pp.render_pack_html(w, p, "r", "d", eh=_eh(status=st))
+        assert ('class="ribbon"' in page) is ribbon, st
+    assert pmlc.is_draft(_eh("reviewed")) and not pmlc.is_draft(_eh("approved"))
+
+
+def test_register_xlsx_about_column_a_fits_the_brand_line(ws, tmp_path):  # noqa: F811
+    import openpyxl
+    reg = tmp_path / "reg.json"
+    reg.write_text(json.dumps(MINI_REG))
+    out = tmp_path / "r.xlsx"
+    run("register-xlsx", str(reg), "--ws", str(ws), "--out", str(out))
+    about = openpyxl.load_workbook(out)["About"]
+    longest = max(len(str(c.value)) for c in about["A"] if c.value)
+    assert about.column_dimensions["A"].width >= min(longest, 200)

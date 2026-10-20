@@ -71,6 +71,20 @@ def _canon(x: str) -> str:
     return re.sub(r"[\s.]+", "", x.lower())
 
 
+def build_redact_map(redact: dict) -> tuple:
+    """(repl, multi) for a --redact map: repl maps the canonical form of each name and variant to its role, multi
+    lists the multi-token forms. A form two names share with different roles (a surname, say) is ambiguous, so it
+    maps to '[redacted]' and not to whichever name came last."""
+    repl, multi = {}, []
+    for name, role in redact.items():
+        for v in privacy.name_variants(name) + [name]:
+            key = _canon(v)
+            repl[key] = "[redacted]" if repl.get(key, role) != role else role
+            if len(v.split()) > 1:
+                multi.append(v)
+    return repl, multi
+
+
 def redact_data(obj, rx, repl: dict, role_rx=None, single=None):
     """(redacted copy, count): every string value (not dict keys) passed through rx; repl maps the canonical match
     (lower case, no spaces or dots) to the role. Under a 'roles' key only role_rx (the multi-token forms) is used, so
@@ -207,12 +221,7 @@ def cmd_ingest(a):
         sys.exit(f"{out} already holds a workspace. Pass --force to overwrite it.")
     redactions = None
     if redact is not None:
-        repl, multi = {}, []
-        for name, role in redact.items():
-            for v in privacy.name_variants(name) + [name]:
-                repl[_canon(v)] = role
-                if len(v.split()) > 1:
-                    multi.append(v)
+        repl, multi = build_redact_map(redact)
         rx = privacy.name_pattern(list(redact), variants=True)
         role_rx = privacy.name_pattern(multi)
         redactions, single = 0, {}

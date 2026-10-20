@@ -2,6 +2,7 @@
 `pmlc.py check-language`, `check-pack` and `check-register` call into this module. Terms: references/lint-terms.json."""
 from __future__ import annotations
 
+import calendar
 import collections
 import json
 import re
@@ -25,6 +26,12 @@ JC8_SKIP_FIELDS = {"leading_indicator", "indicator", "measure", "deterioration"}
 CAP_PAIR_RX = re.compile(r"(?<![\w'’-])(?=([A-Z][a-z]+(?:['’-][A-Za-z]+)*) ([A-Z][a-z]+(?:['’-][A-Za-z]+)*)(?![\w'’-]))")
 WORD_RX = re.compile(r"[A-Za-z]+")
 EXTERNAL = ("external", "public")
+# OD-2: a month word is exempt from JC1 only with a day number or a year next to it ("24 May", "May 2020"), so
+# "May Patel" and "June Kumar" are names. The words are taken out of the vocabulary; _jc1 reads the date shape.
+MONTH_WORDS = {m.lower() for m in [*calendar.month_name[1:], *calendar.month_abbr[1:], "Sept"]}
+DAY_BEFORE_RX = re.compile(r"\d{1,2}(?:st|nd|rd|th)?\s+$")
+NUMBER_AFTER_RX = re.compile(r"\s+\d")
+MISPLACED_LINT_OK = "lint_ok must sit on an item, a bottom-line entry or a register entry"
 _TERMS = None
 
 
@@ -66,7 +73,7 @@ def _vocabulary(w, terms) -> set:
     fields = w.get("incident", {}).get("fields", {})
     for k in ("Incident Title", "Location"):
         v |= _words(fields.get(k))
-    return v
+    return v - MONTH_WORDS
 
 
 def _strings(v):
@@ -147,6 +154,9 @@ def _jc1(c, s, path, quiet):
         st, en = m.start(), m.start() + len(a) + 1 + len(b)
         if any(x <= st < y or x < en <= y for x, y in spans):
             continue
+        if (a.lower() in MONTH_WORDS and DAY_BEFORE_RX.search(s, 0, st)) or \
+                (b.lower() in MONTH_WORDS and NUMBER_AFTER_RX.match(s, en)):
+            continue                                       # "24 May Patel" / "Report May 2020": a date, not a name
         if not any(tok.lower() in c.vocab or re.sub("s$", "", tok.lower()) in c.vocab for tok in (a, b)):
             c.hit("JC1", path, f"{a} {b}", quiet=quiet)
 
@@ -286,6 +296,15 @@ def _retrain_only(c, unit, tiers, path, t1):
               quiet=_lint_ok(c, unit, path)[0])
 
 
+def _misplaced_lint_ok(doc, kind) -> list:
+    """Paths of a lint_ok on the document itself or on a section (A30): it quiets nothing there, so it is an error."""
+    if not isinstance(doc, dict):
+        return []
+    out = ["$.lint_ok"] if "lint_ok" in doc else []
+    secs = doc.get("sections") if kind == "pack" and isinstance(doc.get("sections"), list) else []
+    return out + [f"$.sections[{i}].lint_ok" for i, s in enumerate(secs) if isinstance(s, dict) and "lint_ok" in s]
+
+
 def lint(doc, w, *, kind: str, share: str | None = None, names=(), orgs=()) -> list:
     """Every JC1-JC12 hit in a pack (kind "pack") or a Learnings Register (kind "register"), as Hit tuples.
     share is internal, external or public; None reads handling.classification (P2-2)."""
@@ -319,6 +338,8 @@ def lint(doc, w, *, kind: str, share: str | None = None, names=(), orgs=()) -> l
             recs = [r for r in u["recommendations"] if isinstance(r, dict)]
             if recs and all(isinstance(r.get("hoc_tier"), str) for r in recs):
                 _retrain_only(c, u, [r["hoc_tier"] for r in recs], f"{path}.recommendations", False)
+    for path in _misplaced_lint_ok(doc, kind):
+        c.hits.append(Hit("lint_ok", "error", path, "", MISPLACED_LINT_OK))
     status = doc.get("status") if isinstance(doc, dict) else None
     if not (isinstance(status, str) and STATUS_PHRASE in status):
         c.hit("JC11", "$.status", "", severity="error" if kind == "pack" else "warning")
@@ -336,7 +357,7 @@ def as_problem(h) -> str:
     """A hit as a check-pack or check-register line, with the path written without the leading '$.'."""
     p = h.path[2:] if h.path.startswith("$.") else h.path
     if h.rule == "JC11":
-        return f'{p}: must contain "{STATUS_PHRASE}" (JC11)'
+        return f'{p}: must contain "{STATUS_PHRASE}"'
     return f'{p}: {h.rule} "{h.match}": {h.hint}'
 
 

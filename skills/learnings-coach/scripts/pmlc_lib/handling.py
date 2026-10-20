@@ -192,8 +192,16 @@ def review_text(eh: dict) -> str:
     return st + who
 
 
-def handling_lines(eh: dict) -> list:
-    """The handling line, then 'Draft because: ...' when there are reasons."""
+def md_escape(s) -> str:
+    """s with the Markdown and inline-HTML characters backslash-escaped, for text a person typed."""
+    return re.sub(r"([\\`*_\[\]<>|#])", r"\\\1", str(s))
+
+
+def handling_lines(eh: dict, markdown: bool = False) -> list:
+    """The handling line, then 'Draft because: ...' when there are reasons. markdown=True escapes the typed
+    reviewer_role for Markdown output (the HTML renderers escape it themselves)."""
+    if markdown and eh.get("reviewer_role"):
+        eh = dict(eh, reviewer_role=md_escape(eh["reviewer_role"]))
     out = [f"Review: {review_text(eh)} · Classification: {eh['classification']} · Version {eh['version']}"]
     if eh["draft_reasons"]:
         out.append("Draft because: " + "; ".join(eh["draft_reasons"]))
@@ -386,6 +394,12 @@ def public_records(findings: dict) -> dict:
 def shared_name(path: Path, mode: str) -> Path:
     """<name>.<mode><suffix> for a shared copy, so the internal copy is never overwritten."""
     return path if mode == "internal" else path.with_name(f"{path.stem}.{mode}{path.suffix}")
+
+
+def refuse_internal_overwrite(out, internal, mode) -> None:
+    """Exit 1 when a shared copy's --out is the path of the internal copy it would overwrite."""
+    if mode != "internal" and Path(out).resolve() == Path(internal).resolve():
+        sys.exit(f"refused: --out {out} is the internal copy; a {mode} copy would overwrite it (choose another --out)")
 
 
 def name_guard(texts, a) -> None:

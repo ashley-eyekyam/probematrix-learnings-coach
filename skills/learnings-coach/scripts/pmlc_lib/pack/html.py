@@ -21,7 +21,7 @@ from ..pack.markdown import (
     sorted_events
 )
 from ..pack.schema import (
-    _checked, cited_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, relevant_findings, UNCOVERED_PRINT_LINE, with_item_ids
+    _checked, cited_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, record_check, relevant_findings, UNCOVERED_PRINT_LINE, with_item_ids
 )
 from ..register.check import norm_hoc
 from ..util import _abs, write_json
@@ -340,9 +340,10 @@ def follow_up(pack) -> dict:
 def cmd_pack(a):
     """Render a checked pack. --share external|public: the share gate first (P2-9), then the page is rendered from
     masked copies of the pack and the workspace. In any mode the render name guard runs before anything is written."""
-    w, pack, _ = _checked(a)
+    w, pack, res = _checked(a, record_ok=False)
     warn_stale(a.ws)
     mode = share_gate(pack, w, a, src=a.pack, ws=a.ws)
+    record_check(a, pack, res)                                  # only now: a refused share records nothing
     ws = _abs(a.ws)
     run = ws.parent.name if is_standard_ws(ws) else ws.name
     embed = resolve_embed(a)
@@ -356,7 +357,8 @@ def cmd_pack(a):
     out.mkdir(parents=True, exist_ok=True)
     page = shared_name(out / f"{pack['pack']}.html", mode)
     page.write_text(page_html, encoding="utf-8")
-    print_witness_note(embedded_records(rw, *cited_ids(pack), (), embed, linked=False)[1], embed)
+    if embed != "summary":                                      # summary drops the text the note is about
+        print_witness_note(embedded_records(rw, *cited_ids(pack), (), embed, linked=False)[1], embed)
     print(f"HTML written to {page}")
     if md_text is not None:
         md = shared_name(out / f"{pack['pack']}.md", mode)

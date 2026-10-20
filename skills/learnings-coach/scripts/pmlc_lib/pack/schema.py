@@ -592,18 +592,26 @@ def load_pack(path) -> tuple:
         return None, f"(file): cannot read {path} as UTF-8 JSON ({e.__class__.__name__})"
 
 
-def _checked(a):
-    """Load the workspace and pack, print warnings, exit listing every problem; else return (w, pack, result)."""
+def record_check(a, pack, res) -> None:
+    """Record the check of a.pack in the workspace manifest (a failed write is ignored)."""
+    if isinstance(pack, dict) and isinstance(pack.get("pack"), str):
+        try:
+            record_pack_check(a.ws, pack["pack"], a.pack, not res.problems, len(res.problems))
+        except OSError:
+            pass
+
+
+def _checked(a, record_ok=True):
+    """Load the workspace and pack, print warnings, exit listing every problem; else return (w, pack, result).
+    record_ok=False leaves a passing check unrecorded for the caller to record (a share that is refused records
+    nothing); a failing check is always recorded."""
     w = load_ws(a.ws)
     pack, err = load_pack(a.pack)
     res = Result([err], [], {}) if err else check_pack(pack, w, **lint.cli_options(a))
     if not err:
         res.warnings.extend(unsigned_warning(pack, w, a.pack, a.ws))
-    if not err and isinstance(pack, dict) and isinstance(pack.get("pack"), str):
-        try:
-            record_pack_check(a.ws, pack["pack"], a.pack, not res.problems, len(res.problems))
-        except OSError:
-            pass
+    if not err and (record_ok or res.problems):
+        record_check(a, pack, res)
     for x in res.warnings:
         print(f"warning: {x}")
     if res.problems:

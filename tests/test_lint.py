@@ -176,7 +176,7 @@ def test_skipped_keys_are_not_scanned(w):
 def test_status_problem_is_reported_once(w):
     p = para_pack("Test before service.", status="Draft")
     got = [x for x in pp.check_pack(p, w).problems if x.startswith("status")]
-    assert got == ['status: must contain "Learning purposes: not a statutory document" (JC11)']
+    assert got == ['status: must contain "Learning purposes: not a statutory document"']
 
 
 def test_register_lint(w):
@@ -200,7 +200,7 @@ def test_check_register_reports_lint(ws, tmp_path):  # noqa: F811
     f.write_text(json.dumps(reg), encoding="utf-8")
     r = subprocess.run([sys.executable, str(PMLC), "check-register", str(ws), str(f)], capture_output=True, text=True)
     assert r.returncode == 1 and 'JC2 "careless"' in r.stdout, r.stdout
-    assert 'warning: status: must contain "Learning purposes: not a statutory document" (JC11)' in r.stdout
+    assert 'warning: status: must contain "Learning purposes: not a statutory document"' in r.stdout
 
 
 def test_format_hits():
@@ -344,3 +344,49 @@ def test_lint_ok_reason_is_scanned_for_names_and_orgs(w):
     assert any("lint_ok.reason: JC1" in x
                for x in pp.check_pack(dict(p, sections=[dict(p["sections"][0], items=[dict(
                    p["sections"][0]["items"][0], lint_ok={"rule": "JC5", "reason": "per Mr J Smith"})])]), w).problems)
+
+
+# ----------------------------------------------------------------------------- Task 19: lint_ok placement, OD-2
+
+MISPLACED = "lint_ok must sit on an item, a bottom-line entry or a register entry"
+OK = {"rule": "JC5", "reason": "quoting the title of the rule"}
+
+
+def test_lint_ok_on_a_section_or_the_top_level_is_a_problem(w):
+    """A30: only an item, a bottom-line entry or a register entry takes lint_ok; elsewhere it is an error, and it
+    suppresses nothing."""
+    p = para_pack("The restart was unlawful.")
+    p["sections"][0]["lint_ok"] = OK
+    hits = pl.lint(p, w, kind="pack")
+    assert [(h.rule, h.severity, h.path) for h in hits if h.rule == "lint_ok"] == [("lint_ok", "error", "$.sections[0].lint_ok")]
+    assert "JC5" in rules(hits)
+    assert any(x.startswith("sections[0].lint_ok") and MISPLACED in x for x in pp.check_pack(p, w).problems)
+    q = para_pack("The restart was unlawful.", lint_ok=OK)
+    assert [h.path for h in pl.lint(q, w, kind="pack") if h.rule == "lint_ok"] == ["$.lint_ok"]
+    reg = {"status": STATUS, "lint_ok": OK, "entries": []}
+    assert [h.path for h in pl.lint(reg, w, kind="register") if h.rule == "lint_ok"] == ["$.lint_ok"]
+    ok = para_pack("The restart was unlawful.")
+    ok["sections"][0]["items"][0]["lint_ok"] = OK
+    ok["bottom_line"][0]["lint_ok"] = OK
+    assert "lint_ok" not in rules(pl.lint(ok, w, kind="pack"))
+
+
+def test_jc11_message_has_no_rule_suffix(w):
+    h = pl.Hit("JC11", "error", "$.status", "", "x")
+    assert pl.as_problem(h) == f'status: must contain "{STATUS}"'
+
+
+@pytest.mark.parametrize("text", ["May Patel restarted it.", "June Kumar restarted it.", "Reported by April Quill.",
+                                  "March Daker restarted it."])
+def test_jc1_month_names_that_are_first_names_are_errors(w, text):
+    """OD-2: a month word is no longer vocabulary; only a date exempts it."""
+    hits = pl.lint(para_pack(text), w, kind="pack")
+    assert rules(hits, "error") == ["JC1"], pl.format_hits(hits)
+
+
+@pytest.mark.parametrize("text", ["The seal changed on 24 May and failed.", "In May 2020 the audit found gaps.",
+                                  "On June 24, 2020 the seal was changed.", "The plant restarted 3rd May 2020.",
+                                  "Gaps found in the Annual Review of May 2020.", "Inspected on 24 May, 2020.",
+                                  "The review on 24 September was late."])
+def test_jc1_month_with_a_day_or_a_year_is_exempt(w, text):
+    assert rules(pl.lint(para_pack(text), w, kind="pack"), "error") == [], pl.format_hits(pl.lint(para_pack(text), w, kind="pack"))

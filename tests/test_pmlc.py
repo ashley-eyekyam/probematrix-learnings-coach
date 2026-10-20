@@ -2154,3 +2154,34 @@ def test_redact_protects_role_text_and_warns(tmp_path):
     assert "John Field" not in narr and "Mr. Field" not in narr and "Fitter" in narr
     assert 'warning: surname-only match "Field" replaced 6 times: check the text reads correctly' in out
     assert "redacted" in out
+
+
+def test_dashboard_embed_summary_leaks_no_quotes(ws, tmp_path):
+    """The whole dashboard page (JSON payload, markup, every tab) holds no description, reference or review reason
+    when --embed summary is used, in the plain, JSON-escaped and HTML-escaped forms."""
+    import html
+    import shutil
+    copy = tmp_path / "ws"
+    shutil.copytree(ws, copy)
+    ev = json.loads((copy / "evidence.json").read_text(encoding="utf-8"))
+    for e in ev.values():
+        e["description"] = f"MARK-DESC <{e['id']}> & \\\"q\\\""
+        for n, ln in enumerate(e["links"]):
+            ln["reference"] = f"MARK-REF {e['id']}/{n} <b>"
+    (copy / "evidence.json").write_text(json.dumps(ev), encoding="utf-8")
+    inc = json.loads((copy / "incident.json").read_text(encoding="utf-8"))
+    inc["review_votes"] = [{"finding": "FND-0002", "vote": "upgrade", "reason": "MARK-VOTE <reason>"}]
+    (copy / "incident.json").write_text(json.dumps(inc), encoding="utf-8")
+    reg = tmp_path / "r.json"
+    reg.write_text(json.dumps(MINI_REG))
+    cited, summary = tmp_path / "cited.html", tmp_path / "summary.html"
+    run("dashboard", str(copy), "--register", str(reg), "--out", str(cited), "--embed", "cited")
+    run("dashboard", str(copy), "--register", str(reg), "--out", str(summary), "--embed", "summary")
+    t = summary.read_text(encoding="utf-8")
+    marks = ["MARK-DESC <EVD-0001> & \\\"q\\\"", "MARK-REF EVD-0001/0 <b>", "MARK-VOTE <reason>"]
+    assert any(m in cited.read_text(encoding="utf-8") or pmlc.embed_json(m)[1:-1] in cited.read_text(encoding="utf-8")
+               for m in marks), "the markers must be reachable in cited mode"
+    for m in marks:
+        for form in (m, json.dumps(m)[1:-1], html.escape(m), html.escape(m, quote=False), pmlc.embed_json(m)[1:-1]):
+            assert form not in t, form
+    assert "MARK-" not in t.replace("&lt;", "<")

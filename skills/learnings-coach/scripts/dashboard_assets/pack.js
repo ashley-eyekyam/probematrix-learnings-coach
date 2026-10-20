@@ -70,7 +70,7 @@
         ["Learning clusters", [(c.F || []).join(", "), (c.T || []).join(", "), (c.R || []).join(", ")]
           .filter(Boolean).join(" · ")],
         ["Description", f.short || ""],
-        [(data.brand && data.brand.ai_justification_label) || "Justification", f.justification || ""],
+        [(data.brand && data.brand.ai_justification_label) || "AI justification (ProbeMatrix)", f.justification || ""],
         ["Causal explanation", f.causal || ""],
         ["Reviewer votes", (f.votes || []).map(function (v) { return v.vote + (v.reason ? ": " + v.reason : ""); }).join("; ")],
         ["Evidence", (f.evidence || []).join(", ")]]);

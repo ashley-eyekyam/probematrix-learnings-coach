@@ -1,4 +1,5 @@
 """Tests on the committed Hazira sample (public record). Later tasks reuse the module fixture `hz`."""
+import html
 import json
 import re
 import shutil
@@ -245,7 +246,9 @@ def test_hazira_2_card_summary_leaks_no_quotes(hz, two_card):
     quotes = [ev[x]["description"] for x in dict.fromkeys(eids + linked) if x in ev]
     quotes += [ln["reference"] for x in dict.fromkeys(eids + linked) if x in ev for ln in ev[x]["links"] if ln["reference"]]
     assert quotes
-    escaped = [q for q in quotes if q and (q in t or json.dumps(q, ensure_ascii=False)[1:-1] in t)]
+    forms = lambda q: (q, json.dumps(q, ensure_ascii=False)[1:-1], html.escape(q), html.escape(q, quote=False),   # noqa: E731
+                       pmlc.embed_json(q)[1:-1])
+    escaped = [q for q in quotes if q and any(f in t for f in forms(q))]
     assert escaped == []
 
 

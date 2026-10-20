@@ -5,7 +5,7 @@ import datetime as dt
 
 from .. import BRAND, DRAFT_LABEL
 from ..analysis.timeline import months_between
-from ..handling import effective_handling, handling_lines, is_draft, SHARED_LINE, status_line
+from ..handling import effective_handling, handling_lines, is_draft, md_escape, SHARED_LINE, status_line
 from ..pack.schema import _text, cited_ids, relevant_findings
 from ..register.check import norm_hoc
 from ..workspace import downgraded_findings, incident_date
@@ -182,7 +182,7 @@ def lint_ok_notes(d) -> list:
 
 
 def _md_lint_ok(d, sep) -> str:
-    return "".join(f"{sep}*{n}*" for n in lint_ok_notes(d))
+    return "".join(f"{sep}*{md_escape(n)}*" for n in lint_ok_notes(d))
 
 
 def _md_extras(d) -> str:
@@ -202,8 +202,8 @@ def _md_block(it, inc_date=None) -> str:
 def _handling_lines(eh, share):
     """The handling lines, masked for a shared copy, then the 'Shared <mode>' line."""
     if not share:
-        return handling_lines(eh)
-    return [privacy.share_text(x, share) for x in handling_lines(eh)] + [SHARED_LINE.format(mode=share.mode)]
+        return handling_lines(eh, markdown=True)
+    return [privacy.share_text(x, share) for x in handling_lines(eh, markdown=True)] + [SHARED_LINE.format(mode=share.mode)]
 
 
 def render_pack_md(pack, w, eh=None, share=None) -> str:
