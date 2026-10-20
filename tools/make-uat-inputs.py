@@ -18,11 +18,25 @@ and, for Phase 2, against the uat-approvable workspace:
   uat-shareable-pack.json  a clean pack that can be signed off and shared
   uat-register.json        a clean two-learning register that can be signed off and shared
   uat-names.txt, uat-orgs.txt, uat-redact.json  names, organisations and a redaction map (all fictional)
+and, for Phase 3 (docs/uat/v2.0-consolidated-uat.md):
+  uat-hazira-register.json     the Hazira sample register with every why_not_stronger removed, so that
+                               check-register --strict names LR-08 and LR-12 whatever the shipped sample holds
+  uat-hazira-cards.json        the two-card Hazira test pack (tests/fixtures/hazira/print-2-card.json) whose cards
+                               name the learnings LR-02 and LR-10
+  uat-unknown-lr-pack.json     a Hazira pack whose second item names LR-99, which no register holds
+  uat-adoption-filled.csv      adoption.csv for the Hazira register as Excel saves it: a byte-order mark, CRLF line
+                               ends, reordered and extra columns, mixed-case responses and trailing blank rows
+  uat-distribution-filled.csv  distribution.csv for uat-hazira-cards: two dated deliveries and one planned
+  uat-org-chart.csv            an organisation's departments for the uat-approvable export (invented names)
+  uat-comparator.json, uat-comparison-map.json  a made-up company report on the pump fire and its mapping to the
+                               two learnings of uat-register.json
 
 The export shape follows tests/test_pmlc.py (FIND_COLS, ROWS, make_export), duplicated here so this tool
 needs only the standard library and openpyxl. The workbooks are rebuilt from scratch on every run.
 """
 import argparse
+import csv
+import io
 import json
 import sys
 from pathlib import Path
@@ -217,6 +231,131 @@ TEXT_FILES = {
 }
 
 
+# ----------------------------------------------------------------------------- Phase 3 inputs
+
+SAMPLE_REGISTER = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire" / "outputs" / "learnings-register.json"
+PRINT_2_CARD = ROOT / "tests" / "fixtures" / "hazira" / "print-2-card.json"
+
+
+def hazira_register():
+    """The sample register without any why_not_stronger: LR-08 and LR-12 are priority 1 with only administrative and
+    training fixes, so check-register --strict names them (Ruling P3-3)."""
+    r = json.loads(SAMPLE_REGISTER.read_text(encoding="utf-8"))
+    for e in r["entries"]:
+        e.pop("why_not_stronger", None)
+    return r
+
+
+def hazira_cards():
+    p = json.loads(PRINT_2_CARD.read_text(encoding="utf-8"))
+    p["pack"] = "uat-hazira-cards"
+    p["title"] = "UAT learning cards: Hazira gas release and fire, 2020"
+    cards = p["sections"][0]["items"]
+    cards[0]["learning"] = "LR-02"    # FND-3AB996FC: return to service without a test to design pressure
+    cards[1]["learning"] = "LR-10"    # FND-01C3DE98: gas detection that only displayed an alarm
+    return p
+
+
+UNKNOWN_LR_PACK = {
+    "pack": "uat-unknown-lr-pack", "schema": 1, "title": "UAT unknown learning pack: Hazira", "audience": "UAT testers",
+    "status": STATUS,
+    "bottom_line": [{"text": "A pressure-boundary repair went back into service with no test to design pressure.",
+                     "cites": ["FND-3AB996FC"], "learning": "LR-02"}],
+    "sections": [{"id": "learnings", "heading": "Learnings", "items": [
+        {"kind": "learning", "lesson": "A repair that disturbs a pressure boundary needs a test before restart.",
+         "cites": ["FND-3AB996FC"], "learning": "LR-02"},
+        {"kind": "learning", "lesson": "A seal with no specification on file invites a substitute part.",
+         "cites": ["FND-01C3DE98"], "learning": "LR-99"}]}]}
+
+# The organisation's answers (invented; roles only). Responses use Excel's capitals; the loader folds case.
+ADOPTION_FILLED = {
+    "LR-01": ("Accepted", "Head of Maintenance", "Q1 2027", "", "agreed at the site leadership meeting"),
+    "LR-02": ("Accepted", "Head of Maintenance", "Q1 2027", "", ""),
+    "LR-03": ("Modified", "Maintenance Manager", "Q2 2027",
+              "Independent check added to the existing permit rather than a new form", ""),
+    "LR-09": ("Accepted", "Head of Projects", "2027 shutdown", "", ""),
+    "LR-10": ("Accepted", "Instrumentation Manager", "2027 shutdown", "", ""),
+    "LR-12": ("Modified", "Head of Operations", "Q2 2027", "Simulator time shared with a sister site", ""),
+    "LR-24": ("Rejected", "HSE Manager", "", "Covered by the corporate drill standard now in revision", ""),
+}
+
+
+def adoption_filled(register) -> bytes:
+    """adoption.csv as Excel saves it: BOM, CRLF, columns reordered, an extra Notes column, two blank rows."""
+    buf = io.StringIO()
+    w = csv.writer(buf, lineterminator="\r\n")
+    w.writerow(["lr_id", "title", "response", "owning_role", "target_window", "reason", "Notes"])
+    for e in register["entries"]:
+        resp, role, window, reason, note = ADOPTION_FILLED.get(e["lr_id"], ("", "", "", "", ""))
+        w.writerow([e["lr_id"], e["title"], resp, role, window, reason, note])
+    w.writerow([""] * 7)
+    w.writerow([""] * 7)
+    return b"\xef\xbb\xbf" + buf.getvalue().encode("utf-8")
+
+
+DISTRIBUTION_FILLED = [
+    ["pack", "audience", "channel", "date", "delivered_by_role", "attendees", "contractors_included",
+     "questions_raised", "concerns_escalated"],
+    ["uat-hazira-cards", "Frontline crews (T1)", "Toolbox talk", "2026-11-05", "Shift In-charge", "14", "no",
+     "Where is the test record kept?", ""],
+    ["uat-hazira-cards", "Frontline crews (T1)", "Toolbox talk", "2026-11-06", "Maintenance Supervisor", "9", "yes",
+     "", "Spare seals in the store carry no part numbers"],
+    ["uat-hazira-cards", "Frontline crews (T1)", "Toolbox talk", "", "Shift In-charge", "", "", "", ""],
+]
+
+# Invented departments for the uat-approvable pump fire: one extends F06, two become new entities F20 and F21.
+ORG_CHART = [
+    ["department", "entity", "match", "tier"],
+    ["Stores and Purchase", "F06", "Stores/Procurement", "T3"],
+    ["Site Security", "", "Security Guard", "T1"],
+    ["Reliability Cell", "", "Reliability Engineer", "T3"],
+]
+
+COMPARATOR = {
+    "source": {"title": "Synthetic pump fire: site investigation report", "issuer_role": "Site investigation team",
+               "statutory_status": "non-statutory company report", "kind": "company-report"},
+    "items": [
+        {"id": "OBS-01", "type": "observation", "section": "3.1", "group": "Maintenance",
+         "text": "The pump was restarted after a seal change with no leak test recorded.", "hoc_tier": ""},
+        {"id": "RC-01", "type": "root_cause", "section": "4.1", "group": "Maintenance",
+         "text": "No return-to-service checklist required a leak test.", "hoc_tier": ""},
+        {"id": "RC-02", "type": "root_cause", "section": "4.2", "group": "Stores",
+         "text": "Seals were bought locally without a specification.", "hoc_tier": ""},
+        {"id": "REC-01", "type": "recommendation", "section": "5.1", "group": "Maintenance",
+         "text": "Introduce a return-to-service checklist with a leak-test hold point.", "hoc_tier": "administrative"},
+        {"id": "REC-02", "type": "recommendation", "section": "5.2", "group": "Maintenance",
+         "text": "Brief the seal-change crews on the leak-test step.", "hoc_tier": "training"},
+        {"id": "REC-03", "type": "recommendation", "section": "5.3", "group": "Control systems",
+         "text": "Link the pump-area gas detector to an automatic pump trip.", "hoc_tier": "engineering"},
+        {"id": "ACT-01", "type": "action", "section": "6.1", "group": "Stores",
+         "text": "Seal stock checked against the specification.", "hoc_tier": "administrative"}]}
+
+COMPARISON_MAP = [
+    {"lr_id": "LR-01", "ref": "OBS-01", "match": "yes"},
+    {"lr_id": "LR-01", "ref": "RC-01", "match": "yes"},
+    {"lr_id": "LR-01", "ref": "REC-01", "match": "partial"},
+    {"lr_id": "LR-02", "ref": "RC-02", "match": "yes"},
+    {"lr_id": "LR-02", "ref": "ACT-01", "match": "partial"},
+]
+
+
+def _csv_text(rows) -> str:
+    buf = io.StringIO()
+    csv.writer(buf, lineterminator="\n").writerows(rows)
+    return buf.getvalue()
+
+
+def phase3_files():
+    """{file name: bytes} for the Phase 3 inputs."""
+    reg = hazira_register()
+    dump = lambda o: (json.dumps(o, indent=1, ensure_ascii=False) + "\n").encode("utf-8")   # noqa: E731
+    return {"uat-hazira-register.json": dump(reg), "uat-hazira-cards.json": dump(hazira_cards()),
+            "uat-unknown-lr-pack.json": dump(UNKNOWN_LR_PACK), "uat-adoption-filled.csv": adoption_filled(reg),
+            "uat-distribution-filled.csv": _csv_text(DISTRIBUTION_FILLED).encode("utf-8"),
+            "uat-org-chart.csv": _csv_text(ORG_CHART).encode("utf-8"),
+            "uat-comparator.json": dump(COMPARATOR), "uat-comparison-map.json": dump(COMPARISON_MAP)}
+
+
 def main():
     ap = argparse.ArgumentParser(description="Write the UAT input files.")
     ap.add_argument("--out", type=Path, default=OUT, help="output folder (default: docs/uat/inputs)")
@@ -232,6 +371,9 @@ def main():
         print(f"wrote {out / name}")
     for name, text in TEXT_FILES.items():
         (out / name).write_text(text, encoding="utf-8")
+        print(f"wrote {out / name}")
+    for name, data in phase3_files().items():
+        (out / name).write_bytes(data)
         print(f"wrote {out / name}")
 
 

@@ -1,0 +1,66 @@
+{
+ "source": {
+  "title": "Synthetic pump fire: site investigation report",
+  "issuer_role": "Site investigation team",
+  "statutory_status": "non-statutory company report",
+  "kind": "company-report"
+ },
+ "items": [
+  {
+   "id": "OBS-01",
+   "type": "observation",
+   "section": "3.1",
+   "group": "Maintenance",
+   "text": "The pump was restarted after a seal change with no leak test recorded.",
+   "hoc_tier": ""
+  },
+  {
+   "id": "RC-01",
+   "type": "root_cause",
+   "section": "4.1",
+   "group": "Maintenance",
+   "text": "No return-to-service checklist required a leak test.",
+   "hoc_tier": ""
+  },
+  {
+   "id": "RC-02",
+   "type": "root_cause",
+   "section": "4.2",
+   "group": "Stores",
+   "text": "Seals were bought locally without a specification.",
+   "hoc_tier": ""
+  },
+  {
+   "id": "REC-01",
+   "type": "recommendation",
+   "section": "5.1",
+   "group": "Maintenance",
+   "text": "Introduce a return-to-service checklist with a leak-test hold point.",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-02",
+   "type": "recommendation",
+   "section": "5.2",
+   "group": "Maintenance",
+   "text": "Brief the seal-change crews on the leak-test step.",
+   "hoc_tier": "training"
+  },
+  {
+   "id": "REC-03",
+   "type": "recommendation",
+   "section": "5.3",
+   "group": "Control systems",
+   "text": "Link the pump-area gas detector to an automatic pump trip.",
+   "hoc_tier": "engineering"
+  },
+  {
+   "id": "ACT-01",
+   "type": "action",
+   "section": "6.1",
+   "group": "Stores",
+   "text": "Seal stock checked against the specification.",
+   "hoc_tier": "administrative"
+  }
+ ]
+}

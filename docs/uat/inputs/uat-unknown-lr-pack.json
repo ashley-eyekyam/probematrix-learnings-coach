@@ -1,0 +1,40 @@
+{
+ "pack": "uat-unknown-lr-pack",
+ "schema": 1,
+ "title": "UAT unknown learning pack: Hazira",
+ "audience": "UAT testers",
+ "status": "Learning purposes: not a statutory document",
+ "bottom_line": [
+  {
+   "text": "A pressure-boundary repair went back into service with no test to design pressure.",
+   "cites": [
+    "FND-3AB996FC"
+   ],
+   "learning": "LR-02"
+  }
+ ],
+ "sections": [
+  {
+   "id": "learnings",
+   "heading": "Learnings",
+   "items": [
+    {
+     "kind": "learning",
+     "lesson": "A repair that disturbs a pressure boundary needs a test before restart.",
+     "cites": [
+      "FND-3AB996FC"
+     ],
+     "learning": "LR-02"
+    },
+    {
+     "kind": "learning",
+     "lesson": "A seal with no specification on file invites a substitute part.",
+     "cites": [
+      "FND-01C3DE98"
+     ],
+     "learning": "LR-99"
+    }
+   ]
+  }
+ ]
+}

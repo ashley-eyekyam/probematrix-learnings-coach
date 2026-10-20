@@ -103,7 +103,7 @@ A malformed version changes nothing: `Version must look like 2.0.0, 2.0.0a1 or 2
 
 ## `tools/make-uat-inputs.py`
 
-Writes the user-acceptance-test input files: three small synthetic exports (a reviewer downgrade vote, a renamed column, a CAPA Planner export) and two packs to check against them. Fictional event, no real data.
+Writes the user-acceptance-test input files for the UAT books in `docs/uat/`: synthetic exports (a reviewer downgrade vote, a renamed column, a CAPA Planner export, and an export that can be signed off), packs and registers to check against them, the privacy test files, and, for the consolidated v2.0 book, copies built from the public Hazira sample (a register for the strict check, two learning cards that name their learnings, a pack naming an unknown learning), filled-in `adoption.csv` and `distribution.csv` files (the adoption one saved the way Excel saves it), an org chart and a comparator with its map. Fictional events and invented names only.
 
 ```text
 python3 tools/make-uat-inputs.py [--out DIR]
@@ -123,6 +123,8 @@ wrote uat/uat-renamed-header.xlsx
 wrote uat/uat-capa-planner.xlsx
 wrote uat/uat-votes-pack.json
 wrote uat/uat-unlinked-pack.json
+…
+wrote uat/uat-comparison-map.json
 ```
 
 ## `tools/smoke_sample.py`

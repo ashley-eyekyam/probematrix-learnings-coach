@@ -1,0 +1,2110 @@
+{
+ "title": "Learnings Register: Hazira gas terminal condensate release and fire, 24 September 2020 (draft)",
+ "source": "2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx (ProbeMatrix INC-2026-031). Draft learnings: investigation status in_progress; summary-sheet date (2020-08-24) and type (aviation) corrected to 24 Sep 2020, hydrocarbon release and fire. FND-44219027 excluded (reviewer downgrade).",
+ "status": "Learning purposes: not a statutory document; draft: the investigation status is in progress",
+ "entries": [
+  {
+   "lr_id": "LR-01",
+   "ml_id": "",
+   "title": "A legacy pressure-boundary seal was replaced with an unspecified local part because no one held or owned the specification",
+   "owner_entity": "F02 Mechanical Maintenance (co-owners: F06, F07)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If the original specification for a pressure-boundary part is lost and no role owns re-establishing it, maintainers will fit whatever part is to hand, and the substitute becomes normal practice, because the job has to be done and nothing in the system says 'stop'.",
+   "context": "The 1986 condensate meter used a rectangular-slot gasket. Its OEM specification was not on file, so locally bought round O-rings had been used as a 'regular practice' with no specification, quality check or recorded approval, across replacements in Nov 2018, Feb 2019 and Sep 2020. The 18 Sep 2020 seal failed on 24 Sep 2020 and was the release source. Maintainers were working in a gap the organisation had left: no spec, no approved substitute, no owner.",
+   "finding_ids": [
+    "FND-8C0BB623",
+    "FND-7A32AC87",
+    "FND-89962239",
+    "FND-B356F15B",
+    "FND-91B45FF9",
+    "FND-DA67926D",
+    "FND-54180594",
+    "FND-82673283",
+    "FND-45363DCA",
+    "FND-A2048FB8",
+    "FND-FFE174D0",
+    "FND-A443D288",
+    "FND-72A7D26C",
+    "FND-CEE4B00B",
+    "FND-3746C7B6",
+    "FND-42BEF461",
+    "FND-D66ACA7B",
+    "FND-852B7EC7",
+    "FND-DEAA7F90",
+    "FND-A3D7D53F",
+    "FND-B86F67F0",
+    "FND-D40839C1",
+    "FND-BC4FD086",
+    "FND-23139BF9",
+    "FND-EBB66554",
+    "FND-B440C1BF",
+    "FND-8CE00707",
+    "FND-6B3A6492",
+    "FND-A0017E28",
+    "FND-B56701CA",
+    "FND-2B0A49CB",
+    "FND-35861FFB",
+    "FND-2CEE8915",
+    "FND-48C48354",
+    "FND-9A8F3D7A",
+    "FND-7832DDF6",
+    "FND-DE30BD8B"
+   ],
+   "evidence_ids": [
+    "EVD-8645",
+    "EVD-1494",
+    "EVD-0064"
+   ],
+   "evidence_strength": "corroborated",
+   "confidence": "high",
+   "hfacs_level": "L4 Resource Management (equipment, spares and technical information)",
+   "causal_role": "initiating",
+   "barrier": "prevention: pressure-boundary integrity (correct seal)",
+   "hazard": "loss of containment of condensate / hydrocarbon vapour",
+   "activity": "maintenance: gasket replacement on a legacy meter",
+   "performance_mode": "rule-based; routine deviation normalised over 22 months (no rule or spec available)",
+   "org_system": "maintenance regime; contractor and supply chain",
+   "pattern": "Three replacements in 22 months with the same substitute part; described in the source as regular practice.",
+   "precursors": "Nov 2018, Feb 2019 and Sep 2020 replacements on the same meter; SAP notification 3800419840 on 17 Sep 2020.",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Flange seal failure releasing condensate vapour that finds an ignition source: major fire or vapour cloud explosion.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "maintenance technicians and supervisors",
+    "stores and procurement",
+    "engineering authority",
+    "plant leadership"
+   ],
+   "learning_level": "organisational; double-loop",
+   "formats": [
+    "Brief",
+    "Card",
+    "toolbox talk"
+   ],
+   "tier_messages": {
+    "T1": "If you cannot confirm a seal or gasket matches the specification for a pressure part, stop and ask for the spec. Do not fit 'what we normally use'.",
+    "T2": "Before signing off pressure-boundary work, check the part against a written specification. No spec means no sign-off.",
+    "T3": "Find every pressure-boundary item with no specification on file and re-establish it (OEM, reverse engineering or an engineered substitute).",
+    "T4": "Give one named function ownership of pressure-part specifications and of approving any substitute.",
+    "T5": "Ask for assurance that legacy (pre-2000) pressure equipment has current part specifications and controlled spares."
+   },
+   "recommendations": [
+    {
+     "what": "Re-establish the seal design for the meter flange (OEM data or engineered equivalent) and stock only certified parts against that specification; quarantine non-conforming seals.",
+     "level_barrier": "L4 / pressure-boundary integrity",
+     "evidence_basis": "EVD-8645, EVD-1494",
+     "hoc_tier": "substitution",
+     "leading_indicator": "Share of critical pressure-boundary spares with a specification and certificate on file (target 100%)."
+    },
+    {
+     "what": "Make the stores system refuse to issue a pressure-boundary seal without a specification reference and an approved-substitute record.",
+     "level_barrier": "L4 / procurement control",
+     "evidence_basis": "EVD-8645",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Number of pressure-part issues blocked or referred for engineering approval per quarter, and their closure time."
+    },
+    {
+     "what": "Survey legacy equipment for lost specifications and plan replacement of meters that can no longer be maintained to specification.",
+     "level_barrier": "L4 / equipment obsolescence",
+     "evidence_basis": "EVD-8645, EVD-0064",
+     "hoc_tier": "elimination",
+     "leading_indicator": "Percentage of legacy items surveyed; number with a replacement or re-specification decision recorded."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-02",
+   "ml_id": "",
+   "title": "Pressure-boundary work went back into service without a test to design pressure, because no procedure required one",
+   "owner_entity": "F02 Mechanical Maintenance (co-owners: F01, F07)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4"
+   ],
+   "lesson": "If no procedure defines how a high-pressure joint is tested before return to service, crews will use the quickest available check (pressurising to operating pressure), and a weak joint will pass, because operating pressure does not prove the joint against the pressures it must withstand.",
+   "context": "After the 18 Sep 2020 gasket replacement, the system was pressurised to operating pressure with both meters isolated; no hydrostatic test to design pressure was done, and no SOP covered calibration or return to service of these meters. The meter went back online about 46 hours later and was in service when it failed.",
+   "finding_ids": [
+    "FND-7C5ED5B3",
+    "FND-FD617187",
+    "FND-212DC9B7",
+    "FND-15279F97",
+    "FND-7FA02383",
+    "FND-4944554C",
+    "FND-FDFA6FF5",
+    "FND-1662466D",
+    "FND-9174A5B0",
+    "FND-611A8BFC",
+    "FND-904FCA63",
+    "FND-C34A026C",
+    "FND-257C1100",
+    "FND-137BC719",
+    "FND-8ACDE078",
+    "FND-5919B328",
+    "FND-C4E06264",
+    "FND-3AB996FC",
+    "FND-86CB3683",
+    "FND-491EDE74",
+    "FND-50C7319E",
+    "FND-B91D4A23",
+    "FND-7A10FF70",
+    "FND-71EE9734"
+   ],
+   "evidence_ids": [
+    "EVD-2894",
+    "EVD-0185"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Organisational Process: procedures (no return-to-service SOP)",
+   "causal_role": "initiating",
+   "barrier": "prevention: post-maintenance pressure test / return-to-service verification",
+   "hazard": "loss of containment of condensate / hydrocarbon vapour",
+   "activity": "maintenance: return to service after pressure-boundary work",
+   "performance_mode": "rule-based; no rule available, so routine practice filled the gap",
+   "org_system": "procedures",
+   "pattern": "Operating-pressure-only acceptance had become the modelled return-to-service practice.",
+   "precursors": "Return to service on 19 Sep 2020; failure on 24 Sep 2020.",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Joint failure in service at full pressure with a large release.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "maintenance technicians and supervisors",
+    "operations (acceptance)",
+    "engineering authority"
+   ],
+   "learning_level": "organisational; single- and double-loop",
+   "formats": [
+    "Card",
+    "toolbox talk",
+    "Brief"
+   ],
+   "tier_messages": {
+    "T1": "After any work that opens a pressure boundary, ask: what test proves this joint, and who witnessed it? Write the answer on the job record.",
+    "T2": "Do not accept equipment back from maintenance without a recorded leak/pressure test to the written test pressure.",
+    "T3": "Write and issue a return-to-service procedure for high-pressure equipment that sets test type, test pressure and witness.",
+    "T4": "Treat return to service after pressure-boundary work as a hold point that operations must accept in writing."
+   },
+   "recommendations": [
+    {
+     "what": "Issue a return-to-service procedure for pressure-boundary work stating test medium, test pressure (design-based), hold time and independent witness, with a hold point in the work order.",
+     "level_barrier": "L4 / return-to-service verification",
+     "evidence_basis": "EVD-2894",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Share of pressure-boundary work orders closed with a recorded test result and witness signature (audited sample)."
+    },
+    {
+     "what": "Configure the work-order system so a pressure-boundary job cannot be closed or the equipment released to operations until a test result is entered.",
+     "level_barrier": "L4 / work-control system",
+     "evidence_basis": "EVD-2894, EVD-0185",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Number of attempted closures blocked for missing test data; trend to zero over two quarters."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-03",
+   "ml_id": "",
+   "title": "A high-consequence repair depended on one person's judgement, with no independent check of part, method or test",
+   "owner_entity": "F02 Mechanical Maintenance (co-owners: F08, F06)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4"
+   ],
+   "lesson": "If a job that can cause a major release is planned and resourced like routine work, with no inspector, test witness or close-out reviewer, then the only barrier is the fitter's knowledge, and any gap in it goes straight into service.",
+   "context": "The 18 Sep 2020 job was planned without the OEM specification, part QC, a hydrotest or a closing review, and it ran on a SAP notification with no job safety analysis or permit-based risk review. No one was assigned to verify seal specification, quality or post-installation integrity.",
+   "finding_ids": [
+    "FND-2FAB8D51",
+    "FND-A6312B6B",
+    "FND-28F8790B",
+    "FND-59A2F497",
+    "FND-F8C125D5",
+    "FND-615DB819",
+    "FND-7DF14ADB",
+    "FND-31459031",
+    "FND-63B6D260"
+   ],
+   "evidence_ids": [
+    "EVD-8645",
+    "EVD-2894",
+    "EVD-5105"
+   ],
+   "evidence_strength": "corroborated",
+   "confidence": "high",
+   "hfacs_level": "L3 Planned Inappropriate Operations (team and job resourcing)",
+   "causal_role": "contributory",
+   "barrier": "prevention: independent verification of critical maintenance",
+   "hazard": "loss of containment",
+   "activity": "maintenance planning and execution",
+   "performance_mode": "rule-based; planning norm treated critical work as routine",
+   "org_system": "maintenance regime; supervision",
+   "pattern": "Same unchecked job pattern on each of three replacements.",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Undetected defect in a pressure joint released straight to service.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "maintenance planners",
+    "maintenance supervisors",
+    "HSE / permit owners"
+   ],
+   "learning_level": "organisational; single-loop",
+   "formats": [
+    "Card",
+    "Brief"
+   ],
+   "tier_messages": {
+    "T1": "On safety-critical jobs, expect a second person to check your part and your test. Ask for it if no one comes.",
+    "T2": "Assign a named checker for part, method and test on every safety-critical pressure job before work starts.",
+    "T3": "Classify maintenance on hydrocarbon pressure boundaries as safety-critical and plan it with inspection and witness points.",
+    "T4": "Fund an independent QC/inspection role for safety-critical maintenance."
+   },
+   "recommendations": [
+    {
+     "what": "Introduce a safety-critical maintenance category in work planning that automatically adds inspection, test-witness and close-out review steps.",
+     "level_barrier": "L3 / independent verification",
+     "evidence_basis": "EVD-8645, EVD-2894",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Share of safety-critical jobs with all verification steps signed by someone other than the performer."
+    },
+    {
+     "what": "Require a job safety analysis and permit review for any work opening a hydrocarbon pressure boundary, separate from the maintenance notification.",
+     "level_barrier": "L3 / work risk assessment",
+     "evidence_basis": "EVD-5105",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Audited share of pressure-boundary jobs with a completed JSA attached in the work system."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-04",
+   "ml_id": "",
+   "title": "The malfunction notification was never closed or reviewed, so the last administrative check before return to service did not happen",
+   "owner_entity": "F08 Work Management & Planning (co-owners: F02, F01)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4"
+   ],
+   "lesson": "If maintenance notifications can stay open after equipment returns to service, the close-out review that would catch a missing test or a non-standard part never happens, and repeat failures are not linked together.",
+   "context": "SAP notification 3800419840 (raised 17 Sep 2020 for the meter malfunction) was not closed or reviewed by a senior officer after the gasket job, and no role was accountable for closure. The source recommends sample checks of closure by senior officers.",
+   "finding_ids": [
+    "FND-50775B5A",
+    "FND-56C66B96",
+    "FND-267F1E09",
+    "FND-8071945B",
+    "FND-C59DCD29",
+    "FND-AE60859C",
+    "FND-2B53492C",
+    "FND-96DB7E93",
+    "FND-FA807C69",
+    "FND-977FABA2",
+    "FND-6D3446CD",
+    "FND-646BAC1F",
+    "FND-62EF1667",
+    "FND-30C43927",
+    "FND-678E51A3"
+   ],
+   "evidence_ids": [
+    "EVD-0591",
+    "EVD-0185"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L3 Supervision Inadequate (close-out review)",
+   "causal_role": "contributory",
+   "barrier": "prevention: work close-out review",
+   "hazard": "loss of containment",
+   "activity": "work management / CMMS",
+   "performance_mode": "rule-based; lapse in a routine administrative step that had become optional",
+   "org_system": "maintenance regime; supervision",
+   "pattern": "Described as a systematic non-closure pattern, not a one-off.",
+   "precursors": "Notification raised 17 Sep 2020, still open at the time of the incident.",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Defective repair passes without review; repeat-failure signals stay invisible.",
+   "transferability": "other sites",
+   "priority": 2,
+   "audiences": [
+    "maintenance supervisors",
+    "maintenance planners",
+    "operations shift in-charges"
+   ],
+   "learning_level": "team; single-loop",
+   "formats": [
+    "Card"
+   ],
+   "tier_messages": {
+    "T2": "Close every notification you raise or work, with what was found, what was done and how it was tested.",
+    "T3": "Report open notifications on returned-to-service equipment weekly and review a sample of closures.",
+    "T4": "Add notification close-out quality to the maintenance KPI review."
+   },
+   "recommendations": [
+    {
+     "what": "Link equipment status to notification status in SAP so equipment cannot be set 'available' while its corrective notification is open.",
+     "level_barrier": "L3 / close-out review",
+     "evidence_basis": "EVD-0591, EVD-0185",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Count of in-service equipment with an open corrective notification older than 7 days."
+    },
+    {
+     "what": "Senior officers sample-check closed notifications on safety-critical equipment each month (as the source recommends).",
+     "level_barrier": "L3 / supervisory review",
+     "evidence_basis": "EVD-0591",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Number of sample checks done per month and share finding a defect."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-05",
+   "ml_id": "",
+   "title": "Repeat failures of the same seal were treated as routine repairs, not as a reliability warning",
+   "owner_entity": "F02 Mechanical Maintenance (co-owners: F05, F08)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4"
+   ],
+   "lesson": "If nothing in the maintenance system counts repeat failures on the same item, each failure is fixed as if it were the first, and the same inadequate repair is repeated until it fails in the worst conditions.",
+   "context": "The meter's gasket was replaced in Nov 2018, Feb 2019 and Sep 2020, and a malfunction notification was raised on 17 Sep 2020. None of these triggered root-cause analysis, an engineering review, OEM spares recovery or replacement of the meter. There was no reliability function to see the pattern.",
+   "finding_ids": [
+    "FND-8DA35CA9",
+    "FND-69067A1C",
+    "FND-71D631C1",
+    "FND-CEE3D4D7",
+    "FND-D14B8424",
+    "FND-110F964C",
+    "FND-4EDE038A",
+    "FND-AC9A1E69",
+    "FND-FEC84761",
+    "FND-82FC718D",
+    "FND-3A34BAD3",
+    "FND-E0AE86A6",
+    "FND-1A251687",
+    "FND-55F68376",
+    "FND-350C35AD",
+    "FND-AC8FBB26",
+    "FND-F0D015E1",
+    "FND-8B4A5414",
+    "FND-065439DE"
+   ],
+   "evidence_ids": [
+    "EVD-1494",
+    "EVD-0591"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Organisational Climate/Culture (inconsistent risk management of known problems)",
+   "causal_role": "contributory",
+   "barrier": "prevention: reliability / bad-actor management",
+   "hazard": "loss of containment",
+   "activity": "maintenance management",
+   "performance_mode": "knowledge-based; pattern not visible to anyone",
+   "org_system": "maintenance regime",
+   "pattern": "Three failures in 22 months on one item; fourth failure caused the release.",
+   "precursors": "Nov 2018, Feb 2019, Sep 2020 replacements; 17 Sep 2020 notification.",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Known bad-actor fails during a high-consequence condition.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "maintenance managers",
+    "reliability / integrity engineers",
+    "plant leadership"
+   ],
+   "learning_level": "organisational; double-loop",
+   "formats": [
+    "Brief",
+    "Card"
+   ],
+   "tier_messages": {
+    "T1": "If you are fixing the same fault again, say so on the job record. That note is what starts a root-cause review.",
+    "T2": "Raise a root-cause request when the same item fails twice in a year.",
+    "T3": "Run a monthly repeat-failure report from the CMMS and assign a root-cause analysis to each bad actor.",
+    "T4": "Establish a reliability function (or role) that owns bad-actor review across disciplines."
+   },
+   "recommendations": [
+    {
+     "what": "Set an automatic repeat-failure trigger in the CMMS (e.g. two corrective jobs on one tag in 12 months) that opens a root-cause investigation task.",
+     "level_barrier": "L4 / reliability management",
+     "evidence_basis": "EVD-1494",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Number of bad actors flagged per quarter and share with a completed root-cause analysis within 60 days."
+    },
+    {
+     "what": "Retire or replace pressure equipment that cannot be kept to specification after repeated failures.",
+     "level_barrier": "L4 / equipment obsolescence",
+     "evidence_basis": "EVD-1494, EVD-0591",
+     "hoc_tier": "elimination",
+     "leading_indicator": "Count of bad-actor items with a recorded repair-or-replace decision."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-06",
+   "ml_id": "",
+   "title": "The management-of-change procedure existed on paper but had not been used since 2018",
+   "owner_entity": "F07 Engineering, Design, Documents & MOC (co-owners: F02, F13)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If a management-of-change procedure is published but never triggered, changes in parts, materials and pipework happen without risk review, because people do not recognise a 'like-for-unlike' replacement as a change.",
+   "context": "An MOC SOP was published in Aug 2016, but no MOC had been implemented since 2018. The gasket-to-O-ring substitution, and earlier header changes in 2013 and 2018, went through without change review.",
+   "finding_ids": [
+    "FND-5A5F6AB3",
+    "FND-8083ECAC",
+    "FND-F7FE8463",
+    "FND-7838175A",
+    "FND-ADF96860",
+    "FND-CDE8E62D",
+    "FND-07080447",
+    "FND-CAF9833D",
+    "FND-6ECCE231",
+    "FND-EB48C68C",
+    "FND-9F8CA896",
+    "FND-3FEE59DF",
+    "FND-922A04DB",
+    "FND-EEC2407A"
+   ],
+   "evidence_ids": [
+    "EVD-2986",
+    "EVD-8645"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Organisational Process: oversight of programmes (MOC not implemented)",
+   "causal_role": "contributory",
+   "barrier": "prevention: management of change",
+   "hazard": "loss of containment from unreviewed changes",
+   "activity": "engineering change / maintenance substitution",
+   "performance_mode": "rule-based; rule existed but was not triggered (not recognised as a change)",
+   "org_system": "management of change",
+   "pattern": "Plant-wide: no MOCs since 2018, so not specific to this meter.",
+   "precursors": "2013 and 2018 header changes done without MOC.",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Any unreviewed change in hydrocarbon service introduces a new failure mode.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "engineering authority",
+    "maintenance and operations managers",
+    "stores",
+    "plant leadership"
+   ],
+   "learning_level": "organisational; double-loop",
+   "formats": [
+    "Brief",
+    "toolbox talk"
+   ],
+   "tier_messages": {
+    "T1": "A different part, material or size than the original is a change. Ask for an MOC before fitting it.",
+    "T2": "Check that any non-like-for-like replacement has an MOC number before you authorise the job.",
+    "T3": "Define 'replacement not in kind' with examples (seals, gaskets, materials) and make it trigger MOC.",
+    "T4": "Track the number of MOCs raised per month; zero over a long period means the system is not being used.",
+    "T5": "Ask for evidence that MOC is in active use at each site, not only that a procedure exists."
+   },
+   "recommendations": [
+    {
+     "what": "Build an MOC trigger into the work order and stores issue screens: a non-catalogue or substitute part requires an MOC reference.",
+     "level_barrier": "L4 / management of change",
+     "evidence_basis": "EVD-2986, EVD-8645",
+     "hoc_tier": "engineering",
+     "leading_indicator": "MOCs raised per month (non-zero, trending stable) and share of substitute-part issues with an MOC reference."
+    },
+    {
+     "what": "Relaunch the MOC procedure with a short 'replacement in kind' guide and briefing for maintenance, stores and operations.",
+     "level_barrier": "L4 / management of change",
+     "evidence_basis": "EVD-2986",
+     "hoc_tier": "training",
+     "leading_indicator": "Share of maintenance and stores staff briefed; MOC quality audit score. (Training alone is weak; pairs with the engineering trigger above.)"
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-07",
+   "ml_id": "",
+   "title": "The emergency plan named the major-leak scenario but gave no isolation criteria and no delegated authority to isolate",
+   "owner_entity": "F09b Emergency Planning & Command (co-owners: F01, F13)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If an emergency plan names a release scenario but not who may isolate, and on what criteria, isolation waits for escalation up the chain, because people at the scene reasonably believe they need permission to shut in a major supply.",
+   "context": "The on-site DMP covered hydrocarbon leakage but did not include isolation or stoppage decision criteria. No standing authority below the Plant Manager to close the emergency valves is recorded. The response escalated serially (control room, shift in-charges, Commander-in-Charge) with a mid-incident hand-off; the first isolation valve (MOV 54) closed at 03:01, about 46 minutes after the leak began at 02:12:50.",
+   "finding_ids": [
+    "FND-314D34C5",
+    "FND-DE132C95",
+    "FND-AE629313",
+    "FND-81E3EEA0",
+    "FND-500E0B2D",
+    "FND-8DAFDADC",
+    "FND-7505B1AF",
+    "FND-2EC435D0",
+    "FND-BB4CC662",
+    "FND-D4A3EF8A",
+    "FND-4F687CC5",
+    "FND-D1DF4895",
+    "FND-7A2429CE",
+    "FND-33D32D4C",
+    "FND-DF1144C3",
+    "FND-82761CC5",
+    "FND-730D0DCA",
+    "FND-6472CD15",
+    "FND-E009D26B",
+    "FND-5C7B163D",
+    "FND-446A7956",
+    "FND-D4A6F6B6",
+    "FND-A206DFD6",
+    "FND-8A8F94A5"
+   ],
+   "evidence_ids": [
+    "EVD-4052",
+    "EVD-6414",
+    "EVD-3932",
+    "EVD-9612",
+    "EVD-7340"
+   ],
+   "evidence_strength": "corroborated",
+   "confidence": "high",
+   "hfacs_level": "L4 Organisational Process: procedures and policy (emergency plan)",
+   "causal_role": "escalating",
+   "barrier": "mitigation: emergency isolation",
+   "hazard": "flammable vapour cloud accumulation",
+   "activity": "emergency response",
+   "performance_mode": "rule-based; no rule available, so people improvised and escalated",
+   "org_system": "emergency preparedness",
+   "pattern": "Same gap repeated in DMP and ERDMP documents.",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Vapour cloud grows for tens of minutes and ignites: fire or vapour cloud explosion with off-site impact.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "shift in-charges",
+    "control-room engineers",
+    "emergency planners",
+    "plant leadership"
+   ],
+   "learning_level": "organisational; double-loop",
+   "formats": [
+    "Brief",
+    "Card",
+    "toolbox talk",
+    "module"
+   ],
+   "tier_messages": {
+    "T1": "On a confirmed major hydrocarbon release, isolation is your first job. You are authorised to do it; report while you act.",
+    "T2": "Know the isolation trigger and the valves for each release scenario on your unit. Do not wait for the call chain to isolate.",
+    "T3": "Write isolation and stoppage criteria, valve lists and delegated authority into the emergency plan for every release scenario.",
+    "T4": "Give shift crews standing written authority to isolate and shut down on defined criteria, and back them when they do.",
+    "T5": "Ask whether every site's emergency plan says who may isolate, on what criteria, without calling up."
+   },
+   "recommendations": [
+    {
+     "what": "Add scenario-specific isolation and stoppage criteria, isolation valve lists and delegated authority (down to control-room shift level) to the DMP/ERDMP.",
+     "level_barrier": "L4 / emergency isolation",
+     "evidence_basis": "EVD-4052, EVD-3932",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Share of release scenarios in the plan with written criteria, valves and authority; time-to-isolate in drills."
+    },
+    {
+     "what": "Pair the written authority with remote or automatic isolation so the decision can be executed from a safe place (see the isolation-valve learning).",
+     "level_barrier": "L4 / emergency isolation",
+     "evidence_basis": "EVD-3932, EVD-9612",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Drill time from confirmed release to isolation (target set by consequence study)."
+    },
+    {
+     "what": "Run unannounced night-shift drills on the major-release scenario that test isolation without senior staff present.",
+     "level_barrier": "L4 / emergency readiness",
+     "evidence_basis": "EVD-6414",
+     "hoc_tier": "training",
+     "leading_indicator": "Number of night-shift isolation drills per quarter and median time to isolation."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-08",
+   "ml_id": "",
+   "title": "When the vapour cloud blocked access, the shift response stayed on 'find the leak' rather than switching to upstream isolation",
+   "owner_entity": "F01 Operations & Control Room (co-owners: F13, F09b)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4"
+   ],
+   "lesson": "If responders are not trained to switch from 'locate and fix' to 'isolate from a distance' as soon as a release blocks access, they keep trying to approach and escalate by phone, because that is what normal leak response looks like.",
+   "context": "Control-room engineers went out to find the source and were driven back by gas density. Senior shift staff arrived at about 02:35 and could not enter the area; first isolation came at 03:01 and the 36-inch line control valve at 03:04. Responders had no isolation criteria, no remote valves and limited emergency training (see related learnings), so this is a learning about decision support, not individual blame.",
+   "finding_ids": [
+    "FND-20217957",
+    "FND-36179046",
+    "FND-305216AF",
+    "FND-4245FBF2",
+    "FND-C92C29DB",
+    "FND-5F3E97E1",
+    "FND-82D49143",
+    "FND-AEA16F83",
+    "FND-744032B6",
+    "FND-13708453",
+    "FND-969D104C",
+    "FND-61129BB8",
+    "FND-F887999D"
+   ],
+   "evidence_ids": [
+    "EVD-9612",
+    "EVD-7340",
+    "EVD-1460",
+    "EVD-9220",
+    "EVD-6414"
+   ],
+   "evidence_strength": "corroborated",
+   "confidence": "medium",
+   "hfacs_level": "L3 Supervision Inadequate (failure to respond to critical information)",
+   "causal_role": "escalating",
+   "barrier": "mitigation: emergency isolation decision",
+   "hazard": "flammable vapour cloud accumulation",
+   "activity": "emergency response",
+   "performance_mode": "knowledge-based; mistake under time pressure in an untrained situation",
+   "org_system": "emergency preparedness; training and competence",
+   "pattern": "",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Isolation delayed until ignition.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "control-room engineers",
+    "shift in-charges",
+    "emergency trainers"
+   ],
+   "learning_level": "team; double-loop",
+   "formats": [
+    "Card",
+    "toolbox talk",
+    "module"
+   ],
+   "tier_messages": {
+    "T1": "If you cannot reach the source safely, stop trying. Isolate upstream and downstream from where you can.",
+    "T2": "Your first decision on a major release is which valves isolate it from a safe place. Make it before you arrive on scene.",
+    "T3": "Train and drill the switch from 'locate' to 'isolate remotely', with decision aids at the control-room console."
+   },
+   "recommendations": [
+    {
+     "what": "Provide control-room decision aids (isolation matrices by area) for major releases, showing which valves isolate each section and where they can be operated from.",
+     "level_barrier": "L3 / isolation decision",
+     "evidence_basis": "EVD-6414, EVD-3932",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Isolation matrices in place for all hydrocarbon areas; tested in drills."
+    },
+    {
+     "what": "Scenario training (simulator or tabletop) where access to the source is denied, measuring time to the isolate decision.",
+     "level_barrier": "L3 / emergency competence",
+     "evidence_basis": "EVD-1460, EVD-9220, EVD-9612",
+     "hoc_tier": "training",
+     "leading_indicator": "Share of shift leaders who completed the scenario in the last 12 months; decision time trend."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-09",
+   "ml_id": "",
+   "title": "Emergency isolation valves could only be closed by hand at the valve, inside the area the release made unreachable",
+   "owner_entity": "F01 Operations & Control Room (co-owners: F13, F07)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If the valves that stop a release can only be operated at the valve, they will be unreachable in exactly the event they exist for, because a large release fills the area around them.",
+   "context": "MOV 54 and the other Gas Terminal emergency valves had no remote operation from the control room. The dense vapour cloud stopped people approaching from about 02:15; the first valve closed at 03:01. The risk that the valves would be inaccessible during a release had not been assessed.",
+   "finding_ids": [
+    "FND-4C645CB5",
+    "FND-31405D96",
+    "FND-A7137BC4",
+    "FND-DE978BF5",
+    "FND-DBE08E73",
+    "FND-7D28BE30",
+    "FND-05841EDA",
+    "FND-322112EE",
+    "FND-044D1DEC",
+    "FND-02310148",
+    "FND-6DB250E6",
+    "FND-A19F3D9C",
+    "FND-9B406A83",
+    "FND-01ADF0AA",
+    "FND-594A80E9",
+    "FND-BDD73BA2",
+    "FND-FD0EF0F5",
+    "FND-097AB964"
+   ],
+   "evidence_ids": [
+    "EVD-3932",
+    "EVD-9612",
+    "EVD-1460",
+    "EVD-9220",
+    "EVD-9941"
+   ],
+   "evidence_strength": "corroborated",
+   "confidence": "high",
+   "hfacs_level": "L4 Resource Management (equipment design)",
+   "causal_role": "escalating",
+   "barrier": "mitigation: emergency isolation (hardware)",
+   "hazard": "flammable vapour cloud accumulation",
+   "activity": "emergency response",
+   "performance_mode": "n/a (design condition)",
+   "org_system": "design and human-machine interface",
+   "pattern": "All Gas Terminal MOVs, not one valve.",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Release continues unchecked until ignition or inventory exhaustion.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "engineering authority",
+    "operations management",
+    "plant leadership",
+    "corporate capital planning"
+   ],
+   "learning_level": "organisational; double-loop",
+   "formats": [
+    "Brief"
+   ],
+   "tier_messages": {
+    "T2": "Know which emergency valves on your unit can only be shut locally, and how you would isolate if you could not reach them.",
+    "T3": "List emergency isolation valves that are local-only and assess for each whether a release would deny access.",
+    "T4": "Fund remote-operated (and where justified, automatic) emergency isolation for inventories that can produce a large vapour cloud.",
+    "T5": "Ask for a fleet-wide inventory of local-only emergency isolation valves on major hazard sites."
+   },
+   "recommendations": [
+    {
+     "what": "Convert the Gas Terminal emergency isolation valves to remotely operated ESD valves, operable from the control room and a safe secondary location.",
+     "level_barrier": "L4 / emergency isolation",
+     "evidence_basis": "EVD-3932, EVD-9612",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Share of identified emergency isolation points with remote operation; ESD valve proof-test pass rate."
+    },
+    {
+     "what": "Assess every major-hazard area for access-denied isolation (vapour, fire, toxic) and record the isolation strategy.",
+     "level_barrier": "L4 / risk assessment",
+     "evidence_basis": "EVD-9941, EVD-1460",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Number of areas with an access-denied isolation assessment completed."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-10",
+   "ml_id": "",
+   "title": "Gas detection only displayed an alarm; it did not trigger shutdown or protection, and it alarmed after people had already seen the cloud",
+   "owner_entity": "F04 Instrumentation, Control & Calibration (co-owners: F01, F11)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If fire and gas detection only lights an annunciator, every protective action depends on people noticing, verifying and deciding, which takes minutes to tens of minutes, because the system was designed to inform rather than act.",
+   "context": "Hydrocarbon/H2S detectors were configured annunciator-only, without DCS history and without automatic shutdown or suppression interlocks. The first control-room alarm came at about 02:20, about 7 minutes after CCTV showed the leak and 5 minutes after security staff saw it. The plant relied on a manual chain that took 46 minutes to isolate.",
+   "finding_ids": [
+    "FND-A245072B",
+    "FND-B5C0CE8F",
+    "FND-94C28ACE",
+    "FND-9399FA02",
+    "FND-D45021AD",
+    "FND-4D7CF773",
+    "FND-119E6CF7",
+    "FND-5BC96E8A",
+    "FND-2D90823E",
+    "FND-01C3DE98",
+    "FND-6155A1C2",
+    "FND-4458E0C0",
+    "FND-5897D1E4",
+    "FND-3D785319",
+    "FND-A31F75EF",
+    "FND-5134D887",
+    "FND-789D5D60",
+    "FND-C5000A82",
+    "FND-15B4E60F"
+   ],
+   "evidence_ids": [
+    "EVD-8657",
+    "EVD-3452",
+    "EVD-1284"
+   ],
+   "evidence_strength": "corroborated",
+   "confidence": "high",
+   "hfacs_level": "L4 Organisational Climate/Culture (risk accepted in design of protective systems)",
+   "causal_role": "escalating",
+   "barrier": "mitigation: detection and automatic protective action",
+   "hazard": "flammable vapour cloud accumulation",
+   "activity": "detection and alarm",
+   "performance_mode": "n/a (design condition)",
+   "org_system": "design and human-machine interface",
+   "pattern": "",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Large release detected late and not acted on automatically.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "instrument and control engineers",
+    "process safety",
+    "plant leadership"
+   ],
+   "learning_level": "organisational; double-loop",
+   "formats": [
+    "Brief"
+   ],
+   "tier_messages": {
+    "T1": "Treat a gas alarm as late news: the release has already started. Act on it as confirmed until proved otherwise.",
+    "T2": "Know which gas alarms on your unit trigger automatic action and which do not. For those that do not, the response is yours.",
+    "T3": "Review F&G cause-and-effect: which detectors should trip ESD, start deluge or isolate, and where history should be kept.",
+    "T4": "Approve and fund F&G voting logic with automatic executive action for major-release areas."
+   },
+   "recommendations": [
+    {
+     "what": "Implement confirmed-gas voting logic that automatically initiates ESD isolation (and deluge where designed) in the metering and Gas Terminal areas.",
+     "level_barrier": "L4 / automatic protective action",
+     "evidence_basis": "EVD-3452, EVD-8657",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Share of major-release areas covered by executive F&G action; spurious-trip and proof-test records."
+    },
+    {
+     "what": "Historise all F&G detector signals in the DCS and review detector coverage against credible release locations.",
+     "level_barrier": "L4 / detection",
+     "evidence_basis": "EVD-8657, EVD-1284",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Share of detectors historised; detector coverage study completed and gaps closed."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-11",
+   "ml_id": "",
+   "title": "A damaged flameproof light fitting stayed in service in a hazardous area under breakdown-led electrical maintenance",
+   "owner_entity": "F03 Electrical Maintenance (co-owners: F11, F02)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If electrical maintenance in hazardous areas responds to breakdowns instead of inspecting explosion-protected equipment, defects that do not stop the equipment working (missing bolts, open enclosures) stay in service until a release finds them.",
+   "context": "The investigating committee identified as the probable ignition source an HPMV flameproof lamp at the skid with three bolts missing and its glass case open about 5-6 cm. Electrical PM was breakdown-skewed, and the post-incident audit grouped all nine lamps into one generic status. Confidence is medium because the ignition source is 'probable', not proven.",
+   "finding_ids": [
+    "FND-784A23E4",
+    "FND-74A80D24",
+    "FND-C7F16268",
+    "FND-554BFB4A",
+    "FND-1D61DC3A",
+    "FND-ADC25F29",
+    "FND-0B35D995",
+    "FND-5E08D0F8",
+    "FND-675D99DD",
+    "FND-1280E788",
+    "FND-ABF11182",
+    "FND-CCE6F868",
+    "FND-76BE46EF",
+    "FND-E6759E06",
+    "FND-D1709E71",
+    "FND-198069BD",
+    "FND-9066FB74",
+    "FND-5C43E7A3",
+    "FND-FD533742",
+    "FND-02C51A67",
+    "FND-B1D1AAC1",
+    "FND-30EC643B"
+   ],
+   "evidence_ids": [
+    "EVD-6916",
+    "EVD-9999",
+    "EVD-0496"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "medium",
+   "hfacs_level": "L4 Organisational Process: maintenance programme (hazardous-area equipment)",
+   "causal_role": "contributory",
+   "barrier": "prevention: ignition source control",
+   "hazard": "ignition of flammable atmosphere",
+   "activity": "electrical preventive maintenance and inspection",
+   "performance_mode": "rule-based; inspection rule not enforced",
+   "org_system": "maintenance regime; assurance and audit",
+   "pattern": "Breakdown-led electrical PM across the area, not one lamp.",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Any release in a zoned area finds an ignition source.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "electrical technicians and supervisors",
+    "process safety",
+    "auditors"
+   ],
+   "learning_level": "organisational; single- and double-loop",
+   "formats": [
+    "Card",
+    "toolbox talk"
+   ],
+   "tier_messages": {
+    "T1": "A flameproof fitting with a missing bolt or open cover is not flameproof. Report it and make it safe the same shift.",
+    "T2": "Include Ex-equipment checks (bolts, covers, glands) in area rounds and record them by item, not as a group.",
+    "T3": "Set up a hazardous-area (Ex) inspection programme with item-level records and competent inspectors.",
+    "T4": "Fund replacement of old HPMV fittings in zoned areas with certified LED fittings."
+   },
+   "recommendations": [
+    {
+     "what": "Replace legacy HPMV flameproof lamps in zoned areas with certified, lower-surface-temperature LED fittings.",
+     "level_barrier": "L4 / ignition source control",
+     "evidence_basis": "EVD-6916, EVD-9999",
+     "hoc_tier": "substitution",
+     "leading_indicator": "Share of zoned-area luminaires replaced with certified fittings."
+    },
+    {
+     "what": "Introduce a risk-based Ex inspection programme (initial, periodic and sample detailed inspections) with item-level records.",
+     "level_barrier": "L4 / ignition source control",
+     "evidence_basis": "EVD-9999, EVD-0496",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Ex inspection completion against plan; defects found and closed per quarter."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-12",
+   "ml_id": "",
+   "title": "Control-room staff held emergency duties after a four-day general course, with no defined qualification or simulator practice",
+   "owner_entity": "F01 Operations & Control Room (co-owners: F12, F02)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If no qualification is defined for control-room operators, people are assigned to emergency duty after general training only, and a rare, time-critical event becomes their first practice, because rostering fills posts with whoever is available.",
+   "context": "Control-room training was a four-day general course, with no defined qualification in HR/Operations policy and no simulator practice; the committee recommended at least one month on simulators. The night-shift two-person crew had no member with practised emergency-isolation competence.",
+   "finding_ids": [
+    "FND-337CB67F",
+    "FND-E4596837",
+    "FND-4C146B0E",
+    "FND-02B682F3",
+    "FND-D2343F46",
+    "FND-4B285961",
+    "FND-7885BCF5",
+    "FND-F2D32B1D",
+    "FND-E3D07562",
+    "FND-FA1C9404",
+    "FND-78ED8552",
+    "FND-8EC441F3",
+    "FND-0AEE9898",
+    "FND-64E24A9E",
+    "FND-2AA87E93",
+    "FND-E44E0EDA",
+    "FND-42043FE6",
+    "FND-F6B552F6",
+    "FND-268CA069",
+    "FND-6CBACB54",
+    "FND-14D093BD",
+    "FND-47E58DF8",
+    "FND-057E89A7",
+    "FND-954553FD"
+   ],
+   "evidence_ids": [
+    "EVD-5634",
+    "EVD-1460",
+    "EVD-9220"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L3 Supervision Inadequate (training and qualification)",
+   "causal_role": "contributory",
+   "barrier": "mitigation: competent emergency response",
+   "hazard": "delayed response to major release",
+   "activity": "control-room operation",
+   "performance_mode": "knowledge-based; untrained situation",
+   "org_system": "training and competence; staffing and fatigue",
+   "pattern": "Most staff had attended one basic course since 2018.",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Crew cannot execute the emergency response the plant relies on.",
+   "transferability": "industry-wide",
+   "priority": 1,
+   "audiences": [
+    "HR and training",
+    "operations managers",
+    "control-room staff"
+   ],
+   "learning_level": "organisational; double-loop",
+   "formats": [
+    "Brief",
+    "module"
+   ],
+   "tier_messages": {
+    "T1": "Ask for practice on the emergencies you are expected to handle. If you have never practised one, tell your supervisor.",
+    "T2": "Do not roster anyone alone on emergency duty who has not passed the emergency-response assessment for that unit.",
+    "T3": "Define a control-room qualification (knowledge, simulator scenarios, assessment, refresher interval).",
+    "T4": "Require that every shift has at least one qualified emergency-competent person in each control room.",
+    "T5": "Ask for control-room competence assurance (qualified share by site) as a standing board metric."
+   },
+   "recommendations": [
+    {
+     "what": "Define a control-room operator qualification with simulator-based emergency scenarios and a pass standard; make it a rostering prerequisite.",
+     "level_barrier": "L3 / competence",
+     "evidence_basis": "EVD-5634",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Share of control-room positions filled by qualified staff on each shift."
+    },
+    {
+     "what": "Deliver at least one month of simulator training (as the committee recommends) with annual emergency refreshers.",
+     "level_barrier": "L3 / competence",
+     "evidence_basis": "EVD-5634",
+     "hoc_tier": "training",
+     "leading_indicator": "Simulator hours per operator per year; scenario pass rate. (Training supports, but does not replace, the engineering controls in LR-09 and LR-10.)"
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-13",
+   "ml_id": "",
+   "title": "People saw the release first, but their warnings reached the control room late and diluted",
+   "owner_entity": "F01 Operations & Control Room (co-owners: F10, F02)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3"
+   ],
+   "lesson": "If perimeter and security staff have no direct line to the control room that can act, and no standard words for a hydrocarbon release, the warning is relayed and softened, because each relay point verifies and re-describes it.",
+   "context": "Two security posts saw the cloud at about 02:15 and called the security network, fire station and another control room, but not the Gas Terminal control room. The CCTV room confirmed 'heavy leakage' but called the Gas Terminal control room at 02:18 describing 'some vapour cloud or steam leakage'. About 3-5 minutes were lost, and urgency was diluted.",
+   "finding_ids": [
+    "FND-BC00FF3A",
+    "FND-5AB5DFA3",
+    "FND-1ABF45B7",
+    "FND-C75F81B9",
+    "FND-57281AC5",
+    "FND-37BC45CF",
+    "FND-95F9205E",
+    "FND-439E0DF7",
+    "FND-2F736E5F",
+    "FND-0A64F629",
+    "FND-A9C42ABE",
+    "FND-35636BDF"
+   ],
+   "evidence_ids": [
+    "EVD-4286",
+    "EVD-6234",
+    "EVD-8871",
+    "EVD-1460"
+   ],
+   "evidence_strength": "corroborated",
+   "confidence": "high",
+   "hfacs_level": "L2 Personnel Factors: communication and coordination",
+   "causal_role": "escalating",
+   "barrier": "mitigation: detection-to-action communication",
+   "hazard": "delayed response to major release",
+   "activity": "emergency notification",
+   "performance_mode": "rule-based; communication followed the existing routing",
+   "org_system": "communication and handover",
+   "pattern": "Two independent detections both missed the control room.",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Minutes lost at the start of the response, when isolation is most effective.",
+   "transferability": "industry-wide",
+   "priority": 2,
+   "audiences": [
+    "security personnel",
+    "control-room staff",
+    "emergency planners"
+   ],
+   "learning_level": "team; single-loop",
+   "formats": [
+    "Card",
+    "toolbox talk"
+   ],
+   "tier_messages": {
+    "T1": "If you see or hear a release, call the control room for that area first, and say 'hydrocarbon release', where and how big.",
+    "T2": "Treat any external report of vapour or noise as a release until you have proved otherwise.",
+    "T3": "Give every security post a direct line (hotline or radio channel) to each process control room, and a standard release message."
+   },
+   "recommendations": [
+    {
+     "what": "Install a direct hotline/radio channel from perimeter posts and the CCTV room to each process control room, plus a manual call point at watch towers.",
+     "level_barrier": "L2 / notification",
+     "evidence_basis": "EVD-4286, EVD-6234, EVD-8871",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Time from detection to control-room notification in drills (target under 1 minute)."
+    },
+    {
+     "what": "Adopt a standard release message (what, where, size, wind) for security and operations staff, and drill it jointly.",
+     "level_barrier": "L2 / notification",
+     "evidence_basis": "EVD-8871, EVD-1460",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Share of joint security-operations drills using the standard message correctly."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-14",
+   "ml_id": "",
+   "title": "One panning camera was the only view of the skid; it gave intermittent coverage and was lost seconds after ignition",
+   "owner_entity": "F10 Security & Surveillance (co-owners: F01, F07)",
+   "tiers": [
+    "T1",
+    "T3",
+    "T4"
+   ],
+   "lesson": "If a high-hazard area is watched by a single panning camera with no alarm analytics and unprotected cabling, the camera records the start of a release but nobody is alerted, and the record ends when the fire starts.",
+   "context": "The metering area had one PTZ camera with about a 90-second pan turnaround and limited visibility. It recorded the leak at 02:12:50 but did not alert anyone; its cable burned through at 03:08:22, seven seconds after ignition. This coverage risk had not been assessed.",
+   "finding_ids": [
+    "FND-F91D4A48",
+    "FND-B59A077E",
+    "FND-6A00BC2F",
+    "FND-38F0B929",
+    "FND-934DCBE1",
+    "FND-FBC20DA0",
+    "FND-2E2F2A38",
+    "FND-A528DBE5",
+    "FND-E63EB689",
+    "FND-D515D5E4",
+    "FND-AA71AC71"
+   ],
+   "evidence_ids": [
+    "EVD-0210",
+    "EVD-2752",
+    "EVD-1284"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Resource Management (surveillance equipment)",
+   "causal_role": "contributory",
+   "barrier": "mitigation: visual detection and situational awareness",
+   "hazard": "delayed detection; loss of evidence",
+   "activity": "surveillance",
+   "performance_mode": "n/a (design condition)",
+   "org_system": "design and human-machine interface",
+   "pattern": "",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Release unobserved; responders without situational awareness; investigation without evidence.",
+   "transferability": "other sites",
+   "priority": 2,
+   "audiences": [
+    "security and surveillance",
+    "instrument and telecom engineers",
+    "investigators"
+   ],
+   "learning_level": "organisational; single-loop",
+   "formats": [
+    "Brief"
+   ],
+   "tier_messages": {
+    "T1": "If a camera view of a process area is lost or panning away during an event, tell the control room immediately.",
+    "T3": "Provide fixed, redundant camera coverage of high-hazard skids, displayed in the process control room, with fire-protected cabling.",
+    "T4": "Include CCTV and evidence preservation in the major-hazard design review."
+   },
+   "recommendations": [
+    {
+     "what": "Add fixed cameras with vapour/flame analytics covering the metering skid, displayed in the Gas Terminal control room, with fire-rated or rerouted cabling and local recording.",
+     "level_barrier": "L4 / detection",
+     "evidence_basis": "EVD-0210, EVD-2752",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Share of high-hazard areas with continuous, redundant coverage; camera availability percentage."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-15",
+   "ml_id": "",
+   "title": "Pressure transmitters at the leak point sent no data, and control-room clocks disagreed by up to 12 minutes",
+   "owner_entity": "F04 Instrumentation, Control & Calibration (co-owners: F01, F07)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T5"
+   ],
+   "lesson": "If instruments shown on drawings are not delivering data and system clocks are not synchronised, operators lose early warning from pressure trends, and investigators cannot reconstruct what happened, because nobody checks that installed monitoring actually works.",
+   "context": "Three pressure transmitters on the metering lines (shown on the P&ID) had no data in the DCS. DCS clocks across control rooms drifted by 2 to 12 minutes, so data matching was difficult.",
+   "finding_ids": [
+    "FND-2B5C46B9",
+    "FND-4108DB15",
+    "FND-B6C89A9C",
+    "FND-0D4C2C13",
+    "FND-0FFC03BB",
+    "FND-C38CFC44",
+    "FND-6163C9EB",
+    "FND-FECC34C0",
+    "FND-D95B00BD",
+    "FND-1A5ECA30",
+    "FND-EE34220F",
+    "FND-0C37BB1E",
+    "FND-2B215AA5",
+    "FND-D9A35E88",
+    "FND-28F6EE8A"
+   ],
+   "evidence_ids": [
+    "EVD-6470",
+    "EVD-5532"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Resource Management (operational information)",
+   "causal_role": "contributory",
+   "barrier": "prevention: process monitoring / early warning",
+   "hazard": "undetected pressure anomaly",
+   "activity": "process monitoring",
+   "performance_mode": "n/a (latent condition)",
+   "org_system": "design and human-machine interface; maintenance regime",
+   "pattern": "",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Pre-failure pressure anomalies missed; event timeline cannot be reconstructed.",
+   "transferability": "other sites",
+   "priority": 2,
+   "audiences": [
+    "instrument and control engineers",
+    "control-room staff",
+    "investigators"
+   ],
+   "learning_level": "team; single-loop",
+   "formats": [
+    "Card"
+   ],
+   "tier_messages": {
+    "T1": "If a transmitter on your graphics shows no value or a flat line, raise it as a defect, not a nuisance.",
+    "T3": "Audit that every instrument on the P&ID is live in the DCS; synchronise all DCS clocks to one time source."
+   },
+   "recommendations": [
+    {
+     "what": "Synchronise all DCS and safety-system clocks to a common time source (e.g. GPS/NTP) with drift alarms.",
+     "level_barrier": "L4 / information",
+     "evidence_basis": "EVD-5532",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Maximum clock drift between systems (target under 1 second), checked monthly."
+    },
+    {
+     "what": "Restore the metering-line pressure transmitters and run a periodic 'P&ID vs DCS' live-signal check.",
+     "level_barrier": "L4 / process monitoring",
+     "evidence_basis": "EVD-6470",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Share of P&ID instruments with live, historised data."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-16",
+   "ml_id": "",
+   "title": "A calibration setting on the failed meter was changed and reversed without any record or checklist",
+   "owner_entity": "F04 Instrumentation, Control & Calibration (co-owners: F02, F07)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3"
+   ],
+   "lesson": "If calibration work has no checklist and the signed record does not capture every setting change, significant changes to safety-relevant instruments are invisible to everyone after the job, because the record shows the end state, not what was done.",
+   "context": "During calibration on 17-18 Dec 2019, the meter's range was changed from 16000 to 2540 mmwc and back, with no mention in the signed calibration records and no checklist. The export does not show this change caused the release; it shows uncontrolled work on the same meter.",
+   "finding_ids": [
+    "FND-85748D86",
+    "FND-8F0CB4F9",
+    "FND-1E35B220",
+    "FND-DC3D4F71",
+    "FND-0BA85877",
+    "FND-13E2037D",
+    "FND-C2B4989C",
+    "FND-8D744668",
+    "FND-6381588B",
+    "FND-D4BB5251",
+    "FND-89D53630",
+    "FND-E94D563C",
+    "FND-9CED3B55",
+    "FND-D58142C9",
+    "FND-1DA75FF5",
+    "FND-89A8965A",
+    "FND-693FEDD2",
+    "FND-7C8ADD7C",
+    "FND-403FD778",
+    "FND-A534A1C3",
+    "FND-FD98468B",
+    "FND-B0BA0566",
+    "FND-7F829BEB",
+    "FND-98F7C845",
+    "FND-4B8F9B10",
+    "FND-0B651843"
+   ],
+   "evidence_ids": [
+    "EVD-2506"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "medium",
+   "hfacs_level": "L3 Supervision Inadequate (calibration oversight)",
+   "causal_role": "contributory",
+   "barrier": "prevention: instrument integrity / configuration control",
+   "hazard": "incorrect measurement on hydrocarbon service",
+   "activity": "instrument calibration",
+   "performance_mode": "rule-based; no checklist to follow",
+   "org_system": "procedures; assurance and audit",
+   "pattern": "",
+   "precursors": "Dec 2019 calibration change on the meter that failed in Sep 2020.",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Instruments silently misconfigured on safety-relevant service.",
+   "transferability": "other sites",
+   "priority": 2,
+   "audiences": [
+    "instrument technicians",
+    "instrument supervisors"
+   ],
+   "learning_level": "team; single-loop",
+   "formats": [
+    "Card"
+   ],
+   "tier_messages": {
+    "T1": "Record every setting you change during calibration, including changes you later reverse.",
+    "T2": "Do not sign a calibration record without the completed checklist and as-found / as-left values.",
+    "T3": "Issue calibration checklists for critical meters with as-found/as-left fields and supervisor verification."
+   },
+   "recommendations": [
+    {
+     "what": "Issue calibration checklists for high-pressure meters with mandatory as-found / as-left values and change log, verified by a second person.",
+     "level_barrier": "L3 / configuration control",
+     "evidence_basis": "EVD-2506",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Share of critical calibrations with a complete checklist and second-person verification."
+    },
+    {
+     "what": "Use a calibration management system that records instrument configuration changes automatically.",
+     "level_barrier": "L3 / configuration control",
+     "evidence_basis": "EVD-2506",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Share of critical instruments managed in the system."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-17",
+   "ml_id": "",
+   "title": "Known pipe-wall loss was measured but not acted on: no corrective plan for three years, and painting used as the fix",
+   "owner_entity": "F05 Asset Integrity, Corrosion & Inspection (co-owners: F02, F07)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If inspection results are recorded but nobody owns turning them into a corrective plan, the organisation knows about degradation and keeps operating with it, because measurement feels like action.",
+   "context": "A 2017 thickness survey found pipes with significant wall loss needing corrective action; three years later no plan existed. In July 2019, 1.03 mm wall loss with heavy pitting on a zero-corrosion-allowance 36-inch line was treated by painting, with no fitness-for-service evaluation. These lines did not cause this release (the gas pipelines were intact); the learning is about how integrity warnings are handled.",
+   "finding_ids": [
+    "FND-98A4D631",
+    "FND-6D307E93",
+    "FND-5EC15274",
+    "FND-47B1702F",
+    "FND-E5C4209D",
+    "FND-C6992EAF",
+    "FND-B2B200D4",
+    "FND-1F685360",
+    "FND-B5D6A73E",
+    "FND-256214D9",
+    "FND-20034564",
+    "FND-9FAAE764",
+    "FND-4722A2B8",
+    "FND-2E589CCA",
+    "FND-4F81E96C",
+    "FND-ABDADA0C",
+    "FND-7EB223DE",
+    "FND-0F19C9FC",
+    "FND-6E13192C",
+    "FND-B412FF47",
+    "FND-5EA23B17",
+    "FND-FA73D914",
+    "FND-154134EA",
+    "FND-30D45EFE",
+    "FND-4DAC9500",
+    "FND-E87DC506",
+    "FND-159C9FD7",
+    "FND-540A0904",
+    "FND-C90FA7A2",
+    "FND-7D59D47D",
+    "FND-AA826948",
+    "FND-999326F0",
+    "FND-8EFDE3D9"
+   ],
+   "evidence_ids": [
+    "EVD-5527",
+    "EVD-2397"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Organisational Climate/Culture (deferred integrity actions)",
+   "causal_role": "contributory",
+   "barrier": "prevention: integrity management (act on inspection results)",
+   "hazard": "loss of containment from corroded pipework",
+   "activity": "integrity management",
+   "performance_mode": "rule-based; actions deferred without decision",
+   "org_system": "maintenance regime; assurance and audit",
+   "pattern": "Same pattern as the repeat seal failures: signals recorded, not acted on.",
+   "precursors": "2017 thickness report; July 2019 spot UT finding.",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Pipeline or piping rupture in a high-inventory area.",
+   "transferability": "industry-wide",
+   "priority": 2,
+   "audiences": [
+    "integrity and corrosion engineers",
+    "maintenance managers",
+    "plant leadership"
+   ],
+   "learning_level": "organisational; double-loop",
+   "formats": [
+    "Brief"
+   ],
+   "tier_messages": {
+    "T1": "Painting over pitting hides it. Report pitting and wall loss for engineering review before coating.",
+    "T3": "Every inspection finding gets an owner, a fitness-for-service decision and a due date; track them to closure.",
+    "T4": "Review overdue integrity actions monthly and decide: repair, re-rate, or shut in.",
+    "T5": "Ask for overdue integrity actions on major-hazard pipework as a board-level indicator."
+   },
+   "recommendations": [
+    {
+     "what": "Carry out fitness-for-service assessments on the 2017 and 2019 wall-loss locations and repair, re-rate or replace as required.",
+     "level_barrier": "L4 / integrity",
+     "evidence_basis": "EVD-5527, EVD-2397",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Number of open wall-loss findings without a fitness-for-service decision (target zero)."
+    },
+    {
+     "what": "Put inspection findings into a tracked integrity action register with owners and due dates, reported to site leadership.",
+     "level_barrier": "L4 / integrity",
+     "evidence_basis": "EVD-5527",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Overdue integrity actions count and age, reviewed monthly."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-18",
+   "ml_id": "",
+   "lint_ok": {
+    "rule": "JC6",
+    "reason": "the administrative change is the system fix at the level of the cause: the CMMS schedules the inspections and escalates overdue ones, owned by the integrity function"
+   },
+   "title": "The four-year thickness inspection cycle slipped to six years, and original baseline data and pipe schedules were missing",
+   "owner_entity": "F05 Asset Integrity, Corrosion & Inspection (co-owners: F07, F02)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If an inspection schedule has no escalation when it slips and baseline data was never kept, corrosion rates cannot be calculated and remaining life is unknown, because there is nothing to compare against.",
+   "context": "The laid-down thickness measurement schedule was every four years, but measurements were done in 2011 and 2017 only, with the next cycle overdue by 2020. For many 1986 Gas Terminal pipes, baseline thickness data and original drawings and schedules were not available.",
+   "finding_ids": [
+    "FND-172D2FE4",
+    "FND-75CEBE09",
+    "FND-2F99FB62",
+    "FND-5ABEE30B",
+    "FND-C4B133AA",
+    "FND-FCCB9505",
+    "FND-6FA2CEDE",
+    "FND-C4842890",
+    "FND-B8E1F804",
+    "FND-64864239",
+    "FND-C048B355",
+    "FND-F9D69EC8",
+    "FND-F696F4E0",
+    "FND-F131C1B1",
+    "FND-637706CD",
+    "FND-10FEDDD8",
+    "FND-A3DCEBD8"
+   ],
+   "evidence_ids": [
+    "EVD-8307",
+    "EVD-8287"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Organisational Process: programme oversight (inspection)",
+   "causal_role": "contributory",
+   "barrier": "prevention: integrity inspection",
+   "hazard": "loss of containment from undetected corrosion",
+   "activity": "integrity inspection",
+   "performance_mode": "rule-based; schedule not enforced",
+   "org_system": "maintenance regime",
+   "pattern": "",
+   "precursors": "2011-2017 gap; cycle overdue by 2020.",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Corrosion failure in a line with unknown remaining life.",
+   "transferability": "other sites",
+   "priority": 2,
+   "audiences": [
+    "integrity and inspection engineers",
+    "maintenance planners"
+   ],
+   "learning_level": "organisational; single-loop",
+   "formats": [
+    "Brief"
+   ],
+   "tier_messages": {
+    "T3": "Put inspection due dates in the CMMS with escalation when overdue; reconstruct baselines from first measurements.",
+    "T4": "Review overdue statutory and integrity inspections every month."
+   },
+   "recommendations": [
+    {
+     "what": "Schedule thickness inspections in the CMMS with automatic escalation when overdue, and treat the 2011 data as the baseline where originals are lost.",
+     "level_barrier": "L4 / integrity inspection",
+     "evidence_basis": "EVD-8307, EVD-8287",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Inspection compliance against plan (percentage on time)."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-19",
+   "ml_id": "",
+   "lint_ok": {
+    "rule": "JC6",
+    "reason": "the administrative change is the system fix at the level of the cause: a field-verified, controlled drawing set owned by the engineering documents function"
+   },
+   "title": "The metering P&ID was a lost original replaced by an unapproved vendor drawing that did not match the field",
+   "owner_entity": "F07 Engineering, Design, Documents & MOC (co-owners: F02, F14)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4"
+   ],
+   "lesson": "If drawings are allowed to drift from the field and vendor drawings are not approved, maintenance and emergency responders work from a picture that is wrong, because no one owns keeping the as-built record true.",
+   "context": "P&ID 02-310-AO-101 Rev.1 for the metering system was prepared by a vendor after the original was lost, was not checked or approved by the operator, and its valve and meter configuration did not match the field.",
+   "finding_ids": [
+    "FND-72DCEE68",
+    "FND-82687B50",
+    "FND-D25BF914",
+    "FND-583EB5FE",
+    "FND-9D19BE37",
+    "FND-99B3F80E",
+    "FND-733F5A1A",
+    "FND-6710C6BA",
+    "FND-A1F9AC94",
+    "FND-73312E54",
+    "FND-83AD4621",
+    "FND-107C8238"
+   ],
+   "evidence_ids": [
+    "EVD-0933"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Resource Management (technical information)",
+   "causal_role": "contributory",
+   "barrier": "prevention: configuration control",
+   "hazard": "work and isolation planned on wrong information",
+   "activity": "engineering document control",
+   "performance_mode": "n/a (latent condition)",
+   "org_system": "management of change; procedures",
+   "pattern": "",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Wrong isolation or wrong part chosen from an incorrect drawing.",
+   "transferability": "other sites",
+   "priority": 2,
+   "audiences": [
+    "engineering and document control",
+    "maintenance planners",
+    "vendors"
+   ],
+   "learning_level": "organisational; single-loop",
+   "formats": [
+    "Brief"
+   ],
+   "tier_messages": {
+    "T1": "If the drawing does not match what you see, stop and report it before planning isolations from it.",
+    "T3": "Field-verify P&IDs for safety-critical systems; approve every vendor drawing before it becomes controlled.",
+    "T4": "Make as-built drawing accuracy part of MOC close-out."
+   },
+   "recommendations": [
+    {
+     "what": "Field-verify and re-issue controlled P&IDs for the Gas Terminal, starting with metering and emergency isolation systems.",
+     "level_barrier": "L4 / configuration control",
+     "evidence_basis": "EVD-0933",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Share of safety-critical P&IDs field-verified in the last 5 years."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-20",
+   "ml_id": "",
+   "lint_ok": {
+    "rule": "JC6",
+    "reason": "the administrative change is the system fix at the level of the cause: the audit protocol itself is redesigned to require site evidence, owned by the assurance function"
+   },
+   "title": "Safety audits used generic checklists and recorded compliance without site data, so they could not find plant-specific defects",
+   "owner_entity": "F11 HSE, Process Safety & Audit (co-owners: F13, F01)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If audits use generic checklists, and completed checklists are not kept, an audit can report compliance without anyone having looked at the plant, and leadership receives assurance that is not real.",
+   "context": "The self-safety audit used a comprehensive but non-plant-specific checklist and recorded compliances not supported by data. The 2018 and 2019 internal audits gave observations without filled checklists, and the checklist format was not available. The link to the missed flameproof lamp defect is inferred.",
+   "finding_ids": [
+    "FND-C0466EB3",
+    "FND-4215704E",
+    "FND-303495E9",
+    "FND-48967DB2",
+    "FND-BB34B250",
+    "FND-C2CB60DC",
+    "FND-2F5482CD",
+    "FND-B93AE333",
+    "FND-304A499A",
+    "FND-DFB39372",
+    "FND-76A6DEC1",
+    "FND-35279095",
+    "FND-9E1AB5BA",
+    "FND-C9C77FB7",
+    "FND-459B7917",
+    "FND-0621F920",
+    "FND-FC482A83",
+    "FND-78D4704E",
+    "FND-D5242E3B",
+    "FND-FE78954C",
+    "FND-9F27F129",
+    "FND-5BA62765",
+    "FND-5C07D424",
+    "FND-97325867",
+    "FND-9AFEE699",
+    "FND-88D0E4B1"
+   ],
+   "evidence_ids": [
+    "EVD-9692",
+    "EVD-7681"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "medium",
+   "hfacs_level": "L4 Organisational Process: oversight (assurance)",
+   "causal_role": "failed mitigation",
+   "barrier": "prevention: assurance and audit",
+   "hazard": "latent defects undetected",
+   "activity": "safety auditing",
+   "performance_mode": "rule-based; audit routine without verification",
+   "org_system": "assurance and audit",
+   "pattern": "Repeated in self-safety and internal audits across 2018-2019.",
+   "precursors": "2018 and 2019 internal audits.",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Leadership believes barriers are working when they are not.",
+   "transferability": "industry-wide",
+   "priority": 2,
+   "audiences": [
+    "auditors",
+    "HSE function",
+    "plant leadership",
+    "board"
+   ],
+   "learning_level": "organisational; double-loop",
+   "formats": [
+    "Brief"
+   ],
+   "tier_messages": {
+    "T3": "Build audit checklists from the site's own hazards and barriers; keep every completed checklist with evidence.",
+    "T4": "Ask auditors to show the evidence behind a 'compliant' finding, not only the finding.",
+    "T5": "Commission an independent check of audit quality, not only audit completion."
+   },
+   "recommendations": [
+    {
+     "what": "Replace generic checklists with site-specific barrier-based audit protocols that require evidence (photo, record, reading) for each compliance claim.",
+     "level_barrier": "L4 / assurance",
+     "evidence_basis": "EVD-9692, EVD-7681",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Share of audit items with recorded evidence; number of plant-specific defects found per audit."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-21",
+   "ml_id": "",
+   "title": "External-audit recommendations were extended without the required approval, so overdue safety actions had no accountable owner",
+   "owner_entity": "F13 Plant & Asset Leadership (co-owners: F11, F14)",
+   "tiers": [
+    "T2",
+    "T3",
+    "T4",
+    "T5"
+   ],
+   "lesson": "If due dates on safety recommendations can be extended without the approval the procedure requires, overdue actions drift quietly, because the governance step that would force a decision is skipped.",
+   "context": "Of 308 recommendations from the Feb 2018 external audit, 296 were complied with; 12 were extended to 30 Apr 2021 without the required approval of the Director Offshore.",
+   "finding_ids": [
+    "FND-1D713648",
+    "FND-850B270C",
+    "FND-5A742738",
+    "FND-B2AC0F8C",
+    "FND-2A77BAFB",
+    "FND-856F80CE",
+    "FND-81AAC878",
+    "FND-9078AFA4"
+   ],
+   "evidence_ids": [
+    "EVD-6852"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Organisational Process: oversight (action tracking)",
+   "causal_role": "contributory",
+   "barrier": "prevention: action closure governance",
+   "hazard": "known risks remaining open",
+   "activity": "audit action management",
+   "performance_mode": "rule-based; approval step bypassed",
+   "org_system": "assurance and audit",
+   "pattern": "",
+   "precursors": "Feb 2018 external audit.",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Known gaps remain open until they contribute to an incident.",
+   "transferability": "other sites",
+   "priority": 3,
+   "audiences": [
+    "HSE function",
+    "plant leadership",
+    "corporate governance"
+   ],
+   "learning_level": "organisational; single-loop",
+   "formats": [
+    "Brief"
+   ],
+   "tier_messages": {
+    "T4": "Do not extend a safety recommendation without the documented approval the procedure requires.",
+    "T5": "Review overdue and extended audit recommendations, with who approved each extension."
+   },
+   "recommendations": [
+    {
+     "what": "Configure the action tracker so a due-date extension cannot be saved without the approver's record.",
+     "level_barrier": "L4 / governance",
+     "evidence_basis": "EVD-6852",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Number of extensions without approval record (target zero); overdue action count."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-22",
+   "ml_id": "",
+   "title": "Maintenance notifications were treated as work permits, permits went missing untracked, and job safety plans were absent",
+   "owner_entity": "F11 HSE, Process Safety & Audit (co-owners: F02, F01)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3"
+   ],
+   "lesson": "If the permit system lets a maintenance notification stand in for a permit and does not track missing permits, hazardous jobs proceed without a task-specific hazard review, and nobody can tell which ones.",
+   "context": "Work permits were issued in SAP with hard copies on site, but missing permits were not tracked, job safety plans were absent from SAP, permit closure was not reviewed, and notifications could be mistaken for permits.",
+   "finding_ids": [
+    "FND-7E1F2B3F",
+    "FND-AA571C63",
+    "FND-A3D2773A",
+    "FND-EFC192D7",
+    "FND-1DF986F8",
+    "FND-031A3738",
+    "FND-535125C1",
+    "FND-53C9BDB5",
+    "FND-14E2A4B5",
+    "FND-D93C5262",
+    "FND-78F0BFCF",
+    "FND-D5A1CDD9",
+    "FND-E885ED4C",
+    "FND-0A8B8BCC"
+   ],
+   "evidence_ids": [
+    "EVD-5105"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "medium",
+   "hfacs_level": "L4 Organisational Process: procedures (permit to work)",
+   "causal_role": "contributory",
+   "barrier": "prevention: permit to work",
+   "hazard": "uncontrolled hazardous work",
+   "activity": "permit to work",
+   "performance_mode": "rule-based; routine shortcut",
+   "org_system": "procedures",
+   "pattern": "Systemic across the permit records sampled.",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Hazardous work done without isolation or hazard controls.",
+   "transferability": "industry-wide",
+   "priority": 2,
+   "audiences": [
+    "permit issuers and holders",
+    "HSE function",
+    "maintenance supervisors"
+   ],
+   "learning_level": "organisational; single-loop",
+   "formats": [
+    "Card",
+    "toolbox talk"
+   ],
+   "tier_messages": {
+    "T1": "A notification is not a permit. No permit and JSA, no work on hydrocarbon equipment.",
+    "T2": "Check that the permit and JSA are present before work starts and that the permit is closed and returned.",
+    "T3": "Track every permit issued through to closure; investigate missing permits."
+   },
+   "recommendations": [
+    {
+     "what": "Make the e-permit mandatory for hydrocarbon work with an attached JSA, and reconcile issued vs closed permits daily.",
+     "level_barrier": "L4 / permit to work",
+     "evidence_basis": "EVD-5105",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Unreconciled permits per week (target zero); share of permits with JSA attached."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-23",
+   "ml_id": "",
+   "title": "Three of four diesel fire-water pumps were unavailable or unreliable; electric pumps happened to carry the incident",
+   "owner_entity": "F09a Fire-fighting Operations & Fire-water Systems (co-owners: F03, F08)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3",
+    "T4"
+   ],
+   "lesson": "If backup fire-water pumps can sit under maintenance or trip without diagnosis, the plant's fire protection depends on the primary supply surviving the event, which a power loss would remove.",
+   "context": "Fire-water tank level and header pressure were healthy and three electrical pumps ran during cooling. But two of four diesel pumps were under maintenance and one tripped after about two minutes, with no recorded cause or action.",
+   "finding_ids": [
+    "FND-A4B843EB",
+    "FND-814A8889",
+    "FND-B6BB0738",
+    "FND-D8BC7096",
+    "FND-694B2DA0",
+    "FND-26BF96E1",
+    "FND-20CC87C0",
+    "FND-075C4510",
+    "FND-E7FB469A",
+    "FND-D9E0CE71",
+    "FND-DF7337F2",
+    "FND-B955FBD6",
+    "FND-4317808B"
+   ],
+   "evidence_ids": [
+    "EVD-2432"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Resource Management (maintenance of emergency equipment)",
+   "causal_role": "failed mitigation",
+   "barrier": "mitigation: fire-water supply",
+   "hazard": "escalation of fire",
+   "activity": "fire-water system maintenance",
+   "performance_mode": "n/a (latent condition)",
+   "org_system": "maintenance regime; emergency preparedness",
+   "pattern": "",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Loss of fire water during a fire with power failure.",
+   "transferability": "other sites",
+   "priority": 2,
+   "audiences": [
+    "fire service",
+    "electrical and mechanical maintenance",
+    "plant leadership"
+   ],
+   "learning_level": "organisational; single-loop",
+   "formats": [
+    "Card",
+    "Brief"
+   ],
+   "tier_messages": {
+    "T1": "If a fire pump trips on test or use, record what happened and raise a defect the same shift.",
+    "T3": "Set a minimum availability for diesel fire pumps and treat unavailability as a safety-critical defect with a time limit.",
+    "T4": "Review fire-water pump availability weekly until it meets the standard."
+   },
+   "recommendations": [
+    {
+     "what": "Treat diesel fire-water pumps as safety-critical elements with a performance standard, weekly run tests and a maximum allowed outage.",
+     "level_barrier": "L4 / fire-water supply",
+     "evidence_basis": "EVD-2432",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Diesel fire-pump availability percentage and test pass rate."
+    },
+    {
+     "what": "Diagnose and fix the tripping fault and restore the pumps under maintenance.",
+     "level_barrier": "L4 / fire-water supply",
+     "evidence_basis": "EVD-2432",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Number of diesel pumps available (target 4 of 4)."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-24",
+   "ml_id": "",
+   "lint_ok": {
+    "rule": "JC6",
+    "reason": "the administrative change is the system fix at the level of the cause: one drill record with timings and tracked actions, owned by the emergency planning function"
+   },
+   "title": "Fire drill records held no actions or observations, so drills could not show whether readiness was improving",
+   "owner_entity": "F11 HSE, Process Safety & Audit (co-owners: F09b, F12)",
+   "tiers": [
+    "T1",
+    "T2",
+    "T3"
+   ],
+   "lesson": "If drills are recorded without observations and actions, the organisation cannot learn from them, and gaps such as missing isolation criteria stay hidden until a real event.",
+   "context": "Monthly fire drill reports in SAP had no actions or recommendations, and a separate dataset was kept outside the approved guidelines. The fire team performed well on the night.",
+   "finding_ids": [
+    "FND-DC0751CF",
+    "FND-B8B75D91",
+    "FND-BFABC63C",
+    "FND-C69E0C67",
+    "FND-332DC593",
+    "FND-BC32F8F7",
+    "FND-7F27ED51",
+    "FND-A532B8F8"
+   ],
+   "evidence_ids": [
+    "EVD-2130"
+   ],
+   "evidence_strength": "direct",
+   "confidence": "high",
+   "hfacs_level": "L4 Organisational Process: oversight (emergency readiness)",
+   "causal_role": "contributory",
+   "barrier": "mitigation: emergency readiness (learning from drills)",
+   "hazard": "unprepared emergency response",
+   "activity": "emergency drills",
+   "performance_mode": "rule-based; drills done, learning not captured",
+   "org_system": "emergency preparedness",
+   "pattern": "",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Drills repeat without exposing plan gaps.",
+   "transferability": "other sites",
+   "priority": 3,
+   "audiences": [
+    "fire service",
+    "emergency planners",
+    "HSE function"
+   ],
+   "learning_level": "team; single-loop",
+   "formats": [
+    "Card"
+   ],
+   "tier_messages": {
+    "T2": "After each drill, record what went wrong and one action, in the system of record.",
+    "T3": "Use one drill record format with observations, actions and timings, and review trends quarterly."
+   },
+   "recommendations": [
+    {
+     "what": "Adopt a single drill record with timings (detection, notification, isolation), observations and tracked actions.",
+     "level_barrier": "L4 / emergency readiness",
+     "evidence_basis": "EVD-2130",
+     "hoc_tier": "administrative",
+     "leading_indicator": "Share of drills with at least one recorded action; action closure rate."
+    }
+   ]
+  },
+  {
+   "lr_id": "LR-25",
+   "ml_id": "",
+   "title": "The new control room had blast-proof walls but ordinary doors, in an area that filled with vapour",
+   "owner_entity": "F07 Engineering, Design, Documents & MOC (co-owners: F01)",
+   "tiers": [
+    "T1",
+    "T3",
+    "T4"
+   ],
+   "lesson": "If protective buildings and plant structures are delivered with weak points (non-blast doors, structures not designed for a flange release), the protection assumed in the safety case does not exist where people shelter.",
+   "context": "The newly built Gas Terminal control room was delivered with blast-proof walls but doors that were not blast-proof; the control room area filled with vapour during the event. The metering skid superstructure was not designed to contain a flange-failure release.",
+   "finding_ids": [
+    "FND-D871D980",
+    "FND-1B3355D5"
+   ],
+   "evidence_ids": [
+    "EVD-1460",
+    "EVD-1394"
+   ],
+   "evidence_strength": "inferred",
+   "confidence": "medium",
+   "hfacs_level": "L4 Organisational Climate/Culture (acceptance of incomplete protection)",
+   "causal_role": "escalating",
+   "barrier": "mitigation: occupied-building protection",
+   "hazard": "explosion overpressure affecting occupied buildings",
+   "activity": "design and construction acceptance",
+   "performance_mode": "n/a (design condition)",
+   "org_system": "design and human-machine interface",
+   "pattern": "",
+   "precursors": "",
+   "comparison": "not compared",
+   "reason_class": "",
+   "worst_case": "Control-room occupants exposed to blast or fire.",
+   "transferability": "industry-wide",
+   "priority": 2,
+   "audiences": [
+    "engineering and projects",
+    "plant leadership"
+   ],
+   "learning_level": "organisational; single-loop",
+   "formats": [
+    "Brief"
+   ],
+   "tier_messages": {
+    "T3": "Check that occupied-building protection (doors, HVAC shutdown, gas detection at intakes) matches the building's blast rating.",
+    "T4": "Do not accept a protective building as complete until every element meets the design rating."
+   },
+   "recommendations": [
+    {
+     "what": "Fit blast-rated doors to the Gas Terminal control room and verify the whole envelope against the occupied-building risk assessment.",
+     "level_barrier": "L4 / occupied-building protection",
+     "evidence_basis": "EVD-1460",
+     "hoc_tier": "engineering",
+     "leading_indicator": "Occupied buildings in hazardous areas with a verified protective envelope (percentage)."
+    }
+   ]
+  }
+ ]
+}
