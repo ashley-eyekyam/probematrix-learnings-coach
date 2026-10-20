@@ -121,6 +121,18 @@
     btn.setAttribute("aria-expanded", "true");
   }
 
+  /* A learning chip names a Learnings Register entry (LR-nn); clicking it searches the pack for that id. */
+  var LR_RX = /^LR-\d{2,}$/;
+  function learningLabel(id) { return typeof id === "string" && LR_RX.test(id) ? "Learning " + id : null; }
+  function learningQuery(id) { return typeof id === "string" && LR_RX.test(id) ? id : ""; }
+
+  function searchLearning(btn) {
+    var id = learningQuery(btn.getAttribute("data-lr")), q = document.getElementById("q");
+    if (!id) return;
+    if (q) q.value = id;
+    search(id);
+  }
+
   function search(q) {
     var shown = 0, active = String(q || "").trim() !== "";
     document.querySelectorAll(".item").forEach(function (it) {
@@ -189,6 +201,8 @@
     document.addEventListener("click", function (ev) {
       var b = ev.target && ev.target.closest ? ev.target.closest("button.cite") : null;
       if (b) toggleCite(b);
+      var lr = ev.target && ev.target.closest ? ev.target.closest("button.pm-learning") : null;
+      if (lr) searchLearning(lr);
       var a = ev.target && ev.target.closest ? ev.target.closest('a[href^="#s/"],a[href^="#i/"]') : null;
       if (a && location.hash === a.getAttribute("href")) { ev.preventDefault(); route(); }
     });
@@ -217,7 +231,8 @@
   }
 
   var API = {parseHash: parseHash, matches: matches, tickKey: tickKey, readTicks: readTicks, writeTicks: writeTicks,
-             isTicked: isTicked, recordRows: recordRows, recordView: recordView};
+             isTicked: isTicked, recordRows: recordRows, recordView: recordView, learningLabel: learningLabel,
+             learningQuery: learningQuery};
   if (typeof module !== "undefined" && module.exports) { module.exports = API; return; }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();

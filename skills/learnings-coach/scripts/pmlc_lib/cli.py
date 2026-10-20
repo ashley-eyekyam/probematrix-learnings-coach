@@ -238,6 +238,8 @@ def build_parser():
     s.add_argument("ws")
     s.add_argument("pack")
     _lint_flags(s)
+    s.add_argument("--register", help="Learnings Register JSON to check learning ids against "
+                   "(default: <run>/outputs/learnings-register.json when it exists)")
     s.set_defaults(fn=cmd_check_pack)
 
     s = sp.add_parser("pack", help="learning pack JSON -> <run>/outputs/<pack>.html (and .md)", allow_abbrev=False)

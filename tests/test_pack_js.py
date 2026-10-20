@@ -81,7 +81,8 @@ def test_pack_assets_are_inline_safe():
 @pytest.mark.skipif(not NODE, reason="node not installed")
 def test_pack_js_loads_without_dom():
     out = node(f"const p = require({json.dumps(str(PACK_JS))}); console.log(Object.keys(p).sort().join(','));")
-    assert out.strip() == "isTicked,matches,parseHash,readTicks,recordRows,recordView,tickKey,writeTicks"
+    assert out.strip() == ("isTicked,learningLabel,learningQuery,matches,parseHash,readTicks,recordRows,recordView,"
+                           "tickKey,writeTicks")
 
 
 @pytest.mark.skipif(not NODE, reason="node not installed")
@@ -148,3 +149,20 @@ assert.strictEqual(v.chip, null);                 // user_edited is not embedded
 assert.strictEqual(v.banner, 'banner');           // the label is still the investigation's wording
 assert.deepStrictEqual(p.recordRows('EVD-0001', D), [['Type','document'],['Linked to AB 1.1','Shows no test']]);
 """)
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_pack_js_renders_learning_chip():
+    node(f"""
+const assert = require('assert');
+const p = require({json.dumps(str(PACK_JS))});
+assert.strictEqual(p.learningLabel('LR-01'), 'Learning LR-01');
+assert.strictEqual(p.learningLabel('LR-123'), 'Learning LR-123');
+assert.strictEqual(p.learningLabel('LR-1'), null);
+assert.strictEqual(p.learningLabel('<b>'), null);
+assert.strictEqual(p.learningLabel(null), null);
+assert.strictEqual(p.learningQuery('LR-07'), 'LR-07');
+assert.strictEqual(p.learningQuery('LR-7'), '');
+""")
+    css = PACK_CSS.read_text(encoding="utf-8")
+    assert ".pm-learning{" in css and ".pm-clause{" in css and ".gaps{" in css

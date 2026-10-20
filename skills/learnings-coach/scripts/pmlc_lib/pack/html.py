@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import datetime as dt
 import html
+import json
 import re
 from pathlib import Path
 
@@ -78,12 +79,20 @@ def _hoc(v) -> str:
     return f'<span class="{cls}">Control: {_h(t)}</span>'
 
 
+def _links(d) -> str:
+    """The learning chip (a button that searches the pack for its LR id, pack.js) and the clauses badge."""
+    lr, cl = d.get("learning"), d.get("clauses")
+    chip = (f' <button type="button" class="pm-learning" data-lr="{_h(lr)}">Learning {_h(lr)}</button>'
+            if isinstance(lr, str) and lr else "")
+    return chip + (f' <span class="badge pm-clauses">Clauses: {_h(", ".join(cl))}</span>' if cl else "")
+
+
 def _extras(d) -> str:
     s = d.get("evidence_strength")
     badge = f' <span class="badge strength">Evidence: {_h(s)}</span>' if s else ""
     sup = d.get("supporting_cites") or []
     more = f'<details class="more"><summary>+{len(sup)} supporting</summary>{_chips(sup)}</details>' if sup else ""
-    return badge + more
+    return _links(d) + badge + more
 
 
 def _lint_ok_html(d) -> str:
@@ -106,9 +115,11 @@ def _html_item(it, graphs, inc_date=None) -> str:
                 + _labelled("Answer", g("answer"))
                 + _labelled("Good evidence looks like", g("good_evidence")) + c)
     elif k == "recommendation":
-        meta = _hoc(it["hoc_tier"]) + _badges([("Barrier", g("barrier")), ("Owner", g("owner")), ("By", g("by_when"))])
+        meta = _hoc(it["hoc_tier"]) + _badges([("Barrier", g("barrier")), ("Barrier ID", g("barrier_id")),
+                                               ("Owner", g("owner")), ("By", g("by_when"))])
         body = (f'<p><b>{_inline(it["change"])}</b></p><p>{meta}</p><p class="indicator-line">'
-                f'<span class="label">Leading indicator</span>{_inline(it["indicator"])}</p>{c}')
+                f'<span class="label">Leading indicator</span>{_inline(it["indicator"])}</p>'
+                + _labelled("Why not stronger", g("why_not_stronger")) + c)
     elif k == "decision":
         opts = '<span class="label">Options</span>' + _list(g("options")) if g("options") else ""
         body = (f'<p><b>{_inline(it["decision"])}</b></p>{opts}' + _labelled("Trade-offs", g("trade_offs"))
@@ -147,7 +158,9 @@ def _html_item(it, graphs, inc_date=None) -> str:
     elif k == "test_point":
         flags = ('<span class="label">Red flags seen in this investigation</span>' + _list(g("red_flags"))
                  if g("red_flags") else "")
-        body = (f'<div class="card"><p><b>{_inline(it["requirement"])}</b></p>' + _labelled("What to sample", it["sample"])
+        clause = f'<p><span class="badge pm-clause">Clause: {_h(g("clause"))}</span></p>' if g("clause") else ""
+        body = (f'<div class="card"><p><b>{_inline(it["requirement"])}</b></p>{clause}'
+                + _labelled("What to sample", it["sample"])
                 + _labelled("Evidence of conformity", it["conformity_evidence"]) + flags + c + PFOOT + "</div>")
     elif k == "module":
         meta = "".join(f'<span class="badge">{_h(g(f))}</span>' for f in ("audience", "duration") if g(f))
@@ -156,7 +169,8 @@ def _html_item(it, graphs, inc_date=None) -> str:
         body = (f'<div class="card"><h3>Module: {_h(it["title"])}</h3><p>{meta}</p>' + _labelled("Objective", it["objective"])
                 + '<span class="label">Content</span>' + _list(it["content"], "ol") + assess + c + "</div>")
     elif k == "barrier":
-        meta = _hoc(it["hoc_tier"]) + _badges([("Type", g("type")), ("State", g("state")), ("Owner", g("owner"))])
+        meta = _hoc(it["hoc_tier"]) + _badges([("Barrier ID", g("barrier_id")), ("Type", g("type")), ("State", g("state")),
+                                               ("Owner", g("owner"))])
         body = (f'<p><b>{_inline(it["barrier"])}</b></p><p>{meta}</p>' + _labelled("Failure mode", it["failure_mode"])
                 + _labelled("Fix", g("fix")) + _labelled("Leading indicator", g("indicator")) + c)
     elif k == "timeline":
@@ -262,6 +276,13 @@ def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, shar
     dq = pack.get("data_quality") or []
     dq_html = ('<section class="dq"><h2>Data quality and limits</h2><ul>'
                + "".join(f'<li>{_inline(n["text"])} {_chips(n.get("cites"))}</li>' for n in dq) + "</ul></section>") if dq else ""
+    gaps = pack.get("gaps") or []
+    gaps_html = ('<section class="gaps"><h2>Gaps in the evidence</h2><ul>'
+                 + "".join(f'<li>{_h(x["text"])} {_chips(x.get("cites"))}<p class="m">Evidence needed: '
+                           f'{_h(x["evidence_needed"])}</p></li>' for x in gaps) + "</ul></section>") if gaps else ""
+    limits = pack.get("limits") or []
+    limits_html = ('<section class="limits"><h2>Limits of this pack</h2><ul>'
+                   + "".join(f"<li>{_h(x)}</li>" for x in limits) + "</ul></section>") if limits else ""
     exc = "".join(f'<li>{_chip(e["id"])} {_h(e["label"])} · {_h(e["reason"])}</li>' for e in cov["excluded"])
     unc = "".join(f'<li>{_chip(u["id"])} {_h(u["label"])} · rating {_h(u["rating"])} · L{_h(u["level"])} · '
                   f'{_h(u["reason"])}</li>' for u in cov["uncovered"])
@@ -288,7 +309,7 @@ def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, shar
     payload = embed_json(data)
     brand = _h(BRAND)
     tokens, wide = PAGE_TOKENS_CSS, WIDE_CSS
-    body = "".join(secs) + cov_html + _trail(data, pack)
+    body = "".join(secs) + gaps_html + limits_html + cov_html + _trail(data, pack)
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
 <style>
@@ -337,6 +358,24 @@ def follow_up(pack) -> dict:
     return {}
 
 
+def update_gaps(ws, pack):
+    """Rewrite <run>/outputs/gaps.json for this pack (L3-14): its entries are replaced by its current gaps, other
+    packs' entries are kept. Always the run's outputs folder (artefacts.json), whatever --out says; the file is
+    written only when the pack has gaps or the file already exists. Returns the path written, or None."""
+    path = outputs_dir(ws) / "gaps.json"
+    mine = [{"pack": pack["pack"], "text": g["text"], "cites": list(g.get("cites") or []),
+             "evidence_needed": g["evidence_needed"]} for g in pack.get("gaps") or []]
+    if not mine and not path.is_file():
+        return None
+    try:
+        old = json.loads(path.read_text(encoding="utf-8")).get("gaps", []) if path.is_file() else []
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, AttributeError):
+        old = []
+    keep = [g for g in old if isinstance(g, dict) and g.get("pack") != pack["pack"]] if isinstance(old, list) else []
+    write_json(path, {"gaps": keep + mine})
+    return path
+
+
 def cmd_pack(a):
     """Render a checked pack. --share external|public: the share gate first (P2-9), then the page is rendered from
     masked copies of the pack and the workspace. In any mode the render name guard runs before anything is written."""
@@ -364,6 +403,9 @@ def cmd_pack(a):
         print(f"Markdown written to {md}")
     if mode != "internal":
         print(SHARED_LINE.format(mode=mode))
+    gj = update_gaps(ws, pack)
+    if gj:
+        print(f"Gaps written to {gj}")
     if pack["pack"] == "investigator-coach" and mode == "internal":   # interview plans never leave the team
         fu = out / "follow-up.json"
         write_json(fu, follow_up(pack))

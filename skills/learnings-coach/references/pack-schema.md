@@ -4,6 +4,7 @@ Every audience and analysis skill writes its deliverable as one **pack**: a JSON
 
 ```bash
 PMLC check-pack <ws> <run>/outputs/<skill>.json     # lists every problem with its JSON path; fix them all
+                                                    # [--register FILE]: check learning ids (default: the run's register)
 PMLC pack <ws> <run>/outputs/<skill>.json           # -> <run>/outputs/<skill>.html (primary) and <skill>.md
 ```
 
@@ -30,7 +31,10 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 }
 ```
 
-- **`pack`:** the skill name, which is also the file name. It is lowercase words joined by hyphens, or `dossier-F<nn>` for `cluster-learning-dossier` (a lettered entity keeps its letter: `dossier-F09b`).
+- **`pack`:** the skill name, which is also the file name. It is lowercase words joined by hyphens, or `dossier-F<nn>` for `cluster-learning-dossier` (a lettered entity keeps its letter: `dossier-F09b`). The exceptions, where the pack name is not the skill name:
+  - `organisation-learning-plan` (from `organisation-learning-map`);
+  - `dossier-F<nn>`, one per cluster, and `dossier-index` (from `cluster-learning-dossier`);
+  - `report-comparison-client-safe`, the neutral copy beside `report-comparison`.
 - **`status`:** must contain `Learning purposes: not a statutory document`.
 - **`bottom_line`:** 1 to 7 takeaways, each citing at least one Finding or Evidence ID.
 - **`scope` (optional):**
@@ -53,15 +57,15 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 | `para` | text* | narrative, explanation |
 | `check` | text*, hold_point (true/false), when | checklists, hold points, what to refuse; readers can tick them on screen |
 | `question` | question*, why*, answer (an answer key), good_evidence, to (role the question is put to) | board questions, questions to raise, interview questions |
-| `recommendation` | change*, indicator*, hoc_tier*, barrier, owner, by_when; **must cite** | what should change, with its leading indicator and hierarchy-of-controls tier |
+| `recommendation` | change*, indicator*, hoc_tier*, barrier, barrier_id, owner, by_when, why_not_stronger; **must cite** | what should change, with its leading indicator and hierarchy-of-controls tier |
 | `decision` | decision*, options[], trade_offs, owner, by_when | decisions for leaders, pending engineering decisions |
 | `indicator` | name*, measure*, deterioration, owner | leading indicators, readiness indicators |
 | `card` | title*, what_happened*, why_made_sense, organisation_changing (what the organisation is changing; `check-pack` warns when a pack for tier T1 omits it), warning_signs[]*, good_looks_like*, discussion[]; **must cite** | Learning Cards (`output-style.md`) |
 | `scenario` | situation*, prompts[]* | coaching conversations, drills, exercises |
 | `table` | columns[]*, rows[][]*, row_cites[][], row_supporting_cites[][] | anything tabular; each row has as many cells as there are columns |
-| `test_point` | requirement*, sample*, conformity_evidence*, red_flags[]; **must cite** | audit test points |
+| `test_point` | requirement*, sample*, conformity_evidence*, red_flags[], clause (free text naming the requirement source, e.g. "ISO 45001 8.1.3; OSHA 1910.119(l)", shown as a badge); **must cite** | audit test points |
 | `module` | title*, objective*, audience, duration, content[]*, assessment[] | training modules |
-| `barrier` | barrier*, failure_mode*, hoc_tier*, type, fix, owner, state (absent, degraded, defeated, worked partly, worked), indicator; **must cite** | barrier analysis |
+| `barrier` | barrier*, failure_mode*, hoc_tier*, type, fix, owner, state (absent, degraded, defeated, worked partly, worked), indicator, barrier_id; **must cite** | barrier analysis |
 | `timeline` | events[]*: {date* (YYYY-MM-DD, YYYY-MM or YYYY), time (HH:MM), text*, signal (true/false), knowable_then (true, false or text: what could be known at that moment), received_by, response, cites[]} | precursors, response timelines; events sort by date then time, and same-date events without a time keep your order |
 | `graph` | nodes[]*: {id*, label*}; edges[]*: {from*, to*, label} | causal maps, interfaces; drawn as SVG with a text list of links. `PMLC causal-item <ws> --top 40` prints a ready graph item from `causal_graph.json` (run `PMLC causal` first) |
 | `learning` | lesson* (one sentence), explanation (two to four sentences), owner (who must learn it); **must cite** | a learning: the lesson, why, and its evidence (dossiers, manager and leadership coaches, signal and interface learnings) |
@@ -76,10 +80,23 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 | `supporting_cites` | any item or bottom-line entry | Further Finding/Evidence IDs for the same condition. They count for coverage and are shown collapsed ("+N supporting"); keep `cites` to the key evidence. |
 | `evidence_strength` | any item or bottom-line entry | `direct`, `corroborated` or `inferred` (`learning-principles.md`), shown as a badge. On a recommendation (or any item) it rates the evidence for the condition the item describes, not how well a proposed fix will work. |
 | `group` | any item | A label such as a supervisor habit, a question mix or an interviewee role; a subheading is shown whenever it changes. |
+| `learning` | any item or bottom-line entry | The Learnings Register entry the item carries, as `LR-` and two or more digits (`LR-01`). Shown as a chip that searches the pack for that id. `check-pack` checks it against the register given with `--register FILE`, or found at `<run>/outputs/learnings-register.json`: an unknown id is a warning (a problem with `strict`). With no register it warns once: `learning ids not verified: no register`. |
+| `clauses` | any item or bottom-line entry | Requirement ids from `standards-crosswalk.json` (e.g. `["ISO45001-10.2", "PSM-(m)(4)"]`), shown as a badge. An id the crosswalk does not hold warns `unknown clause <id>` (a problem with `strict`). For free-text clause wording on a test point use `clause`. |
+| `comparator_refs` | any item | Ids of the comparator report's items (`OBS-`, `RC-`, `REC-` or `ACT-` and two or more digits) that the item corresponds to, for `report-comparison`. |
+| `gaps` | top level: list of `{"text": "…", "cites": [...], "evidence_needed": "…"}` | What the evidence could not show (the `[GAP]` convention, `learning-principles.md`). `text` and `evidence_needed` are required; `cites` is optional and every ID must exist. Shown in a box titled "Gaps in the evidence". `pack` also writes them to `<run>/outputs/gaps.json` (below). |
+| `limits` | top level: list of text | What this pack's analysis could not see or does not cover. Listed under "Limits of this pack". |
+
+**`why_not_stronger`.** A `recommendation` whose `hoc_tier` is `administrative` or `training` should say why no stronger control (elimination, substitution, engineering) is proposed; without it `check-pack` warns `recommendation <id> is administrative or training only: say why_not_stronger`. **`barrier_id`** (free text, on `barrier` and `recommendation`) names the organisation's own barrier or critical-control register entry.
+
+**`gaps.json`.** `{"gaps": [{"pack": "…", "text": "…", "cites": [...], "evidence_needed": "…"}]}`, collected across packs for `investigator-coach`. Each `pack` run replaces that pack's entries and keeps every other pack's; a pack that no longer has `gaps` has its entries removed. It is always written to the run's outputs folder, whatever `--out` says.
 
 A table's `row_cites` appear as an extra last column labelled **Cites**; `row_supporting_cites` (one list per row, may be empty) add a collapsed "+N supporting" to that cell and count for coverage. `check-pack` warns when a pack cites fewer than a quarter of its relevant findings; the page always shows the count and lists the rest.
 
 `hoc_tier` must name one of: elimination, substitution, engineering, administrative, training, ppe. Free wording such as "Engineering control: interlock" is fine.
+
+## What check-pack does not check
+
+An `OK` from `check-pack` means the pack is well formed and grounded in IDs that exist. It does not mean the content is right. It does not check that a cited finding or evidence item actually says what the sentence claims, that a quote is exact, that every name has been removed (the language lint catches common patterns and `--names` lists, not every name), that the wording is fair to the people involved beyond the JC rules, that a recommendation would work, or that a `barrier_id` or free-text `clause` exists in the organisation's registers. A person must still review the pack before `sign-off`.
 
 ## Handling and sign-off
 
@@ -118,4 +135,4 @@ Unknown keys, bad values and `reviewed` or `approved` without `reviewer_role`, `
 
 ## investigator-coach
 
-Its pack must contain a `table` with `"id": "follow-up"` and columns `Finding`, `Evidence to collect`, `Key questions`, `Suggested interviews`, `Causal hypothesis`, with Finding IDs in the first cell of each row. A row may list several Finding IDs (one row per condition, comma-separated); `follow-up.json` gets one entry per finding, and a finding may appear in only one row. `pack` also writes `<run>/outputs/follow-up.json` from it (finding ID → `evidence_to_collect`, `key_questions`, `suggested_interviews`, `causal_hypothesis`). An optional `finding_notes` object on that table (`{"FND-…": "note"}`) gives one finding in a shared row its own note: it is shown under the table and copied to that finding's `note` in `follow-up.json`. Every key must appear in the table's first column.
+Its follow-up table contract (the `table` with `"id": "follow-up"`, `finding_notes` and `follow-up.json`) is in `skills/investigator-coach/SKILL.md`.

@@ -14,6 +14,9 @@ from .. import privacy
 
 # ----------------------------------------------------------------------------- coverage and Markdown
 
+GAPS_HEADING = "## Gaps in the evidence"
+LIMITS_HEADING = "## Limits of this pack"
+
 def coverage(w, pack) -> dict:
     """How many of the pack's relevant findings it cites, which it leaves out, and which it excludes on purpose."""
     fids = set(cited_ids(pack)[0])
@@ -100,8 +103,10 @@ def _md_item(it, inc_date=None) -> str:
                           ("Good evidence looks like", g("good_evidence")), ("Put to", g("to"))]))
     if k == "recommendation":
         return (f"**Recommendation:** {it['change']}{c}\n"
-                + _lines([("Control tier", norm_hoc(it["hoc_tier"])), ("Barrier", g("barrier")), ("Owner", g("owner")),
-                          ("By when", g("by_when")), ("Leading indicator", it["indicator"])]))
+                + _lines([("Control tier", norm_hoc(it["hoc_tier"])), ("Barrier", g("barrier")),
+                          ("Barrier ID", g("barrier_id")), ("Owner", g("owner")),
+                          ("By when", g("by_when")), ("Leading indicator", it["indicator"]),
+                          ("Why not stronger", g("why_not_stronger"))]))
     if k == "decision":
         return (f"**Decision:** {it['decision']}{c}\n"
                 + _lines([("Options", "; ".join(g("options") or [])), ("Trade-offs", g("trade_offs")),
@@ -136,7 +141,8 @@ def _md_item(it, inc_date=None) -> str:
         return md
     if k == "test_point":
         return (f"**Test point:** {it['requirement']}{c}\n"
-                + _lines([("What to sample", it["sample"]), ("Evidence of conformity", it["conformity_evidence"]),
+                + _lines([("Clause", g("clause")), ("What to sample", it["sample"]),
+                          ("Evidence of conformity", it["conformity_evidence"]),
                           ("Red flags", "; ".join(g("red_flags") or []))]))
     if k == "module":
         out = (f"### Module: {it['title']}{c}\n\n"
@@ -145,7 +151,8 @@ def _md_item(it, inc_date=None) -> str:
         return out + ("\n\n**Assessment:**\n" + _numbered(it["assessment"]) if g("assessment") else "")
     if k == "barrier":
         return (f"**Barrier:** {it['barrier']}{c}\n"
-                + _lines([("Failure mode", it["failure_mode"]), ("Type", g("type")), ("State on the day", g("state")),
+                + _lines([("Failure mode", it["failure_mode"]), ("Barrier ID", g("barrier_id")), ("Type", g("type")),
+                          ("State on the day", g("state")),
                           ("Owner", g("owner")), ("Control tier", norm_hoc(it["hoc_tier"])), ("Fix", g("fix")),
                           ("Leading indicator", g("indicator"))]))
     if k == "timeline":
@@ -187,7 +194,9 @@ def _md_lint_ok(d, sep) -> str:
 
 def _md_extras(d) -> str:
     bits = ([f"evidence: {d['evidence_strength']}"] if d.get("evidence_strength") else []) + \
-           ([f"+{len(d['supporting_cites'])} supporting"] if d.get("supporting_cites") else [])
+           ([f"+{len(d['supporting_cites'])} supporting"] if d.get("supporting_cites") else []) + \
+           ([f"learning: {d['learning']}"] if d.get("learning") else []) + \
+           ([f"Clauses: {', '.join(d['clauses'])}"] if d.get("clauses") else [])
     return f"*({'; '.join(bits)})*" if bits else ""
 
 
@@ -248,6 +257,11 @@ def render_pack_md(pack, w, eh=None, share=None) -> str:
     sup += [f"- {s['heading']} › {n}, row {r}: {'; '.join(x)}"
             for s in pack["sections"] for n, it in enumerate(s["items"], 1)
             for r, x in enumerate(it.get("row_supporting_cites") or [], 1) if x]
+    if pack.get("gaps"):
+        out += [GAPS_HEADING, "\n".join(f"- {x['text']}{_c(x.get('cites'))}\n  - Evidence needed: {x['evidence_needed']}"
+                                        for x in pack["gaps"])]
+    if pack.get("limits"):
+        out += [LIMITS_HEADING, "\n".join(f"- {x}" for x in pack["limits"])]
     if sup:
         out += ["## Supporting citations", "\n".join(sup)]
     tail = ["---", f"This pack cites {cov['cited']} of {cov['relevant']} relevant findings."]
