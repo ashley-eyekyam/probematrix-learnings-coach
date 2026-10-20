@@ -1,67 +1,101 @@
 ---
 name: learning-clusters
-description: Classify every finding in a ProbeMatrix investigation export into Learning Clusters - the organisational entity that owns the learning (operations, maintenance, engineering, emergency response, HSE, leadership…), the tier that must learn (frontline to board) and the role's relation to the factor (actor, approver, owner, absent function…). Use when someone asks who in the organisation should learn from an investigation, wants findings grouped by department, role or level, or before producing any audience-specific learning from a ProbeMatrix export. Includes the LLM pass that resolves roles the rules cannot place.
+description: Classifies every finding in a ProbeMatrix investigation export into Learning Clusters - the organisational entity that owns the learning (operations, maintenance, engineering, emergency response, HSE, leadership…), the tier that must learn (frontline to board) and the role's relation to the factor (actor, approver, owner, absent function…) - including the pass that resolves roles the rules cannot place, an organisation's own departments and the statutory posts named. Use when someone with a ProbeMatrix export asks who in the organisation should learn from it, wants findings grouped by department, role or level, or before any audience-specific learning. Not for the dashboard or the organisation-wide learning plan (use `organisation-learning-map`).
 ---
 
 # Learning Clusters
 
 Step 1 of the Learnings Coach method: put every finding with the people who own its learning.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it; `<skills-root>` is the folder that contains this skill). If the workspace does not exist yet, follow Step 1 of the `learnings-coach` skill. Read `learnings-coach/references/ontology.md` §3 for the taxonomy.
+Engine: `PMLC` as in `learnings-coach/references/skill-common.md` §1; this skill needs the `learnings-coach` skill installed alongside it.
 
-## 1. Run the rules
+## Before you start
+
+Follow `learnings-coach/references/skill-common.md` §1 (engine and paths) and §2 (preconditions; run `PMLC setup`
+when only an .xlsx was given: it runs `classify` too). Needs: `workspace`. Read
+`learnings-coach/references/learning-principles.md` and `learnings-coach/references/ontology.md` §3 (the
+taxonomy: entities with their `tags`, tiers, relations).
+
+## Gather
 
 ```bash
-PMLC classify <ws>
+PMLC classify <ws>                                       # -> clusters.json, unresolved_roles.json, singleton_roles.json
+PMLC select <ws> --text "<distinctive words>" --brief    # read the findings that use a doubtful role
+PMLC table-item <ws> clusters                            # cluster table, ready to paste
+PMLC table-item <ws> tiers                               # tier table
+PMLC table-item <ws> relations                           # relation table
 ```
 
-This writes `<ws>/clusters.json` and lists roles with no entity (F99) or no tier (T9) in `<ws>/unresolved_roles.json`. It also writes `<ws>/singleton_roles.json`: roles that could identify one person, each with a generalised label to use instead.
+`classify` lists roles with no entity (F99) or no tier (T9) in `<ws>/unresolved_roles.json`, and roles that could
+identify one person, each with a generalised label, in `<ws>/singleton_roles.json`. `clusters.json` also lists
+`statutory_roles`: roles that name a statutory post (an occupier or factory manager, a COMAH operator, a mine
+manager), each with its regime and findings. Each is a prompt to check the statutory duty, not a finding.
 
-## 2. Resolve the leftovers (the LLM pass)
-
-Read `unresolved_roles.json`. For each role string decide:
-- **F**: one or more entity IDs. A role can belong to several ("Operations / maintenance manager" → F01, F02, F13 if it is a site-level role).
-- **T**: one tier. Infer from the wording: crews and technicians T1; supervisors, signatories, shift in-charges T2; managers, leads, authorities, owners T3; plant or site leadership T4; corporate functions, corporate policy owners, directors, the board T5. Rank words beat the word "policy": a plant manager who owns a policy is T4.
+**Resolve the leftovers.** For each role string in `unresolved_roles.json` decide:
+- **F**: one or more entity IDs ("Operations / maintenance manager" → F01, F02, F13 if it is a site-level role).
+- **T**: one tier. Crews and technicians T1; supervisors, signatories, shift in-charges T2; managers, leads,
+  authorities, owners T3; plant or site leadership T4; corporate functions, policy owners, directors, the board
+  T5. Rank words beat the word "policy": a plant manager who owns a policy is T4.
 - **R**: the relation from the qualifier in parentheses, else `actor`.
 
-Then check the rule-based mappings that look wrong. Look especially at role strings that name a function and a rank together. When in doubt, read the findings that use the role: `PMLC select <ws> --text "<distinctive words>" --brief`.
+Check rule mappings that look wrong too, especially role strings naming a function and a rank together. Write
+`<ws>/role_overrides.json` as `{"<role string>": {"F": ["F05"], "T": "T3", "R": "owner"}}` and re-run
+`PMLC classify <ws>`: every later `classify` re-applies it (`--no-overrides` ignores it).
 
-Write the decisions to `<ws>/role_overrides.json` as `{"<role string>": {"F": ["F05"], "T": "T3", "R": "owner"}}` and re-run:
+**Stop rule.** Repeat until F99 and T9 are empty or each remaining role is explained. If after two passes more
+than 10% of findings still sit in F99 (the profile's "high F99 share"), stop: list the leftovers in the pack and
+tell the user that tier and entity packs will miss those findings.
 
-```bash
-PMLC classify <ws>
-```
-
-`role_overrides.json` is read automatically on every `classify`; `--no-overrides` ignores it.
-
-Repeat until F99 and T9 are empty or each remaining case is explained.
-
-## 3. Adapt the taxonomy (when the organisation is different)
-
-If the user's organisation has different departments (e.g. a hospital, a mine, an airline), copy `learnings-coach/references/taxonomy.json`, edit the entities and regexes, and run `PMLC classify <ws> --taxonomy <file>`. Keep IDs stable once outputs are shared.
-
-Site- or country-specific role words go in an overlay (`references/overlays/`), not in the base taxonomy: `PMLC classify <ws> --overlay <name>`. A later plain `classify` remembers the overlays and taxonomy the previous one used; pass `--taxonomy`/`--overlay` to change them, or `--no-overlay` for none. Give new entities `tags` so the audience skills find them.
-
-## 4. Report
-
-Write the pack `<run>/outputs/learning-clusters.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+**The organisation's own structure.** If its departments differ (a hospital, a mine, an airline), give
+`classify` the organisation's chart, a CSV with columns `department`, `entity` (optional F-id to extend),
+`match` (keywords separated by `;`, or a regex) and `tier` (optional):
 
 ```bash
-PMLC check-pack <ws> <run>/outputs/learning-clusters.json   # fix every problem it lists
-PMLC pack <ws> <run>/outputs/learning-clusters.json         # -> learning-clusters.html (primary) and .md
+PMLC classify <ws> --org-chart <departments.csv>         # rows without an entity become F20, F21, …
+PMLC classify <ws> --overlay india-process-site          # site or country role words (references/overlays/)
 ```
 
-Sections and the kinds that fill them:
-- **Cluster table:** a `table` copied from `classify`, with columns Entity, Findings, L1, L2, L3 and L4, plus `row_cites`. Give the section an `intro` saying that a finding can touch several clusters, so the counts add up to more than the number of findings.
-- **Tier table:** a `table`.
-- **Relation mix:** a `table` with one example role per relation.
-- **Top five clusters:** one `para` each, with `group` = the cluster.
-- **Unresolved items:** a `table` with columns Role string, Decision and Reason. Write "(a personal name)", never the name.
-- **Taxonomy adaptation:** a `para`, only if you did step 3.
+Both are remembered by later `classify` runs (`--no-org-chart`, `--no-overlay` forget them). For a full custom
+taxonomy, copy `learnings-coach/references/taxonomy.json` and pass `--taxonomy <file>`; keep IDs stable once
+outputs are shared, and give new entities `tags` (`emergency`, `supply`, `contractor` …) so the audience
+skills, which select by tag, still find them.
 
-The bottom line cites the highest-rated finding of each top cluster. Put data-quality corrections in `data_quality`.
+## Write
 
-```json
-{"kind": "table", "columns": ["Entity", "Findings", "L1", "L2", "L3", "L4"],
- "rows": [["F02 Mechanical Maintenance", 2, 1, 0, 1, 0]], "row_cites": [["FND-…", "FND-…"]]}
+Write `<run>/outputs/learning-clusters.json` in the shape in `learnings-coach/references/pack-schema.md`.
+
+| § | id | Heading | Content rule | Kind | Count |
+|---|---|---|---|---|---|
+| — | bottom_line | — | Where the learning sits; cite the highest-rated finding of each top cluster | `bottom_line` | up to 7 |
+| 1 | `clusters` | Learning clusters | The `table-item clusters` table, with an `intro`: a finding can touch several clusters, so the counts add up to more than the findings | `table` | 1 |
+| 2 | `tiers` | Tiers that must learn | The `table-item tiers` table | `table` | 1 |
+| 3 | `relations` | Relation mix | The `table-item relations` table, with one example role per relation | `table` | 1 |
+| 4 | `top-clusters` | Top clusters | One `para` per cluster, `group` = the cluster: what it owns and its highest-rated finding | `para` | up to 5 |
+| 5 | `leftovers` | Unresolved items | Role string, Decision, Reason; write "(a personal name)", never the name | `table` | 1 |
+| 6 | `statutory` | Statutory posts named | From `clusters.json` `statutory_roles`: Role, Statutory post, Regime, Findings; a prompt to check the duty, not a conclusion | `table` | optional, up to 1 |
+| 7 | `taxonomy` | Taxonomy adaptation | Only if you used an org chart, overlay or custom taxonomy: what changed and why | `para` | optional |
+
+## If the evidence is thin
+
+Follow `skill-common.md` §6, and:
+- **Few roles in the export:** the tables are short; say so, and do not split an entity to look fuller.
+- **F99 stays high** (stop rule above): publish the pack with the leftovers listed, and name the share in the
+  bottom line.
+- **No statutory posts found:** leave the `statutory` section out.
+
+## Not covered here
+
+- The dashboard and the organisation-wide learning plan: `organisation-learning-map`.
+- One cluster's learning in depth: `cluster-learning-dossier`.
+- The seams between clusters: `interface-learnings`.
+
+## Check and hand over
+
+Run `skill-common.md` §4, then tick §5:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/learning-clusters.json --strict   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/learning-clusters.json                  # -> learning-clusters.html and .md
 ```
+
+Tell the user the F99 and T9 shares after resolution, and which audience packs the largest clusters point to.

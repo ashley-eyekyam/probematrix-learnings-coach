@@ -5,18 +5,22 @@
  "scope": {"min_rating": 4},
  "sections": [
   {"id": "barriers", "heading": "Barriers", "items": [
-   {"kind": "barrier", "group": "Prevention", "barrier": "Specification of critical spares", "type": "prevention",
+   {"kind": "barrier", "group": "Prevention", "barrier": "materials and spares: specification of critical spares", "type": "procedural",
     "owner": "Materials Management (F06)", "state": "absent", "failure_mode": "Local purchase without a specification since March 2022",
     "hoc_tier": "engineering", "fix": "Purchasing system blocks critical-spares orders without a specification",
-    "indicator": "% of critical-spares orders with a specification", "cites": ["FND-0003", "EVD-0003"]},
-   {"kind": "barrier", "group": "Prevention", "barrier": "Leak test before return to service", "type": "prevention",
+    "indicator": "% of critical-spares orders with a specification", "barrier_id": "BR-12", "cites": ["FND-0003", "EVD-0003"]},
+   {"kind": "barrier", "group": "Prevention", "barrier": "maintenance and testing: leak test before return to service", "type": "procedural",
     "owner": "Maintenance supervision (F02, T2)", "state": "absent", "failure_mode": "No checklist required the test",
-    "hoc_tier": "administrative", "fix": "Signed hold point", "indicator": "% of restarts with a test record", "cites": ["FND-0002", "FND-0001"]},
-   {"kind": "barrier", "group": "Mitigation", "barrier": "Gas detection with shutdown", "type": "mitigation", "state": "degraded",
+    "hoc_tier": "administrative", "fix": "Signed hold point", "indicator": "% of restarts with a test record", "barrier_id": "BR-07", "cites": ["FND-0002", "FND-0001"]},
+   {"kind": "barrier", "group": "Mitigation", "barrier": "detection and alarm: gas detection with shutdown", "type": "active", "state": "degraded",
     "failure_mode": "Alarm displayed only; no automatic action", "hoc_tier": "engineering",
     "fix": "[GAP] the export does not say whether a trip was intended", "cites": ["FND-0004"]}]},
   {"id": "summary", "heading": "What the barriers show", "items": [
    {"kind": "para", "text": "Failures cluster on the prevention side. Of the two fixes the export supports, one is above the administrative tier; the mitigation fix is still a gap [FND-0002; FND-0003; FND-0004]."}]},
   {"id": "verify-first", "heading": "Critical controls to verify first", "items": [
-   {"kind": "check", "text": "Leak test before return to service", "cites": ["FND-0002"]},
-   {"kind": "check", "text": "Specification of critical spares", "cites": ["FND-0003"]}]}]}
+   {"kind": "check", "text": "Leak test before return to service", "clauses": ["ICMM-CCM-8"], "cites": ["FND-0002"]},
+   {"kind": "check", "text": "Specification of critical spares", "cites": ["FND-0003"]}]},
+  {"id": "unmapped", "heading": "Barriers not in the organisation's register", "items": [
+   {"kind": "table", "columns": ["Barrier", "Side", "Why unmapped"],
+    "rows": [["detection and alarm: gas detection with shutdown", "Mitigation", "The register lists the detector but no shutdown function"]],
+    "row_cites": [["FND-0004"]]}]}]}

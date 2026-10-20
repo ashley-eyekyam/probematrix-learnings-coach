@@ -23,21 +23,26 @@ The learnings that fall between departments: handovers, shared ownership, unclea
 
 ```bash
 pmlc interfaces <ws> --top 25
-pmlc select <ws> --entity <A> <B> --entity-mode all --brief   # the findings both functions share
-pmlc check-pack <ws> <run>/outputs/interface-learnings.json
+pmlc table-item <ws> interfaces --top 12                       # the matrix table to paste into the pack
+pmlc select <ws> --entity <A> <B> --entity-mode all --brief     # the findings both functions share
+pmlc select <ws> --entity <A> --tag emergency --entity-mode all --brief   # A with any emergency-response function
+pmlc check-pack <ws> <run>/outputs/interface-learnings.json --strict
 pmlc pack <ws> <run>/outputs/interface-learnings.json
 ```
 
 - [interfaces](../commands/interfaces.md) ranks pairs of functions by **shared findings** (both named on the same finding) and **cross-entity causal mentions** (a finding of one names a factor of the other). `--top` sets how many pairs it prints. It writes `interfaces.json`.
-- [select](../commands/select.md) with two `--entity` IDs and `--entity-mode all` returns only the findings that carry both. With the default `--entity-mode any` you would get every finding of either function, which is far too many. `--brief` keeps entries short.
-- [check-pack](../commands/check-pack.md) and [pack](../commands/pack.md) render the pack.
+- [table-item](../commands/table-item.md) `interfaces` prints the top pairs as a ready `table` item, with their example findings as row citations; `--top` keeps that many pairs.
+- [select](../commands/select.md) with two `--entity` IDs and `--entity-mode all` returns only the findings that carry both. With the default `--entity-mode any` you would get every finding of either function, which is far too many. `--tag emergency` with one `--entity` finds a mitigation-side seam: the findings that name that function and any emergency-response function. `--brief` keeps entries short.
+- [check-pack](../commands/check-pack.md) with `--strict` and [pack](../commands/pack.md) check and render the pack.
 
 ## What you get
 
 `interface-learnings.html` and `.md`:
 
 - a matrix of the top pairs, with their shared findings and causal mentions;
-- one section per interface (for example `f02-f06`): the seam, what went wrong, why neither side saw it, a learning for each side, and a joint fix as a recommendation with its control tier and indicator;
+- one section per interface, named by the pair with the lower ID first (for example `f02-f06`): the seam, what went wrong, why neither side saw it, a learning for each side, and a joint fix as a recommendation with its control tier, an indicator both sides can see, an owner on one side and a co-owner on the other;
+- at least one interface on the mitigation side (detection, isolation, emergency command) when the evidence supports one;
+- **Joint-review agenda:** a table for the meeting the two sides hold (interface, roles who meet, agenda item, evidence to bring, decision sought);
 - **Who must meet whom:** a closing list.
 
 ## Worked example (Hazira)

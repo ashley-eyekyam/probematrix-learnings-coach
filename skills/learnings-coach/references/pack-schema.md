@@ -34,7 +34,12 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 - **`pack`:** the skill name, which is also the file name. It is lowercase words joined by hyphens, or `dossier-F<nn>` for `cluster-learning-dossier` (a lettered entity keeps its letter: `dossier-F09b`). The exceptions, where the pack name is not the skill name:
   - `organisation-learning-plan` (from `organisation-learning-map`);
   - `dossier-F<nn>`, one per cluster, and `dossier-index` (from `cluster-learning-dossier`);
-  - `report-comparison-client-safe`, the neutral copy beside `report-comparison`.
+  - `report-comparison-client-safe`, the neutral copy beside `report-comparison`, for the organisation that wrote
+    the other report;
+  - `report-comparison-regulator-safe`, the copy for a regulator or other authority ("additional learning"
+    wording, the comparator's statutory status, `--embed summary`, legal review first).
+
+  Both copies have exactly the sections of `report-comparison` (profile rule `same-sections-as:report-comparison`).
 - **`status`:** must contain `Learning purposes: not a statutory document`.
 - **`bottom_line`:** 1 to 7 takeaways, each citing at least one Finding or Evidence ID.
 - **`scope` (optional):**

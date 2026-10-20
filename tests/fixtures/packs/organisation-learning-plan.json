@@ -5,9 +5,10 @@
   {"id": "where", "heading": "Where the learning sits", "items": [
    {"kind": "para", "text": "Two of the four findings sit at supervision or organisational level [FND-0002; FND-0003]."}]},
   {"id": "t1", "heading": "Frontline (T1)", "items": [
-   {"kind": "learning", "lesson": "Do not pressurise without the test record.", "owner": "F02 Mechanical Maintenance", "cites": ["FND-0001"]}]},
+   {"kind": "learning", "learning": "LR-01", "lesson": "Do not pressurise without the test record.", "owner": "F02 Mechanical Maintenance", "cites": ["FND-0001"]}]},
   {"id": "t2", "heading": "Supervision (T2)", "items": [
-   {"kind": "learning", "lesson": "Hold the restart until the test is signed.", "owner": "F02 Mechanical Maintenance", "cites": ["FND-0002"]}]},
+   {"kind": "learning", "learning": "LR-01", "lesson": "Hold point before acceptance.", "owner": "F02 Mechanical Maintenance", "cites": ["FND-0002"]},
+   {"kind": "learning", "learning": "LR-02", "lesson": "Confirm each alarm has a defined response.", "owner": "F02 Mechanical Maintenance", "cites": ["FND-0004"]}]},
   {"id": "owners", "heading": "Top learning owners", "items": [
    {"kind": "table", "columns": ["Cluster", "Priority-1 learnings", "Why"], "rows": [["F02 Mechanical Maintenance", 1, "Return to service without a test"]],
     "row_cites": [["FND-0001", "FND-0002"]]}]},
@@ -17,7 +18,9 @@
    {"kind": "para", "text": "The register's recommendations need checking for engineering controls on the spares path [FND-0003]."},
    {"kind": "table", "columns": ["Control tier", "Recommendations"], "rows": [["engineering", 0], ["administrative", 2]],
     "row_cites": [["FND-0003"], ["FND-0002"]]}]},
-  {"id": "rollout", "heading": "Rollout plan", "items": [
-   {"kind": "table", "columns": ["Order", "Skill", "Audience", "Why"],
-    "rows": [[1, "site-leadership-coach", "Site leadership", "Owns the spares decision"], [2, "supervisor-coach", "Supervisors", "Owns the hold point"]],
-    "row_cites": [["FND-0003"], ["FND-0002"]]}]}]}
+  {"id": "cascade", "heading": "Cascade plan", "items": [
+   {"kind": "table", "columns": ["Audience", "Pack", "Channel", "Deliverer role", "Window (relative weeks)", "Feedback", "Completion measure"],
+    "rows": [["Site leadership", "site-leadership-coach", "Leadership meeting", "Site head of HSE", "Weeks 1-2", "Decisions minuted", "Spares decision recorded"],
+             ["Supervisors", "supervisor-coach", "Supervisor briefing", "Maintenance manager", "Weeks 2-3", "Questions raised", "Every shift supervisor briefed"],
+             ["Frontline crews", "frontline-learning-cards", "Toolbox talk", "Shift supervisor", "Weeks 3-5", "Concerns escalated", "Every crew has a distribution.csv row"]],
+    "row_cites": [["FND-0003"], ["FND-0002"], ["FND-0001"]]}]}]}

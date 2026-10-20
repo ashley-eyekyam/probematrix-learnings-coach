@@ -34,9 +34,6 @@ NON_HUB = [s for s in ALL_SKILLS if s != HUB]
 
 # Tasks 21-23 remove their skills' names as each skill reaches the skeleton (staged, Ruling X8).
 PENDING = {
-    # Task 21: register and analysis
-    "learnings-register", "learning-clusters", "organisation-learning-map", "causal-map", "precursor-timeline",
-    "interface-learnings", "barrier-learnings", "report-comparison",
     # Task 22: leadership, assurance and investigation
     "board-brief", "top-management-brief", "site-leadership-coach", "manager-coach", "cluster-learning-dossier",
     "auditor-assurance-pack", "investigator-coach",
@@ -69,6 +66,24 @@ OVERLAPS = {
     ("barrier-learnings", "engineering-integrity-learnings"), ("engineering-integrity-learnings", "barrier-learnings"),
 }
 NO_PROFILE = {"learnings-register"}        # writes a register, not a pack: its Write table has no profile
+# Variant packs (Task 20 review m-5): a variant has the main pack's sections (rule same-sections-as), so it shares the
+# skill's one Write table; its profile must equal the main profile's sections and bottom line.
+VARIANTS = {"report-comparison": ("report-comparison-client-safe", "report-comparison-regulator-safe")}
+# Task 21: what each register and analysis skill must say after its Phase 3 changes (brief, Task 21 block).
+PHASE3_TEXT = {
+    "learnings-register": ("urgency", "recommendation_class", "recipient_role", "regulatory_touchpoint",
+                           "verification", "why_not_stronger", "PMLC register-md", "never hand-write",
+                           "check-register <ws> <run>/outputs/learnings-register.json --strict"),
+    "learning-clusters": ("--org-chart", "tags", "statutory"),
+    "organisation-learning-map": ("cascade", "deliverer role", "window (relative weeks)", "completion measure",
+                                  "PMLC templates <ws> distribution", "reach"),
+    "causal-map": ("PMLC causal <ws> --top 60 --hubs", "PMLC table-item <ws> hubs", "end on a condition"),
+    "precursor-timeline": ("PMLC timeline-item <ws> --before incident", "year-only", "undated"),
+    "interface-learnings": ("joint-review agenda", "co_owner", "lower id first", "mitigation"),
+    "barrier-learnings": ("barriers-and-controls.md", "barrier_id", "unmapped", "ICMM", "Seveso"),
+    "report-comparison": ("comparator.json", "PMLC compare", "own-action-plan", "report-comparison-regulator-safe",
+                          "additional learning", "--embed summary", "legal review", "statutory_status"),
+}
 WRITE_HEADER = ["§", "id", "heading", "content rule", "kind", "count"]
 NO_LIMIT = 99
 COMMON_LINK = "learnings-coach/references/skill-common.md"
@@ -157,8 +172,10 @@ def parse_kinds(cell: str) -> list:
     return list(dict.fromkeys(kinds))
 
 
-def write_table(text: str) -> list:
-    """Rows of the Write section-spec table as dicts {id, kinds, min, max}. AssertionError when it is missing."""
+def write_table(text: str, need_kinds: bool = True) -> list:
+    """Rows of the Write section-spec table as dicts {id, kinds, min, max}. AssertionError when it is missing.
+    need_kinds=False (NO_PROFILE skills, Task 20 review m-4): the Kind cell names register field types, not pack
+    kinds, so it is not checked."""
     body = section(text, "Write")
     lines = body.splitlines()
     start = None
@@ -176,7 +193,7 @@ def write_table(text: str) -> list:
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
         assert len(cells) == 6, f"Write row has {len(cells)} cells, expected 6: {line}"
         kinds = parse_kinds(cells[4])
-        assert kinds, f"no pack kind in the Kind cell: {line}"
+        assert kinds or not need_kinds, f"no pack kind in the Kind cell: {line}"
         lo, hi = parse_count(cells[5])
         rows.append({"id": cells[1].replace("`", "").strip(), "kinds": sorted(kinds), "min": lo, "max": hi})
     assert rows, "the Write table has no rows"
@@ -305,7 +322,7 @@ def test_cites_principles_full_path(skill):
 @pytest.mark.parametrize("skill", NON_HUB)
 def test_write_table_matches_profile(skill):
     ready(skill)
-    rows = write_table(skill_md(skill))
+    rows = write_table(skill_md(skill), need_kinds=skill not in NO_PROFILE)
     if skill in NO_PROFILE:
         return
     profs = json.loads(read(REFS / "pack-profiles.json"))
@@ -319,6 +336,28 @@ def test_write_table_matches_profile(skill):
     for r in bl:
         lim = prof.get("bottom_line") or {}
         assert (r["min"], r["max"]) == (lim.get("min"), lim.get("max")), f"{skill}: bottom_line count differs"
+
+
+@pytest.mark.parametrize("skill", sorted(VARIANTS))
+def test_variant_profiles_share_the_main_sections(skill):
+    ready(skill)
+    profs = json.loads(read(REFS / "pack-profiles.json"))
+    main = profs[profile_key(skill)]
+    t = skill_md(skill)
+    for v in VARIANTS[skill]:
+        assert v in profs, f"{skill}: no profile {v}"
+        assert profs[v]["sections"] == main["sections"] and profs[v]["bottom_line"] == main["bottom_line"], v
+        assert f"same-sections-as:{profile_key(skill)}" in profs[v].get("rules", []), v
+        assert f"<run>/outputs/{v}.json" in t, f"{skill}: SKILL.md must name {v}.json"
+
+
+@pytest.mark.parametrize("skill", sorted(PHASE3_TEXT))
+def test_phase3_changes_present(skill):
+    ready(skill)
+    t = skill_md(skill)
+    missing = [x for x in PHASE3_TEXT[skill] if x not in t]
+    assert missing == [], f"{skill}: Phase 3 text missing {missing}"
+    assert len(t.splitlines()) <= 150, f"{skill}: {len(t.splitlines())} lines"
 
 
 @pytest.mark.parametrize("skill", NON_HUB)
@@ -400,3 +439,10 @@ def test_write_table_parser():
     assert heading_order(headings(SAMPLE), SKELETON) == [0, 1, 2, 3, 4, 5]
     with pytest.raises(AssertionError):
         write_table(SAMPLE.replace("| Count |", "| How many |"))
+
+
+def test_write_table_register_rows_need_no_pack_kind():
+    reg = SAMPLE.replace("| `question` (with `to`) | up to 12 |", "| text field | up to 12 |")
+    with pytest.raises(AssertionError):
+        write_table(reg)
+    assert write_table(reg, need_kinds=False)[-1] == {"id": "questions", "kinds": [], "min": 1, "max": 12}

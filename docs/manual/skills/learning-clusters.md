@@ -30,21 +30,28 @@ pmlc classify <ws>                                   # rules first
 pmlc select <ws> --text "<distinctive words>" --brief  # read the findings that use a puzzling role
 pmlc classify <ws>                                   # again, after writing role_overrides.json
 pmlc classify <ws> --overlay india-process-site      # add site role words (remembered next time)
+pmlc classify <ws> --org-chart departments.csv       # the organisation's own departments (remembered too)
 pmlc classify <ws> --taxonomy my-taxonomy.json       # a different list of functions
 pmlc classify <ws> --no-overlay                      # drop the overlay again
+pmlc table-item <ws> clusters                        # the cluster, tier and relation tables for the pack
+pmlc check-pack <ws> <run>/outputs/learning-clusters.json --strict
+pmlc pack <ws> <run>/outputs/learning-clusters.json
 ```
 
-- [classify](../commands/classify.md) writes `clusters.json`, `unresolved_roles.json` and `singleton_roles.json`. It reads `role_overrides.json` on every run; `--overrides FILE` names another file and `--no-overrides` ignores it. A plain `classify` reuses the taxonomy and overlays of the previous run.
+- [classify](../commands/classify.md) writes `clusters.json`, `unresolved_roles.json` and `singleton_roles.json`. It reads `role_overrides.json` on every run; `--overrides FILE` names another file and `--no-overrides` ignores it. `--org-chart FILE.csv` adds the organisation's departments (columns department, entity, match and tier; rows with no entity become F20, F21 …), and `--no-org-chart` forgets it. A plain `classify` reuses the taxonomy, overlays and org chart of the previous run.
 - [select](../commands/select.md) with `--text` (a search over the finding text) and `--brief` (short entries) shows the findings behind a role.
-- Then [check-pack](../commands/check-pack.md) and [pack](../commands/pack.md) for the `learning-clusters` report.
+- [table-item](../commands/table-item.md) prints the `clusters`, `tiers` and `relations` tables as ready items, so counts are never retyped.
+- [check-pack](../commands/check-pack.md) with `--strict` and [pack](../commands/pack.md) check and render the `learning-clusters` report.
+
+The resolution pass stops when F99 and T9 are empty or explained. If more than 10% of findings still sit in F99 after two passes, the agent stops, lists the leftovers and says that tier and entity packs will miss those findings. Give new entities `tags` (such as `emergency` or `supply`): the audience skills select by tag.
 
 ## What you get
 
-- `clusters.json`: every finding's entities, tiers and relations.
+- `clusters.json`: every finding's entities, tiers and relations, the taxonomy version and fingerprint, and `statutory_roles` (roles that name a statutory post such as an occupier or a COMAH operator, each a prompt to check the duty, not a finding).
 - `unresolved_roles.json`: roles with no entity (F99) or no tier (T9).
 - `singleton_roles.json`: roles that could point to one person, each with a general label to use instead.
 - `role_overrides.json`: your corrections, kept for every later run.
-- A report pack `learning-clusters.html` and `.md`: the cluster table, the tier table, the relation mix, the five largest clusters and the decisions on unplaced roles.
+- A report pack `learning-clusters.html` and `.md`: the cluster table, the tier table, the relation mix, up to five top clusters, the decisions on unplaced roles, the statutory posts named (when there are any) and any taxonomy adaptation.
 
 ## Worked example (Hazira)
 

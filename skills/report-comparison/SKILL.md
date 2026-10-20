@@ -1,52 +1,110 @@
 ---
 name: report-comparison
-description: Compare a ProbeMatrix investigation with an official, regulatory, corporate or conventional investigation report on the same event - two-way coverage of learnings and recommendations, depth by HFACS level, ownership, actionability and control strength - fairly and without blame. Use when someone has an enquiry committee report, regulator report, company RCA or root-cause report and wants to know what each analysis covers, what the second look adds, or wants a side-by-side comparison for a management or client discussion.
+description: Compares a ProbeMatrix investigation export with an official, regulatory, corporate or conventional investigation report on the same event, or with the organisation's own action plan - two-way coverage of learnings and recommendations, depth by HFACS level, ownership, actionability and control strength - fairly and without blame, with neutral client-safe and regulator-safe copies. Use when someone with a ProbeMatrix export has an enquiry committee report, regulator report, company RCA or CAPA plan and wants to know what each covers, what the second look adds, or wants a side-by-side comparison for a management or client discussion. Not for drafting new learnings (use `learnings-register`).
 ---
 
 # Report Comparison
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). **Read `learnings-coach/references/comparison-method.md` before starting**, and `learning-principles.md`.
+Engine: `PMLC` as in `learnings-coach/references/skill-common.md` §1; this skill needs the `learnings-coach` skill installed alongside it.
 
-## Inputs
+## Before you start
 
-- the ProbeMatrix workspace (ingested and classified)
-- the other report (PDF, Word or text). Extract its text with whatever tools the host provides.
+Follow `learnings-coach/references/skill-common.md` §1 (engine and paths) and §2 (preconditions; run `PMLC setup`
+when only an .xlsx was given). Needs: `workspace`. Optional: the register, the comparator. **Read
+`learnings-coach/references/comparison-method.md` first** (framing, reason classes, the name-bleed rule, file
+shapes), and `learnings-coach/references/learning-principles.md`.
 
-## Steps
+Ask which report is compared, and its kind: an official or regulator report (`official-report`), a company
+report (`company-report`), or the organisation's **own action plan** (`own-action-plan`, L1-16 mode).
 
-1. **Establish sighted or blind.** Search the findings for quotations of the other report's recommendation or lessons sections, e.g. `PMLC select <ws> --text "recommendation|remedial" --brief`, and look for page references that fall inside those sections. Report how many findings cite them. If any do, the comparison is sighted; say so on page 1.
-2. **Inventory the other report**: observations (`OBS-nn`), root causes (`RC-nn`), recommendations (`REC-nn`), each with its section or discipline group. Count them.
-3. **Learnings on the ProbeMatrix side**: use an existing Learnings Register if present; otherwise build a compact one (see `learnings-register`, steps 1–2) so both sides are compared at the level of learnings, not finding instances.
-4. **Map both ways** (yes / partial / none) with reason classes for "none".
-5. **Compare dimensions**: level reached, ownership (entity and tier named?), actionability, control tier of recommendations, evidence basis, interfaces.
-6. **Cross-tabulate** the other report's discipline groups against Learning Clusters to show where each concentrates.
-7. **Names do not bleed in.** Replace personal names in quoted comparator text with roles (and company names with their function) before they reach a table; see the name-bleed rule in `comparison-method.md`. Check with `scan-names` or `check-language --names` using the comparator's names. Put a conflict-of-interest line on page 1 when the commissioning organisation is one of the compared parties.
-8. **Say where the other report is stronger.** Specific engineering recommendations, site findings, primary evidence: credit them.
+## Gather
 
-## Output
+1. **Extract the other report:** `pdftotext -layout report.pdf report.txt`. A scanned PDF gives an empty or
+   garbled file: run OCR if available, otherwise transcribe the items by hand and say so on page 1.
+2. **Sighted or blind.** Find findings that quote the other report's recommendation or lessons sections:
 
-Write the pack `<run>/outputs/report-comparison.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+   ```bash
+   PMLC select <ws> --text "recommendation|remedial" --brief
+   PMLC select <ws> --text "<quoted phrase>" --in-evidence --brief   # findings whose evidence quotes it
+   ```
+
+   If any do, the comparison is **sighted**: report coverage, not independent discovery. Say so on page 1.
+3. **Write `<ws>/comparator.json` first** (shape in `comparison-method.md` §7): `source` with `title`,
+   `issuer_role`, `statutory_status` (as the report states it, e.g. "statutory enquiry under …" or
+   "non-statutory") and `kind`, then one item per observation (`OBS-nn`), root cause (`RC-nn`), recommendation
+   (`REC-nn`) or action (`ACT-nn`), with its section, group and `hoc_tier`. Never guess an item. Replace personal
+   names with roles and company names with functions as you transcribe (the name-bleed rule).
+4. **The ProbeMatrix side is learnings, not findings:** use the register if present; otherwise build a compact
+   one first (`learnings-register`, its Gather and Write steps).
+5. **Map both ways** in `<ws>/comparison-map.json` (`[{"lr_id", "ref", "match": "yes|partial|none"}]`), then:
+
+   ```bash
+   PMLC compare <ws> --register <run>/outputs/learnings-register.json          # check the inputs; read the tables
+   PMLC compare <ws> --register <run>/outputs/learnings-register.json --json   # the same as ready pack items
+   ```
+
+   Paste the `--json` items unchanged (the basis sentence with the statutory status, the item counts, both
+   directions, the control-tier profile and the group × owner cross-tab). Write the reason class for each
+   "none" from `comparison-method.md` §4.
+6. **Own-action-plan mode:** each learning is mapped to the organisation's actions (`ACT-nn`) with the action's
+   `hoc_tier`. A learning with no matching action, or only a weaker one, is a candidate for the organisation's
+   adoption review: offer `PMLC templates <ws> adoption` (the organisation fills it in; never you).
+
+## Write
+
+Write `<run>/outputs/report-comparison.json` in the shape in `learnings-coach/references/pack-schema.md`.
+
+| § | id | Heading | Content rule | Kind | Count |
+|---|---|---|---|---|---|
+| — | bottom_line | — | What each analysis covers, what the second look adds, and where the other report is stronger | `bottom_line` | up to 5 |
+| 1 | `basis` | Basis of the comparison | The `compare` basis sentence (title, issuer role, statutory status); sighted or blind; "same evidence, different analytical architecture"; a conflict-of-interest line when the commissioning organisation is a compared party | `para` | up to 3 |
+| 2 | `coverage` | Coverage both ways | The `compare` count tables and cross-tab, plus one mapping table per direction (Other report, ProbeMatrix learning, Match, Reason if none; `row_cites`) | `table` | up to 6 |
+| 3 | `depth` | Depth and ownership | Dimension, Other report, ProbeMatrix: levels reached, ownership, actionability, evidence basis, interfaces | `table` | 1 |
+| 4 | `control-tiers` | Control-tier profile | The `compare` control-tier table, both sides | `table` | 1 |
+| 5 | `side-by-side` | Side by side | Topic, Other report says, ProbeMatrix says; three to five rows; `row_cites` | `table` | 1 |
+| 6 | `stronger` | Where the other report is stronger | Specific engineering recommendations, site findings, primary evidence: credit them | `para` | up to 3 |
+| 7 | `limits` | Limits of this comparison | What the desk analysis could not see; transcription or OCR caveats | `para` | up to 3 |
+
+The other report's ids are plain text in tables; on an item, list them in `comparator_refs` (checked against
+`comparator.json`). Carry `learning: "LR-nn"` where a row or item expresses one register learning.
+
+**Variants: the same sections, only the content changes.** Each copy has exactly the sections above, in order
+(its profile's rule `same-sections-as:report-comparison`):
+- **Client-safe**, for the organisation that wrote the other report: `<run>/outputs/report-comparison-client-safe.json`,
+  `"pack": "report-comparison-client-safe"`. Neutral wording, no product claims, roles for names, functions for
+  companies, and no reason class that reads as a verdict.
+- **Regulator-safe** (L7-12), for a regulator or other authority: `<run>/outputs/report-comparison-regulator-safe.json`,
+  `"pack": "report-comparison-regulator-safe"`. Write "additional learning", never "missed" or "gap in the
+  report"; make no product claims; put the comparator's `statutory_status` in the `basis` statement; add a
+  `limits` line that the copy is not a statutory document and needs legal review before it leaves the
+  organisation. It is rendered with `--embed summary` and shared only under `skill-common.md` §7.
+
+## If the evidence is thin
+
+Follow `skill-common.md` §6, and:
+- **No numbered recommendations in the other report:** number its stated actions or conclusions as `OBS-nn`
+  and say so in `basis`.
+- **No register and too few findings for one:** compare at finding level, and say so in `basis` and `limits`.
+- **A scanned report with no OCR:** transcribe only what you can read and list the pages not covered in `limits`.
+
+## Not covered here
+
+- Drafting the learnings themselves: `learnings-register`.
+- What to ask next where the two reports differ: `investigator-coach`.
+- Statutory notification or reporting duties: the organisation's own process (`learnings-coach/references/jurisdictions.md` lists regimes).
+
+## Check and hand over
+
+Run `skill-common.md` §4, then tick §5:
 
 ```bash
-PMLC check-pack <ws> <run>/outputs/report-comparison.json   # fix every problem it lists
-PMLC pack <ws> <run>/outputs/report-comparison.json         # -> report-comparison.html (primary) and .md
+PMLC check-pack <ws> <run>/outputs/report-comparison.json --strict   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/report-comparison.json                  # -> report-comparison.html and .md
+PMLC compare <ws> --client-safe <run>/outputs/report-comparison-regulator-safe.json --main <run>/outputs/report-comparison.json
+PMLC check-pack <ws> <run>/outputs/report-comparison-regulator-safe.json --strict --share external
+PMLC pack <ws> <run>/outputs/report-comparison-regulator-safe.json --embed summary
 ```
 
-The pack supplies the status line and the footer. Sections and the kinds that fill them:
-1. **Basis:** a `para` with the sighted or blind statement and the "same evidence, different analytical architecture" framing.
-2. **Bottom line:** five entries.
-3. **Coverage:** one `table` per direction (Other report, ProbeMatrix learning, Match = yes, partial or none, Reason if none; `row_cites`), plus a counts `table`.
-4. **Depth and ownership:** a `table` (Dimension, Other report, ProbeMatrix).
-5. **Control-tier profile:** a `table`.
-6. **Side by side:** a `table` (Topic, Other report says, ProbeMatrix says; `row_cites`) with three to five rows.
-7. **Where the other report is stronger:** `para`.
-8. **Limits:** `para`.
-
-Use the cross-tab of discipline groups × Learning Clusters as a further `table`. The other report's IDs (`OBS-nn`, `RC-nn`, `REC-nn`) are plain text, not citations. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
-
-If the user will share the comparison with the organisation that wrote the other report, also write `<run>/outputs/report-comparison-client-safe.json` with `"pack": "report-comparison-client-safe"`. Keep the same content, use neutral wording and make no product claims.
-
-```json
-{"kind": "table", "columns": ["Other report", "ProbeMatrix learning", "Match", "Reason if none"],
- "rows": [["REC-01 …", "…", "partial", ""]], "row_cites": [["FND-…"]]}
-```
+Run the variant lines only for the copies the user asked for (the same lines serve the client-safe copy). Check
+quoted comparator text with `check-language --names` using the comparator's names. Prompt for legal review
+before any copy leaves the organisation; never run `sign-off` yourself.

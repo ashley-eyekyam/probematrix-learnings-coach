@@ -26,11 +26,21 @@ Two of the four findings sit at supervision or organisational level [FND-0002; F
 
 - Owner: F02 Mechanical Maintenance
 
+*(learning: LR-01)*
+
 ## Supervision (T2)
 
-**Learning:** Hold the restart until the test is signed. [FND-0002]
+**Learning:** Hold point before acceptance. [FND-0002]
 
 - Owner: F02 Mechanical Maintenance
+
+*(learning: LR-01)*
+
+**Learning:** Confirm each alarm has a defined response. [FND-0004]
+
+- Owner: F02 Mechanical Maintenance
+
+*(learning: LR-02)*
 
 ## Top learning owners
 
@@ -53,12 +63,13 @@ The register's recommendations need checking for engineering controls on the spa
 | engineering | 0 | FND-0003 |
 | administrative | 2 | FND-0002 |
 
-## Rollout plan
+## Cascade plan
 
-| Order | Skill | Audience | Why | Cites |
-|---|---|---|---|---|
-| 1 | site-leadership-coach | Site leadership | Owns the spares decision | FND-0003 |
-| 2 | supervisor-coach | Supervisors | Owns the hold point | FND-0002 |
+| Audience | Pack | Channel | Deliverer role | Window (relative weeks) | Feedback | Completion measure | Cites |
+|---|---|---|---|---|---|---|---|
+| Site leadership | site-leadership-coach | Leadership meeting | Site head of HSE | Weeks 1-2 | Decisions minuted | Spares decision recorded | FND-0003 |
+| Supervisors | supervisor-coach | Supervisor briefing | Maintenance manager | Weeks 2-3 | Questions raised | Every shift supervisor briefed | FND-0002 |
+| Frontline crews | frontline-learning-cards | Toolbox talk | Shift supervisor | Weeks 3-5 | Concerns escalated | Every crew has a distribution.csv row | FND-0001 |
 
 ---
 

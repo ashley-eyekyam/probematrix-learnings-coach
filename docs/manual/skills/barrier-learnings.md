@@ -24,20 +24,25 @@ Which safety barriers and controls failed: prevention barriers before the loss o
 ```bash
 pmlc select <ws> --top-rated --brief
 pmlc select <ws> --preset barrier-learnings     # the same call, as the skill's preset
-pmlc check-pack <ws> <run>/outputs/barrier-learnings.json
+pmlc table-item <ws> hoc --pack <run>/outputs/barrier-learnings.json   # control-tier counts of the fixes
+pmlc check-pack <ws> <run>/outputs/barrier-learnings.json --strict
 pmlc pack <ws> <run>/outputs/barrier-learnings.json
 ```
 
 - [select](../commands/select.md): `--top-rated` keeps the findings at the workspace's top rating, and `--brief` keeps entries short.
-- [check-pack](../commands/check-pack.md) and [pack](../commands/pack.md) render the pack. The pack's scope is `{"min_rating": "top"}`, so its coverage is measured against the top-rated findings.
+- [table-item](../commands/table-item.md) `hoc` with `--pack` counts the pack's fixes per control tier, so the share above the administrative tier is computed, not estimated.
+- [check-pack](../commands/check-pack.md) with `--strict` and [pack](../commands/pack.md) check and render the pack. The pack's scope is `{"min_rating": "top"}`, so its coverage is measured against the top-rated findings. `check-pack` also checks the `clauses` on the critical controls (`ICMM-CCM-8`, `ICMM-CCM-9`, `SEVESO-AnnexIII(vi)`) against the standards crosswalk.
+
+Barrier names, types, states and control tiers come from one shared vocabulary, `barriers-and-controls.md`, so a barrier means the same thing in every pack. If the organisation has a barrier or critical-control register (a CSV with an id and a name), the agent gives each barrier the matching `barrier_id` and lists the barriers it could not map.
 
 ## What you get
 
 `barrier-learnings.html` and `.md`:
 
-- **Barriers:** one entry per barrier, grouped as Prevention or Mitigation. Each gives the barrier, its owner, its state (absent, degraded, defeated, worked partly or worked), how it degraded (or "[GAP]" where the export does not say), the fix with its control tier, a leading indicator and the evidence.
+- **Barriers:** up to twelve, grouped as Prevention or Mitigation. Each gives the barrier, its type (active, passive, procedural or behavioural), its owner, its state (absent, degraded, defeated, worked partly or worked), how it degraded (or "[GAP]" where the export does not say), the fix with its control tier, a leading indicator, the organisation's `barrier_id` when mapped, and the evidence.
 - **Summary:** which barriers carried the most weight, whether failures clustered on one side, and the share of fixes above the administrative tier.
-- **Critical controls to verify first:** a ranked list for the owners.
+- **Critical controls to verify first:** a ranked list for the owners, with ICMM critical-control and Seveso III clauses where the evidence touches them.
+- **Barriers not in the organisation's register:** only when a barrier register was supplied.
 
 The `barrier` items can be handed to a bow-tie tool.
 

@@ -117,7 +117,8 @@ def _html_item(it, graphs, inc_date=None) -> str:
                 + _labelled("Good evidence looks like", g("good_evidence")) + c)
     elif k == "recommendation":
         meta = _hoc(it["hoc_tier"]) + _badges([("Barrier", g("barrier")), ("Barrier ID", g("barrier_id")),
-                                               ("Owner", g("owner")), ("By", g("by_when"))])
+                                               ("Owner", g("owner")), ("Co-owner", g("co_owner")),
+                                               ("By", g("by_when"))])
         body = (f'<p><b>{_inline(it["change"])}</b></p><p>{meta}</p><p class="indicator-line">'
                 f'<span class="label">Leading indicator</span>{_inline(it["indicator"])}</p>'
                 + _labelled("Why not stronger", g("why_not_stronger")) + c)

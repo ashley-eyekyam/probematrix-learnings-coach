@@ -1,0 +1,28 @@
+{"pack": "report-comparison-regulator-safe", "schema": 1, "title": "Report Comparison (regulator-safe): Synthetic pump fire, 2024",
+ "audience": "The authority that holds the other report", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "The analyses agree on the return-to-service test; the additional learning concerns the spares specification and the alarm response.",
+                  "cites": ["FND-0001", "FND-0003"]}],
+ "sections": [
+  {"id": "basis", "heading": "Basis of the comparison", "items": [
+   {"kind": "para", "text": "Compared with the Synthetic review panel report (Independent review panel; statutory status: non-statutory). Both analyses used the same evidence with a different analytical architecture, and the comparison is blind: no finding quotes the other report's recommendations [FND-0001; FND-0002; FND-0003; FND-0004]."}]},
+  {"id": "coverage", "heading": "Coverage both ways", "items": [
+   {"kind": "table", "columns": ["Other report", "Learning", "Match", "Note"],
+    "rows": [["REC-01 Retrain fitters on leak testing", "Signed leak-test hold point", "partial", ""],
+             ["Outside the report's terms of reference", "Additional learning: spares bought without a specification", "none", "Outside the original terms of reference"]],
+    "row_cites": [["FND-0001"], ["FND-0003"]]}]},
+  {"id": "depth", "heading": "Depth and ownership", "items": [
+   {"kind": "table", "columns": ["Dimension", "Other report", "This analysis"], "rows": [["Deepest level reached", "L1", "L4"]],
+    "row_cites": [["FND-0003"]]}]},
+  {"id": "control-tiers", "heading": "Control-tier profile of recommendations", "items": [
+   {"kind": "table", "columns": ["Control tier", "Other report", "This analysis"], "rows": [["Engineering", 0, 1], ["Training", 1, 0]]}]},
+  {"id": "side-by-side", "heading": "Side by side", "items": [
+   {"kind": "table", "columns": ["Topic", "Other report says", "This analysis says"],
+    "rows": [["Leak test", "Retrain fitters", "A signed hold point at return to service"],
+             ["Spares", "Outside its terms of reference", "Additional learning: spares bought without a specification"],
+             ["Gas alarm", "Outside its terms of reference", "Additional learning: a display-only alarm with no shutdown"]],
+    "row_cites": [["FND-0001", "FND-0002"], ["FND-0003", "EVD-0003"], ["FND-0004"]]}]},
+  {"id": "stronger", "heading": "Where the other report is stronger", "items": [
+   {"kind": "para", "text": "Its recommendation names the function that retrains the fitters; the export's own recommendation leaves the owner open [FND-0001]."}]},
+  {"id": "limits", "heading": "Limits of this comparison", "items": [
+   {"kind": "para", "text": "This copy is for learning, not a statutory document, and it needs legal review before it leaves the organisation."},
+   {"kind": "para", "text": "The other report here is fictional, for testing; counts are illustrative only."}]}]}

@@ -220,6 +220,9 @@ WAVE2 = ["frontline-learning-cards", "manager-coach", "site-leadership-coach", "
 WAVE3 = ["causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings", "learning-clusters",
          "cluster-learning-dossier", "report-comparison", "organisation-learning-map"]
 PACK_OF = {"cluster-learning-dossier": "dossier-F02", "organisation-learning-map": "organisation-learning-plan"}
+# Variant packs beside a skill's main pack (pack-schema.md pack-name exceptions): variant -> skill.
+VARIANT_OF = {"report-comparison-client-safe": "report-comparison",
+              "report-comparison-regulator-safe": "report-comparison"}
 DOC_NAME = {"cluster-learning-dossier": "dossier-<F-id>"}          # how SKILL.md writes the pack file name
 DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3}                                     # tasks 15 and 24 add waves 2 and 3
 VERSION = pmlc.__version__
@@ -231,7 +234,7 @@ def pack_fixtures() -> list:
 
 
 def skill_of(pack) -> str:
-    return {v: k for k, v in PACK_OF.items()}.get(pack, pack)
+    return VARIANT_OF.get(pack) or {v: k for k, v in PACK_OF.items()}.get(pack, pack)
 
 
 def fixture(name):
@@ -1391,6 +1394,30 @@ def test_profile_same_sections_rule_and_unknown_rule(w):
     assert profiles.check("not a pack", prof) == [] and profiles.check(p, None) == []
 
 
+def test_comparison_variants_keep_the_main_sections(w):
+    """Task 21 (L7-12; Task 10 M-8): the client-safe and regulator-safe copies have report-comparison's sections, in
+    order (same-sections-as), and pass check-pack --share external --strict."""
+    main = [s["id"] for s in fixture("report-comparison")["sections"]]
+    for v in ("report-comparison-client-safe", "report-comparison-regulator-safe"):
+        p = fixture(v)
+        assert [s["id"] for s in p["sections"]] == main, v
+        assert pp.check_pack(p, w, share="external", strict=True).problems == [], v
+        p["sections"] = p["sections"][1:]
+        assert any(x.startswith("sections: must be the same sections as report-comparison")
+                   for x in _strict(p, w)), v
+    t = json.dumps(fixture("report-comparison-regulator-safe")).lower()
+    assert "additional learning" in t and "statutory" in t and "legal review" in t
+    assert "missed" not in t and "deficien" not in t
+
+
+def test_recommendation_co_owner_is_rendered(w):
+    """Task 21 (interface-learnings): a joint fix's co_owner shows in the Markdown and the HTML."""
+    p = fixture("interface-learnings")
+    assert "- Owner: Materials Management (F06)\n- Co-owner: Mechanical Maintenance (F02)\n" in pp.render_pack_md(p, w)
+    t = pp.render_pack_html(w, p, "2024-03-20-pump-fire", "2026-10-16")
+    assert "Co-owner" in t and "Emergency Planning &amp; Command (F09b)" in t
+
+
 def test_check_pack_manual_documents_strict():
     doc = (ROOT / "docs" / "manual" / "commands" / "check-pack.md").read_text(encoding="utf-8")
     assert "--strict" in doc and "pack-profiles.json" in doc and "top-rated relevant findings cited" in doc
@@ -1420,11 +1447,27 @@ def _fresh_run(tmp_path):
     return ws_, ws_.parent / "outputs"
 
 
+def _without_learning_ids(p):
+    """The fixture as an alpha.4 pack: Tasks 21-23 add `learning` ids to fixtures; an alpha.4 pack has none."""
+    for s in p["sections"]:
+        for it in s["items"]:
+            it.pop("learning", None)
+    return p
+
+
 @pytest.mark.parametrize("name", pack_fixtures() + ["all-kinds"])
 def test_alpha4_pack_passes_without_new_fields(w, name):
-    r = pp.check_pack(fixture(name), w)
+    r = pp.check_pack(_without_learning_ids(fixture(name)), w)
     assert r.problems == [], r.problems
     assert not [x for x in r.warnings if "learning ids not verified" in x or "unknown clause" in x]
+
+
+@pytest.mark.parametrize("name", pack_fixtures())
+def test_fixture_learning_ids_are_in_the_mini_register(w, name):
+    """Fixture `learning` values name learnings of tests/fixtures/registers/mini-register.json (Tasks 21-23)."""
+    reg = json.loads((ROOT / "tests" / "fixtures" / "registers" / "mini-register.json").read_text(encoding="utf-8"))
+    r = pp.check_pack(fixture(name), w, register=reg, strict=True)
+    assert not [x for x in r.problems + r.warnings if "learning" in x and "unknown" in x], r
 
 
 def test_learning_id_checked_against_register(w):

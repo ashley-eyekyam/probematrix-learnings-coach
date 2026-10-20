@@ -1,43 +1,97 @@
 ---
 name: learnings-register
-description: Build a formal Learnings Register (lessons-learned register) from a ProbeMatrix investigation export - one row per learning with evidence, HFACS level, barrier, organisational system, audiences, priority and recommendations rated on the hierarchy of controls with leading indicators - and write it to Markdown and a formatted Excel workbook. Use when someone asks for a lessons-learned register, a learnings log, an Excel of learnings, a register to take to management, or "turn these findings into lessons and recommendations".
+description: Builds a formal Learnings Register (lessons-learned register) from a ProbeMatrix investigation export - one row per learning with evidence, HFACS level, barrier, organisational system, audiences, priority, urgency and recommendations rated on the hierarchy of controls with leading indicators - and writes it to Markdown, a formatted Excel workbook and the two-tab dashboard. Use when someone with a ProbeMatrix export asks for a lessons-learned register, a learnings log, an Excel of learnings, a register to take to management, or "turn these findings into lessons and recommendations". Not for the organisation-wide cascade plan (use `organisation-learning-map`).
 ---
 
 # Learnings Register
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Needs `clusters.json` (see `learning-clusters`). Read `learnings-coach/references/learning-principles.md` and `learnings-coach/references/register-schema.md`.
+Engine: `PMLC` as in `learnings-coach/references/skill-common.md` §1; this skill needs the `learnings-coach` skill installed alongside it.
 
-## Method
+## Before you start
 
-1. **Find the learnings, not the findings.** Start from the highest-rated findings: `PMLC select <ws> --top-rated --brief`. Group findings that describe the same condition. A typical investigation of a few hundred findings yields 15–40 learnings. Then sweep lower ratings for conditions not yet covered, especially at L3–L4.
-2. **One learning per row.** Write the lesson as a generalisable sentence that would make sense to another site ("If X, then Y, because Z"), not a restatement of the event.
-3. **Classify** each learning against register sections B–H. Owner entity and tiers come from `clusters.json` for its findings.
-4. **Recommend.** One to three recommendations per learning, each with HoC tier and a leading indicator. At least one recommendation per priority-1 learning should be above the administrative tier, or say why none is possible.
-5. **Tier messages.** For each learning, write `tier_messages`: one short, concrete message per tier that must act (T1 frontline … T5 corporate/board), omitting tiers with nothing to do. This is what turns the register into a learning plan for the whole organisation.
-6. **Use the controlled values** in `register-schema.md` for `hfacs_level`, `hoc_tier`, `priority` and `comparison`, so the Summary sheet and dashboard count cleanly. Put nuance in the free-text fields.
-7. **Prioritise.** Priority 1 = credible major consequence and likely to recur or transfer; 3 = local and minor.
-8. **Comparison.** Leave `comparison` as `not compared` unless a comparator report is supplied (then use `report-comparison`).
+Follow `learnings-coach/references/skill-common.md` §1 (engine and paths) and §2 (preconditions; run `PMLC setup`
+when only an .xlsx was given). Needs: `workspace`, `clusters` (resolve unresolved roles with `learning-clusters`
+first if many findings sit in F99). Optional: the comparator. Read
+`learnings-coach/references/learning-principles.md`, `learnings-coach/references/register-schema.md` (fields and
+controlled values), `learnings-coach/references/barriers-and-controls.md` (barrier names and control tiers) and
+`learnings-coach/references/indicators-and-effectiveness.md` (indicators; single- and double-loop criteria).
 
-## Output
+## Gather
 
-All files go to `<run>/outputs/` (see the folder rule in `learnings-coach/SKILL.md`; `PMLC run-path <ws>` prints it).
+```bash
+PMLC select <ws> --top-rated --brief                     # start from the highest-rated findings
+PMLC facts <ws>                                          # counts, levels and the L3-L4 share, to quote exactly
+```
 
-- `<run>/outputs/learnings-register.json` in the schema shape.
-- `PMLC check-register <ws> <run>/outputs/learnings-register.json`: validates IDs, evidence links, controlled values, tier messages and leading indicators, flags findings with reviewer downgrade votes, and lists high-rated findings no learning covers. Fix everything it reports, then:
-- `PMLC register-xlsx <run>/outputs/learnings-register.json` writes `learnings-register.xlsx` beside it (sheets: Learnings Register, Recommendations, Learning Plan, Summary, About). Do not rebuild these sheets by hand; if something is missing, add it to the JSON and re-run.
-- `PMLC dashboard <ws> --register <run>/outputs/learnings-register.json [--date <corrected date>] [--title "<plain title>"]` writes `<run>/outputs/organisation-learning-map.html` with two tabs:
-  - **Overview:** the organisation map plus the learning × tier matrix, whose rows link to tab 2.
-  - **Detailed register:** every field of every learning, its recommendations, tier messages, and the full text of each cited finding and evidence item. It has stakeholder lenses (T1–T5, Investigator, Auditor), filters, search, expand/collapse, print, and a panel of findings no learning covers. Unknown register keys are shown, never dropped.
-  - It is required for this skill.
-  - Do not hand-edit the HTML: change the JSON and re-run.
-- `<run>/outputs/learnings-register.md`: summary tables (counts by entity, level, organisational system, HoC tier), the priority-1 learnings in full, then the rest in a compact table.
+1. **Find the learnings, not the findings.** Group findings that describe the same condition. Scale to the
+   export: roughly **one learning per 5–10 distinct conditions** (a few hundred findings typically give 15–40
+   learnings; a small export may give 3–6). Then sweep lower ratings for conditions not yet covered, especially
+   at L3–L4.
+2. **Owner and tiers** come from `clusters.json` for the learning's findings (the owner rule in
+   `register-schema.md`).
+3. **Prioritise.** Priority 1 = a credible major consequence, likely to recur or transfer; 3 = local and minor.
+
+## Write
+
+Write `<run>/outputs/learnings-register.json` in the shape in `register-schema.md` (it is a register, not a
+pack). One entry per learning:
+
+| § | id | Heading | Content rule | Kind | Count |
+|---|---|---|---|---|---|
+| A | `lr_id` | Identity | `LR-01`, `LR-02` … with a short `title` | text | 1 |
+| B | `lesson` | Lesson | A generalisable sentence ("If X, then Y, because Z") that makes sense at another site, not a restatement of the event; `owner_entity`, `tiers` | text | 1 |
+| C | `finding_ids` | Evidence | Finding IDs and Evidence IDs (`evidence_ids`), `evidence_strength`, `confidence` | ID list | at least 1 |
+| D | `hfacs_level` | Causal classification | Level plus sub-category as the export writes it; `barrier` and `org_system` in the shared vocabulary | text | 1 |
+| G | `priority` | Significance | 1, 2 or 3, with `worst_case` and `transferability` | value | 1 |
+| I | `recommendations` | Recommendations | Each with `what`, `hoc_tier`, `leading_indicator`; at least one above the administrative tier for a priority-1 learning, or say why in `why_not_stronger` | list | 1–3 |
+| J | `tier_messages` | Tier messages | One short, concrete message per tier that must act (T1 … T5), omitting tiers with nothing to do | object | up to 5 |
+| K | `urgency` | Urgency | `alert` (act now, a live risk elsewhere), `notice` (act within the normal cycle), `information` (awareness only) | value | optional |
+| K | `recommendation_class` | Class | `recommendation` (a change still to make), `observation` (worth knowing, no change asked), `action_taken` (already done; say so, with evidence) | value | optional |
+| K | `recipient_role` | Recipient | The role that must receive and answer the learning, never a name; use it when one role is clearly the addressee | text | optional |
+| K | `regulatory_touchpoint` | Regulatory touchpoint | Free text naming a regime the learning touches (e.g. a permit or PSM duty), as a flag for legal or compliance review, never a legal conclusion | text | optional |
+| K | `verification` | Verification | `{"method", "indicator"}`: how the organisation will check the change worked; use it for priority-1 and alert learnings | object | optional |
+| K | `why_not_stronger` | Why not stronger | Only for a priority-1 learning with no fix above the administrative tier: why elimination, substitution or engineering is not possible | text | optional |
+
+Use the controlled values in `register-schema.md` for `hfacs_level`, `hoc_tier`, `priority`, `urgency`,
+`recommendation_class`, `learning_level` and `comparison`; put nuance in free text. Leave `comparison` as
+`not compared` unless a comparator report is supplied (then use `report-comparison`). Owners and due dates stay
+blank unless the user asks (`learning-principles.md` §6).
+
+## If the evidence is thin
+
+Follow `skill-common.md` §6, and:
+- **No Evidence Links sheet:** cite Finding IDs only, set `evidence_strength: "inferred"`, and say so in each
+  learning's `context` and to the user. `check-register` cannot then find evidence IDs; do not invent them.
+- **A small export:** write fewer learnings (the scaling rule above); never split one condition into several.
+- **No fix above the administrative tier is possible for a priority-1 learning:** fill `why_not_stronger`
+  honestly rather than relabelling a procedure as engineering.
+
+## Not covered here
+
+- The whole-organisation dashboard narrative and cascade plan: `organisation-learning-map`.
+- Comparison with an official report or the organisation's own action plan: `report-comparison`.
+- Audience packs built from the register: the audience skills (`learnings-coach/references/audiences.md`).
 
 ## Sharing outside the organisation
 
-A register is for the organisation's own learning. Do not send it to a regulator, client or the public from here. Sharing outside needs legal review, an approved sign-off, and `--share external`; follow "Sharing outside the organisation" in `learnings-coach/references/skill-common.md` (§7) and the hub's step 4.
+A register is for the organisation's own learning. Do not offer to send it outside. Sharing a copy needs legal
+review, an approved sign-off and `register-xlsx --share external`; follow `skill-common.md` §7.
 
-## Checks before handing over
+## Check and hand over
 
-- Every row has finding IDs and at least one evidence ID.
-- No names, no blame wording, no owners or due dates (unless the user asked).
-- The share of recommendations at administrative or training tier is reported honestly.
+Run `skill-common.md` §4 (the register's own loop), then tick §5 with `check-register` in place of `check-pack`:
+
+```bash
+PMLC check-register <ws> <run>/outputs/learnings-register.json --strict   # fix every problem; read the warnings
+PMLC register-md <ws> <run>/outputs/learnings-register.json               # -> learnings-register.md
+PMLC register-xlsx <run>/outputs/learnings-register.json                  # -> learnings-register.xlsx
+PMLC dashboard <ws> --register <run>/outputs/learnings-register.json      # -> organisation-learning-map.html
+```
+
+`check-register --strict` validates IDs, evidence links, controlled values, tier messages and indicators, makes
+the priority-1 rule a problem, flags findings with reviewer downgrade votes, and lists high-rated findings no
+learning covers. Run `register-md`; never hand-write the Markdown: it holds the summary counts (by entity, level,
+organisational system and control tier) the engine computes. The workbook (Learnings Register, Recommendations,
+Learning Plan, Summary, About) and the dashboard (Overview and Detailed register tabs) are rebuilt from the JSON:
+change the JSON and re-run, never edit the outputs. Every register entry and every audience pack that uses it
+carries the same `LR-nn`.
