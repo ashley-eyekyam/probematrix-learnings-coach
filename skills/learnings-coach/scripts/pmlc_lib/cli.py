@@ -27,7 +27,7 @@ Subcommands
   check-samples   check samples/<slug>/ folders follow the contribution layout
   run-manifest    set a run's intended use, jurisdiction, retention review date and classification
   purge           delete a run's workspace (and outputs) after retention, keeping run-manifest.json
-  setup           ingest, profile, classify, causal, timeline and interfaces in one go
+  setup           ingest, classify, profile, causal, timeline and interfaces in one go
   check-all       check every pack and the register in outputs/
   render-all      render every pack that passed its check, and the register
   index           write outputs/index.html, one row per pack
@@ -341,7 +341,7 @@ def build_parser():
                    help="also flag email, phone and staff-number patterns (an aid, not proof of de-identification)")
     s.set_defaults(fn=cmd_scan_names)
 
-    s = sp.add_parser("setup", help="ingest, profile, classify, causal, timeline and interfaces in one go", allow_abbrev=False)
+    s = sp.add_parser("setup", help="ingest, classify, profile, causal, timeline and interfaces in one go", allow_abbrev=False)
     s.add_argument("xlsx")
     s.add_argument("--slug", required=True, help="<site>-<event>, e.g. hazira-gas-release-fire")
     s.add_argument("--date", help="incident date YYYY-MM-DD (default: the summary sheet's Date)")

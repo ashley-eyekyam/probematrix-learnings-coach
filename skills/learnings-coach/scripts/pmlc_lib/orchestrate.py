@@ -69,7 +69,7 @@ def cmd_setup(a):
             ing += [flag, v]
     ing += (["--force"] if a.force else []) + (["--strict"] if a.strict else [])
     steps = [("ingest", ing)]
-    for name in ("profile", "classify", "causal", "timeline", "interfaces"):
+    for name in ("classify", "profile", "causal", "timeline", "interfaces"):   # classify first: profile reads clusters.json
         steps.append((name, None))
     for name, argv in steps:
         if argv is None:

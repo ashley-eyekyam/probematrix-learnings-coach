@@ -222,3 +222,12 @@ def test_non_object_scope_fails_cleanly_with_old_message(setup_ws):
     for cmd in (("check-pack",), ("pack",)):
         r = run_fail(*cmd, str(ws), str(outd / "board-brief.json"))
         assert r.returncode == 1 and "scope: must be an object" in r.stderr and "Traceback" not in r.stderr
+
+
+def test_setup_profile_carries_tier_flags(setup_ws):
+    """I-1: setup classifies before it profiles, so profile.md and the summary carry the tier flags (P3-8)."""
+    ws, out = setup_ws
+    prof = (ws / "profile.md").read_text(encoding="utf-8")
+    assert "Run classify" not in prof and "Run classify" not in out
+    assert "Thin tiers: " in prof or "Empty tiers: " in prof
+    assert "Thin tiers: " in out or "Empty tiers: " in out

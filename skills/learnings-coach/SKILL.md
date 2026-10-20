@@ -21,7 +21,7 @@ One investigation, learned by the whole organisation. This skill sets up the wor
 ## Step 1: set up
 
 ```bash
-PMLC setup <export.xlsx> --slug <site>-<event> [--date YYYY-MM-DD]   # ingest, profile, classify, causal, timeline, interfaces
+PMLC setup <export.xlsx> --slug <site>-<event> [--date YYYY-MM-DD]   # ingest, classify, profile, causal, timeline, interfaces
 PMLC run-manifest <ws> --intended-use "<what the learnings are for>" --jurisdiction <in,uk,us,eu>
 ```
 
