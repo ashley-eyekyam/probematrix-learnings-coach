@@ -15,7 +15,7 @@ from pathlib import Path
 
 from . import contracts
 from .util import HERE, write_json
-from .workspace import (file_sha256, load_manifest, manifest_state_hash, outputs_dir, pack_record, record_derived,
+from .workspace import (check_current, load_manifest, manifest_state_hash, outputs_dir, record_derived,
                         stale_files, taxonomy_hash)
 
 PLAN = "plan.json"
@@ -123,8 +123,7 @@ def _file(ws: Path, rel: str) -> Path:
 def _checked(manifest, path: Path) -> bool:
     if not path.is_file():
         return False
-    rec = pack_record(manifest, path)
-    return bool(rec and rec.get("ok") and rec.get("sha256") == file_sha256(path))
+    return check_current(manifest, path)
 
 
 def _step(key, node, ctx) -> dict:

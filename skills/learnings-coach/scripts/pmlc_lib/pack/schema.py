@@ -772,12 +772,17 @@ def _read_register(path):
         return None, f"(register): cannot read {path} as UTF-8 JSON ({e.__class__.__name__})"
 
 
-def record_check(a, pack, res) -> None:
-    """Record the check of a.pack in the workspace manifest (a failed write is ignored)."""
+def record_check(a, pack, res, w=None) -> None:
+    """Record the check of a.pack in the workspace manifest, with its coverage when the workspace is given (a failed
+    write is ignored)."""
     if isinstance(pack, dict) and isinstance(pack.get("pack"), str):
         try:
-            record_pack_check(a.ws, pack["pack"], a.pack, not res.problems, len(res.problems))
-        except OSError:
+            cov = None
+            if w is not None and not res.problems:
+                from .markdown import coverage   # markdown imports this module
+                cov = coverage(w, pack)
+            record_pack_check(a.ws, pack["pack"], a.pack, not res.problems, len(res.problems), coverage=cov)
+        except Exception:   # noqa: BLE001 - coverage is a nicety; it never blocks a check
             pass
 
 
@@ -794,7 +799,7 @@ def _checked(a, record_ok=True):
     if not err:
         res.warnings.extend(unsigned_warning(pack, w, a.pack, a.ws))
     if not err and (record_ok or res.problems):
-        record_check(a, pack, res)
+        record_check(a, pack, res, w)
     for x in res.warnings:
         print(f"warning: {x}")
     if res.problems:

@@ -74,6 +74,19 @@ def org_section(org: dict) -> str:
     return _render("packs", warnings=warn, matrix=matrix, packlist=packlist)
 
 
+def mask_org(org: dict, share) -> dict:
+    """Organisation-file text that can echo a cell value (warnings, the pack names of distribution.csv) passes the
+    share masking, like the rest of the page text."""
+    if not share:
+        return org
+    t = lambda x: privacy.share_text(x, share)   # noqa: E731
+    mx = org["lr_pack_matrix"]
+    matrix = {"packs": [t(p) for p in mx["packs"]],
+              "rows": [{**r, "cells": {t(k): v for k, v in r["cells"].items()}} for r in mx["rows"]]}
+    return {**org, "warnings": [t(x) for x in org["warnings"]], "reach": {t(k): v for k, v in org["reach"].items()},
+            "lr_pack_matrix": matrix}
+
+
 def cmd_dashboard(a):
     ws = Path(a.ws)
     w = load_ws(ws)
@@ -139,14 +152,14 @@ def cmd_dashboard(a):
                    for k, c in top_codes) if top_codes else ""
     learn_html = ""
     detail = None
-    org = org_data(ws, [])
+    org = mask_org(org_data(ws, []), share)
     if a.register:
         reg = reg0
         entries = reg["entries"] if isinstance(reg, dict) else reg
         entries = sorted(entries, key=lambda e: (_int(e.get("priority"), 9), _s(e.get("lr_id"))))
         embed = resolve_embed(a)
         detail = build_detail_data(w, reg, embed)
-        org = org_data(ws, entries)
+        org = mask_org(org_data(ws, entries), share)
         detail["responses"], detail["closure"] = org["responses"], org["closure"]
         detail["compliance_count"] = sum(1 for e in entries if _s(e.get("regulatory_touchpoint")))
         if share and share.mode == "public":

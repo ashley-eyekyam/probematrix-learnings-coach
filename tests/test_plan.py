@@ -204,7 +204,9 @@ def test_plan_next_advances_after_check_pack(fresh):
     r = subprocess.run([sys.executable, str(PMLC), "plan", str(fresh), "--next"], capture_output=True, text=True)
     assert r.returncode == 2 and "complete" in r.stdout
     # an edit after the check makes the step todo again
-    (out / "board-brief.json").write_text(json.dumps(mini_pack("board-brief"), indent=2), encoding="utf-8")
+    edited = mini_pack("board-brief")
+    edited["title"] = "Edited after the check"
+    (out / "board-brief.json").write_text(json.dumps(edited, indent=2), encoding="utf-8")
     assert "3. board-brief" in run("plan", str(fresh), "--next")
 
 

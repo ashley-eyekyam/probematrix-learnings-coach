@@ -384,7 +384,7 @@ def cmd_pack(a):
     w, pack, res = _checked(a, record_ok=False)
     warn_stale(a.ws)
     mode = share_gate(pack, w, a, src=a.pack, ws=a.ws)
-    record_check(a, pack, res)                                  # only now: a refused share records nothing
+    record_check(a, pack, res, w)                                  # only now: a refused share records nothing
     ws = _abs(a.ws)
     run = ws.parent.name if is_standard_ws(ws) else ws.name
     embed = resolve_embed(a)

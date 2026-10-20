@@ -14,7 +14,7 @@ from pathlib import Path
 from . import BRAND, DRAFT_LABEL, STATUS_PHRASE
 from .handling import effective_handling
 from .util import HERE, write_json
-from .workspace import file_sha256, load_manifest, load_ws, outputs_dir, pack_record
+from .workspace import check_current, load_manifest, load_ws, outputs_dir, pack_record
 
 REGISTER_NAME = "learnings-register.json"
 TEMPLATES = Path(__file__).resolve().parent / "dashboard" / "templates"
@@ -108,19 +108,7 @@ def cmd_setup(a):
 # ----------------------------------------------------------------------------- check-all
 
 def _check_pack_argv(ws, path, strict):
-    argv = ["check-pack", str(ws), str(path)]
-    if strict:
-        from .cli import build_parser
-        if "--strict" in _flags(build_parser(), "check-pack"):
-            argv.append("--strict")
-    return argv
-
-
-def _flags(parser, name):
-    for act in parser._actions:
-        if hasattr(act, "choices") and isinstance(act.choices, dict) and name in act.choices:
-            return {o for x in act.choices[name]._actions for o in x.option_strings}
-    return set()
+    return ["check-pack", str(ws), str(path)] + (["--strict"] if strict else [])
 
 
 def _problem_count(code, out, err):
@@ -187,25 +175,18 @@ def cmd_render_all(a):
             print(f"failed {label}", file=sys.stderr)
 
     for p, _ in _pack_files(out):
-        rec = pack_record(m, p)
-        if not (rec and rec.get("ok") and rec.get("sha256") == file_sha256(p)):
+        if not check_current(m, p):
             print(f"skipped {p.name}: run check-all first")
             continue
         go(p.name, ["pack", str(ws), str(p)] + extra)
     reg = out / REGISTER_NAME
     if reg.is_file():
-        code, _, _ = _run(["check-register", str(ws), str(reg)])
-        if code:
+        if not check_current(m, reg):
             print(f"skipped {reg.name}: run check-all first")
         else:
             # register-xlsx has no --embed
             go("register-xlsx", ["register-xlsx", str(reg), "--ws", str(ws)] + share_flags)
-            from .cli import build_parser
-            if "register-md" in {c for act in build_parser()._actions
-                                 for c in (getattr(act, "choices", None) or {}) if isinstance(c, str)}:
-                go("register-md", ["register-md", str(ws), str(reg)])
-            else:
-                print("note: register-md is not available in this engine; register Markdown skipped")
+            go("register-md", ["register-md", str(ws), str(reg)])
             go("dashboard", ["dashboard", str(ws), "--register", str(reg)] + extra)
     if failed:
         sys.exit(1)

@@ -2,7 +2,7 @@
 
 ## What it does
 
-Renders what passed its check: [pack](pack.md) for each pack whose last check passed and whose file has not changed since, then for the register [register-xlsx](register-xlsx.md), `register-md` when this engine has it, and [dashboard](dashboard.md) with the register. A pack never checked, failing, or changed since its check is skipped with `skipped <file>: run check-all first`.
+Renders what passed its check: [pack](pack.md) for each pack whose last check passed and whose file has not changed since, then for the register [register-xlsx](register-xlsx.md), `register-md`, and [dashboard](dashboard.md) with the register. A pack or register never checked, failing, or changed since its check is skipped with `skipped <file>: run check-all first`. "Changed" is judged on the content without its `handling` block, so signing a file off after its check does not make the check stale; any other edit does.
 
 ## When to use it
 

@@ -216,7 +216,13 @@ def org_data(ws, entries) -> dict:
         warnings.append(str(e))
     responses = {}
     try:
-        responses = {r["lr_id"]: r["response"] for r in load_adoption(ws) if r.get("lr_id") and r.get("response")}
+        for r in load_adoption(ws):
+            if not (r.get("lr_id") and r.get("response")):
+                continue
+            if not re.fullmatch(r"LR-\d{2,}", r["lr_id"]):
+                warnings.append(f"adoption.csv row {r['_row']}: lr_id is not an LR-nn identifier; the row is ignored")
+                continue
+            responses[r["lr_id"]] = r["response"]
     except OrgFileError as e:
         warnings.append(str(e))
     closure = {}
