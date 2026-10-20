@@ -15,7 +15,7 @@
     {"id": "F10", "name": "Security & Surveillance", "match": "cctv|watch[- ]?tower|security|guard", "tags": ["emergency"]},
     {"id": "F11", "name": "HSE, Process Safety & Audit", "match": "\\bhse\\b|\\bh&s\\b|safety|audit|permit|health & safety", "tags": ["assurance"]},
     {"id": "F12", "name": "HR, Training & Competence", "match": "\\bhr\\b|human resource|training|competen|roster|manning|staffing|qualif|recruit", "tags": ["people"]},
-    {"id": "F13", "name": "Plant & Asset Leadership", "match": "plant manag|plant management|head operations|site manag|area manag|asset manag|superintendent|asset owner|(plant|site|asset|senior) leadership|general manager", "tags": ["leadership"]},
+    {"id": "F13", "name": "Plant & Asset Leadership", "match": "plant manag|plant management|head operations|site manag|area manag|asset manag|superintendent|asset owner|(plant|site|asset|senior) leadership|^\\W*(the )?leadership team|general manager", "tags": ["leadership"]},
     {"id": "F14", "name": "Corporate & Board", "match": "director|corporate|board|recommendation-tracking", "tags": ["corporate"]},
     {"id": "F15", "name": "Regulators & External Bodies", "match": "regulator|statutory|inspectorate", "tags": ["external"]},
     {"id": "F16", "name": "Vendors, OEMs & Suppliers", "match": "vendor|supplier|\\boem\\b|manufacturer", "tags": ["supply"]},
@@ -23,7 +23,7 @@
   ],
   "tiers": [
     {"id": "T5", "name": "Corporate / policy owner / board", "match": "corporate|director|board", "weak": "governance|policy|programme owner|program owner"},
-    {"id": "T4", "name": "Plant / asset leadership", "match": "plant manag|plant management|(?<!deputy )(?<!assistant )(?<!dy\\. )(?<!dy )(?<!asst\\. )(?<!asst )general manag|head operations|site manag|(plant|site|asset|senior) leadership|superintendent|asset owner"},
+    {"id": "T4", "name": "Plant / asset leadership", "match": "plant manag|plant management|(?<!deputy )(?<!assistant )(?<!dy\\.)(?<!dy\\. )(?<!dy )(?<!asst\\.)(?<!asst\\. )(?<!asst )general manag|head operations|site manag|(plant|site|asset|senior) leadership|^\\W*(the )?leadership team|superintendent|asset owner"},
     {"id": "T3", "name": "Function / department management", "match": "manag|\\bhead\\b|authority|\\blead\\b|owner|custodian|approver|decision-maker|programme|program|(maintenance|operations?|engineering|hse|safety|production|integrity|process safety|functional|department(al)?)\\b[^,;]{0,40}\\bleadership"},
     {"id": "T2", "name": "First-line supervision / shift in-charge", "match": "supervis|in-?charge|chief engineer|signatory|permit issu|coordinator|controller|planner|team lead|\\bleaders?\\b|senior officer|foreman"},
     {"id": "T1", "name": "Frontline / sharp end", "match": "fitter|technician|operator|crew|team|personnel|staff|members|engineers?\\b|draughtsman|requestor|requester|raiser|learners|worker"}

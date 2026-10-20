@@ -35,12 +35,25 @@ def test_design_is_still_not_approver():
     assert _map("Design engineers")["R"] != "approver"
 
 
-@pytest.mark.parametrize("role,tier", [
-    ("DGM (Production)", "T3"), ("Dy. GM (Operations)", "T3"), ("Dy. General Manager", "T3"),
-    ("Deputy General Manager", "T3"), ("Asst. GM", "T3"), ("Assistant General Manager", "T3"),
-    ("Addl. GM", "T4"), ("Additional General Manager", "T4"), ("GM (Production)", "T4")])
+T3_FORMS = ["DGM", "DGM (Production)", "Dy. GM (Operations)", "Dy.GM", "Dy GM", "Deputy GM", "Deputy General Manager",
+            "Dy. General Manager", "Asst. GM", "Asst GM", "Assistant GM", "Assistant General Manager"]
+T4_FORMS = ["Addl. GM", "Addl GM", "Additional GM", "Additional General Manager", "GM (Production)"]
+
+
+@pytest.mark.parametrize("role,tier", [(r, "T3") for r in T3_FORMS] + [(r, "T4") for r in T4_FORMS])
 def test_dgm_tier_per_od1(role, tier):                                                        # A3, OD-1
     assert _map(role, [OVERLAY])["T"] == tier, role
+
+
+def test_bare_agm_stays_unresolved():                                                         # ruling X21
+    assert _map("AGM (Operations)", [OVERLAY])["T"] == "T9"
+
+
+@pytest.mark.parametrize("role", ["Leadership team", "The leadership team", "Senior leadership team",
+                                  "Plant leadership team"])
+def test_leadership_team_is_site_leadership(role):
+    m = _map(role)
+    assert m["T"] == "T4" and "F13" in m["F"], role
 
 
 def test_dgm_not_in_base_taxonomy():
@@ -124,10 +137,18 @@ def test_org_chart_import_stable_ids(tmp_path):
 
 def test_org_chart_tier_and_entity_extension(tmp_path):
     ws = _classified(tmp_path)
+    role = "Emergency Response planners"
+    run("classify", str(ws))
+    before = _clusters(ws)["role_map"][role]
+    assert "F06" not in before["F"] and before["T"] != "T3"
     chart = tmp_path / "org.csv"
-    chart.write_text("department,entity,match,tier\nSpares,F06,purchase records,\n", encoding="utf-8")
-    run("classify", str(ws), "--org-chart", str(chart))
-    assert _clusters(ws)["taxonomy"]["entities"].get("F20") is None
+    chart.write_text("department,entity,match,tier\nSpares,F06,emergency response,T3\n", encoding="utf-8")
+    out = run("classify", str(ws), "--org-chart", str(chart))
+    c = _clusters(ws)
+    assert "2 of 4 findings mapped to your departments" in out  # FND-0003 has F06 natively
+    assert "F20" not in c["taxonomy"]["entities"]                       # an entity row adds no new entity
+    assert "F06" in c["role_map"][role]["F"] and c["role_map"][role]["T"] == "T3"
+    assert c["findings"]["FND-0004"]["F"].count("F06") == 1
 
 
 def test_org_chart_bad_row_named(tmp_path):
@@ -136,11 +157,20 @@ def test_org_chart_bad_row_named(tmp_path):
     chart.write_text("department,entity,match,tier\nA,,aaa,\nB,,bbb,\nC,,,\n", encoding="utf-8")
     r = subprocess.run([sys.executable, str(PMLC), "classify", str(ws), "--org-chart", str(chart)],
                        capture_output=True, text=True)
-    assert r.returncode == 1 and "org chart row 3: match is required" not in r.stderr  # row 4 in the file
+    assert r.returncode == 1 and "org chart row 4: match is required" in r.stderr
     chart.write_text("department,entity,match,tier\nA,,aaa,\nB,,,\n", encoding="utf-8")
     r = subprocess.run([sys.executable, str(PMLC), "classify", str(ws), "--org-chart", str(chart)],
                        capture_output=True, text=True)
     assert r.returncode == 1 and "org chart row 3: match is required" in r.stderr
+
+
+def test_org_chart_row_is_the_csv_line(tmp_path):
+    ws = _classified(tmp_path)
+    chart = tmp_path / "org.csv"
+    chart.write_text("department,entity,match,tier\nA,,aaa,\n\nB,,,\n", encoding="utf-8")
+    r = subprocess.run([sys.executable, str(PMLC), "classify", str(ws), "--org-chart", str(chart)],
+                       capture_output=True, text=True)
+    assert r.returncode == 1 and "org chart row 4: match is required" in r.stderr
 
 
 def test_org_chart_other_errors(tmp_path):

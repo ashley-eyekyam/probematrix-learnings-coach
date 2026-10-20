@@ -83,7 +83,7 @@ _REGEX_CHARS = re.compile(r"[\\^$*+?()\[\]{}|]")
 
 
 def load_org_chart(path, ws: Path, tax: dict) -> list:
-    """Parse the org-chart CSV (department, entity, match, tier; row numbers count the header as row 1) into
+    """Parse the org-chart CSV (department, entity, match, tier; row numbers are the CSV's own line numbers, so the header is row 1) into
     [{department, entity, match, tier}] with an entity ID for every row. Rows without an entity get F20, F21, ...
     kept stable per department in <ws>/org-chart-ids.json. Exits naming the row on any problem."""
     p = Path(path)
@@ -96,7 +96,7 @@ def load_org_chart(path, ws: Path, tax: dict) -> list:
         if missing:
             sys.exit(f"org chart: missing column(s) {', '.join(missing)} in {path}; the columns are department, "
                      "entity (optional), match and tier (optional).")
-        raw = [(n, {k: (v or "").strip() for k, v in row.items() if k}) for n, row in enumerate(rdr, start=2)]
+        raw = [(rdr.line_num, {k: (v or "").strip() for k, v in row.items() if k}) for row in rdr]
     known = {e["id"] for e in tax["entities"]}
     tiers = {t["id"] for t in tax["tiers"]}
     ids_path = Path(ws) / "org-chart-ids.json"
