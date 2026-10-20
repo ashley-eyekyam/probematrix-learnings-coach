@@ -913,12 +913,13 @@ def test_pack_given_as_register_is_refused(shws, tmp_path):
 
 @pytest.mark.parametrize("mode", ["external", "public"])
 def test_share_keeps_pack_link_ids(tmp_path, shws, mode):
-    """Task 11 fix 1: learning, clauses, comparator_refs and barrier_id are ids, never masked; free text still is."""
+    """Task 11 fix 1: learning, clauses, comparator_refs and the test point clause are ids, never masked; free text
+    still is. barrier_id is free text that can hold an equipment tag, so it is masked like text (ruling X37, I-3)."""
     ws, orgs = shws
     doc = copy.deepcopy(SPACK)
     doc["sections"][0]["items"][0].update(text="Pump P-101 was restarted untested.", learning="LR-01",
                                           clauses=["ISO45001-10.2"], comparator_refs=["REC-03", "OBS-12"])
-    doc["sections"][0]["items"][1]["barrier_id"] = "BR-07"
+    doc["sections"][0]["items"][1]["barrier_id"] = "BR-P-101A"
     clause = "ISO45001-8.1.3; OSHA 1910.119(l)"                 # ISO45001 would be masked as an equipment tag in prose
     doc["sections"][0]["items"].append({"kind": "test_point", "requirement": "Restarts are tested", "sample": "10 restarts",
                                         "conformity_evidence": "Signed test records", "clause": clause,
@@ -930,13 +931,14 @@ def test_share_keeps_pack_link_ids(tmp_path, shws, mode):
     t = (out / f"test-pack.{mode}.html").read_text(encoding="utf-8")
     md = (out / f"test-pack.{mode}.md").read_text(encoding="utf-8")
     for doc_ in (t, md):
-        assert "Clauses: ISO45001-10.2" in doc_ and "LR-01" in doc_ and "Barrier ID: BR-07" in doc_
-        assert "P-101" not in doc_ and "Pump [equipment tag] was restarted untested." in doc_
+        assert "Clauses: ISO45001-10.2" in doc_ and "LR-01" in doc_ and "Barrier ID: " in doc_
+        assert "P-101" not in doc_ and "Pump [equipment tag] was restarted untested." in doc_   # P-101A too
         assert f"Clause: {clause}" in doc_
     assert 'data-lr="LR-01"' in t
     shared = pv.share_doc(doc, pv.ShareCtx(mode, [], [], {}))
     assert shared["sections"][0]["items"][0]["comparator_refs"] == ["REC-03", "OBS-12"]
-    assert shared["sections"][0]["items"][1]["barrier_id"] == "BR-07"
+    assert "P-101A" not in shared["sections"][0]["items"][1]["barrier_id"]
+    assert shared["sections"][0]["items"][-1]["clause"] == clause
 
 
 # ----------------------------------------------------------------------------- Task 19: deferred hygiene, part B

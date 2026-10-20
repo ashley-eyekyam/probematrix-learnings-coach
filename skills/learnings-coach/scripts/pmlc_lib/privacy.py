@@ -50,8 +50,9 @@ TAG_RX = re.compile(r"\b(?<!FND-)(?<!EVD-)(?<!LR-)(?<!ML-)(?!(?:FND|EVD|LR|ML)-)
 ID_KEYS = {"id", "kind", "pack", "schema", "cites", "supporting_cites", "row_cites", "row_supporting_cites",
            "finding_ids", "evidence_ids", "lr_id", "ml_id", "owner_entity", "entities", "scope", "content_hash",
            "rule",                                       # a lint_ok rule ID (JC10) is not an equipment tag
-           "learning", "clauses", "comparator_refs", "barrier_id",   # pack links: register, crosswalk, comparator, barrier ids
+           "learning", "clauses", "comparator_refs",     # pack links: register, crosswalk and comparator ids
            "clause"}                                     # a test point's standard reference, never incident detail (X23)
+# barrier_id is not here: it is free text (P3-13) and can hold an equipment tag, so it is masked like text (X37).
 # Inside a graph item's edges, from and to are node IDs (elsewhere `to` is display text, e.g. a message's audience).
 EDGE_ID_KEYS = ("from", "to")
 # Dicts whose keys are role strings (clusters.json role_map): share_doc masks their keys as well as their values.
