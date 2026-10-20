@@ -166,3 +166,16 @@ assert.strictEqual(p.learningQuery('LR-7'), '');
 """)
     css = PACK_CSS.read_text(encoding="utf-8")
     assert ".pm-learning{" in css and ".pm-clause{" in css and ".gaps{" in css
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_pack_js_justification_fallback_is_the_brand_label():
+    """A34: without a brand payload the label is still the AI label, never the bare 'Justification'."""
+    node(f"""
+const assert = require('assert');
+const p = require({json.dumps(str(PACK_JS))});
+const D = {{findings: {{'FND-0001': {{id:'FND-0001', label:'Pump restarted', justification:'no test'}}}}, evidence: {{}}}};
+const v = p.recordView('FND-0001', D);
+assert.ok(v.rows.some(r => r[0] === 'AI justification (ProbeMatrix)' && r[1] === 'no test'));
+assert.ok(!v.rows.some(r => r[0] === 'Justification'));
+""")

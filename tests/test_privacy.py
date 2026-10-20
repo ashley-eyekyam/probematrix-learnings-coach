@@ -937,3 +937,187 @@ def test_share_keeps_pack_link_ids(tmp_path, shws, mode):
     shared = pv.share_doc(doc, pv.ShareCtx(mode, [], [], {}))
     assert shared["sections"][0]["items"][0]["comparator_refs"] == ["REC-03", "OBS-12"]
     assert shared["sections"][0]["items"][1]["barrier_id"] == "BR-07"
+
+
+# ----------------------------------------------------------------------------- Task 19: deferred hygiene, part B
+
+@pytest.mark.parametrize("raw,want", [
+    ("Gas was seen on the scale at 9:15.", "Gas was seen on the scale."),                                # A44
+    ("Check the seals, e.g., the flange seal.", "Check the seals, e.g., the flange seal."),            # A45
+    ("Check the seals, e.g., the flange seal, at 9:15 pm.", "Check the seals, e.g., the flange seal."),
+    ("The leak started at 9:15 pm. Then the alarm sounded.", "The leak started. Then the alarm sounded."),  # A46
+    ("The leak started at 9.15 p.m. Then the alarm sounded.", "The leak started. Then the alarm sounded."),
+    ("The tank, at 14:05. Then", "The tank. Then"),
+    ("The valve was open since 0300.", "The valve was open."),                                           # A47
+    ("The site has about 1200 workers.", "The site has about 1200 workers."),
+    ("The audit in 2019 found gaps.", "The audit in 2019 found gaps."),
+    ("The plant has run since 2018, leaving the gap.", "The plant has run since 2018, leaving the gap."),
+    ("The ratio: 1:10.", "The ratio: 1:10."),
+    ("Mix (ratio 1:10) was used.", "Mix (ratio 1:10) was used."),
+    ("A 1:10 dilution. The mix at 9:15 rang.", "A 1:10 dilution. The mix rang."),
+])
+def test_strip_times_cases(raw, want):
+    assert pv.strip_times(raw) == want
+
+
+@pytest.mark.parametrize("role", ["Maintenance Manager (Dec-2019)", "Operations Head - 24 May 2020",
+                                  "Site Engineer (2019)", "Planner (12/03/2020)", "Planner - 2020-03-12"])
+def test_a_date_only_qualifier_is_not_a_singleton(role):
+    assert _qual(role) == []
+
+
+def test_a_date_with_a_real_qualifier_is_still_a_singleton():
+    assert _qual("Shift A Engineer (CR 2) (Dec-2019)") == ["Shift A Engineer (CR 2) (Dec-2019)"]
+
+
+def test_name_pattern_accepts_initials_without_spaces():
+    for names in (["R.K. Vandermere"], ["R. K. Vandermere"], ["RK Vandermere"]):
+        rx = pv.name_pattern(names, variants=True)
+        for text in ("by R.K. Vandermere", "by R. K. Vandermere", "by R K Vandermere", "by Vandermere"):
+            assert rx.search(text), (names, text)
+    exact = pv.name_pattern(["R.K. Vandermere"])
+    assert exact.search("by R. K. Vandermere") and exact.search("by R.K. Vandermere")
+    assert "R. K. Vandermere" in pv.name_variants("R.K. Vandermere")
+
+
+def test_singleton_roles_json_goes_stale_after_a_changed_export(tmp_path):
+    from test_pmlc import _changed_export, _status_row
+    x = make_export(tmp_path)
+    w = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(w))
+    run("classify", str(w))
+    assert "current" in _status_row(run("status", str(w)), "singleton_roles.json")
+    run("ingest", str(_changed_export(tmp_path)), "--legacy-out", str(w), "--force")
+    assert "stale" in _status_row(run("status", str(w)), "singleton_roles.json")
+    run("classify", str(w))
+    assert "current" in _status_row(run("status", str(w)), "singleton_roles.json")
+
+
+def test_share_doc_merges_role_map_values_when_masked_keys_collide():
+    """A43: two roles that mask to the same key keep both roles' entities, tiers and relations."""
+    ctx = pv.ShareCtx("external", [], ["Quillon Seals", "ACME"], {})
+    cl = {"role_map": {"Quillon Seals fitter": {"F": ["F02"], "T": "T1", "R": ["actor"]},
+                       "ACME fitter": {"F": ["F03", "F02"], "T": "T2", "R": ["actor", "owner"], "source": "overlay"}}}
+    out = pv.share_doc(cl, ctx)["role_map"]
+    assert list(out) == ["[organisation] fitter"]
+    assert out["[organisation] fitter"] == {"F": ["F02", "F03"], "T": "T1", "R": ["actor", "owner"], "source": "overlay"}
+
+
+def test_slug_date_is_coarsened_to_the_year():
+    """A51: an ISO date at the start of a slug keeps the year only; a lone date still becomes 'Month YYYY'."""
+    ctx = pv.ShareCtx("public", [], [], {})
+    assert pv.share_text("run 2020-09-24-hazira-gas-release-fire done", ctx) == "run 2020-hazira-gas-release-fire done"
+    assert pv.coarsen_dates("2020-09-24-hazira") == "2020-hazira"
+    assert pv.share_text("on 2020-09-24 only", ctx) == "on September 2020 only"
+
+
+def test_scan_names_patterns_ignore_the_brand_address(tmp_path):
+    names = tmp_path / "names.txt"
+    names.write_text("Fictional Person\n", encoding="utf-8")
+    doc = tmp_path / "doc.md"
+    doc.write_text(pmlc.BRAND + "\nMail jo.example@acme.test about it.\n", encoding="utf-8")
+    r = _cli("scan-names", str(names), str(doc), "--patterns")
+    assert "jo.example@acme.test" in r.stdout and "ashley@eyekyam.com" not in r.stdout
+    assert "1 hit(s)." in r.stdout
+
+
+def test_office_member_cap_reads_with_a_byte_limit(tmp_path, monkeypatch, capsys):
+    """A35: the member cap counts bytes actually read, not the size the zip header declares."""
+    import io
+    import zipfile
+
+    class FakeInfo:
+        filename = "docProps/core.xml"
+        file_size = 1                                   # a lying header
+
+    class FakeZip:
+        def __init__(self, *a, **k):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def infolist(self):
+            return [FakeInfo()]
+
+        def open(self, name, *a, **k):
+            return io.BytesIO(b"<x>" + b"a" * 500 + b"</x>")
+
+        def read(self, name):
+            raise AssertionError("unbounded read")
+
+    monkeypatch.setattr(zipfile, "ZipFile", FakeZip)
+    monkeypatch.setattr(pmlc_lib.privacy, "_MAX_MEMBER", 100)
+    unread = []
+    got = list(pmlc_lib.privacy._office_xml_texts(tmp_path / "f.docx", unread))
+    assert got == [] and unread == [str(tmp_path / "f.docx")]
+    assert "over 50 MB" in capsys.readouterr().out
+
+
+def test_redact_map_marks_an_ambiguous_variant(tmp_path):
+    """_canon collision guard: one surname shared by two people with different roles is redacted, not guessed."""
+    from pmlc_lib.ingest.xlsx import build_redact_map
+    repl, multi = build_redact_map({"A. Vandermere": "Fitter", "B. Vandermere": "Officer", "C. Quillon": "Clerk"})
+    assert repl["vandermere"] == "[redacted]" and repl["quillon"] == "Clerk"
+    assert repl["a.vandermere".replace(".", "")] == "Fitter" and "A. Vandermere" in multi
+
+
+def _pack_record(ws, p):
+    from pmlc_lib.workspace import load_manifest, pack_record
+    return pack_record(load_manifest(ws), p)
+
+
+def test_a_refused_share_records_nothing_in_the_manifest(tmp_path, shws):
+    """The share gate runs before the passing check is recorded; an internal render still records it."""
+    ws, _ = shws
+    p = write_doc(tmp_path, SPACK, "test-pack.json")
+    r = _cli("pack", str(ws), str(p), "--share", "external", "--out", str(tmp_path / "out"))
+    assert r.returncode == 1 and "cannot share externally" in r.stderr
+    assert _pack_record(ws, p) is None
+    r = _cli("pack", str(ws), str(p), "--out", str(tmp_path / "out2"))
+    assert r.returncode == 0, r.stderr
+    assert _pack_record(ws, p)["ok"] is True
+
+
+def test_a_failing_pack_is_still_recorded_when_a_share_is_asked_for(tmp_path, shws):
+    ws, _ = shws
+    bad = copy.deepcopy(SPACK)
+    bad["status"] = "Draft"
+    p = write_doc(tmp_path, bad, "test-pack.json")
+    r = _cli("pack", str(ws), str(p), "--share", "external", "--out", str(tmp_path / "out"))
+    assert r.returncode == 1
+    assert _pack_record(ws, p)["ok"] is False
+
+
+def test_share_out_may_not_be_the_internal_copy(tmp_path, shws):
+    ws, orgs = shws
+    reg = copy.deepcopy(MINI_REG)
+    rp = write_doc(tmp_path, reg, "reg.json")
+    sign(ws, rp, "--classification", "external", "--legal-review", "cleared")
+    internal = ws.parent / "outputs" / "organisation-learning-map.html"
+    r = _cli("dashboard", str(ws), "--register", str(rp), "--share", "external", "--orgs", str(orgs), "--out", str(internal))
+    assert r.returncode == 1 and "internal copy" in r.stderr and not internal.exists()
+    x = tmp_path / "learnings-register.xlsx"
+    r = _cli("register-xlsx", str(rp), "--ws", str(ws), "--share", "external", "--orgs", str(orgs), "--out", str(x))
+    assert r.returncode == 1 and "internal copy" in r.stderr and not x.exists()
+    other = tmp_path / "elsewhere.xlsx"
+    r = _cli("register-xlsx", str(rp), "--ws", str(ws), "--share", "external", "--orgs", str(orgs), "--out", str(other))
+    assert r.returncode == 0, r.stderr
+    assert other.exists()
+
+
+def test_summary_mode_builds_the_embedded_records_once(monkeypatch, tmp_path, shws):
+    import pmlc_lib.pack.html as ph
+    ws, _ = shws
+    p = write_doc(tmp_path, SPACK)
+    calls = []
+    real = ph.embedded_records
+    monkeypatch.setattr(ph, "embedded_records", lambda *a, **k: calls.append(1) or real(*a, **k))
+    import argparse
+    ns = argparse.Namespace(ws=str(ws), pack=str(p), cmd="pack", share=None, embed="summary", out=str(tmp_path / "o"),
+                            no_md=True, names=None, orgs=None)
+    ph.cmd_pack(ns)
+    assert len(calls) == 1

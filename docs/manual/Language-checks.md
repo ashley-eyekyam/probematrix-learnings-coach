@@ -51,7 +51,7 @@ The examples below were run through `check-language` on the Hazira workspace.
 
 ## JC1: names
 
-Looks for a personal name: an honorific followed by a name or initials (Mr, Mrs, Ms, Dr, Shri, Smt and others), any entry in your names file, and two capitalised words together when neither is a known word: a role, a function, an HFACS term, a month or day, or a word from the incident's title or location. Learnings use roles only.
+Looks for a personal name: an honorific followed by a name or initials (Mr, Mrs, Ms, Dr, Shri, Smt and others), any entry in your names file, and two capitalised words together when neither is a known word: a role, a function, an HFACS term, a day of the week, or a word from the incident's title or location. Learnings use roles only.
 
 > Example of wording the check flags (invented names, about no one in the Hazira enquiry): "Shri A. B. Example replaced the gasket." and "Jane Placeholder released the meter."
 
@@ -59,7 +59,7 @@ Looks for a personal name: an honorific followed by a name or initials (Mr, Mrs,
 ERROR JC1 $.sections[0].items[0].text: "Shri A. B. Example": use the role, not the person, e.g. "the fitter" or "the shift supervisor"; if this is not a person, add lint_ok with the reason
 ```
 
-**Rewrite:** "The fitter replaced the gasket." Two capitalised words that are not a person, such as the name of a pipeline header, can be accepted with `lint_ok` (see below). Ordinary safety words such as "Control Room Operator" or "Hazira Gas Terminal" pass without one.
+**Rewrite:** "The fitter replaced the gasket." Two capitalised words that are not a person, such as the name of a pipeline header, can be accepted with `lint_ok` (see below). Ordinary safety words such as "Control Room Operator" or "Hazira Gas Terminal" pass without one. A month word passes only as part of a date, with a day number or a year next to it ("24 May", "May 2020", "June 24, 2020"); "May Patel" or "June Kumar" is read as a name.
 
 ## JC2: punitive wording
 
@@ -203,7 +203,7 @@ Sometimes the wording is right and the rule does not apply: two capitalised word
  "cites": ["FND-3AB996FC"]}
 ```
 
-- `lint_ok` covers one item (or one bottom-line entry or register row) and the rule it names. Give a list of `{rule, reason}` objects for more than one rule.
+- `lint_ok` covers one item (or one bottom-line entry or register row) and the rule it names. Give a list of `{rule, reason}` objects for more than one rule. On a section or at the top of the file it is an error and accepts nothing.
 - The reason must not be empty. An empty reason, or a rule that is not JC1 to JC12, is itself an error and accepts nothing:
 
 ```text

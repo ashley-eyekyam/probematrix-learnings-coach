@@ -7,7 +7,7 @@ What it does
      sheets are dropped.
   2. Optionally overrides Incident Summary fields (e.g. a wrong date or type): --set "Date=2024-03-20".
   3. Strips metadata: resets the core and app properties (creator, lastModifiedBy, title, company), removes
-     comments, headers and footers, unhides hidden rows, columns and sheets (so the scan sees them) and drops
+     comments, hyperlinks, headers and footers, unhides hidden rows, columns and sheets (so the scan sees them) and drops
      defined names. Blanks Investigating Officer, Supervisor at Time and Investigation Team (keep one with
      --keep-field NAME, repeatable) and drops narrative lines that start with To:, From: or Cc:.
   4. Optionally runs a deterministic name scan (--names) against a names file you keep OUTSIDE the repo
@@ -38,7 +38,7 @@ KEEP = ["Incident Summary", "Identified Findings", "Evidence Links", "Causal Cha
 
 
 def strip_metadata(wb, keep_fields=()) -> None:
-    """Remove what a workbook carries besides cell text: properties, comments, headers and footers, hidden state,
+    """Remove what a workbook carries besides cell text: properties, comments, hyperlinks, headers and footers, hidden state,
     defined names; blank the personal fields and drop memo header lines from the Incident Summary."""
     from openpyxl.packaging.core import DocumentProperties
     wb.properties = DocumentProperties(creator="", lastModifiedBy=None, title=None, subject=None, description=None,

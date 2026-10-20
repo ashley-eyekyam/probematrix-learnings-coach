@@ -13,6 +13,7 @@ import re
 import sys
 from pathlib import Path
 
+from . import BRAND
 from .util import _need_openpyxl, HERE
 
 
@@ -24,6 +25,7 @@ PATTERNS = {"email": r"[\w.+-]+@[\w-]+\.[\w.-]+",
             "phone": r"(?<![\w+-])(?!\d{4}-\d{2}-\d{2}(?!\d))(?!\d{1,2}[-/.]\d{1,2}[-/.]\d{4}(?!\d))"
                      r"\+?\d[\d\s-]{8,}\d(?![\w-])",
             "staff_no": r"(?i)\b(staff|emp(loyee)?|CPF|badge|ID)\s*(no\.?|number|#)\s*\w+"}
+BRAND_EMAIL = re.search(PATTERNS["email"], BRAND).group(0).lower()
 # An organisation name ends in a company suffix: "Acme Pumps Ltd".
 ORG_SUFFIX_RX = re.compile(r"\b(?:[A-Z][\w&'-]*\s+){1,4}(?:Ltd|Pvt|Inc|GmbH|LLC|Limited)\b\.?")
 # A role string that carries an instance identifier: a qualifier word plus a number or letter id ('Gate 3',
@@ -31,6 +33,11 @@ ORG_SUFFIX_RX = re.compile(r"\b(?:[A-Z][\w&'-]*\s+){1,4}(?:Ltd|Pvt|Inc|GmbH|LLC|
 # 'shift', '(owner)' or '- Operations' does not identify one person.
 QUALIFIER_RX = re.compile(r"\b(?i:post|gate|shift|grade|no\.?|desk|cabin|CR|control room)[\s-]*(?:\d+|[A-Z]\b)"
                           r"|#\s*\d|\s-\s[^()]*\d[^()]*$|\([^()]*\d[^()]*\)\s*$")
+# A date ('Dec-2019', '24 May 2020', '12/03/2020', '2020-03-12', a bare year) is no qualifier: it does not point at
+# one person, so QUALIFIER_RX is read with dates removed (A31).
+DATE_QUALIFIER_RX = re.compile(r"(?i)\b(?:\d{1,2}(?:st|nd|rd|th)?[\s./-]+)?(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)"
+                               r"[a-z]*\.?[\s,./-]*(?:\d{1,2}(?:st|nd|rd|th)?,?[\s./-]+)?(?:19|20)\d{2}\b"
+                               r"|\b\d{1,4}[./-]\d{1,2}[./-]\d{1,4}\b|\b(?:19|20)\d{2}\b")
 # A group role (the crew, not a person) is never a singleton.
 GROUP_RX = re.compile(r"(?i)\b(?:operators|crew|team|staff|workers|personnel)\s*$")
 
@@ -82,13 +89,18 @@ def _terms() -> dict:
     return json.loads(TERMS_FILE.read_text(encoding="utf-8"))
 
 
+def _spread_initials(name: str) -> str:
+    """'R.K. Vandermere' as 'R. K. Vandermere': initials written without spaces are separate initials (A32)."""
+    return re.sub(r"(?<![A-Za-z])([A-Za-z])\.(?=[A-Za-z])", r"\1. ", name)
+
+
 def name_variants(name: str, skip_role_words=False) -> list:
     """The ways a person is named in text: the full name as given, surname only, initial plus surname, and an
-    honorific plus surname for each honorific in lint-terms.json. 'Shri R. K. Sharma' gives 'Sharma', 'R. Sharma',
-    'R K Sharma', 'Shri Sharma', 'Shri. Sharma' and so on. A line with a digit (a staff ID) has no variants.
+    honorific plus surname for each honorific in lint-terms.json. 'Shri R. K. Vandermere' (or 'R.K. Vandermere')
+    gives 'Vandermere', 'R. Vandermere', 'R K Vandermere', 'Shri Vandermere', 'Shri. Vandermere' and so on. A line with a digit (a staff ID) has no variants.
     skip_role_words=True (share masking and scan-names --variants, M1) leaves out a one-word variant that is a role
     noun or a lint vocabulary word ('Officer', 'Field'), so it never masks a role; --redact keeps it and warns (X17)."""
-    name = " ".join(name.split())
+    name = " ".join(_spread_initials(name).split())
     out = [name]
     if not name or any(ch.isdigit() for ch in name):
         return out
@@ -119,7 +131,7 @@ def name_variants(name: str, skip_role_words=False) -> list:
 
 def _alt(x: str) -> str:
     """Regex for one name form. Whitespace matches any run; an initial ('R.' or 'R') has an optional dot and may
-    be followed directly by the next token, so 'R. K. Sharma' also matches 'R.K. Sharma' and 'R K Sharma'."""
+    be followed directly by the next token, so 'R. K. Vandermere' also matches 'R.K. Vandermere' and 'R K Vandermere'."""
     out, prev_initial = [], False
     for i, t in enumerate(x.split()):
         initial = bool(re.fullmatch(r"[A-Za-z]\.?", t))
@@ -132,11 +144,11 @@ def _alt(x: str) -> str:
 
 def name_pattern(names, variants=False, skip_role_words=False):
     """One case-insensitive regex for a list of names (None for an empty list), bounded by (?<!\\w) and (?!\\w) so
-    'Sharma' does not match inside 'Sharmaji' and a space matches any run of whitespace. variants=True adds the
+    'Vandermere' does not match inside 'Vandermeres' and a space matches any run of whitespace. variants=True adds the
     name_variants of each name (skip_role_words: see name_variants)."""
     xs = []
     for n in names:
-        for v in (name_variants(n, skip_role_words) if variants else [" ".join(n.split())]):
+        for v in (name_variants(n, skip_role_words) if variants else [" ".join(_spread_initials(n).split())]):
             if v and v not in xs:
                 xs.append(v)
     if not xs:
@@ -162,7 +174,7 @@ def build_singletons(role_map: dict, findings: list, tax: dict, tier_labels: dic
     for r in sorted(role_map):
         if GROUP_RX.search(re.split(r"\s-\s|\(", r)[0].strip()):
             continue
-        reason = "qualifier" if QUALIFIER_RX.search(r) else "single-holder" if r in sole else None
+        reason = "qualifier" if QUALIFIER_RX.search(DATE_QUALIFIER_RX.sub("", r)) else "single-holder" if r in sole else None
         if not reason:
             continue
         m = role_map[r]
@@ -192,29 +204,35 @@ _MON_RX = r"(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?"
 # H:MM or HH:MM (optional :SS, optional am/pm or hrs), and HHMM only with hrs or hours ("1405 hrs"). A colon time
 # with no seconds and no suffix ("bare") is kept when a ratio word sits next to it, e.g. "ratio 1:10" (X23).
 # H.MM or HH.MM counts only with am, pm or hrs ("9.15 am", "21.30 hrs"), so "2.50 hours" stays a duration.
+AMPM = r"(?:[ap]m\b|[ap]\.m\b\.?)"                  # "pm" leaves a sentence full stop alone; "p.m." takes its own
 TIME_RX = re.compile(r"(?:\bat\s+(?:about\s+|around\s+|approximately\s+)?)?(?<![\w:.])"
                      r"(?:(?P<clock>(?:[01]?\d|2[0-3]):[0-5]\d)(?P<sec>:[0-5]\d)?"
-                     r"(?P<suf>\s*(?:hrs?\b|hours?\b|[ap]\.?m\b\.?))?(?![\d:])"
+                     r"(?P<suf>\s*(?:hrs?\b|hours?\b|" + AMPM + r"))?(?![\d:])"
                      r"|(?:[01]\d|2[0-3])[0-5]\d\s*(?:hrs?|hours?)\b"
-                     r"|(?:[01]?\d|2[0-3])\.[0-5]\d\s*(?:hrs\b|[ap]\.?m\b\.?))", re.I)
-# A bare HHMM (0000-2359) after a preposition, which goes with it: "At 0216", "at about 0300", "from 0200 until 0415".
-# Years are kept: after about, around, approximately, by, from, until or till, 1900-2099 reads as a year ("from 2017",
-# "by 2020"); only "at" takes those as times ("at 1930"). "in" and "since" are never followed by a time. A following
-# unit ("at 1500 rpm", "about 1200 m") makes it a quantity, also kept.
+                     r"|(?:[01]?\d|2[0-3])\.[0-5]\d\s*(?:hrs\b|" + AMPM + r"))", re.I)
+# A bare HHMM (0000-2359) after a preposition, which goes with it: "At 0216", "at about 0300", "from 0200 until 0415",
+# "since 0300". Years are kept: after about, around, approximately, by, from, since, until or till, 1900-2099 reads as
+# a year ("from 2017", "by 2020", "since 2018"); only "at" takes those as times ("at 1930"). "in" is never followed
+# by a time. A following unit ("at 1500 rpm", "about 1200 m") makes it a quantity, also kept, and so does a number
+# after a bare about/around/approximately that starts without a zero and is followed by a plural noun ("about 1200
+# workers"); "at about 1200" and "around 0220" are times.
 PREP_HHMM_RX = re.compile(r"\b(?P<prep>at\s+(?:about\s+|around\s+|approximately\s+|approx\.\s*)?"
-                          r"|(?:about|around|approximately|by|from|until|till)\s+|approx\.\s*)"
+                          r"|(?:about|around|approximately|by|from|since|until|till)\s+|approx\.\s*)"
                           r"(?P<hhmm>(?:[01]\d|2[0-3])[0-5]\d)(?:\s*[-–]\s*(?:[01]\d|2[0-3])[0-5]\d)?(?![-/:]|[.,]\d|\w)", re.I)
 _UNIT_AFTER = re.compile(r"\s*([A-Za-z]+\d?|%|°[CF]?)(?!\w)")
 UNIT_WORDS = {"rpm", "kpa", "mpa", "pa", "bar", "barg", "psi", "psig", "mm", "cm", "m", "km", "kg", "g", "t", "te",
               "tonnes", "tons", "l", "litres", "liters", "ml", "m3", "nm3", "scm", "ppm", "kw", "mw", "w", "v", "kv",
               "a", "hz", "metres", "meters", "feet", "ft", "units", "people", "%", "°", "°c", "c", "k"}
 RATIO_WORDS = {"ratio", "ratios", "slope", "slopes", "scale", "odds", "mix", "mixture", "dilution", "dilutions"}
-_WORD_BEFORE = re.compile(r"([A-Za-z]+)\W*(?:\bof\W*)?$")      # "ratio 1:10" and "a ratio of 1:10"
-_WORD_AFTER = re.compile(r"^\W*([A-Za-z]+)")
+_WORD_BEFORE = re.compile(r"([A-Za-z]+)[^\w.!?]*(?:\bof[^\w.!?]*)?$")      # "ratio 1:10" and "a ratio of 1:10", not across a full stop
+_WORD_AFTER = re.compile(r"^[^\w.!?]*([A-Za-z]+)")
+_NOT_PLURAL = {"was", "has", "is", "as", "his", "this", "its", "us", "yes", "always", "across", "press"}
+_SENTINEL = "\ue000"                                                # marks a removed time while strip_times tidies it
 ISO_DATE_RX = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})(?:[T ](?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?"
                          r"(?:Z|[+-]\d{2}:?\d{2})?)?(?![\d-])")
 DMY_TEXT_RX = re.compile(r"\b(\d{1,2})(?:st|nd|rd|th)?[ -]" + _MON_RX + r",?[ -](\d{4})\b", re.I)
 MDY_TEXT_RX = re.compile(r"\b" + _MON_RX + r" (\d{1,2})(?:st|nd|rd|th)?,? (\d{4})\b", re.I)
+SLUG_DATE_RX = re.compile(r"(?<![\w-])(\d{4})-\d{2}-\d{2}-(?=[A-Za-z])")       # '2020-09-24-hazira-...' (a run slug)
 NUM_DATE_RX = re.compile(r"\b(\d{1,2})[./](\d{1,2})[./](\d{4})\b")
 
 
@@ -232,41 +250,70 @@ def _num_date(m) -> str:
 
 
 def coarsen_dates(text: str) -> str:
-    """ISO dates and date-times, 'D Month YYYY', 'Month D, YYYY' and D/M/YYYY become 'Month YYYY'."""
+    """ISO dates and date-times, 'D Month YYYY', 'Month D, YYYY' and D/M/YYYY become 'Month YYYY'. The ISO date that
+    starts a slug ('2020-09-24-hazira-...') keeps its year only ('2020-hazira-...')."""
+    text = SLUG_DATE_RX.sub(lambda m: m.group(1) + "-", text)
     text = ISO_DATE_RX.sub(lambda m: _month(m.group(1), m.group(2)) or m.group(0), text)
     text = DMY_TEXT_RX.sub(lambda m: _month(m.group(3), _MON[m.group(2).lower()]), text)
     text = MDY_TEXT_RX.sub(lambda m: _month(m.group(3), _MON[m.group(1).lower()]), text)
     return NUM_DATE_RX.sub(_num_date, text)
 
 
+def _tidy_removed(out: str) -> str:
+    """Remove the spacing and punctuation a removed time (marked _SENTINEL) leaves, around the mark only, so text
+    elsewhere ('e.g.,', a double space) is untouched."""
+    run_rx = re.compile(r"[ \t]*(?:" + _SENTINEL + r"[ \t]*)+")
+    while True:
+        m = run_rx.search(out)
+        if not m:
+            return out
+        left, right = out[:m.start()], out[m.end():]
+        lp = left.rstrip(" \t")
+        if not right:
+            out = lp
+        elif not lp or lp.endswith("\n"):                     # the time opened the text or a line
+            out = left + (right.lstrip(",.;:").lstrip(" \t") if right[0] in ",.;:" else right)
+        elif right[0] in ",.;:!?)":
+            if lp[-1] in ".!?":                               # "rang. At 0216. He": the stray stop ended the time
+                out = lp + right.lstrip(",.;:")
+            elif lp[-1] in ",;:" and right[0] in ".!?":       # "The tank, at 14:05. Then"
+                out = lp[:-1].rstrip(" \t") + right
+            else:
+                out = lp + right
+        else:
+            out = lp + (" " if lp[-1] not in "([{" else "") + right
+
+
 def strip_times(text: str) -> str:
-    """Clock times (HH:MM, with an optional :SS and 'hrs') removed, and the spacing they leave tidied."""
+    """Clock times (HH:MM, with an optional :SS, 'hrs' or am/pm; a bare HHMM after a preposition) removed with the
+    'at' that introduced them, and the spacing and punctuation they leave tidied around the gap only."""
     def drop(m):
-        if m.group("clock") and not (m.group("sec") or m.group("suf")):
+        if m.group("clock") and not (m.group("sec") or m.group("suf")) and not m.group(0).lower().startswith("at"):
             before = _WORD_BEFORE.search(text, 0, m.start())
             after = _WORD_AFTER.search(text[m.end():])
             near = {x.group(1).lower() for x in (before, after) if x}
             if near & RATIO_WORDS:
                 return m.group(0)
-        return ""
+        stop = bool(re.search(r"(?i)[ap]\.m\.$", m.group(0))) and re.match(r"\s*$|\s+[A-Z]", text[m.end():])
+        return _SENTINEL + ("." if stop else "")
 
     def drop_hhmm(m):
         unit = _UNIT_AFTER.match(m.string, m.end())
         if unit and unit.group(1).lower() in UNIT_WORDS:
             return m.group(0)
-        if 1900 <= int(m.group("hhmm")) <= 2099 and not m.group("prep").lower().startswith("at"):
+        prep, hhmm = m.group("prep").lower(), m.group("hhmm")
+        if 1900 <= int(hhmm) <= 2099 and not prep.startswith("at"):
             return m.group(0)
-        return ""
+        if prep.startswith(("about", "around", "approx")) and not hhmm.startswith("0"):
+            nxt = _WORD_AFTER.search(m.string[m.end():])
+            if nxt and len(nxt.group(1)) > 3 and nxt.group(1).lower().endswith("s") and nxt.group(1).lower() not in _NOT_PLURAL:
+                return m.group(0)                             # "about 1200 workers"
+        return _SENTINEL
 
     out = PREP_HHMM_RX.sub(drop_hhmm, TIME_RX.sub(drop, text))
-    if out == text:
+    if _SENTINEL not in out:
         return text
-    out = re.sub(r"[ \t]{2,}", " ", out)
-    out = re.sub(r"[ \t]+([,.;:)])", r"\1", out)
-    if not re.match(r"\s*[,.;:]", text):                 # "At 0216. He ..." reads "He ...", not ". He ..."
-        out = re.sub(r"^(\s*)[,.;:]+[ \t]*", r"\1", out)
-    if ".." not in text:                                    # "rang. At 0216. He" reads "rang. He"
-        out = re.sub(r"(?<!\.)([.!?])[ \t]*[.,;:](?!\.)", r"\1", out)
+    out = _tidy_removed(out)
     return out.strip() if text == text.strip() else out
 
 
@@ -316,6 +363,20 @@ def share_text(text: str, ctx) -> str:
     return coarsen_dates(strip_times(text))
 
 
+def _merge_role(a, b):
+    """Two role_map values whose keys masked to the same text: lists are joined without repeats, a scalar keeps the
+    first value, and a key only one of them has is kept (A43)."""
+    if not (isinstance(a, dict) and isinstance(b, dict)):
+        return a
+    out = dict(a)
+    for k, v in b.items():
+        if k not in out:
+            out[k] = v
+        elif isinstance(out[k], list) and isinstance(v, list):
+            out[k] = out[k] + [x for x in v if x not in out[k]]
+    return out
+
+
 def _norm(k) -> str:
     return re.sub(r"[^a-z0-9]+", "_", str(k).lower()).strip("_")
 
@@ -345,7 +406,13 @@ def share_doc(obj, ctx, owners=None):
         if isinstance(v, dict):
             out = {k: copy.deepcopy(x) if k in ID_KEYS else walk(owner(x) if k == "owner" else x, k)
                    for k, x in v.items() if _norm(k) not in SHARE_DROP_KEYS}
-            return {share_text(k, ctx): x for k, x in out.items()} if key in ROLE_KEYED else out
+            if key in ROLE_KEYED:
+                masked = {}
+                for k, x in out.items():
+                    mk = share_text(k, ctx)
+                    masked[mk] = _merge_role(masked[mk], x) if mk in masked else x
+                return masked
+            return out
         return copy.deepcopy(v)
 
     return walk(obj)
@@ -380,15 +447,15 @@ _NAME_ATTR = re.compile(r"""(?<![\w.:-])(?:[\w.-]+:)?(?:author|name|displayName|
 
 
 def _xml_attr_names(raw: str) -> str:
-    """The values of author, name, initials, creator and lastModifiedBy attributes (any namespace prefix), one per
-    line: comment and people parts often hold a name only in an attribute."""
+    """The values of author, name, displayName, initials, creator and lastModifiedBy attributes (any namespace
+    prefix), one per line: comment and people parts often hold a name only in an attribute."""
     return "\n".join(html.unescape(m.group(1) if m.group(1) is not None else m.group(2))
                       for m in _NAME_ATTR.finditer(raw))
 
 
 def _xml_text(raw: str) -> str:
     """Plain text of an Office XML part. Run text inside a paragraph is joined with no separator, so a name split
-    across runs ('Ra' + 'vi Sharma') is whole again; a paragraph end is a newline; other tags become a space."""
+    across runs ('Quil' + 'lon Vale') is whole again; a paragraph end is a newline; other tags become a space."""
     raw = _XML_BREAK.sub(" ", raw)
     raw = _XML_PARA_END.sub("\n", raw)
     raw = _XML_RUN_TAG.sub("", raw)
@@ -407,11 +474,13 @@ def _office_xml_texts(path: Path, unread: list):
                 n = zi.filename
                 if not (_META_PART.search(n) or (body and _BODY_PART.search(n))):
                     continue
-                if zi.file_size > _MAX_MEMBER:
+                with z.open(zi) as fh:                       # the cap counts bytes read, not the size the header declares
+                    data = fh.read(_MAX_MEMBER + 1)
+                if len(data) > _MAX_MEMBER:
                     print(f"warning: {path}:{n} is over 50 MB and was skipped")
                     unread.append(str(path))
                     continue
-                raw = z.read(n).decode("utf-8", errors="ignore")
+                raw = data.decode("utf-8", errors="ignore")
                 text = _xml_text(raw)
                 if _META_PART.search(n):
                     text += "\n" + _xml_attr_names(raw)
@@ -482,6 +551,8 @@ def cmd_scan_names(a):
         nonlocal hits
         for label, rx in scans:
             for m in rx.finditer(text):
+                if label == "pattern:email" and m.group(0).lower().rstrip(".") == BRAND_EMAIL:
+                    continue                                    # the brand address every output carries (A49)
                 hits += 1
                 if hits <= a.show:
                     tag = f" [{label}]" if label else ""

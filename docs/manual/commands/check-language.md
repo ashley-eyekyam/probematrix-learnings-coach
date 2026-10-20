@@ -21,7 +21,7 @@ Reads a learning pack or a Learnings Register and checks its **wording** against
 
 Errors make the command exit with code 1. [check-pack](check-pack.md) and [check-register](check-register.md) run the same checks as part of their own; check-language runs only these.
 
-A hit can be accepted, when the wording is right, by adding to that item `"lint_ok": {"rule": "JCn", "reason": "..."}`. The reason must not be empty. [Language checks](../Language-checks.md) explains every rule with examples.
+A hit can be accepted, when the wording is right, by adding to that item `"lint_ok": {"rule": "JCn", "reason": "..."}`. The reason must not be empty. `lint_ok` belongs on an item, a bottom-line entry or a register entry; on a section or at the top of the file it is an error, and it accepts nothing. [Language checks](../Language-checks.md) explains every rule with examples.
 
 ## When to use it
 

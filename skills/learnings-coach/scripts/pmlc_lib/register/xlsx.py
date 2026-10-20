@@ -13,7 +13,7 @@ from .. import BRAND, DRAFT_LABEL, STATUS_PHRASE, VERSION_STAMP
 from ..classify import TIER_LABELS
 from ..handling import (
     effective_handling, is_draft, REASON_NO_WORKSPACE, review_text, share_ctx, share_gate, shared_copy, SHARED_LINE,
-    shared_name, SHARED_SOURCE
+    refuse_internal_overwrite, shared_name, SHARED_SOURCE
 )
 from ..register.check import HOC_TIERS, norm_entity, norm_hoc, norm_level
 from ..util import _flat, _need_openpyxl
@@ -208,7 +208,7 @@ def cmd_register_xlsx(a):
         rows = [(k, privacy.share_text(v, share)) for k, v in rows] + [("Sharing", SHARED_LINE.format(mode=mode))]
     for k, v in rows:
         ab.append([k, v])
-    ab.column_dimensions["A"].width = 120
+    ab.column_dimensions["A"].width = min(200, max(120, max(len(str(c.value)) for c in ab["A"] if c.value) + 2))
     ab.column_dimensions["B"].width = 60
     for sh in wb.worksheets:
         sh.oddHeader.center.text = STATUS_PHRASE + (f" · {DRAFT_LABEL}" if is_draft(eh) else "")
@@ -219,7 +219,9 @@ def cmd_register_xlsx(a):
     if share:
         wb.properties = DocumentProperties(creator="", lastModifiedBy=None, created=SHARED_EPOCH,
                                            modified=SHARED_EPOCH)
-    out = Path(a.out) if a.out else shared_name(Path(a.register).resolve().parent / "learnings-register.xlsx", mode)
+    internal = Path(a.register).resolve().parent / "learnings-register.xlsx"
+    out = Path(a.out) if a.out else shared_name(internal, mode)
+    refuse_internal_overwrite(out, internal, mode)
     out.parent.mkdir(parents=True, exist_ok=True)
     text_cells(wb)
     wb.save(out)
