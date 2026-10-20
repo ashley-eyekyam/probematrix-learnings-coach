@@ -10,6 +10,12 @@ Reads the roles named in each finding's "Individuals Involved" column (for examp
 
 It writes `clusters.json` and `singleton_roles.json` to the workspace, and lists the roles it could not place in `unresolved_roles.json`. The words it matches come from the taxonomy in `skills/learnings-coach/references/taxonomy.json`; an **overlay** adds site-specific role words on top.
 
+### Taxonomy version, fingerprint and statutory roles
+
+`clusters.json` records `taxonomy_version` (taxonomy 2.0 and later), `taxonomy_fingerprint` (a sha256 of the merged taxonomy, the overlays and the org chart, so two runs can show they used the same rules) and `statutory_roles`: the roles that name a statutory post such as the Occupier or Factory Manager (India), the COMAH operator (UK), a PSM contract employee (US) or a DGMS mine manager (India), each as `{role, label, regime, findings}`. Each is a prompt to check the statutory duty, not a finding.
+
+An org-chart row error names the row, counting the header as row 1, for example `org chart row 3: match is required`.
+
 ## When to use it
 
 After [ingest](ingest.md), and before any [select](select.md) by entity, tag, tier or relation. Run it again after you resolve unresolved roles, or when you add an overlay.
@@ -19,6 +25,7 @@ After [ingest](ingest.md), and before any [select](select.md) by entity, tag, ti
 ```text
 pmlc classify ws [--taxonomy TAXONOMY] [--overlay NAME_OR_PATH] [--no-overlay]
                  [--overrides OVERRIDES] [--no-overrides]
+                 [--org-chart FILE.csv] [--no-org-chart]
 ```
 
 ## Arguments
@@ -36,6 +43,8 @@ pmlc classify ws [--taxonomy TAXONOMY] [--overlay NAME_OR_PATH] [--no-overlay]
 | `--no-overlay` | none | off | Use no overlay. Without `--taxonomy`, `--overlay` or `--no-overlay`, classify reuses the taxonomy and overlays the previous run used, and says so |
 | `--overrides` | file | `$WS/role_overrides.json` when it exists | A JSON object `{role: {"F": [...], "T": ..., "R": ...}}` that fixes the cluster of named roles, usually written by the agent's resolution pass |
 | `--no-overrides` | none | off | Ignore any overrides file |
+| `--org-chart` | CSV file | none | Your own departments, as a CSV with the columns `department` (required), `entity` (an F-id to extend, optional), `match` (keywords separated by `;`, or a regex; required) and `tier` (`T1` to `T5`, optional). Rows without an `entity` become new entities `F20`, `F21` and so on, in CSV order, and keep their ID across re-runs through `org-chart-ids.json` in the workspace. Remembered like `--overlay`. Classify prints `<n> of <m> findings mapped to your departments` |
+| `--no-org-chart` | none | off | Forget the remembered org chart |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples

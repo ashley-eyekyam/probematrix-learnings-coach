@@ -171,6 +171,9 @@ def _current_input(ws: Path, name: str, entry: dict):
         if not p and src.get("overrides_auto") and (ws / "role_overrides.json").is_file():
             return file_sha256(ws / "role_overrides.json")
         return "none" if not p else (file_sha256(p) if Path(p).is_file() else None)
+    if name == "org_chart":
+        p = src.get("org_chart")
+        return "none" if not p else (file_sha256(p) if Path(p).is_file() else None)
     if name == "export":
         return "skip"
     p = ws / name
