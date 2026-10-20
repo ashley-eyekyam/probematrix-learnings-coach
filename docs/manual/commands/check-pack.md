@@ -10,15 +10,20 @@ Checks a **learning pack**: the JSON file an audience skill writes (a board brie
 - a cited finding that a reviewer voted to downgrade has a data-quality note;
 - the `scope` (levels, tiers, entities) is valid;
 - the `handling` block, when present, is valid;
-- the language rules JC1 to JC12, the same as [check-language](check-language.md).
+- the language rules JC1 to JC12, the same as [check-language](check-language.md);
+- the optional v2.0 fields: a `learning` id has the shape `LR-01` and is in the Learnings Register; every id in `clauses` is in `standards-crosswalk.json`; `gaps` and `limits` are well formed.
 
-It also gives **warnings**, which do not fail the check: low coverage of the top-rated relevant findings, an Evidence ID not linked to the findings its item cites, an ID written in the text but not in `cites`, a missing handling block, and language warnings. Three more warnings become **problems under `--strict`**:
+It also gives **warnings**, which do not fail the check: low coverage of the top-rated relevant findings, an Evidence ID not linked to the findings its item cites, an ID written in the text but not in `cites`, a missing handling block, `learning ids not verified: no register` when the pack uses `learning` and no register is found, an administrative or training recommendation without `why_not_stronger`, and language warnings. Five more warnings become **problems under `--strict`**:
 
 - **Pack profile.** Each skill's pack has a profile in `skills/learnings-coach/references/pack-profiles.json`, written from the skill's "Sections → kinds" text: its sections, the kinds that fill each one, how many items of each kind (for example up to 12 board questions), how many bottom-line entries, the `scope` keys it must set, word limits (a learning card has at most 250 words) and a few named rules (an engineering learning, barrier and recommendation share a `group`; a training assessment question has an `answer` and `cites`; the investigator follow-up table has a row for every top-rated finding). Every count a skill names is read as a maximum with a floor of one: "`question` ×8–12" means up to 12 and at least 1, and "`scenario` ×3" means up to 3 and at least 1, so a thin export never forces padding. The section ids come from the committed example packs; until each SKILL.md's Write table names them, a pack that uses other ids gets "not a section of the … profile" warnings.
 - **Padding.** Three or more items in one section with the same `cites` list may be one condition written several times. Items in different sections are not compared, and items that share one `group` count once, so an engineering learning, barrier and recommendation on the same finding, or a decision and its indicator, are not padding.
 - **Scope drift.** An audience skill's pack whose `scope` leaves out its audience's default tiers, levels or tags (from `references/audiences.json`), for example a supervisor pack without `T2`. Only the dimensions the pack sets are compared, and a wider scope is fine; a pack that sets none of its audience's default dimensions (no tiers, levels or tags that the default uses) counts as drift, because it is no longer aimed at that audience.
+- **Unknown learning id.** A `learning` id that the Learnings Register has no entry for.
+- **Unknown clause.** An id in `clauses` that `standards-crosswalk.json` does not have.
 
 **Coverage** is measured against the top-rated findings within the pack's scope (those with the highest rating any relevant finding has), so a short pack on a broad scope need not pad its citations. The rendered pack prints both numbers: "*x* of *y* relevant findings cited" and "*x* of *y* top-rated relevant findings cited".
+
+An `OK` does not mean the content is right: see "What check-pack does not check" in pack-schema.md.
 
 The result is recorded in the workspace manifest, and [status](status.md) shows it.
 
@@ -29,7 +34,7 @@ Every time a pack JSON is written or edited, before [pack](pack.md). [pack](pack
 ## Synopsis
 
 ```text
-pmlc check-pack ws pack [--share {internal,external,public}] [--names NAMES] [--orgs ORGS] [--strict]
+pmlc check-pack ws pack [--share {internal,external,public}] [--names NAMES] [--orgs ORGS] [--strict] [--register REGISTER]
 ```
 
 ## Arguments
@@ -46,7 +51,8 @@ pmlc check-pack ws pack [--share {internal,external,public}] [--names NAMES] [--
 | `--share` | `internal`, `external` or `public` | the pack's `handling.classification`, else `internal` | Which language rules apply. `external` and `public` turn on the stricter outside rules |
 | `--names` | file | `$PMLC_NAMES` | Personal names, one per line, that must not appear |
 | `--orgs` | file | `$PMLC_ORGS` | Organisation names, one per line |
-| `--strict` | none | off | Pack-profile violations, padding and scope drift are problems (exit code 1), not warnings. Run it before handing a pack over |
+| `--strict` | none | off | Pack-profile violations, padding, scope drift, unknown learning ids and unknown clauses are problems (exit code 1), not warnings. Run it before handing a pack over |
+| `--register` | file | `<run>/outputs/learnings-register.json` when it exists | The Learnings Register JSON that `learning` ids are checked against. A given file that cannot be read is a problem; an auto-detected one that cannot be read is warned about and ignored |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples
@@ -121,6 +127,10 @@ The exit code is 1, so a script or agent stops here.
 - **"scope differs from the … audience default (…)".** Put the audience's default tiers, levels or tags back in `scope`; a wider scope is fine.
 - **"no handling block: rendered as draft (internal)".** Expected until a reviewer runs [sign-off](sign-off.md).
 - **"not signed off in this workspace: status is draft until sign-off records it".** The file claims `reviewed` or `approved`, but this workspace has no sign-off of it: the block was written or changed by hand, or the file was copied. Have it reviewed and run [sign-off](sign-off.md) here.
+- **"unknown learning LR-nn".** The register has no entry with that `lr_id`: a typing error, or the register was rebuilt with new numbers. Fix the pack, or pass the right register with `--register`.
+- **"learning ids not verified: no register".** The pack uses `learning` but no register was found. Write the register first, or pass `--register`.
+- **"unknown clause …".** The id is not in `standards-crosswalk.json`. Use an id from it, or put free wording in a test point's `clause`.
+- **"recommendation … is administrative or training only: say why_not_stronger".** Add `why_not_stronger`: why no elimination, substitution or engineering control is proposed.
 - **Language errors (JC1, JC2, JC11 …).** See [check-language](check-language.md) for each rule and how to fix it.
 
 ## Related

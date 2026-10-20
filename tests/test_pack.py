@@ -1405,3 +1405,214 @@ def test_profile_checks_never_crash_on_wrong_types(w, bad):
     p["scope"] = {"tags": "engineering"}
     r = pp.check_pack(p, w, strict=True)
     assert r.problems
+
+
+# ---- v2.0 phase 3, task 11: LR ids, clauses, gaps and limits, why-not-stronger (P3-12, P3-13, L3-14)
+
+MINI_REGISTER = {"entries": [{"lr_id": "LR-01", "title": "Test what you disturb"},
+                             {"lr_id": "LR-02", "title": "Specify critical spares"}]}
+
+
+def _fresh_run(tmp_path):
+    x = make_export(tmp_path)
+    run("ingest", str(x), "--slug", "pump-fire")
+    ws_ = tmp_path / "pmlc-runs" / "2024-03-20-pump-fire" / "workspace"
+    run("classify", str(ws_))
+    return ws_, ws_.parent / "outputs"
+
+
+@pytest.mark.parametrize("name", pack_fixtures() + ["all-kinds"])
+def test_alpha4_pack_passes_without_new_fields(w, name):
+    r = pp.check_pack(fixture(name), w)
+    assert r.problems == [], r.problems
+    assert not [x for x in r.warnings if "learning ids not verified" in x or "unknown clause" in x]
+
+
+def test_learning_id_checked_against_register(w):
+    p = pack_with(item("para", cites=["FND-0002"], learning="LR-99"))
+    r = pp.check_pack(p, w, register=MINI_REGISTER)
+    assert r.problems == [] and "sections[0].items[0].learning: unknown learning LR-99" in r.warnings, r
+    r = pp.check_pack(p, w, register=MINI_REGISTER, strict=True)
+    assert "sections[0].items[0].learning: unknown learning LR-99" in r.problems
+    ok = pack_with(item("para", cites=["FND-0002"], learning="LR-01"))
+    r = pp.check_pack(ok, w, register=MINI_REGISTER, strict=True)
+    assert r.problems == [] and not [x for x in r.warnings if "learning" in x], r
+    two = pack_with(item("para", cites=["FND-0002"], learning="LR-01"), item("para", cites=["FND-0002"], learning="LR-02"))
+    r = pp.check_pack(two, w)
+    assert [x for x in r.warnings if "learning ids not verified" in x] == ["learning ids not verified: no register"]
+    assert pp.check_pack(two, w, strict=True).problems == []          # no register: a warning even when strict
+    assert pp.check_pack(two, w, register=[{"lr_id": "LR-01"}, {"lr_id": "LR-02"}], strict=True).problems == []
+
+
+def test_learning_id_shape(w):
+    for bad in ("LR-1", "lr-01", "LR-01 ", 7):
+        got = problems(pack_with(item("para", cites=["FND-0002"], learning=bad)), w)
+        assert any(x.startswith("sections[0].items[0].learning: must be LR-") for x in got), (bad, got)
+    bl = pack_with(item("para", cites=["FND-0002"]), bottom_line=[{"text": "t", "cites": ["FND-0002"], "learning": "LR-x"}])
+    assert any(x.startswith("bottom_line[0].learning: must be LR-") for x in problems(bl, w))
+
+
+def test_clauses_validated(w):
+    ok = pack_with(item("para", cites=["FND-0002"], clauses=["ISO45001-10.2"]))
+    r = pp.check_pack(ok, w, strict=True)
+    assert r.problems == [] and not [x for x in r.warnings if "clause" in x], r
+    unk = pack_with(item("para", cites=["FND-0002"], clauses=["ISO45001-99"]))
+    r = pp.check_pack(unk, w)
+    assert r.problems == [] and "sections[0].items[0].clauses[0]: unknown clause ISO45001-99" in r.warnings
+    assert "sections[0].items[0].clauses[0]: unknown clause ISO45001-99" in pp.check_pack(unk, w, strict=True).problems
+    for bad in ("ISO45001-10.2", [], [""], [3]):
+        got = problems(pack_with(item("para", cites=["FND-0002"], clauses=bad)), w)
+        assert any(x.startswith("sections[0].items[0].clauses") for x in got), (bad, got)
+    t = pp.render_pack_html(w, ok, "r", "d")
+    assert "Clauses: ISO45001-10.2" in t and "Clauses: ISO45001-10.2" in pp.render_pack_md(ok, w)
+
+
+def test_comparator_refs_field_is_allowed(w):
+    r = pp.check_pack(pack_with(item("para", cites=["FND-0002"], comparator_refs=["REC-01"])), w)
+    assert r.problems == [] and not [x for x in r.warnings if "unknown field" in x], r
+
+
+def test_test_point_clause_badge(w):
+    p = pack_with(item("test_point", clause="ISO 45001 8.1.3; OSHA 1910.119(l)"))
+    r = pp.check_pack(p, w)
+    assert r.problems == [] and not [x for x in r.warnings if "unknown field" in x], r
+    t = pp.render_pack_html(w, p, "r", "d")
+    assert re.search(r'<span class="[^"]*\bpm-clause\b[^"]*">Clause: ISO 45001 8\.1\.3; OSHA 1910\.119\(l\)</span>', t)
+    assert "Clause: ISO 45001 8.1.3; OSHA 1910.119(l)" in pp.render_pack_md(p, w)
+    assert any(x.startswith("sections[0].items[0].clause: must be non-empty text")
+               for x in problems(pack_with(item("test_point", clause="")), w))
+
+
+def test_why_not_stronger_warning(w):
+    msg = "recommendation {} is administrative or training only: say why_not_stronger"
+    for tier in ("administrative", "Training of fitters"):
+        r = pp.check_pack(pack_with(item("recommendation", hoc_tier=tier, id="r1")), w)
+        assert r.problems == [] and any(x.endswith(msg.format("r1")) for x in r.warnings), r.warnings
+    r = pp.check_pack(pack_with(item("recommendation", hoc_tier="training")), w)
+    assert any(x.endswith(msg.format("s1-1")) for x in r.warnings), r.warnings
+    p = pack_with(item("recommendation", hoc_tier="administrative", id="r1", barrier_id="BR-07",
+                       why_not_stronger="The pump cannot be interlocked until the next shutdown."))
+    r = pp.check_pack(p, w)
+    assert r.problems == [] and not [x for x in r.warnings if "why_not_stronger" in x or "unknown field" in x], r
+    assert not [x for x in pp.check_pack(pack_with(item("recommendation")), w).warnings if "why_not_stronger" in x]
+    md, t = pp.render_pack_md(p, w), pp.render_pack_html(w, p, "r", "d")
+    assert "- Why not stronger: The pump cannot be interlocked until the next shutdown." in md
+    assert "- Barrier ID: BR-07" in md
+    assert "Why not stronger" in t and "Barrier ID: BR-07" in t
+    b = pack_with(item("barrier", barrier_id="CC-3"))
+    assert pp.check_pack(b, w).problems == [] and "Barrier ID: CC-3" in pp.render_pack_md(b, w)
+    assert any(x.startswith("sections[0].items[0].barrier_id: must be non-empty text")
+               for x in problems(pack_with(item("barrier", barrier_id=" ")), w))
+
+
+GAPS = [{"text": "No record shows who approved the local purchase.", "cites": ["FND-0003"],
+         "evidence_needed": "The stores approval log for 2022 to 2024."}]
+
+
+def test_gaps_validation(w):
+    assert problems(pack_with(item("para", cites=["FND-0002"]), gaps=GAPS), w) == []
+    for gaps, expected in [("x", "gaps: must be a non-empty list"), ([], "gaps: must be a non-empty list"),
+                           (["x"], "gaps[0]: must be an object"),
+                           ([{"evidence_needed": "e"}], "gaps[0].text: required"),
+                           ([{"text": "t"}], "gaps[0].evidence_needed: required"),
+                           ([{"text": "t", "evidence_needed": "e", "cites": "FND-0003"}], "gaps[0].cites: must be a list"),
+                           ([{"text": "t", "evidence_needed": "e", "cites": ["FND-9999"]}],
+                            "gaps[0].cites[0]: FND-9999 is not in this workspace")]:
+        got = problems(pack_with(item("para", cites=["FND-0002"]), gaps=gaps), w)
+        assert any(x.startswith(expected) for x in got), (gaps, got)
+
+
+def test_gaps_box_and_gaps_json(tmp_path):
+    ws_, outd = _fresh_run(tmp_path)
+    w_ = pmlc.load_ws(ws_)
+    a = pack_with(item("para", cites=["FND-0002"]), gaps=GAPS)
+    t, md = pp.render_pack_html(w_, a, "r", "d"), pp.render_pack_md(a, w_)
+    assert "<h2>Gaps in the evidence</h2>" in t and "The stores approval log for 2022 to 2024." in t
+    assert "## Gaps in the evidence\n\n- No record shows who approved the local purchase. [FND-0003]" in md
+    assert "Evidence needed: The stores approval log for 2022 to 2024." in md
+    src = outd / "test-pack.json"
+    src.write_text(json.dumps(a), encoding="utf-8")
+    run("pack", str(ws_), str(src))
+    gj = outd / "gaps.json"
+    assert json.loads(gj.read_text(encoding="utf-8")) == {"gaps": [dict(GAPS[0], pack="test-pack")]}
+    b = pack_with(item("para", cites=["FND-0002"]), pack="other-pack",
+                  gaps=[{"text": "Shift log missing", "evidence_needed": "The night shift log"}])
+    srcb = outd / "other-pack.json"
+    srcb.write_text(json.dumps(b), encoding="utf-8")
+    run("pack", str(ws_), str(srcb), "--out", str(tmp_path / "elsewhere"))   # gaps.json stays in the run's outputs
+    got = json.loads(gj.read_text(encoding="utf-8"))["gaps"]
+    assert [g["pack"] for g in got] == ["test-pack", "other-pack"] and got[1]["cites"] == []
+    a["gaps"] = [{"text": "Replaced gap", "cites": [], "evidence_needed": "x"}]
+    src.write_text(json.dumps(a), encoding="utf-8")
+    run("pack", str(ws_), str(src))
+    got = json.loads(gj.read_text(encoding="utf-8"))["gaps"]
+    assert [(g["pack"], g["text"]) for g in got] == [("other-pack", "Shift log missing"), ("test-pack", "Replaced gap")]
+    del a["gaps"]
+    src.write_text(json.dumps(a), encoding="utf-8")
+    run("pack", str(ws_), str(src))                                  # no gaps any more: its entries go
+    assert [g["pack"] for g in json.loads(gj.read_text(encoding="utf-8"))["gaps"]] == ["other-pack"]
+
+
+def test_pack_without_gaps_writes_no_gaps_json(tmp_path):
+    ws_, outd = _fresh_run(tmp_path)
+    src = outd / "test-pack.json"
+    src.write_text(json.dumps(pack_with(item("para", cites=["FND-0002"]))), encoding="utf-8")
+    run("pack", str(ws_), str(src))
+    assert not (outd / "gaps.json").exists()
+
+
+def test_limits_rendered(w):
+    p = pack_with(item("para", cites=["FND-0002"]), limits=["The export has no maintenance history before 2022."])
+    assert problems(p, w) == []
+    t, md = pp.render_pack_html(w, p, "r", "d"), pp.render_pack_md(p, w)
+    assert "<h2>Limits of this pack</h2>" in t and "<li>The export has no maintenance history before 2022.</li>" in t
+    assert "## Limits of this pack\n\n- The export has no maintenance history before 2022." in md
+    for bad in ("x", [], [""], [1]):
+        got = problems(pack_with(item("para", cites=["FND-0002"]), limits=bad), w)
+        assert any(x.startswith("limits") for x in got), (bad, got)
+
+
+def test_learning_chip_rendered(w):
+    p = pack_with(item("para", cites=["FND-0002"], learning="LR-01"))
+    t = pp.render_pack_html(w, p, "r", "d")
+    assert '<button type="button" class="pm-learning" data-lr="LR-01">Learning LR-01</button>' in t
+    assert "*(learning: LR-01)*" in pp.render_pack_md(p, w)
+
+
+def test_check_pack_register_flag(tmp_path):
+    ws_, outd = _fresh_run(tmp_path)
+    src = outd / "test-pack.json"
+    src.write_text(json.dumps(pack_with(item("para", cites=["FND-0002"], learning="LR-99"))), encoding="utf-8")
+    out = run("check-pack", str(ws_), str(src))
+    assert "warning: learning ids not verified: no register" in out
+    reg = tmp_path / "reg.json"
+    reg.write_text(json.dumps(MINI_REGISTER), encoding="utf-8")
+    out = run("check-pack", str(ws_), str(src), "--register", str(reg))
+    assert "warning: sections[0].items[0].learning: unknown learning LR-99" in out
+    (outd / "learnings-register.json").write_text(json.dumps(MINI_REGISTER), encoding="utf-8")   # auto-detected
+    assert "unknown learning LR-99" in run("check-pack", str(ws_), str(src))
+    r = run_fail("check-pack", str(ws_), str(src), "--register", str(tmp_path / "missing.json"))
+    assert "(register):" in r.stderr and "missing.json" in r.stderr
+    (outd / "learnings-register.json").write_text("{bad", encoding="utf-8")       # a broken auto-detected file
+    out = run("check-pack", str(ws_), str(src))                                   # never blocks: warned, ignored
+    assert "warning: (register):" in out and "ignored" in out and "learning ids not verified: no register" in out
+
+
+def test_pack_schema_reference_covers_task_11():
+    t = (ROOT / "skills" / "learnings-coach" / "references" / "pack-schema.md").read_text(encoding="utf-8")
+    for f in ("`learning`", "`clauses`", "`comparator_refs`", "`why_not_stronger`", "`barrier_id`", "`clause`",
+              "`gaps`", "`limits`", "gaps.json", "--register", "organisation-learning-plan", "dossier-index",
+              "report-comparison-client-safe", "What check-pack does not check", "investigator-coach/SKILL.md"):
+        assert f in t, f
+
+
+@pytest.mark.parametrize("embed", ["cited", "summary"])
+def test_gap_cites_are_embedded(w, embed):
+    """Task 11 fix 2: a gap's citation buttons open their records (cited and summary embed cited records)."""
+    p = pack_with(item("para", cites=["FND-0002"]),
+                  gaps=[{"text": "t", "cites": ["FND-0004", "EVD-0003"], "evidence_needed": "e"}])
+    d = _pack_data(pp.render_pack_html(w, p, "r", "d", embed=embed))
+    assert "EVD-0003" in d["evidence"] and "FND-0004" in d["findings"]
+    assert set(d["findings"]["FND-0004"]) != STUB_KEYS                    # a full record, not a label stub
+    assert pp.coverage(w, p)["cited"] == 1                                 # gap cites still do not count
+    assert pp.embedded_ids(p) == (["FND-0002", "FND-0004"], ["EVD-0003"])

@@ -13,7 +13,8 @@ from ..classify import TIER_LABELS
 from ..handling import check_handling, unsigned_warning
 from ..register.check import HOC_TIERS, norm_hoc
 from ..select import _filter, select_args
-from ..workspace import downgraded_findings, linked_evidence, load_ws, record_pack_check
+from ..util import REFS
+from ..workspace import downgraded_findings, linked_evidence, load_ws, outputs_dir, record_pack_check
 from .. import lint
 from . import profiles
 from .profiles import top_rated_of
@@ -34,16 +35,18 @@ KINDS = {
     "para": {"req": ["text"], "opt": []},
     "check": {"req": ["text"], "opt": ["hold_point", "when"]},
     "question": {"req": ["question", "why"], "opt": ["answer", "good_evidence", "to"]},
-    "recommendation": {"req": ["change", "indicator", "hoc_tier"], "opt": ["barrier", "owner", "by_when", "co_owner"], "cite": True},
+    "recommendation": {"req": ["change", "indicator", "hoc_tier"],
+                       "opt": ["barrier", "owner", "by_when", "co_owner", "why_not_stronger", "barrier_id"], "cite": True},
     "decision": {"req": ["decision"], "opt": ["options", "trade_offs", "owner", "by_when"]},
     "indicator": {"req": ["name", "measure"], "opt": ["deterioration", "owner"]},
     "card": {"req": ["title", "what_happened", "warning_signs", "good_looks_like"],
              "opt": ["why_made_sense", "organisation_changing", "discussion"], "cite": True},
     "scenario": {"req": ["situation", "prompts"], "opt": []},
     "table": {"req": ["columns", "rows"], "opt": ["row_cites", "row_supporting_cites", "finding_notes"]},
-    "test_point": {"req": ["requirement", "sample", "conformity_evidence"], "opt": ["red_flags"], "cite": True},
+    "test_point": {"req": ["requirement", "sample", "conformity_evidence"], "opt": ["red_flags", "clause"], "cite": True},
     "module": {"req": ["title", "objective", "content"], "opt": ["audience", "duration", "assessment"]},
-    "barrier": {"req": ["barrier", "failure_mode", "hoc_tier"], "opt": ["type", "fix", "owner", "state", "indicator"],
+    "barrier": {"req": ["barrier", "failure_mode", "hoc_tier"], "opt": ["type", "fix", "owner", "state", "indicator",
+                                                                      "barrier_id"],
                 "cite": True},
     "timeline": {"req": ["events"], "opt": []},
     "graph": {"req": ["nodes", "edges"], "opt": []},
@@ -108,7 +111,7 @@ CITE_FIELDS = ["cites", "row_cites", "row_supporting_cites", "supporting_cites"]
 STRENGTHS = ("direct", "corroborated", "inferred")
 BARRIER_STATES = ("absent", "degraded", "defeated", "worked partly", "worked")
 TIME_RX = re.compile(r"(?:[01]\d|2[0-3]):[0-5]\d")          # used with fullmatch: "14:05", never "14:05\n"
-GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group", "lint_ok",
+GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group", "lint_ok", "learning", "clauses",
                   "comparator_refs")
 
 
@@ -145,6 +148,28 @@ def cited_ids(pack) -> tuple:
         if x not in bucket:
             bucket.append(x)
     return fids, eids
+
+
+def gap_ids(pack) -> tuple:
+    """(finding IDs, evidence IDs) cited by the top-level gaps. They are not citations for coverage, but the page
+    embeds their records so their buttons open."""
+    fids, eids = [], []
+    gaps = pack.get("gaps") if isinstance(pack.get("gaps"), list) else []
+    for g in gaps:
+        cites = g.get("cites") if isinstance(g, dict) else None
+        for x in cites if isinstance(cites, list) else []:
+            if not isinstance(x, str):
+                continue
+            bucket = fids if x.startswith("FND-") else eids
+            if x not in bucket:
+                bucket.append(x)
+    return fids, eids
+
+
+def embedded_ids(pack) -> tuple:
+    """cited_ids plus gap_ids: every ID the page renders as a citation button."""
+    (f1, e1), (f2, e2) = cited_ids(pack), gap_ids(pack)
+    return list(dict.fromkeys(f1 + f2)), list(dict.fromkeys(e1 + e2))
 
 
 def with_item_ids(pack) -> dict:
@@ -469,16 +494,97 @@ def _check_comparator_refs(pack, w, bad, warn):
                         bad(ip, f"{x} is not in comparator.json")
 
 
+LR_RX = re.compile(r"LR-\d{2,}")
+WEAK_HOC = ("administrative", "training")
+NO_REGISTER = "learning ids not verified: no register"
+CROSSWALK = REFS / "standards-crosswalk.json"
+_CLAUSE_IDS = []
+
+
+def clause_ids() -> set:
+    """Every requirement id in references/standards-crosswalk.json (frameworks.<fw>.requirements[].id), read once."""
+    if not _CLAUSE_IDS:
+        d = json.loads(CROSSWALK.read_text(encoding="utf-8"))
+        _CLAUSE_IDS.append({r["id"] for f in d.get("frameworks", {}).values() for r in f.get("requirements", [])
+                            if isinstance(r, dict) and isinstance(r.get("id"), str)})
+    return _CLAUSE_IDS[0]
+
+
+def register_ids(register) -> set:
+    """The lr_id of every entry in a loaded register: {"entries": [...]} or a bare list."""
+    entries = register.get("entries") if isinstance(register, dict) else register
+    return {e["lr_id"] for e in (entries if isinstance(entries, list) else [])
+            if isinstance(e, dict) and isinstance(e.get("lr_id"), str)}
+
+
+def _check_links(d, p, bad, soft, known_lr, seen_lr):
+    """Optional on every item and bottom-line entry: learning (a register LR id) and clauses (crosswalk ids). An id
+    of the right shape that the register or crosswalk does not know is soft: a warning, or a problem when strict."""
+    if "learning" in d:
+        v = d["learning"]
+        if not (isinstance(v, str) and LR_RX.fullmatch(v)):
+            bad(f"{p}.learning", "must be LR- followed by two or more digits, e.g. LR-01")
+        else:
+            seen_lr.append(v)
+            if known_lr is not None and v not in known_lr:
+                soft(f"{p}.learning", f"unknown learning {v}")
+    if "clauses" in d:
+        v = d["clauses"]
+        if not isinstance(v, list) or not v or not all(_text(x) for x in v):
+            bad(f"{p}.clauses", "must be a non-empty list of standards-crosswalk ids, e.g. ISO45001-10.2")
+        else:
+            for k, x in enumerate(v):
+                if x not in clause_ids():
+                    soft(f"{p}.clauses[{k}]", f"unknown clause {x}")
+
+
+def _check_gaps_limits(pack, w, bad):
+    """Top level, optional: gaps [{text, cites, evidence_needed}] and limits [text] (L3-14)."""
+    gaps = pack.get("gaps")
+    if gaps is not None:
+        if not isinstance(gaps, list) or not gaps:
+            bad("gaps", "must be a non-empty list of {text, cites, evidence_needed}")
+        else:
+            F, E = {f["id"] for f in w["findings"]}, set(w.get("evidence", {}))
+            for i, g in enumerate(gaps):
+                gp = f"gaps[{i}]"
+                if not isinstance(g, dict):
+                    bad(gp, "must be an object with text, cites and evidence_needed")
+                    continue
+                for f in ("text", "evidence_needed"):
+                    if not _text(g.get(f)):
+                        bad(f"{gp}.{f}", "required")
+                if "cites" in g:
+                    if not _id_list(g["cites"]):
+                        bad(f"{gp}.cites", "must be a list of Finding or Evidence IDs")
+                    else:
+                        for k, x in enumerate(g["cites"]):
+                            if x not in (F if x.startswith("FND-") else E):
+                                bad(f"{gp}.cites[{k}]", f"{x} is not in this workspace")
+                for k in g:
+                    if k not in ("text", "cites", "evidence_needed"):
+                        bad(f"{gp}.{k}", "unknown key; use text, cites, evidence_needed")
+    lim = pack.get("limits")
+    if lim is not None and (not isinstance(lim, list) or not lim or not all(_text(x) for x in lim)):
+        bad("limits", "must be a non-empty list of text")
+
+
 def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register=None) -> Result:
-    """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings). Pack-profile
-    violations, padding and scope drift are warnings, and problems when strict (Ruling P3-5). register: Task 11."""
+    """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings). register: a
+    loaded Learnings Register, against which learning ids are checked (P3-12). strict (Ruling P3-5): pack-profile
+    violations, padding, scope drift, an unknown learning id and an unknown clause are problems, not warnings."""
     P, W = [], []
+    known_lr = register_ids(register) if register is not None else None
+    seen_lr = []
 
     def bad(path, msg):
         P.append(f"{path}: {msg}")
 
     def warn(path, msg):
         W.append(f"{path}: {msg}")
+
+    def soft(path, msg):
+        (bad if strict else warn)(path, msg)
 
     if not isinstance(pack, dict):
         return Result(["(root): a pack must be a JSON object"], [], {})
@@ -515,6 +621,7 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
         if not (_id_list(e.get("cites")) and e.get("cites")):
             bad(f"bottom_line[{i}].cites", "every bottom-line entry needs at least one Finding or Evidence ID")
         _check_extras(e, f"bottom_line[{i}]", bad)
+        _check_links(e, f"bottom_line[{i}]", bad, soft, known_lr, seen_lr)
     _check_scope(pack.get("scope"), w, bad)
     _check_notes(pack, w, bad)
 
@@ -556,11 +663,19 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
                     bad(f"{ip}.id", f"duplicate id {iid!r}")
                 seen.add(iid)
             _check_item(it, ip, bad, warn)
+            if isinstance(it, dict):
+                _check_links(it, ip, bad, soft, known_lr, seen_lr)
+                if (it.get("kind") == "recommendation" and _text(it.get("hoc_tier"))
+                        and norm_hoc(it["hoc_tier"]) in WEAK_HOC and not _text(it.get("why_not_stronger"))):
+                    warn(ip, f"recommendation {iid or ip} is administrative or training only: say why_not_stronger")
             if (isinstance(it, dict) and it.get("kind") == "card" and not it.get("organisation_changing")
                     and t1_pack):
                 warn(f"card {iid or ip}", "add organisation_changing (what the organisation is changing)")
     if pack.get("pack") == "investigator-coach":
         _check_follow_up(secs, bad)
+    _check_gaps_limits(pack, w, bad)
+    if seen_lr and known_lr is None:
+        W.append(NO_REGISTER)
 
     F = {f["id"] for f in w["findings"]}
     E = set(w.get("evidence", {}))
@@ -630,12 +745,41 @@ def load_pack(path) -> tuple:
         return None, f"(file): cannot read {path} as UTF-8 JSON ({e.__class__.__name__})"
 
 
+def load_register(a):
+    """(register, None), (None, None) when there is none, or (None, a problem line). From --register FILE, else
+    auto-detected at <run>/outputs/learnings-register.json (P3-12); an auto-detected file that cannot be read is
+    reported with a warning and ignored, so it never blocks a pack."""
+    path = getattr(a, "register", None)
+    if not path:
+        auto = outputs_dir(a.ws) / "learnings-register.json"
+        if not auto.is_file():
+            return None, None
+        reg, err = _read_register(auto)
+        if err:
+            print(f"warning: {err}; ignored")
+        return reg, None
+    return _read_register(path)
+
+
+def _read_register(path):
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8")), None
+    except FileNotFoundError:
+        return None, f"(register): {path} not found"
+    except json.JSONDecodeError as e:
+        return None, f"(register): {path} is not valid JSON (line {e.lineno} column {e.colno}: {e.msg})"
+    except (OSError, UnicodeDecodeError, RecursionError) as e:
+        return None, f"(register): cannot read {path} as UTF-8 JSON ({e.__class__.__name__})"
+
+
 def _checked(a):
     """Load the workspace and pack, print warnings, exit listing every problem; else return (w, pack, result)."""
     w = load_ws(a.ws)
     pack, err = load_pack(a.pack)
-    opts = dict(lint.cli_options(a), strict=getattr(a, "strict", False))
-    res = Result([err], [], {}) if err else check_pack(pack, w, **opts)
+    register, rerr = (None, None) if err else load_register(a)
+    err = err or rerr
+    res = Result([err], [], {}) if err else check_pack(pack, w, **lint.cli_options(a),
+                                                        strict=bool(getattr(a, "strict", False)), register=register)
     if not err:
         res.warnings.extend(unsigned_warning(pack, w, a.pack, a.ws))
     if not err and isinstance(pack, dict) and isinstance(pack.get("pack"), str):

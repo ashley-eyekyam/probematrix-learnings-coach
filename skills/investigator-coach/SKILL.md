@@ -46,3 +46,5 @@ Sections → kinds:
 | 5 Training use | `scenario` |
 
 `pack` writes `follow-up.json` from the follow-up table (one entry per finding), ready to paste back into the investigation. Use `data_quality` for export problems and `exclusions` for findings left out on purpose. When one finding in a shared row needs its own note, add `finding_notes` (`{"FND-…": "note"}`) to the table.
+
+**Follow-up contract** (`check-pack` enforces it): the first cell of each row holds one or more Finding IDs (comma-separated), and a finding may appear in only one row. `follow-up.json` maps each finding ID to `evidence_to_collect`, `key_questions`, `suggested_interviews` and `causal_hypothesis` from its row, plus `note` when `finding_notes` gives one; every `finding_notes` key must appear in the table's first column.

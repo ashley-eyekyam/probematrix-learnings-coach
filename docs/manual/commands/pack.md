@@ -6,6 +6,7 @@ Turns a learning pack JSON into the files people read:
 
 - `<pack>.html`: a self-contained page that works offline and prints well. Each cited ID opens the finding or evidence it refers to, the findings in scope that the pack does not cite are listed, and the footer carries the status phrase and the ProbeMatrix credit;
 - `<pack>.md`: the same content as Markdown, for email, a wiki or a document.
+- `gaps.json`, when the pack has `gaps`: the run's outputs folder collects every pack's evidence gaps there for the investigator. Each run replaces this pack's entries and keeps the other packs'. It is always written to the run's outputs folder, even with `--out`.
 
 It first runs the full [check-pack](check-pack.md). If the check finds a problem, nothing is written. A pack that has not been signed off renders with a **DRAFT** label.
 
