@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>$title</title>
+<style>
+:root{--bg:#fff;--fg:#1b2733;--mut:#5b6b7a;--line:#d5dde5;--acc:#0b3954;--draft:#a15c00}
+@media (prefers-color-scheme:dark){:root{--bg:#10171e;--fg:#e6edf3;--mut:#9aa9b8;--line:#2b3947;--acc:#7cc4ee;--draft:#f0b050}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px}
+h1{font-size:22px;color:var(--acc)}
+.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{font-size:13px;color:var(--mut)}
+.draft{color:var(--draft);font-weight:600}
+a{color:var(--acc)}
+footer{margin-top:32px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<main>
+<h1>$title</h1>
+<p>$status_phrase. Statuses show the effective review state: DRAFT until a person has signed the file off.</p>
+<div class="wrap">
+<table>
+<thead><tr><th>Pack</th><th>Audience</th><th>Coverage</th><th>Formats</th><th>Date</th><th>Status</th><th>Open</th></tr></thead>
+<tbody>
+$rows
+</tbody>
+</table>
+</div>
+<footer>$status_phrase &middot; $brand</footer>
+</main>
+</body>
+</html>

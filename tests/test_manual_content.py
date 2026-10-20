@@ -22,7 +22,8 @@ SKILL_HEADINGS = ["What it is for", "How to start it", "What it needs", "Engine 
 # Pages Task 13 writes (they exist once both tasks are merged).
 SUBCOMMANDS = ["ingest", "profile", "classify", "select", "causal", "timeline", "interfaces", "dashboard",
                "check-register", "check-language", "register-xlsx", "status", "run-path", "check-samples",
-               "check-pack", "pack", "causal-item", "sign-off", "scan-names"]
+               "check-pack", "pack", "causal-item", "sign-off", "scan-names", "setup", "check-all", "render-all", "index",
+               "dossier-index"]
 T13_PAGES = {"Home.md", "Commands.md", "Developer-tools.md"} | {f"commands/{c}.md" for c in SUBCOMMANDS}
 # Flags of other programs the pages quote (pip).
 OTHER_FLAGS = {"--user"}
