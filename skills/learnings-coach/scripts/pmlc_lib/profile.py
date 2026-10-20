@@ -3,17 +3,66 @@ from __future__ import annotations
 
 import collections
 import datetime as dt
+import json
 from pathlib import Path
 
 from . import BRAND, LEVEL_NAMES
 from .analysis.timeline import _parse_dates
 from .handling import _norm_status, is_edited
 from .ingest.xlsx import personal_fields_present, REGULATOR_RX
-from .util import _s
+from .util import _s, REFS
 from .workspace import load_ws
 
 
 # ----------------------------------------------------------------------------- profile
+
+TIER_IDS = ("T1", "T2", "T3", "T4", "T5")
+
+
+def _hfacs_levels() -> dict:
+    return json.loads((REFS / "hfacs-codes.json").read_text(encoding="utf-8"))["levels"]
+
+
+def _has_dated_text(w) -> bool:
+    texts = [w.get("incident", {}).get("narrative", "")]
+    texts += [_s(v) for f in w["findings"] for v in f.values() if isinstance(v, str)]
+    texts += [_s(e.get("description")) for e in w.get("evidence", {}).values()]
+    return any(_parse_dates(t) for t in texts if t)
+
+
+def _thin_export_flags(w, ws) -> list:
+    """Thin-export flags (P3-8). F99 and T9 shares and tier counts need clusters.json."""
+    F, E = w["findings"], w.get("evidence", {})
+    out = []
+    if not E:
+        out.append('No Evidence Links sheet: learnings rest on findings only; use evidence_strength "inferred"')
+    if not w.get("incident", {}).get("narrative", "").strip():
+        out.append("No narrative text")
+    if F and not _has_dated_text(w):
+        out.append("No dated text: timelines will show order only")
+    cp = Path(ws) / "clusters.json"
+    if not F:
+        return out
+    if not cp.exists():
+        out.append("Run classify to check the F99 and T9 shares")
+        return out
+    per = json.loads(cp.read_text(encoding="utf-8")).get("findings", {})
+    n = len(F)
+    f99 = sum(1 for f in F if "F99" in per.get(f["id"], {}).get("F", []))
+    t9 = sum(1 for f in F if "T9" in per.get(f["id"], {}).get("T", []))
+    if f99 * 10 > n:
+        out.append(f"High F99 share: {f99} of {n} findings unmapped (over 10%)")
+    if t9 * 4 > n:
+        out.append(f"High T9 share: {t9} of {n} findings touch unresolved roles (over 25%)")
+    tc = {t: sum(1 for f in F if t in per.get(f["id"], {}).get("T", [])) for t in TIER_IDS}
+    empty = [t for t in TIER_IDS if tc[t] == 0]
+    thin = [f"{t} ({tc[t]})" for t in TIER_IDS if 1 <= tc[t] <= 4]
+    if empty:
+        out.append("Empty tiers: " + ", ".join(empty))
+    if thin:
+        out.append("Thin tiers: " + ", ".join(thin))
+    return out
+
 
 def cmd_profile(a):
     w = load_ws(a.ws)
@@ -42,6 +91,9 @@ def cmd_profile(a):
     L.append("## By level\n\n| Level | Name | Findings |\n|---|---|---:|")
     for k in sorted(x for x in lvl if x is not None):
         L.append(f"| {k} | {LEVEL_NAMES.get(k, '')} | {lvl[k]} |")
+    L.append("\n## HFACS levels\n\n| Level | Name | Definition | Findings |\n|---|---|---|---:|")
+    for k, d in sorted(_hfacs_levels().items(), key=lambda kv: int(kv[0])):
+        L.append(f"| {k} | {d['name']} | {d['definition']} | {lvl.get(int(k), 0)} |")
     L.append("\n## By rating (higher = stronger causal contribution)\n\n| Rating | Findings |\n|---|---:|")
     for k in sorted(x for x in rat if x is not None):
         L.append(f"| {k} | {rat[k]} |")
@@ -57,7 +109,7 @@ def cmd_profile(a):
     L.append("\n## Evidence types\n\n| Type | Items |\n|---|---:|")
     for k, c in etypes.most_common():
         L.append(f"| {k or '(blank)'} | {c} |")
-    flags = []
+    flags = _thin_export_flags(w, a.ws)
     for col, lab in (("evidence_to_collect", "Evidence to Collect"), ("key_questions", "Key Questions"),
                      ("suggested_interviews", "Suggested Interviews"), ("causal_hypothesis", "Causal Hypothesis")):
         if n and not any(f[col] for f in F):

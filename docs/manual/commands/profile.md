@@ -2,7 +2,7 @@
 
 ## What it does
 
-Writes a one-page Markdown summary of the investigation: the incident fields, how many findings sit at each HFACS level and rating, the sub-categories, the most frequent factors, the roles named most often, the kinds of evidence, and a list of **data-quality flags**: things to know before you write any learning (for example, that no finding has been reviewed by a person yet).
+Writes a one-page Markdown summary of the investigation: the incident fields, how many findings sit at each HFACS level and rating, an **HFACS levels** table (level, name, definition, findings), the sub-categories, the most frequent factors, the roles named most often, the kinds of evidence, and a list of **data-quality flags**: things to know before you write any learning (for example, that no finding has been reviewed by a person yet).
 
 ## When to use it
 
@@ -91,6 +91,21 @@ python3 $E profile $WS --top 3
 - Investigation Status is 'in_progress'; label outputs as draft learnings.
 - Regulator involvement is mentioned but "Reportable to Regulator" is "No": confirm reporting status
 ```
+
+**Thin-export flags.**
+
+The data-quality flags also warn when an export is too thin to support every audience. Each line is one of:
+
+- `No Evidence Links sheet: learnings rest on findings only; use evidence_strength "inferred"`
+- `No narrative text`
+- `No dated text: timelines will show order only`
+- `High F99 share: {x} of {n} findings unmapped (over 10%)`
+- `High T9 share: {x} of {n} findings touch unresolved roles (over 25%)`
+- `Run classify to check the F99 and T9 shares` (the two share checks and the tier checks need `clusters.json`)
+- `Empty tiers: T2, T3` (tiers with no findings)
+- `Thin tiers: T5 (1)` (tiers with 1 to 4 findings)
+
+On the Hazira sample only `Thin tiers: T5 (1)` fires.
 
 ## Common problems
 
