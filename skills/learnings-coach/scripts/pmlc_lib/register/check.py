@@ -249,7 +249,8 @@ def cmd_check_register(a):
     problems, warnings, st = res.problems, res.warnings, res.stats
     name = Path(a.register).name
     try:
-        record_pack_check(a.ws, name[:-5] if name.endswith(".json") else name, a.register, not problems, len(problems))
+        record_pack_check(a.ws, name[:-5] if name.endswith(".json") else name, a.register, not problems, len(problems),
+                          strict=bool(getattr(a, "strict", False)))
     except OSError:
         pass
     if getattr(a, "json", False):

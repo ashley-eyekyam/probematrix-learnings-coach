@@ -48,7 +48,7 @@ python3 $E export-actions $WS --profile generic --names names.txt
 ## Common problems
 
 - **Exit 1 with a name scan hit.** A personal name is in a pack or register text. Remove it (roles only), then run again.
-- **Running it again overwrites the two files.** They hold nothing your organisation entered, because the owner columns are always blank.
+- **"already exists and may hold your organisation's entries".** The command never overwrites `actions.csv` or `actions.json`, because your organisation may have filled in the owner, due-date or status columns. Move the old files, or pass a new `--out-dir`. Exit code 1; nothing is written.
 
 ## Related
 

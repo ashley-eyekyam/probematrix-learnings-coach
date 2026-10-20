@@ -69,7 +69,7 @@ def cmd_setup(a):
             ing += [flag, v]
     ing += (["--force"] if a.force else []) + (["--strict"] if a.strict else [])
     steps = [("ingest", ing)]
-    for name in ("profile", "classify", "causal", "timeline", "interfaces"):
+    for name in ("classify", "profile", "causal", "timeline", "interfaces"):   # classify first: profile reads clusters.json
         steps.append((name, None))
     for name, argv in steps:
         if argv is None:
@@ -126,7 +126,7 @@ def _check_all_results(a):
                         "detail": [x for x in se.splitlines() if x.strip()]})
     reg = out / REGISTER_NAME
     if reg.is_file():
-        code, so, se = _run(["check-register", str(ws), str(reg)])
+        code, so, se = _run(["check-register", str(ws), str(reg)] + (["--strict"] if a.strict else []))
         results.append({"file": reg.name, "kind": "register", "ok": code == 0, "problems": _problem_count(code, so, se),
                         "detail": [x for x in so.splitlines() if x.startswith(" - ")]})
     return results

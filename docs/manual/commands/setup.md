@@ -2,7 +2,7 @@
 
 ## What it does
 
-Runs the first six steps of a run in one command: [ingest](ingest.md), [profile](profile.md) (written to `profile.md` in the workspace), [classify](classify.md), [causal](causal.md), [timeline](timeline.md) and [interfaces](interfaces.md). It stops at the first step that fails and prints one summary: the finding and evidence counts, the unresolved roles, the profile's data-quality flags, the workspace path and the next step.
+Runs the first six steps of a run in one command: [ingest](ingest.md), [classify](classify.md), [profile](profile.md) (written to `profile.md` in the workspace, after classify so it carries the F99, T9 and tier flags), [causal](causal.md), [timeline](timeline.md) and [interfaces](interfaces.md). It stops at the first step that fails and prints one summary: the finding and evidence counts, the unresolved roles, the profile's data-quality flags, the workspace path and the next step.
 
 ## When to use it
 

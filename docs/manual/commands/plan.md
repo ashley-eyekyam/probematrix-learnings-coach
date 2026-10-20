@@ -21,8 +21,10 @@ Each step gives:
 A step is **done** only when its output is current:
 
 - an engine step, when its file exists and [status](status.md) says it is current. After a re-ingest of a changed export, classify shows as todo again;
-- a pack step, when `<run>/outputs/<pack>.json` exists and its last [check-pack](check-pack.md) passed on the file as it is now. Editing the pack after the check makes the step todo again;
-- the register step, when the register passed check-register on its current content.
+- a pack step, when `<run>/outputs/<pack>.json` exists and its last [check-pack](check-pack.md) passed **in strict mode** (the step's gate) on the file as it is now. A pass that was not strict does not count, and editing the pack after the check makes the step todo again;
+- the register step, when the register passed check-register in strict mode on its current content.
+
+A later check that is not strict, on unchanged content, keeps an earlier strict pass. A check recorded by an older engine says nothing about strictness, so the step reads todo until you check it again.
 
 A preset step whose skill has not been released yet is listed as **planned for v2.0, Phase N** and skipped. It is not an error.
 
@@ -115,7 +117,7 @@ When everything is done, `--next` prints "The plan is complete: every step is do
 - **"cycle: a -> b -> a".** Two skills' manifests each need what the other makes. Fix the `requires` lists in their `skill.json`.
 - **"nothing produces '…', which … requires".** A `requires` entry names something no engine command or released skill makes. Check the name against `references/artefacts.json`.
 - **"no plan in …".** `--next` needs a plan made first with `--workflow`, `--audiences` or `--skills`.
-- **A step stays todo after you wrote its pack.** Run [check-pack](check-pack.md) on it: a step is done only after a passing check of the file as it is now.
+- **A step stays todo after you wrote its pack.** Run [check-pack](check-pack.md) on it in strict mode (or [check-all](check-all.md) in strict mode): a step is done only after a passing strict check of the file as it is now.
 - **[status](status.md) shows plan.json as stale.** Something in the workspace changed since the plan was made. Run plan again, or `--next`.
 
 ## Related

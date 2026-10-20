@@ -22,7 +22,7 @@ for the rest. Read [`learning-principles.md`](learning-principles.md) before wri
 - **Only an .xlsx was given** (no workspace yet, or the skill was invoked directly): run `PMLC setup` silently,
   then continue with the skill. Do not send the user back to the hub.
 
-      PMLC setup <export.xlsx> --slug <site>-<event> [--date YYYY-MM-DD]   # ingest, profile, classify, causal, timeline, interfaces
+      PMLC setup <export.xlsx> --slug <site>-<event> [--date YYYY-MM-DD]   # ingest, classify, profile, causal, timeline, interfaces
 
   Name the site and event in plain lowercase words joined by hyphens. Use the corrected incident date when the
   profile flags the summary-sheet date. If the export folder is read-only, add `--root <a writable folder>`.

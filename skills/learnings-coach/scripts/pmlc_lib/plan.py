@@ -120,10 +120,10 @@ def _file(ws: Path, rel: str) -> Path:
     return outputs_dir(ws).parent / rel
 
 
-def _checked(manifest, path: Path) -> bool:
+def _checked(manifest, path: Path, strict: bool = False) -> bool:
     if not path.is_file():
         return False
-    return check_current(manifest, path)
+    return check_current(manifest, path, strict=strict)
 
 
 def _step(key, node, ctx) -> dict:
@@ -165,7 +165,8 @@ def _step(key, node, ctx) -> dict:
     if m["share_default"] in ("external", "public"):
         st["gate"].append("approved review")
     st["commands"] = cmds
-    if "<" not in pack and _checked(manifest, outputs_dir(ws) / f"{pack}.json"):
+    strict = any("--strict" in g for g in st["gate"])     # the gate the plan prints is the one done-detection needs
+    if "<" not in pack and _checked(manifest, outputs_dir(ws) / f"{pack}.json", strict=strict):
         st["status"] = "done"
     return st
 

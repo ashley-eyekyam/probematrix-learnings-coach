@@ -134,14 +134,14 @@ def test_export_actions_round_trip(rund, tmp_path):
     assert back == flat and len(rows) == 5  # the default register's two recommendations are added
 
 
-def test_export_actions_profile_rename_and_unverified_warning(rund):
+def test_export_actions_profile_rename_and_unverified_warning(rund, tmp_path):
     r = cli("export-actions", str(rund), "--profile", "enablon")
     assert r.returncode == 0
     assert ("profile 'enablon' is an unverified mapping: check the column names against your system before "
             "importing") in r.stderr
     head = (rund.parent / "outputs" / "actions.csv").read_text(encoding="utf-8").splitlines()[0]
     assert head != "id,lr_id" and "Action Owner" in head and "owner" not in head.split(",")
-    g = cli("export-actions", str(rund))
+    g = cli("export-actions", str(rund), "--out-dir", str(tmp_path / "generic"))
     assert g.stderr == ""
 
 
@@ -203,3 +203,23 @@ def test_export_actions_rejects_non_pack_and_accepts_co_owner(rund, tmp_path):
     p = tmp_path / "pk.json"
     p.write_text(json.dumps(pk), encoding="utf-8")
     assert "unknown field" not in cli("check-pack", str(rund), str(p)).stdout.lower()
+
+
+def test_export_actions_refuses_overwrite(rund, tmp_path):
+    """I-4 (ruling X38): the actions files are the organisation's to fill in, so a second run never overwrites them."""
+    out = rund.parent / "outputs"
+    assert cli("export-actions", str(rund)).returncode == 0
+    filled = (out / "actions.csv").read_bytes().replace(b",,,,,", b",Maintenance Manager,2030-01-01,,,", 1)
+    (out / "actions.csv").write_bytes(filled)
+    before = {n: (out / n).read_bytes() for n in ("actions.csv", "actions.json")}
+    r = cli("export-actions", str(rund))
+    assert r.returncode == 1 and "Traceback" not in r.stderr
+    assert (f"{out / 'actions.csv'} already exists and may hold your organisation's entries; move it or pass a new "
+            "--out-dir") in r.stderr
+    assert {n: (out / n).read_bytes() for n in before} == before
+    (out / "actions.csv").unlink()                         # the JSON alone is refused too
+    r = cli("export-actions", str(rund))
+    assert r.returncode == 1 and f"{out / 'actions.json'} already exists" in r.stderr
+    assert not (out / "actions.csv").exists() and (out / "actions.json").read_bytes() == before["actions.json"]
+    assert cli("export-actions", str(rund), "--out-dir", str(tmp_path / "new")).returncode == 0
+    assert (tmp_path / "new" / "actions.csv").is_file()

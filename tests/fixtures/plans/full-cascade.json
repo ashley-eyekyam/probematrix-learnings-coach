@@ -22,6 +22,20 @@
   },
   {
    "n": 2,
+   "skill": "engine:classify",
+   "status": "done",
+   "planned_for": null,
+   "produces": "clusters",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC classify <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 3,
    "skill": "learning-clusters",
    "status": "todo",
    "planned_for": null,
@@ -36,20 +50,6 @@
    "gate": [
     "check-pack --strict"
    ]
-  },
-  {
-   "n": 3,
-   "skill": "engine:classify",
-   "status": "done",
-   "planned_for": null,
-   "produces": "clusters",
-   "mode": null,
-   "when": null,
-   "commands": [
-    "PMLC classify <ws>"
-   ],
-   "questions": [],
-   "gate": []
   },
   {
    "n": 4,
@@ -230,5 +230,5 @@
    "gate": []
   }
  ],
- "next": 2
+ "next": 3
 }

@@ -107,6 +107,11 @@ def cmd_export_actions(a):
     if a.register and not reg.is_file():
         sys.exit(f"No Learnings Register at {reg}")
     entries = load_register_entries(reg) if reg.is_file() else []
+    d = Path(a.out_dir) if a.out_dir else out_dir
+    for target in (d / "actions.csv", d / "actions.json"):        # the organisation fills these in (ruling X38)
+        if target.exists():
+            sys.exit(f"{target} already exists and may hold your organisation's entries; "
+                     f"move it or pass a new --out-dir")
     rows = collect_actions(_slug(ws), docs, entries)
     cmap = {c: prof["columns"].get(c, c) for c in ACTION_COLUMNS}
     jrows = [{cmap[c]: r[c] for c in ACTION_COLUMNS} for r in rows]
@@ -125,7 +130,6 @@ def cmd_export_actions(a):
             print(f"name scan: {len(hits)} hit(s) in the actions ({', '.join(hits)}); nothing written. "
                   f"Fix the pack or register text and run again.", file=sys.stderr)
             sys.exit(1)
-    d = Path(a.out_dir) if a.out_dir else out_dir
     d.mkdir(parents=True, exist_ok=True)
     (d / "actions.csv").write_bytes(csv_text.encode("utf-8"))
     (d / "actions.json").write_text(json_text, encoding="utf-8")

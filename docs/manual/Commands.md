@@ -88,7 +88,7 @@ pmlc 2.0.0a4
 
 | Command | What it does |
 |---|---|
-| [setup](commands/setup.md) | Runs ingest, profile, classify, causal, timeline and interfaces in one go |
+| [setup](commands/setup.md) | Runs ingest, classify, profile, causal, timeline and interfaces in one go |
 | [check-all](commands/check-all.md) | Checks every pack and the register in the outputs folder |
 | [render-all](commands/render-all.md) | Renders every pack that passed its check, and the register |
 | [index](commands/index.md) | Writes the outputs front page, one row per pack |

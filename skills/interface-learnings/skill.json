@@ -10,6 +10,7 @@
   },
   "requires": [
     "workspace",
+    "clusters",
     "interfaces"
   ],
   "optional_inputs": [
