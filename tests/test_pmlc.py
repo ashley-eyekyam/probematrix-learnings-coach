@@ -2311,3 +2311,94 @@ def test_dashboard_embed_summary_leaks_no_quotes(ws, tmp_path):
         for form in (m, json.dumps(m)[1:-1], html.escape(m), html.escape(m, quote=False), pmlc.embed_json(m)[1:-1]):
             assert form not in t, form
     assert "MARK-" not in t.replace("&lt;", "<")
+
+
+# ----------------------------------------------------------------------------- Task 17: org data on the dashboard
+
+def _org_ws(ws, tmp_path):
+    """A private copy of the shared workspace, with two fixture packs whose items name learnings."""
+    import shutil
+    w = tmp_path / "ws"
+    shutil.copytree(ws, w)
+    out = w / "outputs"
+    out.mkdir(exist_ok=True)
+    for name, learns in (("Board brief", ["LR-01", "LR-01", ""]), ("Supervisor coach", ["LR-01"])):
+        (out / (name.lower().replace(" ", "-") + ".json")).write_text(json.dumps({
+            "pack": name, "sections": [{"id": "s", "items": [{"kind": "point", "text": "x", "learning": lr}
+                                                             if lr else {"kind": "point", "text": "y"}
+                                                             for lr in learns]}]}))
+    return w
+
+
+def _dash(w, tmp_path, reg=MINI_REG):
+    r = tmp_path / "r.json"
+    r.write_text(json.dumps(reg))
+    out = tmp_path / "d.html"
+    res = subprocess.run([sys.executable, str(PMLC), "dashboard", str(w), "--register", str(r), "--out", str(out)],
+                         capture_output=True, text=True)
+    assert res.returncode == 0, res.stderr
+    return out.read_text(encoding="utf-8"), res.stderr
+
+
+def test_dashboard_lr_pack_matrix(ws, tmp_path):
+    w = _org_ws(ws, tmp_path)
+    org = pmlc.org_data(w, MINI_REG["entries"])
+    assert org["lr_pack_matrix"]["packs"] == ["Board brief", "Supervisor coach"]
+    assert org["lr_pack_matrix"]["rows"] == [{"lr_id": "LR-01", "title": "Return to service without a test",
+                                              "cells": {"Board brief": 2, "Supervisor coach": 1}}]
+    t, _ = _dash(w, tmp_path)
+    assert "Learnings × packs" in t and "<th>Board brief</th>" in t
+
+
+def test_dashboard_reach_from_distribution(ws, tmp_path):
+    w = _org_ws(ws, tmp_path)
+    (w / "outputs" / "distribution.csv").write_text(
+        "pack,audience,channel,date,delivered_by_role,attendees,contractors_included\n"
+        "Board brief,Board,meeting,2026-10-01,CEO,12,yes\n"
+        "Board brief,Board,email,2026-10-02,CEO,3,no\n"
+        "Board brief,Board,email,,CEO,99,yes\n"
+        "Supervisor coach,Sup,,,,,\n")
+    org = pmlc.org_data(w, MINI_REG["entries"])
+    assert org["reach"] == {"Board brief": {"deliveries": 2, "attendees": 15, "contractors_included": 1}}
+    t, _ = _dash(w, tmp_path)
+    assert "2 deliveries · 15 attendees · 1 with contractors" in t and "Not yet delivered" in t
+
+
+def test_dashboard_response_from_adoption(ws, tmp_path):
+    w = _org_ws(ws, tmp_path)
+    (w / "outputs" / "adoption.csv").write_text("lr_id,title,response\nLR-01,x,Accepted\nLR-02,y,\n")
+    reg = json.loads(json.dumps(MINI_REG))
+    reg["entries"][0].update(capa_ref="CAPA-9", closure_evidence="photo", effectiveness_result="held")
+    org = pmlc.org_data(w, reg["entries"])
+    assert org["responses"] == {"LR-01": "accepted"}
+    assert org["closure"] == {"LR-01": {"capa_ref": "CAPA-9", "closure_evidence": "photo", "effectiveness_result": "held"}}
+    t, _ = _dash(w, tmp_path, reg)
+    d = _data_block(t)
+    assert d["responses"] == {"LR-01": "accepted"} and d["closure"]["LR-01"]["capa_ref"] == "CAPA-9"
+    assert "Response and closure" in t
+
+
+def test_dashboard_bad_org_file_warns_not_crashes(ws, tmp_path):
+    w = _org_ws(ws, tmp_path)
+    (w / "outputs" / "adoption.csv").write_text("lr_id,title,response\nLR-01,x,maybe\n")
+    t, err = _dash(w, tmp_path)
+    assert "adoption.csv row 2" in t and 'role="alert"' in t
+    assert "adoption.csv row 2" in err
+
+
+def test_dashboard_compliance_filter_count(ws, tmp_path):
+    w = _org_ws(ws, tmp_path)
+    reg = json.loads(json.dumps(MINI_REG))
+    reg["entries"].append(dict(reg["entries"][0], lr_id="LR-02", regulatory_touchpoint="Factories Act s.7A"))
+    t, _ = _dash(w, tmp_path, reg)
+    assert _data_block(t)["compliance_count"] == 1
+    assert "Needs legal / compliance review" in t
+
+
+def test_dashboard_no_org_files_shows_empty_states(ws, tmp_path):
+    w = _org_ws(ws, tmp_path)
+    for f in (w / "outputs").glob("*.json"):
+        f.unlink()
+    t, err = _dash(w, tmp_path)
+    assert "No pack item names a learning yet" in t and "No learning packs have been written yet" in t
+    assert err == ""

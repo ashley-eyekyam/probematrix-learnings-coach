@@ -66,6 +66,7 @@
     if (f.owner && d.entity !== f.owner) return false;
     if (f.level && d.level !== f.level) return false;
     if (f.hoc && (d.hoc || []).indexOf(f.hoc) < 0) return false;
+    if (f.compliance && !String(e.regulatory_touchpoint || "").trim()) return false;
     var q = String(f.q || "").trim().toLowerCase();
     if (q && haystack(e, data).indexOf(q) < 0) return false;
     return true;
@@ -136,7 +137,7 @@
   /* ------------------------------------------------------------------ browser rendering */
 
   var D, els = {}, pendingCtx = null;
-  var state = {lens: "all", priority: "", owner: "", level: "", hoc: "", q: ""};
+  var state = {lens: "all", priority: "", owner: "", level: "", hoc: "", compliance: false, q: ""};
   var GROUPS = [
     ["Causation", ["hfacs_level", "causal_role", "barrier", "hazard", "activity", "performance_mode"]],
     ["Organisation", ["owner_entity", "tiers", "org_system", "audiences", "learning_level", "formats", "ml_id"]],
@@ -361,7 +362,8 @@
       .concat([d.level ? chip(d.level) : null,
                chip("strongest: " + (d.strongest || "unclassified"), "hoc " + (d.strongest || "")),
                chip((e.finding_ids || []).length + " findings"), chip(evidenceIdsFor(e, D).length + " evidence"),
-               e.confidence ? chip("confidence " + e.confidence) : null]);
+               e.confidence ? chip("confidence " + e.confidence) : null,
+               (D.responses || {})[e.lr_id] ? chip("response: " + D.responses[e.lr_id], "resp") : null]);
     var body = h("div", {class: "lr-body"});
     if (msg) body.appendChild(h("div", {class: "callout"}, [h("b", {text: tierName(spec.tier) + ": "}), valueNode(msg)]));
     spec.order.forEach(function (sid) {
@@ -369,6 +371,15 @@
       if (s) body.appendChild(h("details", {class: "sec sec-" + sid, open: spec.open.indexOf(sid) >= 0},
         [h("summary", {text: s.title}), s.node]));
     });
+    var cl = (D.closure || {})[e.lr_id], resp = (D.responses || {})[e.lr_id];
+    if (resp || cl) {
+      var rows = [];
+      if (resp) rows.push(kv("Response", resp));
+      ["capa_ref", "closure_evidence", "effectiveness_result"].forEach(function (k) {
+        if (cl && cl[k]) rows.push(kv(humanKey(k).replace(/^./, function (c) { return c.toUpperCase(); }), cl[k])); });
+      body.appendChild(h("details", {class: "sec sec-response", open: false},
+        [h("summary", {text: "Response and closure"}), h("div", null, rows)]));
+    }
     return h("article", {class: "lr", id: "lr-" + e.lr_id}, [h("details", {class: "card"}, [
       h("summary", {class: "lr-head"}, [
         h("span", {class: "id", text: e.lr_id || "?"}), chip("P" + p, "p" + p), h("span", {class: "t", text: e.title || ""}),
@@ -411,6 +422,21 @@
     return h("label", null, [text, sel]);
   }
 
+  function complianceCount(data) {
+    return (data.entries || []).filter(function (e) { return String(e.regulatory_touchpoint || "").trim(); }).length;
+  }
+
+  function complianceChip() {
+    var b = h("button", {type: "button", class: "filter-chip", "aria-pressed": "false",
+                         text: "Needs legal / compliance review (" + complianceCount(D) + ")"});
+    b.addEventListener("click", function () {
+      state.compliance = !state.compliance;
+      b.setAttribute("aria-pressed", state.compliance ? "true" : "false");
+      applyFilters();
+    });
+    return b;
+  }
+
   function toolbar() {
     var dv = D.derived || {};
     function opts(values, fmt) {
@@ -430,6 +456,7 @@
       selectBox("owner", "Owner", opts(D.entries.map(function (e) { return (dv[e.lr_id] || {}).entity; }), entityName)),
       selectBox("level", "HFACS level", opts(D.entries.map(function (e) { return (dv[e.lr_id] || {}).level; }))),
       selectBox("hoc", "Control tier", opts([].concat.apply([], D.entries.map(function (e) { return (dv[e.lr_id] || {}).hoc || []; })))),
+      complianceChip(),
       h("label", null, ["Search", q]),
       h("span", {class: "btns"}, [
         h("button", {type: "button", text: "Expand all", onclick: function () { setOpen(true); }}),
@@ -461,7 +488,7 @@
 
   function applyFilters() {
     var spec = lensSpec(state.lens), visible = [];
-    var f = {tier: spec.tier, priority: state.priority, owner: state.owner, level: state.level, hoc: state.hoc, q: state.q};
+    var f = {tier: spec.tier, priority: state.priority, owner: state.owner, level: state.level, hoc: state.hoc, compliance: state.compliance, q: state.q};
     sortEntries(D.entries).forEach(function (e) {
       var ok = matches(e, D, f), card = document.getElementById("lr-" + e.lr_id);
       if (card) card.hidden = !ok;
@@ -471,10 +498,12 @@
   }
 
   function resetFilters() {
-    state = {lens: "all", priority: "", owner: "", level: "", hoc: "", q: ""};
+    state = {lens: "all", priority: "", owner: "", level: "", hoc: "", compliance: false, q: ""};
     els.panel.querySelectorAll(".toolbar select").forEach(function (s) { s.value = s.name === "lens" ? "all" : ""; });
     var q = els.panel.querySelector(".toolbar input");
     if (q) q.value = "";
+    var cc = els.panel.querySelector(".filter-chip");
+    if (cc) cc.setAttribute("aria-pressed", "false");
     renderCards();
   }
 
