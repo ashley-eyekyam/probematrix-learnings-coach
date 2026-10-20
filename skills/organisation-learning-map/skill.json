@@ -1,0 +1,31 @@
+{
+  "name": "organisation-learning-map",
+  "kind": "dissemination",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "clusters",
+    "register"
+  ],
+  "optional_inputs": [
+    "interfaces",
+    "adoption",
+    "distribution"
+  ],
+  "produces": {
+    "pack": "organisation-learning-plan",
+    "files": [
+      "outputs/organisation-learning-map.html"
+    ]
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

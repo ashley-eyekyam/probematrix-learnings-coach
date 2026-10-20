@@ -1,0 +1,37 @@
+{
+  "name": "board-brief",
+  "kind": "audience",
+  "audiences": [
+    "board"
+  ],
+  "scope": {
+    "tiers": [
+      "T5"
+    ],
+    "levels": [
+      3,
+      4
+    ],
+    "tags": [],
+    "min_rating": "top"
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "causal_graph",
+    "adoption",
+    "timeline"
+  ],
+  "produces": {
+    "pack": "board-brief",
+    "files": []
+  },
+  "share_default": "external",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

@@ -1,0 +1,289 @@
+[
+  {
+    "id": "frontline",
+    "label": "Frontline",
+    "typical_people": "operators, technicians, fitters, crews, security staff",
+    "controls": "how the task is done today",
+    "needs": "practical warning signs, what to stop and ask",
+    "tier": "T1",
+    "levels": [
+      1,
+      2
+    ],
+    "default_scope": {
+      "tiers": [
+        "T1"
+      ],
+      "levels": [],
+      "tags": []
+    },
+    "reading_level": "plain",
+    "skill": "frontline-learning-cards"
+  },
+  {
+    "id": "supervisors",
+    "label": "First-line supervisors",
+    "typical_people": "shift in-charges, maintenance supervisors, permit issuers, signatories",
+    "controls": "which work starts, which work is accepted",
+    "needs": "checks, hold points, what to refuse",
+    "tier": "T2",
+    "levels": [
+      2,
+      3
+    ],
+    "default_scope": {
+      "tiers": [
+        "T2"
+      ],
+      "levels": [],
+      "tags": []
+    },
+    "reading_level": "working",
+    "skill": "supervisor-coach"
+  },
+  {
+    "id": "managers",
+    "label": "Function managers",
+    "typical_people": "maintenance, operations, engineering, integrity, HSE managers",
+    "controls": "procedures, resources, priorities in a department",
+    "needs": "system changes, leading indicators",
+    "tier": "T3",
+    "levels": [
+      3
+    ],
+    "default_scope": {
+      "tiers": [
+        "T3"
+      ],
+      "levels": [],
+      "tags": []
+    },
+    "reading_level": "working",
+    "skill": "manager-coach"
+  },
+  {
+    "id": "site-leadership",
+    "label": "Site / asset leadership",
+    "typical_people": "plant manager, head of operations, site leadership team",
+    "controls": "site priorities, budgets, culture signals",
+    "needs": "decisions, trade-offs, what leaders model",
+    "tier": "T4",
+    "levels": [
+      3,
+      4
+    ],
+    "default_scope": {
+      "tiers": [
+        "T4"
+      ],
+      "levels": [],
+      "tags": []
+    },
+    "reading_level": "executive",
+    "skill": "site-leadership-coach"
+  },
+  {
+    "id": "top-management",
+    "label": "Top management",
+    "typical_people": "CEO, ExCo, corporate HSE, corporate functions",
+    "controls": "policy, enterprise standards, investment",
+    "needs": "enterprise-wide transfer, policy and investment decisions",
+    "tier": "T5",
+    "levels": [
+      4
+    ],
+    "default_scope": {
+      "tiers": [
+        "T4",
+        "T5"
+      ],
+      "levels": [
+        4
+      ],
+      "tags": [],
+      "min_rating": "top"
+    },
+    "reading_level": "executive",
+    "skill": "top-management-brief"
+  },
+  {
+    "id": "board",
+    "label": "Board",
+    "typical_people": "board, board safety / risk committee, independent directors",
+    "controls": "oversight, assurance, risk appetite",
+    "needs": "questions to ask, assurance gaps",
+    "tier": "T5",
+    "levels": [
+      3,
+      4
+    ],
+    "default_scope": {
+      "tiers": [
+        "T5"
+      ],
+      "levels": [
+        3,
+        4
+      ],
+      "tags": [],
+      "min_rating": "top"
+    },
+    "reading_level": "executive",
+    "skill": "board-brief"
+  },
+  {
+    "id": "auditors",
+    "label": "Auditors and assurance",
+    "typical_people": "internal audit, certification bodies, regulators' inspectors, insurers",
+    "controls": "assurance programmes",
+    "needs": "test points, evidence to request, sampling",
+    "tier": null,
+    "levels": [
+      3,
+      4
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [
+        3,
+        4
+      ],
+      "tags": [
+        "assurance"
+      ],
+      "min_rating": "top"
+    },
+    "reading_level": "technical",
+    "skill": "auditor-assurance-pack"
+  },
+  {
+    "id": "investigators",
+    "label": "Investigators and HSE professionals",
+    "typical_people": "incident investigators, HSE advisers, process safety engineers",
+    "controls": "investigation quality",
+    "needs": "evidence gaps, key questions, interviews, method lessons",
+    "tier": null,
+    "levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [],
+      "tags": []
+    },
+    "reading_level": "technical",
+    "skill": "investigator-coach"
+  },
+  {
+    "id": "training",
+    "label": "Training and L&D",
+    "typical_people": "training managers, instructors, competence assessors",
+    "controls": "curricula, assessment",
+    "needs": "training needs, modules, assessment items",
+    "tier": null,
+    "levels": [
+      1,
+      2
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [
+        1,
+        2
+      ],
+      "tags": []
+    },
+    "reading_level": "working",
+    "skill": "training-designer"
+  },
+  {
+    "id": "emergency-response",
+    "label": "Emergency response and fire services",
+    "typical_people": "fire crews, emergency planners, incident commanders",
+    "controls": "response plans, drills, readiness",
+    "needs": "detection-to-isolation, command, readiness learnings",
+    "tier": null,
+    "levels": [
+      1,
+      2
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [],
+      "tags": [
+        "emergency"
+      ]
+    },
+    "reading_level": "working",
+    "skill": "emergency-response-learnings"
+  },
+  {
+    "id": "engineering",
+    "label": "Engineering and integrity",
+    "typical_people": "design, MOC, document control, integrity, reliability",
+    "controls": "technical standards, change, inspection",
+    "needs": "design, MOC and integrity learnings",
+    "tier": null,
+    "levels": [
+      2,
+      3
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [],
+      "tags": [
+        "engineering"
+      ]
+    },
+    "reading_level": "technical",
+    "skill": "engineering-integrity-learnings"
+  },
+  {
+    "id": "supply-chain",
+    "label": "Contractors and supply chain",
+    "typical_people": "procurement, stores, vendors, OEMs, contractors",
+    "controls": "specifications, sourcing, contractor work",
+    "needs": "sourcing, specification and contractor learnings",
+    "tier": null,
+    "levels": [
+      2,
+      3
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [],
+      "tags": [
+        "supply",
+        "contractor"
+      ]
+    },
+    "reading_level": "working",
+    "skill": "supply-chain-contractor-learnings"
+  },
+  {
+    "id": "workforce-reps",
+    "label": "Workforce representatives",
+    "typical_people": "safety committee members, union safety reps",
+    "controls": "consultation, raising concerns",
+    "needs": "discussion guide, questions to raise",
+    "tier": null,
+    "levels": [
+      1,
+      2,
+      3
+    ],
+    "default_scope": {
+      "tiers": [
+        "T1",
+        "T2"
+      ],
+      "levels": [],
+      "tags": []
+    },
+    "reading_level": "plain",
+    "skill": "safety-committee-guide"
+  }
+]

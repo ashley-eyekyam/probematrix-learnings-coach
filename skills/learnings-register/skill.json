@@ -1,0 +1,30 @@
+{
+  "name": "learnings-register",
+  "kind": "register",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "comparator"
+  ],
+  "produces": {
+    "pack": "learnings-register",
+    "files": [
+      "outputs/learnings-register.json",
+      "outputs/learnings-register.xlsx",
+      "outputs/learnings-register.md"
+    ]
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

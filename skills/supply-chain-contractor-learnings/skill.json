@@ -1,0 +1,33 @@
+{
+  "name": "supply-chain-contractor-learnings",
+  "kind": "audience",
+  "audiences": [
+    "supply-chain"
+  ],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": [
+      "supply",
+      "contractor"
+    ]
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "interfaces",
+    "adoption"
+  ],
+  "produces": {
+    "pack": "supply-chain-contractor-learnings",
+    "files": []
+  },
+  "share_default": "external",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

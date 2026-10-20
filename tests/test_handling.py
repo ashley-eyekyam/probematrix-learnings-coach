@@ -130,7 +130,8 @@ def test_sign_off_default_status_is_reviewed(tmp_path, okws):
 
 def test_edit_after_sign_off_reverts_to_draft(tmp_path, okws):
     p = write(tmp_path, PACK)
-    assert cli("sign-off", str(okws), str(p), "--status", "approved", "--role", "HSE manager").returncode == 0
+    assert cli("sign-off", str(okws), str(p), "--status", "approved", "--role", "HSE manager",
+               "--date", "2026-10-19").returncode == 0
     doc = json.loads(p.read_text())
     doc["sections"][0]["items"][0]["text"] = "Test before service!"  # one character
     p.write_text(json.dumps(doc), encoding="utf-8")

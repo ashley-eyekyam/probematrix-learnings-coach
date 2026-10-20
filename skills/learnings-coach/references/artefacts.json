@@ -1,0 +1,86 @@
+{
+  "workspace": {
+    "file": "workspace/findings.json",
+    "producer": "engine:ingest",
+    "org_filled": false
+  },
+  "clusters": {
+    "file": "workspace/clusters.json",
+    "producer": "engine:classify",
+    "org_filled": false
+  },
+  "causal_graph": {
+    "file": "workspace/causal_graph.json",
+    "producer": "engine:causal",
+    "org_filled": false
+  },
+  "timeline": {
+    "file": "workspace/timeline_candidates.json",
+    "producer": "engine:timeline",
+    "org_filled": false
+  },
+  "interfaces": {
+    "file": "workspace/interfaces.json",
+    "producer": "engine:interfaces",
+    "org_filled": false
+  },
+  "register": {
+    "file": "outputs/learnings-register.json",
+    "producer": "skill:learnings-register",
+    "org_filled": false
+  },
+  "gaps": {
+    "file": "outputs/gaps.json",
+    "producer": "engine:pack",
+    "org_filled": false
+  },
+  "comparator": {
+    "file": "workspace/comparator.json",
+    "producer": "skill:report-comparison",
+    "org_filled": false
+  },
+  "adoption": {
+    "file": "outputs/adoption.csv",
+    "producer": "engine:templates",
+    "org_filled": true
+  },
+  "distribution": {
+    "file": "outputs/distribution.csv",
+    "producer": "engine:templates",
+    "org_filled": true
+  },
+  "verification": {
+    "file": "outputs/verification.jsonl",
+    "producer": "engine:templates",
+    "org_filled": true
+  },
+  "actions": {
+    "file": "outputs/actions.csv",
+    "producer": "engine:export-actions",
+    "org_filled": false
+  },
+  "nine-m-map": {
+    "file": "outputs/nine-m-analysis.json",
+    "producer": "skill:nine-m-analysis",
+    "org_filled": false,
+    "planned": "Phase 5"
+  },
+  "evidence-audit": {
+    "file": "outputs/evidence-strength-scorecard.json",
+    "producer": "skill:evidence-strength-scorecard",
+    "org_filled": false,
+    "planned": "Phase 5"
+  },
+  "hfacs-profile": {
+    "file": "outputs/latent-conditions-profile.json",
+    "producer": "skill:latent-conditions-profile",
+    "org_filled": false,
+    "planned": "Phase 5"
+  },
+  "library": {
+    "file": "$PMLC_LIBRARY",
+    "producer": "engine:library",
+    "org_filled": false,
+    "planned": "Phase 7"
+  }
+}

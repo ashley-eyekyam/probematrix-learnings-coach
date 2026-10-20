@@ -1,0 +1,36 @@
+{
+  "name": "top-management-brief",
+  "kind": "audience",
+  "audiences": [
+    "top-management"
+  ],
+  "scope": {
+    "tiers": [
+      "T4",
+      "T5"
+    ],
+    "levels": [
+      4
+    ],
+    "tags": [],
+    "min_rating": "top"
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "causal_graph",
+    "adoption"
+  ],
+  "produces": {
+    "pack": "top-management-brief",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

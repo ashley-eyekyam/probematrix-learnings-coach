@@ -1,0 +1,33 @@
+{
+  "name": "site-leadership-coach",
+  "kind": "audience",
+  "audiences": [
+    "site-leadership"
+  ],
+  "scope": {
+    "tiers": [
+      "T4"
+    ],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "causal_graph",
+    "timeline",
+    "adoption"
+  ],
+  "produces": {
+    "pack": "site-leadership-coach",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

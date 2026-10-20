@@ -1,0 +1,31 @@
+{
+  "name": "frontline-learning-cards",
+  "kind": "audience",
+  "audiences": [
+    "frontline"
+  ],
+  "scope": {
+    "tiers": [
+      "T1"
+    ],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "adoption"
+  ],
+  "produces": {
+    "pack": "frontline-learning-cards",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

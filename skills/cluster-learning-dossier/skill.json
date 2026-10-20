@@ -1,0 +1,33 @@
+{
+  "name": "cluster-learning-dossier",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": [],
+    "entities": [
+      "<F-id>"
+    ]
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "interfaces",
+    "timeline"
+  ],
+  "produces": {
+    "pack": "dossier-<F-id>",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": [
+    "Which function (F-id) is the dossier for?"
+  ]
+}

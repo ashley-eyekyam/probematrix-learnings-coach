@@ -1,0 +1,37 @@
+{
+  "name": "auditor-assurance-pack",
+  "kind": "audience",
+  "audiences": [
+    "auditors"
+  ],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      3,
+      4
+    ],
+    "tags": [
+      "assurance"
+    ],
+    "min_rating": "top"
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "adoption",
+    "distribution",
+    "verification"
+  ],
+  "produces": {
+    "pack": "auditor-assurance-pack",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

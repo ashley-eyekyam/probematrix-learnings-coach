@@ -1,0 +1,32 @@
+{
+  "name": "engineering-integrity-learnings",
+  "kind": "audience",
+  "audiences": [
+    "engineering"
+  ],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": [
+      "engineering"
+    ]
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "timeline",
+    "interfaces"
+  ],
+  "produces": {
+    "pack": "engineering-integrity-learnings",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}

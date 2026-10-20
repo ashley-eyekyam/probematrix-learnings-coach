@@ -1,0 +1,32 @@
+{
+  "name": "manager-coach",
+  "kind": "audience",
+  "audiences": [
+    "managers"
+  ],
+  "scope": {
+    "tiers": [
+      "T3"
+    ],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register",
+    "interfaces",
+    "adoption"
+  ],
+  "produces": {
+    "pack": "manager-coach",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "0.1.0",
+  "questions": []
+}
