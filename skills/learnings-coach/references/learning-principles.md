@@ -39,10 +39,10 @@ Two further rules:
 ## 2. Ground every sentence
 
 - Every learning cites the **Finding IDs** it rests on, and the **Evidence IDs** where a fact is stated.
-- Quote evidence only from `Specific Reference` or `AI Justification` text, and keep quotes short.
+- Quote facts only from evidence: the `Specific Reference` text of an evidence item, kept short. `AI Justification` is the analysis's reasoning, not evidence: quote it only as "the analysis states …", and do not rest an evidence-strength label on it.
 - Do not add facts that are not in the export. If something important is missing, say what evidence would settle it ("[GAP] no record of who approved the substitute part").
 - **Numbers rule.** Every percentage, count, duration, pressure, rating or other figure in your text must appear in a record you cite (a finding or evidence item), with the same value and unit. Do not add statistics, benchmarks or "typical" values from outside the export ("80% of such fires..."). If a figure matters but is not in the record, name the gap instead ("[GAP] no record of the test pressure"). Engineering values (set points, intervals, limits) are for the equipment owner to set.
-- Label evidence strength: **direct** (a document or record states it), **corroborated** (two or more independent items), **inferred** (reasoned from the findings, not stated).
+- Label evidence strength: **direct** (a document or record states it), **corroborated** (two or more independent items), **inferred** (reasoned from the findings, not stated). Items are **independent** when they come from different sources: a log and a witness statement, or two separate inspections. Two copies of the same source, a record and its summary, or statements given together are not independent.
 
 ## 3. Respect the level
 
@@ -65,23 +65,19 @@ and at the end the branding line from `output-style.md`.
 
 ## 6. Recommendations, not action plans
 
-Recommendations say **what should change**, the **barrier** it strengthens, the **evidence basis**, the **hierarchy-of-controls tier**, and a **leading indicator** that would show the change is working. They do not assign named owners or due dates unless the user asks; the organisation decides and implements.
+Recommendations say **what should change**, the **barrier** it strengthens, the **evidence basis**, the **hierarchy-of-controls tier**, and a **leading indicator** that would show the change is working. They do not assign named owners or due dates unless the user asks; the organisation decides and implements. An `owner` is always a role, never a person. A `by_when` is a relative horizon ("before the next turnaround", "within one inspection cycle"), never a calendar date unless the user asks for one.
 
 **Owner wording.** Separate "owns the change" from "was involved". A learning's `owner` or recommendation's `owner` names the role that **owns the change** (holds the authority to change the system), never the role that was involved in the event. At site-leadership and board level a role can be one person, so "learning owner" reads as an accusation: write the function ("Maintenance function") rather than the post, and say "owns the change", not "was involved" or "responsible". Never write a named person; owners and due dates are still the organisation's decision.
 
-## 7. Sharing outside the organisation
+## 7. Review status and draft learnings
 
-A copy for a regulator, client, contractor, insurer, sister company or the public is the organisation's decision, never the coach's. Do not offer it unprompted. A copy may leave the organisation only when **all** of these hold:
+Read the data-quality flags in `profile.md` before writing, and pass them on.
 
-1. **Legal review.** The organisation's legal adviser has reviewed the copy and cleared it. Record this as `legal_review: cleared` with `sign-off --legal-review cleared`. These outputs create no legal privilege: a pack, register or dashboard is not a privileged document, and writing it does not make anything privileged. Whether to share, and on what terms, is for legal review.
-2. **Approved sign-off at the right classification.** A person who reviewed the file signs it off as `approved`, with `--classification external` (or `public` for a public copy). Any edit after sign-off returns the file to draft. Nothing from an investigation still in progress, or with no finding edited by a person, can be approved.
-3. **`--share external`** (or `--share public`) on `pack`, `dashboard` or `register-xlsx`. The engine refuses, listing every unmet condition and writing nothing, unless all four checks hold: an approved sign-off that still matches the file, a classification of `external` or `public` (`public` for a public copy), `legal_review: cleared`, and an embed mode of `summary`. The shared copy is written as `<name>.external.html` (or `.public.html`) beside the internal one, and it says `Shared external: identifying details are masked`.
-4. **`--embed summary`.** The page carries no evidence descriptions, quotes, interview plans, key questions or reviewer-vote reasons. Sharing uses `summary` when `--embed` is left out, and refuses `cited` or `full`. A public copy also drops the AI justification and causal text of each finding, keeping its label and ID.
-5. **A client-safe (or regulator-safe) variant.** Write the pack for that reader: functions instead of posts, no company names (JC9), no equipment tags (JC10), no role string that points to one person (JC7), and nothing the reader does not need to learn. Run `check-pack --share external` and fix every error before signing off.
+- **Do not silently correct the export.** When the profile flags the summary-sheet date or incident type against the narrative, state the correction in `data_quality`, use the corrected value in your text, and pass it to generated files (e.g. `dashboard --date 2024-03-20`).
+- **Downgrade votes.** Leave findings with reviewer downgrade votes out of learnings (list them in `exclusions` with the reason), or say why you kept them.
+- **Unreviewed analysis.** When no finding is marked `User Edited`, or the Investigation Status is not `completed`, the findings are an AI analysis no person has finished reviewing. Say so near the top: add a `data_quality` entry that the output holds "draft learnings from an unreviewed analysis". Such an output stays a draft: sign-off refuses to mark it reviewed or approved until the investigation is completed in ProbeMatrix and at least one finding is marked as edited by a person.
 
-What the engine masks in a shared copy: listed names (`--names` or `PMLC_NAMES`) and honorific forms become `[name]`; listed organisations (`--orgs` or `PMLC_ORGS`) and company-suffix names become `[organisation]`; equipment tags become `[equipment tag]`; singleton roles become their generalised label; a site-leadership or board `owner` becomes its function; clock times are removed and full dates become the month and year; the run slug and generated date are left out. Masking is a safety net, not the review: read the shared copy before it leaves.
-
-In every mode, `pack` and `dashboard` refuse to write a page in which a listed name appears. Fix the pack text, or redact the workspace with `ingest --redact`.
+Sharing a copy outside the organisation is covered in `skill-common.md` §7.
 
 ## Interviews in a just culture
 
