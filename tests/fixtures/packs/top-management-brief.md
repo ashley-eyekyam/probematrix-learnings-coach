@@ -45,9 +45,36 @@ Purchase records show local buying with no specification check [FND-0003; EVD-00
 **Indicator:** Sites with verified spares specifications [FND-0003]
 - Measure: % of sites whose critical-spares orders all cite a specification
 
+### Return to service
+
+**Decision:** Set an enterprise standard for return-to-service hold points [FND-0001; FND-0002]
+- Options: Mandatory standard; Guidance with audit
+- Trade-offs: Uniform practice against local fit.
+
+**Indicator:** Sites with signed hold points [FND-0001]
+- Measure: % of sites with a signed return-to-service hold point
+
+### Technical authority
+
+**Decision:** Require a named technical authority for substitutes at every site [FND-0003; EVD-0001]
+- Options: Per site; Regional pool
+- Trade-offs: Cost against consistent approval.
+
+**Indicator:** Sites with a filled approving role [FND-0003; EVD-0003]
+- Measure: % of sites with the role filled
+
+### Alarm philosophy
+
+**Decision:** Adopt an enterprise alarm philosophy for gas detection [FND-0004; EVD-0002]
+- Options: Trip on high gas; Response-time standard
+- Trade-offs: Spurious trips against slower response.
+
+**Indicator:** Sites aligned to the alarm philosophy [FND-0004]
+- Measure: % of sites with gas alarms classed by action
+
 ## Assurance
 
-**Q: How will we know every site applies the spares rule?** [FND-0003]
+**Q: How will we know every site applies the spares rule?** [FND-0003; EVD-0003]
 - Why it matters: Local buying without a specification ran for two years before this event.
 - Good evidence looks like: Sampled audits from the auditor assurance pack
 - Put to: Head of internal audit
@@ -55,5 +82,7 @@ Purchase records show local buying with no specification check [FND-0003; EVD-00
 ---
 
 This pack cites 1 of 1 relevant findings.
+
+1 of 1 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

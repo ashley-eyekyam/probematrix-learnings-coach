@@ -1,20 +1,18 @@
 {"pack": "report-comparison", "schema": 1, "title": "Report Comparison: Synthetic pump fire, 2024",
  "audience": "HSE and investigation leads", "status": "Learning purposes: not a statutory document",
- "bottom_line": [{"text": "Same evidence, different analytical architecture: ProbeMatrix reaches the spares programme the other report does not name.",
-                  "cites": ["FND-0003"]}],
+ "bottom_line": [
+  {"text": "Same evidence, different analytical architecture: ProbeMatrix reaches the spares programme the other report does not name.", "cites": ["FND-0003"]}],
  "sections": [
   {"id": "basis", "heading": "Basis of the comparison", "items": [
    {"kind": "para", "text": "Blind comparison: no finding quotes the other report's recommendations [FND-0001; FND-0002; FND-0003; FND-0004]."}]},
   {"id": "coverage", "heading": "Coverage both ways", "items": [
-   {"kind": "table", "columns": ["Other report", "ProbeMatrix learning", "Match", "Reason if none"],
-    "rows": [["REC-01 Retrain fitters on leak testing", "Signed leak-test hold point", "partial", ""],
-             ["None", "Spares bought without a specification", "none", "Not examined in the other report"]],
-    "row_cites": [["FND-0001"], ["FND-0003"]]}]},
+   {"kind": "table", "columns": ["Other report", "ProbeMatrix learning", "Match", "Reason if none"], "rows": [["REC-01 Retrain fitters on leak testing", "Signed leak-test hold point", "partial", ""], ["None", "Spares bought without a specification", "none", "Not examined in the other report"]], "row_cites": [["FND-0001"], ["FND-0003"]]}]},
   {"id": "depth", "heading": "Depth and ownership", "items": [
-   {"kind": "table", "columns": ["Dimension", "Other report", "ProbeMatrix"], "rows": [["Deepest level reached", "L1", "L4"]],
-    "row_cites": [["FND-0003"]]}]},
+   {"kind": "table", "columns": ["Dimension", "Other report", "ProbeMatrix"], "rows": [["Deepest level reached", "L1", "L4"]], "row_cites": [["FND-0003"]]}]},
   {"id": "control-tiers", "heading": "Control-tier profile of recommendations", "items": [
    {"kind": "table", "columns": ["Control tier", "Other report", "ProbeMatrix"], "rows": [["Engineering", 0, 1], ["Training", 1, 0]]}]},
+  {"id": "side-by-side", "heading": "Side by side", "items": [
+   {"kind": "table", "columns": ["Topic", "Other report says", "ProbeMatrix says"], "rows": [["Leak test", "Retrain fitters", "A signed hold point at return to service"], ["Spares", "Not examined", "Spares bought without a specification"], ["Gas alarm", "Not examined", "A display-only alarm with no shutdown"]], "row_cites": [["FND-0001", "FND-0002"], ["FND-0003", "EVD-0003"], ["FND-0004"]]}]},
   {"id": "stronger", "heading": "Where the other report is stronger", "items": [
    {"kind": "para", "text": "Its recommendation names who retrains the fitters; the export's own recommendation leaves the owner open [FND-0001]."}]},
   {"id": "limits", "heading": "Limits of this comparison", "items": [

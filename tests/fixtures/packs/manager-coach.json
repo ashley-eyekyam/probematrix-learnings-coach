@@ -1,26 +1,17 @@
 {"pack": "manager-coach", "schema": 1, "title": "Manager Coach: Synthetic pump fire, 2024",
  "audience": "Function and department managers (T3)", "status": "Learning purposes: not a statutory document",
- "bottom_line": [{"text": "Maintenance had no return-to-service checklist, so a skipped leak test went unseen.", "cites": ["FND-0002"]}],
+ "bottom_line": [
+  {"text": "Maintenance had no return-to-service checklist, so a skipped leak test went unseen.", "cites": ["FND-0002"]}],
  "scope": {"tiers": ["T3"]},
  "sections": [
   {"id": "mechanical-maintenance", "heading": "Mechanical Maintenance (F02)", "items": [
-   {"kind": "learning", "group": "What your system allowed", "lesson": "Return to service relied on memory, not a checklist.",
-    "explanation": "The procedure index has no return-to-service entry [EVD-0002].", "owner": "Maintenance manager",
-    "cites": ["FND-0002"]},
-   {"kind": "para", "group": "Interfaces you share",
-    "text": "Stores buys the seals that maintenance fits; agree who approves a substitute part [FND-0003]."},
-   {"kind": "recommendation", "group": "Recommendations", "change": "Add a signed leak-test hold point to every return to service",
-    "hoc_tier": "administrative", "barrier": "Return-to-service test", "owner": "Maintenance manager",
-    "indicator": "% of restarts with a signed leak-test record", "cites": ["FND-0002", "FND-0001"]},
-   {"kind": "indicator", "group": "Leading indicators", "name": "Restarts with a test record",
-    "measure": "% of pump restarts in the CMMS with a leak-test record attached", "deterioration": "Any restart without one",
-    "cites": ["FND-0001"]},
-   {"kind": "table", "group": "90-day agenda", "columns": ["Days", "Action"],
-    "rows": [["0-30", "Check whether restarts still happen without a test record"], ["31-60", "Draft the checklist with the fitters"],
-             ["61-90", "Report the indicator monthly"]],
-    "row_cites": [["FND-0001"], ["FND-0002"], ["FND-0002"]]}]},
+   {"kind": "learning", "group": "What your system allowed", "lesson": "Return to service relied on memory, not a checklist.", "explanation": "The procedure index has no return-to-service entry [EVD-0002].", "owner": "Maintenance manager", "cites": ["FND-0002"]},
+   {"kind": "learning", "group": "What your system allowed", "lesson": "A work order could close with no test result recorded.", "explanation": "The work order shows no test [EVD-0001].", "owner": "Mechanical maintenance", "cites": ["FND-0001", "EVD-0001"]},
+   {"kind": "learning", "group": "What your system allowed", "lesson": "Parts without a specification reached the job with no check at the workshop.", "explanation": "Local seals had no specification [FND-0003].", "owner": "Mechanical maintenance", "cites": ["FND-0001", "FND-0003"]},
+   {"kind": "para", "group": "Interfaces you share", "text": "Stores buys the seals that maintenance fits; agree who approves a substitute part [FND-0003]."},
+   {"kind": "recommendation", "group": "Recommendations", "change": "Add a signed leak-test hold point to every return to service", "hoc_tier": "administrative", "barrier": "Return-to-service test", "owner": "Maintenance manager", "indicator": "% of restarts with a signed leak-test record", "cites": ["FND-0002", "FND-0001"]},
+   {"kind": "indicator", "group": "Leading indicators", "name": "Restarts with a test record", "measure": "% of pump restarts in the CMMS with a leak-test record attached", "deterioration": "Any restart without one", "cites": ["FND-0001"]},
+   {"kind": "indicator", "group": "Leading indicators", "name": "Jobs with a checklist", "measure": "% of pressure-boundary jobs with a return-to-service checklist attached", "deterioration": "Any job without one", "cites": ["FND-0002", "EVD-0002"]},
+   {"kind": "table", "group": "90-day agenda", "columns": ["Days", "Action"], "rows": [["0-30", "Check whether restarts still happen without a test record"], ["31-60", "Draft the checklist with the fitters"], ["61-90", "Report the indicator monthly"]], "row_cites": [["FND-0001"], ["FND-0002"], ["FND-0002"]]}]},
   {"id": "summary", "heading": "Summary", "items": [
-   {"kind": "table", "columns": ["Function", "Top learning", "Top recommendation", "Indicator"],
-    "rows": [["Mechanical Maintenance", "Return to service relied on memory", "Signed leak-test hold point",
-              "% of restarts with a test record"]],
-    "row_cites": [["FND-0002"]]}]}]}
+   {"kind": "table", "columns": ["Function", "Top learning", "Top recommendation", "Indicator"], "rows": [["Mechanical Maintenance", "Return to service relied on memory", "Signed leak-test hold point", "% of restarts with a test record"]], "row_cites": [["FND-0002"]]}]}]}

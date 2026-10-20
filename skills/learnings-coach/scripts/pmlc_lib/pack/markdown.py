@@ -6,7 +6,7 @@ import datetime as dt
 from .. import BRAND, DRAFT_LABEL
 from ..analysis.timeline import months_between
 from ..handling import effective_handling, handling_lines, is_draft, SHARED_LINE, status_line
-from ..pack.schema import _text, cited_ids, relevant_findings
+from ..pack.schema import _text, cited_ids, relevant_findings, TOP_PRINT_LINE, top_rated_of
 from ..register.check import norm_hoc
 from ..workspace import downgraded_findings, incident_date
 from .. import privacy
@@ -25,7 +25,9 @@ def coverage(w, pack) -> dict:
     unc = [{"id": x, "label": F[x].get("label", ""), "rating": F[x].get("rating"), "level": F[x].get("level"),
             "reason": "reviewer downgrade vote" if x in downs else "not cited in this pack"} for x in rel if x not in fids]
     excl = [{"id": x, "label": F[x].get("label", ""), "reason": r} for x, r in reasons.items()]
-    return {"relevant": len(rel), "cited": len(rel) - len(unc), "uncovered": unc, "excluded": excl}
+    top = top_rated_of(w, rel)
+    return {"relevant": len(rel), "cited": len(rel) - len(unc), "uncovered": unc, "excluded": excl,
+            "top_relevant": len(top), "top_cited": sum(1 for x in top if x in fids)}
 
 
 def _knowable(v) -> str:
@@ -250,7 +252,8 @@ def render_pack_md(pack, w, eh=None, share=None) -> str:
             for r, x in enumerate(it.get("row_supporting_cites") or [], 1) if x]
     if sup:
         out += ["## Supporting citations", "\n".join(sup)]
-    tail = ["---", f"This pack cites {cov['cited']} of {cov['relevant']} relevant findings."]
+    tail = ["---", f"This pack cites {cov['cited']} of {cov['relevant']} relevant findings.",
+            TOP_PRINT_LINE.format(x=cov["top_cited"], y=cov["top_relevant"]) + "."]
     if cov["excluded"]:
         tail.append("Left out on purpose:\n" + "\n".join(f"- {e['id']}: {e['reason']}" for e in cov["excluded"]))
     out += tail + [f"> {BRAND}"]

@@ -55,10 +55,12 @@ The findings show no check by either side [FND-0003; FND-0001].
 
 ## Who must meet whom
 
-- [ ] Maintenance planner and stores lead: monthly review of critical-spares substitutions [FND-0003]
+- [ ] Maintenance planner and stores lead: monthly review of critical-spares substitutions [FND-0003; EVD-0003]
 
 ---
 
 This pack cites 1 of 2 relevant findings.
+
+1 of 2 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

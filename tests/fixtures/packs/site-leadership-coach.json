@@ -1,32 +1,31 @@
 {"pack": "site-leadership-coach", "schema": 1, "title": "Site Leadership Coach: Synthetic pump fire, 2024",
  "audience": "Plant and site leadership (T4)", "status": "Learning purposes: not a statutory document",
- "bottom_line": [{"text": "Seals were bought locally without a specification for two years.", "cites": ["FND-0003"]},
-                 {"text": "No check stopped an untested pump returning to service.", "cites": ["FND-0002"]}],
+ "bottom_line": [
+  {"text": "Seals were bought locally without a specification for two years.", "cites": ["FND-0003"]},
+  {"text": "No check stopped an untested pump returning to service.", "cites": ["FND-0002"]}],
  "scope": {"tiers": ["T4"]},
  "sections": [
   {"id": "set-up", "heading": "How the site set this up", "items": [
-   {"kind": "graph", "id": "pathways",
-    "nodes": [{"id": "OR 2.2", "label": "L4 OR 2.2 Spares Programme Failure"}, {"id": "SV 1.4", "label": "L3 SV 1.4 No Guidance Provided"},
-              {"id": "AB 1.1", "label": "L1 AB 1.1 Step Omitted"}],
-    "edges": [{"from": "OR 2.2", "to": "AB 1.1", "label": "2 mentions"}, {"from": "SV 1.4", "to": "AB 1.1", "label": "2 mentions"},
-              {"from": "OR 2.2", "to": "SV 1.4", "label": "1 mention"}],
-    "cites": ["FND-0001", "FND-0002", "FND-0003"]},
-   {"kind": "para", "group": "Pathway 1: spares to restart",
-    "text": "Seals were bought locally without a specification [FND-0003]. Nothing in the return-to-service step asked for a test [FND-0002]. The pump restarted untested [FND-0001]."}]},
+   {"kind": "graph", "id": "pathways", "nodes": [{"id": "OR 2.2", "label": "L4 OR 2.2 Spares Programme Failure"}, {"id": "SV 1.4", "label": "L3 SV 1.4 No Guidance Provided"}, {"id": "AB 1.1", "label": "L1 AB 1.1 Step Omitted"}], "edges": [{"from": "OR 2.2", "to": "AB 1.1", "label": "2 mentions"}, {"from": "SV 1.4", "to": "AB 1.1", "label": "2 mentions"}, {"from": "OR 2.2", "to": "SV 1.4", "label": "1 mention"}], "cites": ["FND-0001", "FND-0002", "FND-0003"]},
+   {"kind": "para", "group": "Pathway 1: spares to restart", "text": "Seals were bought locally without a specification [FND-0003]. Nothing in the return-to-service step asked for a test [FND-0002]. The pump restarted untested [FND-0001]."}]},
   {"id": "signals", "heading": "Signals that reached leadership", "items": [
-   {"kind": "timeline", "events": [{"date": "2022-03", "text": "Local seal purchases begin", "signal": true,
-     "received_by": "Plant manager (budget owner)", "response": "None recorded", "cites": ["FND-0003", "EVD-0003"]}]}]},
+   {"kind": "timeline", "events": [{"date": "2022-03", "text": "Local seal purchases begin", "signal": true, "received_by": "Plant manager (budget owner)", "response": "None recorded", "cites": ["FND-0003", "EVD-0003"]}]}]},
   {"id": "culture", "heading": "Culture signals", "items": [
    {"kind": "para", "text": "Buying seals locally without a specification had become routine; the findings record no challenge to it [FND-0003]."}]},
   {"id": "decisions", "heading": "Decisions for the leadership team", "items": [
-   {"kind": "decision", "group": "Spares specification", "decision": "Require a specification for every critical-spares order",
-    "options": ["All critical spares now", "Rotating equipment first"], "trade_offs": "Longer lead times against fewer unknown parts.",
-    "owner": "Plant manager", "cites": ["FND-0003"]},
-   {"kind": "indicator", "group": "Spares specification", "name": "Critical spares bought to specification",
-    "measure": "% of critical-spares orders with a specification reference", "cites": ["FND-0003"]}]},
+   {"kind": "decision", "group": "Spares specification", "decision": "Require a specification for every critical-spares order", "options": ["All critical spares now", "Rotating equipment first"], "trade_offs": "Longer lead times against fewer unknown parts.", "owner": "Plant manager", "cites": ["FND-0003"]},
+   {"kind": "indicator", "group": "Spares specification", "name": "Critical spares bought to specification", "measure": "% of critical-spares orders with a specification reference", "cites": ["FND-0003"]},
+   {"kind": "decision", "group": "Return to service", "decision": "Make a signed leak test a hold point on every restart after pressure-boundary work", "options": ["All rotating equipment now", "Pumps first"], "trade_offs": "Some restart delay against no untested restarts.", "owner": "Maintenance manager", "cites": ["FND-0001", "FND-0002"]},
+   {"kind": "indicator", "group": "Return to service", "name": "Restarts with a signed test record", "measure": "% of restarts with a signed leak-test record", "cites": ["FND-0001"]},
+   {"kind": "decision", "group": "Procedures", "decision": "Fund a review of hold points across maintenance procedures", "options": ["This quarter", "Next budget year"], "trade_offs": "Engineering time against unknown gaps.", "owner": "Maintenance manager", "cites": ["FND-0002", "EVD-0002"]},
+   {"kind": "indicator", "group": "Procedures", "name": "Procedures with reviewed hold points", "measure": "% of maintenance procedures reviewed this year", "cites": ["FND-0002"]},
+   {"kind": "decision", "group": "Substitute parts", "decision": "Fill the reliability engineering role that approves substitutes", "options": ["Permanent post", "Shared with another site"], "trade_offs": "Cost against unapproved substitutions.", "owner": "Plant manager", "cites": ["FND-0003", "EVD-0001"]},
+   {"kind": "indicator", "group": "Substitute parts", "name": "Substitutions approved before fitting", "measure": "% of substitute parts with an approval", "cites": ["FND-0001", "FND-0003"]},
+   {"kind": "decision", "group": "Gas alarms", "decision": "Decide which gas alarms must trip equipment", "options": ["Trip on high gas", "Display with a set response time"], "trade_offs": "Spurious trips against slower response.", "owner": "Operations manager", "cites": ["FND-0004", "EVD-0002"]},
+   {"kind": "indicator", "group": "Gas alarms", "name": "Gas alarms with an action class", "measure": "% of gas alarms with a set action", "cites": ["FND-0004"]},
+   {"kind": "decision", "group": "Stores", "decision": "Add a specification check at the stores issue counter", "options": ["Check every critical spare", "Check rotating-equipment spares first"], "trade_offs": "Issue time against unknown parts.", "owner": "Stores lead", "cites": ["FND-0003", "EVD-0003"]},
+   {"kind": "indicator", "group": "Stores", "name": "Critical spares issued with a specification reference", "measure": "% of critical-spares issues with a reference", "cites": ["FND-0003", "EVD-0003"]}]},
   {"id": "visible", "heading": "What leaders will do visibly", "items": [
    {"kind": "check", "text": "Ask for the leak-test record at every pump walk-through.", "when": "next 30 days", "cites": ["FND-0001"]}]},
   {"id": "workshop", "heading": "Leadership workshop agenda (two hours)", "items": [
-   {"kind": "table", "columns": ["Time", "Activity", "Built on"],
-    "rows": [["0:00", "Walk the pathways", "How the site set this up"], ["0:45", "Name the routines nobody challenged", "Culture signals"],
-             ["1:15", "Choose the decisions", "Decisions for the leadership team"]]}]}]}
+   {"kind": "table", "columns": ["Time", "Activity", "Built on"], "rows": [["0:00", "Walk the pathways", "How the site set this up"], ["0:45", "Name the routines nobody challenged", "Culture signals"], ["1:15", "Choose the decisions", "Decisions for the leadership team"]]}]}]}

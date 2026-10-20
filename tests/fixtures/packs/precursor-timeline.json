@@ -1,15 +1,16 @@
 {"pack": "precursor-timeline", "schema": 1, "title": "Precursor Timeline: Synthetic pump fire, 2024",
  "audience": "Site leaders and auditors", "status": "Learning purposes: not a statutory document",
- "bottom_line": [{"text": "Local seal buying ran for two years before the fire with no response recorded.", "cites": ["FND-0003", "EVD-0003"]}],
+ "bottom_line": [
+  {"text": "Local seal buying ran for two years before the fire with no response recorded.", "cites": ["FND-0003", "EVD-0003"]}],
  "sections": [
   {"id": "signals", "heading": "Signals before the event", "items": [
-   {"kind": "timeline", "events": [{"date": "2022-03", "text": "Seals bought locally without a specification", "signal": true,
-     "knowable_then": "The purchase record was visible to Stores at the time, but no check asked for a specification.", "received_by": "Materials Management (F06, T1)", "response": "None recorded", "cites": ["FND-0003", "EVD-0003"]}]}]},
+   {"kind": "timeline", "events": [{"date": "2022-03", "text": "Seals bought locally without a specification", "signal": true, "knowable_then": "The purchase record was visible to Stores at the time, but no check asked for a specification.", "received_by": "Materials Management (F06, T1)", "response": "None recorded", "cites": ["FND-0003", "EVD-0003"]}]}]},
   {"id": "event-day", "heading": "The event sequence", "items": [
    {"kind": "timeline", "events": [{"date": "2024-03-12", "text": "Seal changed; pump restarted without a leak test", "cites": ["FND-0001", "EVD-0001"]}]}]},
   {"id": "signal-learnings", "heading": "Signal learnings", "items": [
-   {"kind": "learning", "lesson": "A buying practice is a signal when nobody owns the risk it carries.",
-    "explanation": "The reliability engineer role that would review it was absent [FND-0003].", "owner": "Plant & Asset Leadership (F13, T4)",
-    "cites": ["FND-0003"]},
-   {"kind": "indicator", "name": "Critical spares bought without a specification", "measure": "Count per month from purchase records",
-    "cites": ["FND-0003"]}]}]}
+   {"kind": "learning", "lesson": "A buying practice is a signal when nobody owns the risk it carries.", "explanation": "The reliability engineer role that would review it was absent [FND-0003].", "owner": "Plant & Asset Leadership (F13, T4)", "cites": ["FND-0003"]},
+   {"kind": "indicator", "name": "Critical spares bought without a specification", "measure": "Count per month from purchase records", "cites": ["FND-0003"]},
+   {"kind": "learning", "lesson": "A missing procedure entry is a signal when restarts carry on without it.", "explanation": "The procedure index has no return-to-service entry [EVD-0002].", "owner": "Mechanical Maintenance (F02, T3)", "cites": ["FND-0002", "EVD-0002"]},
+   {"kind": "indicator", "name": "Pressure-boundary jobs with no checklist", "measure": "Count per month from the procedure index", "cites": ["FND-0002"]},
+   {"kind": "learning", "lesson": "A display-only alarm is a signal that the response relies on attention.", "explanation": "The gas alarm had no shutdown [FND-0004].", "owner": "Control room (F09, T1)", "cites": ["FND-0004", "EVD-0002"]},
+   {"kind": "indicator", "name": "Gas alarms with no action class", "measure": "Count from the alarm list each quarter", "cites": ["FND-0004"]}]}]}

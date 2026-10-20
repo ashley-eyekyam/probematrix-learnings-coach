@@ -45,11 +45,13 @@ The plan should say who acts on a display-only gas alarm, and how fast [FND-0004
 
 ## Readiness indicators
 
-**Indicator:** Alarm to isolation decision in drills [FND-0004]
+**Indicator:** Alarm to isolation decision in drills [FND-0004; EVD-0002]
 - Measure: Minutes from inject to decision
 
 ---
 
 This pack cites 1 of 1 relevant findings.
+
+1 of 1 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

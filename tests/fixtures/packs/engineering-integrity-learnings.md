@@ -35,7 +35,7 @@ Seals were bought locally without a specification from March 2022 [FND-0003; EVD
 - Fix: Block critical-spares orders without a specification in the purchasing system
 - Leading indicator: % of critical-spares orders with a specification reference
 
-**Recommendation:** Route every substitute part through change control [FND-0003]
+**Recommendation:** Route every substitute part through change control [FND-0003; EVD-0003]
 - Control tier: administrative
 - Leading indicator: Substitutions approved through change control
 
@@ -47,10 +47,12 @@ Seals were bought locally without a specification from March 2022 [FND-0003; EVD
 
 ## Data and records
 
-- [ ] Each critical spare's record names its specification and approver. *(at receipt)* [FND-0003]
+- [ ] Each critical spare's record names its specification and approver. *(at receipt)* [FND-0003; EVD-0003]
 
 ---
 
 This pack cites 1 of 1 relevant findings.
+
+1 of 1 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

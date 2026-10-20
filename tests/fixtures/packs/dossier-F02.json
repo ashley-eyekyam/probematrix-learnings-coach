@@ -1,32 +1,42 @@
 {"pack": "dossier-F02", "schema": 1, "title": "Cluster Learning Dossier F02 Mechanical Maintenance: Synthetic pump fire, 2024",
  "audience": "Mechanical Maintenance (F02), all tiers", "status": "Learning purposes: not a statutory document",
- "bottom_line": [{"text": "Return to service had no test step, and the crew restarted the pump untested.", "cites": ["FND-0001", "FND-0002"]}],
+ "bottom_line": [
+  {"text": "Return to service had no test step, and the crew restarted the pump untested.", "cites": ["FND-0001", "FND-0002"]}],
  "scope": {"entities": ["F02"]},
  "sections": [
   {"id": "s1-profile", "heading": "S1 Profile", "items": [
-   {"kind": "table", "columns": ["Level", "Findings"], "rows": [["L1 Unsafe acts", 1], ["L3 Supervision", 1]],
-    "row_cites": [["FND-0001"], ["FND-0002"]]}]},
+   {"kind": "table", "columns": ["Level", "Findings"], "rows": [["L1 Unsafe acts", 1], ["L3 Supervision", 1]], "row_cites": [["FND-0001"], ["FND-0002"]]}]},
   {"id": "s2-practice", "heading": "S2 Practice (L1)", "items": [
-   {"kind": "learning", "lesson": "Restarting without a test went unchallenged because nothing asked for one.",
-    "explanation": "The work order shows no test [EVD-0001].", "cites": ["FND-0001"]}]},
+   {"kind": "learning", "lesson": "Restarting without a test went unchallenged because nothing asked for one.", "explanation": "The work order shows no test [EVD-0001].", "cites": ["FND-0001"]},
+   {"kind": "learning", "lesson": "A seal change was treated as routine work with no test step in the plan.", "explanation": "The work order lists the seal change and no test [EVD-0001].", "cites": ["FND-0001", "EVD-0001"]},
+   {"kind": "learning", "lesson": "The crew relied on the part being right because nothing told them otherwise.", "explanation": "The seal came from a local purchase with no specification [FND-0003].", "cites": ["FND-0001", "FND-0003"]}]},
+  {"id": "s3-preconditions", "heading": "Preconditions", "items": [
+   {"kind": "learning", "lesson": "An unfamiliar seal gave no cue that a test mattered more than usual.", "explanation": "The findings show local seals without a specification [FND-0003].", "cites": ["FND-0003", "EVD-0003"]},
+   {"kind": "learning", "lesson": "No test record field on the work order made the omission invisible.", "explanation": "The work order closed without a test entry [EVD-0001].", "cites": ["FND-0001"]},
+   {"kind": "learning", "lesson": "The gas alarm gave the crew no automatic protection once the leak started.", "explanation": "The alarm was display-only [FND-0004].", "cites": ["FND-0004", "EVD-0002"]}]},
   {"id": "s4-supervision", "heading": "S4 Supervision (L3)", "items": [
-   {"kind": "learning", "lesson": "Supervisors had no checklist to refuse a restart against.",
-    "explanation": "The procedure index has no entry [EVD-0002].", "cites": ["FND-0002"]}]},
+   {"kind": "learning", "lesson": "Supervisors had no checklist to refuse a restart against.", "explanation": "The procedure index has no entry [EVD-0002].", "cites": ["FND-0002"]},
+   {"kind": "learning", "lesson": "Release to service depended on memory, not a signed hold point.", "explanation": "No return-to-service checklist exists [EVD-0002].", "cites": ["FND-0002", "EVD-0002"]},
+   {"kind": "learning", "lesson": "Supervision had no record to check before approving the restart.", "explanation": "The work order shows no test [EVD-0001].", "cites": ["FND-0001", "FND-0002"]}]},
+  {"id": "s5-organisation", "heading": "Organisational influences", "items": [
+   {"kind": "learning", "lesson": "The spares programme let critical seals in without a specification.", "explanation": "Purchase records show local buying since March 2022 [EVD-0003].", "cites": ["FND-0003"]},
+   {"kind": "learning", "lesson": "The procedure set had no owner checking that hold points covered return to service.", "explanation": "The procedure index has no entry [EVD-0002].", "cites": ["FND-0002"]},
+   {"kind": "learning", "lesson": "Budget pressure on spares was not weighed against the risk of unknown parts.", "explanation": "The findings name the plant manager as budget owner [FND-0003].", "cites": ["FND-0002", "FND-0003"]}]},
+  {"id": "s6-interfaces", "heading": "Interfaces", "items": [
+   {"kind": "para", "text": "Maintenance fits what stores buys, and neither side checked the specification [FND-0003; FND-0001]."},
+   {"kind": "learning", "lesson": "Maintenance and stores need one owner for the specification of a critical spare.", "cites": ["FND-0001", "FND-0003", "EVD-0001"]}]},
   {"id": "s7-barriers", "heading": "S7 Barriers", "items": [
-   {"kind": "barrier", "barrier": "Leak test before return to service", "type": "prevention", "state": "absent",
-    "failure_mode": "No checklist required it", "hoc_tier": "administrative", "fix": "Signed hold point", "cites": ["FND-0002"]}]},
+   {"kind": "barrier", "barrier": "Leak test before return to service", "type": "prevention", "state": "absent", "failure_mode": "No checklist required it", "hoc_tier": "administrative", "fix": "Signed hold point", "cites": ["FND-0001", "FND-0002"]}]},
   {"id": "s8-precursors", "heading": "S8 Precursors", "items": [
    {"kind": "timeline", "events": [{"date": "2024-03-12", "text": "Seal changed; no test recorded", "cites": ["FND-0001", "EVD-0001"]}]}]},
   {"id": "s9-tier-messages", "heading": "S9 Tier messages", "items": [
    {"kind": "para", "group": "T1 Frontline", "text": "Do not restart without a signed leak-test record [FND-0001]."},
    {"kind": "para", "group": "T2 Supervision", "text": "Make the leak test a hold point you sign [FND-0002]."}]},
   {"id": "s10-recommendations", "heading": "S10 Recommendations", "items": [
-   {"kind": "recommendation", "change": "Signed leak-test hold point on every return to service", "hoc_tier": "administrative",
-    "barrier": "Leak test before return to service", "indicator": "% of restarts with a test record", "cites": ["FND-0002"]}]},
+   {"kind": "recommendation", "change": "Signed leak-test hold point on every return to service", "hoc_tier": "administrative", "barrier": "Leak test before return to service", "indicator": "% of restarts with a test record", "cites": ["FND-0002", "EVD-0002"]}]},
+  {"id": "s11-competence", "heading": "Competence", "items": [
+   {"kind": "table", "columns": ["Tier", "Competence"], "rows": [["T1 Frontline", "Carry out and record a leak test"], ["T2 Supervision", "Check the test record before release"]], "row_cites": [["FND-0001"], ["FND-0002"]]}]},
   {"id": "s12-transferability", "heading": "S12 Transferability", "items": [
-   {"kind": "table", "columns": ["Learning", "Reach", "Reason"],
-    "rows": [["No test step at return to service", "Same site", "Only this site's procedure index is in evidence"]],
-    "row_cites": [["FND-0002"]]}]},
+   {"kind": "table", "columns": ["Learning", "Reach", "Reason"], "rows": [["No test step at return to service", "Same site", "Only this site's procedure index is in evidence"]], "row_cites": [["FND-0002"]]}]},
   {"id": "s14-formats", "heading": "S14 Formats", "items": [
-   {"kind": "table", "columns": ["Learning", "Format"], "rows": [["Test what you disturb", "Learning Card and toolbox talk"]],
-    "row_cites": [["FND-0001"]]}]}]}
+   {"kind": "table", "columns": ["Learning", "Format"], "rows": [["Test what you disturb", "Learning Card and toolbox talk"]], "row_cites": [["FND-0001"]]}]}]}

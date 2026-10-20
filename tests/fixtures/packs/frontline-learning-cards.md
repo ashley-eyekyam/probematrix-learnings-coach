@@ -50,6 +50,63 @@ Draft because: no finding is marked as edited by a person
 
 **What good looks like:** Crews know which alarms trip equipment and which need a person to act.
 
+### Check the part matches the job [FND-0003; EVD-0003]
+
+**What happened:** A seal without a specification was fitted to the pump.
+
+**Why it made sense at the time:** The seal came from stores like any other part [FND-0003].
+
+**What the organisation is changing:** Stores will label critical spares with their specification reference.
+
+**Warning signs:**
+- No specification reference on the part
+- Packaging different from the usual supplier
+
+**What good looks like:** The part's specification is checked before fitting.
+
+**Questions for discussion:**
+1. Where do you find the specification?
+2. Who do you ask if it is missing?
+3. What happens to a part you reject?
+
+### Ask for the checklist [FND-0002; EVD-0002]
+
+**What happened:** There was no return-to-service checklist for the pump.
+
+**Why it made sense at the time:** Without a checklist, the last steps depended on memory [FND-0002].
+
+**What the organisation is changing:** A return-to-service checklist is being written with the fitters.
+
+**Warning signs:**
+- No checklist for the job
+- A job you have not done for a while
+
+**What good looks like:** The checklist is on the work order before the job starts.
+
+**Questions for discussion:**
+1. Which jobs have no checklist?
+2. Who adds one?
+3. What do you do until it exists?
+
+### Record what you did [FND-0001; FND-0002]
+
+**What happened:** The work order was closed with no test entry.
+
+**Why it made sense at the time:** The work order had no field that asked for a test result [FND-0001].
+
+**What the organisation is changing:** Work orders will not close without a test result for pressure-boundary work.
+
+**Warning signs:**
+- A work order with no test field
+- A test done but not written down
+
+**What good looks like:** Every test is recorded before the work order closes.
+
+**Questions for discussion:**
+1. Where is the record kept?
+2. Who checks it?
+3. What if you cannot record it?
+
 ## Toolbox talks
 
 ### Returning equipment to service
@@ -68,6 +125,8 @@ Five minutes on the leak test: why it matters and where the record goes [FND-000
 
 ---
 
-This pack cites 2 of 3 relevant findings.
+This pack cites 3 of 3 relevant findings.
+
+1 of 1 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

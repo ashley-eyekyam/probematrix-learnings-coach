@@ -29,8 +29,8 @@ MODULES = [
     "pmlc_lib.samples",
     "pmlc_lib.cli",
 ]
-PACK_MODULES = ["pmlc_lib.pack.schema", "pmlc_lib.pack.graph_layout", "pmlc_lib.pack.items", "pmlc_lib.pack.markdown",
-                "pmlc_lib.pack.html"]
+PACK_MODULES = ["pmlc_lib.pack.profiles", "pmlc_lib.pack.schema", "pmlc_lib.pack.graph_layout", "pmlc_lib.pack.items",
+                "pmlc_lib.pack.markdown", "pmlc_lib.pack.html"]
 LINT_MODULES = ["pmlc_lib.lint"]
 PRIVACY_MODULES = ["pmlc_lib.privacy"]
 

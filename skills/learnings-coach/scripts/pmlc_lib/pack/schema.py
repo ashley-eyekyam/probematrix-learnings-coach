@@ -15,6 +15,7 @@ from ..register.check import HOC_TIERS, norm_hoc
 from ..select import _filter, select_args
 from ..workspace import downgraded_findings, linked_evidence, load_ws, record_pack_check
 from .. import lint
+from . import profiles
 
 
 SCHEMA_VERSION = 1
@@ -24,6 +25,8 @@ ID_RX = re.compile(r"\b(FND-[0-9A-Za-z]{4,}|EVD-\d{3,})\b")
 DATE_RX = re.compile(r"^\d{4}(?:-\d{2}(?:-\d{2})?)?$")
 MAX_BOTTOM_LINE = 7
 UNCOVERED_PRINT_LINE = "{x} of {y} relevant findings cited"
+TOP_PRINT_LINE = "{x} of {y} top-rated relevant findings cited"
+COVERAGE_WARNING = "under a quarter of the top-rated relevant findings are cited ({x} of {y})"
 
 # Item kinds: required fields, optional fields, and whether at least one citation is required.
 KINDS = {
@@ -164,6 +167,13 @@ def relevant_findings(w, scope=None) -> list:
         return [f["id"] for f in w["findings"] if f["id"] in rel]
     top = max(((f.get("rating") or 0) for f in w["findings"]), default=0)
     return [f["id"] for f in w["findings"] if top and (f.get("rating") or 0) == top]
+
+
+def top_rated_of(w, ids) -> list:
+    """The findings among ids with the highest rating any of them has (top-rated within the pack's scope, L6-19)."""
+    R = {f["id"]: (f.get("rating") or 0) for f in w["findings"]}
+    top = max((R.get(x, 0) for x in ids), default=0)
+    return [x for x in ids if top and R.get(x, 0) == top]
 
 
 def _check_field(v, f, path, bad):
@@ -442,8 +452,9 @@ def tiers_in_scope(pack) -> list:
     return t if isinstance(t, list) else []
 
 
-def check_pack(pack, w, *, names=(), orgs=(), share=None) -> Result:
-    """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings)."""
+def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register=None) -> Result:
+    """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings). Pack-profile
+    violations, padding and scope drift are warnings, and problems when strict (Ruling P3-5). register: Task 11."""
     P, W = [], []
 
     def bad(path, msg):
@@ -566,11 +577,20 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None) -> Result:
     for i, x in enumerate(excluded_ids(pack)):
         if x in ids:
             bad(f"exclusions[{i}].id", f"{x} is also cited; a finding is either cited or left out on purpose")
+    prof = profiles.profile_for(pack.get("pack"))
     if not P:
         rel = [x for x in relevant_findings(w, pack.get("scope")) if x not in excluded_ids(pack)]
-        got = len(set(rel) & ids)
-        if rel and got * 4 < len(rel):
-            W.append(f"coverage: cites {got} of {len(rel)} relevant findings (under a quarter)")
+        top = top_rated_of(w, rel)
+        got, top_got, floor = len(set(rel) & ids), len(set(top) & ids), profiles.coverage_floor(prof)
+        if top and top_got < floor * len(top):
+            low = COVERAGE_WARNING.format(x=top_got, y=len(top))
+            if floor != profiles.DEFAULT_COVERAGE_FLOOR:
+                low = low.replace("a quarter", f"{floor:.0%}")
+            W.append(f"coverage: cites {got} of {len(rel)} relevant findings; {low}")
+    strict_msgs = profiles.check(pack, prof, w) if prof else []
+    strict_msgs += [f"items: {x}" for x in profiles.padding(pack)]
+    strict_msgs += [f"scope: {x}" for x in profiles.scope_drift(pack, profiles.load_audiences())]
+    (P if strict else W).extend(strict_msgs)
     hp, hw = check_handling(pack)
     P += hp
     W += hw
@@ -596,7 +616,8 @@ def _checked(a):
     """Load the workspace and pack, print warnings, exit listing every problem; else return (w, pack, result)."""
     w = load_ws(a.ws)
     pack, err = load_pack(a.pack)
-    res = Result([err], [], {}) if err else check_pack(pack, w, **lint.cli_options(a))
+    opts = dict(lint.cli_options(a), strict=getattr(a, "strict", False))
+    res = Result([err], [], {}) if err else check_pack(pack, w, **opts)
     if not err:
         res.warnings.extend(unsigned_warning(pack, w, a.pack, a.ws))
     if not err and isinstance(pack, dict) and isinstance(pack.get("pack"), str):

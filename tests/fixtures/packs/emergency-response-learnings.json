@@ -1,23 +1,16 @@
 {"pack": "emergency-response-learnings", "schema": 1, "title": "Emergency Response Learnings: Synthetic pump fire, 2024",
  "audience": "Emergency response, fire and control-room roles", "status": "Learning purposes: not a statutory document",
- "bottom_line": [{"text": "The gas alarm showed on a display but started no shutdown, so the response depended on someone noticing it.",
-                  "cites": ["FND-0004", "EVD-0002"]}],
+ "bottom_line": [
+  {"text": "The gas alarm showed on a display but started no shutdown, so the response depended on someone noticing it.", "cites": ["FND-0004", "EVD-0002"]}],
  "scope": {"tags": ["emergency"]},
  "sections": [
   {"id": "timeline", "heading": "Response timeline", "items": [
-   {"kind": "timeline", "events": [
-     {"date": "2024-03-20", "text": "Gas detector alarms on the control-room display only", "received_by": "Control room operators",
-      "cites": ["FND-0004"]},
-     {"date": "2024-03-20", "text": "Response depends on the alarm being noticed; the export gives no times", "cites": ["FND-0004"]}]}]},
+   {"kind": "timeline", "events": [{"date": "2024-03-20", "text": "Gas detector alarms on the control-room display only", "received_by": "Control room operators", "cites": ["FND-0004"]}, {"date": "2024-03-20", "text": "Response depends on the alarm being noticed; the export gives no times", "cites": ["FND-0004"]}]}]},
   {"id": "by-phase", "heading": "Learnings by response phase", "items": [
-   {"kind": "learning", "group": "Detection and alarm", "lesson": "A display-only gas alarm leaves detection to chance.",
-    "explanation": "The DCS list shows no shutdown on the gas detector [EVD-0002].", "owner": "Emergency planning (F09b)",
-    "cites": ["FND-0004"]}]},
+   {"kind": "learning", "group": "Detection and alarm", "lesson": "A display-only gas alarm leaves detection to chance.", "explanation": "The DCS list shows no shutdown on the gas detector [EVD-0002].", "owner": "Emergency planning (F09b)", "cites": ["FND-0004"]}]},
   {"id": "plan-review", "heading": "Plan review input", "items": [
    {"kind": "para", "text": "The plan should say who acts on a display-only gas alarm, and how fast [FND-0004]."}]},
   {"id": "drills", "heading": "Drill scenarios", "items": [
-   {"kind": "scenario", "situation": "Inject: a gas alarm appears on the display during a shift handover.",
-    "prompts": ["Who sees it first?", "Time standard: alarm to isolation decision"], "cites": ["FND-0004"]}]},
+   {"kind": "scenario", "situation": "Inject: a gas alarm appears on the display during a shift handover.", "prompts": ["Who sees it first?", "Time standard: alarm to isolation decision"], "cites": ["FND-0004"]}]},
   {"id": "readiness", "heading": "Readiness indicators", "items": [
-   {"kind": "indicator", "name": "Alarm to isolation decision in drills", "measure": "Minutes from inject to decision",
-    "cites": ["FND-0004"]}]}]}
+   {"kind": "indicator", "name": "Alarm to isolation decision in drills", "measure": "Minutes from inject to decision", "cites": ["FND-0004", "EVD-0002"]}]}]}

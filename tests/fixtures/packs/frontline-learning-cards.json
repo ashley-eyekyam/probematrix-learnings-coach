@@ -1,26 +1,18 @@
 {"pack": "frontline-learning-cards", "schema": 1, "title": "Frontline Learning Cards: Synthetic pump fire, 2024",
  "audience": "Frontline crews (T1)", "status": "Learning purposes: not a statutory document",
- "bottom_line": [{"text": "A pump went back into service without a leak test after a seal change.", "cites": ["FND-0001", "EVD-0001"]}],
+ "bottom_line": [
+  {"text": "A pump went back into service without a leak test after a seal change.", "cites": ["FND-0001", "EVD-0001"]}],
  "scope": {"tiers": ["T1"]},
  "sections": [
   {"id": "cards", "heading": "Learning Cards", "items": [
-   {"kind": "card", "title": "Test what you disturb", "what_happened": "The pump was restarted after a seal change without a leak test.",
-    "why_made_sense": "There was no return-to-service checklist, so the test was easy to miss [FND-0002].",
-    "organisation_changing": "Work orders now require a recorded leak test before the pump is released.",
-    "warning_signs": ["No test record on the work order", "A seal that looks different from the usual part"],
-    "good_looks_like": "No restart until the leak-test record is signed.",
-    "discussion": ["Where is the test record kept?", "Who signs it?", "What do you do if the test rig is not available?"],
-    "cites": ["FND-0001", "EVD-0001"]},
-   {"kind": "card", "title": "Know what the gas alarm does", "what_happened": "The gas alarm showed on the display but did not shut anything down.",
-    "why_made_sense": "The alarm looked like every other display alert, and nothing told the crew it did not trip equipment [FND-0004].",
-    "organisation_changing": "Alarm labels will say whether the alarm trips equipment or needs a person to act.",
-    "warning_signs": ["An alarm that only shows on a screen"],
-    "good_looks_like": "Crews know which alarms trip equipment and which need a person to act.", "cites": ["FND-0004"]}]},
+   {"kind": "card", "title": "Test what you disturb", "what_happened": "The pump was restarted after a seal change without a leak test.", "why_made_sense": "There was no return-to-service checklist, so the test was easy to miss [FND-0002].", "organisation_changing": "Work orders now require a recorded leak test before the pump is released.", "warning_signs": ["No test record on the work order", "A seal that looks different from the usual part"], "good_looks_like": "No restart until the leak-test record is signed.", "discussion": ["Where is the test record kept?", "Who signs it?", "What do you do if the test rig is not available?"], "cites": ["FND-0001", "EVD-0001"]},
+   {"kind": "card", "title": "Know what the gas alarm does", "what_happened": "The gas alarm showed on the display but did not shut anything down.", "why_made_sense": "The alarm looked like every other display alert, and nothing told the crew it did not trip equipment [FND-0004].", "organisation_changing": "Alarm labels will say whether the alarm trips equipment or needs a person to act.", "warning_signs": ["An alarm that only shows on a screen"], "good_looks_like": "Crews know which alarms trip equipment and which need a person to act.", "cites": ["FND-0004"]},
+   {"kind": "card", "title": "Check the part matches the job", "what_happened": "A seal without a specification was fitted to the pump.", "why_made_sense": "The seal came from stores like any other part [FND-0003].", "organisation_changing": "Stores will label critical spares with their specification reference.", "warning_signs": ["No specification reference on the part", "Packaging different from the usual supplier"], "good_looks_like": "The part's specification is checked before fitting.", "discussion": ["Where do you find the specification?", "Who do you ask if it is missing?", "What happens to a part you reject?"], "cites": ["FND-0003", "EVD-0003"]},
+   {"kind": "card", "title": "Ask for the checklist", "what_happened": "There was no return-to-service checklist for the pump.", "why_made_sense": "Without a checklist, the last steps depended on memory [FND-0002].", "organisation_changing": "A return-to-service checklist is being written with the fitters.", "warning_signs": ["No checklist for the job", "A job you have not done for a while"], "good_looks_like": "The checklist is on the work order before the job starts.", "discussion": ["Which jobs have no checklist?", "Who adds one?", "What do you do until it exists?"], "cites": ["FND-0002", "EVD-0002"]},
+   {"kind": "card", "title": "Record what you did", "what_happened": "The work order was closed with no test entry.", "why_made_sense": "The work order had no field that asked for a test result [FND-0001].", "organisation_changing": "Work orders will not close without a test result for pressure-boundary work.", "warning_signs": ["A work order with no test field", "A test done but not written down"], "good_looks_like": "Every test is recorded before the work order closes.", "discussion": ["Where is the record kept?", "Who checks it?", "What if you cannot record it?"], "cites": ["FND-0001", "FND-0002"]}]},
   {"id": "toolbox-talks", "heading": "Toolbox talks", "items": [
-   {"kind": "para", "group": "Returning equipment to service",
-    "text": "Five minutes on the leak test: why it matters and where the record goes [FND-0001]."},
-   {"kind": "scenario", "group": "Returning equipment to service", "situation": "The test rig is out of service and the pump is needed.",
-    "prompts": ["What do you say to the supervisor?", "Who can authorise a delay?"], "cites": ["FND-0001"]}]},
+   {"kind": "para", "group": "Returning equipment to service", "text": "Five minutes on the leak test: why it matters and where the record goes [FND-0001]."},
+   {"kind": "scenario", "group": "Returning equipment to service", "situation": "The test rig is out of service and the pump is needed.", "prompts": ["What do you say to the supervisor?", "Who can authorise a delay?"], "cites": ["FND-0001"]}]},
   {"id": "stop-and-ask", "heading": "Stop and ask", "items": [
    {"kind": "check", "text": "Stop and ask if there is no leak-test record before a restart.", "when": "before restart", "cites": ["FND-0001"]},
    {"kind": "check", "text": "Stop and ask if a gas alarm shows and nobody has said what to do.", "when": "any gas alarm", "cites": ["FND-0004"]}]}]}

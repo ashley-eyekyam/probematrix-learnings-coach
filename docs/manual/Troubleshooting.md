@@ -227,10 +227,10 @@ ERROR JC2 $.sections[0].items[0].text: "careless": describe what the organisatio
 ## The check warns about coverage
 
 ```text
-warning: coverage: cites 3 of 101 relevant findings (under a quarter)
+warning: coverage: cites 3 of 308 relevant findings; under a quarter of the top-rated relevant findings are cited (3 of 101)
 ```
 
-**Why.** The pack cites less than a quarter of the findings that its scope says are relevant. It may be fine for a short brief, but it can also mean whole conditions were missed.
+**Why.** The pack cites less than a quarter of the top-rated findings within its scope (here 101 of the 308 relevant findings have the top rating). It may be fine for a short brief, but it can also mean whole conditions were missed.
 
 **What to do.** Read the list of uncovered findings on the page. Cite the conditions that matter, add same-condition findings as `supporting_cites`, and list deliberate omissions as `exclusions` with a reason.
 

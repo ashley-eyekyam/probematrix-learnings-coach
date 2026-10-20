@@ -48,6 +48,11 @@ Two of the four findings sit at supervision or organisational level [FND-0002; F
 
 The register's recommendations need checking for engineering controls on the spares path [FND-0003].
 
+| Control tier | Recommendations | Cites |
+|---|---|---|
+| engineering | 0 | FND-0003 |
+| administrative | 2 | FND-0002 |
+
 ## Rollout plan
 
 | Order | Skill | Audience | Why | Cites |
@@ -58,5 +63,7 @@ The register's recommendations need checking for engineering controls on the spa
 ---
 
 This pack cites 2 of 2 relevant findings.
+
+2 of 2 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
