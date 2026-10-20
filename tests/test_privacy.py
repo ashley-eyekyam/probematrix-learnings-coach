@@ -1143,3 +1143,24 @@ def test_share_dashboard_masks_org_file_text(tmp_path, shws):
     assert r.returncode == 0, r.stderr
     t = (outs / "organisation-learning-map.public.html").read_text(encoding="utf-8")
     assert "Quillon" not in t and "Vantress" not in t
+
+
+def test_pack_xlsx_share_gate_and_masking(tmp_path, shws):
+    """INT-8: pack-xlsx --share applies the pack share gate, records nothing when refused, and masks the sheet."""
+    ws, orgs = shws
+    doc = copy.deepcopy(SPACK)
+    doc["sections"][0]["items"].append({"kind": "question", "question": "Who checked P-101 at 14:05?",
+                                        "why": "No check exists", "to": "Stores", "cites": ["FND-0001"]})
+    p = write_doc(tmp_path, doc)
+    out = tmp_path / "q.xlsx"
+    r = _cli("pack-xlsx", str(ws), str(p), "--kind", "question", "--share", "external", "--out", str(out))
+    assert r.returncode == 1 and "cannot share externally: review is draft" in r.stderr
+    mf = ws / "manifest.json"
+    assert not out.exists() and (not mf.exists() or json.loads(mf.read_text()).get("packs", {}) == {})
+    sign(ws, p, "--classification", "external", "--legal-review", "cleared")
+    r = _cli("pack-xlsx", str(ws), str(p), "--kind", "question", "--share", "external")
+    assert r.returncode == 0, r.stderr
+    sh = ws.parent / "outputs" / "test-pack-questions.external.xlsx"
+    assert sh.is_file() and not (ws.parent / "outputs" / "test-pack-questions.xlsx").exists()
+    cells = " ".join(str(c.value) for row in openpyxl.load_workbook(sh).active.iter_rows() for c in row if c.value)
+    assert "P-101" not in cells and "14:05" not in cells and "[equipment tag]" in cells
