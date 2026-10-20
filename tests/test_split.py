@@ -19,10 +19,16 @@ sys.path.insert(0, str(SCRIPTS))
 import pmlc  # noqa: E402
 
 
+def _engine_names(names):
+    """Drop interpreter-defined dunders (e.g. __cached__, __loader__) that vary by Python version."""
+    engine_defined = {"__version__", "__all__"}
+    return {n for n in names if n in engine_defined or not (n.startswith("__") and n.endswith("__"))}
+
+
 @pytest.mark.parametrize("module", ["pmlc", "pmlc_pack", "pmlc_lint", "pmlc_privacy"])
 def test_every_old_name_still_exported(module):
-    old = set(json.loads((FIXTURES / f"{module}-names.json").read_text(encoding="utf-8")))
-    missing = sorted(old - set(dir(importlib.import_module(module))))
+    old = _engine_names(json.loads((FIXTURES / f"{module}-names.json").read_text(encoding="utf-8")))
+    missing = sorted(old - _engine_names(dir(importlib.import_module(module))))
     assert not missing, f"{module} no longer exports: {missing}"
 
 
