@@ -51,7 +51,7 @@ These are the files in a fresh Hazira workspace after `ingest`, `profile` and `c
 | `profile.md` | `profile --out` | The readable summary: counts by level, rating and sub-category, the most frequent factors and roles, evidence types and data-quality flags. |
 | `clusters.json` | `classify` | For every finding, its entities (F), tiers (T) and relations (R); the role map (how each role string was placed, and why); the taxonomy and overlays used; the overrides applied. |
 | `unresolved_roles.json` | `classify` | Role strings with no entity (F99) or no tier (T9). 96 on Hazira before the resolution pass. |
-| `singleton_roles.json` | `classify` | Roles that could point to one person (a post with a single holder, or a role with a number, date or place in it), each with a general label to use instead. 8 on Hazira. |
+| `singleton_roles.json` | `classify` | Roles that could point to one person: a role with an instance number or letter (a gate, post, shift, desk, cabin or control room number, or a number in a closing bracket or after a dash), or the only role at its tier in Plant & Asset Leadership or Corporate & Board. A date alone, such as "(Dec-2019)", does not make a role a singleton. Each comes with a general label to use instead. 8 on Hazira. |
 | `org-chart-ids.json` | `classify --org-chart` | The F-ids given to your own departments (`F20`, `F21` and so on), so they keep their ID on every re-run. |
 | `role_overrides.json` | you, or the agent with your agreement | Your decisions for roles the rules could not place or placed wrongly: `{"<role>": {"F": [...], "T": "...", "R": "..."}}`. Read on every `classify`. Never rebuilt: keep it. |
 | `causal_graph.json`, `causal_graph.mmd` | `causal` | The factor-to-factor links, with mention counts and supporting finding IDs; the `.mmd` file is the same graph for tools that draw Mermaid diagrams. |
@@ -110,7 +110,7 @@ These files in the skills folder (`skills/learnings-coach/references/` unless st
 
 | File | What it holds | Used by |
 |---|---|---|
-| `skills/<skill>/skill.json` | One per skill: its kind (hub, analysis, audience, register, dissemination), audiences, scope, what it requires and produces, the default share level and the questions to ask | `plan`, `index`, the hub |
+| `skills/<skill>/skill.json` | One per skill: its kind (hub, analysis, audience, register or dissemination today; interactive and multi-incident are reserved for later skills), audiences, scope, what it requires and produces, the default share level and the questions to ask | `plan`, `index`, the hub |
 | `skill.schema.json` | The schema every `skill.json` must follow | the engine's contract check and the test suite |
 | `artefacts.json` | Every file a step can produce or need (workspace, clusters, register, gaps, adoption and so on), with its path in the run folder and what produces it | `plan` |
 | `workflows.json` | The nine workflow presets and their steps, in order | `plan`, the hub |

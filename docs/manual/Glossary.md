@@ -206,7 +206,7 @@ A warning before the event that someone could have seen at the time: an inspecti
 
 ### Quasi-identifier
 
-A detail that can point to one person without naming them: a post with one holder, a gate or shift number, a date in a role string. See *singleton role*.
+A detail that can point to one person without naming them: a post with one holder, a gate or shift number. A date in a role string is masked in shared copies, but on its own it does not make the role a singleton. See *singleton role*.
 
 ### Rating
 
@@ -254,7 +254,7 @@ The record that a person reviewed a file, made with `sign-off` and the reviewer'
 
 ### Singleton role
 
-A role that points to one person, listed in `singleton_roles.json` with a general label to use instead. The language check flags it (JC7).
+A role that points to one person, listed in `singleton_roles.json` with a general label to use instead: a role with an instance number or letter (a gate, post, shift, desk, cabin or control room number, or a number in a closing bracket or after a dash), or the only role at its tier in Plant & Asset Leadership or Corporate & Board. A date alone, such as "(Dec-2019)", does not make a role a singleton. The language check flags it (JC7).
 
 ### Slug
 

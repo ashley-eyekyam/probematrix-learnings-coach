@@ -123,7 +123,7 @@ WARNING JC6 $.sections[0].items[6].hoc_tier: "training": the cited cause sits at
 
 ## JC7: a role that points to one person
 
-Looks for any role listed in the workspace's `singleton_roles.json`: a post with one holder, or a role with a number, date or place in it. Even without a name, such a role identifies a person. It is a warning inside the organisation and an error when shared outside.
+Looks for any role listed in the workspace's `singleton_roles.json`: a role with an instance number or letter (a gate, post, shift, desk, cabin or control room number, or a number in a closing bracket or after a dash), or the only role at its tier in Plant & Asset Leadership or Corporate & Board. A date alone, such as "(Dec-2019)", does not make a role a singleton. Even without a name, such a role identifies a person. It is a warning inside the organisation and an error when shared outside.
 
 > Example of wording the check flags: "The Director Offshore (approval authority) signed the change."
 
