@@ -71,7 +71,6 @@ def test_profile_hfacs_levels_table(tmp_path):
 
 
 def test_thin_workspace_honest_pack_passes_strict(tmp_path):
-    # check-pack --strict arrives with Task 10; until then this asserts a clean check-pack (switch on merge).
     ws = _thin(tmp_path)
     pack = {"pack": "test-pack", "schema": 1, "title": "Thin pack: frontline only", "audience": "Frontline",
             "status": "Learning purposes: not a statutory document",
@@ -80,5 +79,5 @@ def test_thin_workspace_honest_pack_passes_strict(tmp_path):
                 {"kind": "learning", "lesson": "Check the seal before restart.", "cites": ["FND-0001"]}]}]}
     p = tmp_path / "pack.json"
     p.write_text(json.dumps(pack), encoding="utf-8")
-    out = run("check-pack", str(ws), str(p))
+    out = run("check-pack", str(ws), str(p), "--strict")
     assert "OK" in out
