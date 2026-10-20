@@ -78,7 +78,7 @@ Make the leak test a hold point you sign [FND-0002].
 
 ## S10 Recommendations
 
-**Recommendation:** Signed leak-test hold point on every return to service [FND-0002; EVD-0002]
+**Recommendation:** Signed leak-test hold point on every return to service [FND-0002]
 - Control tier: administrative
 - Barrier: Leak test before return to service
 - Leading indicator: % of restarts with a test record

@@ -32,7 +32,7 @@
    {"kind": "para", "group": "T2 Supervision", "text": "Make the leak test a hold point you sign [FND-0002]."}]},
   {"id": "s10-recommendations", "heading": "S10 Recommendations", "items": [
    {"kind": "recommendation", "change": "Signed leak-test hold point on every return to service", "hoc_tier": "administrative",
-    "barrier": "Leak test before return to service", "indicator": "% of restarts with a test record", "cites": ["FND-0002", "EVD-0002"]}]},
+    "barrier": "Leak test before return to service", "indicator": "% of restarts with a test record", "cites": ["FND-0002"]}]},
   {"id": "s11-competence", "heading": "S11 Competence", "items": [
    {"kind": "table", "columns": ["Tier", "Competence"], "rows": [["T1 Frontline", "Carry out and record a leak test"],
     ["T2 Supervision", "Check the test record before release"]], "row_cites": [["FND-0001"], ["FND-0002"]]}]},

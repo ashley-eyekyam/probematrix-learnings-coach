@@ -44,7 +44,7 @@ The reliability engineer role named in the findings was absent [FND-0003].
 
 ## Recommendations and indicators
 
-**Recommendation:** Hold critical-spares orders until a specification is attached [FND-0003; EVD-0003]
+**Recommendation:** Hold critical-spares orders until a specification is attached [FND-0003]
 - Control tier: engineering
 - Owner: Head of procurement
 - Leading indicator: % of critical spares with an approved specification

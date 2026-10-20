@@ -20,4 +20,4 @@
     "prompts": ["Who sees it first?", "Time standard: alarm to isolation decision"], "cites": ["FND-0004"]}]},
   {"id": "readiness", "heading": "Readiness indicators", "items": [
    {"kind": "indicator", "name": "Alarm to isolation decision in drills", "measure": "Minutes from inject to decision",
-    "cites": ["FND-0004", "EVD-0002"]}]}]}
+    "cites": ["FND-0004"]}]}]}

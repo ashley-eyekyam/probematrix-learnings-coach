@@ -45,7 +45,7 @@ The plan should say who acts on a display-only gas alarm, and how fast [FND-0004
 
 ## Readiness indicators
 
-**Indicator:** Alarm to isolation decision in drills [FND-0004; EVD-0002]
+**Indicator:** Alarm to isolation decision in drills [FND-0004]
 - Measure: Minutes from inject to decision
 
 ---

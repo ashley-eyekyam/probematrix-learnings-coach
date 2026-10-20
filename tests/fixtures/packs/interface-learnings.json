@@ -19,4 +19,4 @@
    {"kind": "recommendation", "group": "Joint fix", "change": "Add a specification check at the stores issue counter",
     "hoc_tier": "administrative", "indicator": "% of critical spares issued with a specification reference", "cites": ["FND-0003"]}]},
   {"id": "who-meets", "heading": "Who must meet whom", "items": [
-   {"kind": "check", "text": "Maintenance planner and stores lead: monthly review of critical-spares substitutions", "cites": ["FND-0003", "EVD-0003"]}]}]}
+   {"kind": "check", "text": "Maintenance planner and stores lead: monthly review of critical-spares substitutions", "cites": ["FND-0003"]}]}]}

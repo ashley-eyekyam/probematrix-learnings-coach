@@ -1238,7 +1238,7 @@ def test_padding_warning(w):
     assert not any("possible padding" in x for x in pp.check_pack(two, w).warnings)
 
 
-def test_padding_counts_a_group_once(w):                                            # ruling X24
+def test_padding_counts_a_group_once_and_stays_in_one_section(w):                  # rulings X24, X26
     c = ["FND-0003"]
     triplet = [item("learning", group="Spares", cites=c), item("barrier", group="Spares", cites=c),
                item("recommendation", group="Spares", cites=c)]
@@ -1248,6 +1248,10 @@ def test_padding_counts_a_group_once(w):                                        
         pack_with(*three_groups), w).warnings
     mixed = triplet + [item("para", text="u1", cites=c), item("para", text="u2", cites=c)]   # 1 group + 2 ungrouped
     assert "items: 5 items share the same cites (FND-0003): possible padding" in pp.check_pack(pack_with(*mixed), w).warnings
+    across = pack_with(item("para", text="a", cites=c))
+    across["sections"] += [{"id": f"s{k}", "heading": f"S{k}", "items": [item("para", text=f"x{k}", cites=c)]}
+                           for k in (2, 3)]
+    assert not any("possible padding" in x for x in pp.check_pack(across, w, strict=True).problems)
     e = fixture("engineering-integrity-learnings")                  # SKILL.md triplet, all citing FND-0003
     th = e["sections"][0]["items"]
     assert {tuple(it["cites"]) for it in th} == {("FND-0003",)} and len({it["group"] for it in th}) == 1

@@ -21,4 +21,4 @@
     "rows": [["0-10", "What happened"], ["10-40", "Questions for management"], ["40-60", "Concerns to send on"]]}]},
   {"id": "follow-up", "heading": "Follow-up", "items": [
    {"kind": "check", "text": "Ask to see the new return-to-service checklist.", "when": "30 days", "cites": ["FND-0002"]},
-   {"kind": "check", "text": "Ask for the share of restarts with a test record.", "when": "90 days", "cites": ["FND-0001", "EVD-0001"]}]}]}
+   {"kind": "check", "text": "Ask for the share of restarts with a test record.", "when": "90 days", "cites": ["FND-0001"]}]}]}

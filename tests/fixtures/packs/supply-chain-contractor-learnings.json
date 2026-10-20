@@ -20,4 +20,4 @@
     "cites": ["FND-0003"]}]},
   {"id": "recommendations", "heading": "Recommendations and indicators", "items": [
    {"kind": "recommendation", "change": "Hold critical-spares orders until a specification is attached", "hoc_tier": "engineering",
-    "indicator": "% of critical spares with an approved specification", "owner": "Head of procurement", "cites": ["FND-0003", "EVD-0003"]}]}]}
+    "indicator": "% of critical spares with an approved specification", "owner": "Head of procurement", "cites": ["FND-0003"]}]}]}

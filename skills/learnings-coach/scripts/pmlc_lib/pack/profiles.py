@@ -203,16 +203,16 @@ def check(pack, profile, top=None, profiles=None) -> list:
 
 
 def padding(pack) -> list:
-    """P3-7: three or more items in one pack with the same non-empty cites set. Ruling X24: items that share one
-    non-empty group (an engineering learning, barrier and recommendation; a decision and its indicator) count once,
-    so the same cites set must recur in three different groups, or in ungrouped items, to warn."""
+    """P3-7: three or more items in one section with the same non-empty cites set. Ruling X26: only within one
+    section (sections answer different questions). Ruling X24: items that share one non-empty group (an engineering
+    learning, barrier and recommendation; a decision and its indicator) count once."""
     seen: dict = {}
-    for n, (_, _, it) in enumerate(_items(pack)):
+    for n, (s, _, it) in enumerate(_items(pack)):
         c, g = it.get("cites"), it.get("group")
         if isinstance(c, list) and c and all(isinstance(x, str) for x in c):
             unit = ("group", g) if isinstance(g, str) and g.strip() else ("item", n)
-            seen.setdefault(tuple(sorted(set(c))), []).append(unit)
-    return [f"{len(v)} items share the same cites ({', '.join(k)}): possible padding" for k, v in seen.items()
+            seen.setdefault((id(s), tuple(sorted(set(c)))), []).append(unit)
+    return [f"{len(v)} items share the same cites ({', '.join(k[1])}): possible padding" for k, v in seen.items()
             if len(set(v)) >= 3]
 
 

@@ -51,7 +51,7 @@ Ground rules: no names, no blame, talk about conditions.
 ## Follow-up
 
 - [ ] Ask to see the new return-to-service checklist. *(30 days)* [FND-0002]
-- [ ] Ask for the share of restarts with a test record. *(90 days)* [FND-0001; EVD-0001]
+- [ ] Ask for the share of restarts with a test record. *(90 days)* [FND-0001]
 
 ---
 
