@@ -140,4 +140,4 @@ Unknown keys, bad values and `reviewed` or `approved` without `reviewer_role`, `
 
 ## investigator-coach
 
-Its follow-up table contract (the `table` with `"id": "follow-up"`, `finding_notes` and `follow-up.json`) is in `skills/investigator-coach/SKILL.md`.
+Its follow-up table contract (the `table` with `"id": "follow-up"`, `finding_notes` and `follow-up.json`) is in `skills/investigator-coach/references/follow-up.md`, linked from `skills/investigator-coach/SKILL.md`.

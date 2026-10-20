@@ -34,9 +34,8 @@ NON_HUB = [s for s in ALL_SKILLS if s != HUB]
 
 # Tasks 21-23 remove their skills' names as each skill reaches the skeleton (staged, Ruling X8).
 PENDING = {
-    # Task 22: leadership, assurance and investigation
-    "board-brief", "top-management-brief", "site-leadership-coach", "manager-coach", "cluster-learning-dossier",
-    "auditor-assurance-pack", "investigator-coach",
+    # Task 21: register and analysis (done)
+    # Task 22: leadership, assurance and investigation (done)
     # Task 23: frontline and specialists
     "frontline-learning-cards", "supervisor-coach", "safety-committee-guide", "training-designer",
     "emergency-response-learnings", "engineering-integrity-learnings", "supply-chain-contractor-learnings",
@@ -483,3 +482,25 @@ def test_write_table_register_rows_need_no_pack_kind():
     with pytest.raises(AssertionError):
         write_table(reg)
     assert write_table(reg, need_kinds=False)[-1] == {"id": "questions", "kinds": [], "min": 1, "max": 12}
+
+
+# ------------------------------------------------- Task 22: management-review input (L7-16), exactly six rows
+
+MR_ROWS = ["Incidents and corrective actions", "Monitoring results", "Audit results", "Risks and opportunities",
+           "Adequacy of resources", "Consultation outcomes"]
+MR_SKILLS = ["top-management-brief", "site-leadership-coach", "manager-coach"]
+NOT_IN = "not in this investigation"
+
+
+@pytest.mark.parametrize("skill", MR_SKILLS)
+def test_management_review_input_six_rows(skill):
+    t = skill_md(skill)
+    assert all(r in t for r in MR_ROWS) and NOT_IN in t, f"{skill}: SKILL.md must name the six inputs"
+    pack = json.loads(read(ROOT / "tests" / "fixtures" / "packs" / f"{skill}.json"))
+    sec = next(s for s in pack["sections"] if s["id"] == "management-review")
+    tab = next(it for it in sec["items"] if it["kind"] == "table")
+    assert [r[0] for r in tab["rows"]] == MR_ROWS
+    det = tab["columns"].index("Deterioration trigger")
+    for row, cites in zip(tab["rows"], tab["row_cites"]):
+        assert row[det].strip() if cites else NOT_IN in row[1].lower(), (skill, row)
+

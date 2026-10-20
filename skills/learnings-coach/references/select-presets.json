@@ -9,7 +9,8 @@
   ],
   "board-brief": [
     {"name": "top-l4", "args": ["--level", "4", "--top-rated", "--brief"]},
-    {"name": "assurance-l34", "args": ["--tag", "assurance", "--level", "3", "4", "--brief"]}
+    {"name": "assurance-l34", "args": ["--tag", "assurance", "--level", "3", "4", "--brief"]},
+    {"name": "earlier-warnings", "args": ["--text", "recommendation|alert|overdue|repeat|earlier|previous", "--level", "3", "4", "--top-rated", "--brief"]}
   ],
   "emergency-response-learnings": [
     {"name": "emergency", "args": ["--tag", "emergency", "--brief"]},
@@ -33,9 +34,11 @@
     {"name": "top", "args": ["--top-rated", "--brief"]}
   ],
   "manager-coach": [
+    {"name": "functions-t3", "args": ["--tier", "T3", "--count-by", "entity"]},
     {"name": "tier-t3", "args": ["--tier", "T3", "--brief"]},
     {"name": "top-tier-t3-l34", "args": ["--tier", "T3", "--level", "3", "4", "--top-rated"]},
-    {"name": "relation", "args": ["--relation", "owner", "absent", "--brief"]}
+    {"name": "relation", "args": ["--relation", "owner", "absent", "--brief"]},
+    {"name": "work-management", "args": ["--entity", "F08", "--level", "3", "4", "--brief"]}
   ],
   "report-comparison": [
     {"name": "text", "args": ["--text", "recommendation|remedial", "--brief"]}
@@ -48,7 +51,8 @@
   "site-leadership-coach": [
     {"name": "tier-t4", "args": ["--tier", "T4", "--brief"]},
     {"name": "top-l4", "args": ["--level", "4", "--top-rated"]},
-    {"name": "relation", "args": ["--relation", "norm_setter", "learner", "absent", "challenger"]}
+    {"name": "relation", "args": ["--relation", "norm_setter", "learner", "absent", "challenger", "--brief"]},
+    {"name": "culture-oic", "args": ["--prefix", "OIC", "--level", "4", "--brief"]}
   ],
   "supervisor-coach": [
     {"name": "tier-t2", "args": ["--tier", "T2", "--brief"]},
@@ -62,7 +66,8 @@
   "top-management-brief": [
     {"name": "tiers-t4-t5", "args": ["--tier", "T4", "T5", "--brief"]},
     {"name": "top-l4", "args": ["--level", "4", "--top-rated"]},
-    {"name": "people-corporate-assurance", "args": ["--tag", "people", "corporate", "assurance", "--level", "4", "--brief"]}
+    {"name": "people-corporate-assurance", "args": ["--tag", "people", "corporate", "assurance", "--level", "4", "--brief"]},
+    {"name": "leadership-corporate", "args": ["--tag", "leadership", "corporate", "--level", "4", "--brief"]}
   ],
   "training-designer": [
     {"name": "text", "args": ["--text", "train|competen|qualif|knowledge|experience|familiar|skill", "--brief"]},

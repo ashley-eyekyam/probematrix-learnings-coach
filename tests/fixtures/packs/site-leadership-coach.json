@@ -1,7 +1,7 @@
 {"pack": "site-leadership-coach", "schema": 1, "title": "Site Leadership Coach: Synthetic pump fire, 2024",
  "audience": "Plant and site leadership (T4)", "status": "Learning purposes: not a statutory document",
  "bottom_line": [{"text": "Seals were bought locally without a specification for two years.", "cites": ["FND-0003"]},
-                 {"text": "No check stopped an untested pump returning to service.", "cites": ["FND-0002"]}],
+                 {"text": "No check stopped an untested pump returning to service.", "cites": ["FND-0002"], "learning": "LR-01"}],
  "scope": {"tiers": ["T4"]},
  "sections": [
   {"id": "set-up", "heading": "How the site set this up", "items": [
@@ -21,11 +21,29 @@
   {"id": "decisions", "heading": "Decisions for the leadership team", "items": [
    {"kind": "decision", "group": "Spares specification", "decision": "Require a specification for every critical-spares order",
     "options": ["All critical spares now", "Rotating equipment first"], "trade_offs": "Longer lead times against fewer unknown parts.",
-    "owner": "Plant manager", "cites": ["FND-0003"]},
+    "owner": "Site operations function", "cites": ["FND-0003"]},
    {"kind": "indicator", "group": "Spares specification", "name": "Critical spares bought to specification",
-    "measure": "% of critical-spares orders with a specification reference", "cites": ["FND-0003"]}]},
+    "measure": "% of critical-spares orders with a specification reference", "deterioration": "Any month below 100%",
+    "cites": ["FND-0003"]},
+   {"kind": "decision", "group": "Enterprise spares standard",
+    "decision": "Needs corporate decision: one enterprise standard for critical-spares specifications",
+    "options": ["Ask head office for a standard", "Keep a site rule"], "trade_offs": "Consistency across sites against time to agree it.",
+    "owner": "Site leadership team", "cites": ["FND-0003", "EVD-0003"]},
+   {"kind": "indicator", "group": "Enterprise spares standard", "name": "Escalation answered",
+    "measure": "Days from escalation to a corporate answer", "deterioration": "No answer within one quarter",
+    "cites": ["FND-0003", "EVD-0003"]}]},
   {"id": "visible", "heading": "What leaders will do visibly", "items": [
-   {"kind": "check", "text": "Ask for the leak-test record at every pump walk-through.", "when": "next 30 days", "cites": ["FND-0001"]}]},
+   {"kind": "check", "text": "Ask for the leak-test record at every pump walk-through.", "when": "next 30 days", "learning": "LR-01",
+    "cites": ["FND-0001"]}]},
+  {"id": "management-review", "heading": "Management review input", "items": [
+   {"kind": "table", "columns": ["Input", "What this investigation shows", "Indicator", "Deterioration trigger"],
+    "rows": [["Incidents and corrective actions", "A restart without a leak test led to the fire", "% of restarts with a test record", "Any restart without one"],
+             ["Monitoring results", "Not in this investigation", "", ""],
+             ["Audit results", "No audit checked purchase records against specifications", "Spares audits completed", "An audit cycle missed"],
+             ["Risks and opportunities", "Not in this investigation", "", ""],
+             ["Adequacy of resources", "No return-to-service checklist existed to resource", "Procedures with a test step", "A procedure revised without one"],
+             ["Consultation outcomes", "Not in this investigation", "", ""]],
+    "row_cites": [["FND-0001"], [], ["FND-0003"], [], ["FND-0002"], []]}]},
   {"id": "workshop", "heading": "Leadership workshop agenda (two hours)", "items": [
    {"kind": "table", "columns": ["Time", "Activity", "Built on"],
     "rows": [["0:00", "Walk the pathways", "How the site set this up"], ["0:45", "Name the routines nobody challenged", "Culture signals"],

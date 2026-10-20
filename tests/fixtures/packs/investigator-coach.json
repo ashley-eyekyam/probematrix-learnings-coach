@@ -1,10 +1,16 @@
 {"pack": "investigator-coach", "schema": 1, "title": "Investigator Coach: Synthetic pump fire, 2024",
  "audience": "Investigators and HSE professionals", "status": "Learning purposes: not a statutory document",
  "bottom_line": [{"text": "No statement was taken from the stores officer who bought the seals.", "cites": ["FND-0003", "EVD-0003"]}],
+ "gaps": [{"text": "The export does not name the investigation team.", "evidence_needed": "The team list with each member's role",
+           "cites": ["FND-0003"]}],
  "sections": [
   {"id": "evidence-audit", "heading": "Evidence base audit", "items": [
    {"kind": "table", "columns": ["Evidence type", "Items"], "rows": [["document", 2], ["log_record", 1]]},
    {"kind": "para", "text": "There is no interview evidence; every finding rests on documents [EVD-0001; EVD-0002; EVD-0003]."}]},
+  {"id": "process", "heading": "Investigation process against requirements", "items": [
+   {"kind": "check", "text": "The report records the date of the incident and a description of it [FND-0001].", "clauses": ["PSM-(m)(4)"]},
+   {"kind": "check", "text": "The team included someone who knows the stores process. [GAP] The export names no investigation team.",
+    "clauses": ["PSM-(m)(3)"], "cites": ["FND-0003"]}]},
   {"id": "follow-up-per-finding", "heading": "Follow-up per high-rated finding", "items": [
    {"kind": "table", "id": "follow-up",
     "columns": ["Finding", "Evidence to collect", "Key questions", "Suggested interviews", "Causal hypothesis"],
@@ -20,4 +26,4 @@
    {"kind": "para", "text": "The alarm finding may belong at L4 if the configuration was a design standard [FND-0004]."}]},
   {"id": "training", "heading": "Training use", "items": [
    {"kind": "scenario", "situation": "Move FND-0001 to the level where it belongs.",
-    "prompts": ["Which condition enabled the omitted step?"], "cites": ["FND-0001"]}]}]}
+    "prompts": ["Which condition enabled the omitted step?"], "learning": "LR-01", "cites": ["FND-0001"]}]}]}

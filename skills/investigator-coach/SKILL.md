@@ -1,50 +1,81 @@
 ---
 name: investigator-coach
-description: Coach incident investigators and HSE professionals using a ProbeMatrix investigation export - evidence gaps and conflicts, key questions and suggested interviews still to pursue, causal hypotheses to test, and method lessons on reaching supervisory and organisational causes. Fills the export's Evidence to Collect, Key Questions, Suggested Interviews and Causal Hypothesis columns when they are empty. Use when someone asks how to deepen or strengthen an investigation, what evidence is missing, who else to interview, how good the investigation is, or wants investigator training material from a real case.
+description: Coaches incident investigators and HSE professionals from a ProbeMatrix investigation export - evidence gaps and conflicts, the investigation process against requirements, key questions and interviews still to pursue, causal hypotheses to test, and method lessons on reaching supervisory and organisational causes. Fills the export's Evidence to Collect, Key Questions, Suggested Interviews and Causal Hypothesis columns when they are empty. Use when someone asks how to deepen or strengthen an investigation with a ProbeMatrix export, what evidence is missing, who else to interview, how good the investigation is, or wants investigator training material from a real case.
 ---
 
 # Investigator Coach
 
-Audience: investigators, HSE advisers and process-safety engineers who run or review investigations.
+Audience: investigators, HSE advisers and process-safety engineers who run or review investigations. Read `learnings-coach/references/learning-principles.md` (including "Interviews in a just culture") and `learnings-coach/references/export-schema.md`.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md` and `export-schema.md`.
+## Before you start
+
+Follow `learnings-coach/references/skill-common.md` §1 and §2.
+
+Engine: `PMLC`, as `skill-common.md` §1 defines it (this skill needs the `learnings-coach` skill installed alongside it).
+
+This skill needs the **workspace** only. It uses, when present: the register (`<run>/outputs/learnings-register.json`), the comparator (`<ws>/comparator.json`) and the gaps other packs recorded (`<run>/outputs/gaps.json`).
+
+- **Ask about privilege first**, one question, before you write the interview plan or the follow-up table: "Is litigation, a prosecution or a regulator's inquiry in prospect?" If yes, or the user does not know, produce the interview plan and follow-up only at the direction of the organisation's legal adviser, title the pack "Working papers", and say that `follow-up.json` is pasted back only when the adviser agrees. These outputs create no legal privilege (`skill-common.md` §7).
+- Start from the register if present: carry `learning: "LR-nn"` on method lessons and follow-up rows that test a register learning.
 
 ## Gather
 
 ```bash
-PMLC profile <ws>                           # shows whether follow-up columns are empty
-PMLC select <ws> --top-rated --format json --out <ws>/top.json
+PMLC select <ws> --top-rated --format json --out <ws>/top.json   # the high-rated findings the follow-up must cover
+PMLC table-item <ws> evidence-types                              # evidence items by type, ready to paste
+PMLC run-path <ws>                                               # top rating and incident date
 ```
 
-Read the incident narrative in `<ws>/incident.json` and the evidence descriptions in `<ws>/evidence.json`.
+`select --preset investigator-coach` runs the select call. The profile (`<ws>/profile.md`, printed by `setup`) says whether the follow-up columns are empty. Read:
+- the incident narrative and the Incident Summary fields in `<ws>/incident.json` (`fields`: Date, Investigation Status, Investigation Team, Due Date, Completed Date where the export has them);
+- the evidence descriptions in `<ws>/evidence.json`;
+- `<run>/outputs/gaps.json` when it exists: the gaps the other packs could not close. Each one is a candidate follow-up row or interview question.
 
 ## Write
 
-1. **Evidence base audit**: evidence items by type; which kinds of evidence are absent (e.g. no maintenance-fitter statement, no procurement records, no calibration master data); conflicts between sources (dates, times, identifiers) and how they were resolved or not.
-2. **Follow-up per high-rated finding** (one table row each): evidence to collect · key questions · suggested interviews (by role) · causal hypothesis to test. Keep it specific to the finding's evidence.
-3. **Interview plan** (follow "Interviews in a just culture" in `learnings-coach/references/learning-principles.md`: non-disciplinary, a representative present, local rationality, no leading questions): roles to interview that the evidence never heard from, ordered by how much they could change the analysis, each with five questions.
-4. **Method lessons**: where the analysis reached L3–L4 and how; where findings may be coded at too low a level (an organisational condition recorded as an individual act); where a finding rests on a single source.
-5. **Training use**: three exercises from this case for investigator training (e.g. "move this L1 finding to the level where it belongs").
+Write the pack `<run>/outputs/investigator-coach.json` in the shape in `learnings-coach/references/pack-schema.md`. **Leave `scope` out**: coverage is then measured against the top-rated findings, which are exactly what the follow-up table must cover.
 
-## Output
+| § | id | Heading | Content rule | Kind | Count |
+|---|---|---|---|---|---|
+| — | bottom_line | — | The gaps that would most change the analysis | `bottom_line` | up to 7 |
+| 1 | `evidence-audit` | Evidence base audit | The `table-item evidence-types` output, pasted unchanged | `table` | 1 |
+| 1 | `evidence-audit` | (same section) | Absent kinds of evidence; conflicts between sources (dates, times, identifiers) and whether they were resolved; findings that rest on a single source | `para` | up to 4 |
+| 2 | `process` | Investigation process against requirements | One `check` per requirement (below), with `clauses`; [GAP] where the export does not show it | `check` | up to 6 |
+| 3 | `follow-up-per-finding` | Follow-up per high-rated finding | The follow-up table: `"id": "follow-up"`, one row per condition (`investigator-coach/references/follow-up.md`) | `table` | 1 |
+| 4 | `interview-plan` | Interview plan | Roles the evidence never heard from, ordered by how much they could change the analysis, five questions each; `to` = the role, `group` = the role | `question` | at least 1 |
+| 5 | `method` | Method lessons | Where the analysis reached L3–L4 and how; findings coded too low (an organisational condition recorded as an individual act); single-source findings | `para` | up to 5 |
+| 6 | `training` | Training use | Exercises from this case for investigator training (such as "move this L1 finding to the level where it belongs") | `scenario` | up to 3 |
 
-Write the pack `<run>/outputs/investigator-coach.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+Rules for the content:
 
-```bash
-PMLC check-pack <ws> <run>/outputs/investigator-coach.json
-PMLC pack <ws> <run>/outputs/investigator-coach.json    # -> investigator-coach.html, .md and follow-up.json
+- **Investigation process against requirements.** Check, from the Incident Summary fields and the narrative: the investigation began promptly (within 48 hours under PSM (m)(2) and RMP 68.81; `PSM-(m)(2)`); the team included someone who knows the process, and a contract employee where contractor work was involved (`PSM-(m)(3)`); the report holds the minimum fields: date of incident, date the investigation began, description, contributing factors, recommendations (`PSM-(m)(4)`); a system exists to resolve the recommendations (`PSM-(m)(5)`); the report will be reviewed with affected personnel, contractors included (`PSM-(m)(6)`); causes, actions and effectiveness review are planned (`ISO45001-10.2`). Where a field is absent, write the check with "[GAP]" and a top-level `gaps` entry naming the record that would show it. State what the export shows; never that a requirement was breached.
+- **Follow-up table.** The contract is in `investigator-coach/references/follow-up.md` (`check-pack` enforces it). Keep each cell specific to the finding's evidence. `pack` writes `follow-up.json` from it, ready to paste back into the investigation.
+- **Interviews** follow "Interviews in a just culture": non-disciplinary, a representative present, local rationality, no leading questions. Add one question for validating the account with the people involved before learnings are published.
+
+```json
+{"kind": "check", "text": "The report records the date the investigation began. [GAP] The export has no Incident Summary date for it.",
+ "clauses": ["PSM-(m)(4)"], "cites": ["FND-…"]}
 ```
 
-Sections → kinds:
+## If the evidence is thin
 
-| Section | Kind |
-|---|---|
-| 1 Evidence audit | `table` (evidence type, items) + `para` |
-| 2 Follow-up | the `table` with `"id": "follow-up"` and columns `Finding`, `Evidence to collect`, `Key questions`, `Suggested interviews`, `Causal hypothesis`, one row per condition, with that condition's high-rated Finding IDs (comma-separated) in the first cell and `row_cites` |
-| 3 Interview plan | `question`, `to` the role |
-| 4 Method lessons | `para` |
-| 5 Training use | `scenario` |
+- **No Evidence Links sheet:** the evidence audit says so in one `para`; the follow-up table still covers every top-rated finding, with Evidence to collect stating what record would ground it.
+- **No Incident Summary timeline fields:** every process check carries [GAP]; do not infer dates from the narrative unless it states them.
+- **Hundreds of top-rated findings:** one row per condition, not per finding; group findings that describe the same condition into one row.
 
-`pack` writes `follow-up.json` from the follow-up table (one entry per finding), ready to paste back into the investigation. Use `data_quality` for export problems and `exclusions` for findings left out on purpose. When one finding in a shared row needs its own note, add `finding_notes` (`{"FND-…": "note"}`) to the table.
+## Not covered here
 
-**Follow-up contract** (`check-pack` enforces it): the first cell of each row holds one or more Finding IDs (comma-separated), and a finding may appear in only one row. `follow-up.json` maps each finding ID to `evidence_to_collect`, `key_questions`, `suggested_interviews` and `causal_hypothesis` from its row, plus `note` when `finding_notes` gives one; every `finding_notes` key must appear in the table's first column.
+- Comparing this investigation with an official report: `report-comparison`.
+- The learnings themselves and their recommendations: `learnings-register`.
+- Legal advice on privilege or disclosure: the organisation's legal adviser.
+
+## Check and hand over
+
+Run `learnings-coach/references/skill-common.md` §4, then tick §5:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/investigator-coach.json --strict   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/investigator-coach.json                  # -> investigator-coach.html, .md and follow-up.json
+```
+
+Also confirm: the privilege question was asked and answered, every top-rated finding has a follow-up row, and the pack stays internal (`pack` keeps interview plans out of any shared copy). Next: paste `follow-up.json` back into the investigation, when the answer to the privilege question allows it.

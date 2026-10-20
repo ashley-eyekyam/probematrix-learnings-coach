@@ -1447,17 +1447,21 @@ def _fresh_run(tmp_path):
     return ws_, ws_.parent / "outputs"
 
 
-def _without_learning_ids(p):
-    """The fixture as an alpha.4 pack: Tasks 21-23 add `learning` ids to fixtures; an alpha.4 pack has none."""
-    for s in p["sections"]:
-        for it in s["items"]:
-            it.pop("learning", None)
+def alpha4_copy(p):
+    """The pack as alpha.4 wrote it: the Phase 3 optional ids (item and bottom-line `learning` and `clauses`) removed,
+    since audience fixtures now carry register learnings (Tasks 21-23)."""
+    p = copy.deepcopy(p)
+    for x in [*(p.get("bottom_line") or []), *(it for s in p.get("sections") or [] for it in s.get("items") or [])]:
+        if isinstance(x, dict):
+            if isinstance(x.get("learning"), str):
+                del x["learning"]
+            x.pop("clauses", None)
     return p
 
 
 @pytest.mark.parametrize("name", pack_fixtures() + ["all-kinds"])
 def test_alpha4_pack_passes_without_new_fields(w, name):
-    r = pp.check_pack(_without_learning_ids(fixture(name)), w)
+    r = pp.check_pack(alpha4_copy(fixture(name)), w)
     assert r.problems == [], r.problems
     assert not [x for x in r.warnings if "learning ids not verified" in x or "unknown clause" in x]
 
@@ -1709,3 +1713,21 @@ def test_register_xlsx_about_column_a_fits_the_brand_line(ws, tmp_path):  # noqa
     about = openpyxl.load_workbook(out)["About"]
     longest = max(len(str(c.value)) for c in about["A"] if c.value)
     assert about.column_dimensions["A"].width >= min(longest, 200)
+
+
+# ---- v2.0 phase 3, task 22: leadership, assurance and investigation fixtures carry register learnings (P3-12)
+
+MINI_REGISTER_FILE = ROOT / "tests" / "fixtures" / "registers" / "mini-register.json"
+T22_AUDIENCE = ["board-brief", "top-management-brief", "site-leadership-coach", "manager-coach",
+                "auditor-assurance-pack", "investigator-coach"]
+
+
+@pytest.mark.parametrize("name", T22_AUDIENCE)
+def test_t22_fixture_learning_ids_in_mini_register(w, name):
+    p = fixture(name)
+    ids = [x["learning"] for x in [*p.get("bottom_line", []), *(it for s in p["sections"] for it in s["items"])]
+           if isinstance(x.get("learning"), str)]
+    assert ids, f"{name}: no item carries a register learning"
+    r = pp.check_pack(p, w, register=json.loads(MINI_REGISTER_FILE.read_text(encoding="utf-8")), strict=True)
+    assert r.problems == [], r.problems
+    assert not [x for x in r.warnings if "unknown learning" in x or "not verified" in x], r.warnings

@@ -10,16 +10,31 @@
    {"kind": "table", "columns": ["Learning", "Transferability", "Reason"],
     "rows": [["Spares bought without a specification", "Likely at similar sites", "Any site that buys spares locally"]],
     "row_cites": [["FND-0003"]]}]},
-  {"id": "policies", "heading": "Policies and standards implicated", "items": [
-   {"kind": "para", "group": "Spares and sourcing",
-    "text": "Purchase records show local buying with no specification check [FND-0003; EVD-0003]."}]},
+  {"id": "policies", "heading": "Policies, standards and legal requirements implicated", "items": [
+   {"kind": "para", "group": "Spares and sourcing standard",
+    "text": "Purchase records show local buying with no specification check [FND-0003; EVD-0003]."},
+   {"kind": "para", "group": "Corrective action requirement",
+    "text": "The findings record no review of whether earlier sourcing changes worked [FND-0003].", "clauses": ["ISO45001-10.2"]}]},
   {"id": "decisions", "heading": "Decisions for top management", "items": [
-   {"kind": "decision", "group": "Critical spares", "decision": "Set one enterprise rule for critical-spares specifications",
+   {"kind": "decision", "group": "For decision: critical spares", "decision": "Set one enterprise rule for critical-spares specifications",
     "options": ["Mandatory standard", "Guidance with audit"], "trade_offs": "Cost and lead time against consistent parts.",
     "cites": ["FND-0003"]},
-   {"kind": "indicator", "group": "Critical spares", "name": "Sites with verified spares specifications",
-    "measure": "% of sites whose critical-spares orders all cite a specification", "cites": ["FND-0003"]}]},
+   {"kind": "indicator", "group": "For decision: critical spares", "name": "Sites with verified spares specifications",
+    "measure": "% of sites whose critical-spares orders all cite a specification", "deterioration": "Any site below 100% for two months",
+    "cites": ["FND-0003"]}]},
+  {"id": "management-review", "heading": "Management review input", "items": [
+   {"kind": "table", "columns": ["Input", "What this investigation shows", "Indicator", "Deterioration trigger"],
+    "rows": [["Incidents and corrective actions", "A restart without a leak test led to the fire", "% of restarts with a test record", "Any restart without one"],
+             ["Monitoring results", "Not in this investigation", "", ""],
+             ["Audit results", "No audit checked purchase records against specifications", "Spares audits completed", "An audit cycle missed"],
+             ["Risks and opportunities", "Local buying without a specification was a standing risk", "% of critical spares to specification", "Any month below target"],
+             ["Adequacy of resources", "Not in this investigation", "", ""],
+             ["Consultation outcomes", "Not in this investigation", "", ""]],
+    "row_cites": [["FND-0001"], [], ["FND-0003", "EVD-0003"], ["FND-0003"], [], []]}]},
   {"id": "assurance", "heading": "Assurance", "items": [
    {"kind": "question", "question": "How will we know every site applies the spares rule?",
     "why": "Local buying without a specification ran for two years before this event.",
-    "good_evidence": "Sampled audits from the auditor assurance pack", "to": "Head of internal audit", "cites": ["FND-0003"]}]}]}
+    "good_evidence": "Sampled audits from the auditor assurance pack", "to": "Head of internal audit", "cites": ["FND-0003"]},
+   {"kind": "question", "question": "How will we know restarts are tested at every site?",
+    "why": "The pump returned to service without a test.", "good_evidence": "Restart records sampled at each site",
+    "to": "Head of internal audit", "learning": "LR-01", "cites": ["FND-0002"]}]}]}

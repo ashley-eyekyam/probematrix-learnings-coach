@@ -92,7 +92,9 @@
     "PMLC check-pack <ws> <run>/outputs/auditor-assurance-pack.json --strict",
     "PMLC pack <ws> <run>/outputs/auditor-assurance-pack.json"
    ],
-   "questions": [],
+   "questions": [
+    "Which framework should the test points follow: iso45001, psm, rbps, seveso, icmm, india, or the organisation's own management-system elements?"
+   ],
    "gate": [
     "check-pack --strict"
    ]

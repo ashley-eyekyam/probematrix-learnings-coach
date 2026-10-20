@@ -16,12 +16,27 @@ Draft because: no finding is marked as edited by a person
 
 - Return to service had no test step, and the crew restarted the pump untested. [FND-0001; FND-0002]
 
+## Front sheet: decisions and indicators
+
+### Return-to-service test
+
+**Decision:** Make a signed leak test a hold point on every return to service [FND-0002]
+- Options: All pressure-boundary work; Rotating equipment first
+- Trade-offs: Longer restarts against untested equipment.
+- Owner: Maintenance function
+
+**Indicator:** Restarts with a test record [FND-0002]
+- Measure: % of restarts with a signed leak-test record
+- Deterioration looks like: Any restart without one
+
 ## S1 Profile
 
 | Level | Findings | Cites |
 |---|---|---|
 | L1 Unsafe acts | 1 | FND-0001 |
 | L3 Supervision | 1 | FND-0002 |
+
+S13 Comparison is left out: no comparator report was supplied.
 
 ## S2 Practice (L1)
 

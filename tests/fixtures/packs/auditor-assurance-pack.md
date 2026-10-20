@@ -25,22 +25,36 @@ The findings record no check of purchase records against specifications [FND-000
 ### Maintenance and testing
 
 **Test point:** Every restart after pressure-boundary work has a leak-test record [FND-0002; EVD-0001]
-- What to sample: 10 recent restarts from the CMMS
+- Clause: Site element 4.2 Return to service
+- What to sample: The last 10 restarts after pressure-boundary work, from the CMMS
 - Evidence of conformity: A signed test record on each work order
 - Red flags: Work order closed with no test entry
+
+*(learning: LR-01)*
 
 ### Materials and spares
 
 **Test point:** Critical spares are bought to a specification [FND-0003; EVD-0003]
+- Clause: ISO 45001 9.2
 - What to sample: 20 critical-spares purchase orders
 - Evidence of conformity: A specification reference on each order
 - Red flags: Local purchase with no technical approval
+
+*(Clauses: ISO45001-9.2)*
 
 ## Cross-site verification protocol
 
 | Condition | Records to pull | Interview | Walk-path stop | Cites |
 |---|---|---|---|---|
 | Restart without a test | Last 10 restart work orders | Maintenance supervisor | Pump bay | FND-0002 |
+
+## Critical-control verification
+
+| Critical control | Barrier register id | Performance requirement | Verification activity | Verifier role | Cites |
+|---|---|---|---|---|---|
+| Leak test before return to service | unmapped | Every restart has a signed test record | Monthly sample of restart work orders | Area maintenance lead | FND-0002 |
+
+*(Clauses: ICMM-CCM-8)*
 
 ## Evidence request list
 
@@ -54,12 +68,16 @@ The findings record no check of purchase records against specifications [FND-000
 
 ## Reporting
 
-Grade each test point: conforming, partly, not, or not tested.
+Grade each test point: conforming, major nonconformity (NC), minor nonconformity, opportunity for improvement (OFI), or not tested.
 
-| Test point | Grade | Notes |
-|---|---|---|
-| Restart leak-test record |  |  |
-| Spares to specification |  |  |
+| Test point | Clause | Grade | Response to finding | Notes |
+|---|---|---|---|---|
+| Restart leak-test record | Site element 4.2 |  |  |  |
+| Spares to specification | ISO 45001 9.2 |  |  |  |
+
+## Limits of this pack
+
+- One critical control has no entry in the organisation's barrier register (unmapped).
 
 ---
 

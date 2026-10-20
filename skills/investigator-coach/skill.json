@@ -14,7 +14,8 @@
   ],
   "optional_inputs": [
     "register",
-    "comparator"
+    "comparator",
+    "gaps"
   ],
   "produces": {
     "pack": "investigator-coach",
@@ -24,5 +25,7 @@
   "embed_default": "cited",
   "interactive": false,
   "since": "0.1.0",
-  "questions": []
+  "questions": [
+    "Is litigation, a prosecution or a regulator's inquiry in prospect? If so, the interview plan and follow-up are produced only at the direction of the organisation's legal adviser."
+  ]
 }
