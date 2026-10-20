@@ -11,12 +11,12 @@
     "owner": "Reliability engineer (absent)", "state": "absent", "failure_mode": "No approval step existed for local purchases",
     "hoc_tier": "engineering", "fix": "Block critical-spares orders without a specification in the purchasing system",
     "indicator": "% of critical-spares orders with a specification reference", "cites": ["FND-0003"]},
-   {"kind": "recommendation", "group": "Specification and substitution", "change": "Route every substitute part through change control",
+   {"kind": "recommendation", "group": "Specification and substitution", "change": "Route: MOC. Put every substitute part through change control before it is bought",
     "hoc_tier": "administrative", "indicator": "Substitutions approved through change control", "cites": ["FND-0003"]}]},
   {"id": "decisions", "heading": "Engineering decisions pending", "items": [
    {"kind": "decision", "decision": "Which leak test applies after a seal change, and at what pressure?",
     "options": ["Set by the technical authority per pump class", "One site-wide test standard"], "owner": "Technical authority",
-    "cites": ["FND-0001"]}]},
+    "learning": "LR-01", "cites": ["FND-0001"]}]},
   {"id": "records", "heading": "Data and records", "items": [
    {"kind": "check", "text": "Each critical spare's record names its specification and approver.", "when": "at receipt",
     "cites": ["FND-0003"]}]}]}

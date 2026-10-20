@@ -40,9 +40,7 @@ PENDING = {
     # Task 22: leadership, assurance and investigation
     "board-brief", "top-management-brief", "site-leadership-coach", "manager-coach", "cluster-learning-dossier",
     "auditor-assurance-pack", "investigator-coach",
-    # Task 23: frontline and specialists
-    "frontline-learning-cards", "supervisor-coach", "safety-committee-guide", "training-designer",
-    "emergency-response-learnings", "engineering-integrity-learnings", "supply-chain-contractor-learnings",
+    # Task 23: frontline and specialists (done: removed)
 }
 HUB_PENDING = {"learnings-coach"}          # Task 24 removes it when the hub is rewritten
 

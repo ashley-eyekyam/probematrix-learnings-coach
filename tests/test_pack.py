@@ -1350,7 +1350,7 @@ def test_profile_sections_kinds_and_bottom_line(w):
 def test_profile_required_scope_and_word_limit(w):
     p = fixture("frontline-learning-cards")
     del p["scope"]
-    card = p["sections"][0]["items"][0]
+    card = next(s for s in p["sections"] if s["id"] == "cards")["items"][0]
     card["what_happened"] = " ".join(["word"] * 260)
     got = _strict(p, w)
     assert "scope.tiers: required by the frontline-learning-cards profile" in got
@@ -1420,11 +1420,34 @@ def _fresh_run(tmp_path):
     return ws_, ws_.parent / "outputs"
 
 
+def _without_learning_ids(p):
+    """The pack as alpha.4 wrote it: no item or bottom-line `learning` ids (Tasks 21-23 add them to fixtures)."""
+    p = copy.deepcopy(p)
+    for e in p.get("bottom_line") or []:
+        e.pop("learning", None)
+    for s in p.get("sections") or []:
+        for it in s.get("items") or []:
+            it.pop("learning", None)
+    return p
+
+
 @pytest.mark.parametrize("name", pack_fixtures() + ["all-kinds"])
 def test_alpha4_pack_passes_without_new_fields(w, name):
-    r = pp.check_pack(fixture(name), w)
+    r = pp.check_pack(_without_learning_ids(fixture(name)), w)
     assert r.problems == [], r.problems
     assert not [x for x in r.warnings if "learning ids not verified" in x or "unknown clause" in x]
+
+
+MINI_REGISTER_FILE = Path(__file__).resolve().parent / "fixtures" / "registers" / "mini-register.json"
+
+
+@pytest.mark.parametrize("name", pack_fixtures())
+def test_fixture_learning_ids_in_mini_register(w, name):
+    """Fixture packs carry `learning` ids from the mini register (skill-common.md section 3); strict checks pass."""
+    reg = json.loads(MINI_REGISTER_FILE.read_text(encoding="utf-8"))
+    r = pp.check_pack(fixture(name), w, register=reg, strict=True)
+    assert r.problems == [], r.problems
+    assert not [x for x in r.warnings if "learning" in x], r.warnings
 
 
 def test_learning_id_checked_against_register(w):

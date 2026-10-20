@@ -98,8 +98,8 @@
    "when": null,
    "commands": [
     "PMLC select <ws> --preset frontline-learning-cards:tier-t1",
-    "PMLC select <ws> --preset frontline-learning-cards:tier-t1-l12",
-    "PMLC select <ws> --preset frontline-learning-cards:top-tier-t1",
+    "PMLC select <ws> --preset frontline-learning-cards:top-tier-t1-l12",
+    "PMLC select <ws> --preset frontline-learning-cards:contractor",
     "PMLC check-pack <ws> <run>/outputs/frontline-learning-cards.json --strict",
     "PMLC pack <ws> <run>/outputs/frontline-learning-cards.json"
    ],

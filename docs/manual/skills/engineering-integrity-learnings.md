@@ -1,11 +1,13 @@
 # engineering-integrity-learnings
 
-Learning for engineering, design, asset integrity, inspection, reliability, instrumentation and management-of-change functions. It covers specifications and documents, change control, inspection and corrosion programmes, testing after maintenance, alarm and safety-system design and ageing equipment, with technical recommendations rated on the hierarchy of controls.
+Learning for engineering, design, asset integrity, inspection, reliability, instrumentation and management-of-change functions. It covers specifications and documents, change control, inspection and corrosion programmes, testing after maintenance, alarm and safety-system design and ageing equipment, with technical recommendations rated on the hierarchy of controls and the route each one takes to be adopted.
 
 ## What it is for
 
 - "What should engineers, the technical authority, integrity or reliability teams, change-control owners or instrument engineers learn?"
-- A technical lessons pack from an incident.
+- A technical lessons pack from a ProbeMatrix export.
+
+The barrier-by-barrier analysis across all functions is [barrier-learnings](barrier-learnings.md); when its pack exists, this skill takes its engineering barriers from it.
 
 ## How to start it
 
@@ -16,6 +18,7 @@ Learning for engineering, design, asset integrity, inspection, reliability, inst
 ## What it needs
 
 - `clusters.json`. The skill selects the functions tagged `engineering`: in the default list F03 Electrical Maintenance, F04 Instrumentation, Control & Calibration, F05 Asset Integrity, Corrosion & Inspection, and F07 Engineering, Design, Documents & MOC.
+- Optional: the [barrier-learnings](barrier-learnings.md) pack (the source for barriers) and the Learnings Register (entries owned by an engineering function, with their `LR-nn` ids).
 
 ## Engine commands and flags
 
@@ -25,19 +28,19 @@ pmlc select <ws> --tag engineering --level 3 4 --top-rated
 pmlc select <ws> --text "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design" --brief
 pmlc select <ws> --preset engineering-integrity-learnings   # the three calls above at once
 pmlc timeline <ws> --before incident
-pmlc check-pack <ws> <run>/outputs/engineering-integrity-learnings.json
+pmlc check-pack <ws> <run>/outputs/engineering-integrity-learnings.json --strict
 pmlc pack <ws> <run>/outputs/engineering-integrity-learnings.json
 ```
 
 - [select](../commands/select.md): `--tag engineering` every function tagged engineering; `--level 3 4` the Supervision and Organisational levels; `--top-rated` the strongest; `--text` a regular expression over the finding text (technical words); `--brief` short entries.
 - [timeline](../commands/timeline.md) with `--before incident` gives dated technical history, such as inspection dates.
-- [check-pack](../commands/check-pack.md) and [pack](../commands/pack.md) render the pack.
+- [check-pack](../commands/check-pack.md) with `--strict` checks the pack against its profile, including one learning, one barrier and one recommendation per theme; [pack](../commands/pack.md) renders it.
 
 ## What you get
 
 `engineering-integrity-learnings.html` and `.md`:
 
-1. **technical learnings by theme**, only for the themes the evidence supports. For each: a learning (the technical condition and how it persisted), the barrier it weakened, and a recommendation with engineering controls first where credible;
+1. **technical learnings by theme**, only for the themes the evidence supports. For each: a learning (the technical condition and how it persisted), the barrier it weakened, and a recommendation with engineering controls first where credible. Each recommendation starts with its route: "Route: MOC.", "Route: engineering standard revision.", "Route: inspection plan change." or "Route: technical query.";
 2. **engineering decisions pending**: questions for the technical authority, stated as decisions with options, not answers;
 3. **data and records**: the minimum record at each point in the work.
 

@@ -1,52 +1,91 @@
 ---
 name: engineering-integrity-learnings
-description: Produce learning for engineering, design, asset integrity, inspection, reliability, instrumentation and management-of-change functions from a ProbeMatrix investigation export - specifications and documents, change control, inspection and corrosion programmes, testing after maintenance, alarm and safety-system design, ageing equipment - with technical recommendations rated on the hierarchy of controls. Use when someone asks what engineers, the technical authority, integrity or reliability teams, MOC owners or instrument engineers should learn, or wants a technical lessons pack from an incident.
+description: Produces learning for engineering, design, asset integrity, inspection, reliability, instrumentation and management-of-change functions from a ProbeMatrix investigation export - specifications and documents, change control, inspection and corrosion programmes, testing after maintenance, alarm and safety-system design, ageing equipment - with technical recommendations rated on the hierarchy of controls and the route each one takes (MOC, standard revision, inspection plan change, technical query). Use when someone has a ProbeMatrix export and asks what engineers, the technical authority, integrity or reliability teams, MOC owners or instrument engineers should learn, or wants a technical lessons pack. Not for the barrier-by-barrier analysis across all functions (use `barrier-learnings`).
 ---
 
 # Engineering & Integrity Learnings
 
-Audience: the Learning Clusters tagged `engineering` (in the default taxonomy F04 instrumentation, control and calibration, F05 asset integrity, corrosion and inspection, F07 engineering, design, documents and MOC, and F03 electrical, for hazardous-area equipment).
+Audience: the Learning Clusters tagged `engineering` (in the default taxonomy F03 electrical, for
+hazardous-area equipment, F04 instrumentation, control and calibration, F05 asset integrity, corrosion and
+inspection, and F07 engineering, design, documents and MOC).
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md`.
+## Before you start
+
+Engine: `PMLC` as defined in `skill-common.md` §1 (needs the `learnings-coach` skill installed alongside it).
+
+- Follow `learnings-coach/references/skill-common.md` §1 (engine and paths) and §2 (preconditions).
+- Needs: **workspace** and **clusters**.
+- Read `learnings-coach/references/learning-principles.md`; barrier and tier words from
+  `learnings-coach/references/barriers-and-controls.md`.
+- **Barriers come from `barrier-learnings`.** If `<run>/outputs/barrier-learnings.json` exists, take each
+  engineering barrier from it (same wording, `state`, `hoc_tier` and `barrier_id`) rather than re-deriving it.
+  If it does not, write the barriers here and suggest `barrier-learnings` as the next step.
+- **Start from the register if present.** In `<run>/outputs/learnings-register.json`, take the entries whose
+  `owner_entity` is an `engineering` entity: keep their wording and carry `learning: "LR-nn"` on the items.
 
 ## Gather
 
 ```bash
-PMLC select <ws> --tag engineering --brief
-PMLC select <ws> --tag engineering --level 3 4 --top-rated
+PMLC select <ws> --tag engineering --brief                        # the engineering functions' findings
+PMLC select <ws> --tag engineering --level 3 4 --top-rated        # how the conditions persisted
 PMLC select <ws> --text "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design" --brief
-PMLC timeline <ws> --before incident
+PMLC timeline <ws> --before incident                              # the build-up, for "how it persisted"
 ```
 
 ## Write
 
-1. **Technical learnings by theme**: specification and substitution of parts; testing after maintenance; change management; inspection and corrosion programmes; documents and as-built records; detection, alarm and shutdown design; hazardous-area equipment integrity; ageing equipment. Only themes the evidence supports.
-2. **For each learning**: the technical condition, how it persisted (L3–L4), the barrier it weakened, a recommendation with HoC tier (engineering controls first where credible), and a technical leading indicator.
-3. **Engineering decisions pending**: questions the technical authority must settle (e.g. test pressure policy after pressure-boundary work, acceptance of substitute components), stated as decisions, not answers.
-4. **Data and records**: what technical records were missing or unreliable, and what the minimum record should be.
+Pack `<run>/outputs/engineering-integrity-learnings.json` (shape: `learnings-coach/references/pack-schema.md`),
+`"scope": {"tags": ["engineering"]}`.
 
-## Output
+| § | id | Heading | Content rule | Kind | Count |
+|---|---|---|---|---|---|
+| — | bottom_line | — | The technical learnings, one line each | `bottom_line` | up to 5 |
+| 1 | `themes` | Technical learnings by theme | The technical condition and how it persisted (L3–L4); `group` = the theme | `learning` | up to 8 |
+| 1 | `themes` | Technical learnings by theme | The barrier it weakened (type, owner, state, failure_mode, hoc_tier, fix, indicator), same `group` | `barrier` | up to 8 |
+| 1 | `themes` | Technical learnings by theme | The fix, engineering controls first where credible, with its route (below) and a technical leading indicator, same `group` | `recommendation` | up to 8 |
+| 2 | `decisions` | Engineering decisions pending | Questions the technical authority must settle, as options without answers; `owner` = the technical authority | `decision` | up to 6 |
+| 3 | `records` | Data and records | The minimum technical record, `when` = the point in the work | `check` | up to 8 |
 
-Write the pack `<run>/outputs/engineering-integrity-learnings.json` (schema: `learnings-coach/references/pack-schema.md`), then:
-
-```bash
-PMLC check-pack <ws> <run>/outputs/engineering-integrity-learnings.json   # fix every problem it lists
-PMLC pack <ws> <run>/outputs/engineering-integrity-learnings.json         # -> engineering-integrity-learnings.html (primary) and .md
-```
-
-Sections → kinds:
-1. For each learning, write three items with the same `group` (the theme):
-   - a `learning`: the technical condition and how it persisted;
-   - a `barrier` for the barrier it weakened (type, owner, state, failure_mode, hoc_tier, fix, indicator);
-   - a `recommendation`, engineering controls first where credible.
-2. `decision` items (options, no answers), with `owner` = the technical authority.
-3. `check` items stating the minimum record, with `when` = the point in the work.
-
-Set `"scope": {"tags": ["engineering"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+- **Themes.** Specification and substitution of parts; testing after maintenance; change management; inspection
+  and corrosion programmes; documents and as-built records; detection, alarm and shutdown design; hazardous-area
+  equipment integrity; ageing equipment. Only the themes the evidence supports. Each theme has one learning, one
+  barrier and one recommendation with the same `group`.
+- **Route.** Each recommendation's `change` starts with the route it takes to be adopted: "Route: MOC.",
+  "Route: engineering standard revision.", "Route: inspection plan change." or "Route: technical query." Pick
+  the route the change needs, not the quickest one.
+- **Numbers rule.** Do not specify engineering values (pressures, thicknesses, intervals, percentages,
+  durations) beyond what the cited records state; never add a figure from outside the export; make them
+  `decision` items for the technical authority.
 
 ```json
-{"kind": "barrier", "group": "Specification and substitution", "barrier": "…", "type": "prevention", "owner": "…",
- "state": "absent", "failure_mode": "…", "hoc_tier": "engineering", "fix": "…", "indicator": "…", "cites": ["FND-…"]}
+{"kind": "recommendation", "group": "Specification and substitution",
+ "change": "Route: MOC. Put every substitute critical part through change control before it is bought.",
+ "hoc_tier": "administrative", "why_not_stronger": "…", "indicator": "…", "cites": ["FND-…"]}
 ```
 
-**Numbers rule.** Do not specify engineering values (pressures, thicknesses, intervals, percentages, durations) beyond what the cited records state; never add a figure from outside the export; make them `decision` items for the technical authority.
+## If the evidence is thin
+
+- **Few engineering findings:** write only the themes the evidence supports; one theme is a valid pack.
+- **No barrier in the evidence for a theme:** keep the learning and recommendation, and write the barrier with
+  `state` only where a record states it; otherwise add a `gaps` entry for the record that would show it.
+- `skill-common.md` §6 covers the rest.
+
+## Not covered here
+
+- The barrier-by-barrier analysis across all functions, prevention and mitigation: `barrier-learnings` (the
+  source for barriers here).
+- The interfaces between engineering and other functions: `interface-learnings`.
+- Procurement and vendor learning about parts: `supply-chain-contractor-learnings`.
+- Engineering values and standards themselves: decisions for the technical authority, not this pack.
+
+## Check and hand over
+
+Run `skill-common.md` §4, then tick §5:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/engineering-integrity-learnings.json --strict
+PMLC pack <ws> <run>/outputs/engineering-integrity-learnings.json
+```
+
+- Check that every recommendation names its route and that no engineering value lacks a cited record.
+- Next step: `barrier-learnings`, if its pack does not exist yet.

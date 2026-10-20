@@ -64,6 +64,8 @@
    "commands": [
     "PMLC select <ws> --preset training-designer:text",
     "PMLC select <ws> --preset training-designer:l12",
+    "PMLC select <ws> --preset training-designer:people-l34",
+    "PMLC select <ws> --preset training-designer:top-t2-t3-l34",
     "PMLC check-pack <ws> <run>/outputs/training-designer.json --strict",
     "PMLC pack <ws> <run>/outputs/training-designer.json"
    ],
@@ -82,8 +84,8 @@
    "when": null,
    "commands": [
     "PMLC select <ws> --preset frontline-learning-cards:tier-t1",
-    "PMLC select <ws> --preset frontline-learning-cards:tier-t1-l12",
-    "PMLC select <ws> --preset frontline-learning-cards:top-tier-t1",
+    "PMLC select <ws> --preset frontline-learning-cards:top-tier-t1-l12",
+    "PMLC select <ws> --preset frontline-learning-cards:contractor",
     "PMLC check-pack <ws> <run>/outputs/frontline-learning-cards.json --strict",
     "PMLC pack <ws> <run>/outputs/frontline-learning-cards.json"
    ],

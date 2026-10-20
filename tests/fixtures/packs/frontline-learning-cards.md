@@ -16,9 +16,18 @@ Draft because: no finding is marked as edited by a person
 
 - A pump went back into service without a leak test after a seal change. [FND-0001; EVD-0001]
 
+## Using these cards
+
+These cards are read by the crews whose work appears in the findings: talk them through with the people involved before wide release. The crew's supervisor delivers each card at the shift briefing [FND-0001; FND-0004].
+
+| Card | Delivered by | Pair with | Contractor crews | Cites |
+|---|---|---|---|---|
+| Test what you disturb | Maintenance supervisor | supervisor-coach coaching-1 | Not covered by the findings | FND-0001 |
+| Know what the gas alarm does | Shift supervisor (control room) | supervisor-coach coaching scenarios | Not covered by the findings | FND-0004 |
+
 ## Learning Cards
 
-### Test what you disturb [FND-0001; EVD-0001]
+### Test what you disturb [FND-0001; FND-0002; EVD-0001]
 
 **What happened:** The pump was restarted after a seal change without a leak test.
 
@@ -37,6 +46,8 @@ Draft because: no finding is marked as edited by a person
 2. Who signs it?
 3. What do you do if the test rig is not available?
 
+*(learning: LR-01)*
+
 ### Know what the gas alarm does [FND-0004]
 
 **What happened:** The gas alarm showed on the display but did not shut anything down.
@@ -49,6 +60,8 @@ Draft because: no finding is marked as edited by a person
 - An alarm that only shows on a screen
 
 **What good looks like:** Crews know which alarms trip equipment and which need a person to act.
+
+*(learning: LR-02)*
 
 ## Toolbox talks
 

@@ -32,9 +32,15 @@ The DCS list shows no shutdown on the gas detector [EVD-0002].
 
 - Owner: Emergency planning (F09b)
 
+*(learning: LR-02)*
+
 ## Plan review input
 
-The plan should say who acts on a display-only gas alarm, and how fast [FND-0004].
+| Plan section | Change | Evidence | Cites |
+|---|---|---|---|
+| Gas detection and alarm response | Say who acts on a display-only gas alarm, and how fast | The gas alarm shows on the display and starts no shutdown | FND-0004; EVD-0002 |
+
+Where the emergency plan is a regulated plan, a change to it may need review by, or notice to, an authority: the plan owner should check this before revising the plan.
 
 ## Drill scenarios
 

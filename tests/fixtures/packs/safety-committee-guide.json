@@ -8,8 +8,8 @@
    {"kind": "para", "text": "After a seal change, a pump was restarted without a leak test [FND-0001]."}]},
   {"id": "system", "heading": "What the investigation says about the system", "items": [
    {"kind": "learning", "lesson": "The job had no checklist to catch a skipped test.",
-    "explanation": "The procedure index has no return-to-service entry [EVD-0002].", "cites": ["FND-0002"]},
-   {"kind": "para", "text": "The analysis places the top-rated causes at supervision and organisational level [FND-0002; FND-0003]."}]},
+    "explanation": "The procedure index has no return-to-service entry [EVD-0002].", "learning": "LR-01", "cites": ["FND-0002"]},
+   {"kind": "para", "text": "Half of the findings sit at levels 3 and 4, and the analysis places the top-rated causes at supervision and organisational level [FND-0002; FND-0003]."}]},
   {"id": "questions", "heading": "Questions to raise with management", "items": [
    {"kind": "question", "question": "Who may stop a restart when the test record is missing?", "why": "The restart went ahead without one.",
     "to": "Maintenance manager", "cites": ["FND-0001"]}]},
@@ -19,6 +19,12 @@
    {"kind": "para", "text": "Ground rules: no names, no blame, talk about conditions."},
    {"kind": "table", "columns": ["Minutes", "Item"],
     "rows": [["0-10", "What happened"], ["10-40", "Questions for management"], ["40-60", "Concerns to send on"]]}]},
+  {"id": "concerns-log", "heading": "Concerns log", "items": [
+   {"kind": "table", "columns": ["Concern", "Condition seen", "Location type", "Date raised", "Response requested"],
+    "rows": [["Restarts without a test record", "A pump went back into service with no leak-test record", "Pump bay", "", "Show the committee the return-to-service checklist"]],
+    "row_cites": [["FND-0001"]]}]},
   {"id": "follow-up", "heading": "Follow-up", "items": [
    {"kind": "check", "text": "Ask to see the new return-to-service checklist.", "when": "30 days", "cites": ["FND-0002"]},
-   {"kind": "check", "text": "Ask for the share of restarts with a test record.", "when": "90 days", "cites": ["FND-0001"]}]}]}
+   {"kind": "check", "text": "Ask for the share of restarts with a test record.", "when": "90 days", "cites": ["FND-0001"]}]},
+  {"id": "rights", "heading": "Committee and representative rights", "items": [
+   {"kind": "para", "text": "Committees and workforce representatives may have statutory rights, for example to be consulted or to see investigation documents. This guide does not replace them: confirm them with your own adviser."}]}]}
