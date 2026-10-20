@@ -13,7 +13,7 @@ Before writing a causal map, a board brief or a barrier analysis, to see which u
 ## Synopsis
 
 ```text
-pmlc causal ws [--top TOP] [--include-justification]
+pmlc causal ws [--top TOP] [--include-justification] [--hubs]
 ```
 
 ## Arguments
@@ -28,6 +28,7 @@ pmlc causal ws [--top TOP] [--include-justification]
 |---|---|---|---|
 | `--top` | number | 60 | How many links to print and to draw in the Mermaid file. `causal_graph.json` always holds every link |
 | `--include-justification` | none | off | Also read factor codes from the AI justification text, not only the causal explanation. This finds more links, but some are mentions rather than causes |
+| `--hubs` | none | off | Also print the factors with the most links out, with their level and mentions |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples
@@ -42,13 +43,13 @@ python3 $E causal $WS --top 8
 | From | To | Mentions |
 |---|---|---:|
 | OIR 1.6 (L4) | SVF 3.4 (L3) | 7 |
+| OIR 1.6 (L4) | SVV 4.1 (L3) | 6 |
 | SVI 1.1 (L3) | ASBE 1.2 (L1) | 6 |
 | SVI 1.4 (L3) | ASBE 1.2 (L1) | 6 |
 | SVI 1.4 (L3) | PTE 2.7 (L2) | 6 |
-| OIR 1.6 (L4) | SVV 4.1 (L3) | 6 |
-| SVI 1.4 (L3) | AJDE 2.11 (L1) | 5 |
-| SVV 4.1 (L3) | ASBE 1.2 (L1) | 5 |
-| OIR 1.6 (L4) | SVI 1.6 (L3) | 5 |
+| OIC 2.1 (L4) | AV 1.1 (L1) | 5 |
+| OIC 2.7 (L4) | AJDE 2.11 (L1) | 5 |
+| OIC 2.7 (L4) | ASBE 1.2 (L1) | 5 |
 ```
 
 Read as: "a failure in the maintenance, spares and support programme (OIR 1.6, level 4) is named seven times as leading to an ineffective action against an identified risk (SVF 3.4, level 3)".
@@ -64,10 +65,12 @@ python3 $E causal $WS --top 3 --include-justification
 
 | From | To | Mentions |
 |---|---|---:|
-| SVI 1.4 (L3) | PTE 2.7 (L2) | 8 |
 | SVI 1.4 (L3) | ASBE 1.2 (L1) | 8 |
+| SVI 1.4 (L3) | PTE 2.7 (L2) | 8 |
 | OIR 1.6 (L4) | SVF 3.4 (L3) | 7 |
 ```
+
+Ties in the tables are ordered by factor code, so two runs print the same order.
 
 ## Common problems
 
@@ -78,5 +81,6 @@ python3 $E causal $WS --top 3 --include-justification
 ## Related
 
 - [causal-item](causal-item.md) gives the top links as a pack graph item.
+- [table-item](table-item.md) prints the hubs as a pack table.
 - [interfaces](interfaces.md) counts causal links that cross between departments.
 - [Skills](../Skills.md): `causal-map` and `barrier-learnings` use this graph.

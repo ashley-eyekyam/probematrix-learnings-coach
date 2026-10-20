@@ -58,9 +58,20 @@ MINI_REG = {"title": "Synthetic register", "source": "export.xlsx", "entries": [
           "leading_indicator": "i"}]}]}
 
 
+EXTRA_ROWS = [
+    ["FND-0005", "AB 1.2", "Check Skipped", 1, "Unsafe Acts", "Unsafe Acts", "Errors", "substantiated", 2, 1,
+     "Seal fitted without checking the part number", "Seal fitted without a part-number check; see OR 2.2.",
+     "Stores issue slip [EVD-0003].", "Enabled by OR 2.2.",
+     "Pump Technician (seal change crew), Stores/Procurement Officer", "EVD-0003",
+     None, None, None, None, "No", None, None],
+]
+CAUSAL_ROWS = [["CL-1", "SV 1.4", 3, "AB 1.1"], ["CL-2", "OR 2.2", 4, "SV 1.4"]]
+
+
 def make_export(d: Path, status: str = "completed", edited=None, summary=(), narrative=None,
-                name="export.xlsx") -> Path:
+                name="export.xlsx", causal_rows=False) -> Path:
     """summary adds (field, value) rows to the Incident Summary; narrative adds an INCIDENT NARRATIVE block.
+    causal_rows adds two Causal Chain rows and a fifth finding (a second F02/F06 pair) for the item generators.
     The defaults give the unchanged export."""
     wb = openpyxl.Workbook()
     s = wb.active
@@ -76,7 +87,7 @@ def make_export(d: Path, status: str = "completed", edited=None, summary=(), nar
     f = wb.create_sheet("Identified Findings")
     f.append(FIND_COLS)
     ue = FIND_COLS.index("User Edited")
-    for r in ROWS:
+    for r in ROWS + (EXTRA_ROWS if causal_rows else []):
         r = list(r)
         if edited and r[0] in edited:
             r[ue] = edited[r[0]]
@@ -89,7 +100,11 @@ def make_export(d: Path, status: str = "completed", edited=None, summary=(), nar
     e.append(["OR 2.2", "Spares Programme Failure", "EVD-0003", "log_record", "Local buys", "bought locally", "PO list"])
     c = wb.create_sheet("Causal Chain")
     c.append(["Link ID", "From Code", "From Level", "To Code"])
-    c.append(["No causal links found", None, None, None])
+    if causal_rows:
+        for r in CAUSAL_ROWS:
+            c.append(r)
+    else:
+        c.append(["No causal links found", None, None, None])
     x = d / name
     wb.save(x)
     return x

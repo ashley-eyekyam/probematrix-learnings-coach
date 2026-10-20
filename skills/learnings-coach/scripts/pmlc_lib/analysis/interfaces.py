@@ -49,7 +49,7 @@ def cmd_interfaces(a):
     ents = sorted({e for k in pair for e in k} | {e for k in cross for e in k})
     out = {"pairs": [{"a": k[0], "b": k[1], "shared_findings": pair[k], "cross_causal_mentions": cross.get(k, 0),
                       "examples": examples[k][:10]} for k in sorted(set(pair) | set(cross),
-                                                                    key=lambda k: -(pair.get(k, 0) * 3 + cross.get(k, 0)))]}
+                                                                    key=lambda k: (-(pair.get(k, 0) * 3 + cross.get(k, 0)), k))]}
     write_json(ws / "interfaces.json", out)
     record_derived(ws, "interfaces.json", {n: file_sha256(ws / n) for n in ("findings.json", "clusters.json")})
     print("| Interface | Shared findings | Cross-entity causal mentions |\n|---|---:|---:|")

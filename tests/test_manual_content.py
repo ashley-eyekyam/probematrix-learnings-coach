@@ -24,7 +24,7 @@ SUBCOMMANDS = ["ingest", "profile", "classify", "select", "causal", "timeline", 
                "check-register", "check-language", "register-xlsx", "status", "run-path", "check-samples",
                "check-pack", "pack", "causal-item", "sign-off", "scan-names", "run-manifest", "purge", "setup",
                "check-all", "render-all", "index", "dossier-index", "templates", "export-actions", "plan", "compare",
-               "register-md"]
+               "register-md", "table-item", "register-items", "timeline-item", "facts", "pack-xlsx"]
 T13_PAGES = {"Home.md", "Commands.md", "Developer-tools.md"} | {f"commands/{c}.md" for c in SUBCOMMANDS}
 # Flags of other programs the pages quote (pip).
 OTHER_FLAGS = {"--user"}
