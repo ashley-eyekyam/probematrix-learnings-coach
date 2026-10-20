@@ -25,6 +25,11 @@ Subcommands
   check-samples   check samples/<slug>/ folders follow the contribution layout
   run-manifest    set a run's intended use, jurisdiction, retention review date and classification
   purge           delete a run's workspace (and outputs) after retention, keeping run-manifest.json
+  setup           ingest, profile, classify, causal, timeline and interfaces in one go
+  check-all       check every pack and the register in outputs/
+  render-all      render every pack that passed its check, and the register
+  index           write outputs/index.html, one row per pack
+  dossier-index   write outputs/dossier-index.json listing the dossier-F*.json packs
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -44,6 +49,7 @@ from .dashboard.render import cmd_dashboard
 from .handling import cmd_sign_off, HANDLING_ENUMS, SHARE_MODES
 from .ingest.xlsx import cmd_ingest
 from .lint import cmd_check_language
+from .orchestrate import cmd_check_all, cmd_dossier_index, cmd_index, cmd_render_all, cmd_setup
 from .pack.html import cmd_pack
 from .pack.items import cmd_causal_item
 from .pack.schema import cmd_check_pack
@@ -295,6 +301,39 @@ def build_parser():
     s.add_argument("--patterns", action="store_true",
                    help="also flag email, phone and staff-number patterns (an aid, not proof of de-identification)")
     s.set_defaults(fn=cmd_scan_names)
+
+    s = sp.add_parser("setup", help="ingest, profile, classify, causal, timeline and interfaces in one go", allow_abbrev=False)
+    s.add_argument("xlsx")
+    s.add_argument("--slug", required=True, help="<site>-<event>, e.g. hazira-gas-release-fire")
+    s.add_argument("--date", help="incident date YYYY-MM-DD (default: the summary sheet's Date)")
+    s.add_argument("--root", help="folder that holds pmlc-runs/ (default: the export's folder)")
+    s.add_argument("--force", action="store_true", help="overwrite an existing workspace in the run folder")
+    s.add_argument("--strict", action="store_true", help="exit 1 when a required column is missing")
+    s.add_argument("--redact", metavar="MAP.json", help="JSON {name: role}; passed to ingest")
+    s.add_argument("--overlay", metavar="NAME_OR_PATH", help="role overlay for classify, e.g. india-process-site")
+    s.set_defaults(fn=cmd_setup)
+
+    s = sp.add_parser("check-all", help="check every pack and the register in outputs/", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--strict", action="store_true", help="pass --strict to check-pack where it is available")
+    s.add_argument("--json", action="store_true", help="print one JSON object on stdout; messages go to stderr")
+    s.set_defaults(fn=cmd_check_all)
+
+    s = sp.add_parser("render-all", help="render every pack that passed its last check, and the register", allow_abbrev=False)
+    s.add_argument("ws")
+    add_embed_arg(s)
+    add_share_args(s)
+    s.set_defaults(fn=cmd_render_all)
+
+    s = sp.add_parser("index", help="write outputs/index.html: one row per pack", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--out", help="default: <run>/outputs/index.html")
+    s.set_defaults(fn=cmd_index)
+
+    s = sp.add_parser("dossier-index", help="write outputs/dossier-index.json listing the dossier-F*.json packs", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--out", help="default: <run>/outputs/dossier-index.json")
+    s.set_defaults(fn=cmd_dossier_index)
 
     return p
 

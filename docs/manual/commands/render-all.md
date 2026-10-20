@@ -1,0 +1,45 @@
+# render-all
+
+## What it does
+
+Renders what passed its check: [pack](pack.md) for each pack whose last check passed and whose file has not changed since, then for the register [register-xlsx](register-xlsx.md), `register-md` when this engine has it, and [dashboard](dashboard.md) with the register. A pack never checked, failing, or changed since its check is skipped with `skipped <file>: run check-all first`.
+
+## When to use it
+
+After [check-all](check-all.md) is clean.
+
+## Synopsis
+
+```text
+pmlc render-all ws [--embed {cited,summary,full}] [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
+```
+
+## Arguments
+
+| Argument | What it is |
+|---|---|
+| `ws` | The workspace folder |
+
+## Flags
+
+| Flag | Value | Default | What it does |
+|---|---|---|---|
+| `--embed` | `cited`, `summary` or `full` | `cited` | Records each page embeds, as for pack |
+| `--share` | `internal`, `external` or `public` | `internal` | A masked copy for outside the organisation; needs a sign-off |
+| `--names` | file | `$PMLC_NAMES` | Personal names, one per line |
+| `--orgs` | file | `$PMLC_ORGS` | Organisation names, one per line |
+| `-h`, `--help` | none | | Show the flags and stop |
+
+## Examples
+
+```bash
+python3 $E render-all $WS
+```
+
+## Common problems
+
+- **"skipped … run check-all first".** Run [check-all](check-all.md); a pack edited after its check is skipped too.
+
+## Related
+
+[check-all](check-all.md), [index](index.md), [pack](pack.md)

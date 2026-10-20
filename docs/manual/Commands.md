@@ -77,6 +77,16 @@ pmlc 2.0.0a4
 | [dashboard](commands/dashboard.md) | Writes the self-contained organisation learning map (HTML) |
 | [register-xlsx](commands/register-xlsx.md) | Writes a Learnings Register JSON to a formatted Excel workbook |
 
+### Run it all
+
+| Command | What it does |
+|---|---|
+| [setup](commands/setup.md) | Runs ingest, profile, classify, causal, timeline and interfaces in one go |
+| [check-all](commands/check-all.md) | Checks every pack and the register in the outputs folder |
+| [render-all](commands/render-all.md) | Renders every pack that passed its check, and the register |
+| [index](commands/index.md) | Writes the outputs front page, one row per pack |
+| [dossier-index](commands/dossier-index.md) | Writes a pack listing the cluster dossiers |
+
 ### 5. Repository upkeep
 
 | Command | What it does |
