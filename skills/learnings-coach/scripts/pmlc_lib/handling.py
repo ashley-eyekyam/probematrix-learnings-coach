@@ -18,6 +18,7 @@ from .classify import _load_taxonomy, map_role, TIER_LABELS
 from .util import _overlay_path, _s, iso_date, write_json
 from .workspace import _save_manifest, load_manifest, load_ws, sign_off_entry
 from . import lint
+from .retention import run_handling_facts
 from . import privacy
 
 
@@ -156,6 +157,10 @@ def effective_handling(doc, w, src=None, ws=None) -> dict:
         elif not _signed_here(h, ws, src):
             reasons.append(REASON_NOT_SIGNED)
     out["draft_reasons"] = list(dict.fromkeys(reasons))
+    facts = run_handling_facts(ws)      # the run manifest: a retention date the block lacks, and the regimes
+    if not out.get("retention_review") and facts["retention_review"]:
+        out["retention_review"] = facts["retention_review"]
+    out["regimes"] = facts["regimes"]
     signed = claims and not reasons
     out["effective_status"] = h["status"] if signed else "draft"
     return out
@@ -193,10 +198,15 @@ def review_text(eh: dict) -> str:
 
 
 def handling_lines(eh: dict) -> list:
-    """The handling line, then 'Draft because: ...' when there are reasons."""
+    """The handling line, 'Draft because: ...' when there are reasons, 'Retention review: <date>' when the handling
+    block or the run manifest has one, and 'Statutory report still required: ...' when the run names a jurisdiction."""
     out = [f"Review: {review_text(eh)} · Classification: {eh['classification']} · Version {eh['version']}"]
     if eh["draft_reasons"]:
         out.append("Draft because: " + "; ".join(eh["draft_reasons"]))
+    if eh.get("retention_review"):
+        out.append(f"Retention review: {eh['retention_review']}")
+    if eh.get("regimes"):
+        out.append("Statutory report still required: " + "; ".join(eh["regimes"]))
     return out
 
 

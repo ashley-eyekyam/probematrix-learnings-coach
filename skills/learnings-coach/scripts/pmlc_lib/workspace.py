@@ -218,6 +218,13 @@ def cmd_status(a):
         p = Path(rec.get("path", ""))
         changed = "missing" if not p.is_file() else ("yes" if file_sha256(p) != rec.get("sha256") else "no")
         print(f"| {name} | {last} | {changed} |")
+    from .retention import load_run_manifest   # retention imports this module
+    rm = load_run_manifest(ws)
+    if rm:
+        print("\n| Run manifest | Value |\n|---|---|")
+        for k in ("classification", "intended_use", "jurisdiction", "retention_review", "purged_on"):
+            v = rm.get(k)
+            print(f"| {k} | {', '.join(v) if isinstance(v, list) else (v if v is not None else '')} |")
     signed = m.get("sign_offs", {})
     if signed:
         print("\n| Signed off | Status | Role | Date | Changed since |\n|---|---|---|---|---|")

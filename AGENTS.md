@@ -23,6 +23,8 @@ WS=path/to/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace      # printed by ing
 python3 $E profile $WS --out $WS/profile.md
 python3 $E classify $WS
 python3 $E status $WS                          # which derived files are stale after a re-ingest
+python3 $E run-manifest $WS --jurisdiction in --retention-review YYYY-MM-DD   # run-manifest.json: adds the Retention review and Statutory report lines
+python3 $E purge <run> --keep outputs --yes   # delete the workspace after retention; run-manifest.json stays (no --yes: lists only)
 python3 $E dashboard $WS                       # -> <run>/outputs/organisation-learning-map.html
 python3 $E select $WS --tier T2 --level 3 --brief      # feed an audience skill
 python3 $E check-language $WS <run>/outputs/board-brief.json   # just-culture language check (check-pack runs it too)

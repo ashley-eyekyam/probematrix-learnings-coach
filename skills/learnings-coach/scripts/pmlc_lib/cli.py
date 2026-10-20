@@ -23,6 +23,8 @@ Subcommands
   status          which derived files are current or stale, and the last check of each pack
   run-path        print a workspace's run folder, outputs folder and slug
   check-samples   check samples/<slug>/ folders follow the contribution layout
+  run-manifest    set a run's intended use, jurisdiction, retention review date and classification
+  purge           delete a run's workspace (and outputs) after retention, keeping run-manifest.json
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -52,6 +54,7 @@ from .register.xlsx import cmd_register_xlsx
 from .samples import cmd_check_samples
 from .select import cmd_select, COUNT_BY, SELECT_FIELDS
 from .util import HERE
+from .retention import cmd_purge, cmd_run_manifest, CLASSIFICATIONS, JURISDICTIONS
 from .workspace import cmd_run_path, cmd_status
 
 
@@ -229,6 +232,20 @@ def build_parser():
     s = sp.add_parser("run-path", help="print the run folder, workspace, outputs folder and slug of a workspace", allow_abbrev=False)
     s.add_argument("ws")
     s.set_defaults(fn=cmd_run_path)
+
+    s = sp.add_parser("run-manifest", help="update <run>/run-manifest.json (intended use, jurisdiction, retention review, classification)", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--intended-use", dest="intended_use", help="what the learnings are for (free text)")
+    s.add_argument("--jurisdiction", help="comma-separated: " + ",".join(JURISDICTIONS))
+    s.add_argument("--retention-review", dest="retention_review", help="YYYY-MM-DD")
+    s.add_argument("--classification", choices=list(CLASSIFICATIONS))
+    s.set_defaults(fn=cmd_run_manifest)
+
+    s = sp.add_parser("purge", help="delete a run's workspace and outputs, keeping run-manifest.json (needs --yes)", allow_abbrev=False)
+    s.add_argument("run", help="the run folder <dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>")
+    s.add_argument("--keep", choices=["outputs"], help="keep the outputs folder")
+    s.add_argument("--yes", action="store_true", help="really delete (without it, list what would go and exit 1)")
+    s.set_defaults(fn=cmd_purge)
 
     s = sp.add_parser("check-samples", help="check samples/<slug>/ folders follow the contribution layout", allow_abbrev=False)
     s.add_argument("dir", nargs="?", default=str(HERE.parents[2] / "samples"))
