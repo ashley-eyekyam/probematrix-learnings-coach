@@ -40,6 +40,14 @@ Blind comparison: no finding quotes the other report's recommendations [FND-0001
 | Engineering | 0 | 1 |
 | Training | 1 | 0 |
 
+## Side by side
+
+| Topic | Other report says | ProbeMatrix says | Cites |
+|---|---|---|---|
+| Leak test | Retrain fitters | A signed hold point at return to service | FND-0001; FND-0002 |
+| Spares | Not examined | Spares bought without a specification | FND-0003; EVD-0003 |
+| Gas alarm | Not examined | A display-only alarm with no shutdown | FND-0004 |
+
 ## Where the other report is stronger
 
 Its recommendation names who retrains the fitters; the export's own recommendation leaves the owner open [FND-0001].
@@ -51,5 +59,7 @@ The other report here is fictional, for testing; counts are illustrative only.
 ---
 
 This pack cites 2 of 2 relevant findings.
+
+2 of 2 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

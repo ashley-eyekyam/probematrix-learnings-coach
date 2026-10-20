@@ -3,7 +3,7 @@
  "bottom_line": [
   {"text": "Seals were bought without a specification for two years before the fire.", "cites": ["FND-0003", "EVD-0003"]},
   {"text": "No check stopped an untested pump returning to service.", "cites": ["FND-0002"]}],
- "scope": {"levels": [3, 4]},
+ "scope": {"levels": [3, 4], "min_rating": "top"},
  "sections": [
   {"id": "what-happened", "heading": "What happened and why it matters to the board", "items": [
    {"kind": "para", "text": "A pump was restarted after a seal change without a leak test and the seal failed [FND-0001; EVD-0001]."}]},

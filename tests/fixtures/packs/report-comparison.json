@@ -15,6 +15,12 @@
     "row_cites": [["FND-0003"]]}]},
   {"id": "control-tiers", "heading": "Control-tier profile of recommendations", "items": [
    {"kind": "table", "columns": ["Control tier", "Other report", "ProbeMatrix"], "rows": [["Engineering", 0, 1], ["Training", 1, 0]]}]},
+  {"id": "side-by-side", "heading": "Side by side", "items": [
+   {"kind": "table", "columns": ["Topic", "Other report says", "ProbeMatrix says"],
+    "rows": [["Leak test", "Retrain fitters", "A signed hold point at return to service"],
+             ["Spares", "Not examined", "Spares bought without a specification"],
+             ["Gas alarm", "Not examined", "A display-only alarm with no shutdown"]],
+    "row_cites": [["FND-0001", "FND-0002"], ["FND-0003", "EVD-0003"], ["FND-0004"]]}]},
   {"id": "stronger", "heading": "Where the other report is stronger", "items": [
    {"kind": "para", "text": "Its recommendation names who retrains the fitters; the export's own recommendation leaves the owner open [FND-0001]."}]},
   {"id": "limits", "heading": "Limits of this comparison", "items": [

@@ -8,7 +8,8 @@
    {"kind": "para", "text": "After a seal change, a pump was restarted without a leak test [FND-0001]."}]},
   {"id": "system", "heading": "What the investigation says about the system", "items": [
    {"kind": "learning", "lesson": "The job had no checklist to catch a skipped test.",
-    "explanation": "The procedure index has no return-to-service entry [EVD-0002].", "cites": ["FND-0002"]}]},
+    "explanation": "The procedure index has no return-to-service entry [EVD-0002].", "cites": ["FND-0002"]},
+   {"kind": "para", "text": "The analysis places the top-rated causes at supervision and organisational level [FND-0002; FND-0003]."}]},
   {"id": "questions", "heading": "Questions to raise with management", "items": [
    {"kind": "question", "question": "Who may stop a restart when the test record is missing?", "why": "The restart went ahead without one.",
     "to": "Maintenance manager", "cites": ["FND-0001"]}]},

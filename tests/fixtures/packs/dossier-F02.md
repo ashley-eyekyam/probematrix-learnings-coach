@@ -29,11 +29,29 @@ Draft because: no finding is marked as edited by a person
 
 The work order shows no test [EVD-0001].
 
+## S3 Preconditions (L2)
+
+**Learning:** An unfamiliar seal gave no cue that a test mattered more than usual. [FND-0001; FND-0003]
+
+The findings show local seals without a specification [FND-0003].
+
 ## S4 Supervision (L3)
 
 **Learning:** Supervisors had no checklist to refuse a restart against. [FND-0002]
 
 The procedure index has no entry [EVD-0002].
+
+## S5 Organisational influences (L4)
+
+**Learning:** The spares programme let critical seals in without a specification. [FND-0003; EVD-0003]
+
+Purchase records show local buying since March 2022 [EVD-0003].
+
+## S6 Interfaces
+
+Maintenance fits what stores buys, and neither side checked the specification [FND-0003; FND-0001].
+
+**Learning:** Maintenance and stores need one owner for the specification of a critical spare. [FND-0001; FND-0003; EVD-0001]
 
 ## S7 Barriers
 
@@ -65,6 +83,13 @@ Make the leak test a hold point you sign [FND-0002].
 - Barrier: Leak test before return to service
 - Leading indicator: % of restarts with a test record
 
+## S11 Competence
+
+| Tier | Competence | Cites |
+|---|---|---|
+| T1 Frontline | Carry out and record a leak test | FND-0001 |
+| T2 Supervision | Check the test record before release | FND-0002 |
+
 ## S12 Transferability
 
 | Learning | Reach | Reason | Cites |
@@ -80,5 +105,7 @@ Make the leak test a hold point you sign [FND-0002].
 ---
 
 This pack cites 2 of 2 relevant findings.
+
+1 of 1 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Smoke test: ingest the Hazira sample into a temp root and check the baseline.
 
-Uses only the standard library. Exits non-zero naming the failing assertion.
+Exits non-zero naming the failing assertion. Needs requirements-dev.txt (openpyxl, and pytest for the synthetic
+export that tests/test_pmlc.py builds, used by the fixture --strict check).
 Later tasks add assertions here.
 """
 import json
 import os
+import pathlib
 import re
 import subprocess
 import sys
@@ -63,8 +65,26 @@ def main():
         if not re.search(r"^check-language: 0 errors, \d+ warnings$", out, re.M):
             fail("check-language did not report 0 errors on the sample register:\n" + out)
 
+        print("smoke: %d fixture packs pass check-pack --strict" % strict_fixtures(tmp))
+
     print("smoke OK: %d findings, %d evidence, register 0 problems, language 0 errors"
           % (EXPECT_FINDINGS, EXPECT_EVIDENCE))
+
+
+def strict_fixtures(tmp):
+    """Ruling P3-5: every committed fixture pack (and so every golden) passes check-pack --strict on the synthetic
+    workspace the tests build (tests/test_pmlc.py make_export)."""
+    sys.path.insert(0, os.path.join(ROOT, "tests"))
+    from test_pmlc import make_export  # noqa: E402  (synthetic, fictional export)
+    d = os.path.join(tmp, "synthetic")
+    os.makedirs(d)
+    pmlc("ingest", str(make_export(pathlib.Path(d))), "--legacy-out", os.path.join(d, "ws"))
+    pmlc("classify", os.path.join(d, "ws"))
+    fix = os.path.join(ROOT, "tests", "fixtures", "packs")
+    names = sorted(f for f in os.listdir(fix) if f.endswith(".json") and f not in ("all-kinds.json", "bad-l3-01.json"))
+    for f in names:
+        pmlc("check-pack", os.path.join(d, "ws"), os.path.join(fix, f), "--strict")
+    return len(names)
 
 
 if __name__ == "__main__":

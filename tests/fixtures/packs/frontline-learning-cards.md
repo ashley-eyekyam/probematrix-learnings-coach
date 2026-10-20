@@ -70,4 +70,6 @@ Five minutes on the leak test: why it matters and where the record goes [FND-000
 
 This pack cites 2 of 3 relevant findings.
 
+0 of 1 top-rated relevant findings cited.
+
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

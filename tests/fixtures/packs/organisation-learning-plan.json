@@ -14,7 +14,9 @@
   {"id": "interfaces", "heading": "Strongest interfaces", "items": [
    {"kind": "table", "columns": ["Interface", "What passes between them"], "rows": [["F02 × F06", "Critical spares"]], "row_cites": [["FND-0003"]]}]},
   {"id": "fixes", "heading": "Strength of fixes", "items": [
-   {"kind": "para", "text": "The register's recommendations need checking for engineering controls on the spares path [FND-0003]."}]},
+   {"kind": "para", "text": "The register's recommendations need checking for engineering controls on the spares path [FND-0003]."},
+   {"kind": "table", "columns": ["Control tier", "Recommendations"], "rows": [["engineering", 0], ["administrative", 2]],
+    "row_cites": [["FND-0003"], ["FND-0002"]]}]},
   {"id": "rollout", "heading": "Rollout plan", "items": [
    {"kind": "table", "columns": ["Order", "Skill", "Audience", "Why"],
     "rows": [[1, "site-leadership-coach", "Site leadership", "Owns the spares decision"], [2, "supervisor-coach", "Supervisors", "Owns the hold point"]],

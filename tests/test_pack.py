@@ -279,7 +279,8 @@ def test_markdown_per_kind(w):
         "**Barrier:** Leak test [FND-0001]\n- Failure mode: Skipped\n- Type: prevention\n- Control tier: administrative\n- Fix: Interlock",
         "- 2022-03 (24 months before): Local seal purchases begin *(weak signal)* [FND-0003]\n- 2024-03-12: Seal changed [FND-0001]",
         "Graph: 2 nodes, 1 links [FND-0003]\n\n- Seal bought locally → Pump restarted untested (enabled)",
-        "---\n\nThis pack cites 2 of 2 relevant findings.\n\n> " + pmlc.BRAND + "\n",
+        "---\n\nThis pack cites 2 of 2 relevant findings.\n\n2 of 2 top-rated relevant findings cited.\n\n> "
+        + pmlc.BRAND + "\n",
     ]:
         assert expected in md, expected
     assert md.endswith(pmlc.BRAND + "\n")
@@ -550,7 +551,8 @@ def test_exclusions_leave_coverage_and_show_reason(w):
     assert cov["excluded"] == [{"id": "FND-0003", "label": "Seals bought locally without specification",
                                 "reason": "Reviewer downgrade vote: not substantiated"}]
     md = pp.render_pack_md(p, w)
-    assert ("This pack cites 1 of 1 relevant findings.\n\nLeft out on purpose:\n"
+    assert ("This pack cites 1 of 1 relevant findings.\n\n1 of 1 top-rated relevant findings cited.\n\n"
+            "Left out on purpose:\n"
             "- FND-0003: Reviewer downgrade vote: not substantiated") in md
     t = pp.render_pack_html(w, p, "r", "d")
     assert "Left out on purpose (1)" in t and "Reviewer downgrade vote: not substantiated" in t
@@ -1192,3 +1194,214 @@ def test_tiers_in_scope_drives_the_t1_card_warning(w):
     assert any("organisation_changing" in x for x in pp.check_pack(pack_with(card, scope={"tiers": ["T1"]}), w).warnings)
     for sc in ({"tiers": "T1"}, "T1", None):
         assert not any("organisation_changing" in x for x in pp.check_pack(pack_with(item("card"), scope=sc), w).warnings)
+
+
+# ---- v2.0 phase 3, task 10: pack profiles, --strict, top-rated coverage, padding, scope drift (P3-5, P3-7)
+
+import pmlc_lib.pack.profiles as profiles  # noqa: E402
+
+
+def _board_with_questions(n):
+    p = fixture("board-brief")
+    pool = [["FND-0002"], ["FND-0003"], ["FND-0002", "EVD-0002"], ["FND-0003", "EVD-0003"], ["FND-0002", "FND-0003"],
+            ["FND-0003", "EVD-0001"], ["FND-0001", "FND-0002"]]
+    qs = [dict(MIN["question"], kind="question", question=f"Question {i}?", cites=pool[i % len(pool)]) for i in range(n)]
+    next(s for s in p["sections"] if s["id"] == "questions")["items"] = qs
+    return p
+
+
+def test_profile_violation_warns_then_strict_fails(w, ws, tmp_path):  # noqa: F811
+    p = _board_with_questions(13)                           # ruling X25 (L2-17): up to 12, at least 1
+    msg = "section questions: 13 question items, expected 1-12"
+    r = pp.check_pack(p, w)
+    assert msg in r.warnings and msg not in r.problems
+    assert msg in pp.check_pack(p, w, strict=True).problems
+    f = tmp_path / "board-brief.json"
+    f.write_text(json.dumps(p), encoding="utf-8")
+    assert f"warning: {msg}" in run("check-pack", str(ws), str(f))
+    r = run_fail("check-pack", str(ws), str(f), "--strict")
+    assert r.returncode == 1 and msg in r.stderr
+
+
+@pytest.mark.parametrize("name", pack_fixtures())
+def test_all_fixtures_pass_strict(w, name):
+    r = pp.check_pack(fixture(name), w, strict=True)
+    assert r.problems == [], r.problems
+
+
+def test_coverage_counts_top_rated(w):
+    p = pack_with(item("para", cites=["FND-0002"]), scope={"levels": [1, 2, 3, 4]})
+    rel = pp.relevant_findings(w, p["scope"])
+    top = max(f["rating"] for f in w["findings"] if f["id"] in rel)
+    n_top = sum(1 for f in w["findings"] if f["id"] in rel and f["rating"] == top)
+    cov = pp.coverage(w, p)
+    assert cov["top_relevant"] == n_top == 2 and cov["top_cited"] == 1
+    md = pp.render_pack_md(p, w)
+    t = pp.render_pack_html(w, p, "r", "d")
+    for doc in (md, t):
+        assert "1 of 2 top-rated relevant findings cited" in doc
+    assert "This pack cites 1 of 4 relevant findings." in md
+    assert '<p class="printonly">1 of 4 relevant findings cited</p>' in t
+
+
+def test_coverage_warning_uses_top_rated(w):
+    p = pack_with(item("para", cites=["FND-0002", "FND-0003"]), scope={"levels": [1, 2, 3, 4]},
+                  bottom_line=[{"text": "Test before service.", "cites": ["FND-0002"]}])
+    assert pp.coverage(w, p)["cited"] == 2 and pp.coverage(w, p)["relevant"] == 4
+    assert not any(x.startswith("coverage") for x in pp.check_pack(p, w).warnings)
+    thin = pack_with(item("para", cites=["FND-0001"]), scope={"levels": [1, 2, 3, 4]},
+                     bottom_line=[{"text": "Test before service.", "cites": ["FND-0001"]}])
+    assert any("under a quarter of the top-rated relevant findings are cited" in x
+               for x in pp.check_pack(thin, w).warnings)
+
+
+def test_coverage_floor_comes_from_the_profile(w, monkeypatch):
+    p = pack_with(item("para", cites=["FND-0002"]))                  # 1 of 2 top-rated: half
+    assert not any(x.startswith("coverage") for x in pp.check_pack(p, w).warnings)
+    monkeypatch.setattr(profiles, "profile_for", lambda name, profiles=None: {"coverage_floor": 0.75})
+    assert any("under 75% of the top-rated relevant findings are cited (1 of 2)" in x
+               for x in pp.check_pack(p, w).warnings)
+
+
+def test_padding_warning(w):
+    three = pack_with(*[item("para", text=f"t{i}", cites=["FND-0002", "FND-0001"]) for i in range(3)])
+    msg = "items: 3 items share the same cites (FND-0001, FND-0002): possible padding"
+    assert msg in pp.check_pack(three, w).warnings
+    assert msg in pp.check_pack(three, w, strict=True).problems
+    two = pack_with(*[item("para", text=f"t{i}", cites=["FND-0002", "FND-0001"]) for i in range(2)])
+    assert not any("possible padding" in x for x in pp.check_pack(two, w).warnings)
+
+
+def test_padding_counts_a_group_once_and_stays_in_one_section(w):                  # rulings X24, X26
+    c = ["FND-0003"]
+    triplet = [item("learning", group="Spares", cites=c), item("barrier", group="Spares", cites=c),
+               item("recommendation", group="Spares", cites=c)]
+    assert not any("possible padding" in x for x in pp.check_pack(pack_with(*triplet), w, strict=True).problems)
+    three_groups = [item("para", text=f"t{g}", group=g, cites=c) for g in ("A", "B", "C")]
+    assert "items: 3 items share the same cites (FND-0003): possible padding" in pp.check_pack(
+        pack_with(*three_groups), w).warnings
+    mixed = triplet + [item("para", text="u1", cites=c), item("para", text="u2", cites=c)]   # 1 group + 2 ungrouped
+    assert "items: 5 items share the same cites (FND-0003): possible padding" in pp.check_pack(pack_with(*mixed), w).warnings
+    across = pack_with(item("para", text="a", cites=c))
+    across["sections"] += [{"id": f"s{k}", "heading": f"S{k}", "items": [item("para", text=f"x{k}", cites=c)]}
+                           for k in (2, 3)]
+    assert not any("possible padding" in x for x in pp.check_pack(across, w, strict=True).problems)
+    e = fixture("engineering-integrity-learnings")                  # SKILL.md triplet, all citing FND-0003
+    th = e["sections"][0]["items"]
+    assert {tuple(it["cites"]) for it in th} == {("FND-0003",)} and len({it["group"] for it in th}) == 1
+    assert pp.check_pack(e, w, strict=True).problems == []
+
+
+def test_scope_drift_warning(w):
+    p = fixture("supervisor-coach")
+    msg = "scope: scope differs from the supervisor audience default (T2)"
+    assert not any("scope differs" in x for x in pp.check_pack(p, w).warnings)
+    for scope in ({"tiers": ["T1"]}, {"levels": [2]}, None):
+        q = copy.deepcopy(p)
+        if scope is None:
+            del q["scope"]
+        else:
+            q["scope"] = scope
+        assert msg in pp.check_pack(q, w).warnings, scope
+        assert msg in pp.check_pack(q, w, strict=True).problems
+    q = dict(copy.deepcopy(p), scope={"tiers": ["T2", "T3"]})       # widening keeps the default: no drift
+    assert not any("scope differs" in x for x in pp.check_pack(q, w).warnings)
+    b = fixture("board-brief")                                       # SKILL.md sets levels, audiences.json also T5
+    assert not any("scope differs" in x for x in pp.check_pack(b, w).warnings)
+
+
+def test_every_profile_names_a_fixture():
+    assert sorted(profiles.load()) == pack_fixtures()
+
+
+def test_profiles_have_the_contract_shape():
+    for name, prof in profiles.load().items():
+        assert set(prof) <= {"sections", "required_scope", "bottom_line", "word_limits", "coverage_floor", "rules"}, name
+        for e in prof["sections"]:
+            assert set(e) == {"id", "kinds", "min", "max"} and 0 <= e["min"] <= e["max"], (name, e)
+            assert all(k in pp.KINDS for k in e["kinds"]), (name, e)
+        assert all(r in ("triplets", "assessment-answer", "follow-up-per-top") or r.startswith("same-sections-as:")
+                   for r in prof.get("rules", [])), name
+    assert profiles.profile_for("dossier-F09b") is profiles.load()["dossier-F02"]
+    assert profiles.profile_for("test-pack") is None and profiles.profile_for(None) is None
+
+
+def _strict(p, w):
+    return pp.check_pack(p, w, strict=True).problems
+
+
+def test_profile_sections_kinds_and_bottom_line(w):
+    p = fixture("supervisor-coach")
+    p["sections"].append({"id": "extra", "heading": "Extra", "items": [item("para", cites=["FND-0002"])]})
+    p["sections"][0]["items"].append(item("decision", cites=["FND-0003"]))
+    p["sections"] = [s for s in p["sections"] if s["id"] != "coaching"]
+    p["bottom_line"] = [{"text": f"b{i}", "cites": ["FND-0002"]} for i in range(6)]
+    got = _strict(p, w)
+    for m in ["section extra: not a section of the supervisor-coach profile",
+              "section before-work: decision items do not belong here (expected check)",
+              "section coaching: missing (scenario items, expected 1-3)",
+              "bottom_line: 6 entries, expected 1-5"]:
+        assert m in got, got
+    m = fixture("manager-coach")
+    m["sections"] = [s for s in m["sections"] if s["id"] == "summary"]
+    assert "a section matching *: missing (learning items, expected 1-6)" in _strict(m, w)
+    assert not any("expected" in x for x in _strict(_board_with_questions(1), w))     # one question is enough
+
+
+def test_profile_required_scope_and_word_limit(w):
+    p = fixture("frontline-learning-cards")
+    del p["scope"]
+    card = p["sections"][0]["items"][0]
+    card["what_happened"] = " ".join(["word"] * 260)
+    got = _strict(p, w)
+    assert "scope.tiers: required by the frontline-learning-cards profile" in got
+    assert any(x.startswith(f"card {card.get('id', 'cards-1')}: ") and x.endswith("words, at most 250") for x in got)
+
+
+def test_profile_rules(w):
+    e = fixture("engineering-integrity-learnings")
+    e["sections"][0]["items"] = [it for it in e["sections"][0]["items"] if it["kind"] != "barrier"]
+    e["sections"][0]["items"][0].pop("group")
+    got = _strict(e, w)
+    assert any("a learning needs a group shared with its learning, barrier and recommendation" in x for x in got)
+    assert any(x.startswith("group ") and "(missing learning, barrier)" in x for x in got), got
+    t = fixture("training-designer")
+    q = next(s for s in t["sections"] if s["id"] == "assessment")["items"][0]
+    q.pop("answer")
+    q.pop("cites")
+    got = _strict(t, w)
+    assert any("an assessment question needs an answer" in x for x in got)
+    assert any("an assessment question needs cites" in x for x in got)
+    i = fixture("investigator-coach")
+    fu = next(it for s in i["sections"] for it in s["items"] if it.get("id") == "follow-up")
+    fu["rows"], fu["row_cites"] = fu["rows"][:1], fu["row_cites"][:1]
+    assert "follow-up: no row for top-rated finding(s) FND-0003" in _strict(i, w)
+    assert profiles.check(i, profiles.load()["investigator-coach"]) == []         # no workspace: rule skipped
+
+
+def test_profile_same_sections_rule_and_unknown_rule(w):
+    base = {"sections": [{"id": "basis", "kinds": ["para"], "min": 1, "max": 99}]}
+    prof = {"rules": ["same-sections-as:base", "same-sections-as:nope", "frobnicate"], "sections": base["sections"]}
+    p = pack_with(item("para", cites=["FND-0002"]))
+    got = profiles.check(p, prof, w, profiles={"base": base})
+    assert "sections: must be the same sections as base (basis), got s1" in got
+    assert "rules: same-sections-as:nope names no profile" in got
+    assert "rules: unknown profile rule 'frobnicate'" in got
+    p["sections"][0]["id"] = "basis"
+    assert not any(x.startswith("sections:") for x in profiles.check(p, prof, w, profiles={"base": base}))
+    assert profiles.check("not a pack", prof) == [] and profiles.check(p, None) == []
+
+
+def test_check_pack_manual_documents_strict():
+    doc = (ROOT / "docs" / "manual" / "commands" / "check-pack.md").read_text(encoding="utf-8")
+    assert "--strict" in doc and "pack-profiles.json" in doc and "top-rated relevant findings cited" in doc
+
+
+@pytest.mark.parametrize("bad", [{"kind": ["para"]}, "x", {"kind": "para", "cites": "FND-0002"}])
+def test_profile_checks_never_crash_on_wrong_types(w, bad):
+    p = fixture("engineering-integrity-learnings")
+    p["sections"][0]["items"].append(bad)
+    p["sections"].append({"id": "x", "heading": "h", "items": "nope"})
+    p["scope"] = {"tags": "engineering"}
+    r = pp.check_pack(p, w, strict=True)
+    assert r.problems

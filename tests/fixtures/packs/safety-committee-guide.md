@@ -26,6 +26,8 @@ After a seal change, a pump was restarted without a leak test [FND-0001].
 
 The procedure index has no return-to-service entry [EVD-0002].
 
+The analysis places the top-rated causes at supervision and organisational level [FND-0002; FND-0003].
+
 ## Questions to raise with management
 
 **Q: Who may stop a restart when the test record is missing?** [FND-0001]
@@ -54,5 +56,7 @@ Ground rules: no names, no blame, talk about conditions.
 ---
 
 This pack cites 3 of 4 relevant findings.
+
+2 of 2 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

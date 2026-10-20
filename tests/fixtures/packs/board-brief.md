@@ -53,4 +53,6 @@ Spares were bought locally without a specification, and assurance did not see th
 
 This pack cites 2 of 2 relevant findings.
 
+2 of 2 top-rated relevant findings cited.
+
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

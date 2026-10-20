@@ -56,4 +56,6 @@ Purchase records show local buying with no specification check [FND-0003; EVD-00
 
 This pack cites 1 of 1 relevant findings.
 
+1 of 1 top-rated relevant findings cited.
+
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

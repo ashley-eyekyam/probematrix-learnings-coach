@@ -53,7 +53,8 @@ python3 $E pack $WS $OUT/board-brief.json
 ```
 
 ```text
-warning: coverage: cites 3 of 308 relevant findings (under a quarter)
+warning: coverage: cites 3 of 308 relevant findings; under a quarter of the top-rated relevant findings are cited (3 of 101)
+…
 warning: no handling block: rendered as draft (internal)
 HTML written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.html
 Markdown written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.md
@@ -66,7 +67,8 @@ python3 $E pack $WS $OUT/board-brief.json --no-md --out print
 ```
 
 ```text
-warning: coverage: cites 3 of 308 relevant findings (under a quarter)
+warning: coverage: cites 3 of 308 relevant findings; under a quarter of the top-rated relevant findings are cited (3 of 101)
+…
 warning: no handling block: rendered as draft (internal)
 HTML written to print/board-brief.html
 ```
@@ -78,7 +80,8 @@ python3 $E pack $WS $OUT/board-brief.json --embed summary --no-md --out e-summar
 ```
 
 ```text
-warning: coverage: cites 3 of 308 relevant findings (under a quarter)
+warning: coverage: cites 3 of 308 relevant findings; under a quarter of the top-rated relevant findings are cited (3 of 101)
+…
 warning: no handling block: rendered as draft (internal)
 HTML written to e-summary/board-brief.html
 ```
@@ -90,7 +93,8 @@ python3 $E pack $WS $OUT/board-brief.json --share external
 ```
 
 ```text
-warning: coverage: cites 3 of 308 relevant findings (under a quarter)
+warning: coverage: cites 3 of 308 relevant findings; under a quarter of the top-rated relevant findings are cited (3 of 101)
+…
 warning: no handling block: rendered as draft (internal)
 cannot share externally: review is draft (the investigation status is in progress, no finding is marked as edited by a person); classification is "internal" (needs "external" or "public"); legal_review is not "cleared"
 ```

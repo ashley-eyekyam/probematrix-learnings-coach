@@ -21,7 +21,8 @@ from ..pack.markdown import (
     sorted_events
 )
 from ..pack.schema import (
-    _checked, cited_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, relevant_findings, UNCOVERED_PRINT_LINE, with_item_ids
+    _checked, cited_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, relevant_findings, TOP_PRINT_LINE, UNCOVERED_PRINT_LINE,
+    with_item_ids
 )
 from ..register.check import norm_hoc
 from ..util import _abs, write_json
@@ -268,6 +269,7 @@ def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, shar
     cov_html = ('<section class="coverage"><h2>Coverage</h2>'
                 f'<p class="noprint">This pack cites {cov["cited"]} of {cov["relevant"]} relevant findings.</p>'
                 f'<p class="printonly">{_h(UNCOVERED_PRINT_LINE.format(x=cov["cited"], y=cov["relevant"]))}</p>'
+                f'<p class="top-rated">{_h(TOP_PRINT_LINE.format(x=cov["top_cited"], y=cov["top_relevant"]))}</p>'
                 + (f'<details class="noprint"><summary>Not covered here ({len(cov["uncovered"])})</summary>'
                    f'<ul>{unc}</ul></details>' if unc else "")
                 + (f'<details><summary>Left out on purpose ({len(cov["excluded"])})</summary><ul>{exc}</ul></details>'

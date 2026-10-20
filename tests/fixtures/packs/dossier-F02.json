@@ -9,9 +9,19 @@
   {"id": "s2-practice", "heading": "S2 Practice (L1)", "items": [
    {"kind": "learning", "lesson": "Restarting without a test went unchallenged because nothing asked for one.",
     "explanation": "The work order shows no test [EVD-0001].", "cites": ["FND-0001"]}]},
+  {"id": "s3-preconditions", "heading": "S3 Preconditions (L2)", "items": [
+   {"kind": "learning", "lesson": "An unfamiliar seal gave no cue that a test mattered more than usual.",
+    "explanation": "The findings show local seals without a specification [FND-0003].", "cites": ["FND-0001", "FND-0003"]}]},
   {"id": "s4-supervision", "heading": "S4 Supervision (L3)", "items": [
    {"kind": "learning", "lesson": "Supervisors had no checklist to refuse a restart against.",
     "explanation": "The procedure index has no entry [EVD-0002].", "cites": ["FND-0002"]}]},
+  {"id": "s5-organisation", "heading": "S5 Organisational influences (L4)", "items": [
+   {"kind": "learning", "lesson": "The spares programme let critical seals in without a specification.",
+    "explanation": "Purchase records show local buying since March 2022 [EVD-0003].", "cites": ["FND-0003", "EVD-0003"]}]},
+  {"id": "s6-interfaces", "heading": "S6 Interfaces", "items": [
+   {"kind": "para", "text": "Maintenance fits what stores buys, and neither side checked the specification [FND-0003; FND-0001]."},
+   {"kind": "learning", "lesson": "Maintenance and stores need one owner for the specification of a critical spare.",
+    "cites": ["FND-0001", "FND-0003", "EVD-0001"]}]},
   {"id": "s7-barriers", "heading": "S7 Barriers", "items": [
    {"kind": "barrier", "barrier": "Leak test before return to service", "type": "prevention", "state": "absent",
     "failure_mode": "No checklist required it", "hoc_tier": "administrative", "fix": "Signed hold point", "cites": ["FND-0002"]}]},
@@ -23,6 +33,9 @@
   {"id": "s10-recommendations", "heading": "S10 Recommendations", "items": [
    {"kind": "recommendation", "change": "Signed leak-test hold point on every return to service", "hoc_tier": "administrative",
     "barrier": "Leak test before return to service", "indicator": "% of restarts with a test record", "cites": ["FND-0002"]}]},
+  {"id": "s11-competence", "heading": "S11 Competence", "items": [
+   {"kind": "table", "columns": ["Tier", "Competence"], "rows": [["T1 Frontline", "Carry out and record a leak test"],
+    ["T2 Supervision", "Check the test record before release"]], "row_cites": [["FND-0001"], ["FND-0002"]]}]},
   {"id": "s12-transferability", "heading": "S12 Transferability", "items": [
    {"kind": "table", "columns": ["Learning", "Reach", "Reason"],
     "rows": [["No test step at return to service", "Same site", "Only this site's procedure index is in evidence"]],
