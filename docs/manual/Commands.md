@@ -54,6 +54,10 @@ pmlc 2.0.0a4
 | [select](commands/select.md) | Picks the findings for one audience or question, as Markdown or JSON |
 | [causal](commands/causal.md) | Builds the causal graph from the findings' causal explanations |
 | [causal-item](commands/causal-item.md) | Prints the top causal links as a ready graph item for a pack |
+| [table-item](commands/table-item.md) | Prints a ready table item (clusters, tiers, hubs, hoc, adoption and more) for a pack |
+| [register-items](commands/register-items.md) | Prints one tier's register learnings as learning items for a pack |
+| [timeline-item](commands/timeline-item.md) | Prints the dated candidates as a timeline item for a pack |
+| [facts](commands/facts.md) | Prints the headline numbers of a workspace |
 | [timeline](commands/timeline.md) | Finds dated precursor candidates and the clock times of the event day |
 | [interfaces](commands/interfaces.md) | Finds where two parts of the organisation share findings or causal links |
 
@@ -73,6 +77,7 @@ pmlc 2.0.0a4
 |---|---|
 | [pack](commands/pack.md) | Turns a learning pack JSON into HTML and Markdown |
 | [dashboard](commands/dashboard.md) | Writes the self-contained organisation learning map (HTML) |
+| [pack-xlsx](commands/pack-xlsx.md) | Writes a pack's test points or questions to an Excel sheet |
 | [register-xlsx](commands/register-xlsx.md) | Writes a Learnings Register JSON to a formatted Excel workbook |
 
 ### Files for the organisation to fill in

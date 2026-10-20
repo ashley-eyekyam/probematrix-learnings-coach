@@ -12,6 +12,27 @@ from ..workspace import file_sha256, load_ws, record_derived
 
 # ----------------------------------------------------------------------------- causal
 
+HUB_COLUMNS = ["Factor", "Level", "Links out", "Mentions"]
+
+
+def hub_rows(g: dict) -> list:
+    """Out-degree of every factor in a causal_graph.json document: dicts with code, name, level, links (distinct
+    links out), mentions (their total) and findings (the Finding IDs behind them). Most links first; ties by
+    mentions, then by code, so the order never depends on the hash seed (X14)."""
+    names = {n["code"]: n for n in g.get("nodes", [])}
+    out = {}
+    for e in g.get("edges", []):
+        h = out.setdefault(e["from"], {"code": e["from"], "links": 0, "mentions": 0, "findings": []})
+        h["links"] += 1
+        h["mentions"] += e["mentions"]
+        h["findings"] += [x for x in e.get("findings", []) if x.startswith("FND-")]
+    for c, h in out.items():
+        h["name"] = names.get(c, {}).get("name", "")
+        h["level"] = names.get(c, {}).get("level")
+        h["findings"] = sorted(set(h["findings"]))
+    return sorted(out.values(), key=lambda h: (-h["links"], -h["mentions"], h["code"]))
+
+
 def cmd_causal(a):
     ws = Path(a.ws)
     w = load_ws(ws)
@@ -37,7 +58,8 @@ def cmd_causal(a):
         edges[k] += 1
         evid[k].append("causal-chain-sheet")
     items = [{"from": s, "to": t, "from_level": present.get(s), "to_level": present.get(t),
-              "mentions": c, "findings": evid[(s, t)][:12]} for (s, t), c in edges.most_common()]
+              "mentions": c, "findings": evid[(s, t)][:12]}
+             for (s, t), c in sorted(edges.items(), key=lambda kv: (-kv[1], kv[0]))]
     write_json(ws / "causal_graph.json", {"nodes": [{"code": c, "name": names[c], "level": present[c]}
                                                     for c in sorted(present)], "edges": items})
     top = items[: a.top]
@@ -64,3 +86,9 @@ def cmd_causal(a):
     print("\n| From | To | Mentions |\n|---|---|---:|")
     for e in top[:25]:
         print(f"| {e['from']} (L{e['from_level']}) | {e['to']} (L{e['to_level']}) | {e['mentions']} |")
+    if getattr(a, "hubs", False):
+        print("\nHubs: factors with the most links out (a count of links, not a measure of strength)\n")
+        print("| " + " | ".join(HUB_COLUMNS) + " | Name |\n|---|---|---:|---:|---|")
+        for h in hub_rows({"nodes": [{"code": c, "name": names[c], "level": present[c]} for c in present],
+                           "edges": items})[:15]:
+            print(f"| {h['code']} | L{h['level']} | {h['links']} | {h['mentions']} | {h['name'][:60]} |")

@@ -24,6 +24,11 @@ Subcommands
   run-path        print a workspace's run folder, outputs folder and slug
   check-samples   check samples/<slug>/ folders follow the contribution layout
   templates       blank adoption.csv, distribution.csv or verification.jsonl for the organisation to fill in
+  table-item      a ready table item for a pack (JSON on stdout)
+  register-items  a tier's learnings from the register as learning items
+  timeline-item   timeline candidates as a pack timeline item
+  facts           the headline numbers of a workspace
+  pack-xlsx       a pack's test points or questions as an Excel sheet
   export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
 
 Only dependency outside the standard library: openpyxl.
@@ -45,7 +50,9 @@ from .handling import cmd_sign_off, HANDLING_ENUMS, SHARE_MODES
 from .ingest.xlsx import cmd_ingest
 from .lint import cmd_check_language
 from .pack.html import cmd_pack
-from .pack.items import cmd_causal_item
+from .pack.items import cmd_causal_item, cmd_register_items, cmd_table_item, cmd_timeline_item, TABLE_KINDS
+from .pack.xlsx import cmd_pack_xlsx, XLSX_KINDS
+from .facts import cmd_facts
 from .pack.schema import cmd_check_pack
 from .privacy import cmd_scan_names
 from .profile import cmd_profile
@@ -175,6 +182,7 @@ def build_parser():
     s.add_argument("ws")
     s.add_argument("--top", type=int, default=60)
     s.add_argument("--include-justification", action="store_true")
+    s.add_argument("--hubs", action="store_true", help="also print the factors with the most links out")
     s.set_defaults(fn=cmd_causal)
 
     s = sp.add_parser("timeline", help="dated precursor candidates", allow_abbrev=False)
@@ -298,6 +306,42 @@ def build_parser():
     s.add_argument("--names", help="names file: nothing is written if one appears in the actions (default: $PMLC_NAMES)")
     s.add_argument("--out-dir", dest="out_dir", help="folder to write into (default: <run>/outputs)")
     s.set_defaults(fn=cmd_export_actions)
+
+    s = sp.add_parser("table-item", help="a ready table item for a pack (JSON on stdout)", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("kind", choices=TABLE_KINDS)
+    s.add_argument("--entity", metavar="F", help="entity for entity-tier, e.g. F02")
+    s.add_argument("--level", nargs="+", type=int, metavar="N", help="count only findings of these HFACS levels")
+    s.add_argument("--top", type=int, default=15, help="rows to keep (default 15)")
+    s.add_argument("--register", help="Learnings Register JSON (hoc, adoption)")
+    s.add_argument("--pack", help="pack JSON whose recommendations and barriers hoc counts")
+    s.set_defaults(fn=cmd_table_item)
+
+    s = sp.add_parser("register-items", help="a tier's learnings from the register as learning items (JSON on stdout)", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--tier", required=True, choices=["T1", "T2", "T3", "T4", "T5"])
+    s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json)")
+    s.set_defaults(fn=cmd_register_items)
+
+    s = sp.add_parser("timeline-item", help="timeline candidates as a pack timeline item (JSON on stdout)", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--before", required=True, help="ISO date, or the word incident")
+    s.add_argument("--top", type=int, default=12, help="events to keep (default 12)")
+    s.set_defaults(fn=cmd_timeline_item)
+
+    s = sp.add_parser("facts", help="the headline numbers of a workspace", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json when present)")
+    s.add_argument("--json", action="store_true", help="print one JSON object")
+    s.set_defaults(fn=cmd_facts)
+
+    s = sp.add_parser("pack-xlsx", help="a pack's test points or questions as an Excel sheet", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("pack")
+    s.add_argument("--kind", required=True, choices=list(XLSX_KINDS))
+    s.add_argument("--out", help="default: <run>/outputs/<pack>-test-points.xlsx or -questions.xlsx")
+    _lint_flags(s)
+    s.set_defaults(fn=cmd_pack_xlsx)
 
     return p
 

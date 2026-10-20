@@ -13,7 +13,7 @@ Before writing a causal map, a board brief or a barrier analysis, to see which u
 ## Synopsis
 
 ```text
-pmlc causal ws [--top TOP] [--include-justification]
+pmlc causal ws [--top TOP] [--include-justification] [--hubs]
 ```
 
 ## Arguments
@@ -28,6 +28,7 @@ pmlc causal ws [--top TOP] [--include-justification]
 |---|---|---|---|
 | `--top` | number | 60 | How many links to print and to draw in the Mermaid file. `causal_graph.json` always holds every link |
 | `--include-justification` | none | off | Also read factor codes from the AI justification text, not only the causal explanation. This finds more links, but some are mentions rather than causes |
+| `--hubs` | none | off | Also print the factors with the most links out, with their level and mentions |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples
@@ -69,6 +70,8 @@ python3 $E causal $WS --top 3 --include-justification
 | OIR 1.6 (L4) | SVF 3.4 (L3) | 7 |
 ```
 
+Ties in the tables are ordered by factor code, so two runs print the same order.
+
 ## Common problems
 
 - **A count is a number of mentions, not a measure of strength.** Several findings can describe the same link in different words. Count learnings, not mentions.
@@ -78,5 +81,6 @@ python3 $E causal $WS --top 3 --include-justification
 ## Related
 
 - [causal-item](causal-item.md) gives the top links as a pack graph item.
+- [table-item](table-item.md) prints the hubs as a pack table.
 - [interfaces](interfaces.md) counts causal links that cross between departments.
 - [Skills](../Skills.md): `causal-map` and `barrier-learnings` use this graph.
