@@ -29,6 +29,8 @@ PMLC select <ws> --tag people --level 3 4 --brief       # the competence system 
 PMLC select <ws> --tier T2 T3 --level 3 4 --top-rated --brief --budget-chars 30000   # supervisor and manager modules
 ```
 
+- **Budget drops.** When the last call says findings were dropped for budget, rerun it with `--entity <F-id>` for
+  the function a supervisor or manager module is for, rather than relying on which top-rated findings survived.
 - **Scope per module audience.** Crew modules draw on levels 1 and 2. Supervisor and manager modules draw on
   levels 3 and 4, where their competence gaps sit. Set the pack scope to the levels the modules cover:
   `{"levels": [1, 2]}` for crew modules only, `{"levels": [1, 2, 3, 4]}` when there is a supervisor or manager

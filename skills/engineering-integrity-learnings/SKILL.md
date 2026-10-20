@@ -43,8 +43,8 @@ Pack `<run>/outputs/engineering-integrity-learnings.json` (shape: `learnings-coa
 | 1 | `themes` | Technical learnings by theme | The technical condition and how it persisted (L3–L4); `group` = the theme | `learning` | up to 8 |
 | 1 | `themes` | Technical learnings by theme | The barrier it weakened (type, owner, state, failure_mode, hoc_tier, fix, indicator), same `group` | `barrier` | up to 8 |
 | 1 | `themes` | Technical learnings by theme | The fix, engineering controls first where credible, with its route (below) and a technical leading indicator, same `group` | `recommendation` | up to 8 |
-| 2 | `decisions` | Engineering decisions pending | Questions the technical authority must settle, as options without answers; `owner` = the technical authority | `decision` | up to 6 |
-| 3 | `records` | Data and records | The minimum technical record, `when` = the point in the work | `check` | up to 8 |
+| 2 | `decisions` | Engineering decisions pending | Questions the technical authority must settle (e.g. test pressure after pressure-boundary work, acceptance of substitute components), as options without answers; `owner` = the technical authority | `decision` | up to 6 |
+| 3 | `records` | Data and records | Which technical records were missing or unreliable, and the minimum record, `when` = the point in the work | `check` | up to 8 |
 
 - **Themes.** Specification and substitution of parts; testing after maintenance; change management; inspection
   and corrosion programmes; documents and as-built records; detection, alarm and shutdown design; hazardous-area

@@ -1,6 +1,6 @@
 ---
 name: frontline-learning-cards
-description: Turns a ProbeMatrix investigation export into frontline learning - one-page Learning Cards and five-minute toolbox talks for operators, technicians, fitters, crews, control-room staff, security personnel and contractor crews, in plain language, blame-free, with warning signs, "stop and ask" points and the supervisor who delivers each card. Use when someone has a ProbeMatrix export and wants toolbox talks, safety moments, shift briefings, learning cards or pre-job talk material for workers or crews. Not for the supervisors' own checks and hold points (use `supervisor-coach`), training modules and assessments (use `training-designer`), or response-phase learning for fire and emergency teams (use `emergency-response-learnings`).
+description: Turns a ProbeMatrix investigation export into frontline learning - one-page Learning Cards and five-minute toolbox talks for operators, technicians, fitters, crews, control-room staff, security personnel and contractor crews, in plain language, blame-free, with warning signs, "stop and ask" points and the supervisor who delivers each card. Use when someone has a ProbeMatrix export and wants toolbox talks, safety moments, shift briefings, learning cards or pre-job talk material for workers or crews. Not for the supervisors' own checks and hold points (use `supervisor-coach`), training modules and assessments (use `training-designer`), response-phase learning for fire and emergency teams (use `emergency-response-learnings`), or the organisation's procurement, vendor and contractor-management learning and the contract owner's briefing points for contractor crews (use `supply-chain-contractor-learnings`).
 ---
 
 # Frontline Learning Cards
@@ -34,7 +34,8 @@ PMLC register-items <ws> --tier T1                      # register learnings, wh
   use the contractor selection too and set `"scope": {"tiers": ["T1"], "tags": ["contractor"]}`. The host
   organisation's system owns the contractor's briefing and supervision: write "the contractor crew was not
   briefed on…", never "the contractor failed".
-- **Primary cite at L1 or L2.** T1 selections surface many level 3 and 4 findings. The first Finding ID in each
+- **Primary cite at L1 or L2.** Take it from the top-rated L1/L2 selection, or from the `--tier T1 --brief` list for
+  a card the top-rated set misses. T1 selections surface many level 3 and 4 findings. The first Finding ID in each
   card's `cites` must be a level 1 or 2 finding (an act or condition at the sharp end). A level 3 or 4 finding
   may follow it when it explains why the job felt normal ("this substitute part had been used for years"); say
   so in `why_made_sense`. Levels: `learnings-coach/references/hfacs-levels.md` §1.
@@ -54,7 +55,7 @@ Pack `<run>/outputs/frontline-learning-cards.json` (shape: `learnings-coach/refe
 |---|---|---|---|---|---|
 | — | bottom_line | — | The learnings a crew should take away, one line each | `bottom_line` | up to 5 |
 | 1 | `delivery` | Using these cards | Facilitator note (below), then who delivers what | `para` | 1 |
-| 1 | `delivery` | Using these cards | Columns Card, Delivered by, Pair with (supervisor-coach scenario), Contractor crews; one row per card, `row_cites` = the card's cites | `table` | 1 |
+| 1 | `delivery` | Using these cards | Columns Card, Delivered by, Pair with (supervisor-coach scenario), Contractor crews to brief (whether the card also goes to contractor crews: a plan, not the record); one row per card, `row_cites` = the card's cites | `table` | 1 |
 | 2 | `cards` | Learning Cards | title, what_happened, `why_made_sense`, `organisation_changing` (both required here), warning_signs, good_looks_like, three `discussion` questions; under 250 words; primary cite L1 or L2 | `card` | up to 8 |
 | 3 | `toolbox-talks` | Toolbox talks | One `para` per five-minute talk, `group` = the task ("returning equipment to service") | `para` | up to 3 |
 | 3 | `toolbox-talks` | Toolbox talks | One discussion `scenario` per talk, same `group` | `scenario` | up to 3 |
@@ -81,7 +82,7 @@ Pack `<run>/outputs/frontline-learning-cards.json` (shape: `learnings-coach/refe
   or 4 finding into a crew instruction. Put the organisational conditions in a `limits` line pointing to
   `supervisor-coach` and `manager-coach`.
 - **No contractor findings** (the contractor selection returns none): leave the contractor tag out of the scope
-  and write "Not covered by the findings" in the Contractor crews column.
+  and write "Not covered by the findings" in the Contractor crews to brief column.
 - `skill-common.md` §6 covers the rest.
 
 ## Not covered here

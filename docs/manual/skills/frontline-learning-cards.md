@@ -47,7 +47,7 @@ pmlc templates <ws> distribution                      # the delivery record, onc
 
 `frontline-learning-cards.html` and `.md`:
 
-- **using these cards**: a facilitator note on using the cards fairly, and a table of who delivers each card, the [supervisor-coach](supervisor-coach.md) coaching scenario to pair it with, and whether contractor crews are covered;
+- **using these cards**: a facilitator note on using the cards fairly, and a table of who delivers each card, the [supervisor-coach](supervisor-coach.md) coaching scenario to pair it with, and whether the card also goes to contractor crews ("Contractor crews to brief": a plan; the record is `distribution.csv`);
 - up to eight **Learning Cards**, each under 250 words, each citing its evidence. The first cite on each card is a level 1 or 2 finding (an act or condition at the sharp end); a level 3 or 4 finding may follow when it explains why the job felt normal;
 - up to three **toolbox talks**, grouped by task (for example "returning equipment to service"), each with a discussion scenario;
 - a **"stop and ask" list**: the situations where anyone on the crew should pause the job and ask a supervisor, and the support they should expect when they do.
@@ -56,7 +56,7 @@ With the contractor-workforce option, the scope adds the `contractor` tag and th
 
 ## Worked example (Hazira)
 
-`select --tier T1 --brief` returned 222 findings; `--tier T1 --level 1 2 --top-rated` returned 38, the pool for each card's first cite; and `--tag contractor --brief` returned 2 (F17 Contractors), so on Hazira the contractor column mostly reads "Not covered by the findings". A card could rest on a test after a gasket change that must not be skipped (FND-3AB996FC). The agent leaves out learnings only managers can act on.
+`select --tier T1 --brief` returned 222 findings; `--tier T1 --level 1 2 --top-rated` returned 38, the pool for each card's first cite; and `--tag contractor --brief` returned 2 (F17 Contractors), so on Hazira the "Contractor crews to brief" column mostly reads "Not covered by the findings". A card could rest on a test after a gasket change that must not be skipped (FND-3AB996FC). The agent leaves out learnings only managers can act on.
 
 These counts are from the base classification, before the resolution pass. After you place the remaining roles they will be higher, most for T3 (in one trial pass on Hazira, roughly T1 222→231, T2 237→238, T3 211→257; your numbers depend on how you place roles).
 
@@ -65,5 +65,5 @@ These counts are from the base classification, before the resolution pass. After
 - [supervisor-coach](supervisor-coach.md): the checks behind the hold points on the cards, and the crew briefing plan.
 - [training-designer](training-designer.md): turns the cards into a module.
 - [safety-committee-guide](safety-committee-guide.md): the workforce representatives' view.
-- [supply-chain-contractor-learnings](supply-chain-contractor-learnings.md): the contractor-management side.
+- [supply-chain-contractor-learnings](supply-chain-contractor-learnings.md): the organisation's contractor-management learning and the contract owner's briefing points; the crews' own cards stay here.
 - Recipe: [A frontline toolbox talk, and printing it](../Workflows-and-recipes.md#a-frontline-toolbox-talk-and-printing-it).

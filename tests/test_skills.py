@@ -65,6 +65,9 @@ OVERLAPS = {
     ("frontline-learning-cards", "supervisor-coach"), ("supervisor-coach", "frontline-learning-cards"),
     ("frontline-learning-cards", "training-designer"), ("training-designer", "frontline-learning-cards"),
     ("barrier-learnings", "engineering-integrity-learnings"), ("engineering-integrity-learnings", "barrier-learnings"),
+    ("frontline-learning-cards", "supply-chain-contractor-learnings"),
+    ("supply-chain-contractor-learnings", "frontline-learning-cards"),
+    ("safety-committee-guide", "frontline-learning-cards"),
 }
 NO_PROFILE = {"learnings-register"}        # writes a register, not a pack: its Write table has no profile
 WRITE_HEADER = ["§", "id", "heading", "content rule", "kind", "count"]

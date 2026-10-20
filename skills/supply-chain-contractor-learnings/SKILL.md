@@ -1,6 +1,6 @@
 ---
 name: supply-chain-contractor-learnings
-description: Produces learning for procurement, stores, materials management, vendors, OEMs, contractors and contractor crews from a ProbeMatrix investigation export - part specifications and substitutions, local sourcing without quality control, OEM support for ageing equipment, vendor documents, contractor work control, agency or outsourced roles, and a briefing for the contractor workforce. Use when someone has a ProbeMatrix export and asks what procurement, stores, the supply chain, vendors, OEMs or contractors should learn, or wants a supplier or contractor briefing, spares policy input, or contractor-management lessons after an incident.
+description: Produces learning for procurement, stores, materials management, vendors, OEMs, contractors and contractor crews from a ProbeMatrix investigation export - part specifications and substitutions, local sourcing without quality control, OEM support for ageing equipment, vendor documents, contractor work control, agency or outsourced roles, and a briefing for the contractor workforce. Use when someone has a ProbeMatrix export and asks what procurement, stores, the supply chain, vendors, OEMs or contractors should learn, or wants a supplier or contractor briefing, spares policy input, or contractor-management lessons after an incident. Not for the Learning Cards and toolbox talks the crews themselves keep, contractor crews included (use `frontline-learning-cards`).
 ---
 
 # Supply Chain & Contractor Learnings

@@ -1,6 +1,6 @@
 ---
 name: safety-committee-guide
-description: Produces a discussion guide from a ProbeMatrix investigation export for joint health and safety committees, workforce safety representatives and union safety reps - a plain-language account, the questions the workforce should raise with management, what to look for on site, a concerns log, and how to keep the discussion about systems rather than blame. Use when someone has a ProbeMatrix export and asks for safety committee material, a worker consultation pack, a guide for safety reps, a workforce engagement session or a town-hall discussion on the investigation.
+description: Produces a discussion guide from a ProbeMatrix investigation export for joint health and safety committees, workforce safety representatives and union safety reps - a plain-language account, the questions the workforce should raise with management, what to look for on site, a concerns log, and how to keep the discussion about systems rather than blame. Use when someone has a ProbeMatrix export and asks for safety committee material, a worker consultation pack, a guide for safety reps, a workforce engagement session or a town-hall discussion on the investigation. Not for the crews' own cards and toolbox talks (use `frontline-learning-cards`).
 ---
 
 # Safety Committee Guide

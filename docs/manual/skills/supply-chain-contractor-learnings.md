@@ -60,4 +60,5 @@ These counts are from the base classification, before the resolution pass. After
 
 - [interface-learnings](interface-learnings.md): the maintenance and stores seam (27 shared findings on Hazira).
 - [engineering-integrity-learnings](engineering-integrity-learnings.md): technical approval of substitutes.
+- [frontline-learning-cards](frontline-learning-cards.md): the cards contractor crews keep (its contractor-workforce option).
 - [Review and sharing](../Review-and-sharing.md): before a briefing goes to a vendor or contractor.

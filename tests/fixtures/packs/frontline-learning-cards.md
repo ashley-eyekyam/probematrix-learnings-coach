@@ -20,7 +20,7 @@ Draft because: no finding is marked as edited by a person
 
 These cards are read by the crews whose work appears in the findings: talk them through with the people involved before wide release. The crew's supervisor delivers each card at the shift briefing [FND-0001; FND-0004].
 
-| Card | Delivered by | Pair with | Contractor crews | Cites |
+| Card | Delivered by | Pair with | Contractor crews to brief | Cites |
 |---|---|---|---|---|
 | Test what you disturb | Maintenance supervisor | supervisor-coach coaching-1 | Not covered by the findings | FND-0001 |
 | Know what the gas alarm does | Shift supervisor (control room) | supervisor-coach coaching scenarios | Not covered by the findings | FND-0004 |
