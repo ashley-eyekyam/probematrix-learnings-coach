@@ -16,7 +16,7 @@ One row per **learning** (`LR-nn`). Each learning carries its recommendations. L
 | H. Dissemination | `audiences`, `learning_level` (individual / team / organisational; single- or double-loop), `formats` (Brief, Card, toolbox talk, module) |
 | I. Recommendations | list of `{what, level_barrier, evidence_basis, hoc_tier, leading_indicator}` |
 | J. Tier messages | `tier_messages`: `{"T1": "...", "T2": "...", "T3": "...", "T4": "...", "T5": "..."}`, one short message per tier that must act (omit tiers with nothing to do). Feeds the Learning Plan sheet and the dashboard |
-| K. Spine fields (optional) | `urgency` (alert / notice / information), `recommendation_class` (recommendation / observation / action already taken, after HSSIB), `recipient_role` (a role, never a name), `regulatory_touchpoint` (free text naming the regime; counted by `check-register` as flagged for legal or compliance review), `nine_m` (`M1` to `M9`) and `nine_m_subcategory`, `verification` (an object: `method` and `indicator`), `why_not_stronger` (why a priority-1 learning has no fix above the administrative tier) |
+| K. Spine fields (optional) | `urgency` (alert / notice / information), `recommendation_class` (recommendation / observation / action_taken, after HSSIB), `recipient_role` (a role, never a name), `regulatory_touchpoint` (free text naming the regime; counted by `check-register` as flagged for legal or compliance review), `nine_m` (`M1` to `M9`) and `nine_m_subcategory`, `verification` (an object: `method` and `indicator`), `why_not_stronger` (why a priority-1 learning has no fix above the administrative tier) |
 
 **Owner rule.** `owner_entity` is the entity with the most findings among the learning's findings (from `clusters.json`), written as `F-id Name`; list co-owners after it, e.g. `F02 Mechanical Maintenance (co-owners: F06, F07)`. Choose a different owner only when the learning is about a system another entity owns, and say why in `context`.
 
@@ -24,7 +24,7 @@ One row per **learning** (`LR-nn`). Each learning carries its recommendations. L
 
 Controlled values (keep to these so summaries count cleanly; put detail in another field):
 - `hfacs_level`: start with `L1`, `L2`, `L3` or `L4`, then the sub-category.
-- `hoc_tier`: one of `elimination`, `substitution`, `engineering`, `administrative`, `training`, `ppe` (a trailing "control" is fine). Free text is read by `norm_hoc`: text with an administrative cue (review, procedure, checklist, audit, permit, plan, instruction, sign) at the start of a word is `administrative`, otherwise one tier word gives that tier; anything else is ambiguous and warns.
+- `hoc_tier`: one of `elimination`, `substitution`, `engineering`, `administrative`, `training`, `ppe` (a trailing "control" is fine). Free text is read by `norm_hoc`: an administrative cue (review, procedure, checklist, audit, permit, plan, instruction, sign) at the start of a word gives `administrative`; otherwise the strongest tier mentioned (in the order above) wins; text naming no tier warns as ambiguous.
 - `priority`: `1`, `2` or `3`. A priority-1 learning needs at least one recommendation above the administrative tier (`elimination`, `substitution` or `engineering`) or a non-empty `why_not_stronger`: `check-register` warns, and `check-register --strict` fails.
 - `urgency`, `recommendation_class` and `nine_m` take the values in section K; any other value is a problem.
 - `learning_level`: `single-loop` or `double-loop`, chosen by the written criteria in `indicators-and-effectiveness.md` section 7.

@@ -85,7 +85,7 @@ def test_new_fields_validated(w):
     p = "\n".join(check_register(reg(bad), w).problems)
     for t in ("urgency 'critical'", "recommendation_class 'order'", "nine_m 'M10'", "verification should be"):
         assert t in p
-    good = entry(urgency="alert", recommendation_class="action already taken", nine_m="M4",
+    good = entry(urgency="alert", recommendation_class="action_taken", nine_m="M4",
                  verification={"method": "sample", "indicator": "share"})
     assert not [x for x in check_register(reg(good), w).problems if "urgency" in x or "nine_m" in x or "verif" in x]
 
@@ -116,11 +116,12 @@ def test_check_register_json(wsdir, tmp_path):
 @pytest.mark.parametrize("text,tier", [
     ("Engineering review of the procedure", "administrative"), ("engineering", "engineering"),
     ("Engineering controls", "engineering"), ("Interlock", "unclassified"), ("PPE", "ppe"),
-    ("Personal protective equipment", "ppe"), ("eliminate or substitute", "unclassified"),
+    ("Personal protective equipment", "ppe"), ("eliminate or substitute", "elimination"), ("Engineering / administrative", "engineering"),
+    ("Administrative / training", "administrative"),
     ("Engineering control: interlock", "engineering"), ("Administrative (procedure)", "administrative"),
     ("plant redesign, engineering", "engineering"), ("signal engineering", "engineering"),
     ("significant engineering change", "engineering"), ("engineering plan", "administrative"),
-    ("engineering sign-off", "administrative"), ("Elimination and substitution", "unclassified"),
+    ("engineering sign-off", "administrative"), ("Elimination and substitution", "elimination"),
 ])
 def test_norm_hoc_rules(text, tier):
     assert norm_hoc(text) == tier
@@ -184,3 +185,12 @@ def test_hazira_register_still_passes(tmp_path):
 
 
 EXPECTED_HAZIRA_WARNINGS = 19
+
+
+def test_every_fixture_pack_still_passes_check_pack(wsdir):
+    for f in sorted((FIX.parent / "packs").glob("*.json")):
+        doc = json.loads(f.read_text(encoding="utf-8"))
+        if f.name.startswith("bad-") or not (isinstance(doc, dict) and "pack" in doc and "sections" in doc):
+            continue
+        r = subprocess.run([sys.executable, str(PMLC), "check-pack", str(wsdir), str(f)], capture_output=True, text=True)
+        assert r.returncode == 0, (f.name, r.stdout, r.stderr)

@@ -26,13 +26,15 @@ def norm_level(v):
 # P3-4 / X11: administrative cues match at the START of a word, so "plant", "signal" and "significant" are no cue.
 ADMIN_CUE_RX = re.compile(r"\b(?:review|procedur|checklist|audit|permit|plan(?!t)|instruction|sign(?!al|ific))")
 STRONG_TIERS = ("elimination", "substitution", "engineering")     # the tiers above administrative
-TIER_WORD_RX = {t: re.compile(r"\b" + t + r"\b") for t in HOC_TIERS}
+TIER_WORD_RX = {t: re.compile(r"\b" + stem) for t, stem in (
+    ("elimination", "eliminat"), ("substitution", "substitut"), ("engineering", "engineer"),
+    ("administrative", "administrat"), ("training", "train"), ("ppe", r"ppe\b"))}
 
 
 def norm_hoc(v):
-    """The control tier a hoc_tier text means (P3-4): an exact tier name (optional trailing 'control(s)'), 'personal
-    protective equipment', else the one tier word it contains when it has no administrative cue; a text with an
-    administrative cue is administrative; anything else is 'unclassified'."""
+    """The control tier a hoc_tier text means (X22, replacing P3-4): an exact tier name (optional trailing
+    'control(s)'); 'personal protective equipment' or PPE; an administrative cue at the start of a word; else the
+    strongest tier mentioned, in HOC_TIERS order; else 'unclassified'."""
     s = re.sub(r"\s+", " ", _flat(v).lower()).strip()
     exact = re.sub(r"\s+controls?$", "", s)
     if exact in HOC_TIERS:
@@ -41,8 +43,10 @@ def norm_hoc(v):
         return "ppe"
     if ADMIN_CUE_RX.search(s):
         return "administrative"
-    found = [t for t in HOC_TIERS if TIER_WORD_RX[t].search(s)]
-    return found[0] if len(found) == 1 else "unclassified"
+    for t in HOC_TIERS:
+        if TIER_WORD_RX[t].search(s):
+            return t
+    return "unclassified"
 
 
 def norm_entity(v):
@@ -106,7 +110,7 @@ def register_warnings(entries: list, w: dict) -> list:
     return out
 
 URGENCY = ("alert", "notice", "information")
-REC_CLASSES = ("recommendation", "observation", "action already taken")
+REC_CLASSES = ("recommendation", "observation", "action_taken")
 NINE_M = tuple(f"M{i}" for i in range(1, 10))
 DUE_KEYS = ("due", "by_when", "due_date", "deadline")
 DATE_RX = re.compile(r"\d{4}-\d{2}-\d{2}")
