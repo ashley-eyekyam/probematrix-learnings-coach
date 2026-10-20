@@ -13,6 +13,8 @@ ProbeMatrix by Eyekyam is a human-in-the-loop, AI-assisted incident investigatio
 
 You do not need to type commands to use the coach. In Claude Code, Codex or another agent, you share the export and ask for what you need ("a board brief", "learning cards for the crews"). The agent runs the commands described here for you. This manual tells you what it is doing, so you can check it.
 
+When the request is broad ("what should we learn from this?"), the agent asks what the learnings are for, one question at a time, then proposes a **plan**: one of nine workflow presets, such as `leadership` or `full-cascade`, as a numbered list of steps. Nothing runs until you say OK, and each step must pass its check before the next starts. See [Let the coach plan the work](Workflows-and-recipes.md#let-the-coach-plan-the-work) and [Pick a workflow preset](Workflows-and-recipes.md#pick-a-workflow-preset).
+
 ## How the manual is organised
 
 | Page | What it covers |
@@ -21,7 +23,7 @@ You do not need to type commands to use the coach. In Claude Code, Codex or anot
 | [Workflows and recipes](Workflows-and-recipes.md) | Common jobs from start to finish |
 | [Skills](Skills.md) | The 23 skills: which audience each serves and what it produces |
 | [Commands](Commands.md) | Every engine command, flag by flag, with real examples |
-| [Files and folders](Files-and-folders.md) | The run folder, the workspace and the outputs |
+| [Files and folders](Files-and-folders.md) | The run folder, the workspace, the outputs, the files your organisation fills in and the shared contracts |
 | [Review and sharing](Review-and-sharing.md) | Draft status, sign-off by a reviewer, sharing outside the organisation |
 | [Language checks](Language-checks.md) | The just-culture and grounding checks (JC1 to JC12) |
 | [Troubleshooting](Troubleshooting.md) | Messages you may see and what to do |
@@ -38,7 +40,7 @@ The output shown on each page is real output from running the command on that sa
 
 1. **Grounded.** Every learning cites the Finding IDs and Evidence IDs it comes from. Nothing is added from outside the export.
 2. **Just culture.** Roles only, never personal names; no blame or punishment language; system fixes before retraining.
-3. **A person decides.** The coach drafts. A reviewer reads, edits and signs off. The coach never writes owners or due dates for you.
+3. **A person decides.** The coach drafts. A reviewer reads, edits and signs off. An owner is always a role that owns the change, never a person, and the coach leaves owners and due dates to you unless you ask. The files your organisation fills in (adoption, distribution, verification and the actions export) are written with their owner, date and response columns blank.
 
 ## More
 

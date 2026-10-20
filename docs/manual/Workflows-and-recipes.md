@@ -34,6 +34,45 @@ The nine presets are `first-48-hours`, `full-cascade`, `leadership`, `assurance`
 - It ends with the path of `outputs/index.html` first, then each pack's HTML. It never runs `sign-off` for you, and it leaves owners and due dates blank.
 - On Hazira, `facts` before any register ranks the tiers by finding counts (`T1: 227; T2: 219; T3: 247; T4: 63; T5: 1`); with the sample register, priority-1 learnings sit at every tier from T1 to T4, so the suggestion is `full-cascade`.
 
+## Pick a workflow preset
+
+**Goal.** Choose the preset that fits the job, and know before you start how many steps it has and which of them are not available yet.
+
+**Prompt.**
+
+> Which of your workflows fits a leadership review of this investigation? Show me the steps first.
+
+**Engine commands.**
+
+```bash
+pmlc plan <ws> --workflow leadership
+pmlc plan <ws> --workflow leadership --json      # the same plan as one JSON object (plan.json)
+pmlc plan <ws> --next                            # the next step to do; exit code 2 when the plan is complete
+```
+
+The table shows what `plan --workflow <preset>` printed for each preset on a fresh Hazira workspace (after `setup` with the `india-process-site` overlay, before any pack or register was written). "Engine" steps are `ingest`, `classify`, `templates` and `export-actions`; "planned" steps belong to skills that arrive in a later v2.0 phase and are skipped.
+
+| Preset | What it is for | Steps on Hazira | Planned (skipped) |
+|---|---|---|---|
+| `first-48-hours` | A draft register, an alert and the supervisor briefing within two days | 5: ingest and classify (done), learnings-register (draft), supervisor-coach | `safety-alert` (Phase 6) |
+| `full-cascade` | Every level, frontline to board | 12: ingest and classify (done), learning-clusters, learnings-register, organisation-learning-map, frontline-learning-cards, supervisor-coach, manager-coach, site-leadership-coach, top-management-brief, board-brief, then `templates` | none |
+| `leadership` | Register, site leadership, top management and board | 6: ingest and classify (done), learnings-register, site-leadership-coach, top-management-brief, board-brief | none |
+| `assurance` | Register, evidence strength, standards crosswalk and the auditor pack | 6: ingest and classify (done), learnings-register, auditor-assurance-pack | `evidence-strength-scorecard`, `compliance-crosswalk` (Phase 5) |
+| `investigation-quality` | Evidence strength, open questions and investigator coaching | 5: ingest (done), investigator-coach, report-comparison (only when an official report is supplied) | `evidence-strength-scorecard`, `open-questions-register` (Phase 5) |
+| `action-design` | 9M analysis, recommendation strength and an action export | 6: ingest and classify (done), learnings-register, then `export-actions` | `nine-m-analysis`, `recommendation-strength-review` (Phase 5) |
+| `sister-sites` | An alert and "could it happen here" for other sites | 5: ingest and classify (done), learnings-register | `safety-alert`, `could-it-happen-here` (Phase 6) |
+| `training` | Register, training design, frontline cards and a safety-moment deck | 6: ingest and classify (done), learnings-register, training-designer, frontline-learning-cards | `safety-moment-deck` (Phase 6) |
+| `follow-up` | Effectiveness plan and the verification log | 2: `templates` (the verification log) | `learning-effectiveness-plan` (Phase 6) |
+
+All nine exit with code 0 on Hazira. Once the sample register is copied into `outputs/` and passes `check-register --strict`, the register step shows `done` in every preset that has one, so `plan --next` moves on to the first pack.
+
+**What to check.**
+
+- The plan names each step's gate: `check-pack --strict` for a pack, `check-register --strict` for the register, and an approved review as well for the board brief and the supply-chain pack, which are meant for outside the organisation.
+- A step is `done` only when its output is current. After you edit a pack, its step is `todo` again until the next check passes.
+- A plan that cannot be resolved (an unknown skill, a cycle, or a requirement that nothing produces) exits 1 with a sentence naming it. See [plan](commands/plan.md).
+- If no preset fits, ask for audiences (`--audiences board,supervisors`) or named skills (`--skills causal-map,interface-learnings`) instead.
+
 ## The first 48 hours
 
 **Goal.** Something useful within two days of the export: a draft register and the supervisor briefing, with the full cascade later.
@@ -72,7 +111,7 @@ pmlc pack <ws> <run>/outputs/supervisor-coach.json
 pmlc profile <ws>
 pmlc select <ws> --preset board-brief          # level 4 top-rated, and assurance findings at levels 3 and 4
 pmlc timeline <ws> --before incident
-pmlc check-pack <ws> <run>/outputs/board-brief.json
+pmlc check-pack <ws> <run>/outputs/board-brief.json --strict
 pmlc pack <ws> <run>/outputs/board-brief.json
 ```
 
@@ -95,7 +134,7 @@ pmlc pack <ws> <run>/outputs/board-brief.json
 
 ```bash
 pmlc select <ws> --preset frontline-learning-cards     # T1 brief, T1 levels 1 and 2, T1 top-rated
-pmlc check-pack <ws> <run>/outputs/frontline-learning-cards.json
+pmlc check-pack <ws> <run>/outputs/frontline-learning-cards.json --strict
 pmlc pack <ws> <run>/outputs/frontline-learning-cards.json
 ```
 
@@ -119,16 +158,20 @@ Then open `frontline-learning-cards.html` and use the page's **Print** button (o
 **Engine commands.**
 
 ```bash
-pmlc select <ws> --top-rated --brief
-pmlc check-register <ws> <run>/outputs/learnings-register.json
+pmlc select <ws> --preset learnings-register
+pmlc check-register <ws> <run>/outputs/learnings-register.json --strict
 pmlc register-xlsx <run>/outputs/learnings-register.json
+pmlc register-md <ws> <run>/outputs/learnings-register.json
+pmlc export-actions <ws> --register <run>/outputs/learnings-register.json
 ```
 
 **What to check.**
 
-- `check-register` ends with `0 problem(s)`. On the Hazira sample register it printed `25 learnings; 435 of 436 findings covered (100%); 0 problem(s).`
+- `check-register --strict` ends with `0 problem(s)`. On the Hazira sample register it printed `25 learnings; 435 of 436 findings covered (100%); 0 problem(s).`
+- Under `--strict`, a priority-1 learning needs at least one fix above the administrative tier, or a `why_not_stronger` that says why not. On the sample, LR-08 and LR-12 (decision-making and competence) carry one each, pointing to the engineering fixes in LR-09 and LR-10.
 - Read the warnings too. They do not fail the check, but each JC6 warning means a learning relies only on training or administrative fixes for a level 3 or 4 cause.
-- The workbook has five sheets: Learnings Register, Recommendations, Learning Plan, Summary and About.
+- The workbook has five sheets: Learnings Register, Recommendations, Learning Plan, Summary and About, each an Excel table with filters and drop-down lists.
+- `learnings-register.md` comes from `register-md`; never write it by hand. `export-actions` wrote 44 actions for the sample's 44 recommendations, with owner, due date and status blank for your organisation.
 - Change the JSON and re-run; never edit the workbook by hand.
 
 ## The organisation learning map dashboard
@@ -327,7 +370,7 @@ pmlc scan-names names.txt <run>/outputs --variants
 ```bash
 pmlc select <ws> --text "recommendation|remedial" --brief
 pmlc check-language <ws> <run>/outputs/report-comparison.json --names comparator-names.txt
-pmlc check-pack <ws> <run>/outputs/report-comparison.json
+pmlc check-pack <ws> <run>/outputs/report-comparison.json --strict
 pmlc pack <ws> <run>/outputs/report-comparison.json
 ```
 
@@ -377,7 +420,7 @@ Each pack is then checked with `check-pack` and rendered with `pack`.
 ```bash
 pmlc profile <ws>
 pmlc select <ws> --top-rated --format json --out <ws>/top.json
-pmlc check-pack <ws> <run>/outputs/investigator-coach.json
+pmlc check-pack <ws> <run>/outputs/investigator-coach.json --strict
 pmlc pack <ws> <run>/outputs/investigator-coach.json
 ```
 

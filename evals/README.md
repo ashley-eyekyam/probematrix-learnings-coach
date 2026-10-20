@@ -41,6 +41,7 @@ Hazira sample (`samples/2020-09-24-hazira-gas-release-fire/`). Every skill owns 
 | `language_clean` | `pack` | `pmlc.py check-language <ws> <pack>.json` exits 0 (no lint errors; warnings are allowed) |
 | `pack_absent` | `pack` | `<run>/outputs/<pack>.json` does not exist (a collision eval uses it for the sibling skill's pack) |
 | `card_fields` | `pack`, `fields` | the pack has at least one `card` item and every card has each named field filled in |
+| `section_exists` | `pack`, `section` | the pack has a section whose `id` is `section` (or matches it as a glob, such as `t[1-5]`) |
 | `routes_to` | `skill` (or `null`); `value` in a router eval | judged by a person or from a transcript: reported as `manual` by `grade`, scored by `routes` |
 
 Pack names follow each skill's SKILL.md: usually the skill name, `dossier-F02` for cluster-learning-dossier,

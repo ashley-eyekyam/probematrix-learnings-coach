@@ -371,3 +371,22 @@ def test_routes_scores_against_the_floor(tmp_path):
     f.write_text("[1]")
     r = runner("routes", str(f))
     assert r.returncode == 1 and "must be a JSON object" in r.stderr
+
+
+def test_grade_section_exists(tmp_path):
+    """X33: section_exists passes when the pack has a section with that id (profile globs allowed) and fails
+    naming the missing id."""
+    rd = _run_folder(tmp_path)
+    data = {"skill_name": "probematrix-learnings-coach", "evals": [
+        {"id": 9, "owner": "supervisor-coach", "skill": "supervisor-coach", "kind": "trigger", "prompt": "p",
+         "files": [], "expectations": [{"type": "section_exists", "pack": "supervisor-coach", "section": "refuse"},
+                                       {"type": "section_exists", "pack": "supervisor-coach", "section": "cascade"}]}]}
+    f = tmp_path / "evals-section.json"
+    f.write_text(json.dumps(data))
+    r = runner("grade", str(rd), "--file", str(f))
+    assert r.returncode == 1
+    assert "| 9 | supervisor-coach | section_exists supervisor-coach refuse | pass |" in r.stdout, r.stdout
+    assert "| 9 | supervisor-coach | section_exists supervisor-coach cascade | fail: no section cascade |" in r.stdout
+    bad = dict(data, evals=[dict(data["evals"][0], expectations=[{"type": "section_exists", "pack": "x"}])])
+    f.write_text(json.dumps(bad))
+    assert "eval 9: section_exists needs section" in runner("check", "--file", str(f)).stdout

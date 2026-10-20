@@ -4,6 +4,10 @@ Each problem below starts with the message the engine prints, word for word, so 
 
 Your agent usually reads these messages and fixes the cause itself. Look here when it asks you to decide, or when you want to understand what happened.
 
+**Exit codes.** Every command ends with code 0 when it worked (warnings may still be printed), 1 when it found problems or a plan cannot be resolved, and 2 for a usage error, such as an unknown or shortened flag. `plan --next` also ends with 2 when the plan is complete. The `check-*` commands never use 2 for problems. The full table is under "Exit codes" in [Commands](Commands.md).
+
+**Strict mode.** `check-pack --strict` and `check-register --strict` turn some warnings into problems. Plans use strict mode as the gate, so a pack or register that passes the default check can still stop a plan. The sections below on strict mode say which messages change.
+
 ## The engine says openpyxl is missing
 
 ```text
@@ -357,3 +361,63 @@ Names file is empty.
 **Why.** `scan-names` needs at least one name to look for. Blank lines and lines starting with `#` do not count.
 
 **What to do.** Add the names, one per line, and run the scan again.
+
+## A check passes, but fails in strict mode
+
+```text
+section <id>: missing (<kinds> items, expected <n>-<m>)
+```
+
+**Why.** The pack departs from its pack profile in `references/pack-profiles.json`: a required section is missing (here, for example, the board brief's `ask` section with 1 to 3 paragraphs), a section has too many items or the wrong kind, or the scope drifted from the one the skill fixes. Without `--strict` the same line is printed as a warning and the check passes; with `--strict` it is a problem and the check exits 1.
+
+**What to do.** Add or trim the section as the skill's Write table says, then run the check again with `--strict`. If the evidence is thin, write the section as the skill's "If the evidence is thin" part describes rather than dropping it.
+
+## A priority-1 learning has no stronger fix
+
+```text
+priority-1 learning <LR-id> has no fix above the administrative tier
+```
+
+**Why.** Every recommendation on a priority-1 learning is administrative or training. `check-register` prints this as a warning ending "(give why_not_stronger, or add a stronger fix)"; `check-register --strict` counts it as a problem, so a plan's register step stops here.
+
+**What to do.** Add a recommendation at the elimination, substitution or engineering tier if the evidence supports one. If the learning is about a decision or a competence that only an administrative change can address, add a `why_not_stronger` to the entry, grounded in its own cited findings. The Hazira sample register does this for LR-08 and LR-12.
+
+## Learning IDs are not verified
+
+```text
+warning: learning ids not verified: no register
+```
+
+**Why.** The pack's items carry `learning: "LR-nn"`, but `check-pack` found no register to check them against: none was given with `--register`, and there is no `learnings-register.json` in the run's outputs folder. When a register is found, an ID it does not hold gives `unknown learning LR-nn`, a warning by default and a problem under `--strict`.
+
+**What to do.** Write the register first, or pass `--register <file>`. Then correct any unknown ID to the register's own `lr_id`.
+
+## The plan names an unknown skill
+
+```text
+unknown skill: <skill> (skills: <list>)
+```
+
+**Why.** `plan --skills` was given a name that is not a skill folder, often a typo. The plan cannot be resolved, so `plan` exits 1. The same exit code comes with "cycle: …" (two skills that each need the other first) and "nothing produces '<artefact>', which <skill> requires" (a requirement no engine command or skill writes). A preset step whose skill arrives in a later v2.0 phase is not an error: it is listed as "planned" and skipped.
+
+**What to do.** Use a name from the list the message prints, or a workflow preset with `--workflow`. A cycle or a missing producer means a `skill.json` or `artefacts.json` was edited by hand: undo that edit.
+
+## The plan says it is complete
+
+```text
+The plan is complete: every step is done or planned for a later phase.
+```
+
+**Why.** `plan --next` found no step left to do. It ends with exit code 2 on purpose, so a script or an agent looping over `--next` knows to stop. It is not an error.
+
+**What to do.** Nothing more for this plan. Open `outputs/index.html` (run `index` if it is not there yet), and plan another workflow if you need one.
+
+## A template file already exists
+
+```text
+<file> already exists and may hold your organisation's entries; move it or pass a new --out
+```
+
+**Why.** `templates` never overwrites `adoption.csv`, `distribution.csv` or `verification.jsonl`, because your organisation may have filled them in. It exits 1 and writes nothing.
+
+**What to do.** If the file holds entries, keep it: the dashboard and later reviews read it back. To start a fresh copy, move the old file away first, or write the new one elsewhere with `--out`.

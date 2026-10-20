@@ -257,6 +257,11 @@
      "pack": "board-brief"
     },
     {
+     "type": "section_exists",
+     "pack": "board-brief",
+     "section": "ask"
+    },
+    {
      "type": "routes_to",
      "skill": "board-brief"
     }
@@ -606,7 +611,7 @@
    "owner": "frontline-learning-cards",
    "skill": "frontline-learning-cards",
    "kind": "trigger",
-   "prompt": "Make this useful for the guys on the floor. From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) I need one-page learning cards and five-minute toolbox talks for operators and fitters, blame-free, with warning signs and stop-and-ask points.",
+   "prompt": "Make this useful for the people on the floor. From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) I need one-page learning cards and five-minute toolbox talks for operators and fitters, blame-free, with warning signs and stop-and-ask points.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -856,6 +861,11 @@
      "type": "coverage_min",
      "pack": "investigator-coach",
      "ratio": 0.25
+    },
+    {
+     "type": "section_exists",
+     "pack": "investigator-coach",
+     "section": "process"
     },
     {
      "type": "routes_to",
@@ -1205,6 +1215,11 @@
      "pack": "manager-coach"
     },
     {
+     "type": "section_exists",
+     "pack": "manager-coach",
+     "section": "management-review"
+    },
+    {
      "type": "routes_to",
      "skill": "manager-coach"
     }
@@ -1236,6 +1251,11 @@
      "type": "coverage_min",
      "pack": "organisation-learning-plan",
      "ratio": 0.25
+    },
+    {
+     "type": "section_exists",
+     "pack": "organisation-learning-plan",
+     "section": "cascade"
     },
     {
      "type": "routes_to",
@@ -2497,6 +2517,139 @@
     }
    ],
    "sibling": "investigator-coach"
+  },
+  {
+   "id": 106,
+   "owner": "report-comparison",
+   "skill": "report-comparison",
+   "kind": "trigger",
+   "prompt": "We have to share our comparison of the official enquiry committee report (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_official-report.pdf) and the ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) of the Hazira fire with the regulator. Prepare a copy for the regulator: neutral wording, what the second look adds as additional learning, and nothing that reads as criticism of the committee.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx",
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_official-report.pdf"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "report-comparison"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "report-comparison"
+    },
+    {
+     "type": "language_clean",
+     "pack": "report-comparison"
+    },
+    {
+     "type": "pack_exists",
+     "pack": "report-comparison-regulator-safe"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "report-comparison-regulator-safe"
+    },
+    {
+     "type": "language_clean",
+     "pack": "report-comparison-regulator-safe"
+    },
+    {
+     "type": "routes_to",
+     "skill": "report-comparison"
+    }
+   ]
+  },
+  {
+   "id": 107,
+   "owner": "frontline-learning-cards",
+   "skill": "frontline-learning-cards",
+   "sibling": "supply-chain-contractor-learnings",
+   "kind": "collision",
+   "prompt": "Our maintenance contractor's crew starts work on the metering skid next week. From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), make them one-page learning cards and a toolbox talk they can keep.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "language_clean",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "routes_to",
+     "skill": "frontline-learning-cards"
+    }
+   ]
+  },
+  {
+   "id": 108,
+   "owner": "supply-chain-contractor-learnings",
+   "skill": "supply-chain-contractor-learnings",
+   "sibling": "frontline-learning-cards",
+   "kind": "collision",
+   "prompt": "From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), what should our contract owners and procurement change in how we brief, supervise and select contractors?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "supply-chain-contractor-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "supply-chain-contractor-learnings"
+    },
+    {
+     "type": "language_clean",
+     "pack": "supply-chain-contractor-learnings"
+    },
+    {
+     "type": "routes_to",
+     "skill": "supply-chain-contractor-learnings"
+    }
+   ]
+  },
+  {
+   "id": 109,
+   "owner": "supervisor-coach",
+   "skill": "supervisor-coach",
+   "sibling": "frontline-learning-cards",
+   "kind": "collision",
+   "prompt": "We already have learning cards for the crews from the Hazira investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Help me plan how our shift in-charges and supervisors brief their crews on the cards, and what they check afterwards.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "supervisor-coach"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "supervisor-coach"
+    },
+    {
+     "type": "language_clean",
+     "pack": "supervisor-coach"
+    },
+    {
+     "type": "section_exists",
+     "pack": "supervisor-coach",
+     "section": "brief-crew"
+    },
+    {
+     "type": "routes_to",
+     "skill": "supervisor-coach"
+    }
+   ]
   }
  ]
 }

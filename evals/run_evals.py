@@ -13,6 +13,7 @@ pmlc_pack.coverage for coverage_min. `routes_to` needs a human (or a transcript)
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import json
 import re
 import subprocess
@@ -41,6 +42,7 @@ EXPECT = {                                   # expectation type -> its required 
     "language_clean": ("pack",),
     "pack_absent": ("pack",),
     "card_fields": ("pack", "fields"),
+    "section_exists": ("pack", "section"),
 }
 ABS_PATH = re.compile(r"(?:^|[\s\"'(])(?:/(?:home|Users|tmp|var|mnt|opt|etc|root|srv)/|~/|[A-Za-z]:[\\/])")
 MIN_EVALS, MIN_NO_TRIGGER, MIN_COLLISION = 3, 1, 1
@@ -318,6 +320,11 @@ def grade_one(x, ws, out) -> tuple:
     if t == "scope_equals":
         got = pack.get("scope")
         return ("pass", "") if got == x["scope"] else ("fail", f"scope is {json.dumps(got)}")
+    if t == "section_exists":
+        secs = pack.get("sections") if isinstance(pack.get("sections"), list) else []
+        ids = [str(sec.get("id", "")) for sec in secs if isinstance(sec, dict)]
+        hit = any(i == x["section"] or fnmatch.fnmatchcase(i, x["section"]) for i in ids)
+        return ("pass", "") if hit else ("fail", f"no section {x['section']}")
     if t == "card_fields":
         cards = _cards(pack)
         if not cards:
@@ -342,6 +349,8 @@ def _label(x) -> str:
         return f"routes_to {x.get('value') or x.get('skill') or '(no learnings-coach skill)'}"
     if t == "coverage_min":
         return f"coverage_min {x['pack']} >= {x['ratio']}"
+    if t == "section_exists":
+        return f"section_exists {x['pack']} {x['section']}"
     return f"{t} {x['pack']}"
 
 

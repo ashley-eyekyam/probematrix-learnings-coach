@@ -62,7 +62,7 @@ Uncovered findings (1), highest rated first:
 
 It then listed 14 `hfacs_level` wording warnings, the warning `no handling block: rendered as draft (internal)`, and two JC6 warnings (entries 8 and 12 rely only on administrative and training controls for a level 3 or 4 cause). Warnings do not fail the check. `register-xlsx` printed `Register with 25 entries and 44 recommendations written to …/learnings-register.xlsx`.
 
-`check-register --strict` on the same register printed `25 learnings; 435 of 436 findings covered (100%); 2 problem(s).` and named them: `priority-1 learning LR-08 has no fix above the administrative tier` and the same for LR-12. Adding a `why_not_stronger` to each entry, or a stronger fix, clears them. `register-md` printed `Register markdown written to …/outputs/learnings-register.md`.
+`check-register --strict` on the same register also printed `25 learnings; 435 of 436 findings covered (100%); 0 problem(s).` Two priority-1 learnings, LR-08 (the switch from locating the leak to isolating it) and LR-12 (control-room competence), have only administrative and training fixes. Each carries a `why_not_stronger`, grounded in its own cited findings, pointing to the engineering fixes in LR-09 and LR-10; without it, strict mode names them as problems: `priority-1 learning LR-08 has no fix above the administrative tier`. `register-md` printed `Register markdown written to …/outputs/learnings-register.md`.
 
 ## Related skills
 

@@ -70,6 +70,29 @@ def test_register_still_clean(hz):
     assert "; 0 problem(s)." in r.stdout
 
 
+def test_register_passes_strict(hz):
+    """Ruling X34: LR-08 and LR-12 (priority 1, administrative and training fixes only) carry a why_not_stronger,
+    so the plan's register gate (check-register --strict) passes on the sample."""
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(hz.ws), str(REGISTER), "--strict"],
+                       capture_output=True, text=True)
+    assert r.returncode == 0 and "; 0 problem(s)." in r.stdout, r.stdout + r.stderr
+    entries = {e["lr_id"]: e for e in json.loads(REGISTER.read_text(encoding="utf-8"))["entries"]}
+    assert entries["LR-08"]["why_not_stronger"] and entries["LR-12"]["why_not_stronger"]
+
+
+def test_sample_register_md_is_generated(hz, tmp_path):
+    """The sample's learnings-register.md is register-md output, never hand-written. The footer's version stamp is
+    ignored, so a release bump does not fail this before the sample is regenerated."""
+    out = tmp_path / "learnings-register.md"
+    run("register-md", str(hz.ws), str(REGISTER), "--out", str(out))
+    committed = (SAMPLE / "outputs" / "learnings-register.md").read_text(encoding="utf-8")
+
+    def unstamped(text):
+        return re.sub(r"Learnings Coach v\S+", "Learnings Coach v<version>", text)
+
+    assert unstamped(out.read_text(encoding="utf-8")) == unstamped(committed)
+
+
 def test_select_by_tag_on_hazira(hz):
     emergency = {d["id"] for d in hz.select("--tag", "emergency")}
     assert emergency == {d["id"] for d in hz.select("--entity", "F09a", "F09b", "F10")}
@@ -198,7 +221,7 @@ def test_hazira_register_lint_calibration(hz):
                        capture_output=True, text=True)
     assert r.returncode == 0 and r.stdout.strip().splitlines()[-1].startswith("check-language: 0 errors, 2 warnings"), r.stdout
     md = (SAMPLE / "outputs" / "learnings-register.md").read_text(encoding="utf-8").splitlines()
-    assert md[2] == "*" + reg["status"] + "*"
+    assert any(line.startswith("*" + reg["status"]) and line.endswith("*") for line in md), md[:10]
 
 
 # ----------------------------------------------------------------------------- Task 7: the 2-card print budget

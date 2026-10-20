@@ -18,21 +18,24 @@ A set of agent skills that turn one **ProbeMatrix investigation export** (`.xlsx
 ```bash
 pip install openpyxl
 E=skills/learnings-coach/scripts/pmlc.py
-python3 $E ingest path/to/<export>.xlsx --slug <site>-<event> [--date YYYY-MM-DD]
-WS=path/to/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace      # printed by ingest
-python3 $E profile $WS --out $WS/profile.md
-python3 $E classify $WS
-python3 $E status $WS                          # which derived files are stale after a re-ingest
-python3 $E run-manifest $WS --jurisdiction in --retention-review YYYY-MM-DD   # run-manifest.json: adds the Retention review and Statutory report lines
-python3 $E purge <run> --keep outputs --yes   # delete the workspace after retention; run-manifest.json stays (no --yes: lists only)
-python3 $E dashboard $WS                       # -> <run>/outputs/organisation-learning-map.html
-python3 $E select $WS --tier T2 --level 3 --brief      # feed an audience skill
-python3 $E check-language $WS <run>/outputs/board-brief.json   # just-culture language check (check-pack runs it too)
+python3 $E setup path/to/<export>.xlsx --slug <site>-<event> [--date YYYY-MM-DD] [--overlay india-process-site]   # ingest, profile, classify, causal, timeline, interfaces
+WS=path/to/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace      # printed by setup
+python3 $E run-manifest $WS --intended-use "internal learning" --jurisdiction in --retention-review YYYY-MM-DD   # run-manifest.json: adds the Retention review and Statutory report lines
+python3 $E facts $WS                           # headline numbers (tiers, levels, top-rated) to suggest a workflow
+python3 $E plan $WS --workflow leadership      # numbered plan -> <ws>/plan.json; show it and wait for the user's OK
+python3 $E plan $WS --next                     # the next step to do, with its commands and gate (exit 2: the plan is complete)
+python3 $E select $WS --preset board-brief     # a step's gather calls, as the plan prints them
+python3 $E check-pack $WS <run>/outputs/board-brief.json --strict   # a pack step's gate (runs the language check too)
 python3 $E pack $WS <run>/outputs/board-brief.json  # -> board-brief.html + .md (DRAFT until signed off)
+python3 $E check-all $WS --strict              # every pack and the register in outputs/
+python3 $E render-all $WS                      # render every pack that passed its check, and the register
+python3 $E index $WS                           # -> <run>/outputs/index.html, the front page: give the user this path first
+python3 $E status $WS                          # which derived files are stale after a re-ingest
 python3 $E sign-off $WS <run>/outputs/board-brief.json --role "<reviewer's role>" --status approved   # only after a person says they reviewed it
+python3 $E purge <run> --keep outputs --yes   # delete the workspace after retention; run-manifest.json stays (no --yes: lists only)
 ```
 
-Shortcuts: `setup` runs ingest, profile, classify, causal, timeline and interfaces in one go; `check-all` checks every pack and the register in `outputs/`; `render-all` renders what passed; `index` writes `outputs/index.html`; `dossier-index` writes the pack that lists the `dossier-F*.json` packs.
+The individual commands stay: `setup` is `ingest`, `profile --out`, `classify`, `causal`, `timeline` and `interfaces` run in one go. The nine workflow presets are in `skills/learnings-coach/references/workflows.json`; `plan --audiences board,supervisors` or `--skills causal-map,interface-learnings` plans without a preset. A step marked "planned for v2.0, Phase N" is skipped. `dossier-index` writes the pack that lists the `dossier-F*.json` packs. `templates $WS adoption|distribution|verification` and `export-actions $WS --register <register.json>` write the files the organisation fills in, with owner, due-date and response columns blank; never fill them in.
 
 The user manual, `docs/manual/Home.md` (repository only; also on the project wiki), documents every skill, command and flag with Hazira examples, including sharing a masked copy outside the organisation (`--share external|public`).
 

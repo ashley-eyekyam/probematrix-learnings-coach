@@ -3,7 +3,8 @@
 
 Exits non-zero naming the failing assertion. Needs requirements-dev.txt (openpyxl, and pytest for the synthetic
 export that tests/test_pmlc.py builds, used by the fixture --strict check).
-Later tasks add assertions here.
+Checks: ingest cross-check, finding and evidence counts, check-register (also --strict) and check-language on
+the sample register, facts --json, plan --workflow for every preset, and every fixture pack under --strict.
 """
 import json
 import os
@@ -18,10 +19,12 @@ ENGINE = os.path.join(ROOT, "skills", "learnings-coach", "scripts", "pmlc.py")
 SAMPLE = os.path.join(ROOT, "samples", "2020-09-24-hazira-gas-release-fire")
 EXPORT = os.path.join(SAMPLE, "2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx")
 REGISTER = os.path.join(SAMPLE, "outputs", "learnings-register.json")
+WORKFLOWS = os.path.join(ROOT, "skills", "learnings-coach", "references", "workflows.json")
 RUN_NAME = "2020-09-24-hazira-gas-release-fire"
 
 EXPECT_FINDINGS = 436
 EXPECT_EVIDENCE = 46
+EXPECT_PRESETS = 9
 
 
 def fail(msg):
@@ -57,9 +60,22 @@ def main():
         if len(evidence) != EXPECT_EVIDENCE:
             fail("expected %d evidence items, got %d" % (EXPECT_EVIDENCE, len(evidence)))
 
-        out = pmlc("check-register", ws, REGISTER)
-        if not re.search(r"; 0 problem\(s\)\.", out):
-            fail("check-register did not report 0 problem(s):\n" + out)
+        for strict in ((), ("--strict",)):                 # Ruling X34: the sample also passes --strict
+            out = pmlc("check-register", ws, REGISTER, *strict)
+            if not re.search(r"; 0 problem\(s\)\.", out):
+                fail("check-register %s did not report 0 problem(s):\n" % " ".join(strict) + out)
+
+        facts = json.loads(pmlc("facts", ws, "--json"))
+        if facts.get("findings") != EXPECT_FINDINGS:
+            fail("facts --json gave findings %r, expected %d" % (facts.get("findings"), EXPECT_FINDINGS))
+
+        with open(WORKFLOWS, encoding="utf-8") as fh:
+            presets = list(json.load(fh))
+        if len(presets) != EXPECT_PRESETS:
+            fail("expected %d workflow presets, got %d: %s" % (EXPECT_PRESETS, len(presets), ", ".join(presets)))
+        for preset in presets:                                # pmlc() fails on a non-zero exit
+            pmlc("plan", ws, "--workflow", preset)
+        print("smoke: plan --workflow exits 0 for all %d presets" % len(presets))
 
         out = pmlc("check-language", ws, REGISTER)
         if not re.search(r"^check-language: 0 errors, \d+ warnings$", out, re.M):

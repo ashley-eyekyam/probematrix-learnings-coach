@@ -242,7 +242,7 @@ python3 evals/run_evals.py check
 ```
 
 ```text
-105 evals over 23 skills: 25 trigger, 23 no-trigger, 23 collision, 34 router
+109 evals over 23 skills: 26 trigger, 23 no-trigger, 26 collision, 34 router
 OK
 ```
 

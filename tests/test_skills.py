@@ -212,6 +212,13 @@ def ready(skill):
 
 # ------------------------------------------------------------------------------------------------ never skipped
 
+def test_no_pending_skills():
+    """Ruling X8: the staging sets cannot survive Phase 3. Every skill is on the skeleton and the hub on its headings,
+    so no skeleton test may skip."""
+    assert PENDING == set(), f"skills still PENDING: {sorted(PENDING)}"
+    assert HUB_PENDING == set(), f"hub still HUB_PENDING: {sorted(HUB_PENDING)}"
+
+
 def test_pending_names_real_skills():
     assert PENDING <= set(NON_HUB), PENDING - set(NON_HUB)
     assert HUB_PENDING <= {HUB}

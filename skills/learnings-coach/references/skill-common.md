@@ -67,7 +67,9 @@ for the rest. Read [`learning-principles.md`](learning-principles.md) before wri
 - **Generated items.** Paste the output of `causal-item`, `table-item`, `timeline-item` and `register-items`
   unchanged; never retype its numbers. Drop rows only if the skill says so.
 - **Owners and dates.** `owner` is a role that owns the change, never a person. Leave owners and due dates out
-  unless the user asks (`learning-principles.md` §6). Never write the `handling` block: only `sign-off` writes it.
+  unless the user asks (`learning-principles.md` §6). The files the organisation fills in (`templates`,
+  `export-actions`) have their owner, due-date, response and assessed-by columns written blank, and you never fill
+  them. Never write the `handling` block: only `sign-off` writes it.
 - **Status line and footer.** Set the required top-level `status` field to contain
   `Learning purposes: not a statutory document` (`check-pack` refuses a pack without it). `pack` adds the
   ProbeMatrix footer from `output-style.md`. Do not remove either from any copy.
