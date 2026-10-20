@@ -41,6 +41,7 @@ These are the files in a fresh Hazira workspace after `ingest`, `profile` and `c
 | `timeline_candidates.json` | `timeline` | Every dated mention in findings and evidence, with its precision and sources. 92 before the Hazira incident date. |
 | `timeline_event_day.json` | `timeline --on` | Every clock time on one day, with its sources. 29 on the Hazira incident day. |
 | `interfaces.json` | `interfaces` | Pairs of functions, with shared findings and cross-entity causal mentions. 125 pairs on Hazira. |
+| `plan.json` | `plan` | The numbered plan of steps for a request, each with its state, commands and gate. It holds no dates or absolute paths. `status` shows it stale once the workspace changes; run `plan` again. |
 | `sel-<F-id>.md`, `top.json` | `select --out` | Saved selections that some skills write while gathering. They are working notes, not outputs. |
 
 `status` reports each derived file as `current`, `stale` (an input changed since it was built, with the reason) or `unknown` (built before the manifest existed). See the recipe [Re-run after the export changes, using status](Workflows-and-recipes.md#re-run-after-the-export-changes-using-status).

@@ -1,0 +1,96 @@
+{
+ "plan_version": 1,
+ "request": {
+  "workflow": "action-design",
+  "audiences": [],
+  "skills": []
+ },
+ "steps": [
+  {
+   "n": 1,
+   "skill": "engine:ingest",
+   "status": "done",
+   "planned_for": null,
+   "produces": "workspace",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC ingest <export.xlsx> --slug <site>-<event>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 2,
+   "skill": "engine:classify",
+   "status": "done",
+   "planned_for": null,
+   "produces": "clusters",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC classify <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 3,
+   "skill": "learnings-register",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "register",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset learnings-register:top",
+    "PMLC check-register <ws> <run>/outputs/learnings-register.json --strict",
+    "PMLC register-xlsx <run>/outputs/learnings-register.json",
+    "PMLC register-md <ws> <run>/outputs/learnings-register.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-register --strict"
+   ]
+  },
+  {
+   "n": 4,
+   "skill": "nine-m-analysis",
+   "status": "planned",
+   "planned_for": "Phase 5",
+   "produces": null,
+   "mode": null,
+   "when": null,
+   "commands": [],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 5,
+   "skill": "recommendation-strength-review",
+   "status": "planned",
+   "planned_for": "Phase 5",
+   "produces": null,
+   "mode": null,
+   "when": null,
+   "commands": [],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 6,
+   "skill": "engine:export-actions",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "actions",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC export-actions <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  }
+ ],
+ "next": 3
+}

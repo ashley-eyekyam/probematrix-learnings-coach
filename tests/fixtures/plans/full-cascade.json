@@ -1,0 +1,229 @@
+{
+ "plan_version": 1,
+ "request": {
+  "workflow": "full-cascade",
+  "audiences": [],
+  "skills": []
+ },
+ "steps": [
+  {
+   "n": 1,
+   "skill": "engine:ingest",
+   "status": "done",
+   "planned_for": null,
+   "produces": "workspace",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC ingest <export.xlsx> --slug <site>-<event>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 2,
+   "skill": "learning-clusters",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "learning-clusters",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/learning-clusters.json --strict",
+    "PMLC pack <ws> <run>/outputs/learning-clusters.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 3,
+   "skill": "engine:classify",
+   "status": "done",
+   "planned_for": null,
+   "produces": "clusters",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC classify <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 4,
+   "skill": "learnings-register",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "register",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset learnings-register:top",
+    "PMLC check-register <ws> <run>/outputs/learnings-register.json --strict",
+    "PMLC register-xlsx <run>/outputs/learnings-register.json",
+    "PMLC register-md <ws> <run>/outputs/learnings-register.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-register --strict"
+   ]
+  },
+  {
+   "n": 5,
+   "skill": "organisation-learning-map",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "organisation-learning-plan",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC dashboard <ws> --register <run>/outputs/learnings-register.json",
+    "PMLC check-pack <ws> <run>/outputs/organisation-learning-plan.json --strict",
+    "PMLC pack <ws> <run>/outputs/organisation-learning-plan.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 6,
+   "skill": "frontline-learning-cards",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "frontline-learning-cards",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset frontline-learning-cards:tier-t1",
+    "PMLC select <ws> --preset frontline-learning-cards:tier-t1-l12",
+    "PMLC select <ws> --preset frontline-learning-cards:top-tier-t1",
+    "PMLC check-pack <ws> <run>/outputs/frontline-learning-cards.json --strict",
+    "PMLC pack <ws> <run>/outputs/frontline-learning-cards.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 7,
+   "skill": "supervisor-coach",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "supervisor-coach",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset supervisor-coach:tier-t2",
+    "PMLC select <ws> --preset supervisor-coach:top-l3",
+    "PMLC select <ws> --preset supervisor-coach:tier-t2-relation",
+    "PMLC check-pack <ws> <run>/outputs/supervisor-coach.json --strict",
+    "PMLC pack <ws> <run>/outputs/supervisor-coach.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 8,
+   "skill": "manager-coach",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "manager-coach",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset manager-coach:tier-t3",
+    "PMLC select <ws> --preset manager-coach:top-tier-t3-l34",
+    "PMLC select <ws> --preset manager-coach:relation",
+    "PMLC check-pack <ws> <run>/outputs/manager-coach.json --strict",
+    "PMLC pack <ws> <run>/outputs/manager-coach.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 9,
+   "skill": "site-leadership-coach",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "site-leadership-coach",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset site-leadership-coach:tier-t4",
+    "PMLC select <ws> --preset site-leadership-coach:top-l4",
+    "PMLC select <ws> --preset site-leadership-coach:relation",
+    "PMLC check-pack <ws> <run>/outputs/site-leadership-coach.json --strict",
+    "PMLC pack <ws> <run>/outputs/site-leadership-coach.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 10,
+   "skill": "top-management-brief",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "top-management-brief",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset top-management-brief:tiers-t4-t5",
+    "PMLC select <ws> --preset top-management-brief:top-l4",
+    "PMLC select <ws> --preset top-management-brief:people-corporate-assurance",
+    "PMLC check-pack <ws> <run>/outputs/top-management-brief.json --strict",
+    "PMLC pack <ws> <run>/outputs/top-management-brief.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 11,
+   "skill": "board-brief",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "board-brief",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset board-brief:top-l4",
+    "PMLC select <ws> --preset board-brief:assurance-l34",
+    "PMLC check-pack <ws> <run>/outputs/board-brief.json --strict",
+    "PMLC pack <ws> <run>/outputs/board-brief.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict",
+    "approved review"
+   ]
+  },
+  {
+   "n": 12,
+   "skill": "engine:templates",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "adoption,distribution,verification",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC templates <ws> adoption",
+    "PMLC templates <ws> distribution",
+    "PMLC templates <ws> verification"
+   ],
+   "questions": [],
+   "gate": []
+  }
+ ],
+ "next": 2
+}

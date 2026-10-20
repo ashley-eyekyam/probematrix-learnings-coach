@@ -46,6 +46,7 @@ pmlc 2.0.0a4
 | [classify](commands/classify.md) | Maps the roles named in each finding to Learning Clusters (who: entity, tier, relation) |
 | [status](commands/status.md) | Shows which workspace files are current or stale, and the last check of each pack |
 | [run-path](commands/run-path.md) | Prints the run folder, workspace, outputs folder, slug, top rating and incident date |
+| [plan](commands/plan.md) | Turns a workflow preset, audiences or skills into an ordered plan, and prints the next step |
 
 ### 2. Gather and analyse
 
@@ -107,6 +108,8 @@ Scripts and agents read the exit code to know whether a step worked.
 | 0 | Success. Warnings may still be printed: read them |
 | 1 | The command ran but found a problem, for example `check-pack` found an unknown ID, or the workspace is missing. A few contradictory flag pairs are also reported this way: `classify --overlay x --no-overlay` exits 1 with "--no-overlay and --overlay cannot be combined" |
 | 2 | The command line itself was wrong: an unknown or shortened flag, a value outside the allowed list, or (for `scan-names`) a file that could not be read |
+
+[plan](commands/plan.md) also exits 1 when the plan cannot be resolved (an unknown skill, a cycle, or a requirement nothing produces), and `plan --next` exits 2 when the plan is complete.
 
 ## Related
 

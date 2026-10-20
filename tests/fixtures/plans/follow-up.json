@@ -1,0 +1,37 @@
+{
+ "plan_version": 1,
+ "request": {
+  "workflow": "follow-up",
+  "audiences": [],
+  "skills": []
+ },
+ "steps": [
+  {
+   "n": 1,
+   "skill": "learning-effectiveness-plan",
+   "status": "planned",
+   "planned_for": "Phase 6",
+   "produces": null,
+   "mode": null,
+   "when": null,
+   "commands": [],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 2,
+   "skill": "engine:templates",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "verification",
+   "mode": "verification",
+   "when": null,
+   "commands": [
+    "PMLC templates <ws> verification"
+   ],
+   "questions": [],
+   "gate": []
+  }
+ ],
+ "next": 2
+}

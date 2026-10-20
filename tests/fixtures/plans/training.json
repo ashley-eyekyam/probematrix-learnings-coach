@@ -1,0 +1,109 @@
+{
+ "plan_version": 1,
+ "request": {
+  "workflow": "training",
+  "audiences": [],
+  "skills": []
+ },
+ "steps": [
+  {
+   "n": 1,
+   "skill": "engine:ingest",
+   "status": "done",
+   "planned_for": null,
+   "produces": "workspace",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC ingest <export.xlsx> --slug <site>-<event>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 2,
+   "skill": "engine:classify",
+   "status": "done",
+   "planned_for": null,
+   "produces": "clusters",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC classify <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 3,
+   "skill": "learnings-register",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "register",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset learnings-register:top",
+    "PMLC check-register <ws> <run>/outputs/learnings-register.json --strict",
+    "PMLC register-xlsx <run>/outputs/learnings-register.json",
+    "PMLC register-md <ws> <run>/outputs/learnings-register.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-register --strict"
+   ]
+  },
+  {
+   "n": 4,
+   "skill": "training-designer",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "training-designer",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset training-designer:text",
+    "PMLC select <ws> --preset training-designer:l12",
+    "PMLC check-pack <ws> <run>/outputs/training-designer.json --strict",
+    "PMLC pack <ws> <run>/outputs/training-designer.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 5,
+   "skill": "frontline-learning-cards",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "frontline-learning-cards",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset frontline-learning-cards:tier-t1",
+    "PMLC select <ws> --preset frontline-learning-cards:tier-t1-l12",
+    "PMLC select <ws> --preset frontline-learning-cards:top-tier-t1",
+    "PMLC check-pack <ws> <run>/outputs/frontline-learning-cards.json --strict",
+    "PMLC pack <ws> <run>/outputs/frontline-learning-cards.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 6,
+   "skill": "safety-moment-deck",
+   "status": "planned",
+   "planned_for": "Phase 6",
+   "produces": null,
+   "mode": null,
+   "when": null,
+   "commands": [],
+   "questions": [],
+   "gate": []
+  }
+ ],
+ "next": 3
+}

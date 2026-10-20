@@ -14,47 +14,15 @@ ALLOWED = KEYWORDS | {"$schema", "$id", "title", "description"}
 KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisation-learning-map": "dissemination"}
 ANALYSIS = {"learning-clusters", "causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings",
             "report-comparison", "cluster-learning-dossier"}
+sys.path.insert(0, str(SKILLS_DIR / "learnings-coach" / "scripts"))
+from pmlc_lib.contracts import load_manifests, validate  # noqa: E402  (the engine's P3-6 validator)
+
 PRESETS = ["first-48-hours", "full-cascade", "leadership", "assurance", "investigation-quality", "action-design",
            "sister-sites", "training", "follow-up"]
 
 
 def load(p):
     return json.loads(Path(p).read_text(encoding="utf-8"))
-
-
-def validate(obj, schema, path="$"):
-    """Inline validator for the P3-6 keyword subset; returns a list of problems."""
-    errs = []
-    types = {"object": dict, "array": list, "string": str, "boolean": bool, "null": type(None)}
-    if "type" in schema:
-        want = schema["type"] if isinstance(schema["type"], list) else [schema["type"]]
-
-        def ok(t):
-            if t == "integer":
-                return isinstance(obj, int) and not isinstance(obj, bool)
-            return isinstance(obj, types[t]) and not (t != "boolean" and isinstance(obj, bool))
-        if not any(ok(t) for t in want):
-            return [f"{path}: expected {'/'.join(want)}"]
-    if "const" in schema and obj != schema["const"]:
-        errs.append(f"{path}: must equal {schema['const']!r}")
-    if "enum" in schema and obj not in schema["enum"]:
-        errs.append(f"{path}: {obj!r} not in {schema['enum']}")
-    if isinstance(obj, str) and "pattern" in schema and not re.search(schema["pattern"], obj):
-        errs.append(f"{path}: {obj!r} does not match {schema['pattern']}")
-    if isinstance(obj, dict):
-        for k in schema.get("required", []):
-            if k not in obj:
-                errs.append(f"{path}: missing {k}")
-        props = schema.get("properties", {})
-        for k, v in obj.items():
-            if k in props:
-                errs += validate(v, props[k], f"{path}.{k}")
-            elif schema.get("additionalProperties") is False:
-                errs.append(f"{path}: unknown key {k}")
-    if isinstance(obj, list) and "items" in schema:
-        for i, v in enumerate(obj):
-            errs += validate(v, schema["items"], f"{path}[{i}]")
-    return errs
 
 
 def test_validator_catches_problems():
@@ -67,6 +35,23 @@ def test_validator_catches_problems():
     assert "kind" in msgs and "unknown key extra" in msgs and "missing since" in msgs
     assert validate(dict(good, scope=dict(good["scope"], levels=[5])), schema)
     assert validate(dict(good, interactive="yes"), schema)
+
+
+def test_validator_type_list_and_const():
+    """X10: `type` may be a list, as produces.pack is ["string", "null"]."""
+    schema = load(REFS / "skill.schema.json")
+    good = load(SKILLS_DIR / "board-brief" / "skill.json")
+    for pack in ("board-brief", None):
+        assert validate(dict(good, produces={"pack": pack, "files": []}), schema) == []
+    assert "expected string/null" in " ".join(validate(dict(good, produces={"pack": 3, "files": []}), schema))
+    assert validate(1, {"type": "integer"}) == [] and validate(True, {"type": "integer"})
+    assert validate(1.5, {"type": "number"}) == [] and validate(True, {"type": "number"})
+    assert validate(False, {"type": "boolean"}) == []
+    assert validate("x", {"const": "y"}) == ["$: must equal 'y'"]
+
+
+def test_engine_loads_every_manifest():
+    assert sorted(load_manifests()) == SKILLS
 
 
 def test_every_skill_has_manifest():

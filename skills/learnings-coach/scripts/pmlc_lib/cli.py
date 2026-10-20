@@ -23,6 +23,7 @@ Subcommands
   status          which derived files are current or stale, and the last check of each pack
   run-path        print a workspace's run folder, outputs folder and slug
   check-samples   check samples/<slug>/ folders follow the contribution layout
+  plan            resolve a workflow preset, audiences or skills into an ordered plan (<ws>/plan.json)
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -45,6 +46,7 @@ from .lint import cmd_check_language
 from .pack.html import cmd_pack
 from .pack.items import cmd_causal_item
 from .pack.schema import cmd_check_pack
+from .plan import cmd_plan
 from .privacy import cmd_scan_names
 from .profile import cmd_profile
 from .register.check import cmd_check_register
@@ -278,6 +280,18 @@ def build_parser():
     s.add_argument("--patterns", action="store_true",
                    help="also flag email, phone and staff-number patterns (an aid, not proof of de-identification)")
     s.set_defaults(fn=cmd_scan_names)
+
+    s = sp.add_parser("plan", help="resolve a workflow preset, audiences or skills into an ordered plan",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    what = s.add_mutually_exclusive_group(required=True)
+    what.add_argument("--workflow", metavar="NAME", help="a preset from references/workflows.json")
+    what.add_argument("--audiences", metavar="A,B", help="audience ids from references/audiences.json")
+    what.add_argument("--skills", metavar="S,T", help="skill names")
+    what.add_argument("--next", action="store_true",
+                      help="refresh the saved plan and print only its next step (exit 2 when the plan is complete)")
+    s.add_argument("--json", action="store_true", help="print the plan as one JSON object")
+    s.set_defaults(fn=cmd_plan)
 
     return p
 

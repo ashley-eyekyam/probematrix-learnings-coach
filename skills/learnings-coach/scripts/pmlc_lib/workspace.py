@@ -32,11 +32,12 @@ def load_ws(ws_dir: Path) -> dict:
 MANIFEST = "manifest.json"
 KNOWN_DERIVED = ("findings.json", "evidence.json", "incident.json", "clusters.json", "singleton_roles.json",
                  "causal_graph.json",
-                 "causal_graph.mmd", "timeline_candidates.json", "timeline_event_day.json", "interfaces.json")
+                 "causal_graph.mmd", "timeline_candidates.json", "timeline_event_day.json", "interfaces.json",
+                 "plan.json")
 REBUILD = {"findings.json": "ingest", "evidence.json": "ingest", "incident.json": "ingest",
            "clusters.json": "classify", "singleton_roles.json": "classify", "causal_graph.json": "causal", "causal_graph.mmd": "causal",
            "timeline_candidates.json": "timeline", "timeline_event_day.json": "timeline",
-           "interfaces.json": "interfaces"}
+           "interfaces.json": "interfaces", "plan.json": "plan"}
 
 
 def file_sha256(path) -> str:
@@ -125,9 +126,23 @@ def taxonomy_hash(paths) -> str:
     return hashlib.sha256("\n".join(file_sha256(p) for p in paths).encode()).hexdigest()
 
 
+def manifest_state_hash(ws) -> str:
+    """A hash of the manifest without plan.json's own entry and the engine version: what a plan is built from
+    (every derived file and pack check recorded), so recording the plan does not make it stale."""
+    m = load_manifest(ws)
+    m.pop("engine_version", None)
+    m["files"] = {k: v for k, v in m.get("files", {}).items() if k != "plan.json"}
+    return hashlib.sha256(json.dumps(m, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+
+
 def _current_input(ws: Path, name: str, entry: dict):
     """The input's hash now, 'none', or None when it cannot be checked (export) or is missing."""
     src = entry.get("sources", {})
+    if name == "manifest.json":
+        return manifest_state_hash(ws)
+    if name == "contracts":
+        paths = [Path(p) for p in src.get("contracts", [])]
+        return taxonomy_hash(paths) if paths and all(p.is_file() for p in paths) else None
     if name == "taxonomy":
         paths = [Path(p) for p in src.get("taxonomy", [])]
         return taxonomy_hash(paths) if paths and all(p.is_file() for p in paths) else None
@@ -174,6 +189,8 @@ def stale_files(ws) -> list:
 
 def warn_stale(ws) -> None:
     for name, reason in stale_files(ws):
+        if name == "plan.json":   # a plan feeds no command; status shows it, `plan` rebuilds it
+            continue
         cmd = REBUILD.get(name, "ingest")
         print(f"warning: stale input {name} ({reason}); re-run pmlc {cmd} {ws}", file=sys.stderr)
 
