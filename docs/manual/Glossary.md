@@ -2,6 +2,8 @@
 
 The words this manual uses, in plain language, in alphabetical order. Where a word is also a file, a flag or a field, the term is given in that form too.
 
+The skills keep their own word list in `skills/learnings-coach/references/glossary.json`: 70 terms, each with a definition, a `do_not_translate` mark for names, codes and acronyms, and an empty `translations` slot for the languages a later release adds. Packs use those terms; this page explains them, and more, for readers of the manual.
+
 ## A to C
 
 ### AI justification
@@ -83,6 +85,10 @@ One factor the investigation identified, at one HFACS level, with its rating, de
 The rule that nothing may be reviewed or approved until the investigation status is completed, and while no finding is marked as edited by a person. There is no override.
 
 ## G to I
+
+### Gate
+
+The check a step must pass before a [plan](commands/plan.md) moves on: `check-pack --strict` for a pack, `check-register --strict` for the register, and an approved review as well for a pack meant for outside the organisation.
 
 ### Handling
 
@@ -180,9 +186,17 @@ A small file of site-specific or country-specific role words added to the standa
 
 A learning deliverable for one audience or analysis: a JSON file the skill writes, which `check-pack` checks and `pack` renders to an offline HTML page and a Markdown file.
 
+### Pack profile
+
+The shape a pack must have, kept in `pack-profiles.json`: its sections, the item kinds and counts each allows, the required scope and word limits. `check-pack` warns when a pack departs from it, and fails under `--strict`.
+
+### Plan (`plan.json`)
+
+The numbered list of steps that [plan](commands/plan.md) makes from a workflow preset, a list of audiences or a list of skills: each step's state (done, todo or planned), commands and gate. The agent shows it and waits for your OK before it starts.
+
 ### Preset
 
-A recorded set of `select` calls for a skill, run with `select --preset <skill>`. Sixteen skills have one.
+A recorded set of `select` calls for a skill, run with `select --preset <skill>`. Sixteen skills have one. Compare *workflow preset*.
 
 ### Precursor
 
@@ -192,7 +206,7 @@ A warning before the event that someone could have seen at the time: an inspecti
 
 ### Quasi-identifier
 
-A detail that can point to one person without naming them: a post with one holder, a gate or shift number, a date in a role string. See *singleton role*.
+A detail that can point to one person without naming them: a post with one holder, a gate or shift number. A date in a role string is masked in shared copies, but on its own it does not make the role a singleton. See *singleton role* and [the full rule](Files-and-folders.md#singleton-roles).
 
 ### Rating
 
@@ -218,6 +232,10 @@ Your decision about where a role belongs, kept in `role_overrides.json` and appl
 
 The folder for one investigation, `pmlc-runs/<date>-<site>-<event>/`, holding `workspace/` and `outputs/`. See [Files and folders](Files-and-folders.md).
 
+### Run manifest
+
+`run-manifest.json` in the run folder: which export the run came from (its fingerprint), what the learnings are for, the jurisdiction, the classification and the retention review date. `purge` records there what it deleted.
+
 ### Scope
 
 The part of a pack that says which findings it should cover, using the same filters as `select` (tiers, levels, entities, tags, a minimum rating). Coverage is measured against it.
@@ -236,7 +254,7 @@ The record that a person reviewed a file, made with `sign-off` and the reviewer'
 
 ### Singleton role
 
-A role that points to one person, listed in `singleton_roles.json` with a general label to use instead. The language check flags it (JC7).
+A role that points to one person, listed in `singleton_roles.json` with a general label to use instead: a role with an instance number or letter (such as a gate, post or shift number), or the sole role of its tier in Plant & Asset Leadership or Corporate & Board; group roles and dates alone never count. The full rule is in [Files and folders](Files-and-folders.md#singleton-roles). The language check flags it (JC7).
 
 ### Slug
 
@@ -249,6 +267,10 @@ A workspace file built before one of its inputs changed. `status` lists it with 
 ### Status phrase
 
 The fixed line "Learning purposes: not a statutory document" that every output carries.
+
+### Strict mode (`--strict`)
+
+The stricter level of `check-pack` and `check-register`. What is only a warning by default becomes a problem that fails the check: for a pack, departing from its pack profile, an unknown `LR-nn` or standards clause, or a scope that drifted; for the register, a priority-1 learning with no fix above the administrative tier and no `why_not_stronger`. Plans use it as the gate.
 
 ### Sub-division
 
@@ -279,6 +301,14 @@ The findings at the workspace's highest rating. `select --top-rated` keeps them;
 ### Transferability
 
 How far a learning applies beyond the site: this site only, likely at similar sites, or enterprise-wide or industry-wide.
+
+### Why not stronger (`why_not_stronger`)
+
+A sentence on a priority-1 learning (or a pack recommendation) that explains why no fix above the administrative tier is offered, for example because the stronger engineering fix sits in another learning. It is grounded in the entry's own cited findings.
+
+### Workflow preset
+
+A named sequence of skills for a common job, such as `leadership` or `full-cascade`, kept in `workflows.json`. Nine ship; see [Workflows and recipes](Workflows-and-recipes.md#pick-a-workflow-preset).
 
 ### Workspace
 

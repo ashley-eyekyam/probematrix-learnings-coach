@@ -295,12 +295,23 @@ def test_hazira_register_still_passes(tmp_path):
                         str(HAZIRA / "outputs" / "learnings-register.json")], capture_output=True, text=True)
     d = json.loads(r.stdout)
     assert d["problems"] == [], d["problems"]
+    assert not [x for x in d["warnings"] if "priority-1 learning" in x], d["warnings"]     # X34: why_not_stronger
+    assert len(d["warnings"]) == EXPECTED_HAZIRA_WARNINGS, d["warnings"]
+    # Without the two why_not_stronger texts (Ruling X34), the priority-1 rule warns on exactly LR-08 and LR-12.
+    reg = json.loads((HAZIRA / "outputs" / "learnings-register.json").read_text(encoding="utf-8"))
+    for e in reg["entries"]:
+        e.pop("why_not_stronger", None)
+    bare = tmp_path / "register-without-why.json"
+    bare.write_text(json.dumps(reg), encoding="utf-8")
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(ws), "--json", str(bare)],
+                       capture_output=True, text=True)
+    d = json.loads(r.stdout)
     p1 = [x for x in d["warnings"] if "priority-1 learning" in x]
     assert {x.split()[2] for x in p1} == {"LR-08", "LR-12"}, p1
-    assert len(d["warnings"]) == EXPECTED_HAZIRA_WARNINGS, d["warnings"]
+    assert len(d["warnings"]) == EXPECTED_HAZIRA_WARNINGS + 2, d["warnings"]
 
 
-EXPECTED_HAZIRA_WARNINGS = 19
+EXPECTED_HAZIRA_WARNINGS = 17       # 19 before Ruling X34 gave LR-08 and LR-12 a why_not_stronger
 
 
 def test_every_fixture_pack_still_passes_check_pack(wsdir):

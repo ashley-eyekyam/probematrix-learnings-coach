@@ -37,7 +37,15 @@ Audit test points · Investigator follow-up · Training modules · ER drills · 
 
 ## What's new in v2.0 so far
 
-v2.0 is in testing (current build: 2.0.0-alpha.4, Phase 2: trust gates and the user manual). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+v2.0 is in testing (current build: 2.0.0-alpha.5, Phase 3: the shared spine and the planner). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+
+**Phase 3 (2.0.0-alpha.5):**
+
+- **The coach plans the work with you.** Ask a broad question ("what should we learn from this?") and the coach asks what the learnings are for, one question at a time, then proposes one of nine ready-made workflows, such as a leadership review, the full cascade from frontline to board, or what to put out in the first 48 hours. It shows the numbered steps and does nothing until you say OK. Each step is checked before the next one starts, and the run ends with one front page (`index.html`) linking everything it made.
+- **The register is the backbone.** Every pack can point to the register's own learning numbers (LR-01, LR-02 and so on), and the check confirms each number exists, so a brief, a toolbox talk and the register all talk about the same learnings. The register's Markdown is now always generated, never hand-written, and its Excel workbook has filters, drop-down lists and links between sheets. A top-priority learning whose fixes are all procedures or training must now say why nothing stronger is offered (the check warns, and the planner's stricter check requires it).
+- **Files your organisation fills in.** Ready-made spreadsheets record whether each learning was accepted, who received each pack, and whether each learning has stuck, plus an actions list to import into your action-tracking system. The owner, date and response columns are always left blank for you; the coach never fills them in, and never overwrites a file you have started.
+- **Every skill follows the same layout.** All 22 skills now have the same sections: what to read before starting, what to gather, what to write, what to do when the evidence is thin, what the skill does not cover (and which skill does), and how to check and hand over. That makes each one easier to review and harder to get wrong.
+- **Also new.** A fair comparison with an official report can now produce a copy written for a regulator. Each run keeps a small record of what it is for and when to review it, and can be cleared away after its retention period. Senior roles such as deputy and additional general managers are sorted into the right level more often.
 
 **Phase 2 (2.0.0-alpha.4):**
 
@@ -153,7 +161,7 @@ Every run gets one folder next to the export, named by incident date, site and e
 ```
 <export-dir>/pmlc-runs/2020-09-24-hazira-gas-release-fire/
   workspace/   findings, evidence, clusters (rebuildable from the export)
-  outputs/     learnings register (.json, .xlsx, .md), organisation-learning-map.html, audience packs (<skill>.html + .md)
+  outputs/     index.html (the front page), learnings register (.json, .xlsx, .md), organisation-learning-map.html, audience packs (<skill>.html + .md)
 ```
 
 `organisation-learning-map.html` opens offline. With a Learnings Register it has two tabs: **Overview** (who must learn what) and **Detailed register** (every learning, recommendation, finding and evidence quote, with views for frontline, supervisors, managers, site leaders, board, investigators and auditors).

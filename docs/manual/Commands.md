@@ -48,7 +48,6 @@ pmlc 2.0.0a4
 | [run-path](commands/run-path.md) | Prints the run folder, workspace, outputs folder, slug, top rating and incident date |
 | [run-manifest](commands/run-manifest.md) | Sets a run's intended use, jurisdiction, retention review date and classification |
 | [purge](commands/purge.md) | Deletes a run's workspace (and outputs) after retention, keeping `run-manifest.json` |
-
 | [plan](commands/plan.md) | Turns a workflow preset, audiences or skills into an ordered plan, and prints the next step |
 
 ### 2. Gather and analyse

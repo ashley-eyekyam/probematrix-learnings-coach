@@ -702,6 +702,7 @@
    "worst_case": "Isolation delayed until ignition.",
    "transferability": "industry-wide",
    "priority": 1,
+    "why_not_stronger": "The gap this learning names is the shift's switch from locating the source on foot to isolating it once dense vapour blocked access (FND-744032B6, FND-C92C29DB, EVD-6414), which decision aids and practised scenarios address. The engineering change for the same response, isolation that does not depend on reaching the valve (FND-F887999D), is recommended in LR-09.",
    "audiences": [
     "control-room engineers",
     "shift in-charges",
@@ -1066,6 +1067,7 @@
    "worst_case": "Crew cannot execute the emergency response the plant relies on.",
    "transferability": "industry-wide",
    "priority": 1,
+    "why_not_stronger": "The gap this learning names is competence: control-room staff held emergency duties after a four-day general course with no defined qualification or simulator practice (FND-7885BCF5, FND-337CB67F, EVD-5634), which only a qualification standard and training can close. The engineering controls that reduce reliance on that competence are recommended in LR-09 and LR-10.",
    "audiences": [
     "HR and training",
     "operations managers",
