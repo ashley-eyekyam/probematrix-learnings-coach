@@ -203,7 +203,7 @@ Sometimes the wording is right and the rule does not apply: two capitalised word
  "cites": ["FND-3AB996FC"]}
 ```
 
-- `lint_ok` covers one item (or one bottom-line entry or register row) and the rule it names. Give a list of `{rule, reason}` objects for more than one rule.
+- `lint_ok` covers one item (or one bottom-line entry or register row) and the rule it names. Give a list of `{rule, reason}` objects for more than one rule. On a section or at the top of the file it is an error and accepts nothing.
 - The reason must not be empty. An empty reason, or a rule that is not JC1 to JC12, is itself an error and accepts nothing:
 
 ```text

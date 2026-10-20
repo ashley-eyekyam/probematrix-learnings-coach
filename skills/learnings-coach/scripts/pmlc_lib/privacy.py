@@ -222,8 +222,8 @@ UNIT_WORDS = {"rpm", "kpa", "mpa", "pa", "bar", "barg", "psi", "psig", "mm", "cm
               "tonnes", "tons", "l", "litres", "liters", "ml", "m3", "nm3", "scm", "ppm", "kw", "mw", "w", "v", "kv",
               "a", "hz", "metres", "meters", "feet", "ft", "units", "people", "%", "°", "°c", "c", "k"}
 RATIO_WORDS = {"ratio", "ratios", "slope", "slopes", "scale", "odds", "mix", "mixture", "dilution", "dilutions"}
-_WORD_BEFORE = re.compile(r"([A-Za-z]+)\s*(?:\bof\s*)?$")      # "ratio 1:10" and "a ratio of 1:10", not across a full stop
-_WORD_AFTER = re.compile(r"^\s*([A-Za-z]+)")
+_WORD_BEFORE = re.compile(r"([A-Za-z]+)[^\w.!?]*(?:\bof[^\w.!?]*)?$")      # "ratio 1:10" and "a ratio of 1:10", not across a full stop
+_WORD_AFTER = re.compile(r"^[^\w.!?]*([A-Za-z]+)")
 _NOT_PLURAL = {"was", "has", "is", "as", "his", "this", "its", "us", "yes", "always", "across", "press"}
 _SENTINEL = "\ue000"                                                # marks a removed time while strip_times tidies it
 ISO_DATE_RX = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})(?:[T ](?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?"

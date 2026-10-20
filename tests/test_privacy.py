@@ -924,6 +924,8 @@ def test_pack_given_as_register_is_refused(shws, tmp_path):
     ("The site has about 1200 workers.", "The site has about 1200 workers."),
     ("The audit in 2019 found gaps.", "The audit in 2019 found gaps."),
     ("The plant has run since 2018, leaving the gap.", "The plant has run since 2018, leaving the gap."),
+    ("The ratio: 1:10.", "The ratio: 1:10."),
+    ("Mix (ratio 1:10) was used.", "Mix (ratio 1:10) was used."),
     ("A 1:10 dilution. The mix at 9:15 rang.", "A 1:10 dilution. The mix rang."),
 ])
 def test_strip_times_cases(raw, want):
@@ -965,8 +967,8 @@ def test_singleton_roles_json_goes_stale_after_a_changed_export(tmp_path):
 
 def test_share_doc_merges_role_map_values_when_masked_keys_collide():
     """A43: two roles that mask to the same key keep both roles' entities, tiers and relations."""
-    ctx = pv.ShareCtx("external", [], ["Bharat Seals", "ACME"], {})
-    cl = {"role_map": {"Bharat Seals fitter": {"F": ["F02"], "T": "T1", "R": ["actor"]},
+    ctx = pv.ShareCtx("external", [], ["Quillon Seals", "ACME"], {})
+    cl = {"role_map": {"Quillon Seals fitter": {"F": ["F02"], "T": "T1", "R": ["actor"]},
                        "ACME fitter": {"F": ["F03", "F02"], "T": "T2", "R": ["actor", "owner"], "source": "overlay"}}}
     out = pv.share_doc(cl, ctx)["role_map"]
     assert list(out) == ["[organisation] fitter"]
