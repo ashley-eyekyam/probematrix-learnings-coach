@@ -95,6 +95,33 @@ def make_export(d: Path, status: str = "completed", edited=None, summary=(), nar
     return x
 
 
+def make_thin_export(d: Path, roles=("Pump Technician", "Pump Technician", "Pump Technician", "Pump Technician"),
+                     name="thin.xlsx") -> Path:
+    """A thin export: no Evidence Links sheet, no narrative, no dated text; every role is a frontline role unless
+    `roles` (one string per finding) says otherwise."""
+    wb = openpyxl.Workbook()
+    s = wb.active
+    s.title = "Incident Summary"
+    for r in [("INCIDENT SUMMARY", None), (None, None), ("Field", "Value"), ("Incident Title", "Thin export"),
+              ("Investigation Status", "completed")]:
+        s.append(r)
+    f = wb.create_sheet("Identified Findings")
+    f.append(FIND_COLS)
+    ue = FIND_COLS.index("User Edited")
+    ind = FIND_COLS.index("Individuals Involved")
+    for i, role in enumerate(roles):
+        r = list(ROWS[i % len(ROWS)])
+        r[0] = f"FND-{i + 1:04d}"
+        for k in (11, 12, 13):  # descriptions and causal explanation carry dates in the default rows
+            r[k] = "Described briefly."
+        r[10] = "Short label"
+        r[ind], r[FIND_COLS.index("Linked Evidence")], r[ue] = role, None, "No"
+        f.append(r)
+    x = d / name
+    wb.save(x)
+    return x
+
+
 @pytest.fixture(scope="module")
 def ws(tmp_path_factory):
     d = tmp_path_factory.mktemp("pmlc")
