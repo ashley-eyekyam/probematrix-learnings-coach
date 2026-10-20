@@ -8,6 +8,24 @@ Contributions are welcome: new audience skills, taxonomies for other sectors (he
 - Every skill must respect `learning-principles.md`: grounded, blame-free, roles only.
 - Samples and published runs go in `samples/<YYYY-MM-DD>-<site>-<event>/` (layout and rules in `samples/README.md`; `pmlc.py check-samples` must pass). Never add non-public incident data. For a public-record incident, the official report and ProbeMatrix material (export, report, outputs) may be included unmodified, with no name scan required; generated learnings still follow just culture (roles only, no blame).
 
+## Skill skeleton
+
+Every skill except the hub (`learnings-coach`) uses the same `##` headings, in this order; other headings may sit between them. `tests/test_skills.py` checks them.
+
+1. **Before you start**: link `learnings-coach/references/skill-common.md` §1–§2 and list what the skill needs (the same names as `requires` in its `skill.json`).
+2. **Gather**: the `PMLC select` commands and item generators (`causal-item`, `table-item`, `timeline-item`, `register-items`), one comment per command.
+3. **Write**: one section-spec table, `| § | id | Heading | Content rule | Kind | Count |`, one row per section id and kind. An optional `bottom_line` row gives the bottom-line count. The ids, kinds and counts must equal the skill's entry in `references/pack-profiles.json`. Counts read `N`, `up to N` (min 1), `N–M`, `at least N`, or `optional` / `optional, up to N` (min 0); text in parentheses is a note.
+4. **If the evidence is thin**: the skill's own thin case (`skill-common.md` §6 covers the rest).
+5. **Not covered here**: what the skill does not do, and which skill does.
+6. **Check and hand over**: "Run `skill-common.md` §4, then tick §5", plus any skill-specific check.
+
+Also:
+
+- The description names ProbeMatrix and the export, opens in the third person ("Produces…"), says "Use when…", stays at 1024 characters or fewer, and adds "Not for … (use `<sibling>`)" for each overlapping sibling listed in `OVERLAPS` in `tests/test_skills.py`.
+- Cite `learnings-coach/references/learning-principles.md` by that full path, and name references as `learnings-coach/references/<file>`. Every reference a SKILL.md names must exist.
+- Do not repeat what `skill-common.md` says: no `PMLC = python3 …` definition and no `data_quality` / `exclusions` sentence.
+- Keep the SKILL.md at 150 lines or fewer, and mark any path under `samples/`, `tools/`, `docs/`, `tests/` or `evals/` "(repository only)".
+
 ## Workflow
 
 1. **Issue.** Open an issue first (use the Feature or Bug template), or comment on an existing one.

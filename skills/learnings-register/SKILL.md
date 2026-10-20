@@ -34,7 +34,7 @@ All files go to `<run>/outputs/` (see the folder rule in `learnings-coach/SKILL.
 
 ## Sharing outside the organisation
 
-A register is for the organisation's own learning. Do not send it to a regulator, client or the public from here. Sharing outside needs legal review, an approved sign-off, and `--share external`; follow "Sharing outside the organisation" in `learnings-coach/references/learning-principles.md` (§7) and the hub's step 4.
+A register is for the organisation's own learning. Do not send it to a regulator, client or the public from here. Sharing outside needs legal review, an approved sign-off, and `--share external`; follow "Sharing outside the organisation" in `learnings-coach/references/skill-common.md` (§7) and the hub's step 4.
 
 ## Checks before handing over
 

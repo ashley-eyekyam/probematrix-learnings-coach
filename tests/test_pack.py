@@ -1003,10 +1003,11 @@ def test_principles_sections():
     assert '"failed to X" | "X was not done; the system did not require or support X"' in t
     assert "owns the change" in t
     heads = re.findall(r"^## (.+)$", t, re.M)
-    assert "7. Sharing outside the organisation" in heads
-    i = heads.index("7. Sharing outside the organisation")
+    assert "7. Review status and draft learnings" in heads
+    i = heads.index("7. Review status and draft learnings")
     assert heads[i - 1].startswith("6. ") and heads[i + 1:] == ["Interviews in a just culture", "Quasi-identifiers"]
-    sec = t.split("## 7. Sharing outside the organisation", 1)[1].split("\n## ", 1)[0]
+    common = (SKILLS / "learnings-coach" / "references" / "skill-common.md").read_text(encoding="utf-8")
+    sec = common.split("## 7. Sharing outside the organisation", 1)[1].split("\n## ", 1)[0]   # moved here (P2-13)
     for x in ("legal review", "--share external", "--embed summary", "client-safe", "privilege"):
         assert x in sec, x
 
