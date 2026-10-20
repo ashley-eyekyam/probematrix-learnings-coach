@@ -19,6 +19,8 @@ def _load_taxonomy(path=None, overlays=(), org_rows=()) -> dict:
     rules with the same IDs: match = (?:base)|(?:extra). org_rows (from load_org_chart) then extend entities or add
     new ones. The result carries `_fingerprint`, the sha256 of the merged taxonomy, the overlays and the org chart."""
     p = Path(path) if path else REFS / "taxonomy.json"
+    if path and not p.is_file():
+        sys.exit(f"--taxonomy {path}: file not found")
     t = json.loads(p.read_text(encoding="utf-8"))
     t["_file"] = str(path) if path else "taxonomy.json"
     t["_overlays"] = []
@@ -40,6 +42,8 @@ def _load_taxonomy(path=None, overlays=(), org_rows=()) -> dict:
             sys.exit(f"overlay {name}: `extend` must be an object keyed by entities, tiers or relations.")
         for group in ("entities", "tiers", "relations"):
             rules = {r["id"]: r for r in t[group]}
+            if ext.get(group) is not None and not isinstance(ext.get(group), dict):
+                sys.exit(f"overlay {name}: extend.{group} must be an object")
             for rid, extra in (ext.get(group) or {}).items():
                 if rid not in rules:
                     sys.exit(f"Overlay {name} extends {rid}, which is not in the {group} of taxonomy {t['_file']}.")
@@ -281,6 +285,9 @@ def cmd_classify(a):
             sys.exit(f"The previous classify used org chart {org_chart}, which is no longer there. Pass --org-chart "
                      "<file> to choose one or --no-org-chart for none.")
         print(f"Reusing org chart {org_chart} from the previous classify (--no-org-chart for none).")
+    if a.taxonomy and overlays and not a.overlay and not a.no_overlay:
+        print(f"hint: overlay(s) {', '.join(overlays)} were remembered from the previous classify; "
+              "pass --no-overlay to drop the remembered overlay")
     tax = _load_taxonomy(taxonomy, overlays)
     org_rows = load_org_chart(org_chart, ws, tax) if org_chart else []
     if org_rows:

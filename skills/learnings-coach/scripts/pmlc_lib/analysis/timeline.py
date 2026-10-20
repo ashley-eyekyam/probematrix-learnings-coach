@@ -65,8 +65,12 @@ def _clock_times(text, start=0, end=None):
     return out
 
 
+NARRATIVE_SOURCE = "narrative"
+
+
 def _event_day_sequence(w, day, sources):
-    """One entry per minute: {time, mentions, sources, snippets}, sorted by time.
+    """One entry per minute: {time, mentions, sources, snippets}, sorted by time. `sources` holds citable Finding and
+    Evidence IDs only; a time the narrative mentions sets `narrative: true` instead.
 
     A time counts when its sentence holds no day-precision date other than `day`. A sentence with no date at all
     counts only when `day` is the incident date, since undated times in an export describe the incident day."""
@@ -82,7 +86,9 @@ def _event_day_sequence(w, day, sources):
                 continue
             ev = found.setdefault(hhmm, {"time": hhmm, "mentions": 0, "sources": [], "snippets": []})
             ev["mentions"] += 1
-            if sid not in ev["sources"]:
+            if sid == NARRATIVE_SOURCE:       # the narrative has no FND/EVD id to cite: flag it, never list it
+                ev["narrative"] = True
+            elif sid not in ev["sources"]:
                 ev["sources"].append(sid)
             snip = re.sub(r"\s+", " ", text[max(0, s - 100): e + 100]).strip()
             if len(ev["snippets"]) < 3 and snip not in ev["snippets"]:
@@ -172,7 +178,7 @@ def cmd_timeline(a):
         print(f"| {when} | {it['precision']} | {', '.join(it['sources'][:4])} | {it['snippet'][:160]} |")
     if day:
         texts = [(x[0], x[2]) for x in sources]
-        texts.append(("narrative", w.get("incident", {}).get("narrative", "")))
+        texts.append((NARRATIVE_SOURCE, w.get("incident", {}).get("narrative", "")))
         seq = _event_day_sequence(w, day, texts)
         write_json(ws / "timeline_event_day.json", seq)
         record_derived(ws, "timeline_event_day.json",

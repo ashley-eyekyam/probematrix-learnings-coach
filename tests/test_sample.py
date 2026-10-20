@@ -134,7 +134,8 @@ def test_event_day_sequence(hz):
     times = [x["time"] for x in seq]
     assert times == sorted(times) and {"02:12", "03:01", "03:08"} <= set(times)
     assert len(times) == len(set(times)) and len(seq) < 60
-    assert all(x["sources"] and 1 <= len(x["snippets"]) <= 3 and x["mentions"] >= len(x["sources"]) for x in seq)
+    assert all((x["sources"] or x.get("narrative")) and 1 <= len(x["snippets"]) <= 3 and x["mentions"] >= len(x["sources"])
+               for x in seq)                  # A53: a narrative-only time has no citable ID, so it is flagged
     e308 = next(x for x in seq if x["time"] == "03:08")
     assert e308["mentions"] > 1 and len(e308["sources"]) > 1
 
@@ -170,10 +171,13 @@ def test_sample_register_vocab(hz, capsys):
                        capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr
     warns = [ln for ln in r.stdout.splitlines() if ln.startswith("warning: ")]
+    # A28: the language-check warnings are exactly the two calibrated JC6 ones, not merely "some warnings"
+    jc = [ln for ln in warns if " JC" in ln]
+    assert len(jc) == 2 and all("JC6" in ln for ln in jc), jc
+    assert any(ln.startswith("warning: entries[7].recommendations: JC6") for ln in jc)
+    assert any(ln.startswith("warning: entries[11].recommendations: JC6") for ln in jc)
     with capsys.disabled():
         print(f"\nHazira vocabulary warnings: {len(warns)}")
-        for ln in warns:
-            print("  " + ln)
 
 
 def test_hazira_register_lint_calibration(hz):
@@ -186,12 +190,12 @@ def test_hazira_register_lint_calibration(hz):
     took = time.perf_counter() - t0
     report = pmlc_lint.format_hits(hits)
     assert [h for h in hits if h.severity == "error"] == [], report
-    assert len(hits) <= 3, report
+    assert len([h for h in hits if h.severity == "warning"]) == 2 and len(hits) == 2, report
     assert took < 2, took
     assert reg["status"].startswith("Learning purposes: not a statutory document; draft")
     r = subprocess.run([sys.executable, str(PMLC), "check-language", str(hz.ws), str(REGISTER)],
                        capture_output=True, text=True)
-    assert r.returncode == 0 and r.stdout.strip().splitlines()[-1].startswith("check-language: 0 errors"), r.stdout
+    assert r.returncode == 0 and r.stdout.strip().splitlines()[-1].startswith("check-language: 0 errors, 2 warnings"), r.stdout
     md = (SAMPLE / "outputs" / "learnings-register.md").read_text(encoding="utf-8").splitlines()
     assert md[2] == "*" + reg["status"] + "*"
 

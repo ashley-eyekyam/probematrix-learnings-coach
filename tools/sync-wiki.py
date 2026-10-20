@@ -25,7 +25,10 @@ import pmlc  # noqa: E402
 
 REPO_URL = "https://github.com/ashley-eyekyam/probematrix-learnings-coach"
 MANIFEST = ".pmlc-sync.json"
-LINK_RX = re.compile(r"(?<!!)\[([^\]]*)\]\(([^)\s]+)\)")
+LINK_RX = re.compile(r"(?<!!)\[([^\]]*)\]\(([^)\s]+)((?:\s+(?:\"[^\"]*\"|'[^']*'))?)\s*\)")
+REF_RX = re.compile(r"^(\s{0,3}\[[^\]]+\]:\s*)(\S+)(.*)$")
+CODE_SPAN_RX = re.compile(r"(`+)(?:(?!\1).)+?\1")
+FENCE_RX = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
 
 
 def wiki_name(rel_path: str) -> str:
@@ -53,17 +56,50 @@ def _resolve(rel: str, target: str) -> str:
     return "/".join(parts)
 
 
+def _target(href: str, rel: str, known: set):
+    """Return the wiki link for a relative .md href, or None to leave it alone."""
+    path, hash_, anchor = href.partition("#")
+    if re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*:", href) or not path.endswith(".md"):
+        return None
+    target = _resolve(rel, path)
+    if target not in known:
+        raise ValueError(f"{rel}: link to missing manual page {href}")
+    return f"{wiki_name(target)}{hash_}{anchor}"
+
+
+def _rewrite_line(line: str, rel: str, known: set) -> str:
+    def inline(m: re.Match) -> str:
+        new = _target(m.group(2), rel, known)
+        return m.group(0) if new is None else f"[{m.group(1)}]({new}{m.group(3)})"
+
+    m = REF_RX.match(line)
+    if m:
+        new = _target(m.group(2), rel, known)
+        return line if new is None else f"{m.group(1)}{new}{m.group(3)}"
+    out, pos = [], 0
+    for span in CODE_SPAN_RX.finditer(line):
+        out.append(LINK_RX.sub(inline, line[pos:span.start()]))
+        out.append(span.group(0))
+        pos = span.end()
+    out.append(LINK_RX.sub(inline, line[pos:]))
+    return "".join(out)
+
+
 def rewrite_links(text: str, rel: str, known: set) -> str:
-    def sub(m: re.Match) -> str:
-        label, href = m.group(1), m.group(2)
-        path, hash_, anchor = href.partition("#")
-        if re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*:", href) or not path.endswith(".md"):
-            return m.group(0)
-        target = _resolve(rel, path)
-        if target not in known:
-            raise ValueError(f"{rel}: link to missing manual page {href}")
-        return f"[{label}]({wiki_name(target)}{hash_}{anchor})"
-    return LINK_RX.sub(sub, text)
+    """Rewrite relative .md links to wiki links, leaving fenced and inline code untouched."""
+    out, fence = [], None
+    for line in text.split("\n"):
+        m = FENCE_RX.match(line)
+        if fence is None and m:
+            fence = m.group(1)[0] * len(m.group(1))
+            out.append(line)
+        elif fence is not None:
+            if m and m.group(1)[0] == fence[0] and len(m.group(1)) >= len(fence) and not line.strip().strip(fence[0]):
+                fence = None
+            out.append(line)
+        else:
+            out.append(_rewrite_line(line, rel, known))
+    return "\n".join(out)
 
 
 def build_pages(manual_dir: Path, version: str) -> dict:
@@ -92,17 +128,40 @@ def build_pages(manual_dir: Path, version: str) -> dict:
     return pages
 
 
+def _safe_name(name) -> bool:
+    return isinstance(name, str) and bool(name) and not any(c in name for c in "/\\") and ".." not in name
+
+
+def _write_manifest(mpath: Path, version: str, names) -> None:
+    mpath.parent.mkdir(parents=True, exist_ok=True)
+    text = json.dumps({"version": version, "pages": sorted(names)}, indent=2) + "\n"
+    if not mpath.exists() or mpath.read_text(encoding="utf-8") != text:
+        mpath.write_text(text, encoding="utf-8")
+
+
 def sync(manual_dir, wiki_dir, version, *, check=False, adopt=()) -> list:
     wiki_dir = Path(wiki_dir)
     pages = build_pages(Path(manual_dir), version)
+    unknown = sorted(n for n in adopt if n not in pages)
+    if unknown:
+        print("--adopt names no page this tool generates: " + ", ".join(unknown), file=sys.stderr)
+        raise SystemExit(1)
     mpath = wiki_dir / MANIFEST
-    owned = set(json.loads(mpath.read_text(encoding="utf-8"))["pages"]) if mpath.exists() else set()
+    owned = set()
+    if mpath.exists():
+        data = json.loads(mpath.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or not isinstance(data.get("pages"), list):
+            raise ValueError("wiki manifest is malformed: pages must be a list")
+        owned = {n for n in data["pages"] if isinstance(n, str)}
     collisions = sorted(n for n in pages if (wiki_dir / f"{n}.md").exists() and n not in owned and n not in adopt)
     if collisions:
         print("Refusing to overwrite wiki pages this tool does not own: " + ", ".join(collisions)
               + "\nRe-run with --adopt NAME to take them over.", file=sys.stderr)
         raise SystemExit(1)
     changes = []
+    # Record ownership (old union new) before any page is written, so a crash leaves pages owned.
+    if not check:
+        _write_manifest(mpath, version, owned | set(pages))
     for name, content in sorted(pages.items()):
         f = wiki_dir / f"{name}.md"
         if f.exists() and f.read_text(encoding="utf-8") == content:
@@ -112,16 +171,18 @@ def sync(manual_dir, wiki_dir, version, *, check=False, adopt=()) -> list:
             if not check:
                 wiki_dir.mkdir(parents=True, exist_ok=True)
                 f.write_text(content, encoding="utf-8")
+    root = wiki_dir.resolve()
     for name in sorted(owned - set(pages)):
         f = wiki_dir / f"{name}.md"
+        if not _safe_name(name) or root not in f.resolve().parents:
+            changes.append(f"skip unsafe name {name!r}")
+            continue
         if f.exists():
             changes.append(f"delete {name}")
             if not check:
                 f.unlink()
-    manifest = json.dumps({"version": version, "pages": sorted(pages)}, indent=2) + "\n"
-    if not check and (not mpath.exists() or mpath.read_text(encoding="utf-8") != manifest):
-        wiki_dir.mkdir(parents=True, exist_ok=True)
-        mpath.write_text(manifest, encoding="utf-8")
+    if not check:
+        _write_manifest(mpath, version, pages)
     return changes
 
 

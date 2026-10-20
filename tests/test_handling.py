@@ -111,10 +111,10 @@ def test_sign_off_approved_writes_hash_and_manifest(tmp_path, okws):
     assert h["classification"] == "restricted" and h["distribution"] == ["board", "T2"] and h["version"] == "2.0"
     assert h["content_hash"] == pmlc.content_hash(doc)
     m = json.loads((okws / "manifest.json").read_text())
-    assert m["sign_offs"]["pack.json"]["status"] == "approved"
+    assert pmlc.sign_off_entry(m, p)["status"] == "approved"
     eff = pmlc.effective_handling(doc, pmlc.load_ws(okws), src=p, ws=okws)
     assert eff["effective_status"] == "approved" and eff["draft_reasons"] == []
-    rec = m["sign_offs"]["pack.json"]                 # the whole block and the resolved path are recorded (X25)
+    rec = pmlc.sign_off_entry(m, p)               # the whole block and the resolved path are recorded (X25)
     assert {k: v for k, v in rec.items() if k != "path"} == h and rec["path"] == str(p.resolve())
     ok = cli("check-pack", str(okws), str(p))
     assert ok.returncode == 0 and "warning" not in ok.stdout
@@ -491,3 +491,55 @@ def test_sign_off_accepts_roles(tmp_path, okws, role):
     p = write(tmp_path, PACK)
     r = cli("sign-off", str(okws), str(p), "--role", role, "--distribution", "board", "T2", "site-leadership")
     assert r.returncode == 0, r.stderr
+
+
+# ---- phase 3, task 18: manifest records keyed by resolved path, bare-name keys still read
+def _sub(tmp_path, d, doc=None):
+    (tmp_path / d).mkdir(exist_ok=True)
+    return write(tmp_path / d, doc or PACK)
+
+
+def test_old_name_keyed_sign_off_still_honoured(tmp_path, okws):
+    p = write(tmp_path, PACK)
+    assert cli("sign-off", str(okws), str(p), "--status", "approved", "--role", "HSE manager",
+               "--date", "2026-10-19").returncode == 0
+    mp = okws / "manifest.json"
+    m = json.loads(mp.read_text())
+    assert list(m["sign_offs"]) == [str(p.resolve())]            # new records are keyed by the resolved path
+    m["sign_offs"] = {"pack.json": m["sign_offs"][str(p.resolve())]}   # an alpha.4 manifest: keyed by bare name
+    mp.write_text(json.dumps(m), encoding="utf-8")
+    doc = json.loads(p.read_text())
+    assert pmlc.effective_handling(doc, pmlc.load_ws(okws), src=p, ws=okws)["effective_status"] == "approved"
+    out = cli("status", str(okws)).stdout
+    assert "| pack.json | approved | HSE manager | 2026-10-19 | no |" in out
+    assert cli("sign-off", str(okws), str(p), "--role", "HSE manager", "--date", "2026-10-20").returncode == 0
+    assert list(json.loads(mp.read_text())["sign_offs"]) == [str(p.resolve())]   # the old key is replaced
+
+
+def test_failed_check_recorded_not_ok(tmp_path, okws):
+    bad = dict(PACK, bottom_line=[{"text": "Test before service.", "cites": ["FND-9999"]}])
+    p = write(tmp_path, bad)
+    r = cli("check-pack", str(okws), str(p))
+    assert r.returncode == 1
+    rec = pmlc.pack_record(json.loads((okws / "manifest.json").read_text()), p)
+    assert rec is not None and rec["ok"] is False and rec["problems"] >= 1 and rec["path"] == str(p.resolve())
+    assert "problem(s)" in cli("status", str(okws)).stdout
+
+
+def test_two_runs_same_pack_name_do_not_collide(tmp_path, okws):
+    a = _sub(tmp_path, "run-a")
+    b = _sub(tmp_path, "run-b", dict(PACK, title="Test pack: the second run"))
+    assert cli("sign-off", str(okws), str(a), "--role", "HSE manager").returncode == 0
+    assert cli("check-pack", str(okws), str(a)).returncode == 0
+    assert cli("check-pack", str(okws), str(b)).returncode == 0
+    m = json.loads((okws / "manifest.json").read_text())
+    assert len(m["packs"]) == 2
+    assert pmlc.sign_off_entry(m, a)["path"] == str(a.resolve())
+    ea = pmlc.effective_handling(json.loads(a.read_text()), pmlc.load_ws(okws), src=a, ws=okws)
+    eb = pmlc.effective_handling(json.loads(b.read_text()), pmlc.load_ws(okws), src=b, ws=okws)
+    assert ea["effective_status"] == "reviewed"
+    assert eb["effective_status"] == "draft"        # signing a did not sign b
+    assert cli("sign-off", str(okws), str(b), "--role", "Site HSE lead").returncode == 0
+    m = json.loads((okws / "manifest.json").read_text())
+    assert pmlc.sign_off_entry(m, a)["reviewer_role"] == "HSE manager"
+    assert pmlc.sign_off_entry(m, b)["reviewer_role"] == "Site HSE lead"

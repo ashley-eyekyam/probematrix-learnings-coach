@@ -82,25 +82,47 @@ def load_manifest(ws) -> dict:
     files = m.get("files")
     m["files"] = {k: {**v, **{x: {} for x in ("inputs", "sources") if x in v and not isinstance(v[x], dict)}}
                   for k, v in (files if isinstance(files, dict) else {}).items() if isinstance(v, dict)}
+    for v in m["files"].values():
+        src = v.get("sources")
+        if isinstance(src, dict) and isinstance(src.get("taxonomy"), str):
+            v["sources"] = {**src, "taxonomy": [src["taxonomy"]]}
     packs = m.get("packs")
     m["packs"] = {k: v for k, v in (packs if isinstance(packs, dict) else {}).items() if isinstance(v, dict)}
     return m
 
 
+def _path_key(path) -> str:
+    return str(Path(path).resolve())
+
+
 def pack_record(manifest: dict, pack_path) -> dict | None:
     """The packs-table record (last check-pack) for the pack file at pack_path, or None. The table is keyed by the
-    pack's bare name, the file name without .json (`<run>/outputs/<pack>.json`). Every lookup goes through here, so
-    a change of keying (resolved path, name as the fallback) happens in one place."""
-    name = Path(pack_path).name
-    rec = (manifest.get("packs") or {}).get(name[:-5] if name.endswith(".json") else name)
+    pack file's resolved path; a record an older engine wrote under the pack's bare name (the file name without
+    .json) is the fallback. Every lookup goes through here, so the keying lives in one place."""
+    table = manifest.get("packs") or {}
+    rec = table.get(_path_key(pack_path))
+    if not isinstance(rec, dict):
+        name = Path(pack_path).name
+        rec = table.get(name[:-5] if name.endswith(".json") else name)
     return rec if isinstance(rec, dict) else None
 
 
 def sign_off_entry(manifest: dict, path) -> dict | None:
-    """The sign-offs-table entry for the file at path, or None. The table is keyed by the bare file name; the entry
-    carries the resolved path, which sign_off_record checks. Every lookup goes through here (see pack_record)."""
-    rec = (manifest.get("sign_offs") or {}).get(Path(path).name)
+    """The sign-offs-table entry for the file at path, or None. The table is keyed by the file's resolved path; an
+    entry an older engine wrote under the bare file name is the fallback. The entry carries the resolved path,
+    which sign_off_record checks. Every lookup goes through here (see pack_record)."""
+    table = manifest.get("sign_offs") or {}
+    rec = table.get(_path_key(path))
+    if not isinstance(rec, dict):
+        rec = table.get(Path(path).name)
     return rec if isinstance(rec, dict) else None
+
+
+def drop_name_key(table: dict, path, legacy_key: str) -> None:
+    """Remove the old bare-name record for path from table, but only when it was recorded for this very file."""
+    old = table.get(legacy_key)
+    if isinstance(old, dict) and old.get("path") in (None, "", _path_key(path)):
+        del table[legacy_key]
 
 
 def _save_manifest(ws, m: dict) -> None:
@@ -132,8 +154,10 @@ def record_pack_check(ws, pack_name, pack_path, ok, n_problems) -> None:
     ws = Path(ws)
     m = load_manifest(ws)
     p = Path(pack_path)
-    m.setdefault("packs", {})[pack_name] = {
-        "sha256": file_sha256(p) if p.is_file() else "", "path": str(_abs(p)),
+    table = m.setdefault("packs", {})
+    drop_name_key(table, p, pack_name)
+    table[_path_key(p)] = {
+        "pack": pack_name, "sha256": file_sha256(p) if p.is_file() else "", "path": _path_key(p),
         "ok": bool(ok), "problems": n_problems, "checked": _now()}
     _save_manifest(ws, m)
 
@@ -238,7 +262,8 @@ def cmd_status(a):
         else:
             state, reason = "current", ""
         print(f"| {n} | {state} | {reason} |")
-    packs = dict(m.get("packs", {}))   # a listing of the whole table, not a lookup by file
+    shown = {}   # display name -> record or None; a listing of the whole table, read through the accessors
+    seen = set()
     out = outputs_dir(ws)
     if out.is_dir():
         for p in sorted(out.glob("*.json")):
@@ -247,10 +272,16 @@ def cmd_status(a):
             except (OSError, ValueError):
                 continue
             if isinstance(d, dict) and isinstance(d.get("pack"), str):
-                packs.setdefault(d["pack"], None)
+                rec = pack_record(m, p)
+                shown[d["pack"]] = rec
+                if rec is not None:
+                    seen.add(id(rec))
+    for key, rec in m.get("packs", {}).items():
+        if id(rec) not in seen:
+            shown.setdefault(rec.get("pack") or (Path(rec["path"]).stem if rec.get("path") else Path(key).stem), rec)
     print("\n| Pack | Last check | Changed since |\n|---|---|---|")
-    for name in sorted(packs):
-        rec = packs[name]
+    for name in sorted(shown):
+        rec = shown[name]
         if not rec:
             print(f"| {name} | never | n/a |")
             continue
@@ -268,8 +299,8 @@ def cmd_status(a):
     signed = m.get("sign_offs", {})
     if signed:
         print("\n| Signed off | Status | Role | Date | Changed since |\n|---|---|---|---|---|")
-        for name in sorted(signed):
-            r = signed[name]
+        rows = sorted((Path(k).name, r) for k, r in signed.items() if isinstance(r, dict))
+        for name, r in rows:
             f = Path(r.get("path") or out / name)
             try:
                 d = json.loads(f.read_text(encoding="utf-8"))

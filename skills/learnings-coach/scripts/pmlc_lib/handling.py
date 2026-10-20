@@ -16,7 +16,7 @@ from pathlib import Path
 from . import AI_STATUS, DRAFT_LABEL, STATUS_PHRASE
 from .classify import _load_taxonomy, map_role, TIER_LABELS
 from .util import _overlay_path, _s, iso_date, write_json
-from .workspace import _save_manifest, load_manifest, load_ws, sign_off_entry
+from .workspace import _save_manifest, drop_name_key, load_manifest, load_ws, sign_off_entry
 from . import lint
 from .retention import run_handling_facts
 from . import privacy
@@ -220,7 +220,9 @@ def status_line(status="") -> str:
 def record_sign_off(ws, path, h: dict) -> None:
     """The whole handling block sign-off wrote, with the file's resolved path (effective_handling checks both)."""
     m = load_manifest(Path(ws))
-    m.setdefault("sign_offs", {})[Path(path).name] = {
+    table = m.setdefault("sign_offs", {})
+    drop_name_key(table, path, Path(path).name)
+    table[str(Path(path).resolve())] = {
         **{k: copy.deepcopy(h[k]) for k in HANDLING_KEYS if k in h}, "path": str(Path(path).resolve())}
     _save_manifest(ws, m)
 

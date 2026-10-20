@@ -165,3 +165,78 @@ def test_real_manual_builds():
     for name, text in p.items():
         body = text.split("\n", 2)[-1] if not name.startswith("_") else text
         assert not re.search(r"\]\([^)\s:]*\.md[#)]", body), name
+
+
+def test_sync_wiki_malformed_manifest(manual, tmp_path, capsys):
+    w = tmp_path / "wiki"
+    w.mkdir()
+    for bad in ('{"version": "1"}', '{"pages": "Home"}', "[]"):
+        (w / ".pmlc-sync.json").write_text(bad, encoding="utf-8")
+        rc = sw.main(["--wiki-dir", str(w), "--manual-dir", str(manual)])
+        assert rc == 1
+        assert "wiki manifest is malformed: pages must be a list" in capsys.readouterr().err
+
+
+def test_sync_wiki_refuses_traversal_delete(manual, tmp_path):
+    w = tmp_path / "wiki"
+    w.mkdir()
+    victim = tmp_path / "victim.md"
+    victim.write_text("keep", encoding="utf-8")
+    (w / "sub").mkdir()
+    (w / "sub" / "x.md").write_text("keep", encoding="utf-8")
+    (w / ".pmlc-sync.json").write_text(
+        json.dumps({"pages": ["../victim", "sub/x", "..\\victim", "a..b"]}), encoding="utf-8")
+    ch = sw.sync(manual, w, "1")
+    assert victim.read_text(encoding="utf-8") == "keep"
+    assert (w / "sub" / "x.md").exists()
+    assert not any(c.startswith("delete") for c in ch)
+    assert sum(c.startswith("skip unsafe name") for c in ch) == 4
+
+
+def test_sync_wiki_link_forms(manual):
+    (manual / "Forms.md").write_text(
+        "[a](Guide.md \"Title\") and `[b](Guide.md)` here\n\n```\n[c](Guide.md)\n```\n\n"
+        "~~~\n[d](Guide.md)\n~~~\n\n[ref]: Guide.md#top\n[ext]: https://e.com/x.md\n"
+        "[e](Guide.md 'T2') after\n", encoding="utf-8")
+    body = sw.build_pages(manual, "1")["Forms"]
+    assert '[a](Guide "Title")' in body
+    assert "`[b](Guide.md)`" in body
+    assert "[c](Guide.md)" in body and "[d](Guide.md)" in body
+    assert "[ref]: Guide#top" in body
+    assert "[ext]: https://e.com/x.md" in body
+    assert "[e](Guide 'T2')" in body
+
+
+def test_sync_wiki_unknown_adopt(manual, tmp_path, capsys):
+    w = tmp_path / "wiki"
+    with pytest.raises(SystemExit) as e0:
+        sw.main(["--wiki-dir", str(w), "--manual-dir", str(manual), "--adopt", "Nope"])
+    assert e0.value.code == 1
+    capsys.readouterr()
+    with pytest.raises(SystemExit) as e:
+        sw.sync(manual, w, "1", adopt=["Nope"])
+    assert e.value.code == 1
+    assert "Nope" in capsys.readouterr().err
+    assert not w.exists()
+
+
+def test_sync_wiki_crash_leaves_pages_owned(manual, tmp_path, monkeypatch):
+    w = tmp_path / "wiki"
+    real = Path.write_text
+    calls = []
+
+    def flaky(self, *a, **k):
+        if self.suffix == ".md":
+            calls.append(self.name)
+            if len(calls) == 2:
+                raise OSError("disk full")
+        return real(self, *a, **k)
+
+    monkeypatch.setattr(Path, "write_text", flaky)
+    with pytest.raises(OSError):
+        sw.sync(manual, w, "1")
+    monkeypatch.undo()
+    owned = json.loads((w / ".pmlc-sync.json").read_text(encoding="utf-8"))["pages"]
+    assert set(owned) >= {p.stem for p in w.glob("*.md")} and len(owned) >= 2
+    # a re-run now treats the half-written page as owned instead of refusing
+    assert any(c.startswith("write") for c in sw.sync(manual, w, "1"))

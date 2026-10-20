@@ -216,3 +216,44 @@ def test_check_enforces_owner_and_files(tmp_path):
                 "eval 3: a trigger eval needs files", "eval 4: a no-trigger eval has no files",
                 "eval 5: files: absolute path", "eval 6: prompt: absolute path"]:
         assert msg in out, msg
+
+
+# ---- phase 3, task 18 (A29)
+def _load_runner():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("run_evals_t18", RUNNER)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_abs_path_covers_srv_and_home_tilde():
+    rx = _load_runner().ABS_PATH
+    for s in ("/srv/data/x.xlsx", "open ~/Documents/x.xlsx", "see (/home/a/x)", "C:\\Users\\a", "~/x"):
+        assert rx.search(s), s
+    for s in ("samples/hazira/export.xlsx", "the srv folder", "a ~ b", "docs/home/x"):
+        assert not rx.search(s), s
+
+
+def test_coverage_cache_computes_once(monkeypatch):
+    mod = _load_runner()
+    import pmlc
+    import pmlc_pack
+    calls = []
+
+    def fake(w, pack):
+        calls.append(1)
+        return {"relevant": 4, "cited": 1}
+
+    monkeypatch.setattr(pmlc, "load_ws", lambda ws: {})
+    monkeypatch.setattr(pmlc_pack, "coverage", fake)
+    mod._COV.clear()
+    key = ("ws", "pack.json")
+    assert mod._coverage("ws", {}, key) == 0.25 and mod._coverage("ws", {}, key) == 0.25
+    assert len(calls) == 1
+    mod._coverage("ws", {}, ("ws", "other.json"))
+    assert len(calls) == 2
+    mod._coverage("ws", {})                        # no key: never cached
+    mod._coverage("ws", {})
+    assert len(calls) == 4
+    mod._COV.clear()
