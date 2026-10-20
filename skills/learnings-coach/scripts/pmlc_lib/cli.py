@@ -127,6 +127,11 @@ def build_parser():
     s.add_argument("--overrides", help="JSON {role: {F:[..], T:.., R:..}} from the LLM resolution pass "
                                           "(default: <ws>/role_overrides.json when it exists)")
     s.add_argument("--no-overrides", action="store_true", help="ignore any overrides file")
+    s.add_argument("--org-chart", metavar="FILE.csv",
+                   help="CSV with columns department, entity (optional F-id to extend), match (keywords separated by "
+                        "';' or a regex) and tier (optional T1-T5); rows without an entity become F20, F21, ... "
+                        "Remembered like --overlay")
+    s.add_argument("--no-org-chart", action="store_true", help="forget the remembered org chart")
     s.set_defaults(fn=cmd_classify)
 
     s = sp.add_parser("select", help="filtered findings bundle", allow_abbrev=False)

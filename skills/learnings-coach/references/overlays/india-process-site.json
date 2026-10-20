@@ -9,7 +9,8 @@
    "F13": "resident engineer|\\bgm\\b|\\bcgm\\b"
   },
   "tiers": {
-   "T4": "\\bcgm\\b|\\bgm\\b|\\bsic\\b|\\bcic\\b|resident engineer",
+   "T4": "\\bcgm\\b|(?<!dy\\. )(?<!dy )(?<!asst\\. )(?<!asst )(?<!deputy )(?<!assistant )\\bgm\\b|\\bsic\\b|\\bcic\\b|resident engineer",
+   "T3": "\\bdgm\\b|\\bagm\\b|\\b(dy|asst)\\.? ?gm\\b",
    "T1": "constable|sub-inspector|junior engineer"
   }
  }

@@ -54,6 +54,8 @@ The unit of learning is the **learning**, not the finding. Findings are instance
 
 Before v2.0, F14 also held regulators, vendors and contractors; they are now F15 to F17. The audience skills select by **tag** (`PMLC select <ws> --tag emergency`, pack `"scope": {"tags": [...]}`), not by entity ID, so a renamed or extended taxonomy keeps working as long as its entities carry the same tags. Site- or country-specific role words (e.g. CISF, ERDMP, SIC / CIC, GM / CGM, resident engineer) live in an overlay under `references/overlays/` and are applied with `PMLC classify <ws> --overlay <name>`.
 
+**Taxonomy version.** `taxonomy.json` carries `"version": "2.0"`; `clusters.json` records it with a `taxonomy_fingerprint` (sha256 of the merged taxonomy, overlays and org chart) and the `statutory_roles` found. Changes in 2.0: `leadership` needs a qualifier (plant, site, asset, senior), `sign` variants (signing, signatories, countersigned) count as approver, `document custodian/owner` and `controlled document` map to F07, and deputy and assistant general managers (DGM, Dy. GM, Asst. GM) take T3 and additional general managers T4 (the DGM words live in the India overlay). An organisation's own departments come in with `classify --org-chart FILE.csv`.
+
 Adapt the list to the organisation: rename, split or merge entities in `taxonomy.json`. Keep the IDs stable within one study.
 
 ### 3.2 Layer T: organisational tier (which level learns)
