@@ -189,23 +189,32 @@ def test_plan_unknown_skill_refused(fresh):
     assert r.returncode == 2
 
 
+def fixture_pack(name):
+    """A committed fixture pack: these pass check-pack --strict on the synthetic workspace (Ruling P3-5)."""
+    return json.loads((Path(__file__).resolve().parent / "fixtures" / "packs" / f"{name}.json").read_text(
+        encoding="utf-8"))
+
+
 def test_plan_next_advances_after_check_pack(fresh):
     p = plan_json(str(fresh), "--skills", "board-brief,supervisor-coach")
     assert p["next"] == 3 and p["steps"][2]["skill"] == "board-brief"
     out = fresh / "outputs"
     out.mkdir(exist_ok=True)
-    (out / "board-brief.json").write_text(json.dumps(mini_pack("board-brief")), encoding="utf-8")
+    (out / "board-brief.json").write_text(json.dumps(fixture_pack("board-brief")), encoding="utf-8")
     run("check-pack", str(fresh), str(out / "board-brief.json"))
+    assert "3. board-brief" in run("plan", str(fresh), "--next")      # the gate says --strict: non-strict is not done
+    run("check-pack", str(fresh), str(out / "board-brief.json"), "--strict")
     nxt = run("plan", str(fresh), "--next")
     assert "4. supervisor-coach" in nxt and "board-brief" not in nxt
     assert str(fresh / "outputs" / "supervisor-coach.json") in nxt      # printed with the real paths
     assert json.loads((fresh / "plan.json").read_text(encoding="utf-8"))["next"] == 4
-    (out / "supervisor-coach.json").write_text(json.dumps(mini_pack("supervisor-coach")), encoding="utf-8")
-    run("check-pack", str(fresh), str(out / "supervisor-coach.json"))
+    (out / "supervisor-coach.json").write_text(json.dumps(fixture_pack("supervisor-coach")), encoding="utf-8")
+    run("check-pack", str(fresh), str(out / "supervisor-coach.json"), "--strict")
+    run("check-all", str(fresh))       # a later non-strict pass on unchanged content keeps the strict pass
     r = subprocess.run([sys.executable, str(PMLC), "plan", str(fresh), "--next"], capture_output=True, text=True)
     assert r.returncode == 2 and "complete" in r.stdout
     # an edit after the check makes the step todo again
-    edited = mini_pack("board-brief")
+    edited = fixture_pack("board-brief")
     edited["title"] = "Edited after the check"
     (out / "board-brief.json").write_text(json.dumps(edited, indent=2), encoding="utf-8")
     assert "3. board-brief" in run("plan", str(fresh), "--next")
@@ -296,3 +305,45 @@ def test_every_preset_matches_golden(hzp, preset):
         golden.write_text(json.dumps(got, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     assert golden.exists(), f"no golden {golden.name}: run with PMLC_UPDATE_GOLDEN=1, then review it"
     assert got == json.loads(golden.read_text(encoding="utf-8"))
+
+
+def test_plan_strict_pass_needed_for_pack_with_unknown_learning(fresh):
+    """I-2 repro 1: an unknown LR-nn passes check-pack but not --strict (with a register), so the step stays todo."""
+    from test_pmlc import MINI_REG
+    out = fresh / "outputs"
+    out.mkdir(exist_ok=True)
+    (out / "learnings-register.json").write_text(json.dumps(MINI_REG), encoding="utf-8")
+    pk = mini_pack("board-brief")
+    pk["sections"][0]["items"][0]["learning"] = "LR-99"
+    (out / "board-brief.json").write_text(json.dumps(pk), encoding="utf-8")
+    run("check-pack", str(fresh), str(out / "board-brief.json"))
+    assert run_fail("check-pack", str(fresh), str(out / "board-brief.json"), "--strict").returncode == 1
+    p = plan_json(str(fresh), "--skills", "board-brief")
+    assert dict(steps(p))["board-brief"] == "todo"
+    run("check-all", str(fresh))            # a non-strict check-all never makes it done
+    assert dict(steps(plan_json(str(fresh), "--skills", "board-brief")))["board-brief"] == "todo"
+
+
+def test_plan_register_done_needs_strict_pass(hz, tmp_path):  # noqa: F811
+    """I-2 repro 2: the sample register without why_not_stronger passes check-register, gives 2 problems under
+    --strict; check-all --strict must fail on it and the plan's register step must stay todo."""
+    run_dir = tmp_path / "pmlc-runs" / hz.ws.parent.name
+    shutil.copytree(hz.ws.parent, run_dir)
+    w, out = run_dir / "workspace", run_dir / "outputs"
+    out.mkdir(exist_ok=True)
+    sample = Path(__file__).resolve().parents[1] / "samples" / "2020-09-24-hazira-gas-release-fire" / "outputs"
+    reg = json.loads((sample / "learnings-register.json").read_text(encoding="utf-8"))
+    for e in reg["entries"]:
+        e.pop("why_not_stronger", None)
+    (out / "learnings-register.json").write_text(json.dumps(reg, indent=2), encoding="utf-8")
+    run("check-register", str(w), str(out / "learnings-register.json"))
+    strict = run_fail("check-register", str(w), str(out / "learnings-register.json"), "--strict")
+    assert strict.returncode == 1 and "2 problem(s)" in strict.stdout
+    assert dict(steps(plan_json(str(w), "--skills", "learnings-register")))["learnings-register"] == "todo"
+    r = run_fail("check-all", str(w), "--strict")
+    assert r.returncode == 1 and "learnings-register.json: 2 problem(s)" in r.stdout
+    assert "LR-08" in r.stderr
+    assert dict(steps(plan_json(str(w), "--skills", "learnings-register")))["learnings-register"] == "todo"
+    shutil.copy(sample / "learnings-register.json", out / "learnings-register.json")
+    run("check-all", str(w), "--strict")
+    assert dict(steps(plan_json(str(w), "--skills", "learnings-register")))["learnings-register"] == "done"

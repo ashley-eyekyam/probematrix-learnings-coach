@@ -24,7 +24,7 @@ pmlc check-all ws [--strict] [--json]
 
 | Flag | Value | Default | What it does |
 |---|---|---|---|
-| `--strict` | none | off | Pass `--strict` to check-pack when this engine's check-pack has it |
+| `--strict` | none | off | Pass `--strict` to check-pack for every pack and to check-register for the register. A strict pass is what marks a [plan](plan.md) step done |
 | `--json` | none | off | Print one JSON object on stdout; the per-file lines go to stderr |
 | `-h`, `--help` | none | | Show the flags and stop |
 

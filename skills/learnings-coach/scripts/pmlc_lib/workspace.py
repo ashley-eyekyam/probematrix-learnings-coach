@@ -160,29 +160,39 @@ def _doc_hash(path) -> str:
     return content_hash(d) if isinstance(d, dict) else ""
 
 
-def check_current(manifest: dict, path) -> bool:
+def check_current(manifest: dict, path, strict: bool = False) -> bool:
     """True when the last recorded check of the file at path passed and the file's content is unchanged since. The
     comparison is on the handling-excluded content hash, so a sign-off (which rewrites only the handling block) does
-    not make a check stale; a record without one (an older engine) falls back to the file sha256 (ruling X30)."""
+    not make a check stale; a record without one (an older engine) falls back to the file sha256 (ruling X30).
+    strict=True also needs the passing check to have been a --strict one; a record without the key (an older engine)
+    is not strict, so the file is checked again."""
     path = Path(path)
     rec = pack_record(manifest, path)
     if not (path.is_file() and rec and rec.get("ok")):
+        return False
+    if strict and rec.get("strict") is not True:
         return False
     if rec.get("content_hash"):
         return rec["content_hash"] == _doc_hash(path)
     return rec.get("sha256") == file_sha256(path)
 
 
-def record_pack_check(ws, pack_name, pack_path, ok, n_problems, coverage=None) -> None:
+def record_pack_check(ws, pack_name, pack_path, ok, n_problems, coverage=None, strict=False) -> None:
+    """Record a check-pack or check-register run. "strict" says whether a passing check was a --strict one; a later
+    non-strict pass on unchanged content keeps an earlier strict pass (the content it vouched for is the same)."""
     ws = Path(ws)
     m = load_manifest(ws)
     p = Path(pack_path)
     table = m.setdefault("packs", {})
+    prev = pack_record(m, p) or {}
+    h = _doc_hash(p)
+    strict = bool(ok) and (bool(strict) or (prev.get("ok") is True and prev.get("strict") is True
+                                            and prev.get("content_hash") == h))
     drop_name_key(table, p, pack_name)
     table[_path_key(p)] = {
-        "pack": pack_name, "sha256": file_sha256(p) if p.is_file() else "", "content_hash": _doc_hash(p),
+        "pack": pack_name, "sha256": file_sha256(p) if p.is_file() else "", "content_hash": h,
         "path": _path_key(p),
-        "ok": bool(ok), "problems": n_problems, "checked": _now()}
+        "ok": bool(ok), "strict": strict, "problems": n_problems, "checked": _now()}
     if isinstance(coverage, dict):
         table[_path_key(p)]["coverage"] = {k: coverage[k] for k in ("cited", "relevant", "top_cited", "top_relevant")
                                            if k in coverage}
