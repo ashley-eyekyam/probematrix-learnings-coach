@@ -8,6 +8,7 @@ import sys
 import pytest
 
 from test_pmlc import MINI_REG, PMLC, make_export, run
+from pmlc_lib.pack.schema import KINDS
 from pmlc_lib.templates import OrgFileError, load_adoption, load_distribution, load_verification
 
 PACK = json.loads(json.dumps({
@@ -196,7 +197,7 @@ def test_export_actions_rejects_non_pack_and_accepts_co_owner(rund, tmp_path):
     assert r.returncode == 1 and "not a learning pack" in r.stderr and "Traceback" not in r.stderr
     bad.write_text("nonsense", encoding="utf-8")
     assert "Traceback" not in cli("export-actions", str(rund), "--packs", str(bad)).stderr
-    assert "co_owner" in pmlc.KINDS["recommendation"]["opt"]
+    assert "co_owner" in KINDS["recommendation"]["opt"]
     pk = copy.deepcopy(PACK)
     pk["sections"][0]["items"][0]["co_owner"] = "Maintenance Manager"
     p = tmp_path / "pk.json"
