@@ -209,8 +209,8 @@ def test_export_actions_refuses_overwrite(rund, tmp_path):
     """I-4 (ruling X38): the actions files are the organisation's to fill in, so a second run never overwrites them."""
     out = rund.parent / "outputs"
     assert cli("export-actions", str(rund)).returncode == 0
-    filled = (out / "actions.csv").read_text(encoding="utf-8").replace(",,,,,", ",Maintenance Manager,2030-01-01,,,", 1)
-    (out / "actions.csv").write_text(filled, encoding="utf-8", newline="")
+    filled = (out / "actions.csv").read_bytes().replace(b",,,,,", b",Maintenance Manager,2030-01-01,,,", 1)
+    (out / "actions.csv").write_bytes(filled)
     before = {n: (out / n).read_bytes() for n in ("actions.csv", "actions.json")}
     r = cli("export-actions", str(rund))
     assert r.returncode == 1 and "Traceback" not in r.stderr
