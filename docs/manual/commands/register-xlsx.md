@@ -4,7 +4,9 @@
 
 Writes a Learnings Register JSON to a formatted **Excel workbook**: one row per learning and its recommendations, with the register's review status (draft until a reviewer signs it off, and always draft while the investigation is unfinished), ready to share with management or a safety committee. The status phrase and the ProbeMatrix credit are added for you: every sheet carries the status phrase in its page header (followed by "· DRAFT" until the register is approved), and the About sheet lists the review status, classification, legal review, distribution, version and retention review.
 
-For a regulator or anyone else outside the organisation, `--share external` or `--share public` writes a separate, masked workbook. It works only for an approved register; see [Review and sharing](../Review-and-sharing.md#sharing-outside-the-organisation---share).
+The Learnings Register, Recommendations and Learning Plan sheets are Excel Tables (`LearningsRegister`, `Recommendations`, `LearningPlan`), so every column filters and sorts. Priority, counterpart and hierarchy-of-controls tier cells have drop-down lists. Each LR-ID on the Recommendations sheet links to that learning's row. Every sheet prints landscape, one page wide, with the header row repeated on each page. If any learning carries `urgency`, `recommendation_class` or `regulatory_touchpoint`, the Learnings Register gains those columns after its last one.
+
+For a regulator or anyone else outside the organisation, `--share external` or `--share public` writes a separate, masked workbook with no author and no timestamps in its file properties. It works only for an approved register; see [Review and sharing](../Review-and-sharing.md#sharing-outside-the-organisation---share).
 
 ## When to use it
 
@@ -28,7 +30,7 @@ pmlc register-xlsx register [--out OUT] [--ws WS] [--share {internal,external,pu
 | Flag | Value | Default | What it does |
 |---|---|---|---|
 | `--out` | file | `learnings-register.xlsx` next to the register JSON (`learnings-register.external.xlsx` or `.public.xlsx` when shared) | Where to write the workbook. A shared copy written with `--out` goes exactly where you say |
-| `--ws` | workspace folder | the run's workspace, when the register sits in `<run>/outputs/` | The workspace used to check whether the investigation is still unfinished (which forces draft) and whether the register was signed off there. Give it when the register is not in a standard run folder: without a workspace the workbook is a draft ("no workspace to check"), and `--share external` is refused |
+| `--ws` | workspace folder | the run's workspace, when the register sits in a standard run's `outputs/` folder (a register in any other folder, even inside a run folder, is written next to itself and has no workspace) | The workspace used to check whether the investigation is still unfinished (which forces draft) and whether the register was signed off there. Give it when the register is not in a standard run folder: without a workspace the workbook is a draft ("no workspace to check"), and `--share external` is refused |
 | `--share` | `internal`, `external` or `public` | `internal` | Who the copy is for. `external` and `public` need the register signed off as approved, with a classification at that level or wider and `legal_review` cleared. Names, organisations, equipment tags, singleton roles, clock times and full dates are masked; the source file name becomes "a ProbeMatrix investigation export", and the About sheet gains a "Sharing" row. A workbook embeds no records, so there is no embed flag here |
 | `--names` | file | `$PMLC_NAMES` | A names file, one name per line. A shared copy masks these names |
 | `--orgs` | file | `$PMLC_ORGS` | An organisation names file, one per line. A shared copy masks these names |
