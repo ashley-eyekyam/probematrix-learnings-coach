@@ -30,7 +30,7 @@ KINDS = {
     "para": {"req": ["text"], "opt": []},
     "check": {"req": ["text"], "opt": ["hold_point", "when"]},
     "question": {"req": ["question", "why"], "opt": ["answer", "good_evidence", "to"]},
-    "recommendation": {"req": ["change", "indicator", "hoc_tier"], "opt": ["barrier", "owner", "by_when"], "cite": True},
+    "recommendation": {"req": ["change", "indicator", "hoc_tier"], "opt": ["barrier", "owner", "by_when", "co_owner"], "cite": True},
     "decision": {"req": ["decision"], "opt": ["options", "trade_offs", "owner", "by_when"]},
     "indicator": {"req": ["name", "measure"], "opt": ["deterioration", "owner"]},
     "card": {"req": ["title", "what_happened", "warning_signs", "good_looks_like"], "opt": ["why_made_sense", "organisation_changing", "discussion"],

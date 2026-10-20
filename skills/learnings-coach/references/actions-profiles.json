@@ -1,0 +1,97 @@
+{
+  "generic": {
+    "verified": true,
+    "note": "Our own column names; imports into any spreadsheet or tracker that accepts CSV.",
+    "columns": {
+      "id": "id",
+      "lr_id": "lr_id",
+      "change": "change",
+      "hoc_tier": "hoc_tier",
+      "barrier": "barrier",
+      "indicator": "indicator",
+      "owner": "owner",
+      "due": "due",
+      "status": "status",
+      "capa_ref": "capa_ref",
+      "effectiveness_check": "effectiveness_check",
+      "cites": "cites",
+      "evidence_strength": "evidence_strength"
+    }
+  },
+  "enablon": {
+    "verified": false,
+    "note": "Placeholder target names, not checked against an Enablon import template. Edit the right-hand names to match your system.",
+    "columns": {
+      "id": "External Reference",
+      "lr_id": "lr_id",
+      "change": "Action Description",
+      "hoc_tier": "Control Hierarchy",
+      "barrier": "barrier",
+      "indicator": "indicator",
+      "owner": "Action Owner",
+      "due": "Due Date",
+      "status": "Action Status",
+      "capa_ref": "capa_ref",
+      "effectiveness_check": "effectiveness_check",
+      "cites": "Source Reference",
+      "evidence_strength": "evidence_strength"
+    }
+  },
+  "intelex": {
+    "verified": false,
+    "note": "Placeholder target names, not checked against an Intelex import template. Edit the right-hand names to match your system.",
+    "columns": {
+      "id": "Record ID",
+      "lr_id": "lr_id",
+      "change": "Corrective Action",
+      "hoc_tier": "Hierarchy of Control",
+      "barrier": "barrier",
+      "indicator": "indicator",
+      "owner": "Assigned To",
+      "due": "Target Date",
+      "status": "Status",
+      "capa_ref": "capa_ref",
+      "effectiveness_check": "effectiveness_check",
+      "cites": "Source Reference",
+      "evidence_strength": "evidence_strength"
+    }
+  },
+  "cority": {
+    "verified": false,
+    "note": "Placeholder target names, not checked against a Cority import template. Edit the right-hand names to match your system.",
+    "columns": {
+      "id": "Action Number",
+      "lr_id": "lr_id",
+      "change": "Action Title",
+      "hoc_tier": "Control Type",
+      "barrier": "barrier",
+      "indicator": "indicator",
+      "owner": "Responsible Person",
+      "due": "Due Date",
+      "status": "Action Status",
+      "capa_ref": "capa_ref",
+      "effectiveness_check": "effectiveness_check",
+      "cites": "Source Reference",
+      "evidence_strength": "evidence_strength"
+    }
+  },
+  "sap-ehs": {
+    "verified": false,
+    "note": "Placeholder target names, not checked against an SAP EHS import template. Edit the right-hand names to match your system.",
+    "columns": {
+      "id": "Action ID",
+      "lr_id": "lr_id",
+      "change": "Action Description",
+      "hoc_tier": "Control Level",
+      "barrier": "barrier",
+      "indicator": "indicator",
+      "owner": "Responsible",
+      "due": "Due Date",
+      "status": "Action Status",
+      "capa_ref": "capa_ref",
+      "effectiveness_check": "effectiveness_check",
+      "cites": "Source Reference",
+      "evidence_strength": "evidence_strength"
+    }
+  }
+}
