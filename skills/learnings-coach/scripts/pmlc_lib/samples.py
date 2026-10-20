@@ -26,6 +26,8 @@ def cmd_check_samples(a):
     if not Path(a.dir).is_dir():
         sys.exit(f"No such folder: {a.dir}")
     probs = sample_folder_problems(a.dir)
+    from .util import json_extra
+    json_extra(problems=list(probs))
     for p in probs:
         print(" -", p)
     print(f"{len(probs)} problem(s) in {a.dir}")

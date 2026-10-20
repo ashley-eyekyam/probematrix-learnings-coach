@@ -150,6 +150,23 @@ def cmd_profile(a):
     pf = personal_fields_present(fields)
     if pf:
         flags.append(f"Personal fields present: do not quote {', '.join(pf)}")
+    from .util import json_extra
+    json_extra(incident=dict(fields), findings=n, evidence_items=len(E), distinct_factor_codes=len(codes),
+               distinct_roles=len(roles), supervision_and_organisational=up,
+               levels={str(k): lvl[k] for k in sorted(x for x in lvl if x is not None)},
+               ratings={str(k): rat[k] for k in sorted(x for x in rat if x is not None)},
+               sub_categories=[{"level": lv, "sub_category": sc, "findings": c} for (lv, sc), c in sub.most_common()],
+               top_factors=[{"factor": k, "instances": c} for k, c in codes.most_common(a.top)],
+               top_roles=[{"role": k, "findings": c} for k, c in roles.most_common(a.top)],
+               evidence_types={(k or "(blank)"): c for k, c in etypes.most_common()},
+               empty_columns=[lab for col, lab in (("evidence_to_collect", "Evidence to Collect"),
+                                                   ("key_questions", "Key Questions"),
+                                                   ("suggested_interviews", "Suggested Interviews"),
+                                                   ("causal_hypothesis", "Causal Hypothesis"))
+                              if n and not any(f[col] for f in F)],
+               investigation_status=_s(fields.get("Investigation Status")),
+               any_user_edited=any(is_edited(f["user_edited"]) for f in F),
+               flags=list(flags))
     L.append("\n## Data-quality flags\n")
     L += [f"- {x}" for x in flags] or ["- None."]
     L.append(f"\n---\n*{BRAND}*")

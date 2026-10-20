@@ -279,6 +279,7 @@ def cmd_status(a):
     stale = dict(stale_files(ws))
     print("| File | State | Reason |\n|---|---|---|")
     names = [n for n in KNOWN_DERIVED if (ws / n).exists() or n in recorded]
+    jfiles, jpacks, jsigned = [], [], []
     for n in names:
         if not (ws / n).exists():
             state, reason = "stale", "file is missing"
@@ -289,6 +290,7 @@ def cmd_status(a):
         else:
             state, reason = "current", ""
         print(f"| {n} | {state} | {reason} |")
+        jfiles.append({"file": n, "state": state, "reason": reason})
     shown = {}   # display name -> record or None; a listing of the whole table, read through the accessors
     seen = set()
     out = outputs_dir(ws)
@@ -311,11 +313,14 @@ def cmd_status(a):
         rec = shown[name]
         if not rec:
             print(f"| {name} | never | n/a |")
+            jpacks.append({"pack": name, "last_check": "never", "changed_since": "n/a"})
             continue
         last = ("ok" if rec.get("ok") else f"{rec.get('problems', 0)} problem(s)") + f" ({rec.get('checked', '')})"
         p = Path(rec.get("path", ""))
         changed = "missing" if not p.is_file() else ("yes" if file_sha256(p) != rec.get("sha256") else "no")
         print(f"| {name} | {last} | {changed} |")
+        jpacks.append({"pack": name, "last_check": last, "ok": bool(rec.get("ok")), "problems": rec.get("problems", 0),
+                       "checked": rec.get("checked", ""), "changed_since": changed})
     from .retention import load_run_manifest   # retention imports this module
     rm = load_run_manifest(ws)
     if rm:
@@ -335,6 +340,10 @@ def cmd_status(a):
             except (OSError, ValueError):
                 changed = "missing"
             print(f"| {name} | {r.get('status')} | {r.get('reviewer_role')} | {r.get('reviewed_on')} | {changed} |")
+            jsigned.append({"file": name, "status": r.get("status"), "reviewer_role": r.get("reviewer_role"),
+                            "reviewed_on": r.get("reviewed_on"), "changed_since": changed})
+    from .util import json_extra
+    json_extra(files=jfiles, packs=jpacks, sign_offs=jsigned, run_manifest=rm or None)
 
 
 # ----------------------------------------------------------------------------- run folders

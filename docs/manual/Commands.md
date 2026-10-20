@@ -133,15 +133,21 @@ pmlc 2.0.0a4
 
 ## Exit codes
 
-Scripts and agents read the exit code to know whether a step worked.
+Scripts and agents read the exit code to know whether a step worked. These three codes are the same for every command, with or without `--json`.
 
 | Code | Meaning |
 |---|---|
-| 0 | Success. Warnings may still be printed: read them |
-| 1 | The command ran but found a problem, for example `check-pack` found an unknown ID, or the workspace is missing. A few contradictory flag pairs are also reported this way: `classify --overlay x --no-overlay` exits 1 with "--no-overlay and --overlay cannot be combined" |
-| 2 | The command line itself was wrong: an unknown or shortened flag, a value outside the allowed list, or (for `scan-names`) a file that could not be read |
+| 0 | OK. Warnings may still be printed: read them |
+| 1 | Problems found, or the plan cannot be resolved. For example `check-pack` found an unknown ID, the workspace is missing, or [plan](commands/plan.md) met an unknown skill, a cycle or a requirement nothing produces. A few contradictory flag pairs are also reported this way: `classify --overlay x --no-overlay` exits 1 with "--no-overlay and --overlay cannot be combined" |
+| 2 | Usage error (the command line itself was wrong: an unknown or shortened flag, or a value outside the allowed list), or the plan is complete (`plan --next`) |
 
-[plan](commands/plan.md) also exits 1 when the plan cannot be resolved (an unknown skill, a cycle, or a requirement nothing produces), and `plan --next` exits 2 when the plan is complete.
+The `check-*` commands never use 2 for problems. One command outside that family, [scan-names](commands/scan-names.md), also exits 2 when a file could not be read, so a zero-hit result is not claimed for it.
+
+## JSON output
+
+These commands take `--json`: `profile`, `classify`, `causal`, `timeline`, `interfaces`, `status`, `facts`, `plan`, `compare`, `check-pack`, `check-register`, `check-language`, `check-all`, `check-samples` and `scan-names`. [select](commands/select.md) keeps `--format json` and accepts `--json` as an alias.
+
+With `--json`, stdout holds exactly one JSON object and nothing else; messages, warnings and errors go to stderr. The exit code is the one the command gives without `--json`. `facts`, `plan`, `check-register` and `check-all` print their own documented shapes. `compare --json` keeps its existing output, the ready pack items. The other commands print `{"command", "ok", "exit_code", "output": [report lines]}` plus their data as structured fields (listed on each command page, for example `classify` gives `entities` and `tiers`). When a command fails, `ok` is false and `error` holds the reason, which is also written to stderr. A crash (an unexpected exception) prints a traceback and no JSON.
 
 ## Related
 

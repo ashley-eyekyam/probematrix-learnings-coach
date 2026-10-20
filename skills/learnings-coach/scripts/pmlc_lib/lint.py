@@ -380,5 +380,8 @@ def cmd_check_language(a):
     except json.JSONDecodeError as e:
         sys.exit(f"(json): invalid JSON at line {e.lineno} column {e.colno}: {e.msg}")
     hits = lint(doc, w, kind=doc_kind(doc), **cli_options(a))
+    from .util import json_extra
+    json_extra(hits=[{"severity": h.severity, "rule": h.rule, "path": h.path, "match": h.match, "hint": h.hint}
+                     for h in hits])
     print(format_hits(hits))
     sys.exit(1 if any(h.severity == "error" for h in hits) else 0)

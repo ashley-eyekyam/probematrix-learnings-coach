@@ -48,6 +48,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from pathlib import Path
 
 from . import __version__
 from .analysis.causal import cmd_causal
@@ -452,11 +453,98 @@ def build_parser():
                         "over the internal copy")
     s.set_defaults(fn=cmd_pack_xlsx)
 
+    for name in JSON_COMMANDS:   # P3-24: --json on every analysis and check command (dest as_json: check-language has a positional "json")
+        sp.choices[name].add_argument("--json", dest="as_json", action="store_true",
+                                      help="print one JSON object on stdout ({command, ok, exit_code, output, ...}); "
+                                           "messages go to stderr; the exit code is unchanged")
+    sp.choices["select"].add_argument("--json", dest="as_json", action="store_true", help="alias for --format json")
     return p
+
+
+# The commands that gain --json in Task 25. check-register, plan, facts, compare and check-all had it already and keep
+# their own shapes; select keeps --format json.
+JSON_COMMANDS = ("profile", "classify", "causal", "timeline", "interfaces", "status", "check-pack", "check-language",
+                 "check-samples", "scan-names")
+
+
+def _read(ws, name):
+    import json
+    p = Path(ws) / name
+    return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else None
+
+
+def _workspace_extras(a):
+    """The data a command has just written to the workspace, as structured fields (read back, not re-derived)."""
+    ws = getattr(a, "ws", None)
+    if a.cmd == "classify":
+        c = _read(ws, "clusters.json") or {}
+        tax = c.get("taxonomy", {})
+        tiers = {}
+        for v in c.get("findings", {}).values():
+            for t in v["T"]:
+                tiers[t] = tiers.get(t, 0) + 1
+        return {"entities": {e: {"name": d["name"], "findings": d["n"], "by_level": d["by_level"]}
+                             for e, d in c.get("entities", {}).items()},
+                "tiers": {t: {"name": tax.get("tiers", {}).get(t, ""), "findings": n} for t, n in sorted(tiers.items())},
+                "roles_classified": len(c.get("role_map", {})),
+                "unresolved_roles": c.get("unresolved_roles", []),
+                "unresolved_count": len(c.get("unresolved_roles", [])),
+                "taxonomy_version": c.get("taxonomy_version"), "taxonomy_fingerprint": c.get("taxonomy_fingerprint"),
+                "statutory_roles": c.get("statutory_roles"), "overrides": c.get("overrides"),
+                "written": "clusters.json"}
+    if a.cmd == "causal":
+        g = _read(ws, "causal_graph.json") or {}
+        d = {"nodes": g.get("nodes", []), "edges": g.get("edges", []), "written": "causal_graph.json"}
+        if getattr(a, "hubs", False):
+            from .analysis.causal import hub_rows
+            d["hubs"] = hub_rows(g)
+        return d
+    if a.cmd == "timeline":
+        d = {"candidates": _read(ws, "timeline_candidates.json") or [], "written": "timeline_candidates.json"}
+        if getattr(a, "on", None):
+            d["event_day"] = _read(ws, "timeline_event_day.json") or []
+        return d
+    if a.cmd == "interfaces":
+        return {"pairs": (_read(ws, "interfaces.json") or {}).get("pairs", []), "written": "interfaces.json"}
+    return {}
+
+
+def run_json(a):
+    """Run a command with its stdout captured, then print one JSON object: the exit code is the command's own."""
+    import contextlib
+    import io
+    from .util import JSON_EXTRA, emit_json
+    JSON_EXTRA.clear()
+    buf = io.StringIO()
+    code, error = 0, None
+    try:
+        with contextlib.redirect_stdout(buf):
+            a.fn(a)
+    except SystemExit as e:
+        if e.code is None:
+            code = 0
+        elif isinstance(e.code, int):
+            code = e.code
+        else:
+            print(e.code, file=sys.stderr)
+            code, error = 1, str(e.code)
+    obj = {"command": a.cmd, "ok": code == 0, "exit_code": code}
+    if error:
+        obj["error"] = error
+    obj.update(JSON_EXTRA)
+    if code == 0:
+        obj.update(_workspace_extras(a))
+    obj["output"] = buf.getvalue().splitlines()
+    emit_json(obj)
+    return code
 
 
 def main(argv=None):
     a = build_parser().parse_args(argv)
     a._argv = list(sys.argv[1:] if argv is None else argv)
+    if a.cmd == "select" and getattr(a, "as_json", False):
+        a.format = "json"
+    elif a.cmd in JSON_COMMANDS and getattr(a, "as_json", False):
+        return run_json(a)
     a.fn(a)
     return 0

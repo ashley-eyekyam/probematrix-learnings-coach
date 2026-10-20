@@ -800,6 +800,8 @@ def _checked(a, record_ok=True):
         res.warnings.extend(unsigned_warning(pack, w, a.pack, a.ws))
     if not err and (record_ok or res.problems):
         record_check(a, pack, res, w)
+    from ..util import json_extra
+    json_extra(problems=list(res.problems), warnings=list(res.warnings), stats=dict(res.stats))
     for x in res.warnings:
         print(f"warning: {x}")
     if res.problems:
