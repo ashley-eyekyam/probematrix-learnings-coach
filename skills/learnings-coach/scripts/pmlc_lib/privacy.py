@@ -585,5 +585,5 @@ def cmd_scan_names(a):
             print(" -", f)
         print("Scan their text instead, e.g. `pdftotext -layout report.pdf report.txt`, then scan report.txt.")
     from .util import json_extra
-    json_extra(hits=hits, unread=unread)
+    json_extra(hit_count=hits, unread=unread)
     sys.exit(1 if hits else 2 if unread else 0)

@@ -48,6 +48,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from pathlib import Path
 
 from . import __version__
 from .analysis.causal import cmd_causal
@@ -466,6 +467,48 @@ JSON_COMMANDS = ("profile", "classify", "causal", "timeline", "interfaces", "sta
                  "check-samples", "scan-names")
 
 
+def _read(ws, name):
+    import json
+    p = Path(ws) / name
+    return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else None
+
+
+def _workspace_extras(a):
+    """The data a command has just written to the workspace, as structured fields (read back, not re-derived)."""
+    ws = getattr(a, "ws", None)
+    if a.cmd == "classify":
+        c = _read(ws, "clusters.json") or {}
+        tax = c.get("taxonomy", {})
+        tiers = {}
+        for v in c.get("findings", {}).values():
+            for t in v["T"]:
+                tiers[t] = tiers.get(t, 0) + 1
+        return {"entities": {e: {"name": d["name"], "findings": d["n"], "by_level": d["by_level"]}
+                             for e, d in c.get("entities", {}).items()},
+                "tiers": {t: {"name": tax.get("tiers", {}).get(t, ""), "findings": n} for t, n in sorted(tiers.items())},
+                "roles_classified": len(c.get("role_map", {})),
+                "unresolved_roles": c.get("unresolved_roles", []),
+                "unresolved_count": len(c.get("unresolved_roles", [])),
+                "taxonomy_version": c.get("taxonomy_version"), "taxonomy_fingerprint": c.get("taxonomy_fingerprint"),
+                "statutory_roles": c.get("statutory_roles"), "overrides": c.get("overrides"),
+                "written": "clusters.json"}
+    if a.cmd == "causal":
+        g = _read(ws, "causal_graph.json") or {}
+        d = {"nodes": g.get("nodes", []), "edges": g.get("edges", []), "written": "causal_graph.json"}
+        if getattr(a, "hubs", False):
+            from .analysis.causal import hub_rows
+            d["hubs"] = hub_rows(g)
+        return d
+    if a.cmd == "timeline":
+        d = {"candidates": _read(ws, "timeline_candidates.json") or [], "written": "timeline_candidates.json"}
+        if getattr(a, "on", None):
+            d["event_day"] = _read(ws, "timeline_event_day.json") or []
+        return d
+    if a.cmd == "interfaces":
+        return {"pairs": (_read(ws, "interfaces.json") or {}).get("pairs", []), "written": "interfaces.json"}
+    return {}
+
+
 def run_json(a):
     """Run a command with its stdout captured, then print one JSON object: the exit code is the command's own."""
     import contextlib
@@ -473,7 +516,7 @@ def run_json(a):
     from .util import JSON_EXTRA, emit_json
     JSON_EXTRA.clear()
     buf = io.StringIO()
-    code = 0
+    code, error = 0, None
     try:
         with contextlib.redirect_stdout(buf):
             a.fn(a)
@@ -484,9 +527,13 @@ def run_json(a):
             code = e.code
         else:
             print(e.code, file=sys.stderr)
-            code = 1
+            code, error = 1, str(e.code)
     obj = {"command": a.cmd, "ok": code == 0, "exit_code": code}
+    if error:
+        obj["error"] = error
     obj.update(JSON_EXTRA)
+    if code == 0:
+        obj.update(_workspace_extras(a))
     obj["output"] = buf.getvalue().splitlines()
     emit_json(obj)
     return code

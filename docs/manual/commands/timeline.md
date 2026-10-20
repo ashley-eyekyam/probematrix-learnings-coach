@@ -35,7 +35,7 @@ pmlc timeline ws [--before BEFORE] [--per-date PER_DATE] [--show SHOW] [--on DAY
 | `--on` | `YYYY-MM-DD` or `incident` | none | Also write `timeline_event_day.json`: every clock time on that day. Times in sentences without a date count only for the incident date; for any other day, a time counts only when its sentence gives that day's date |
 | `--entity` | entity IDs | all | Keep only findings in these parts of the organisation, and the evidence linked to them. Needs [classify](classify.md) |
 | `--min-precision` | `day`, `month` or `year` | `year` | The coarsest date to keep. `day` drops "2018" and "Nov 2018"; `year` keeps everything |
-| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output, ...}`, where `output` holds the report's lines and some commands add fields (`problems`, `warnings`, `stats`, `hits`). Messages go to stderr. The exit code is the same as without `--json` |
+| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output}` plus, for this command, `candidates` (the rows of `timeline_candidates.json`) and `written`; with `--on` also `event_day` (the rows of `timeline_event_day.json`). On failure `ok` is false and `error` holds the reason. Messages go to stderr. The exit code is the same as without `--json` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples

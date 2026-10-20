@@ -30,7 +30,7 @@ pmlc interfaces ws [--top TOP]
 | Flag | Value | Default | What it does |
 |---|---|---|---|
 | `--top` | number | 25 | How many pairs to print. The file always holds every pair |
-| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output, ...}`, where `output` holds the report's lines and some commands add fields (`problems`, `warnings`, `stats`, `hits`). Messages go to stderr. The exit code is the same as without `--json` |
+| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output}` plus, for this command, `pairs` (`a`, `b`, `shared_findings`, `cross_causal_mentions`, `examples`) and `written`, read back from `interfaces.json`. On failure `ok` is false and `error` holds the reason. Messages go to stderr. The exit code is the same as without `--json` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples

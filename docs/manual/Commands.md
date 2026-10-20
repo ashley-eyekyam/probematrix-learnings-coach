@@ -147,7 +147,7 @@ The `check-*` commands never use 2 for problems. One command outside that family
 
 These commands take `--json`: `profile`, `classify`, `causal`, `timeline`, `interfaces`, `status`, `facts`, `plan`, `compare`, `check-pack`, `check-register`, `check-language`, `check-all`, `check-samples` and `scan-names`. [select](commands/select.md) keeps `--format json` and accepts `--json` as an alias.
 
-With `--json`, stdout holds exactly one JSON object and nothing else; messages, warnings and errors go to stderr. The exit code is the one the command gives without `--json`. `facts`, `plan`, `check-register` and `check-all` print their own documented shapes. `compare --json` keeps its existing output, the ready pack items. The other commands print `{"command", "ok", "exit_code", "output": [report lines]}`, plus the extra fields on their own page.
+With `--json`, stdout holds exactly one JSON object and nothing else; messages, warnings and errors go to stderr. The exit code is the one the command gives without `--json`. `facts`, `plan`, `check-register` and `check-all` print their own documented shapes. `compare --json` keeps its existing output, the ready pack items. The other commands print `{"command", "ok", "exit_code", "output": [report lines]}` plus their data as structured fields (listed on each command page, for example `classify` gives `entities` and `tiers`). When a command fails, `ok` is false and `error` holds the reason, which is also written to stderr. A crash (an unexpected exception) prints a traceback and no JSON.
 
 ## Related
 
