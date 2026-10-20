@@ -3,9 +3,16 @@
  "bottom_line": [{"text": "Return to service had no test step, and the crew restarted the pump untested.", "cites": ["FND-0001", "FND-0002"]}],
  "scope": {"entities": ["F02"]},
  "sections": [
+  {"id": "front-sheet", "heading": "Front sheet: decisions and indicators", "items": [
+   {"kind": "decision", "group": "Return-to-service test", "decision": "Make a signed leak test a hold point on every return to service",
+    "options": ["All pressure-boundary work", "Rotating equipment first"], "trade_offs": "Longer restarts against untested equipment.",
+    "owner": "Maintenance function", "cites": ["FND-0002"]},
+   {"kind": "indicator", "group": "Return-to-service test", "name": "Restarts with a test record",
+    "measure": "% of restarts with a signed leak-test record", "deterioration": "Any restart without one", "cites": ["FND-0002"]}]},
   {"id": "s1-profile", "heading": "S1 Profile", "items": [
    {"kind": "table", "columns": ["Level", "Findings"], "rows": [["L1 Unsafe acts", 1], ["L3 Supervision", 1]],
-    "row_cites": [["FND-0001"], ["FND-0002"]]}]},
+    "row_cites": [["FND-0001"], ["FND-0002"]]},
+   {"kind": "para", "text": "S13 Comparison is left out: no comparator report was supplied."}]},
   {"id": "s2-practice", "heading": "S2 Practice (L1)", "items": [
    {"kind": "learning", "lesson": "Restarting without a test went unchallenged because nothing asked for one.",
     "explanation": "The work order shows no test [EVD-0001].", "cites": ["FND-0001"]}]},

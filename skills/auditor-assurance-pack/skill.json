@@ -33,5 +33,7 @@
   "embed_default": "cited",
   "interactive": false,
   "since": "0.1.0",
-  "questions": []
+  "questions": [
+    "Which framework should the test points follow: iso45001, psm, rbps, seveso, icmm, india, or the organisation's own management-system elements?"
+  ]
 }

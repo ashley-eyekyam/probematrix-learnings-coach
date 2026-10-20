@@ -28,15 +28,19 @@ HFACS sorts causes into four levels: unsafe acts (L1), preconditions (L2), super
 |---|---|---|---|
 | Spares bought without a specification | Likely at similar sites | Any site that buys spares locally | FND-0003 |
 
-## Policies and standards implicated
+## Policies, standards and legal requirements implicated
 
-### Spares and sourcing
+### Spares and sourcing standard
 
 Purchase records show local buying with no specification check [FND-0003; EVD-0003].
 
+### Corrective action requirement
+
+The findings record no review of whether earlier sourcing changes worked [FND-0003]. *(Clauses: ISO45001-10.2)*
+
 ## Decisions for top management
 
-### Critical spares
+### For decision: critical spares
 
 **Decision:** Set one enterprise rule for critical-spares specifications [FND-0003]
 - Options: Mandatory standard; Guidance with audit
@@ -44,6 +48,18 @@ Purchase records show local buying with no specification check [FND-0003; EVD-00
 
 **Indicator:** Sites with verified spares specifications [FND-0003]
 - Measure: % of sites whose critical-spares orders all cite a specification
+- Deterioration looks like: Any site below 100% for two months
+
+## Management review input
+
+| Input | What this investigation shows | Indicator | Deterioration trigger | Cites |
+|---|---|---|---|---|
+| Incidents and corrective actions | A restart without a leak test led to the fire | % of restarts with a test record | Any restart without one | FND-0001 |
+| Monitoring results | Not in this investigation |  |  |  |
+| Audit results | No audit checked purchase records against specifications | Spares audits completed | An audit cycle missed | FND-0003; EVD-0003 |
+| Risks and opportunities | Local buying without a specification was a standing risk | % of critical spares to specification | Any month below target | FND-0003 |
+| Adequacy of resources | Not in this investigation |  |  |  |
+| Consultation outcomes | Not in this investigation |  |  |  |
 
 ## Assurance
 
@@ -51,6 +67,13 @@ Purchase records show local buying with no specification check [FND-0003; EVD-00
 - Why it matters: Local buying without a specification ran for two years before this event.
 - Good evidence looks like: Sampled audits from the auditor assurance pack
 - Put to: Head of internal audit
+
+**Q: How will we know restarts are tested at every site?** [FND-0002]
+- Why it matters: The pump returned to service without a test.
+- Good evidence looks like: Restart records sampled at each site
+- Put to: Head of internal audit
+
+*(learning: LR-01)*
 
 ---
 

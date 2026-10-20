@@ -65,6 +65,7 @@
     "PMLC select <ws> --preset site-leadership-coach:tier-t4",
     "PMLC select <ws> --preset site-leadership-coach:top-l4",
     "PMLC select <ws> --preset site-leadership-coach:relation",
+    "PMLC select <ws> --preset site-leadership-coach:culture-oic",
     "PMLC check-pack <ws> <run>/outputs/site-leadership-coach.json --strict",
     "PMLC pack <ws> <run>/outputs/site-leadership-coach.json"
    ],
@@ -85,6 +86,7 @@
     "PMLC select <ws> --preset top-management-brief:tiers-t4-t5",
     "PMLC select <ws> --preset top-management-brief:top-l4",
     "PMLC select <ws> --preset top-management-brief:people-corporate-assurance",
+    "PMLC select <ws> --preset top-management-brief:leadership-corporate",
     "PMLC check-pack <ws> <run>/outputs/top-management-brief.json --strict",
     "PMLC pack <ws> <run>/outputs/top-management-brief.json"
    ],
@@ -104,6 +106,7 @@
    "commands": [
     "PMLC select <ws> --preset board-brief:top-l4",
     "PMLC select <ws> --preset board-brief:assurance-l34",
+    "PMLC select <ws> --preset board-brief:earlier-warnings",
     "PMLC check-pack <ws> <run>/outputs/board-brief.json --strict",
     "PMLC pack <ws> <run>/outputs/board-brief.json"
    ],

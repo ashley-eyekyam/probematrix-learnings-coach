@@ -7,19 +7,27 @@
    {"kind": "para", "text": "The findings record no check of purchase records against specifications [FND-0003; EVD-0003]."}]},
   {"id": "test-points", "heading": "Audit test points", "items": [
    {"kind": "test_point", "group": "Maintenance and testing", "requirement": "Every restart after pressure-boundary work has a leak-test record",
-    "sample": "10 recent restarts from the CMMS", "conformity_evidence": "A signed test record on each work order",
-    "red_flags": ["Work order closed with no test entry"], "cites": ["FND-0002", "EVD-0001"]},
+    "sample": "The last 10 restarts after pressure-boundary work, from the CMMS", "conformity_evidence": "A signed test record on each work order",
+    "red_flags": ["Work order closed with no test entry"], "clause": "Site element 4.2 Return to service", "learning": "LR-01",
+    "cites": ["FND-0002", "EVD-0001"]},
    {"kind": "test_point", "group": "Materials and spares", "requirement": "Critical spares are bought to a specification",
     "sample": "20 critical-spares purchase orders", "conformity_evidence": "A specification reference on each order",
-    "red_flags": ["Local purchase with no technical approval"], "cites": ["FND-0003", "EVD-0003"]}]},
+    "red_flags": ["Local purchase with no technical approval"], "clause": "ISO 45001 9.2", "clauses": ["ISO45001-9.2"],
+    "cites": ["FND-0003", "EVD-0003"]}]},
   {"id": "cross-site", "heading": "Cross-site verification protocol", "items": [
    {"kind": "table", "columns": ["Condition", "Records to pull", "Interview", "Walk-path stop"],
     "rows": [["Restart without a test", "Last 10 restart work orders", "Maintenance supervisor", "Pump bay"]],
     "row_cites": [["FND-0002"]]}]},
+  {"id": "critical-controls", "heading": "Critical-control verification", "items": [
+   {"kind": "table", "columns": ["Critical control", "Barrier register id", "Performance requirement", "Verification activity", "Verifier role"],
+    "rows": [["Leak test before return to service", "unmapped", "Every restart has a signed test record", "Monthly sample of restart work orders",
+              "Area maintenance lead"]],
+    "row_cites": [["FND-0002"]], "clauses": ["ICMM-CCM-8"]}]},
   {"id": "evidence-requests", "heading": "Evidence request list", "items": [
    {"kind": "check", "group": "Maintenance", "text": "Return-to-service procedure and its revision history", "cites": ["FND-0002"]},
    {"kind": "check", "group": "Procurement", "text": "Critical-spares purchase orders since March 2022", "cites": ["FND-0003"]}]},
   {"id": "reporting", "heading": "Reporting", "items": [
-   {"kind": "para", "text": "Grade each test point: conforming, partly, not, or not tested."},
-   {"kind": "table", "columns": ["Test point", "Grade", "Notes"],
-    "rows": [["Restart leak-test record", "", ""], ["Spares to specification", "", ""]]}]}]}
+   {"kind": "para", "text": "Grade each test point: conforming, major nonconformity (NC), minor nonconformity, opportunity for improvement (OFI), or not tested."},
+   {"kind": "table", "columns": ["Test point", "Clause", "Grade", "Response to finding", "Notes"],
+    "rows": [["Restart leak-test record", "Site element 4.2", "", "", ""], ["Spares to specification", "ISO 45001 9.2", "", "", ""]]}]}],
+ "limits": ["One critical control has no entry in the organisation's barrier register (unmapped)."]}

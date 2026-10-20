@@ -15,7 +15,7 @@ Draft because: no finding is marked as edited by a person
 ## Bottom line
 
 - Seals were bought locally without a specification for two years. [FND-0003]
-- No check stopped an untested pump returning to service. [FND-0002]
+- No check stopped an untested pump returning to service. [FND-0002] *(learning: LR-01)*
 
 ## How the site set this up
 
@@ -46,14 +46,37 @@ Buying seals locally without a specification had become routine; the findings re
 **Decision:** Require a specification for every critical-spares order [FND-0003]
 - Options: All critical spares now; Rotating equipment first
 - Trade-offs: Longer lead times against fewer unknown parts.
-- Owner: Plant manager
+- Owner: Site operations function
 
 **Indicator:** Critical spares bought to specification [FND-0003]
 - Measure: % of critical-spares orders with a specification reference
+- Deterioration looks like: Any month below 100%
+
+### Enterprise spares standard
+
+**Decision:** Needs corporate decision: one enterprise standard for critical-spares specifications [FND-0003; EVD-0003]
+- Options: Ask head office for a standard; Keep a site rule
+- Trade-offs: Consistency across sites against time to agree it.
+- Owner: Site leadership team
+
+**Indicator:** Escalation answered [FND-0003; EVD-0003]
+- Measure: Days from escalation to a corporate answer
+- Deterioration looks like: No answer within one quarter
 
 ## What leaders will do visibly
 
-- [ ] Ask for the leak-test record at every pump walk-through. *(next 30 days)* [FND-0001]
+- [ ] Ask for the leak-test record at every pump walk-through. *(next 30 days)* [FND-0001] *(learning: LR-01)*
+
+## Management review input
+
+| Input | What this investigation shows | Indicator | Deterioration trigger | Cites |
+|---|---|---|---|---|
+| Incidents and corrective actions | A restart without a leak test led to the fire | % of restarts with a test record | Any restart without one | FND-0001 |
+| Monitoring results | Not in this investigation |  |  |  |
+| Audit results | No audit checked purchase records against specifications | Spares audits completed | An audit cycle missed | FND-0003 |
+| Risks and opportunities | Not in this investigation |  |  |  |
+| Adequacy of resources | No return-to-service checklist existed to resource | Procedures with a test step | A procedure revised without one | FND-0002 |
+| Consultation outcomes | Not in this investigation |  |  |  |
 
 ## Leadership workshop agenda (two hours)
 

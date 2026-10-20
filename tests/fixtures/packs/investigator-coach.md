@@ -25,6 +25,11 @@ Draft because: no finding is marked as edited by a person
 
 There is no interview evidence; every finding rests on documents [EVD-0001; EVD-0002; EVD-0003].
 
+## Investigation process against requirements
+
+- [ ] The report records the date of the incident and a description of it [FND-0001]. *(Clauses: PSM-(m)(4))*
+- [ ] The team included someone who knows the stores process. [GAP] The export names no investigation team. [FND-0003] *(Clauses: PSM-(m)(3))*
+
 ## Follow-up per high-rated finding
 
 | Finding | Evidence to collect | Key questions | Suggested interviews | Causal hypothesis | Cites |
@@ -47,6 +52,13 @@ The alarm finding may belong at L4 if the configuration was a design standard [F
 **Scenario:** Move FND-0001 to the level where it belongs. [FND-0001]
 
 1. Which condition enabled the omitted step?
+
+*(learning: LR-01)*
+
+## Gaps in the evidence
+
+- The export does not name the investigation team. [FND-0003]
+  - Evidence needed: The team list with each member's role
 
 ---
 

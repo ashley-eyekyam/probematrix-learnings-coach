@@ -49,6 +49,7 @@ def test_plan_orders_by_dependency(fresh):
     bb = p["steps"][2]
     assert bb["commands"] == ["PMLC select <ws> --preset board-brief:top-l4",
                               "PMLC select <ws> --preset board-brief:assurance-l34",
+                              "PMLC select <ws> --preset board-brief:earlier-warnings",
                               "PMLC check-pack <ws> <run>/outputs/board-brief.json --strict",
                               "PMLC pack <ws> <run>/outputs/board-brief.json"]
     assert p["steps"][1]["commands"] == ["PMLC classify <ws>"] and p["steps"][1]["produces"] == "clusters"

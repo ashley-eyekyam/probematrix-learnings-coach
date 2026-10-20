@@ -103,11 +103,11 @@ def _preset(hz, *extra):
 def test_preset_budget_is_shared_across_calls(hz):                                  # ruling 27
     floor = _preset(hz, "--budget-chars", "0")
     parts = re.split(r"(?m)^(?=# Preset site-leadership-coach: )", floor.stdout)[1:]
-    assert len(parts) == 3 and "below the minimum output" in floor.stderr
+    assert len(parts) == 4 and "below the minimum output" in floor.stderr        # Task 22 added culture-oic
     min_len = max(len(x) for x in parts)
     capped = _preset(hz, "--budget-chars", "20000").stdout
     uncapped = _preset(hz).stdout
-    assert len(capped) < 20000 + 3 * min_len
+    assert len(capped) < 20000 + len(parts) * min_len
     assert len(uncapped) > 5 * 20000
 
 

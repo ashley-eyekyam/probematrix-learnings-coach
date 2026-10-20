@@ -57,7 +57,9 @@
     "PMLC check-pack <ws> <run>/outputs/investigator-coach.json --strict",
     "PMLC pack <ws> <run>/outputs/investigator-coach.json"
    ],
-   "questions": [],
+   "questions": [
+    "Is litigation, a prosecution or a regulator's inquiry in prospect? If so, the interview plan and follow-up are produced only at the direction of the organisation's legal adviser."
+   ],
    "gate": [
     "check-pack --strict"
    ]

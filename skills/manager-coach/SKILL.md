@@ -1,54 +1,84 @@
 ---
 name: manager-coach
-description: Produce learning for department and function managers from a ProbeMatrix investigation export - maintenance, operations, engineering, integrity, HSE, procurement or training managers - focused on the systems, procedures, resources, priorities and leading indicators they own, with a 90-day improvement agenda per function. Use when someone asks what managers or department heads should change after an investigation, wants a management action agenda, departmental lessons, KPIs or leading indicators, or a management-review input from an incident.
+description: Produces learning for department and function managers from a ProbeMatrix investigation export - maintenance, operations, engineering, integrity, HSE, procurement, training, planning and scheduling managers - on the systems, procedures, resources and priorities they own, with leading indicators, a 90-day agenda per function and a management-review input. Use when someone asks what managers or department heads should change after an investigation, for a management action agenda, departmental KPIs or a function's management-review input from a ProbeMatrix export. Not for site-wide leadership decisions (use `site-leadership-coach`) or every tier of one department (use `cluster-learning-dossier`).
 ---
 
 # Manager Coach
 
-Audience: T3 function and department management. They own procedures, resources and priorities inside a function. Their learning is mostly at Supervision (L3) and Organisational (L4) level.
+Audience: T3 function and department management. They own procedures, resources and priorities inside a function. Their learning is mostly at Supervision (L3) and Organisational (L4) level. Read `learnings-coach/references/learning-principles.md` and `learnings-coach/references/indicators-and-effectiveness.md` §1.
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Read `learnings-coach/references/learning-principles.md` and the leading-indicator guidance in `output-style.md`.
+## Before you start
+
+Follow `learnings-coach/references/skill-common.md` §1 and §2.
+
+Engine: `PMLC`, as `skill-common.md` §1 defines it (this skill needs the `learnings-coach` skill installed alongside it).
+
+This skill needs the **workspace** and **clusters**. It uses, when present: the register (`<run>/outputs/learnings-register.json`), the interfaces and the adoption record.
+
+Start from the register if present: `PMLC register-items <ws> --tier T3` gives the managers' learnings; carry `learning: "LR-nn"` on every item that expresses a register learning.
 
 ## Gather
 
 ```bash
+PMLC select <ws> --tier T3 --count-by entity                # functions ranked by T3 findings: take the top 5
 PMLC select <ws> --tier T3 --brief
 PMLC select <ws> --tier T3 --level 3 4 --top-rated
-PMLC select <ws> --relation owner absent --brief          # systems they own; functions that did not exist
-PMLC interfaces <ws> --top 15
+PMLC select <ws> --relation owner absent --brief            # systems they own; functions that did not exist
+PMLC select <ws> --entity F08 --level 3 4 --brief           # work management and planning (F08 in the default taxonomy)
+PMLC interfaces <ws> --top 15                               # the seams with other functions
+PMLC register-items <ws> --tier T3                          # the register's T3 learnings (needs the register)
 ```
 
-If the user names a function, add `--entity <F-id>`; otherwise produce one section per function with T3 findings, largest first.
+`select --preset manager-coach` runs the select calls at once. If the user names a function, add `--entity <F-id>` and write only that function's section, plus the summary.
 
-## For each function, write
+## Write
 
-- **What your system allowed**: three to six system learnings (procedures missing or not used, schedules that slid, records that hid information, resources short, roles absent).
-- **Interfaces you share**: from `interfaces`, the seams with other functions and what to agree with them.
-- **Recommendations**: what should change, control tier, evidence.
-- **Leading indicators**: two to four, measurable from systems the function already has (CMMS, permits, training records, audit tracker).
-- **90-day agenda**: first 30 days (verify the condition still exists, quick containment), 60 (system change drafted with the people who do the work), 90 (indicator in the monthly report). No names or dates unless asked.
+Write the pack `<run>/outputs/manager-coach.json` in the shape in `learnings-coach/references/pack-schema.md`. Set `"scope": {"tiers": ["T3"]}`. Write one section per function for the **top 5 functions** by T3 findings (`id` = the function, such as `mechanical-maintenance`), largest first, each part as a `group`; the other functions get a row in the summary table only.
 
-## Output
+| § | id | Heading | Content rule | Kind | Count |
+|---|---|---|---|---|---|
+| — | bottom_line | — | The learnings every manager should take away | `bottom_line` | up to 7 |
+| 1–5 | `*` | What your system allowed (section per function) | Procedures missing or not used, schedules that slid, records that hid information, resources short, roles absent; `owner` = the function that owns the change | `learning` | up to 6 |
+| 1–5 | `*` | Interfaces you share | From `interfaces`: the seams with other functions and what to agree with them | `para` | at least 1 |
+| 1–5 | `*` | Recommendations | change, `hoc_tier`, barrier, indicator; `why_not_stronger` at the administrative or training tier | `recommendation` | at least 1 |
+| 1–5 | `*` | Leading indicators | Measurable from systems the function already has (CMMS, permits, training records, audit tracker), each with `deterioration` | `indicator` | up to 4 |
+| 1–5 | `*` | 90-day agenda | Columns Days, Action; `row_cites` (below) | `table` | 1 |
+| 6 | `work-management` | Work management: planners and schedulers | What the planning system allowed (job plans without test steps, deferrals, backlog, permit coordination) | `learning` | optional, up to 4 |
+| 6 | `work-management` | (same section) | What the planning and scheduling function should change | `recommendation` | optional, up to 4 |
+| 7 | `management-review` | Management review input | The six-row table (below) | `table` | optional, up to 1 |
+| 8 | `summary` | Summary | Columns Function, Top learning, Top recommendation, Indicator: one row per function with T3 findings, the top 5 first | `table` | 1 |
 
-Write the pack `<run>/outputs/manager-coach.json` (schema: `learnings-coach/references/pack-schema.md`), then:
+Rules for the content:
 
-```bash
-PMLC check-pack <ws> <run>/outputs/manager-coach.json   # fix every problem it lists
-PMLC pack <ws> <run>/outputs/manager-coach.json         # -> manager-coach.html (primary) and manager-coach.md
-```
-
-Sections → kinds. Write one section per function (`id` = the function, e.g. `mechanical-maintenance`), with each part as a `group`:
-- What your system allowed: `learning` ×3–6 (`owner` = the function that **owns the change**, not who "was involved"; see `learning-principles.md`).
-- Interfaces you share: `para`.
-- Recommendations: `recommendation` (change, hoc_tier, barrier, indicator).
-- Leading indicators: `indicator` ×2–4.
-- 90-day agenda: `table` (Days, Action; `row_cites`).
-
-End with a `summary` section: one `table` with columns Function, Top learning, Top recommendation and Indicator.
-
-Set `"scope": {"tiers": ["T3"]}`. Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`.
+- **90-day agenda.** First 30 days: verify the condition still exists, contain it. 60: the system change drafted with the people who do the work. 90: the indicator in the monthly report. No names or dates unless asked.
+- **Work management.** Planners and schedulers decide what work is planned, with which steps, and what is deferred. Write the section when the work-management selection returns findings; the planning function then gets no separate function section.
+- **Management review input** (ISO 45001 9.3). Write it when the user asks for a management-review input. One `table`, columns Input, What this investigation shows, Indicator, Deterioration trigger, with **exactly six rows** in this order: Incidents and corrective actions; Monitoring results; Audit results; Risks and opportunities; Adequacy of resources; Consultation outcomes. Each row cites its findings in `row_cites`, or reads "not in this investigation" in the second cell with an empty cites list; every row with cites names an indicator and its deterioration trigger.
+- **Indicators.** Give each a baseline to establish and a deterioration trigger, in the terms of `indicators-and-effectiveness.md` §1; thresholds are for the owner to set.
 
 ```json
 {"kind": "learning", "group": "What your system allowed", "lesson": "Return to service relied on memory, not a checklist.",
- "explanation": "…", "owner": "Maintenance function", "cites": ["FND-…"]}
+ "explanation": "…", "owner": "Maintenance function", "learning": "LR-01", "cites": ["FND-…"]}
 ```
+
+## If the evidence is thin
+
+- **Fewer than five functions have T3 findings:** write sections only for those; never promote another tier's findings into a function's section.
+- **A function has one or two findings:** keep its section short (one learning, one recommendation, one indicator) or move it to the summary table only.
+- **No work-management findings:** leave the work-management section out and say so in the summary.
+
+## Not covered here
+
+- Site-wide decisions, culture and the leadership workshop: `site-leadership-coach`.
+- Every tier of one department in one reference file (practice, supervision, barriers, tier messages): `cluster-learning-dossier`. This skill writes only the T3 action agenda and may reuse dossier items.
+- The interface review between two functions: `interface-learnings`.
+
+## Check and hand over
+
+Run `learnings-coach/references/skill-common.md` §4, then tick §5:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/manager-coach.json --strict   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/manager-coach.json                  # -> manager-coach.html (open first) and manager-coach.md
+```
+
+Also confirm: at most five function sections, every function with T3 findings in the summary, and the management-review table, if present, has exactly the six rows. Next: `PMLC export-actions <ws>` turns the recommendations and indicators into an action list with owners left blank.
