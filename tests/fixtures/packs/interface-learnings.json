@@ -17,6 +17,23 @@
    {"kind": "learning", "group": "The learning for each side", "lesson": "Maintenance: no restart without a leak test, whatever the part.",
     "owner": "Mechanical Maintenance (F02)", "cites": ["FND-0001"]},
    {"kind": "recommendation", "group": "Joint fix", "change": "Add a specification check at the stores issue counter",
-    "hoc_tier": "administrative", "indicator": "% of critical spares issued with a specification reference", "cites": ["FND-0003"]}]},
+    "hoc_tier": "administrative", "owner": "Materials Management (F06)", "co_owner": "Mechanical Maintenance (F02)",
+    "indicator": "% of critical spares issued with a specification reference", "cites": ["FND-0003"]}]},
+  {"id": "f01-f09b", "heading": "Control Room and Emergency Planning (mitigation side)", "items": [
+   {"kind": "para", "group": "The seam", "text": "A gas alarm passes from the control room display to the emergency plan [FND-0004]."},
+   {"kind": "para", "group": "What went wrong at the seam", "text": "The alarm displayed only, and the findings show no defined response step owned by either side [FND-0004]."},
+   {"kind": "learning", "group": "The learning for each side", "lesson": "Control room: every gas alarm needs a written first response.",
+    "owner": "Operations & Control Room (F01)", "cites": ["FND-0004"]},
+   {"kind": "learning", "group": "The learning for each side", "lesson": "Emergency planning: the plan starts at the alarm, not at the call-out.",
+    "owner": "Emergency Planning & Command (F09b)", "cites": ["FND-0004", "EVD-0002"]},
+   {"kind": "recommendation", "group": "Joint fix", "change": "Add an automatic shutdown on the gas alarm, with a joint response card",
+    "hoc_tier": "engineering", "owner": "Operations & Control Room (F01)", "co_owner": "Emergency Planning & Command (F09b)",
+    "indicator": "Share of gas alarms with a tested shutdown and response step", "cites": ["FND-0004"]}]},
+  {"id": "agenda", "heading": "Joint-review agenda", "items": [
+   {"kind": "table", "columns": ["Interface", "Roles who meet", "Agenda item", "Evidence to bring", "Decision sought"],
+    "rows": [["F02-F06", "Maintenance planner; stores lead", "Critical-spares substitutions", "Purchase records for the last quarter", "Who signs off a substitute part"],
+             ["F01-F09b", "Shift in-charge; emergency planning lead", "First response to a gas alarm", "Alarm list and the emergency plan", "Which alarms trip and who acts"]],
+    "row_cites": [["FND-0003"], ["FND-0004"]]}]},
   {"id": "who-meets", "heading": "Who must meet whom", "items": [
-   {"kind": "check", "text": "Maintenance planner and stores lead: monthly review of critical-spares substitutions", "cites": ["FND-0003"]}]}]}
+   {"kind": "check", "text": "Maintenance planner and stores lead: monthly review of critical-spares substitutions", "cites": ["FND-0003"]},
+   {"kind": "check", "text": "Shift in-charge and emergency planning lead: review the gas-alarm response cards together", "cites": ["FND-0004"]}]}]}

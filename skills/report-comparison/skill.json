@@ -16,7 +16,12 @@
   ],
   "produces": {
     "pack": "report-comparison",
-    "files": []
+    "files": [
+      "workspace/comparator.json",
+      "workspace/comparison-map.json",
+      "outputs/report-comparison-client-safe.json",
+      "outputs/report-comparison-regulator-safe.json"
+    ]
   },
   "share_default": "internal",
   "embed_default": "cited",

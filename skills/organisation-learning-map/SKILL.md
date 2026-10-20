@@ -1,54 +1,89 @@
 ---
 name: organisation-learning-map
-description: Produce the whole-organisation view of one ProbeMatrix investigation - an HTML dashboard and a learning plan showing which departments and which levels (frontline, supervisors, managers, site leaders, corporate, board) own which learnings, what each level must do, how strong the recommended fixes are, and the order to roll out audience packs. Use when someone asks for an overview, a dashboard, a heatmap, "who needs to learn what", an organisation-wide learning plan, a safety transformation view, or a starting point before producing audience-specific packs.
+description: Produces the whole-organisation view of one ProbeMatrix investigation export - an HTML dashboard and a learning plan showing which departments and levels (frontline, supervisors, managers, site leaders, corporate, board) own which learnings, what each level must do, how strong the fixes are, which pack reaches which learning, and a cascade plan for delivering the audience packs. It builds or reuses the Learnings Register. Use when someone with a ProbeMatrix export asks for an overview, a dashboard, a heatmap, "who needs to learn what", an organisation-wide learning or cascade plan, or a starting point before audience packs. Not for classifying findings or resolving roles (use `learning-clusters`), or for the register workbook alone (use `learnings-register`).
 ---
 
 # Organisation Learning Map
 
-Engine: `PMLC = python3 <skills-root>/learnings-coach/scripts/pmlc.py` (this skill needs the `learnings-coach` skill installed alongside it). Needs `clusters.json` (resolve unresolved roles first if time allows; see `learning-clusters`).
+Engine: `PMLC` as in `learnings-coach/references/skill-common.md` §1; this skill needs the `learnings-coach` skill installed alongside it.
 
-## 1. Build the learnings (unless a register already exists)
+## Before you start
 
-A map of findings alone shows where the evidence sits, not what each level should learn. Build the Learnings Register first by following the `learnings-register` skill, including `tier_messages` for every learning. If the user only wants a quick overview, say that the map will show findings only and offer the register as the next step.
+Follow `learnings-coach/references/skill-common.md` §1 (engine and paths) and §2 (preconditions; run `PMLC setup`
+when only an .xlsx was given). Needs: `workspace`, `clusters`, `register`. Optional: `interfaces`, `adoption`,
+`distribution`. Read `learnings-coach/references/learning-principles.md`,
+`learnings-coach/references/barriers-and-controls.md` (control tiers) and
+`learnings-coach/references/audiences.md` (which skill serves which audience).
 
-## 2. Build the dashboard
+**The register comes first.** A map of findings alone shows where the evidence sits, not what each level should
+learn. If `<run>/outputs/learnings-register.json` exists, reuse it; otherwise build it with `learnings-register`,
+with `tier_messages` for every learning. If the user wants only a quick overview, say the dashboard will show
+findings only, and offer the register as the next step.
 
-```bash
-PMLC dashboard <ws> --register <run>/outputs/learnings-register.json \
-     [--date <corrected date>] [--title "<plain title>"]      # if the profile flagged summary-sheet errors
-#   -> <run>/outputs/organisation-learning-map.html
-PMLC interfaces <ws> --top 10
-```
-
-With `--register`, the HTML has two tabs.
-- **Overview:** the learning × tier matrix (hover a cell for the message; a row links to its detail), a learning plan per level, the control-tier profile of the recommendations, the findings heatmaps (entity × tier, entity × level), and the most frequent factors.
-- **Detailed register:** every register field, each cited finding and evidence item in full, and stakeholder lenses (T1–T5, Investigator, Auditor).
-
-Without `--register`, it is the single-page Overview. The page is self-contained (offline, light and dark mode) and carries the ProbeMatrix footer. Do not hand-edit the generated HTML; change the register JSON and re-run.
-
-## 3. Write the learning plan
-
-Write the pack `<run>/outputs/organisation-learning-plan.json` (schema: `learnings-coach/references/pack-schema.md`) with these sections:
-1. **Where the learning sits**: three sentences on the shape of the map (which entities carry the most findings, how much sits at supervision and organisational level, which tiers are most involved).
-2. **What each level must learn**: one short section per tier (frontline → board), listing the learnings with that tier's message, priority-1 first.
-3. **Top learning owners**: six to eight clusters with the most priority-1 learnings or highest-rated findings, one sentence each.
-4. **Strongest interfaces**: the top three pairs and what passes between them.
-5. **Strength of fixes**: share of recommendations above the administrative tier, and where stronger fixes are missing.
-6. **Rollout plan**: which audience packs to produce, in which order, and why (usually site leadership and supervisors first, then the largest clusters, then board and auditors). Name the skill for each.
-
-The kinds that fill each numbered section:
-1. `para`.
-2. One section per tier, holding `learning` items: `lesson` = that tier's message and `owner` = the cluster, priority-1 first.
-3. A `table` (Cluster, Priority-1 learnings, Why; `row_cites`).
-4. A `table` (Interface, What passes between them).
-5. A `para`, plus a `table` of recommendations per control tier.
-6. A `table` (Order, Skill, Audience, Why). A rollout has an order, not dates.
-
-Then:
+## Gather
 
 ```bash
-PMLC check-pack <ws> <run>/outputs/organisation-learning-plan.json   # fix every problem it lists
-PMLC pack <ws> <run>/outputs/organisation-learning-plan.json         # -> organisation-learning-plan.html (primary) and .md
+PMLC dashboard <ws> --register <run>/outputs/learnings-register.json   # -> <run>/outputs/organisation-learning-map.html
+PMLC register-items <ws> --tier T2                       # a tier's learnings as ready items (repeat per tier)
+PMLC table-item <ws> hoc --register <run>/outputs/learnings-register.json   # recommendations per control tier
+PMLC table-item <ws> interfaces --top 3                  # the strongest interfaces
 ```
 
-Put data-quality corrections in `data_quality`, findings left out on purpose in `exclusions`, and same-condition findings in `supporting_cites`. Keep the plan to three or four pages. The dashboard and register carry the detail.
+Add `--date <corrected date>` and `--title "<plain title>"` to `dashboard` when the profile flagged the
+summary-sheet date. With `--register` the HTML has two tabs: **Overview** (the learning × tier matrix, a plan per
+level, the control-tier profile, heatmaps, the most frequent factors, the **learnings × packs matrix** counted
+from the `learning` ids in `<run>/outputs/*.json`, and the **reach** per pack from `distribution.csv`) and
+**Detailed register**. Re-run `dashboard` after writing packs or after the organisation fills in
+`distribution.csv`. Never hand-edit the HTML: change the register or packs and re-run.
+
+## Write
+
+Write `<run>/outputs/organisation-learning-plan.json` (the pack is named `organisation-learning-plan`) in the
+shape in `learnings-coach/references/pack-schema.md`. Keep it to three or four pages; the dashboard carries the
+detail.
+
+| § | id | Heading | Content rule | Kind | Count |
+|---|---|---|---|---|---|
+| — | bottom_line | — | Which clusters and tiers own the priority-1 learnings, and the first packs to deliver | `bottom_line` | up to 7 |
+| 1 | `where` | Where the learning sits | Which entities carry the most findings, how much sits at supervision and organisational level, which tiers are most involved | `para` | up to 3 |
+| 2 | `t[1-5]` | What each level must learn | One section per tier (`t1` … `t5`) that must act: the `register-items` output for that tier (it carries the tier's message and `learning: "LR-nn"`), adding `owner` = the cluster; priority-1 first | `learning` | up to 8 |
+| 3 | `owners` | Top learning owners | Cluster, Priority-1 learnings, Why; up to eight clusters; `row_cites` | `table` | 1 |
+| 4 | `interfaces` | Strongest interfaces | Interface, What passes between them; the top three pairs | `table` | 1 |
+| 5 | `fixes` | Strength of fixes | The share of recommendations above the administrative tier, and where stronger fixes are missing | `para` | up to 2 |
+| 5 | `fixes` | Strength of fixes | The `table-item hoc` table | `table` | 1 |
+| 6 | `cascade` | Cascade plan | A `table` with the columns Audience, Pack, Channel, Deliverer role, Window (relative weeks), Feedback, Completion measure; one row per audience pack, `row_cites` | `table` | 1 |
+
+**The cascade** replaces the old rollout order. Each row names the audience, the pack name as `distribution.csv` will record it (with the skill that
+writes it, from `audiences.md`), the channel (toolbox talk, briefing, committee, board paper), the deliverer role (a
+role, never a person), the window (relative weeks), such as "weeks 1–2", how feedback comes back (questions raised,
+concerns escalated) and the completion measure (for example "every crew has a `distribution.csv` row"). It has
+no dates and no names: the organisation sets those. Usually site leadership and supervisors come first, then the
+largest clusters, then board and auditors.
+
+## If the evidence is thin
+
+Follow `skill-common.md` §6, and:
+- **No register and the user wants only an overview:** write `where`, `owners` and `interfaces` from the
+  findings, leave out the tier sections, and add a `limits` line that the plan needs the register.
+- **A tier with nothing to act on** (no `tier_messages` for it): leave its section out and say so in `where`.
+- **No interfaces with shared findings:** keep the `interfaces` table to the pairs `interfaces` printed.
+
+## Not covered here
+
+- Classifying findings and resolving roles: `learning-clusters`.
+- The register workbook and its checks: `learnings-register`.
+- The audience packs themselves: the skills named in the cascade.
+
+## Check and hand over
+
+Run `skill-common.md` §4, then tick §5:
+
+```bash
+PMLC check-pack <ws> <run>/outputs/organisation-learning-plan.json --strict   # fix every problem it lists
+PMLC pack <ws> <run>/outputs/organisation-learning-plan.json                  # -> organisation-learning-plan.html and .md
+PMLC templates <ws> distribution                         # next: the delivery record the organisation fills in
+```
+
+Give the user the dashboard path and the plan path. The next step is `PMLC templates <ws> distribution`: it writes
+`<run>/outputs/distribution.csv`, which the organisation fills in as packs are delivered (never you), and which
+the dashboard reads for reach. It refuses to overwrite a file that already holds entries.

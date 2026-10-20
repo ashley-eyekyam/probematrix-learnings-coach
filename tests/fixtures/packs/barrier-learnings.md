@@ -20,18 +20,20 @@ Draft because: no finding is marked as edited by a person
 
 ### Prevention
 
-**Barrier:** Specification of critical spares [FND-0003; EVD-0003]
+**Barrier:** materials and spares: specification of critical spares [FND-0003; EVD-0003]
 - Failure mode: Local purchase without a specification since March 2022
-- Type: prevention
+- Barrier ID: BR-12
+- Type: procedural
 - State on the day: absent
 - Owner: Materials Management (F06)
 - Control tier: engineering
 - Fix: Purchasing system blocks critical-spares orders without a specification
 - Leading indicator: % of critical-spares orders with a specification
 
-**Barrier:** Leak test before return to service [FND-0002; FND-0001]
+**Barrier:** maintenance and testing: leak test before return to service [FND-0002; FND-0001]
 - Failure mode: No checklist required the test
-- Type: prevention
+- Barrier ID: BR-07
+- Type: procedural
 - State on the day: absent
 - Owner: Maintenance supervision (F02, T2)
 - Control tier: administrative
@@ -40,9 +42,9 @@ Draft because: no finding is marked as edited by a person
 
 ### Mitigation
 
-**Barrier:** Gas detection with shutdown [FND-0004]
+**Barrier:** detection and alarm: gas detection with shutdown [FND-0004]
 - Failure mode: Alarm displayed only; no automatic action
-- Type: mitigation
+- Type: active
 - State on the day: degraded
 - Control tier: engineering
 - Fix: [GAP] the export does not say whether a trip was intended
@@ -53,8 +55,14 @@ Failures cluster on the prevention side. Of the two fixes the export supports, o
 
 ## Critical controls to verify first
 
-- [ ] Leak test before return to service [FND-0002]
+- [ ] Leak test before return to service [FND-0002] *(Clauses: ICMM-CCM-8)*
 - [ ] Specification of critical spares [FND-0003]
+
+## Barriers not in the organisation's register
+
+| Barrier | Side | Why unmapped | Cites |
+|---|---|---|---|
+| detection and alarm: gas detection with shutdown | Mitigation | The register lists the detector but no shutdown function | FND-0004 |
 
 ---
 

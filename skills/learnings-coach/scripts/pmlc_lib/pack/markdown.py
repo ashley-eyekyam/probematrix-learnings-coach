@@ -107,7 +107,7 @@ def _md_item(it, inc_date=None) -> str:
         return (f"**Recommendation:** {it['change']}{c}\n"
                 + _lines([("Control tier", norm_hoc(it["hoc_tier"])), ("Barrier", g("barrier")),
                           ("Barrier ID", g("barrier_id")), ("Owner", g("owner")),
-                          ("By when", g("by_when")), ("Leading indicator", it["indicator"]),
+                          ("Co-owner", g("co_owner")), ("By when", g("by_when")), ("Leading indicator", it["indicator"]),
                           ("Why not stronger", g("why_not_stronger"))]))
     if k == "decision":
         return (f"**Decision:** {it['decision']}{c}\n"
