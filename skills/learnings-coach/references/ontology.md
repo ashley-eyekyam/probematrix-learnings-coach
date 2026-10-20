@@ -16,7 +16,7 @@ How one investigation becomes learning for every part and every level of an orga
 
 A conventional investigation report is organised by **discipline** (facilities, maintenance, electrical, fire-fighting…) and closes with a flat list of root causes and recommendations. It tells the organisation *what went wrong*. It rarely tells each part of the organisation, at each level, *what it should now learn and do differently*.
 
-A ProbeMatrix investigation analyses the same evidence at four human-factors levels (Unsafe Acts → Preconditions → Supervision → Organisational Influences). It produces many evidence-linked findings, and for each one it names the **roles and organisational entities involved**. That field is the bridge. The Learnings Coach clusters findings by the entity that owns the learning and then opens each cluster into structured, audience-ready learning.
+A ProbeMatrix investigation analyses the same evidence at four human-factors levels (Unsafe Acts → Preconditions → Supervision → Organisational Influences, defined in `hfacs-levels.md`). It produces many evidence-linked findings, and for each one it names the **roles and organisational entities involved**. That field is the bridge. The Learnings Coach clusters findings by the entity that owns the learning and then opens each cluster into structured, audience-ready learning.
 
 The unit of learning is the **learning**, not the finding. Findings are instance-level (one factor can appear several times), so they are always the evidence beneath a learning, never the headline count.
 
@@ -37,7 +37,7 @@ The unit of learning is the **learning**, not the finding. Findings are instance
 | F03 | Electrical Maintenance | engineering | electrical technicians, electrical PM planners, hazardous-area equipment owners |
 | F04 | Instrumentation, Control & Calibration | engineering | calibration teams, DCS / F&G engineers, instrument supervisors |
 | F05 | Asset Integrity, Corrosion & Inspection | engineering | integrity and corrosion engineers, inspection, reliability |
-| F06 | Materials Management | supply | stores, procurement, spares and quality control |
+| F06 | Materials Management (Stores / Procurement) | supply | stores, procurement, spares and quality control |
 | F07 | Engineering, Design, Documents & MOC | engineering | engineering authority, design, document control, management of change |
 | F08 | Work Management & Planning | operations | planners, CMMS / work-order and notification owners |
 | F09a | Fire-fighting Operations & Fire-water Systems | emergency | fire crews, fire station, fire-water and fire-pump maintenance |
@@ -71,15 +71,21 @@ Adapt the list to the organisation: rename, split or merge entities in `taxonomy
 
 The AI often qualifies roles ("…(approval authority)", "…(absent)", "…(role model)"). The qualifier decides the *kind* of learning:
 
-| Relation | Kind of learning it produces |
-|---|---|
-| actor / participant | a practice to change |
-| approver / authoriser | a check to add or strengthen |
-| owner / custodian | a system, policy or document to change |
-| absent / not provided | an organisational-design learning: a function that should exist |
-| role model / norm-setter | a culture learning about what leaders demonstrate |
-| learner / norm-receiver | a culture learning about what people absorb |
-| expected challenger | a learning about speaking up and challenge authority |
+| ID (`--relation`) | Relation | Kind of learning it produces |
+|---|---|---|
+| `actor` | actor / participant (the default when no rule matches) | a practice to change |
+| `approver` | approver / authoriser | a check to add or strengthen |
+| `owner` | owner / custodian | a system, policy or document to change |
+| `absent` | absent / not provided | an organisational-design learning: a function that should exist |
+| `norm_setter` | role model / norm-setter | a culture learning about what leaders demonstrate |
+| `learner` | learner / norm-receiver | a culture learning about what people absorb |
+| `challenger` | expected challenger | a learning about speaking up and challenge authority |
+
+Where the relation comes from: `classify` reads it from the role's own wording with the `relations` rules in `taxonomy.json` (first match wins). It is only as good as the qualifiers the analysis wrote, so a sparse relation (few `norm_setter` roles, say) is a limit to state, not a finding. For culture learnings, fall back to the `OIC` prefix (`hfacs-levels.md`).
+
+### 3.4 Causal direction
+
+The higher level enables the lower: organisational influences (L4) create supervisory conditions (L3), which allow preconditions (L2), in which unsafe acts (L1) happen. Causal links and causal-map arrows run from the enabling factor to the factor it enabled. See `hfacs-levels.md` §5 for links that run the other way.
 
 ## 4. Per-cluster sub-divisions
 
