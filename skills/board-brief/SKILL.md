@@ -45,7 +45,7 @@ A board paper: the cover (bottom line and the ask of the board) on page one, the
 | 6 | `assurance` | Assurance the board should request | Columns Verification, Sites, Requested reporting date; `row_cites`. A request to management, not a plan | `table` | 1 |
 | 7 | `indicators` | Indicators for the board dashboard | Leading indicators that would have shown deterioration earlier, each with `deterioration` | `indicator` | up to 5 |
 | 8 | `governance` | Governance duties touched | Names the frameworks the learnings touch, with no legal conclusions (below) | `para` | optional, up to 1 |
-| 9 | `follow-up` | Tracking the board's questions | One `check`: minuted questions need tracked answers (below) | `check` | 1 |
+| 9 | `follow-up` | Tracking the board's questions | One `check`: minuted questions need tracked answers (below), citing the findings behind the questions it tracks | `check` | 1 |
 
 Rules for the content:
 
@@ -53,8 +53,8 @@ Rules for the content:
 - **Requested reporting date.** The Requested reporting date cell reads "for the board to set" unless the user gives a date. Never invent one (`learning-principles.md` §6).
 - **Management response.** Paste the `table-item adoption` item unchanged when `<run>/outputs/adoption.csv` holds responses. With no adoption record, leave section 4 out and add a `limits` line: "Management's response to each learning is not yet recorded (`PMLC templates <ws> adoption`)."
 - **Earlier alerts.** Ask at least one question on whether earlier alerts, audit recommendations or the register's priority-1 learnings were acted on, when the evidence shows any.
-- **Governance duties touched.** Write it when the user names a jurisdiction or the run has one (`PMLC run-manifest`). Name the board-reporting frameworks the learnings touch, from the "Board reporting" lines of `learnings-coach/references/jurisdictions.md` (such as UK Corporate Governance Code Provision 29, Companies Act 2013 s.134, SEBI BRSR Principle 3, GRI 403). Say which learnings bear on which framework and stop there: no statement that a duty applies, was met or was breached. Whether and how to disclose is for the board's own advisers.
-- **Tracking.** The `follow-up` check reads, in substance: "Record each question the board minutes, the answer management gives and when; a minuted question with no tracked answer stays open." Board minutes can be disclosed later, so a question asked and never answered is worse than one never asked.
+- **Governance duties touched.** Write it when the user names a jurisdiction or the run has one (`PMLC run-manifest`). Name the board-reporting frameworks the learnings touch: the statutory ones from the "Board reporting" lines of `learnings-coach/references/jurisdictions.md` (such as UK Corporate Governance Code Provision 29, Companies Act 2013 s.134, SEBI BRSR Principle 3) and, when the organisation reports under the GRI Standards, the voluntary disclosure GRI 403-2 (hazard identification, risk assessment and incident investigation), which `jurisdictions.md` does not list. Say which learnings bear on which framework and stop there: no statement that a duty applies, was met or was breached. Whether and how to disclose is for the board's own advisers.
+- **Tracking.** The `follow-up` check reads, in substance: "Record each question the board minutes, the answer management gives and when; a minuted question with no tracked answer stays open." Give it the `cites` of the questions in section 5, like every other item. Board minutes can be disclosed later, so a question asked and never answered is worse than one never asked.
 - **Indicators.** Specify each as in `learnings-coach/references/indicators-and-effectiveness.md` §1; thresholds are for the owner to set.
 - Neutral, factual tone; no blame of management or staff; roles only. Any `owner` is the function that **owns the change**, not who "was involved".
 

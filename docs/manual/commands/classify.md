@@ -70,8 +70,8 @@ Classified 630 distinct roles; 96 need resolution (no entity or no tier). Wrote 
 |---|---:|
 | T1 Frontline / sharp end | 222 |
 | T2 First-line supervision / shift in-charge | 237 |
-| T3 Function / department management | 211 |
-| T4 Plant / asset leadership | 54 |
+| T3 Function / department management | 219 |
+| T4 Plant / asset leadership | 39 |
 | T5 Corporate / policy owner / board | 1 |
 | T9 Unresolved | 98 |
 

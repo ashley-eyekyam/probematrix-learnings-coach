@@ -1735,3 +1735,13 @@ def test_t22_fixture_learning_ids_in_mini_register(w, name):
     r = pp.check_pack(p, w, register=json.loads(MINI_REGISTER_FILE.read_text(encoding="utf-8")), strict=True)
     assert r.problems == [], r.problems
     assert not [x for x in r.warnings if "unknown learning" in x or "not verified" in x], r.warnings
+
+
+def test_board_brief_follow_up_check_is_cited(w):
+    """The board brief's `follow-up` check cites the findings behind the questions it tracks, so a board brief
+    built to the SKILL.md table draws no uncited-item warning (integration fix, Ruling X35)."""
+    p = fixture("board-brief")
+    check = next(s for s in p["sections"] if s["id"] == "follow-up")["items"][0]
+    assert check["kind"] == "check" and check["cites"]
+    r = pp.check_pack(p, w, register=json.loads(MINI_REGISTER_FILE.read_text(encoding="utf-8")), strict=True)
+    assert r.problems == [] and not [x for x in r.warnings if "no Finding or Evidence ID cited" in x], r.warnings

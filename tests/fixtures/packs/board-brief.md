@@ -71,7 +71,7 @@ The spares learning bears on the board's description of material controls under 
 
 ## Tracking the board's questions
 
-- [ ] Record each question the board minutes, the answer management gives and when; a minuted question with no tracked answer stays open.
+- [ ] Record each question the board minutes, the answer management gives and when; a minuted question with no tracked answer stays open. [FND-0002; FND-0003]
 
 ---
 

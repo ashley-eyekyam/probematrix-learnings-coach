@@ -34,4 +34,4 @@
   {"id": "governance", "heading": "Governance duties touched", "items": [
    {"kind": "para", "text": "The spares learning bears on the board's description of material controls under its corporate governance code; whether a disclosure follows is for the board's advisers [FND-0003]."}]},
   {"id": "follow-up", "heading": "Tracking the board's questions", "items": [
-   {"kind": "check", "text": "Record each question the board minutes, the answer management gives and when; a minuted question with no tracked answer stays open."}]}]}
+   {"kind": "check", "text": "Record each question the board minutes, the answer management gives and when; a minuted question with no tracked answer stays open.", "cites": ["FND-0002", "FND-0003"]}]}]}
