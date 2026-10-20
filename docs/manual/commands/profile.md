@@ -26,6 +26,7 @@ pmlc profile ws [--top TOP] [--out OUT]
 |---|---|---|---|
 | `--top` | number | 15 | How many rows to show in the "most frequent factors" and "most-named roles" tables |
 | `--out` | file | print to the screen | Write the profile to this file instead. The usual place is `$WS/profile.md` |
+| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output, ...}`, where `output` holds the report's lines and some commands add fields (`problems`, `warnings`, `stats`, `hits`). Messages go to stderr. The exit code is the same as without `--json` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples

@@ -69,6 +69,18 @@ def norm_code(prefix: str, num: str) -> str:
     return f"{prefix} {num}"
 
 
+def emit_json(obj) -> None:
+    """Print obj as the one JSON object on stdout (the --json contract: nothing else goes to stdout)."""
+    sys.stdout.write(json.dumps(obj, indent=1, ensure_ascii=False) + "\n")
+
+
+JSON_EXTRA: dict = {}   # structured fields a command adds to its --json object (see cli.run_json)
+
+
+def json_extra(**kw) -> None:
+    JSON_EXTRA.update(kw)
+
+
 def write_json(path: Path, obj) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)

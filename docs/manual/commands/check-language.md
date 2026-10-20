@@ -47,6 +47,7 @@ pmlc check-language ws json [--share {internal,external,public}] [--names NAMES]
 | `--share` | `internal`, `external` or `public` | the file's `handling.classification`, else `internal` | Who the file is for. `external` and `public` turn on the stricter outside rules (JC7, JC9 and JC10) |
 | `--names` | file | `$PMLC_NAMES` | A text file of personal names, one per line, that must not appear. Lines starting with `#` and blank lines are skipped |
 | `--orgs` | file | `$PMLC_ORGS` | A text file of organisation names, one per line, for JC9 |
+| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output, ...}`, where `output` holds the report's lines and this command adds `hits`. Messages go to stderr. The exit code is the same as without `--json` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 Keep the names and organisations files outside the repository: they hold the very names you are keeping out.

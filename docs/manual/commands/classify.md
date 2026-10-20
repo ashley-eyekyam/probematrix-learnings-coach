@@ -45,6 +45,7 @@ pmlc classify ws [--taxonomy TAXONOMY] [--overlay NAME_OR_PATH] [--no-overlay]
 | `--no-overrides` | none | off | Ignore any overrides file |
 | `--org-chart` | CSV file | none | Your own departments, as a CSV with the columns `department` (required), `entity` (an F-id to extend, optional), `match` (keywords separated by `;`, or a regex; required) and `tier` (`T1` to `T5`, optional). Rows without an `entity` become new entities `F20`, `F21` and so on, in CSV order, and keep their ID across re-runs through `org-chart-ids.json` in the workspace. Remembered like `--overlay`. Classify prints `<n> of <m> findings mapped to your departments` |
 | `--no-org-chart` | none | off | Forget the remembered org chart |
+| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output, ...}`, where `output` holds the report's lines and some commands add fields (`problems`, `warnings`, `stats`, `hits`). Messages go to stderr. The exit code is the same as without `--json` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples

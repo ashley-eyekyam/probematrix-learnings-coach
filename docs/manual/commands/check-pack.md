@@ -53,6 +53,7 @@ pmlc check-pack ws pack [--share {internal,external,public}] [--names NAMES] [--
 | `--orgs` | file | `$PMLC_ORGS` | Organisation names, one per line |
 | `--strict` | none | off | Pack-profile violations, padding, scope drift, unknown learning ids and unknown clauses are problems (exit code 1), not warnings. Run it before handing a pack over |
 | `--register` | file | `<run>/outputs/learnings-register.json` when it exists | The Learnings Register JSON that `learning` ids are checked against. A given file that cannot be read is a problem; an auto-detected one that cannot be read is warned about and ignored |
+| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output, ...}`, where `output` holds the report's lines and this command adds `problems`, `warnings`, `stats`. Messages go to stderr. The exit code is the same as without `--json` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples

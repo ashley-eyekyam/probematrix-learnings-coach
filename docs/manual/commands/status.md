@@ -26,9 +26,10 @@ pmlc status ws
 
 | Flag | Value | Default | What it does |
 |---|---|---|---|
+| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output, ...}`, where `output` holds the report's lines and some commands add fields (`problems`, `warnings`, `stats`, `hits`). Messages go to stderr. The exit code is the same as without `--json` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
-status has no other flags.
+status has no other flags than `--json`.
 
 ## Examples
 

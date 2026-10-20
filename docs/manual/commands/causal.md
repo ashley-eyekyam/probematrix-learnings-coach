@@ -29,6 +29,7 @@ pmlc causal ws [--top TOP] [--include-justification] [--hubs]
 | `--top` | number | 60 | How many links to print and to draw in the Mermaid file. `causal_graph.json` always holds every link |
 | `--include-justification` | none | off | Also read factor codes from the AI justification text, not only the causal explanation. This finds more links, but some are mentions rather than causes |
 | `--hubs` | none | off | Also print the factors with the most links out, with their level and mentions |
+| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output, ...}`, where `output` holds the report's lines and some commands add fields (`problems`, `warnings`, `stats`, `hits`). Messages go to stderr. The exit code is the same as without `--json` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples

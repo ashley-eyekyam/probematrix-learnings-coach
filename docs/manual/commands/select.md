@@ -75,6 +75,7 @@ pmlc select ws [--entity [ENTITY ...]] [--tag TAG [TAG ...]] [--tier [TIER ...]]
 | Flag | Value | Default | What it does |
 |---|---|---|---|
 | `--preset` | `SKILL` or `SKILL:NAME` | none | Run a skill's recorded gather calls (from `references/select-presets.json`). It takes only the output flags `--format`, `--fields`, `--group-by`, `--count-by`, `--brief`, `--budget-chars` and `--out`, never filters. Each call keeps its own format unless you pass `--format`, which then applies to all. With several calls you get one bundle per call under a `# Preset <skill>: <name>` heading, so JSON output is several JSON values one after another. `--budget-chars` caps the whole output: each call gets what the earlier calls left |
+| `--json` | none | off | An alias for `--format json` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples

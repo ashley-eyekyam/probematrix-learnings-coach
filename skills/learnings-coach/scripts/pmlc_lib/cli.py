@@ -452,11 +452,52 @@ def build_parser():
                         "over the internal copy")
     s.set_defaults(fn=cmd_pack_xlsx)
 
+    for name in JSON_COMMANDS:   # P3-24: --json on every analysis and check command (dest as_json: check-language has a positional "json")
+        sp.choices[name].add_argument("--json", dest="as_json", action="store_true",
+                                      help="print one JSON object on stdout ({command, ok, exit_code, output, ...}); "
+                                           "messages go to stderr; the exit code is unchanged")
+    sp.choices["select"].add_argument("--json", dest="as_json", action="store_true", help="alias for --format json")
     return p
+
+
+# The commands that gain --json in Task 25. check-register, plan, facts, compare and check-all had it already and keep
+# their own shapes; select keeps --format json.
+JSON_COMMANDS = ("profile", "classify", "causal", "timeline", "interfaces", "status", "check-pack", "check-language",
+                 "check-samples", "scan-names")
+
+
+def run_json(a):
+    """Run a command with its stdout captured, then print one JSON object: the exit code is the command's own."""
+    import contextlib
+    import io
+    from .util import JSON_EXTRA, emit_json
+    JSON_EXTRA.clear()
+    buf = io.StringIO()
+    code = 0
+    try:
+        with contextlib.redirect_stdout(buf):
+            a.fn(a)
+    except SystemExit as e:
+        if e.code is None:
+            code = 0
+        elif isinstance(e.code, int):
+            code = e.code
+        else:
+            print(e.code, file=sys.stderr)
+            code = 1
+    obj = {"command": a.cmd, "ok": code == 0, "exit_code": code}
+    obj.update(JSON_EXTRA)
+    obj["output"] = buf.getvalue().splitlines()
+    emit_json(obj)
+    return code
 
 
 def main(argv=None):
     a = build_parser().parse_args(argv)
     a._argv = list(sys.argv[1:] if argv is None else argv)
+    if a.cmd == "select" and getattr(a, "as_json", False):
+        a.format = "json"
+    elif a.cmd in JSON_COMMANDS and getattr(a, "as_json", False):
+        return run_json(a)
     a.fn(a)
     return 0
