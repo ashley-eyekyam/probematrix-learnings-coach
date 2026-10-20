@@ -11,8 +11,10 @@
     "row_cites": [["FND-0001"], ["FND-0002"]]}]},
   {"id": "modules", "heading": "Modules", "items": [
    {"kind": "module", "title": "Return to service", "objective": "Carry out and record a leak test before restart",
-    "audience": "Fitters", "duration": "45 min", "content": ["The case, roles only [FND-0001]", "Practice on the test rig"],
-    "assessment": ["Observed test on the rig"], "cites": ["FND-0001"]}]},
+    "audience": "Fitters", "duration": "45 min", "content": ["The case, roles only [FND-0001]", "Practice on the test rig",
+                "Competence standard: to be set by the competence system owner",
+                "Refresher interval: to be set by the competence system owner"],
+    "assessment": ["Observed test on the rig"], "learning": "LR-01", "cites": ["FND-0001"]}]},
   {"id": "scenarios", "heading": "Scenario exercises", "items": [
    {"kind": "scenario", "situation": "The pump is back from a seal change and the test rig is unavailable.",
     "prompts": ["What do you do?", "Facilitator: listen for a refusal to restart"], "cites": ["FND-0001"]}]},

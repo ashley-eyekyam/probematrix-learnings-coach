@@ -15,7 +15,8 @@
   "emergency-response-learnings": [
     {"name": "emergency", "args": ["--tag", "emergency", "--brief"]},
     {"name": "top-emergency", "args": ["--tag", "emergency", "--top-rated"]},
-    {"name": "text", "args": ["--text", "alarm|detect|isolat|MOV|valve|drill|fire.?water|pump|evacuat|command|CCTV", "--brief"]}
+    {"name": "text", "args": ["--text", "alarm|detect|isolat|MOV|valve|drill|fire.?water|pump|evacuat|command|CCTV", "--brief"]},
+    {"name": "external-responders", "args": ["--tag", "emergency", "--text", "mutual.?aid|neighbour|villag|communit|off-?site|fire (brigade|service)|district", "--brief"]}
   ],
   "engineering-integrity-learnings": [
     {"name": "engineering", "args": ["--tag", "engineering", "--brief"]},
@@ -24,8 +25,8 @@
   ],
   "frontline-learning-cards": [
     {"name": "tier-t1", "args": ["--tier", "T1", "--brief"]},
-    {"name": "tier-t1-l12", "args": ["--tier", "T1", "--level", "1", "2"]},
-    {"name": "top-tier-t1", "args": ["--tier", "T1", "--top-rated"]}
+    {"name": "top-tier-t1-l12", "args": ["--tier", "T1", "--level", "1", "2", "--top-rated"]},
+    {"name": "contractor", "args": ["--tag", "contractor", "--brief"]}
   ],
   "investigator-coach": [
     {"name": "top-json", "args": ["--top-rated", "--format", "json"]}
@@ -46,7 +47,8 @@
   "safety-committee-guide": [
     {"name": "tiers-t1-t2", "args": ["--tier", "T1", "T2", "--brief"]},
     {"name": "top-l4", "args": ["--level", "4", "--top-rated", "--brief"]},
-    {"name": "relation", "args": ["--relation", "norm_setter", "learner", "challenger", "--brief"]}
+    {"name": "relation", "args": ["--relation", "norm_setter", "learner", "challenger", "--brief"]},
+    {"name": "culture-oic", "args": ["--prefix", "OIC", "--top-rated", "--brief"]}
   ],
   "site-leadership-coach": [
     {"name": "tier-t4", "args": ["--tier", "T4", "--brief"]},
@@ -71,6 +73,8 @@
   ],
   "training-designer": [
     {"name": "text", "args": ["--text", "train|competen|qualif|knowledge|experience|familiar|skill", "--brief"]},
-    {"name": "l12", "args": ["--level", "1", "2", "--brief"]}
+    {"name": "l12", "args": ["--level", "1", "2", "--brief"]},
+    {"name": "people-l34", "args": ["--tag", "people", "--level", "3", "4", "--brief"]},
+    {"name": "top-t2-t3-l34", "args": ["--tier", "T2", "T3", "--level", "3", "4", "--top-rated", "--brief", "--budget-chars", "30000"]}
   ]
 }

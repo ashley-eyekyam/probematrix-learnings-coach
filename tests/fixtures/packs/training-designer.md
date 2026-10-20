@@ -34,9 +34,13 @@ Draft because: no finding is marked as edited by a person
 **Content:**
 1. The case, roles only [FND-0001]
 2. Practice on the test rig
+3. Competence standard: to be set by the competence system owner
+4. Refresher interval: to be set by the competence system owner
 
 **Assessment:**
 1. Observed test on the rig
+
+*(learning: LR-01)*
 
 ## Scenario exercises
 

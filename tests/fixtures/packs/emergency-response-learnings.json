@@ -12,9 +12,12 @@
   {"id": "by-phase", "heading": "Learnings by response phase", "items": [
    {"kind": "learning", "group": "Detection and alarm", "lesson": "A display-only gas alarm leaves detection to chance.",
     "explanation": "The DCS list shows no shutdown on the gas detector [EVD-0002].", "owner": "Emergency planning (F09b)",
-    "cites": ["FND-0004"]}]},
+    "learning": "LR-02", "cites": ["FND-0004"]}]},
   {"id": "plan-review", "heading": "Plan review input", "items": [
-   {"kind": "para", "text": "The plan should say who acts on a display-only gas alarm, and how fast [FND-0004]."}]},
+   {"kind": "table", "columns": ["Plan section", "Change", "Evidence"],
+    "rows": [["Gas detection and alarm response", "Say who acts on a display-only gas alarm, and how fast", "The gas alarm shows on the display and starts no shutdown"]],
+    "row_cites": [["FND-0004", "EVD-0002"]]},
+   {"kind": "para", "text": "Where the emergency plan is a regulated plan, a change to it may need review by, or notice to, an authority: the plan owner should check this before revising the plan."}]},
   {"id": "drills", "heading": "Drill scenarios", "items": [
    {"kind": "scenario", "situation": "Inject: a gas alarm appears on the display during a shift handover.",
     "prompts": ["Who sees it first?", "Time standard: alarm to isolation decision"], "cites": ["FND-0004"]}]},

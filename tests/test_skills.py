@@ -33,13 +33,7 @@ ALL_SKILLS = sorted(p.parent.name for p in SKILLS_DIR.glob("*/SKILL.md"))
 NON_HUB = [s for s in ALL_SKILLS if s != HUB]
 
 # Tasks 21-23 remove their skills' names as each skill reaches the skeleton (staged, Ruling X8).
-PENDING = {
-    # Task 21: register and analysis (done)
-    # Task 22: leadership, assurance and investigation (done)
-    # Task 23: frontline and specialists
-    "frontline-learning-cards", "supervisor-coach", "safety-committee-guide", "training-designer",
-    "emergency-response-learnings", "engineering-integrity-learnings", "supply-chain-contractor-learnings",
-}
+PENDING: set = set()                       # Tasks 21-23 done: every skill is on the skeleton
 HUB_PENDING: set = set()                   # Task 24 rewrote the hub (empty from here on)
 
 SKELETON = ("Before you start", "Gather", "Write", "If the evidence is thin", "Not covered here",
@@ -63,6 +57,9 @@ OVERLAPS = {
     ("frontline-learning-cards", "supervisor-coach"), ("supervisor-coach", "frontline-learning-cards"),
     ("frontline-learning-cards", "training-designer"), ("training-designer", "frontline-learning-cards"),
     ("barrier-learnings", "engineering-integrity-learnings"), ("engineering-integrity-learnings", "barrier-learnings"),
+    ("frontline-learning-cards", "supply-chain-contractor-learnings"),
+    ("supply-chain-contractor-learnings", "frontline-learning-cards"),
+    ("safety-committee-guide", "frontline-learning-cards"),
 }
 NO_PROFILE = {"learnings-register"}        # writes a register, not a pack: its Write table has no profile
 # Variant packs (Task 20 review m-5): a variant has the main pack's sections (rule same-sections-as), so it shares the

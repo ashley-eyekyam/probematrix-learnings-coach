@@ -13,7 +13,8 @@
     "tags": []
   },
   "requires": [
-    "workspace"
+    "workspace",
+    "clusters"
   ],
   "optional_inputs": [
     "register",

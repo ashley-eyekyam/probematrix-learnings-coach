@@ -26,7 +26,9 @@ After a seal change, a pump was restarted without a leak test [FND-0001].
 
 The procedure index has no return-to-service entry [EVD-0002].
 
-The analysis places the top-rated causes at supervision and organisational level [FND-0002; FND-0003].
+*(learning: LR-01)*
+
+Half of the findings sit at levels 3 and 4, and the analysis places the top-rated causes at supervision and organisational level [FND-0002; FND-0003].
 
 ## Questions to raise with management
 
@@ -48,10 +50,20 @@ Ground rules: no names, no blame, talk about conditions.
 | 10-40 | Questions for management |
 | 40-60 | Concerns to send on |
 
+## Concerns log
+
+| Concern | Condition seen | Location type | Date raised | Response requested | Cites |
+|---|---|---|---|---|---|
+| Restarts without a test record | A pump went back into service with no leak-test record | Pump bay |  | Show the committee the return-to-service checklist | FND-0001 |
+
 ## Follow-up
 
 - [ ] Ask to see the new return-to-service checklist. *(30 days)* [FND-0002]
 - [ ] Ask for the share of restarts with a test record. *(90 days)* [FND-0001]
+
+## Committee and representative rights
+
+Committees and workforce representatives may have statutory rights, for example to be consulted or to see investigation documents. This guide does not replace them: confirm them with your own adviser.
 
 ---
 

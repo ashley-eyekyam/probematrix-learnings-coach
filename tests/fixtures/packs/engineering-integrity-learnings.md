@@ -35,7 +35,7 @@ Seals were bought locally without a specification from March 2022 [FND-0003; EVD
 - Fix: Block critical-spares orders without a specification in the purchasing system
 - Leading indicator: % of critical-spares orders with a specification reference
 
-**Recommendation:** Route every substitute part through change control [FND-0003]
+**Recommendation:** Route: MOC. Put every substitute part through change control before it is bought [FND-0003]
 - Control tier: administrative
 - Leading indicator: Substitutions approved through change control
 
@@ -44,6 +44,8 @@ Seals were bought locally without a specification from March 2022 [FND-0003; EVD
 **Decision:** Which leak test applies after a seal change, and at what pressure? [FND-0001]
 - Options: Set by the technical authority per pump class; One site-wide test standard
 - Owner: Technical authority
+
+*(learning: LR-01)*
 
 ## Data and records
 

@@ -85,39 +85,42 @@
   "emergency-response-learnings": {
     "sections": [
       {"id": "timeline", "kinds": ["timeline"], "min": 1, "max": 1},
-      {"id": "by-phase", "kinds": ["learning"], "min": 1, "max": 99},
-      {"id": "plan-review", "kinds": ["para"], "min": 1, "max": 99},
+      {"id": "by-phase", "kinds": ["learning"], "min": 1, "max": 15},
+      {"id": "plan-review", "kinds": ["table"], "min": 1, "max": 1},
+      {"id": "plan-review", "kinds": ["para"], "min": 1, "max": 1},
       {"id": "drills", "kinds": ["scenario"], "min": 1, "max": 3},
-      {"id": "readiness", "kinds": ["indicator"], "min": 1, "max": 99}
+      {"id": "readiness", "kinds": ["indicator"], "min": 1, "max": 6}
     ],
     "required_scope": ["tags"],
-    "bottom_line": {"min": 1, "max": 7},
+    "bottom_line": {"min": 1, "max": 5},
     "word_limits": {},
     "coverage_floor": 0.25
   },
   "engineering-integrity-learnings": {
     "sections": [
-      {"id": "themes", "kinds": ["learning"], "min": 1, "max": 99},
-      {"id": "themes", "kinds": ["barrier"], "min": 1, "max": 99},
-      {"id": "themes", "kinds": ["recommendation"], "min": 1, "max": 99},
-      {"id": "decisions", "kinds": ["decision"], "min": 1, "max": 99},
-      {"id": "records", "kinds": ["check"], "min": 1, "max": 99}
+      {"id": "themes", "kinds": ["learning"], "min": 1, "max": 8},
+      {"id": "themes", "kinds": ["barrier"], "min": 1, "max": 8},
+      {"id": "themes", "kinds": ["recommendation"], "min": 1, "max": 8},
+      {"id": "decisions", "kinds": ["decision"], "min": 1, "max": 6},
+      {"id": "records", "kinds": ["check"], "min": 1, "max": 8}
     ],
     "required_scope": ["tags"],
-    "bottom_line": {"min": 1, "max": 7},
+    "bottom_line": {"min": 1, "max": 5},
     "word_limits": {},
     "coverage_floor": 0.25,
     "rules": ["triplets"]
   },
   "frontline-learning-cards": {
     "sections": [
+      {"id": "delivery", "kinds": ["para"], "min": 1, "max": 1},
+      {"id": "delivery", "kinds": ["table"], "min": 1, "max": 1},
       {"id": "cards", "kinds": ["card"], "min": 1, "max": 8},
-      {"id": "toolbox-talks", "kinds": ["para"], "min": 1, "max": 99},
-      {"id": "toolbox-talks", "kinds": ["scenario"], "min": 1, "max": 99},
-      {"id": "stop-and-ask", "kinds": ["check"], "min": 1, "max": 99}
+      {"id": "toolbox-talks", "kinds": ["para"], "min": 1, "max": 3},
+      {"id": "toolbox-talks", "kinds": ["scenario"], "min": 1, "max": 3},
+      {"id": "stop-and-ask", "kinds": ["check"], "min": 1, "max": 10}
     ],
     "required_scope": ["tiers"],
-    "bottom_line": {"min": 1, "max": 7},
+    "bottom_line": {"min": 1, "max": 5},
     "word_limits": {"card": 250},
     "coverage_floor": 0.25
   },
@@ -259,17 +262,19 @@
   },
   "safety-committee-guide": {
     "sections": [
-      {"id": "what-happened", "kinds": ["para"], "min": 1, "max": 99},
+      {"id": "what-happened", "kinds": ["para"], "min": 1, "max": 3},
       {"id": "system", "kinds": ["learning"], "min": 1, "max": 5},
-      {"id": "system", "kinds": ["para"], "min": 1, "max": 99},
+      {"id": "system", "kinds": ["para"], "min": 1, "max": 1},
       {"id": "questions", "kinds": ["question"], "min": 1, "max": 10},
-      {"id": "look-for", "kinds": ["check"], "min": 1, "max": 99},
-      {"id": "running", "kinds": ["para"], "min": 1, "max": 99},
+      {"id": "look-for", "kinds": ["check"], "min": 1, "max": 10},
+      {"id": "running", "kinds": ["para"], "min": 1, "max": 2},
       {"id": "running", "kinds": ["table"], "min": 1, "max": 1},
-      {"id": "follow-up", "kinds": ["check"], "min": 1, "max": 99}
+      {"id": "concerns-log", "kinds": ["table"], "min": 1, "max": 1},
+      {"id": "follow-up", "kinds": ["check"], "min": 1, "max": 6},
+      {"id": "rights", "kinds": ["para"], "min": 1, "max": 1}
     ],
     "required_scope": ["tiers"],
-    "bottom_line": {"min": 1, "max": 7},
+    "bottom_line": {"min": 1, "max": 5},
     "word_limits": {},
     "coverage_floor": 0.25
   },
@@ -292,13 +297,15 @@
   },
   "supervisor-coach": {
     "sections": [
-      {"id": "before-work", "kinds": ["check"], "min": 1, "max": 99},
-      {"id": "return-to-service", "kinds": ["check"], "min": 1, "max": 99},
-      {"id": "known-problems", "kinds": ["para"], "min": 1, "max": 99},
-      {"id": "emergency", "kinds": ["question"], "min": 1, "max": 99},
-      {"id": "refuse", "kinds": ["check"], "min": 1, "max": 99},
-      {"id": "recommendations", "kinds": ["recommendation"], "min": 1, "max": 99},
-      {"id": "coaching", "kinds": ["scenario"], "min": 1, "max": 3}
+      {"id": "before-work", "kinds": ["check"], "min": 1, "max": 10},
+      {"id": "return-to-service", "kinds": ["check"], "min": 1, "max": 8},
+      {"id": "known-problems", "kinds": ["para"], "min": 1, "max": 3},
+      {"id": "emergency", "kinds": ["question"], "min": 1, "max": 5},
+      {"id": "refuse", "kinds": ["check"], "min": 1, "max": 6},
+      {"id": "refuse", "kinds": ["para"], "min": 1, "max": 1},
+      {"id": "recommendations", "kinds": ["recommendation"], "min": 1, "max": 6},
+      {"id": "coaching", "kinds": ["scenario"], "min": 1, "max": 3},
+      {"id": "brief-crew", "kinds": ["table"], "min": 1, "max": 1}
     ],
     "required_scope": ["tiers"],
     "bottom_line": {"min": 1, "max": 5},
@@ -308,11 +315,12 @@
   "supply-chain-contractor-learnings": {
     "sections": [
       {"id": "path", "kinds": ["timeline"], "min": 1, "max": 1},
-      {"id": "learnings", "kinds": ["learning"], "min": 1, "max": 99},
-      {"id": "recommendations", "kinds": ["recommendation"], "min": 1, "max": 99}
+      {"id": "learnings", "kinds": ["learning"], "min": 1, "max": 10},
+      {"id": "contractor-briefing", "kinds": ["check"], "min": 0, "max": 6},
+      {"id": "recommendations", "kinds": ["recommendation"], "min": 1, "max": 8}
     ],
     "required_scope": ["tags"],
-    "bottom_line": {"min": 1, "max": 7},
+    "bottom_line": {"min": 1, "max": 5},
     "word_limits": {},
     "coverage_floor": 0.25
   },
@@ -340,7 +348,7 @@
       {"id": "cascade", "kinds": ["table"], "min": 1, "max": 1}
     ],
     "required_scope": ["levels"],
-    "bottom_line": {"min": 1, "max": 7},
+    "bottom_line": {"min": 1, "max": 5},
     "word_limits": {},
     "coverage_floor": 0.25,
     "rules": ["assessment-answer"]

@@ -1353,7 +1353,7 @@ def test_profile_sections_kinds_and_bottom_line(w):
 def test_profile_required_scope_and_word_limit(w):
     p = fixture("frontline-learning-cards")
     del p["scope"]
-    card = p["sections"][0]["items"][0]
+    card = next(s for s in p["sections"] if s["id"] == "cards")["items"][0]
     card["what_happened"] = " ".join(["word"] * 260)
     got = _strict(p, w)
     assert "scope.tiers: required by the frontline-learning-cards profile" in got
@@ -1466,12 +1466,17 @@ def test_alpha4_pack_passes_without_new_fields(w, name):
     assert not [x for x in r.warnings if "learning ids not verified" in x or "unknown clause" in x]
 
 
+MINI_REGISTER_FILE = ROOT / "tests" / "fixtures" / "registers" / "mini-register.json"
+
+
 @pytest.mark.parametrize("name", pack_fixtures())
-def test_fixture_learning_ids_are_in_the_mini_register(w, name):
-    """Fixture `learning` values name learnings of tests/fixtures/registers/mini-register.json (Tasks 21-23)."""
-    reg = json.loads((ROOT / "tests" / "fixtures" / "registers" / "mini-register.json").read_text(encoding="utf-8"))
+def test_fixture_learning_ids_in_mini_register(w, name):
+    """Fixture `learning` values name learnings of the mini register (skill-common.md section 3) and strict checks
+    pass with no learning warning (Tasks 21 and 23, merged)."""
+    reg = json.loads(MINI_REGISTER_FILE.read_text(encoding="utf-8"))
     r = pp.check_pack(fixture(name), w, register=reg, strict=True)
-    assert not [x for x in r.problems + r.warnings if "learning" in x and "unknown" in x], r
+    assert r.problems == [], r.problems
+    assert not [x for x in r.warnings if "learning" in x], r.warnings
 
 
 def test_learning_id_checked_against_register(w):
@@ -1717,7 +1722,6 @@ def test_register_xlsx_about_column_a_fits_the_brand_line(ws, tmp_path):  # noqa
 
 # ---- v2.0 phase 3, task 22: leadership, assurance and investigation fixtures carry register learnings (P3-12)
 
-MINI_REGISTER_FILE = ROOT / "tests" / "fixtures" / "registers" / "mini-register.json"
 T22_AUDIENCE = ["board-brief", "top-management-brief", "site-leadership-coach", "manager-coach",
                 "auditor-assurance-pack", "investigator-coach"]
 
