@@ -36,7 +36,7 @@ for the rest. Read [`learning-principles.md`](learning-principles.md) before wri
   |---|---|---|
   | workspace | `<ws>/findings.json` | `setup` (or `ingest`) |
   | clusters | `<ws>/clusters.json` | `setup` (or `classify`) |
-  | causal graph, timeline, interfaces | `<ws>/causal_graph.json`, `timeline_candidates.json`, `interfaces.json` | `setup` |
+  | causal_graph, timeline, interfaces | `<ws>/causal_graph.json`, `timeline_candidates.json`, `interfaces.json` | `setup` |
   | register | `<run>/outputs/learnings-register.json` | the `learnings-register` skill |
 
   If the register is required and missing, build it with `learnings-register` first, or tell the user and stop.
@@ -68,8 +68,9 @@ for the rest. Read [`learning-principles.md`](learning-principles.md) before wri
   unchanged; never retype its numbers. Drop rows only if the skill says so.
 - **Owners and dates.** `owner` is a role that owns the change, never a person. Leave owners and due dates out
   unless the user asks (`learning-principles.md` §6). Never write the `handling` block: only `sign-off` writes it.
-- **Status line and footer.** `pack` adds the status line ("Learning purposes: not a statutory document") and the
-  ProbeMatrix footer from `output-style.md`. Do not remove them from any copy.
+- **Status line and footer.** Set the required top-level `status` field to contain
+  `Learning purposes: not a statutory document` (`check-pack` refuses a pack without it). `pack` adds the
+  ProbeMatrix footer from `output-style.md`. Do not remove either from any copy.
 - **Translation.** If the user asks for another language, translate the text fields only. Keep every ID, kind,
   field name and controlled value unchanged, then run §4 again.
 
@@ -122,7 +123,9 @@ three lines: what the pack holds, what the evidence could not show, and the next
   supports, up to N, and stop there. Never pad to reach a number: items that repeat the same cites are padding,
   and `check-pack` warns `possible padding`.
 - **Never invent to fill a section.** Where the evidence is missing, write a `gaps` entry that says what evidence
-  would settle it, and keep the section to the items you can ground.
+  would settle it, and keep the section to the items you can ground. If a required section has no supported theme
+  at all, write one item of that section's kind that states what the evidence does not show, citing the findings
+  that show the gap.
 - **Say what is missing.** Tell the user which sections are short and why. If a selection returns no findings at
   all, stop before writing the pack and say what you searched for.
 - The skill's own "If the evidence is thin" section adds its particular cases.

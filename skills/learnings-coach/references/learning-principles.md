@@ -75,7 +75,7 @@ Read the data-quality flags in `profile.md` before writing, and pass them on.
 
 - **Do not silently correct the export.** When the profile flags the summary-sheet date or incident type against the narrative, state the correction in `data_quality`, use the corrected value in your text, and pass it to generated files (e.g. `dashboard --date 2024-03-20`).
 - **Downgrade votes.** Leave findings with reviewer downgrade votes out of learnings (list them in `exclusions` with the reason), or say why you kept them.
-- **Unreviewed analysis.** When no finding is marked `User Edited`, or the Investigation Status is not `completed`, the findings are an AI analysis no person has finished reviewing. Say so near the top: add a `data_quality` entry that the output holds "draft learnings from an unreviewed analysis". Such an output stays a draft: it cannot be reviewed or approved until the investigation is completed in ProbeMatrix.
+- **Unreviewed analysis.** When no finding is marked `User Edited`, or the Investigation Status is not `completed`, the findings are an AI analysis no person has finished reviewing. Say so near the top: add a `data_quality` entry that the output holds "draft learnings from an unreviewed analysis". Such an output stays a draft: sign-off refuses to mark it reviewed or approved until the investigation is completed in ProbeMatrix and at least one finding is marked as edited by a person.
 
 Sharing a copy outside the organisation is covered in `skill-common.md` §7.
 

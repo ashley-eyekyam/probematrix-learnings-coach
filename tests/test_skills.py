@@ -231,6 +231,8 @@ def test_skill_common_sections():
     for x in ('learning: "LR-', "clauses", "gaps", "limits", "data_quality", "exclusions", "supporting_cites",
               "translat"):
         assert x in s3, x
+    assert re.search(r"required top-level `status` field to contain\s+`Learning purposes: not a statutory document`",
+                     s3), "section 3 must name the required status field with the exact phrase"
     s4 = section(t, "4. The check and pack loop")
     assert "check-pack" in s4 and "--strict" in s4 and "PMLC pack" in s4
     s5 = section(t, "5. Hand-over checklist")
