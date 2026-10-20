@@ -22,7 +22,8 @@ from ..pack.markdown import (
     sorted_events
 )
 from ..pack.schema import (
-    _checked, cited_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, relevant_findings, UNCOVERED_PRINT_LINE, with_item_ids
+    _checked, cited_ids, embedded_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, relevant_findings, UNCOVERED_PRINT_LINE,
+    with_item_ids
 )
 from ..register.check import norm_hoc
 from ..util import _abs, write_json
@@ -230,8 +231,8 @@ def build_pack_data(w, pack, run, embed=EMBED_DEFAULT, share=None) -> dict:
     findings and evidence, and the relevant findings the pack leaves uncited or excludes as {id, label, rating},
     so the coverage list can still expand them. summary: cited without quotes. full: full records of all of them
     plus the evidence the cited findings link."""
-    fids, eids = cited_ids(pack)
-    uncited = [x for x in relevant_findings(w, pack.get("scope")) if x not in fids]
+    uncited = [x for x in relevant_findings(w, pack.get("scope")) if x not in cited_ids(pack)[0]]
+    fids, eids = embedded_ids(pack)                    # gap cites too, so every citation button opens its record
     findings, evidence = embedded_records(w, fids, eids, uncited + excluded_ids(pack), embed, linked=False)
     if share and share.mode == "public":
         findings = public_records(findings)
@@ -395,7 +396,7 @@ def cmd_pack(a):
     out.mkdir(parents=True, exist_ok=True)
     page = shared_name(out / f"{pack['pack']}.html", mode)
     page.write_text(page_html, encoding="utf-8")
-    print_witness_note(embedded_records(rw, *cited_ids(pack), (), embed, linked=False)[1], embed)
+    print_witness_note(embedded_records(rw, *embedded_ids(pack), (), embed, linked=False)[1], embed)
     print(f"HTML written to {page}")
     if md_text is not None:
         md = shared_name(out / f"{pack['pack']}.md", mode)

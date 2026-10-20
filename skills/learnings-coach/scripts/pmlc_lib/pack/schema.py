@@ -146,6 +146,28 @@ def cited_ids(pack) -> tuple:
     return fids, eids
 
 
+def gap_ids(pack) -> tuple:
+    """(finding IDs, evidence IDs) cited by the top-level gaps. They are not citations for coverage, but the page
+    embeds their records so their buttons open."""
+    fids, eids = [], []
+    gaps = pack.get("gaps") if isinstance(pack.get("gaps"), list) else []
+    for g in gaps:
+        cites = g.get("cites") if isinstance(g, dict) else None
+        for x in cites if isinstance(cites, list) else []:
+            if not isinstance(x, str):
+                continue
+            bucket = fids if x.startswith("FND-") else eids
+            if x not in bucket:
+                bucket.append(x)
+    return fids, eids
+
+
+def embedded_ids(pack) -> tuple:
+    """cited_ids plus gap_ids: every ID the page renders as a citation button."""
+    (f1, e1), (f2, e2) = cited_ids(pack), gap_ids(pack)
+    return list(dict.fromkeys(f1 + f2)), list(dict.fromkeys(e1 + e2))
+
+
 def with_item_ids(pack) -> dict:
     """Deep copy in which every item has an id: its own, or <section-id>-<position>."""
     p = copy.deepcopy(pack)

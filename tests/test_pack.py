@@ -1357,3 +1357,15 @@ def test_pack_schema_reference_covers_task_11():
               "`gaps`", "`limits`", "gaps.json", "--register", "organisation-learning-plan", "dossier-index",
               "report-comparison-client-safe", "What check-pack does not check", "investigator-coach/SKILL.md"):
         assert f in t, f
+
+
+@pytest.mark.parametrize("embed", ["cited", "summary"])
+def test_gap_cites_are_embedded(w, embed):
+    """Task 11 fix 2: a gap's citation buttons open their records (cited and summary embed cited records)."""
+    p = pack_with(item("para", cites=["FND-0002"]),
+                  gaps=[{"text": "t", "cites": ["FND-0004", "EVD-0003"], "evidence_needed": "e"}])
+    d = _pack_data(pp.render_pack_html(w, p, "r", "d", embed=embed))
+    assert "EVD-0003" in d["evidence"] and "FND-0004" in d["findings"]
+    assert set(d["findings"]["FND-0004"]) != STUB_KEYS                    # a full record, not a label stub
+    assert pp.coverage(w, p)["cited"] == 1                                 # gap cites still do not count
+    assert pp.embedded_ids(p) == (["FND-0002", "FND-0004"], ["EVD-0003"])

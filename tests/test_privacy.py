@@ -909,3 +909,26 @@ def test_pack_given_as_register_is_refused(shws, tmp_path):
         r = _cli(*args)
         assert r.returncode == 1 and "Traceback" not in r.stderr, r.stderr
         assert r.stderr.strip() == f"{p} is a pack, not a register"
+
+
+@pytest.mark.parametrize("mode", ["external", "public"])
+def test_share_keeps_pack_link_ids(tmp_path, shws, mode):
+    """Task 11 fix 1: learning, clauses, comparator_refs and barrier_id are ids, never masked; free text still is."""
+    ws, orgs = shws
+    doc = copy.deepcopy(SPACK)
+    doc["sections"][0]["items"][0].update(text="Pump P-101 was restarted untested.", learning="LR-01",
+                                          clauses=["ISO45001-10.2"], comparator_refs=["REC-03", "OBS-12"])
+    doc["sections"][0]["items"][1]["barrier_id"] = "BR-07"
+    p = sign(ws, write_doc(tmp_path, doc), "--classification", mode, "--legal-review", "cleared")
+    out = tmp_path / "out"
+    r = _cli("pack", str(ws), str(p), "--share", mode, "--orgs", str(orgs), "--out", str(out))
+    assert r.returncode == 0, r.stderr
+    t = (out / f"test-pack.{mode}.html").read_text(encoding="utf-8")
+    md = (out / f"test-pack.{mode}.md").read_text(encoding="utf-8")
+    for doc_ in (t, md):
+        assert "Clauses: ISO45001-10.2" in doc_ and "LR-01" in doc_ and "Barrier ID: BR-07" in doc_
+        assert "P-101" not in doc_ and "Pump [equipment tag] was restarted untested." in doc_
+    assert 'data-lr="LR-01"' in t
+    shared = pv.share_doc(doc, pv.ShareCtx(mode, [], [], {}))
+    assert shared["sections"][0]["items"][0]["comparator_refs"] == ["REC-03", "OBS-12"]
+    assert shared["sections"][0]["items"][1]["barrier_id"] == "BR-07"
