@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "frameworks": {
+    "iso45001": {
+      "title": "ISO 45001:2018 Occupational health and safety management systems (ISO 9001 and ISO 14001 10.2 follow the same Annex SL pattern)",
+      "requirements": [
+        {"id": "ISO45001-5.4", "title": "Consultation and participation of non-managerial workers, including in investigating incidents and determining corrective actions", "verified": true},
+        {"id": "ISO45001-7.2", "title": "Competence", "verified": true},
+        {"id": "ISO45001-7.3", "title": "Awareness, including of incidents and the outcomes of investigations relevant to workers", "verified": true},
+        {"id": "ISO45001-7.4", "title": "Communication", "verified": true},
+        {"id": "ISO45001-9.1", "title": "Monitoring, measurement, analysis and performance evaluation", "verified": true},
+        {"id": "ISO45001-9.2", "title": "Internal audit", "verified": true},
+        {"id": "ISO45001-9.3", "title": "Management review: inputs include incidents, nonconformities, corrective actions, continual improvement, monitoring and audit results", "verified": true},
+        {"id": "ISO45001-10.2", "title": "Incident, nonconformity and corrective action: determine causes, act, review effectiveness, retain and communicate documented information", "verified": true}
+      ]
+    },
+    "psm": {
+      "title": "OSHA 29 CFR 1910.119 Process Safety Management: (m) incident investigation and (o) compliance audits",
+      "requirements": [
+        {"id": "PSM-(m)(1)", "title": "Incident investigation, paragraph (m)(1): content not summarised in the source review (unverified)", "verified": false},
+        {"id": "PSM-(m)(2)", "title": "Incident investigation, paragraph (m)(2): content not summarised in the source review; the element requires investigation within 48 hours (unverified)", "verified": false},
+        {"id": "PSM-(m)(3)", "title": "Investigation team includes a contract employee where contractor work was involved", "verified": true},
+        {"id": "PSM-(m)(4)", "title": "Investigation report contents: date of incident, date investigation began, description, contributing factors, recommendations", "verified": true},
+        {"id": "PSM-(m)(5)", "title": "A system to promptly address and resolve report findings and recommendations, with resolutions documented", "verified": true},
+        {"id": "PSM-(m)(6)", "title": "Report reviewed with all affected personnel, including contract employees", "verified": true},
+        {"id": "PSM-(m)(7)", "title": "Incident investigation reports retained for five years", "verified": true},
+        {"id": "PSM-(o)(1)", "title": "Compliance audits, paragraph (o)(1): content not summarised in the source review; the element requires an audit at least every three years (unverified)", "verified": false},
+        {"id": "PSM-(o)(2)", "title": "Compliance audits, paragraph (o)(2): content not summarised in the source review (unverified)", "verified": false},
+        {"id": "PSM-(o)(3)", "title": "Compliance audits, paragraph (o)(3): content not summarised in the source review (unverified)", "verified": false},
+        {"id": "PSM-(o)(4)", "title": "Documented response to each compliance audit finding", "verified": true},
+        {"id": "PSM-(o)(5)", "title": "The two most recent compliance audit reports retained", "verified": true}
+      ]
+    },
+    "rmp": {
+      "title": "EPA Risk Management Program, 40 CFR Part 68",
+      "requirements": [
+        {"id": "RMP-68.81", "title": "Incident investigation (Program 3): mirrors PSM (m), with five-year report retention; the 2024 rule added root-cause analysis and a February 2026 proposal would change that rule (check the final rule)", "verified": true}
+      ]
+    },
+    "seveso": {
+      "title": "Seveso III Directive Annex III safety management system, and COMAH 2015 (GB)",
+      "requirements": [
+        {"id": "SEVESO-AnnexIII(vi)", "title": "Monitoring performance: reporting and investigating major accidents and near misses, especially failures of protective measures, and follow-up based on lessons learnt", "verified": true},
+        {"id": "SEVESO-AnnexIII(vii)", "title": "Audit and review", "verified": true},
+        {"id": "COMAH-SMS", "title": "COMAH 2015 (GB) safety management system duties, carrying the Seveso III Annex III duties", "verified": true}
+      ]
+    },
+    "rbps": {
+      "title": "CCPS Risk Based Process Safety, pillar \"Learn from experience\"",
+      "requirements": [
+        {"id": "RBPS-incident-investigation", "title": "Incident Investigation", "verified": true},
+        {"id": "RBPS-measurement-and-metrics", "title": "Measurement and Metrics", "verified": true},
+        {"id": "RBPS-auditing", "title": "Auditing", "verified": true},
+        {"id": "RBPS-management-review", "title": "Management Review and Continuous Improvement", "verified": true}
+      ]
+    },
+    "icmm": {
+      "title": "ICMM Critical Control Management (2015 implementation guide; superseded by a 2026 consolidated guide)",
+      "requirements": [
+        {"id": "ICMM-CCM-8", "title": "Step 8: verification and reporting", "verified": true},
+        {"id": "ICMM-CCM-9", "title": "Step 9: responding to inadequate critical control performance", "verified": true}
+      ]
+    },
+    "india": {
+      "title": "India: Factories Act 1948, OSH Code 2020, MSIHC Rules 1989, PNGRB ERDMP Regulations, OISD, DGMS",
+      "requirements": [
+        {"id": "IN-FactoriesAct-s.41B", "title": "Factories Act 1948 s.41B: named in the source review; content not summarised (unverified)", "verified": false},
+        {"id": "IN-FactoriesAct-s.41G", "title": "Factories Act 1948 s.41G: safety committee in hazardous-process factories", "verified": true},
+        {"id": "IN-FactoriesAct-s.41H", "title": "Factories Act 1948 s.41H: named in the source review; content not summarised (unverified)", "verified": false},
+        {"id": "IN-FactoriesAct-s.88", "title": "Factories Act 1948 s.88: notice of accidents (relevant to legacy events and state transition rules)", "verified": true},
+        {"id": "IN-FactoriesAct-s.88A", "title": "Factories Act 1948 s.88A: named alongside s.88 in the source review; content not summarised (unverified)", "verified": false},
+        {"id": "IN-OSHCode2020-s.10", "title": "OSH Code 2020 s.10: notice of accidents (Code in force 21 November 2025)", "verified": true},
+        {"id": "IN-OSHCode2020-s.11", "title": "OSH Code 2020 s.11: notice of dangerous occurrences", "verified": true},
+        {"id": "IN-OSHCode2020-s.22", "title": "OSH Code 2020 s.22: safety committees", "verified": true},
+        {"id": "IN-OSHCode2020-contract-labour", "title": "OSH Code 2020 contract labour duties (unverified)", "verified": false},
+        {"id": "IN-MSIHC-r.5", "title": "MSIHC Rules 1989 Rule 5: notify the concerned authority within 48 hours of a major accident, follow up with reports, and report the steps taken to avoid recurrence", "verified": true},
+        {"id": "IN-ERDMP", "title": "PNGRB ERDMP Regulations 2010 (amended 2015, 2020; consolidated 2025): emergency response and disaster management plans for gas installations", "verified": true},
+        {"id": "IN-ERDMP-2026-amendment", "title": "PNGRB ERDMP 2026 amendment on post-major-incident committees and board reporting, reported by one secondary source (unverified)", "verified": false},
+        {"id": "IN-OISD", "title": "OISD: the operator investigates every incident, OISD or a ministry committee investigates major ones, and root causes and lessons are shared across oil companies", "verified": true},
+        {"id": "IN-DGMS-s.23", "title": "DGMS: Mines Act 1952 s.23 notice of accidents, for mining exports (unverified)", "verified": false}
+      ]
+    }
+  }
+}
