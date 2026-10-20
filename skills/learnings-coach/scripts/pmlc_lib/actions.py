@@ -56,13 +56,24 @@ def collect_actions(slug: str, packs: list, entries: list) -> list:
         for n, r in enumerate(e.get("recommendations") or [], 1):
             rows.append(_blank(id=f"{slug}/register/{e.get('lr_id', '')}/R{n}", lr_id=e.get("lr_id", ""),
                                change=r.get("what", ""), hoc_tier=r.get("hoc_tier", ""),
-                               barrier=r.get("barrier", ""), indicator=r.get("leading_indicator", ""),
-                               cites=list(e.get("finding_ids") or []) + list(e.get("evidence_ids") or [])))
+                               barrier=r.get("level_barrier") or e.get("barrier") or "",
+                               indicator=r.get("leading_indicator", ""),
+                               cites=list(e.get("finding_ids") or []) + list(e.get("evidence_ids") or []),
+                               evidence_strength=r.get("evidence_strength") or e.get("evidence_strength") or ""))
     return rows
+
+
+FORMULA_LEAD = ("=", "+", "-", "@", "\t", "\r")
 
 
 def _flat(v) -> str:
     return "; ".join(str(x) for x in v) if isinstance(v, list) else v
+
+
+def _csv_cell(v) -> str:
+    """X20: a CSV cell that starts with = + - @ tab or CR gets a leading single quote, so Excel never runs it."""
+    s = _flat(v)
+    return "'" + s if isinstance(s, str) and s.startswith(FORMULA_LEAD) else s
 
 
 def _slug(ws: Path) -> str:
@@ -83,7 +94,13 @@ def cmd_export_actions(a):
             f = Path(p) if Path(p).is_file() else out_dir / (p if p.endswith(".json") else p + ".json")
             if not f.is_file():
                 sys.exit(f"No pack file {p}")
-            docs.append(json.loads(f.read_text(encoding="utf-8")))
+            try:
+                d = json.loads(f.read_text(encoding="utf-8"))
+            except ValueError:
+                d = None
+            if not (isinstance(d, dict) and d.get("pack") and isinstance(d.get("sections"), list)):
+                sys.exit(f"{f} is not a learning pack (it needs 'pack' and 'sections')")
+            docs.append(d)
     else:
         docs = [d for _, d in pack_files(_outputs(ws))]
     reg = Path(a.register) if a.register else out_dir / REGISTER_FILE
@@ -97,7 +114,7 @@ def cmd_export_actions(a):
     w = csv.writer(buf, lineterminator="\r\n")
     w.writerow([cmap[c] for c in ACTION_COLUMNS])
     for r in rows:
-        w.writerow([_flat(r[c]) for c in ACTION_COLUMNS])
+        w.writerow([_csv_cell(r[c]) for c in ACTION_COLUMNS])
     csv_text = buf.getvalue()
     json_text = json.dumps(jrows, indent=2, ensure_ascii=False) + "\n"
     names = load_names(a.names)

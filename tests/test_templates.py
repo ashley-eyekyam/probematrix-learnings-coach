@@ -159,3 +159,46 @@ def test_export_actions_names_guard(rund, tmp_path):
 def test_export_actions_missing_pack_and_register(rund):
     assert cli("export-actions", str(rund), "--packs", "nope").returncode == 1
     assert cli("export-actions", str(rund), "--register", "nope.json").returncode == 1
+
+
+def test_export_actions_register_barrier_and_evidence(rund):
+    reg = copy.deepcopy(MINI_REG)
+    e = reg["entries"][0]
+    e["barrier"] = "Entry barrier"
+    e["evidence_strength"] = "corroborated"
+    e["recommendations"][0]["level_barrier"] = "L3 / return-to-service check"
+    e["recommendations"][0]["evidence_strength"] = "direct"
+    (rund.parent / "outputs" / "learnings-register.json").write_text(json.dumps(reg), encoding="utf-8")
+    assert cli("export-actions", str(rund)).returncode == 0
+    rows = json.loads((rund.parent / "outputs" / "actions.json").read_text(encoding="utf-8"))
+    r1, r2 = rows[-2], rows[-1]
+    assert (r1["barrier"], r1["evidence_strength"]) == ("L3 / return-to-service check", "direct")
+    assert (r2["barrier"], r2["evidence_strength"]) == ("Entry barrier", "corroborated")
+
+
+def test_export_actions_neutralises_formula_cells(rund):
+    pk = copy.deepcopy(PACK)
+    pk["sections"][0]["items"][0]["change"] = "=HYPERLINK(\"http://x\")"
+    pk["sections"][0]["items"][1]["decision"] = "-2+3"
+    (rund.parent / "outputs" / "board-brief.json").write_text(json.dumps(pk), encoding="utf-8")
+    assert cli("export-actions", str(rund)).returncode == 0
+    out = rund.parent / "outputs"
+    back = list(csv.DictReader(open(out / "actions.csv", encoding="utf-8", newline="")))
+    assert back[0]["change"] == "'=HYPERLINK(\"http://x\")" and back[1]["change"] == "'-2+3"
+    rows = json.loads((out / "actions.json").read_text(encoding="utf-8"))
+    assert rows[0]["change"] == "=HYPERLINK(\"http://x\")"
+
+
+def test_export_actions_rejects_non_pack_and_accepts_co_owner(rund, tmp_path):
+    bad = tmp_path / "other.json"
+    bad.write_text('{"entries": []}', encoding="utf-8")
+    r = cli("export-actions", str(rund), "--packs", str(bad))
+    assert r.returncode == 1 and "not a learning pack" in r.stderr and "Traceback" not in r.stderr
+    bad.write_text("nonsense", encoding="utf-8")
+    assert "Traceback" not in cli("export-actions", str(rund), "--packs", str(bad)).stderr
+    assert "co_owner" in pmlc.KINDS["recommendation"]["opt"]
+    pk = copy.deepcopy(PACK)
+    pk["sections"][0]["items"][0]["co_owner"] = "Maintenance Manager"
+    p = tmp_path / "pk.json"
+    p.write_text(json.dumps(pk), encoding="utf-8")
+    assert "unknown field" not in cli("check-pack", str(rund), str(p)).stdout.lower()
