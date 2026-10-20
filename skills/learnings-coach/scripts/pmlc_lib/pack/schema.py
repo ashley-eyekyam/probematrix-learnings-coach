@@ -455,6 +455,8 @@ def _check_comparator_refs(pack, w, bad, warn):
             ip = f"sections[{si}].items[{ii}].comparator_refs"
             if not isinstance(refs, list) or not all(isinstance(x, str) and COMPARATOR_ITEM_RX.fullmatch(x) for x in refs):
                 bad(ip, "must be a list of comparator item ids such as OBS-01, RC-01, REC-01 or ACT-01")
+            elif "comparator_error" in w:
+                warn(ip, f"comparator.json is not valid: {w['comparator_error']}; comparator_refs not verified")
             elif known is None:
                 warn(ip, f"{', '.join(refs)} cannot be checked: no comparator.json in the workspace")
             else:

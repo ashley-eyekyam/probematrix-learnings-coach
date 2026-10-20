@@ -144,3 +144,43 @@ def test_compare_tables_pass_check_pack(cws, reg, tmp_path):
     f = tmp_path / "p.json"
     f.write_text(json.dumps(p))
     run("check-pack", str(cws), str(f))
+
+
+MALFORMED = {
+    "not-json": "{not json",
+    "list": "[]",
+    "items-not-list": '{"source": {}, "items": 5}',
+    "no-id": '{"items": [{"type": "observation"}]}',
+    "bad-id": '{"items": [{"id": "X-1"}]}',
+    "duplicate-id": '{"items": [{"id": "REC-01"}, {"id": "REC-01"}]}',
+    "non-dict-item": '{"items": ["REC-01", 3, null]}',
+}
+
+
+@pytest.mark.parametrize("name", sorted(MALFORMED))
+def test_malformed_comparator_never_breaks_the_workspace(ws, tmp_path, name):  # noqa: F811
+    d = tmp_path / "ws"
+    shutil.copytree(ws, d)
+    pack = pack_with({"kind": "para", "text": "t", "cites": ["FND-0002"], "comparator_refs": ["REC-01"]})
+    pf = tmp_path / "p.json"
+    pf.write_text(json.dumps(pack))
+    base = run("check-pack", str(d), str(pf))
+    run("status", str(d))
+    (d / "comparator.json").write_text(MALFORMED[name], encoding="utf-8")
+    run("status", str(d))
+    run("select", str(d), "--max", "1")
+    import subprocess
+    import sys
+    r = subprocess.run([sys.executable, str(ROOT / "skills" / "learnings-coach" / "scripts" / "pmlc.py"),
+                        "check-pack", str(d), str(pf)], capture_output=True, text=True)
+    out = r.stdout + r.stderr
+    assert "Traceback" not in out
+    assert "no comparator.json in the workspace" in base
+    if name in ("not-json", "list", "items-not-list"):
+        assert r.returncode == 0   # same exit code as with no comparator
+        assert "comparator.json is not valid" in out and "no comparator.json in the workspace" not in out
+        assert "comparator_refs not verified" in out
+    elif name == "duplicate-id":
+        assert r.returncode == 0
+    else:   # a readable inventory that lacks REC-01: a clean problem line, not a crash
+        assert r.returncode == 1 and "REC-01 is not in comparator.json" in out

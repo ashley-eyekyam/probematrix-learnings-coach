@@ -29,17 +29,6 @@ def _read_json(path, what):
         return None, f"{what}: cannot read {path} as JSON ({e.__class__.__name__})"
 
 
-def comparator_ids(ws) -> "set | None":
-    """The item ids of <ws>/comparator.json, or None when the file is absent or unreadable."""
-    p = Path(ws) / COMPARATOR_FILE
-    if not p.is_file():
-        return None
-    c, err = _read_json(p, COMPARATOR_FILE)
-    if err or not isinstance(c, dict) or not isinstance(c.get("items"), list):
-        return None
-    return {i.get("id") for i in c["items"] if isinstance(i, dict)}
-
-
 def validate_comparator(c) -> list:
     """Problems with a comparator.json value (empty when it is sound)."""
     if not isinstance(c, dict):
