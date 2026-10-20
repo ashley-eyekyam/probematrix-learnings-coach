@@ -1,5 +1,6 @@
 """Learning-pack tests on the synthetic export from test_pmlc.py (fictional event, no real data)."""
 import copy
+import html
 import json
 import os
 import re
@@ -332,10 +333,15 @@ def test_render_pack_html_all_kinds(w):
     assert 'data-key="leak-test"' in t and 'id="clear-ticks"' in t
     assert '<svg class="graph"' in t and "url(#arr-causes)" in t
     assert 'data-id="FND-0001"' in t and 'aria-expanded="false"' in t
-    assert "Learning purposes: not a statutory document" in t and pmlc.BRAND in t
+    assert f'<p class="status">{STATUS}' in t and f"<footer>{html.escape(pmlc.BRAND)}</footer>" in t   # A14: in place
     assert "This pack cites 2 of 2 relevant findings." in t and 'class="trail"' in t
     assert pmlc.PAGE_TOKENS_CSS in t and pmlc.WIDE_CSS in t and "function init()" in t and ".rail{" in t
     assert "Synthetic pump fire" in t and "2024-03-20" in t and "generated 2026-10-16" in t
+
+
+def test_pack_brand_in_pack_data(w):
+    t = pp.render_pack_html(w, pack_with(item("para")), "r", "2026-10-16")
+    assert _pack_data(t)["brand"]["status_phrase"] == pmlc.STATUS_PHRASE == STATUS
 
 
 def test_render_pack_html_lists_uncovered_findings(w):
@@ -923,6 +929,19 @@ def test_pack_downgraded_needs_note(w):
     assert not any("downgrade vote" in x for x in pp.check_pack(p, w2).problems)
     p2 = pack_with(item("learning"), bottom_line=[{"text": "x", "cites": ["FND-0004"]}])
     assert any("bottom_line" in x and "downgrade vote" in x for x in pp.check_pack(p2, w2).problems)
+    # A27: every citation route counts, not only cites
+    dv = lambda pk: [x for x in pp.check_pack(pk, w2).problems if "downgrade vote" in x]   # noqa: E731
+    sup = pack_with(item("para", supporting_cites=["FND-0004"]))
+    assert any("supporting_cites" in x for x in dv(sup)), dv(sup)
+    rows = pack_with(item("table", row_cites=[["FND-0004"]]))
+    assert any("row_cites" in x for x in dv(rows)), dv(rows)
+    inline = pack_with(item("para", text="See [FND-0004] for the seal."))
+    assert any("FND-0004" in x for x in dv(inline)), dv(inline)
+    ev = pack_with(item("para", text="Seal photo [EVD-0001] shows wear."))
+    assert pp.cited_ids(ev)[1] == ["EVD-0001"]
+    assert not any("EVD-0001" in x for x in pp.check_pack(ev, w2).problems)
+    rows["data_quality"] = [{"text": "Reviewer doubted this finding.", "cites": ["FND-0004"]}]
+    assert dv(rows) == []
 
 
 # ---- phase 2, task 11: wording and the two new optional fields
@@ -1158,3 +1177,18 @@ def test_readme_alpha_pin():
     head = readme.split("\n\n", 2)[1]
     assert "#v0.3.5" in head
     assert "/plugin marketplace add ashley-eyekyam/probematrix-learnings-coach#v2.0.0-alpha.3" in head
+
+
+# ---- phase 3, task 18: tiers_in_scope branches (A19)
+def test_tiers_in_scope_branches():
+    assert pp.tiers_in_scope({"scope": {"tiers": ["T1", "T2"]}}) == ["T1", "T2"]
+    for bad in (None, [], "x", {}, {"scope": None}, {"scope": "T1"}, {"scope": {}}, {"scope": {"tiers": "T1"}},
+                {"scope": {"tiers": None}}):
+        assert pp.tiers_in_scope(bad) == [], bad
+
+
+def test_tiers_in_scope_drives_the_t1_card_warning(w):
+    card = item("card")
+    assert any("organisation_changing" in x for x in pp.check_pack(pack_with(card, scope={"tiers": ["T1"]}), w).warnings)
+    for sc in ({"tiers": "T1"}, "T1", None):
+        assert not any("organisation_changing" in x for x in pp.check_pack(pack_with(item("card"), scope=sc), w).warnings)

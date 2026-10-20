@@ -377,11 +377,17 @@
       body])]);
   }
 
+  /* The banner's lead-in: the status phrase and ". ", or nothing when the brand carries no phrase. */
+  function statusLead(brand) {
+    var p = brand && brand.status_phrase;
+    return p ? p + ". " : "";
+  }
+
   function banner() {
     var reg = D.register || {};
     var extra = Object.keys(reg).filter(function (k) { return k !== "title" && k !== "source"; });
     return h("div", {class: "banner"}, [
-      h("p", null, [h("b", {text: ((D.brand || {}).status_phrase || "") + ". "}), reg.title || "Learnings Register"]),
+      h("p", null, [statusLead(D.brand) ? h("b", {text: statusLead(D.brand)}) : null, reg.title || "Learnings Register"]),
       reg.source ? h("p", {class: "src"}, ["Source: ", rich(reg.source)]) : null,
       extra.length ? h("details", null, [h("summary", {text: "Register details"}), fieldList(reg, extra, humanKey)]) : null]);
   }
@@ -571,7 +577,7 @@
 
   var API = {tokenize: tokenize, parseHash: parseHash, lensSpec: lensSpec, lensesFor: lensesFor, matches: matches,
              sortEntries: sortEntries, sortFindings: sortFindings, summarise: summarise, evidenceIdsFor: evidenceIdsFor,
-             provenance: provenance};
+             provenance: provenance, statusLead: statusLead};
   if (typeof module !== "undefined" && module.exports) { module.exports = API; return; }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();

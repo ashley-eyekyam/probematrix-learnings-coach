@@ -218,7 +218,7 @@ def test_env_vars_documented():
     keys = _env_keys()
     assert {"PMLC_NAMES", "PMLC_ORGS"} <= keys
     text = "\n".join(p.read_text(encoding="utf-8") for p in _pages())
-    missing = sorted(k for k in keys if k not in text)
+    missing = sorted(k for k in keys if not re.search(rf"(?<![A-Z0-9_]){re.escape(k)}(?![A-Z0-9_])", text))
     assert not missing, f"environment variables not documented in docs/manual/: {missing}"
 
 

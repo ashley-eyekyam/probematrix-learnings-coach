@@ -2047,12 +2047,36 @@ def test_reclassify_keeps_other_flag_half(fresh_ws, tmp_path):
     assert json.loads((w / "clusters.json").read_text())["overrides"]["file"] is None
 
 
-def test_check_pack_citable_once():
-    import inspect
+def test_check_pack_citable_once(monkeypatch):                                      # A25: a call count, not source text
+    import pmlc_lib.pack.schema as schema
+    calls = []
+    real = schema._citable
+    monkeypatch.setattr(schema, "_citable", lambda pack: calls.append(1) or real(pack))
+    pack = {"pack": "p", "schema": 1, "title": "Test pack: x", "audience": "A", "status": "s",
+            "bottom_line": [{"text": "t", "cites": ["FND-0001"]}],
+            "sections": [{"id": "s1", "heading": "H", "items": [{"kind": "para", "text": "t", "cites": ["FND-0001"]}]}]}
+    schema.check_pack(pack, {"findings": [], "evidence": [], "incident": {}, "singletons": []})
+    assert len(calls) == 1
 
-    import pmlc_pack
-    src = inspect.getsource(pmlc_pack.check_pack)
-    assert src.count("_citable(pack)") == 1
+
+def test_stats_block_malformed():                                                   # A26
+    import openpyxl as ox
+    from pmlc_lib.ingest.schema import analysis_stats
+
+    def sheet(rows):
+        wb = ox.Workbook()
+        s = wb.active
+        for r in rows:
+            s.append(r)
+        return s
+    head = ("Level", "Level Name", "Total Findings")
+    assert analysis_stats(None) is None
+    assert analysis_stats(sheet([("nothing",)])) is None                      # no header
+    assert analysis_stats(sheet([head, (1, "Unsafe Acts", 5)])) is None       # no Total row
+    assert analysis_stats(sheet([head, (1, "Unsafe Acts", 5), ("Total", None, "x")])) is None   # Total not a number
+    assert analysis_stats(sheet([("Level", "Other", "Total Findings"), ("Total", None, 3)])) is None
+    got = analysis_stats(sheet([head, ("x", "bad", "y"), (2, "Pre", "n/a"), (1, "A", 5), ("TOTAL", None, 5)]))
+    assert got == {"total": 5, "by_level": {1: 5}}
 
 
 # ----------------------------------------------------------------------------- privacy at ingest (Task 9)
@@ -2154,3 +2178,63 @@ def test_redact_protects_role_text_and_warns(tmp_path):
     assert "John Field" not in narr and "Mr. Field" not in narr and "Fitter" in narr
     assert 'warning: surname-only match "Field" replaced 6 times: check the text reads correctly' in out
     assert "redacted" in out
+
+
+# ---- phase 3, task 18: classify and manifest error paths (A20-A24)
+def test_classify_missing_taxonomy_file(fresh_ws, tmp_path):                         # A20
+    missing = tmp_path / "nope" / "tax.json"
+    r = run_fail("classify", str(fresh_ws), "--taxonomy", str(missing))
+    assert r.returncode == 1 and r.stderr.strip() == f"--taxonomy {missing}: file not found"
+    assert "Traceback" not in r.stderr
+
+
+def test_classify_hint_to_drop_remembered_overlay(fresh_ws, tmp_path):             # A21
+    run("classify", str(fresh_ws), "--overlay", "india-process-site")
+    tax = tmp_path / "tax.json"
+    tax.write_bytes((pmlc.REFS / "taxonomy.json").read_bytes())
+    out = run("classify", str(fresh_ws), "--taxonomy", str(tax))
+    assert "pass --no-overlay to drop the remembered overlay" in out
+    assert "pass --no-overlay to drop the remembered overlay" not in run(
+        "classify", str(fresh_ws), "--taxonomy", str(tax), "--no-overlay")
+
+
+def test_write_json_removes_tmp_on_failure(tmp_path, monkeypatch):                 # A22
+    target = tmp_path / "out.json"
+
+    def boom(src, dst):
+        raise OSError("replace failed")
+
+    monkeypatch.setattr("pmlc_lib.util.os.replace", boom)
+    with pytest.raises(OSError):
+        pmlc.write_json(target, {"a": 1})
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_load_manifest_coerces_string_taxonomy_source(fresh_ws):                    # A23
+    (fresh_ws / "manifest.json").write_text(json.dumps({"files": {"clusters.json": {
+        "inputs": {}, "sources": {"taxonomy": "/x/tax.json"}}}}))
+    assert pmlc.load_manifest(fresh_ws)["files"]["clusters.json"]["sources"]["taxonomy"] == ["/x/tax.json"]
+    r = subprocess.run([sys.executable, str(PMLC), "status", str(fresh_ws)], capture_output=True, text=True)
+    assert r.returncode == 0 and "Traceback" not in r.stderr, r.stderr
+
+
+@pytest.mark.parametrize("bad", ['["x"]', '"x"', "3"])
+def test_overlay_group_must_be_an_object(fresh_ws, tmp_path, bad):                           # A24
+    p = tmp_path / "g.json"
+    p.write_text('{"name": "g", "extend": {"entities": ' + bad + '}}', encoding="utf-8")
+    with pytest.raises(SystemExit, match=r"overlay g: extend\.entities must be an object"):
+        pmlc._load_taxonomy(overlays=[str(p)])
+    r = run_fail("classify", str(fresh_ws), "--overlay", str(p))
+    assert "overlay g: extend.entities must be an object" in r.stderr and "Traceback" not in r.stderr
+
+
+def test_event_day_sources_are_citable_ids_only():                                  # A53
+    from pmlc_lib.analysis.timeline import _event_day_sequence
+    w = {"incident": {"date": "2024-03-20", "fields": {}}}
+    seq = _event_day_sequence(w, "2024-03-20", [
+        ("FND-0001", "The pump tripped at 14:05 on shift."),
+        ("narrative", "At 14:05 the operator called. Later at 15:30 the crew left.")])
+    by = {e["time"]: e for e in seq}
+    assert by["14:05"]["sources"] == ["FND-0001"] and by["14:05"]["narrative"] is True and by["14:05"]["mentions"] == 2
+    assert by["15:30"]["sources"] == [] and by["15:30"]["narrative"] is True
+    assert all(s != "narrative" for e in seq for s in e["sources"])

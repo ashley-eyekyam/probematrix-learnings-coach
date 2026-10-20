@@ -88,7 +88,7 @@ def test_assets_are_inline_safe():
 @pytest.mark.skipif(not NODE, reason="node not installed")
 def test_detail_js_loads_without_dom():
     out = node(f"const d = require({json.dumps(str(DETAIL_JS))}); console.log(Object.keys(d).sort().join(','));")
-    assert out.strip() == "evidenceIdsFor,lensSpec,lensesFor,matches,parseHash,provenance,sortEntries,sortFindings,summarise,tokenize"
+    assert out.strip() == "evidenceIdsFor,lensSpec,lensesFor,matches,parseHash,provenance,sortEntries,sortFindings,statusLead,summarise,tokenize"
 
 
 @pytest.mark.skipif(not NODE, reason="node not installed")
@@ -121,3 +121,14 @@ assert.deepStrictEqual(d.sortFindings(['FND-A', 'FND-B'], {{'FND-A': {{id:'FND-A
   'FND-B': {{id:'FND-B', label:'b', rating:4}}}}), ['FND-B', 'FND-A']);
 """)
     assert "Only the label and rating are embedded in this page." in DETAIL_JS.read_text(encoding="utf-8")
+
+
+@pytest.mark.skipif(not NODE, reason="node not installed")
+def test_detail_banner_lead_only_with_status_phrase():
+    node(f"""
+const assert = require('assert');
+const d = require({json.dumps(str(DETAIL_JS))});
+assert.strictEqual(d.statusLead({{status_phrase: 'Learning purposes: not a statutory document'}}),
+  'Learning purposes: not a statutory document. ');
+for (const b of [{{}}, {{status_phrase: ''}}, null, undefined]) assert.strictEqual(d.statusLead(b), '');
+""")

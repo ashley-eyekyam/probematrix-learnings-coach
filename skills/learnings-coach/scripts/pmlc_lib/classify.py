@@ -16,6 +16,8 @@ def _load_taxonomy(path=None, overlays=()) -> dict:
     """The taxonomy rules with compiled regexes. Each overlay (name or path) ORs its extra regexes onto the base
     rules with the same IDs: match = (?:base)|(?:extra)."""
     p = Path(path) if path else REFS / "taxonomy.json"
+    if path and not p.is_file():
+        sys.exit(f"--taxonomy {path}: file not found")
     t = json.loads(p.read_text(encoding="utf-8"))
     t["_file"] = str(path) if path else "taxonomy.json"
     t["_overlays"] = []
@@ -35,6 +37,8 @@ def _load_taxonomy(path=None, overlays=()) -> dict:
             sys.exit(f"overlay {name}: `extend` must be an object keyed by entities, tiers or relations.")
         for group in ("entities", "tiers", "relations"):
             rules = {r["id"]: r for r in t[group]}
+            if ext.get(group) is not None and not isinstance(ext.get(group), dict):
+                sys.exit(f"overlay {name}: extend.{group} must be an object")
             for rid, extra in (ext.get(group) or {}).items():
                 if rid not in rules:
                     sys.exit(f"Overlay {name} extends {rid}, which is not in the {group} of taxonomy {t['_file']}.")
@@ -173,6 +177,9 @@ def cmd_classify(a):
         if reused:
             print(f"Reusing taxonomy {taxonomy or 'taxonomy.json'} and overlays {', '.join(overlays) or 'none'} "
                   "from the previous classify (pass --taxonomy/--overlay to change, --no-overlay for none).")
+    if a.taxonomy and overlays and not a.overlay and not a.no_overlay:
+        print(f"hint: overlay(s) {', '.join(overlays)} were remembered from the previous classify; "
+              "pass --no-overlay to drop the remembered overlay")
     tax = _load_taxonomy(taxonomy, overlays)
     if reused_tax:
         tax["_file"] = prev["file"]  # the same file under the name it was recorded with

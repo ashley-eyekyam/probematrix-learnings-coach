@@ -36,7 +36,7 @@ EXPECT = {                                   # expectation type -> its required 
     "pack_absent": ("pack",),
     "card_fields": ("pack", "fields"),
 }
-ABS_PATH = re.compile(r"(?:^|[\s\"'(])(?:/(?:home|Users|tmp|var|mnt|opt|etc|root)/|[A-Za-z]:[\\/])")
+ABS_PATH = re.compile(r"(?:^|[\s\"'(])(?:/(?:home|Users|tmp|var|mnt|opt|etc|root|srv)/|~/|[A-Za-z]:[\\/])")
 MIN_EVALS, MIN_NO_TRIGGER, MIN_COLLISION = 3, 1, 1
 
 
