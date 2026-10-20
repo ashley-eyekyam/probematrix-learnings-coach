@@ -24,8 +24,8 @@
   "tiers": [
     {"id": "T5", "name": "Corporate / policy owner / board", "match": "corporate|director|board", "weak": "governance|policy|programme owner|program owner"},
     {"id": "T4", "name": "Plant / asset leadership", "match": "plant manag|plant management|(?<!deputy )(?<!assistant )(?<!dy\\. )(?<!dy )(?<!asst\\. )(?<!asst )general manag|head operations|site manag|(plant|site|asset|senior) leadership|superintendent|asset owner"},
-    {"id": "T3", "name": "Function / department management", "match": "manag|\\bhead\\b|authority|\\blead\\b|owner|custodian|approver|decision-maker|programme|program"},
-    {"id": "T2", "name": "First-line supervision / shift in-charge", "match": "supervis|in-?charge|chief engineer|signatory|permit issu|coordinator|controller|planner|team lead|leader|senior officer|foreman"},
+    {"id": "T3", "name": "Function / department management", "match": "manag|\\bhead\\b|authority|\\blead\\b|owner|custodian|approver|decision-maker|programme|program|(maintenance|operations?|engineering|hse|safety|production|integrity|process safety|functional|department(al)?)\\b[^,;]{0,40}\\bleadership"},
+    {"id": "T2", "name": "First-line supervision / shift in-charge", "match": "supervis|in-?charge|chief engineer|signatory|permit issu|coordinator|controller|planner|team lead|\\bleaders?\\b|senior officer|foreman"},
     {"id": "T1", "name": "Frontline / sharp end", "match": "fitter|technician|operator|crew|team|personnel|staff|members|engineers?\\b|draughtsman|requestor|requester|raiser|learners|worker"}
   ],
   "relations": [

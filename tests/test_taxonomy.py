@@ -184,3 +184,14 @@ def test_hazira_calibration_after_taxonomy(tmp_path):
     assert len(json.loads((ws / "evidence.json").read_text(encoding="utf-8"))) == 46
     sel = json.loads(run("select", str(ws), "--entity", "F02", "F06", "--entity-mode", "all", "--format", "json"))
     assert len(sel) == 27
+
+
+@pytest.mark.parametrize("role,ent", [("Maintenance leadership", "F02"), ("HSE Leadership", "F11"),
+                                      ("Operations leadership (acceptance of alarm-only configuration)", "F01")])
+def test_function_leadership_is_t3(role, ent):                                               # ruling X19
+    m = _map(role, [OVERLAY])
+    assert m["T"] == "T3" and ent in m["F"] and "F13" not in m["F"]
+
+
+def test_team_leader_still_t2():
+    assert _map("Team leader")["T"] == "T2"
