@@ -14,7 +14,7 @@ for d in "$here"/skills/*/; do
   cp -R "$d" "$dest/$name"
   echo "installed $name"
 done
-if [ ! -f "$dest/learnings-coach/scripts/pmlc.py" ]; then
+if [ ! -f "$dest/learnings-coach/scripts/pmlc.py" ] || [ ! -f "$dest/learnings-coach/scripts/pmlc_lib/__init__.py" ]; then
   echo "Error: learnings-coach was not copied to $dest; the other skills need it." >&2
   exit 1
 fi

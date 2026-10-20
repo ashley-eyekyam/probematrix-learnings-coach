@@ -1,0 +1,619 @@
+"""Learning packs: the schema check and the check-pack command. Reference: references/pack-schema.md."""
+from __future__ import annotations
+
+import collections
+import copy
+import datetime as dt
+import json
+import re
+import sys
+from pathlib import Path
+
+from ..classify import TIER_LABELS
+from ..handling import check_handling, unsigned_warning
+from ..register.check import HOC_TIERS, norm_hoc
+from ..select import _filter, select_args
+from ..workspace import downgraded_findings, linked_evidence, load_ws, record_pack_check
+from .. import lint
+
+
+SCHEMA_VERSION = 1
+PACK_NAME_RX = re.compile(r"^(?:[a-z0-9]+(?:-[a-z0-9]+)*|dossier-F\d+[a-z]?)$")
+SLUG_RX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+ID_RX = re.compile(r"\b(FND-[0-9A-Za-z]{4,}|EVD-\d{3,})\b")
+DATE_RX = re.compile(r"^\d{4}(?:-\d{2}(?:-\d{2})?)?$")
+MAX_BOTTOM_LINE = 7
+UNCOVERED_PRINT_LINE = "{x} of {y} relevant findings cited"
+
+# Item kinds: required fields, optional fields, and whether at least one citation is required.
+KINDS = {
+    "para": {"req": ["text"], "opt": []},
+    "check": {"req": ["text"], "opt": ["hold_point", "when"]},
+    "question": {"req": ["question", "why"], "opt": ["answer", "good_evidence", "to"]},
+    "recommendation": {"req": ["change", "indicator", "hoc_tier"], "opt": ["barrier", "owner", "by_when"], "cite": True},
+    "decision": {"req": ["decision"], "opt": ["options", "trade_offs", "owner", "by_when"]},
+    "indicator": {"req": ["name", "measure"], "opt": ["deterioration", "owner"]},
+    "card": {"req": ["title", "what_happened", "warning_signs", "good_looks_like"], "opt": ["why_made_sense", "organisation_changing", "discussion"],
+             "cite": True},
+    "scenario": {"req": ["situation", "prompts"], "opt": []},
+    "table": {"req": ["columns", "rows"], "opt": ["row_cites", "row_supporting_cites", "finding_notes"]},
+    "test_point": {"req": ["requirement", "sample", "conformity_evidence"], "opt": ["red_flags"], "cite": True},
+    "module": {"req": ["title", "objective", "content"], "opt": ["audience", "duration", "assessment"]},
+    "barrier": {"req": ["barrier", "failure_mode", "hoc_tier"], "opt": ["type", "fix", "owner", "state", "indicator"],
+                "cite": True},
+    "timeline": {"req": ["events"], "opt": []},
+    "graph": {"req": ["nodes", "edges"], "opt": []},
+    "learning": {"req": ["lesson"], "opt": ["explanation", "owner"], "cite": True},
+}
+STR_LIST_FIELDS = {"options", "warning_signs", "discussion", "prompts", "columns", "content", "assessment", "red_flags"}
+OBJ_LIST_FIELDS = {"rows", "row_cites", "row_supporting_cites", "events", "nodes", "edges"}
+MAP_FIELDS = {"finding_notes"}
+BOOL_FIELDS = {"hold_point"}
+FOLLOW_UP_COLUMNS = ["Finding", "Evidence to collect", "Key questions", "Suggested interviews", "Causal hypothesis"]
+FOLLOW_UP_KEYS = ["evidence_to_collect", "key_questions", "suggested_interviews", "causal_hypothesis"]
+
+Result = collections.namedtuple("Result", "problems warnings stats")
+
+
+def _text(v) -> bool:
+    return isinstance(v, str) and v.strip() != ""
+
+
+def _id_list(v) -> bool:
+    return isinstance(v, list) and all(isinstance(x, str) and ID_RX.fullmatch(x) for x in v)
+
+
+def _iso_partial(v) -> bool:
+    """YYYY-MM-DD, YYYY-MM or YYYY, and a real calendar date."""
+    if not isinstance(v, str) or not DATE_RX.match(v):
+        return False
+    full = v + "-01-01"[len(v) - 4:] if len(v) < 10 else v      # 2022 -> 2022-01-01, 2022-03 -> 2022-03-01
+    try:
+        dt.date.fromisoformat(full)
+    except ValueError:
+        return False
+    return True
+
+
+def _walk_ids(v, path):
+    """Yield (json-path, ID) for every Finding or Evidence ID in any string under v."""
+    if isinstance(v, str):
+        for m in ID_RX.finditer(v):
+            yield path, m.group(1)
+    elif isinstance(v, list):
+        for i, x in enumerate(v):
+            yield from _walk_ids(x, f"{path}[{i}]")
+    elif isinstance(v, dict):
+        for k, x in v.items():
+            yield from _walk_ids(x, f"{path}.{k}" if path else str(k))
+
+
+# Fields rendered with citation buttons. An ID anywhere else (headings, titles, badges, column headers, graph
+# labels) is shown as plain text, so it is not a citation and does not count towards coverage.
+INLINE_FIELDS = {
+    "para": ["text"], "check": ["text"], "question": ["question", "why", "answer", "good_evidence"],
+    "recommendation": ["change", "indicator"], "decision": ["decision", "options", "trade_offs"],
+    "indicator": ["name", "measure", "deterioration", "owner"],
+    "card": ["what_happened", "why_made_sense", "organisation_changing", "warning_signs", "good_looks_like", "discussion"],
+    "scenario": ["situation", "prompts"], "table": ["rows"],
+    "test_point": ["requirement", "sample", "conformity_evidence", "red_flags"],
+    "module": ["objective", "content", "assessment"], "barrier": ["barrier", "failure_mode", "fix", "indicator"],
+    "timeline": [], "graph": [], "learning": ["lesson", "explanation"],
+}
+CITE_FIELDS = ["cites", "row_cites", "row_supporting_cites", "supporting_cites"]
+STRENGTHS = ("direct", "corroborated", "inferred")
+BARRIER_STATES = ("absent", "degraded", "defeated", "worked partly", "worked")
+TIME_RX = re.compile(r"(?:[01]\d|2[0-3]):[0-5]\d")          # used with fullmatch: "14:05", never "14:05\n"
+GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group", "lint_ok")
+
+
+def _pick(d, keys) -> dict:
+    return {k: d[k] for k in keys if k in d} if isinstance(d, dict) else {}
+
+
+def _citable_item(it) -> dict:
+    """The parts of one item that render as citation buttons (same keys, so JSON paths are unchanged)."""
+    if not isinstance(it, dict):
+        return {}
+    kind = it.get("kind")
+    out = _pick(it, INLINE_FIELDS.get(kind if isinstance(kind, str) else "", []) + CITE_FIELDS)
+    if kind == "timeline" and isinstance(it.get("events"), list):
+        out["events"] = [_pick(e, ["text", "cites"]) for e in it["events"]]
+    return out
+
+
+def _citable(pack) -> dict:
+    bl, secs, dq = pack.get("bottom_line"), pack.get("sections"), pack.get("data_quality")
+    return {"data_quality": [_pick(n, ["text", "cites"]) for n in dq] if isinstance(dq, list) else [],
+            "bottom_line": [_pick(e, ["text", "cites", "supporting_cites"]) for e in bl] if isinstance(bl, list) else [],
+            "sections": [dict(_pick(s, ["intro"]),
+                              items=[_citable_item(it) for it in s["items"]] if isinstance(s.get("items"), list) else [])
+                         if isinstance(s, dict) else {} for s in secs] if isinstance(secs, list) else []}
+
+
+def cited_ids(pack) -> tuple:
+    """Ordered unique (finding IDs, evidence IDs) cited in the bottom line or sections: in cites lists, or inline in
+    text that renders citation buttons."""
+    fids, eids = [], []
+    for _, x in _walk_ids(_citable(pack), ""):
+        bucket = fids if x.startswith("FND-") else eids
+        if x not in bucket:
+            bucket.append(x)
+    return fids, eids
+
+
+def with_item_ids(pack) -> dict:
+    """Deep copy in which every item has an id: its own, or <section-id>-<position>."""
+    p = copy.deepcopy(pack)
+    for s in p["sections"]:
+        for n, it in enumerate(s["items"], 1):
+            it.setdefault("id", f"{s['id']}-{n}")
+    return p
+
+
+def relevant_findings(w, scope=None) -> list:
+    """Finding IDs a pack is expected to draw on: those matching its scope (the same filter as select), or,
+    without a scope, the top-rated findings (rating equal to the workspace maximum, as classify counts them)."""
+    if scope:
+        a = select_args(entity=scope.get("entities") or None, tag=scope.get("tags") or None,
+                             tier=scope.get("tiers") or None, relation=scope.get("relations") or None,
+                             level=scope.get("levels") or None, entity_mode=scope.get("entity_mode") or "any",
+                             top_rated=scope.get("min_rating") == "top",
+                             min_rating=None if scope.get("min_rating") == "top" else scope.get("min_rating"))
+        rel = {f["id"] for f, _ in _filter(w, a)}
+        return [f["id"] for f in w["findings"] if f["id"] in rel]
+    top = max(((f.get("rating") or 0) for f in w["findings"]), default=0)
+    return [f["id"] for f in w["findings"] if top and (f.get("rating") or 0) == top]
+
+
+def _check_field(v, f, path, bad):
+    if f in BOOL_FIELDS:
+        if not isinstance(v, bool):
+            bad(path, "must be true or false")
+    elif f in STR_LIST_FIELDS:
+        if not isinstance(v, list) or not v or not all(_text(x) for x in v):
+            bad(path, "must be a non-empty list of text")
+    elif f in OBJ_LIST_FIELDS:
+        if not isinstance(v, list) or not v:
+            bad(path, "must be a non-empty list")
+    elif f in MAP_FIELDS:
+        return                                   # shape checked by the kind's own check (_check_table)
+    elif not _text(v):
+        bad(path, "must be non-empty text")
+
+
+def _check_table(it, ip, bad):
+    cols, rows = it.get("columns"), it.get("rows")
+    if not isinstance(cols, list) or not isinstance(rows, list):
+        return
+    for r, row in enumerate(rows):
+        if not isinstance(row, list) or len(row) != len(cols):
+            bad(f"{ip}.rows[{r}]", f"must have {len(cols)} cells like columns")
+            continue
+        for c, cell in enumerate(row):
+            if isinstance(cell, bool) or not isinstance(cell, (str, int, float)):
+                bad(f"{ip}.rows[{r}][{c}]", "must be text or a number")
+    for f in ("row_cites", "row_supporting_cites"):
+        rc = it.get(f)
+        if rc is None:
+            continue
+        if not isinstance(rc, list) or len(rc) != len(rows):
+            bad(f"{ip}.{f}", "must hold one list of IDs per row")
+            continue
+        for r, c in enumerate(rc):
+            if not _id_list(c):
+                bad(f"{ip}.{f}[{r}]", "must be a list of Finding or Evidence IDs")
+    _check_finding_notes(it, rows, ip, bad)
+
+
+def _check_finding_notes(it, rows, ip, bad):
+    """investigator-coach: an optional note per finding on the follow-up table, for findings that share a row."""
+    notes = it.get("finding_notes")
+    if notes is None:
+        return
+    if it.get("id") != "follow-up":
+        bad(f"{ip}.finding_notes", "only on the investigator-coach follow-up table")
+        return
+    if not isinstance(notes, dict) or not notes:
+        bad(f"{ip}.finding_notes", "must be an object of Finding ID to note")
+        return
+    firsts = {x for row in rows if isinstance(row, list) and row and isinstance(row[0], str)
+              for x in re.split(r"[\s,;]+", row[0]) if x}
+    for x, v in notes.items():
+        if x not in firsts:
+            bad(f"{ip}.finding_notes.{x}", "not a Finding ID in this table's first column")
+        elif not _text(v):
+            bad(f"{ip}.finding_notes.{x}", "must be non-empty text")
+
+
+def _check_timeline(it, ip, bad):
+    events = it.get("events")
+    if not isinstance(events, list):
+        return
+    for k, ev in enumerate(events):
+        ep = f"{ip}.events[{k}]"
+        if not isinstance(ev, dict):
+            bad(ep, "must be an object")
+            continue
+        if not _iso_partial(ev.get("date")):
+            bad(f"{ep}.date", "must be YYYY-MM-DD, YYYY-MM or YYYY")
+        if not _text(ev.get("text")):
+            bad(f"{ep}.text", "required")
+        if "signal" in ev and not isinstance(ev["signal"], bool):
+            bad(f"{ep}.signal", "must be true or false")
+        if "time" in ev and not (isinstance(ev["time"], str) and TIME_RX.fullmatch(ev["time"])):
+            bad(f"{ep}.time", "must be HH:MM (24-hour)")
+        if "knowable_then" in ev and not (isinstance(ev["knowable_then"], bool) or _text(ev["knowable_then"])):
+            bad(f"{ep}.knowable_then", "must be true, false or text")
+        for f in ("received_by", "response"):
+            if f in ev and not _text(ev[f]):
+                bad(f"{ep}.{f}", "must be non-empty text")
+        if "cites" in ev and not _id_list(ev["cites"]):
+            bad(f"{ep}.cites", "must be a list of Finding or Evidence IDs")
+
+
+def _check_barrier(it, ip, bad):
+    if "state" in it and it["state"] not in BARRIER_STATES:
+        bad(f"{ip}.state", f"must be one of {', '.join(BARRIER_STATES)}")
+
+
+def _check_graph(it, ip, bad):
+    nodes, edges = it.get("nodes"), it.get("edges")
+    if not isinstance(nodes, list) or not isinstance(edges, list):
+        return
+    ids = set()
+    for k, n in enumerate(nodes):
+        np_ = f"{ip}.nodes[{k}]"
+        if not isinstance(n, dict) or not _text(n.get("id")) or not _text(n.get("label")):
+            bad(np_, "needs id and label")
+            continue
+        if n["id"] in ids:
+            bad(f"{np_}.id", f"duplicate node id {n['id']!r}")
+        ids.add(n["id"])
+    for k, e in enumerate(edges):
+        ep = f"{ip}.edges[{k}]"
+        if not isinstance(e, dict):
+            bad(ep, "must be an object")
+            continue
+        for end in ("from", "to"):
+            if not isinstance(e.get(end), str) or e.get(end) not in ids:
+                bad(f"{ep}.{end}", f"{e.get(end)!r} is not a node id")
+        if "label" in e and not _text(e["label"]):
+            bad(f"{ep}.label", "must be text")
+
+
+def _check_extras(d, p, bad):
+    """Optional on every item and bottom-line entry: supporting_cites, evidence_strength and (items) group."""
+    if "supporting_cites" in d and not _id_list(d["supporting_cites"]):
+        bad(f"{p}.supporting_cites", "must be a list of Finding or Evidence IDs")
+    if "evidence_strength" in d and d["evidence_strength"] not in STRENGTHS:
+        bad(f"{p}.evidence_strength", f"must be one of {', '.join(STRENGTHS)}")
+    if "group" in d and not _text(d["group"]):
+        bad(f"{p}.group", "must be non-empty text")
+
+
+def _check_item(it, ip, bad, warn):
+    if not isinstance(it, dict):
+        bad(ip, "must be an object")
+        return
+    kind = it.get("kind")
+    spec = KINDS.get(kind) if isinstance(kind, str) else None
+    if spec is None:
+        bad(f"{ip}.kind", f"unknown kind {kind!r}; one of: {', '.join(KINDS)}")
+        return
+    known = spec["req"] + spec["opt"]
+    for f in spec["req"]:
+        if f not in it:
+            bad(f"{ip}.{f}", f"required for {kind}")
+    for f in known:
+        if f in it:
+            _check_field(it[f], f, f"{ip}.{f}", bad)
+    if "cites" in it and not _id_list(it["cites"]):
+        bad(f"{ip}.cites", "must be a list of Finding or Evidence IDs")
+    if spec.get("cite") and not (_id_list(it.get("cites")) and it.get("cites")):
+        bad(f"{ip}.cites", f"a {kind} needs at least one Finding or Evidence ID")
+    _check_extras(it, ip, bad)
+    for f in it:
+        if f not in known and f not in GENERIC_FIELDS:
+            warn(f"{ip}.{f}", f"unknown field for {kind} (ignored)")
+    if _text(it.get("hoc_tier")) and norm_hoc(it["hoc_tier"]) == "unclassified":
+        bad(f"{ip}.hoc_tier", f"must name a hierarchy-of-controls tier: {', '.join(HOC_TIERS)}")
+    {"table": _check_table, "timeline": _check_timeline, "graph": _check_graph,
+     "barrier": _check_barrier}.get(kind, lambda *x: None)(it, ip, bad)
+    if not spec.get("cite") and not any(True for _ in _walk_ids(_citable_item(it), "")):
+        warn(ip, "no Finding or Evidence ID cited")
+
+
+def _check_scope(scope, w, bad):
+    if scope is None:
+        return
+    if not isinstance(scope, dict):
+        bad("scope", "must be an object")
+        return
+    for k in scope:
+        if k not in ("tiers", "levels", "entities", "tags", "min_rating", "relations", "entity_mode"):
+            bad(f"scope.{k}", "unknown key; use tiers, levels, entities, tags, min_rating, relations, entity_mode")
+    t, lv, en, mr = scope.get("tiers") or [], scope.get("levels") or [], scope.get("entities") or [], scope.get("min_rating")
+    tg = scope.get("tags") or []
+    if not isinstance(t, list) or any(not isinstance(x, str) or x not in TIER_LABELS for x in t):
+        bad("scope.tiers", "a list of T1 to T5")
+    if not isinstance(lv, list) or any(isinstance(x, bool) or x not in (1, 2, 3, 4) for x in lv):
+        bad("scope.levels", "a list of 1 to 4")
+    if not isinstance(en, list) or any(not isinstance(x, str) for x in en):
+        bad("scope.entities", "a list of entity IDs like F02")
+    if not isinstance(tg, list) or any(not isinstance(x, str) for x in tg):
+        bad("scope.tags", "a list of tags like emergency")
+        tg = []
+    if mr is not None and mr != "top" and (isinstance(mr, bool) or not isinstance(mr, int)):
+        bad("scope.min_rating", 'a whole number, "top" or null')
+    rl = scope.get("relations") or []
+    if not isinstance(rl, list) or any(not isinstance(x, str) for x in rl):
+        bad("scope.relations", "a list of relation IDs like owner")
+        rl = []
+    elif "clusters" in w:
+        known_rel = w["clusters"].get("taxonomy", {}).get("relations", {})
+        for x in rl:
+            if x not in known_rel:
+                bad("scope.relations", f"{x} is not a relation in clusters.json ({', '.join(sorted(known_rel))})")
+    if scope.get("entity_mode") not in (None, "any", "all"):
+        bad("scope.entity_mode", 'must be "any" or "all"')
+    if "clusters" in w and isinstance(en, list):
+        known = w["clusters"].get("taxonomy", {}).get("entities", {})
+        for x in en:
+            if isinstance(x, str) and x not in known:
+                bad("scope.entities", f"{x} is not an entity in clusters.json")
+    if "clusters" in w and tg:
+        tagmap = w["clusters"].get("taxonomy", {}).get("tags")
+        if tagmap is None:
+            bad("scope.tags", "clusters.json has no tags (it predates v2.0). Re-run classify")
+        else:
+            known = {x for ts in tagmap.values() for x in ts}
+            for x in tg:
+                if x not in known:
+                    bad("scope.tags", f"{x} is not a tag in clusters.json")
+    if (t or en or tg or rl) and "clusters" not in w:
+        bad("scope", "tiers, entities and tags need clusters.json. Run: pmlc.py classify <ws>")
+
+
+def _check_notes(pack, w, bad):
+    dq = pack.get("data_quality")
+    if dq is not None:
+        if not isinstance(dq, list) or not dq:
+            bad("data_quality", "must be a non-empty list of {text, cites}")
+        else:
+            for i, n in enumerate(dq):
+                if not isinstance(n, dict) or not _text(n.get("text")):
+                    bad(f"data_quality[{i}].text", "required")
+                elif "cites" in n and not _id_list(n["cites"]):
+                    bad(f"data_quality[{i}].cites", "must be a list of Finding or Evidence IDs")
+    ex = pack.get("exclusions")
+    if ex is None:
+        return
+    if not isinstance(ex, list) or not ex:
+        bad("exclusions", "must be a non-empty list of {id, reason}")
+        return
+    F = {f["id"] for f in w["findings"]}
+    seen = set()
+    for i, e in enumerate(ex):
+        if not isinstance(e, dict):
+            bad(f"exclusions[{i}]", "must be an object with id and reason")
+            continue
+        x = e.get("id")
+        if not (isinstance(x, str) and ID_RX.fullmatch(x) and x.startswith("FND-")):
+            bad(f"exclusions[{i}].id", "must be a Finding ID")
+        elif x not in F:
+            bad(f"exclusions[{i}].id", f"{x} is not in this workspace")
+        elif x in seen:
+            bad(f"exclusions[{i}].id", f"{x} is listed twice")
+        else:
+            seen.add(x)
+        if not _text(e.get("reason")):
+            bad(f"exclusions[{i}].reason", "required")
+
+
+def excluded_ids(pack) -> list:
+    ex = pack.get("exclusions")
+    return [e["id"] for e in ex if isinstance(e, dict) and isinstance(e.get("id"), str)] if isinstance(ex, list) else []
+
+
+def _check_follow_up(secs, bad):
+    tables = [it for s in secs if isinstance(s, dict) and isinstance(s.get("items"), list)
+              for it in s["items"] if isinstance(it, dict) and it.get("id") == "follow-up"]
+    if not tables or tables[0].get("kind") != "table" or tables[0].get("columns") != FOLLOW_UP_COLUMNS:
+        bad("investigator-coach", f"needs a table item with id follow-up and columns {FOLLOW_UP_COLUMNS}")
+        return
+    seen = set()
+    for r, row in enumerate(tables[0].get("rows") if isinstance(tables[0].get("rows"), list) else []):
+        if not isinstance(row, list) or not row:
+            continue
+        cell = [x for x in re.split(r"[\s,;]+", row[0]) if x] if isinstance(row[0], str) else []
+        if not cell or not all(ID_RX.fullmatch(x) and x.startswith("FND-") for x in cell):
+            bad(f"follow-up.rows[{r}][0]", "must be one or more Finding IDs")
+            continue
+        for x in cell:
+            if x in seen:
+                bad(f"follow-up.rows[{r}][0]", f"{x} already has a row")
+            seen.add(x)
+
+
+def tiers_in_scope(pack) -> list:
+    sc = pack.get("scope") if isinstance(pack, dict) else None
+    t = sc.get("tiers") if isinstance(sc, dict) else None
+    return t if isinstance(t, list) else []
+
+
+def check_pack(pack, w, *, names=(), orgs=(), share=None) -> Result:
+    """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings)."""
+    P, W = [], []
+
+    def bad(path, msg):
+        P.append(f"{path}: {msg}")
+
+    def warn(path, msg):
+        W.append(f"{path}: {msg}")
+
+    if not isinstance(pack, dict):
+        return Result(["(root): a pack must be a JSON object"], [], {})
+    for k, typ in (("pack", str), ("title", str), ("audience", str), ("status", str),
+                   ("bottom_line", list), ("sections", list)):
+        v = pack.get(k)
+        if k not in pack:
+            bad(k, "required")
+        elif not isinstance(v, typ) or not v or (typ is str and not v.strip()):
+            bad(k, f"must be a non-empty {'list' if typ is list else 'string'}")
+    if pack.get("schema") != SCHEMA_VERSION or isinstance(pack.get("schema"), bool):
+        bad("schema", f"must be {SCHEMA_VERSION}")
+    if _text(pack.get("pack")) and not PACK_NAME_RX.fullmatch(pack["pack"]):
+        bad("pack", "must be lowercase words joined by hyphens (or dossier-F<nn>)")
+    inc = pack.get("incident")
+    if inc is not None:
+        if not isinstance(inc, dict):
+            bad("incident", "must be an object with title and/or date")
+        else:
+            for k in inc:
+                if k not in ("title", "date"):
+                    bad(f"incident.{k}", "unknown key; use title, date")
+            if "title" in inc and not _text(inc["title"]):
+                bad("incident.title", "must be non-empty text")
+            if "date" in inc and not (isinstance(inc["date"], str) and len(inc["date"]) == 10 and _iso_partial(inc["date"])):
+                bad("incident.date", "must be YYYY-MM-DD")
+    bl = pack.get("bottom_line") if isinstance(pack.get("bottom_line"), list) else []
+    if len(bl) > MAX_BOTTOM_LINE:
+        bad("bottom_line", f"at most {MAX_BOTTOM_LINE} entries (got {len(bl)})")
+    for i, e in enumerate(bl):
+        if not isinstance(e, dict) or not _text(e.get("text")):
+            bad(f"bottom_line[{i}].text", "required")
+            continue
+        if not (_id_list(e.get("cites")) and e.get("cites")):
+            bad(f"bottom_line[{i}].cites", "every bottom-line entry needs at least one Finding or Evidence ID")
+        _check_extras(e, f"bottom_line[{i}]", bad)
+    _check_scope(pack.get("scope"), w, bad)
+    _check_notes(pack, w, bad)
+
+    secs = pack.get("sections") if isinstance(pack.get("sections"), list) else []
+    seen, n_items = set(), 0
+    t1_pack = "T1" in tiers_in_scope(pack)
+    for si, s in enumerate(secs):
+        sp = f"sections[{si}]"
+        if not isinstance(s, dict):
+            bad(sp, "must be an object")
+            continue
+        sid = s.get("id")
+        if not isinstance(sid, str) or not SLUG_RX.fullmatch(sid):
+            bad(f"{sp}.id", "required: lowercase words joined by hyphens")
+            sid = None
+        elif sid in seen:
+            bad(f"{sp}.id", f"duplicate id {sid!r}")
+        else:
+            seen.add(sid)
+        if not _text(s.get("heading")):
+            bad(f"{sp}.heading", "required")
+        if "intro" in s and not _text(s.get("intro")):
+            bad(f"{sp}.intro", "must be non-empty text when present")
+        items = s.get("items")
+        if not isinstance(items, list) or not items:
+            bad(f"{sp}.items", "required: a non-empty list")
+            continue
+        for ii, it in enumerate(items):
+            n_items += 1
+            ip = f"{sp}.items[{ii}]"
+            iid = it.get("id") if isinstance(it, dict) else None
+            if iid is not None and not (isinstance(iid, str) and SLUG_RX.fullmatch(iid)):
+                bad(f"{ip}.id", "must be lowercase words joined by hyphens")
+                iid = None
+            elif iid is None and sid:
+                iid = f"{sid}-{ii + 1}"
+            if iid is not None:
+                if iid in seen:
+                    bad(f"{ip}.id", f"duplicate id {iid!r}")
+                seen.add(iid)
+            _check_item(it, ip, bad, warn)
+            if (isinstance(it, dict) and it.get("kind") == "card" and not it.get("organisation_changing")
+                    and t1_pack):
+                warn(f"card {iid or ip}", "add organisation_changing (what the organisation is changing)")
+    if pack.get("pack") == "investigator-coach":
+        _check_follow_up(secs, bad)
+
+    F = {f["id"] for f in w["findings"]}
+    E = set(w.get("evidence", {}))
+    cit_all = _citable(pack)
+    ids, cit = set(), set()
+    for path, x in _walk_ids(cit_all, ""):
+        ids.add(x)
+        cit.add((path, x))
+        if x not in (F if x.startswith("FND-") else E):
+            bad(path, f"{x} is not in this workspace")
+    for path, x in _walk_ids({"data_quality": pack.get("data_quality"), "bottom_line": pack.get("bottom_line"),
+                              "sections": pack.get("sections")}, ""):
+        if (path, x) not in cit:
+            warn(path, f"{x} is shown as plain text, not a citation; put it in cites")
+    downs = downgraded_findings(w)
+    noted = {x for _, x in _walk_ids(cit_all["data_quality"], "data_quality") if x.startswith("FND-")}
+    FM = {f["id"]: f for f in w["findings"]}
+    units = [(f"bottom_line[{i}]", e) for i, e in enumerate(cit_all["bottom_line"])]
+    for si, s in enumerate(cit_all["sections"]):
+        units += [(f"sections[{si}].items[{ii}]", it) for ii, it in enumerate(s.get("items", []))]
+    for upath, unit in units:
+        found = list(_walk_ids(unit, upath))
+        for p_, x in found:
+            if x in downs and x not in noted:
+                bad(p_, f"cites {x}, which has a reviewer downgrade vote; add a data_quality note citing it, or leave it out")
+        fnds = {x for _, x in found if x.startswith("FND-") and x in FM}
+        if fnds:
+            linked = set().union(*(linked_evidence(FM[x]) for x in fnds))
+            for x in dict.fromkeys(x for _, x in found if x.startswith("EVD-") and x in E and x not in linked):
+                warn(upath, f"{x} is not linked to any finding this item cites")
+    for i, x in enumerate(excluded_ids(pack)):
+        if x in ids:
+            bad(f"exclusions[{i}].id", f"{x} is also cited; a finding is either cited or left out on purpose")
+    if not P:
+        rel = [x for x in relevant_findings(w, pack.get("scope")) if x not in excluded_ids(pack)]
+        got = len(set(rel) & ids)
+        if rel and got * 4 < len(rel):
+            W.append(f"coverage: cites {got} of {len(rel)} relevant findings (under a quarter)")
+    hp, hw = check_handling(pack)
+    P += hp
+    W += hw
+    for h in lint.lint(pack, w, kind="pack", share=share, names=names, orgs=orgs):   # JC11 owns the status check
+        if h.rule != "JC11" or _text(pack.get("status")):
+            (P if h.severity == "error" else W).append(lint.as_problem(h))
+    return Result(P, W, {"sections": len(secs), "items": n_items, "cited": len(ids)})
+
+
+def load_pack(path) -> tuple:
+    """(parsed JSON, None) or (None, a problem line)."""
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8")), None
+    except FileNotFoundError:
+        return None, f"(file): {path} not found"
+    except json.JSONDecodeError as e:
+        return None, f"(json): invalid JSON at line {e.lineno} column {e.colno}: {e.msg}"
+    except (OSError, UnicodeDecodeError, RecursionError) as e:
+        return None, f"(file): cannot read {path} as UTF-8 JSON ({e.__class__.__name__})"
+
+
+def _checked(a):
+    """Load the workspace and pack, print warnings, exit listing every problem; else return (w, pack, result)."""
+    w = load_ws(a.ws)
+    pack, err = load_pack(a.pack)
+    res = Result([err], [], {}) if err else check_pack(pack, w, **lint.cli_options(a))
+    if not err:
+        res.warnings.extend(unsigned_warning(pack, w, a.pack, a.ws))
+    if not err and isinstance(pack, dict) and isinstance(pack.get("pack"), str):
+        try:
+            record_pack_check(a.ws, pack["pack"], a.pack, not res.problems, len(res.problems))
+        except OSError:
+            pass
+    for x in res.warnings:
+        print(f"warning: {x}")
+    if res.problems:
+        for x in res.problems:
+            print(x, file=sys.stderr)
+        sys.exit(f"{len(res.problems)} problem(s) in {a.pack}.{' Nothing written.' if a.cmd == 'pack' else ''}")
+    return w, pack, res
+
+
+def cmd_check_pack(a):
+    _, _, res = _checked(a)
+    s = res.stats
+    print(f"OK: {s['sections']} sections, {s['items']} items, {s['cited']} cited IDs")

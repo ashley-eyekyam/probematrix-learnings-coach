@@ -60,8 +60,8 @@ jobs:
       - name: Guard - subprocess coverage must be measured
         run: |
           set -o pipefail
-          # pmlc_pack.py is exercised mostly through the engine subprocess; 0% means the .pth hook did nothing
-          line=$(coverage report --include='*pmlc_pack.py' --fail-under=0 | grep "pmlc_pack.py" || true)
+          # pmlc_lib/pack/ is exercised mostly through the engine subprocess; 0% means the .pth hook did nothing
+          line=$(coverage report --include='*/pmlc_lib/pack/*' --fail-under=0 | grep "^TOTAL" || true)
           echo "$line"
           if [ -z "$line" ] || echo "$line" | awk '{for (i = 1; i <= NF; i++) if ($i ~ /%$/) { print $i; exit }}' | grep -qx "0%"; then
             echo "subprocess coverage was not measured"; exit 1

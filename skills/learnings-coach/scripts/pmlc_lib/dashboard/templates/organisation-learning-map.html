@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Organisational Learning Map: $title</title>
+<style>
+$page_tokens_css
+main{max-width:1180px;margin:0 auto;padding:24px 16px 48px}
+$wide_css
+h1{font-size:24px;margin:0 0 4px} h2{font-size:17px;margin:32px 0 8px} p.m{color:var(--mut);margin:0 0 16px}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.k div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.k b{display:block;font-size:24px} .k span{color:var(--mut);font-size:13px}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px} th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:center}
+tbody th{text-align:left;font-weight:500;white-space:nowrap} thead th{font-weight:600;font-size:12px;color:var(--mut)}
+td{background:color-mix(in srgb,var(--acc) calc(var(--o,0)*100%),transparent)} td span{font-weight:600} td.z{color:var(--mut);background:none}
+.bar{display:grid;grid-template-columns:minmax(160px,340px) 1fr 40px;gap:8px;align-items:center;margin:4px 0;font-size:13px}
+.bar i{display:block;height:12px;background:var(--acc);border-radius:3px} .bar b{text-align:right}
+.tiers details{padding:8px 12px;border-bottom:1px solid var(--line)} .tiers summary{cursor:pointer;font-weight:600} .tiers li{margin:4px 0}
+footer{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+$handling_css
+$extra_css
+</style></head><body><main>
+$ribbon<h1>Organisational Learning Map</h1>
+<p class="m"><b>$status</b></p>
+$handling
+<p class="m">$title · $location · $date. Learnings from one ProbeMatrix investigation, distributed across the organisation by who owns them.</p>
+$body
+<footer>$brand</footer>
+</main>
+$scripts
+</body></html>

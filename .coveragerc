@@ -1,6 +1,8 @@
 [run]
 parallel = True
-source = skills/learnings-coach/scripts
+source =
+    skills/learnings-coach/scripts
+    skills/learnings-coach/scripts/pmlc_lib
 
 [report]
 fail_under = 90

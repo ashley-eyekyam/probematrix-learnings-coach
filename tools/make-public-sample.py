@@ -29,8 +29,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "skills" / "learnings-coach" / "scripts"))
-import pmlc_privacy as privacy  # noqa: E402
-from pmlc import valid_run_slug  # noqa: E402
+from pmlc_lib import privacy  # noqa: E402
+from pmlc_lib.workspace import valid_run_slug  # noqa: E402
 
 MEMO_RX = re.compile(r"^\s*(?:To|From|Cc)\s*:", re.I)
 PERSONAL_FIELDS = ("Investigating Officer", "Supervisor at Time", "Investigation Team")

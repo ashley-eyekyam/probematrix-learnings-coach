@@ -672,7 +672,7 @@ def test_build_parser_has_every_subcommand():
 
 
 def test_release_script_bumps_all_three(tmp_path):
-    files = ["skills/learnings-coach/scripts/pmlc.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
+    files = ["skills/learnings-coach/scripts/pmlc_lib/__init__.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
     for f in files:
         (tmp_path / f).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(ROOT / f, tmp_path / f)
@@ -1760,7 +1760,7 @@ def test_status_phrase_single_source():
         for p in (ROOT / base).rglob("*"):
             if p.suffix in (".py", ".js") and "Learning purposes" in p.read_text(encoding="utf-8"):
                 hits.append(p.relative_to(ROOT).as_posix())
-    assert hits == ["skills/learnings-coach/scripts/pmlc.py"]
+    assert hits == ["skills/learnings-coach/scripts/pmlc_lib/__init__.py"]
     import pmlc_pack
     assert pmlc_pack.STATUS_PHRASE is pmlc.STATUS_PHRASE
     b = pmlc.brand_payload()
@@ -1806,7 +1806,7 @@ def test_dashboard_with_register_embeds_brand(ws, tmp_path):
 
 
 def test_release_bad_version_leaves_files_unchanged(tmp_path):
-    files = ["skills/learnings-coach/scripts/pmlc.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
+    files = ["skills/learnings-coach/scripts/pmlc_lib/__init__.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
     for f in files:
         (tmp_path / f).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(ROOT / f, tmp_path / f)
@@ -1818,7 +1818,7 @@ def test_release_bad_version_leaves_files_unchanged(tmp_path):
 
 
 def test_release_prints_golden_reminder(tmp_path):
-    files = ["skills/learnings-coach/scripts/pmlc.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
+    files = ["skills/learnings-coach/scripts/pmlc_lib/__init__.py", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]
     for f in files:
         (tmp_path / f).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(ROOT / f, tmp_path / f)
