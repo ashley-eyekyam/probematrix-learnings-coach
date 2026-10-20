@@ -1,0 +1,84 @@
+{
+  "title": "Synthetic register",
+  "source": "export.xlsx",
+  "entries": [
+    {
+      "lr_id": "LR-01",
+      "title": "Return to service without a test",
+      "finding_ids": [
+        "FND-0001",
+        "FND-0002"
+      ],
+      "evidence_ids": [
+        "EVD-0001"
+      ],
+      "priority": 1,
+      "owner_entity": "F02 Mechanical Maintenance",
+      "hfacs_level": "L3 Supervision Inadequate",
+      "tiers": [
+        "T1",
+        "T2"
+      ],
+      "lesson": "If a joint is disturbed, test it before service, because untested joints leak (EVD-0001).",
+      "precursors": "Earlier seal leaks",
+      "custom_field": "kept as given",
+      "tier_messages": {
+        "T1": "Do not pressurise without the test record.",
+        "T2": "Hold point before acceptance."
+      },
+      "recommendations": [
+        {
+          "what": "Interlock pressurisation on a signed test record",
+          "hoc_tier": "Engineering control: interlock",
+          "leading_indicator": "Share of restarts with a test record",
+          "owner_note": "extra key"
+        },
+        {
+          "what": "y </script><script>alert(1)</script> & <b>",
+          "hoc_tier": "Administrative (procedure)",
+          "leading_indicator": "i"
+        }
+      ]
+    },
+    {
+      "lr_id": "LR-02",
+      "title": "Display-only alarm had no shutdown",
+      "finding_ids": [
+        "FND-0004"
+      ],
+      "evidence_ids": [
+        "EVD-0002"
+      ],
+      "priority": 2,
+      "owner_entity": "F02 Mechanical Maintenance",
+      "hfacs_level": "L2 Technological Environment",
+      "tiers": [
+        "T2"
+      ],
+      "lesson": "If an alarm only displays, nobody is told to act on it (EVD-0002).",
+      "tier_messages": {
+        "T2": "Confirm each alarm has a defined response."
+      },
+      "urgency": "notice",
+      "recommendation_class": "recommendation",
+      "recipient_role": "control room supervisor",
+      "regulatory_touchpoint": "process safety management regime",
+      "nine_m": "M4",
+      "nine_m_subcategory": "Machine: alarm design",
+      "why_not_stronger": "",
+      "verification": {
+        "method": "sample alarm tests",
+        "indicator": "share of alarms with a response step"
+      },
+      "learning_level": "organisational; double-loop",
+      "recommendations": [
+        {
+          "what": "Add an automatic shutdown on the gas alarm",
+          "hoc_tier": "engineering",
+          "leading_indicator": "Share of gas alarms with a tested shutdown",
+          "owner": "instrument engineer"
+        }
+      ]
+    }
+  ]
+}
