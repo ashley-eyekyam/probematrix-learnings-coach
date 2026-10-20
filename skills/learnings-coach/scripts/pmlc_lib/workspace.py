@@ -1,0 +1,304 @@
+"""Run layout, workspace loading, the manifest, staleness, status and run-path."""
+from __future__ import annotations
+
+import datetime as dt
+import hashlib
+import json
+import os
+import re
+import sys
+from pathlib import Path
+
+from . import __version__
+from .util import _abs, _overlay_path, _s, iso_date, REFS, write_json
+
+
+def load_ws(ws_dir: Path) -> dict:
+    ws_dir = Path(ws_dir)
+    out = {}
+    for name in ("findings", "evidence", "incident", "clusters"):
+        p = ws_dir / f"{name}.json"
+        if p.exists():
+            out[name] = json.loads(p.read_text(encoding="utf-8"))
+    sp = ws_dir / "singleton_roles.json"
+    out["singletons"] = json.loads(sp.read_text(encoding="utf-8")).get("roles", []) if sp.exists() else []
+    if "findings" not in out:
+        sys.exit(f"No findings.json in {ws_dir}. Run: pmlc.py ingest <export.xlsx> --slug <site>-<event>")
+    return out
+
+
+# ----------------------------------------------------------------------------- manifest
+
+MANIFEST = "manifest.json"
+KNOWN_DERIVED = ("findings.json", "evidence.json", "incident.json", "clusters.json", "singleton_roles.json",
+                 "causal_graph.json",
+                 "causal_graph.mmd", "timeline_candidates.json", "timeline_event_day.json", "interfaces.json")
+REBUILD = {"findings.json": "ingest", "evidence.json": "ingest", "incident.json": "ingest",
+           "clusters.json": "classify", "singleton_roles.json": "classify", "causal_graph.json": "causal", "causal_graph.mmd": "causal",
+           "timeline_candidates.json": "timeline", "timeline_event_day.json": "timeline",
+           "interfaces.json": "interfaces"}
+
+
+def file_sha256(path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(65536), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _now() -> str:
+    return dt.datetime.now().isoformat(timespec="seconds")
+
+
+def load_manifest(ws) -> dict:
+    try:
+        m = json.loads((Path(ws) / MANIFEST).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(m, dict):
+        return {}
+    files = m.get("files")
+    m["files"] = {k: {**v, **{x: {} for x in ("inputs", "sources") if x in v and not isinstance(v[x], dict)}}
+                  for k, v in (files if isinstance(files, dict) else {}).items() if isinstance(v, dict)}
+    packs = m.get("packs")
+    m["packs"] = {k: v for k, v in (packs if isinstance(packs, dict) else {}).items() if isinstance(v, dict)}
+    return m
+
+
+def pack_record(manifest: dict, pack_path) -> dict | None:
+    """The packs-table record (last check-pack) for the pack file at pack_path, or None. The table is keyed by the
+    pack's bare name, the file name without .json (`<run>/outputs/<pack>.json`). Every lookup goes through here, so
+    a change of keying (resolved path, name as the fallback) happens in one place."""
+    name = Path(pack_path).name
+    rec = (manifest.get("packs") or {}).get(name[:-5] if name.endswith(".json") else name)
+    return rec if isinstance(rec, dict) else None
+
+
+def sign_off_entry(manifest: dict, path) -> dict | None:
+    """The sign-offs-table entry for the file at path, or None. The table is keyed by the bare file name; the entry
+    carries the resolved path, which sign_off_record checks. Every lookup goes through here (see pack_record)."""
+    rec = (manifest.get("sign_offs") or {}).get(Path(path).name)
+    return rec if isinstance(rec, dict) else None
+
+
+def _save_manifest(ws, m: dict) -> None:
+    m["engine_version"] = __version__
+    m.setdefault("files", {})
+    m.setdefault("packs", {})
+    write_json(Path(ws) / MANIFEST, m)
+
+
+def record_derived(ws, name: str, inputs: dict, sources: dict | None = None) -> None:
+    """Record the sha256 of ws/name and of every input it was built from (read-modify-write)."""
+    ws = Path(ws)
+    m = load_manifest(ws)
+    entry = {"sha256": file_sha256(ws / name), "inputs": inputs, "written": _now()}
+    if sources:
+        entry["sources"] = sources
+    m.setdefault("files", {})[name] = entry
+    _save_manifest(ws, m)
+
+
+def record_export(ws, xlsx) -> None:
+    ws = Path(ws)
+    m = load_manifest(ws)
+    m["export"] = {"file": os.path.basename(xlsx), "sha256": file_sha256(xlsx)}
+    _save_manifest(ws, m)
+
+
+def record_pack_check(ws, pack_name, pack_path, ok, n_problems) -> None:
+    ws = Path(ws)
+    m = load_manifest(ws)
+    p = Path(pack_path)
+    m.setdefault("packs", {})[pack_name] = {
+        "sha256": file_sha256(p) if p.is_file() else "", "path": str(_abs(p)),
+        "ok": bool(ok), "problems": n_problems, "checked": _now()}
+    _save_manifest(ws, m)
+
+
+def taxonomy_sources(path, overlays) -> list:
+    return [Path(path) if path else REFS / "taxonomy.json", *[_overlay_path(x) for x in overlays]]
+
+
+def taxonomy_hash(paths) -> str:
+    return hashlib.sha256("\n".join(file_sha256(p) for p in paths).encode()).hexdigest()
+
+
+def _current_input(ws: Path, name: str, entry: dict):
+    """The input's hash now, 'none', or None when it cannot be checked (export) or is missing."""
+    src = entry.get("sources", {})
+    if name == "taxonomy":
+        paths = [Path(p) for p in src.get("taxonomy", [])]
+        return taxonomy_hash(paths) if paths and all(p.is_file() for p in paths) else None
+    if name == "overrides":
+        p = src.get("overrides")
+        if not p and src.get("overrides_auto") and (ws / "role_overrides.json").is_file():
+            return file_sha256(ws / "role_overrides.json")
+        return "none" if not p else (file_sha256(p) if Path(p).is_file() else None)
+    if name == "export":
+        return "skip"
+    p = ws / name
+    return file_sha256(p) if p.is_file() else None
+
+
+def stale_files(ws) -> list:
+    """[(file, reason)] for recorded derived files whose recorded input hash differs from the current one."""
+    ws = Path(ws)
+    files = load_manifest(ws).get("files", {})
+    out = {}
+    for name, entry in files.items():
+        for inp, rec in entry.get("inputs", {}).items():
+            cur = _current_input(ws, inp, entry)
+            if cur == "skip":
+                continue
+            if cur is None:
+                out[name] = f"input {inp} is missing"
+                break
+            if cur != rec:
+                out[name] = f"{inp} changed since this was built"
+                break
+    changed = True
+    while changed:  # a file built from a stale derived file is stale too
+        changed = False
+        for name, entry in files.items():
+            if name in out:
+                continue
+            for inp in entry.get("inputs", {}):
+                if inp in out and inp in files:
+                    out[name] = f"input {inp} is stale"
+                    changed = True
+                    break
+    return sorted(out.items())
+
+
+def warn_stale(ws) -> None:
+    for name, reason in stale_files(ws):
+        cmd = REBUILD.get(name, "ingest")
+        print(f"warning: stale input {name} ({reason}); re-run pmlc {cmd} {ws}", file=sys.stderr)
+
+
+def cmd_status(a):
+    from .handling import _hash_mismatch   # handling imports this module
+    ws = Path(a.ws)
+    if not ws.is_dir():
+        sys.exit(f"{ws} is not a folder.")
+    m = load_manifest(ws)
+    recorded = m.get("files", {})
+    stale = dict(stale_files(ws))
+    print("| File | State | Reason |\n|---|---|---|")
+    names = [n for n in KNOWN_DERIVED if (ws / n).exists() or n in recorded]
+    for n in names:
+        if not (ws / n).exists():
+            state, reason = "stale", "file is missing"
+        elif n not in recorded:
+            state, reason = "unknown (built before manifest)", ""
+        elif n in stale:
+            state, reason = "stale", stale[n]
+        else:
+            state, reason = "current", ""
+        print(f"| {n} | {state} | {reason} |")
+    packs = dict(m.get("packs", {}))   # a listing of the whole table, not a lookup by file
+    out = outputs_dir(ws)
+    if out.is_dir():
+        for p in sorted(out.glob("*.json")):
+            try:
+                d = json.loads(p.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            if isinstance(d, dict) and isinstance(d.get("pack"), str):
+                packs.setdefault(d["pack"], None)
+    print("\n| Pack | Last check | Changed since |\n|---|---|---|")
+    for name in sorted(packs):
+        rec = packs[name]
+        if not rec:
+            print(f"| {name} | never | n/a |")
+            continue
+        last = ("ok" if rec.get("ok") else f"{rec.get('problems', 0)} problem(s)") + f" ({rec.get('checked', '')})"
+        p = Path(rec.get("path", ""))
+        changed = "missing" if not p.is_file() else ("yes" if file_sha256(p) != rec.get("sha256") else "no")
+        print(f"| {name} | {last} | {changed} |")
+    signed = m.get("sign_offs", {})
+    if signed:
+        print("\n| Signed off | Status | Role | Date | Changed since |\n|---|---|---|---|---|")
+        for name in sorted(signed):
+            r = signed[name]
+            f = Path(r.get("path") or out / name)
+            try:
+                d = json.loads(f.read_text(encoding="utf-8"))
+                changed = "yes" if _hash_mismatch(d) else "no"
+            except (OSError, ValueError):
+                changed = "missing"
+            print(f"| {name} | {r.get('status')} | {r.get('reviewer_role')} | {r.get('reviewed_on')} | {changed} |")
+
+
+# ----------------------------------------------------------------------------- run folders
+
+RUNS_DIR = "pmlc-runs"
+SLUG_PART_RX = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+RUN_SLUG_RX = re.compile(r"^\d{4}-\d{2}-\d{2}(?:-[a-z0-9]+)+$")
+
+
+def run_slug(date, slug) -> str:
+    """Incident date + '<site>-<event>' -> run folder name, e.g. 2020-09-24-hazira-gas-release-fire."""
+    d = iso_date(date)
+    if not d:
+        raise ValueError(f"not an ISO date (YYYY-MM-DD): {date!r}")
+    if not SLUG_PART_RX.match(slug or ""):
+        raise ValueError("slug must be lowercase words joined by hyphens, "
+                         f"e.g. hazira-gas-release-fire (got {slug!r})")
+    return f"{d}-{slug}"
+
+
+def valid_run_slug(s) -> bool:
+    return bool(RUN_SLUG_RX.match(s or "")) and iso_date(s[:10]) is not None
+
+
+def is_standard_ws(ws) -> bool:
+    """True for <anything>/pmlc-runs/<valid slug>/workspace."""
+    p = _abs(ws)
+    return p.name == "workspace" and p.parent.parent.name == RUNS_DIR and valid_run_slug(p.parent.name)
+
+
+def outputs_dir(ws) -> Path:
+    """Where a workspace's outputs go: the sibling outputs/ in the standard layout, ws/outputs otherwise."""
+    p = _abs(ws)
+    return p.parent / "outputs" if is_standard_ws(p) else p / "outputs"
+
+
+def cmd_run_path(a):
+    ws = _abs(a.ws)
+    std = is_standard_ws(ws)
+    print(f"run:       {ws.parent if std else ws}")
+    print(f"workspace: {ws}")
+    print(f"outputs:   {outputs_dir(ws)}")
+    print(f"slug:      {ws.parent.name if std else '(legacy layout: not under pmlc-runs/<slug>/workspace)'}")
+    if (ws / "findings.json").is_file():
+        w = load_ws(ws)
+        print(f"top_rating: {top_rating(w)}")
+        print(f"incident_date: {incident_date(w) or 'unknown'}")
+
+
+def top_rating(w) -> int:
+    """The highest rating in the workspace (0 when there are no findings)."""
+    return max(((f["rating"] or 0) for f in w["findings"]), default=0)
+
+
+def incident_date(w) -> str | None:
+    """The incident date (YYYY-MM-DD): recorded at ingest, else the summary sheet's Date field, else None."""
+    inc = w.get("incident", {})
+    return inc.get("date") or iso_date(inc.get("fields", {}).get("Date"))
+
+
+EVD_RX = re.compile(r"\bEVD-\d{3,}\b")
+
+
+def linked_evidence(f: dict) -> set:
+    """Evidence a finding is linked to: its Linked Evidence column plus the EVD IDs its AI Justification names."""
+    return set(f["evidence"]) | set(EVD_RX.findall(f["justification"]))
+
+
+def downgraded_findings(w: dict) -> set:
+    """Finding IDs with a reviewer vote to downgrade, reject or remove them (incident.json review_votes)."""
+    return {v.get("finding") for v in w.get("incident", {}).get("review_votes", [])
+            if _s(v.get("vote")).lower() in ("downgrade", "reject", "remove")}

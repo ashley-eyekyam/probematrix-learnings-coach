@@ -3,7 +3,7 @@
 
     python3 tools/release.py 2.0.0a1 [--root DIR]
 
-Rewrites __version__ in skills/learnings-coach/scripts/pmlc.py with the PEP 440 form
+Rewrites __version__ in skills/learnings-coach/scripts/pmlc_lib/__init__.py (the single source) with the PEP 440 form
 (2.0.0a1) and "version" in .claude-plugin/plugin.json and .claude-plugin/marketplace.json
 with the semver form (2.0.0-alpha.1). Changes version strings only, and none of them when
 the version is malformed; prints the tag command but does not run git. Standard library only.
@@ -17,7 +17,7 @@ from pathlib import Path
 
 VERSION_RX = re.compile(r"(\d+)\.(\d+)\.(\d+)(?:(a|rc)(\d+))?")
 TARGETS = [  # (file, version-string regex, True when the file takes the semver form)
-    ("skills/learnings-coach/scripts/pmlc.py", re.compile(r'(__version__ = ")[^"]*(")'), False),
+    ("skills/learnings-coach/scripts/pmlc_lib/__init__.py", re.compile(r'(__version__ = ")[^"]*(")'), False),
     (".claude-plugin/plugin.json", re.compile(r'("version": ")[^"]*(")'), True),
     (".claude-plugin/marketplace.json", re.compile(r'("version": ")[^"]*(")'), True),
 ]

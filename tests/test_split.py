@@ -48,6 +48,7 @@ def test_shim_runs_from_copied_folder(tmp_path):
     r = subprocess.run([sys.executable, script, "--version"], cwd=tmp_path, env=env, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
     assert r.stdout.strip() == f"pmlc {pmlc_lib.__version__}"
+    (tmp_path / "exp").mkdir()
     x = make_export(tmp_path / "exp")
     r = subprocess.run([sys.executable, script, "ingest", str(x), "--slug", "site-event", "--date", "2024-03-20"],
                        cwd=tmp_path, env=env, capture_output=True, text=True)
@@ -78,3 +79,16 @@ def test_release_targets_lib(tmp_path):
     assert r.returncode == 0, r.stderr
     init = (tmp_path / "skills/learnings-coach/scripts/pmlc_lib/__init__.py").read_text(encoding="utf-8")
     assert re.search(r'^__version__ = "2\.0\.0a9"$', init, flags=re.M)
+
+
+def test_manifest_record_accessors_key_by_bare_name(tmp_path):
+    from pmlc_lib import workspace
+    rec = {"sha256": "x", "ok": True}
+    m = {"packs": {"board-brief": rec, "bad": 5}, "sign_offs": {"board-brief.json": {"status": "approved"}}}
+    assert workspace.pack_record(m, tmp_path / "outputs" / "board-brief.json") is rec
+    assert workspace.pack_record(m, "board-brief") is rec
+    assert workspace.pack_record(m, "bad.json") is None and workspace.pack_record(m, "other.json") is None
+    assert workspace.pack_record({}, "board-brief.json") is None
+    assert workspace.sign_off_entry(m, tmp_path / "elsewhere" / "board-brief.json") == {"status": "approved"}
+    assert workspace.sign_off_entry(m, "board-brief") is None and workspace.sign_off_entry({}, "x.json") is None
+    assert pmlc.pack_record is workspace.pack_record and pmlc.sign_off_entry is workspace.sign_off_entry

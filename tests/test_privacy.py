@@ -8,6 +8,7 @@ import pytest
 from test_pack import item, pack_with
 from test_pmlc import make_export, run
 import pmlc  # noqa: E402
+import pmlc_lib.privacy  # noqa: E402
 import pmlc_lint as pl  # noqa: E402
 import pmlc_privacy as pv  # noqa: E402
 
@@ -755,7 +756,7 @@ def test_scan_names_names_only_in_attributes(tmp_path):
 
 
 def test_scan_names_oversize_member(tmp_path, monkeypatch):
-    monkeypatch.setattr(pmlc, "_MAX_MEMBER", 10)
+    monkeypatch.setattr(pmlc_lib.privacy, "_MAX_MEMBER", 10)
     d = _zip(tmp_path / "big.docx", {"docProps/core.xml": "<x>" + "a" * 50 + "</x>"})
     out = list(pmlc._iter_texts(d, bad := []))
     assert out == [] and bad == [str(d)]
