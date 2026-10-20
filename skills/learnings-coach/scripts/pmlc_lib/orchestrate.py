@@ -172,10 +172,9 @@ def cmd_render_all(a):
     load_ws(ws)
     out = outputs_dir(ws)
     m = load_manifest(ws)
-    extra = []
-    for flag, v in (("--embed", a.embed), ("--share", a.share), ("--names", a.names), ("--orgs", a.orgs)):
-        if v:
-            extra += [flag, v]
+    share_flags = [x for flag, v in (("--share", a.share), ("--names", a.names), ("--orgs", a.orgs)) if v
+                   for x in (flag, v)]
+    extra = (["--embed", a.embed] if a.embed else []) + share_flags   # pack and dashboard take both
     failed = 0
 
     def go(label, argv):
@@ -199,7 +198,8 @@ def cmd_render_all(a):
         if code:
             print(f"skipped {reg.name}: run check-all first")
         else:
-            go("register-xlsx", ["register-xlsx", str(reg), "--ws", str(ws)] + extra)
+            # register-xlsx has no --embed
+            go("register-xlsx", ["register-xlsx", str(reg), "--ws", str(ws)] + share_flags)
             from .cli import build_parser
             if "register-md" in {c for act in build_parser()._actions
                                  for c in (getattr(act, "choices", None) or {}) if isinstance(c, str)}:

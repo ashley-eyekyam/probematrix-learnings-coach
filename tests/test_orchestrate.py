@@ -1,11 +1,13 @@
 """setup, check-all, render-all, index and dossier-index on the synthetic export (fictional event)."""
 import json
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
-from test_pmlc import make_export, run, run_fail
+from test_pmlc import PMLC, make_export, run, run_fail
 
 FIX = Path(__file__).resolve().parent / "fixtures" / "packs"
 
@@ -100,3 +102,30 @@ def test_dossier_index_none(setup_ws):
     ws, _ = setup_ws
     put(ws, "board-brief")
     assert "no dossier" in run_fail("dossier-index", str(ws)).stderr
+
+
+def test_render_all_with_register_and_embed(setup_ws):
+    from test_pmlc import MINI_REG
+    ws, _ = setup_ws
+    outd = put(ws, "board-brief")
+    reg = outd / "learnings-register.json"
+    reg.write_text(json.dumps(MINI_REG), encoding="utf-8")
+    run("check-pack", str(ws), str(outd / "board-brief.json"))
+    chk = subprocess.run([sys.executable, str(PMLC), "check-register", str(ws), str(reg)], capture_output=True, text=True)
+    if chk.returncode:
+        pytest.skip("synthetic register does not pass check-register: " + chk.stdout[-200:])
+    out = run("render-all", str(ws), "--embed", "summary")
+    assert "skipped learnings-register" not in out
+    assert (outd / "board-brief.html").is_file() and (outd / "learnings-register.xlsx").is_file()
+    assert (outd / "organisation-learning-map.html").is_file()
+
+
+def test_index_escapes_pack_title(setup_ws):
+    ws, _ = setup_ws
+    outd = put(ws, "board-brief")
+    d = json.loads((outd / "board-brief.json").read_text())
+    d["title"] = "Brief <script>alert(1)</script>"
+    (outd / "board-brief.json").write_text(json.dumps(d))
+    run("index", str(ws))
+    html = (outd / "index.html").read_text(encoding="utf-8")
+    assert "<script" not in html and "&lt;script&gt;alert(1)" in html
