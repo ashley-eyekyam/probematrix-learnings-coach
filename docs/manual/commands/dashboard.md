@@ -102,7 +102,7 @@ python3 $E dashboard $WS --title "Hazira gas terminal release and fire" --out $O
 Dashboard written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/map-retitled.html
 ```
 
-## Learnings by pack, reach, response and closure
+**Learnings by pack, reach, response and closure.**
 
 The overview ends with a **Learnings × packs** table (how often each pack item names a learning, from the item's `learning` field in `outputs/*.json`) and a **Packs and reach** list. Reach comes from the rows of `distribution.csv` that have a `date`: deliveries, attendees, and deliveries that included contractors. With `--register`, the detailed register tab shows each learning's **response** from `adoption.csv` (accepted, modified, rejected) and its closure fields (`capa_ref`, `closure_evidence`, `effectiveness_result`) under "Response and closure". The toolbar has a **Needs legal / compliance review** chip that keeps the learnings with a `regulatory_touchpoint`.
 
