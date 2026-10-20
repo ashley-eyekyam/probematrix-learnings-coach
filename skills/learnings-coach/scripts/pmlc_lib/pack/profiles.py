@@ -140,20 +140,20 @@ def _check_assessment(pack, out):
                 out.append(f"{_item_name(s, n, it)}: an assessment question needs cites (the finding it tests)")
 
 
-def _top_rated(w, pack) -> list:
-    F = w.get("findings") or []
-    top = max(((f.get("rating") or 0) for f in F), default=0)
-    ex = {e.get("id") for e in pack.get("exclusions") or [] if isinstance(e, dict)}
-    return [f["id"] for f in F if top and (f.get("rating") or 0) == top and f["id"] not in ex]
+def top_rated_of(w, ids) -> list:
+    """The findings among ids with the highest rating any of them has (top-rated within the pack's scope, L6-19)."""
+    R = {f["id"]: (f.get("rating") or 0) for f in w["findings"]}
+    top = max((R.get(x, 0) for x in ids), default=0)
+    return [x for x in ids if top and R.get(x, 0) == top]
 
 
-def _check_follow_up_per_top(pack, w, out):
-    if w is None:
+def _check_follow_up_per_top(pack, top, out):
+    if top is None:
         return
     rows = [r for _, _, it in _items(pack) if it.get("id") == "follow-up" and isinstance(it.get("rows"), list)
             for r in it["rows"]]
     have = {x for r in rows if isinstance(r, list) and r and isinstance(r[0], str) for x in _ID_SPLIT.split(r[0]) if x}
-    miss = [x for x in _top_rated(w, pack) if x not in have]
+    miss = [x for x in top if x not in have]
     if miss:
         out.append(f"follow-up: no row for top-rated finding(s) {', '.join(miss)}")
 
@@ -169,8 +169,9 @@ def _check_same_sections(pack, other, profiles, out):
         out.append(f"sections: must be the same sections as {other} ({', '.join(want)}), got {', '.join(map(str, got))}")
 
 
-def check(pack, profile, w=None, profiles=None) -> list:
-    """Profile violation messages for one pack. w (the workspace) is needed only by the follow-up-per-top rule."""
+def check(pack, profile, top=None, profiles=None) -> list:
+    """Profile violation messages for one pack. top: the top-rated relevant finding IDs (check_pack passes
+    top_rated_of(w, relevant findings net of exclusions)); the follow-up-per-top rule is skipped without it."""
     if not isinstance(pack, dict) or not isinstance(profile, dict):
         return []
     out: list = []
@@ -193,7 +194,7 @@ def check(pack, profile, w=None, profiles=None) -> list:
         elif r == "assessment-answer":
             _check_assessment(pack, out)
         elif r == "follow-up-per-top":
-            _check_follow_up_per_top(pack, w, out)
+            _check_follow_up_per_top(pack, top, out)
         elif isinstance(r, str) and r.startswith("same-sections-as:"):
             _check_same_sections(pack, r.split(":", 1)[1], load() if profiles is None else profiles, out)
         else:
@@ -202,17 +203,21 @@ def check(pack, profile, w=None, profiles=None) -> list:
 
 
 def padding(pack) -> list:
-    """P3-7: three or more items in one pack with the same non-empty cites set."""
+    """P3-7: three or more items in one pack with the same non-empty cites set. Ruling X24: items that share one
+    non-empty group (an engineering learning, barrier and recommendation; a decision and its indicator) count once,
+    so the same cites set must recur in three different groups, or in ungrouped items, to warn."""
     seen: dict = {}
-    for _, _, it in _items(pack):
-        c = it.get("cites")
+    for n, (_, _, it) in enumerate(_items(pack)):
+        c, g = it.get("cites"), it.get("group")
         if isinstance(c, list) and c and all(isinstance(x, str) for x in c):
-            seen.setdefault(tuple(sorted(set(c))), []).append(it)
+            unit = ("group", g) if isinstance(g, str) and g.strip() else ("item", n)
+            seen.setdefault(tuple(sorted(set(c))), []).append(unit)
     return [f"{len(v)} items share the same cites ({', '.join(k)}): possible padding" for k, v in seen.items()
-            if len(v) >= 3]
+            if len(set(v)) >= 3]
 
 
 def _audience_name(a) -> str:
+    """The audience id in the singular, as the drift message reads ("supervisors" -> "supervisor")."""
     x = a.get("id", "")
     return x[:-1] if x.endswith("s") else x
 

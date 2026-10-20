@@ -1,30 +1,25 @@
 {"pack": "auditor-assurance-pack", "schema": 1, "title": "Auditor Assurance Pack: Synthetic pump fire, 2024",
  "audience": "Internal and external auditors", "status": "Learning purposes: not a statutory document",
- "bottom_line": [
-  {"text": "Restarts and spares purchases can both be tested from existing records.", "cites": ["FND-0002", "FND-0003"]}],
+ "bottom_line": [{"text": "Restarts and spares purchases can both be tested from existing records.", "cites": ["FND-0002", "FND-0003"]}],
  "scope": {"levels": [3, 4], "min_rating": 4},
  "sections": [
   {"id": "why-missed", "heading": "Why existing assurance did not catch it", "items": [
    {"kind": "para", "text": "The findings record no check of purchase records against specifications [FND-0003; EVD-0003]."}]},
   {"id": "test-points", "heading": "Audit test points", "items": [
-   {"kind": "test_point", "group": "Maintenance and testing", "requirement": "Every restart after pressure-boundary work has a leak-test record", "sample": "10 recent restarts from the CMMS", "conformity_evidence": "A signed test record on each work order", "red_flags": ["Work order closed with no test entry"], "cites": ["FND-0002", "EVD-0001"]},
-   {"kind": "test_point", "group": "Materials and spares", "requirement": "Critical spares are bought to a specification", "sample": "20 critical-spares purchase orders", "conformity_evidence": "A specification reference on each order", "red_flags": ["Local purchase with no technical approval"], "cites": ["FND-0003", "EVD-0003"]},
-   {"kind": "test_point", "group": "Maintenance and testing", "requirement": "Seal changes are planned with a written test step", "sample": "15 seal-change work orders", "conformity_evidence": "A test step in each job plan", "red_flags": ["Job plan with no test step"], "cites": ["FND-0001"]},
-   {"kind": "test_point", "group": "Maintenance and testing", "requirement": "Test equipment for leak tests is available and in date", "sample": "Test-rig calibration records", "conformity_evidence": "A current calibration certificate", "red_flags": ["Overdue calibration"], "cites": ["FND-0001"]},
-   {"kind": "test_point", "group": "Maintenance and testing", "requirement": "Supervisors sign the return-to-service record", "sample": "10 return-to-service records", "conformity_evidence": "A supervisor signature on each", "red_flags": ["Unsigned release"], "cites": ["FND-0002"]},
-   {"kind": "test_point", "group": "Procedures", "requirement": "The procedure index covers return to service", "sample": "The current procedure index", "conformity_evidence": "An entry for return to service", "red_flags": ["No entry, or a draft only"], "cites": ["FND-0003"]},
-   {"kind": "test_point", "group": "Procedures", "requirement": "Procedures are reviewed after equipment changes", "sample": "Procedure review log since the last equipment change", "conformity_evidence": "A review date after each change", "red_flags": ["No review after a change"], "cites": ["FND-0004"]},
-   {"kind": "test_point", "group": "Materials and spares", "requirement": "Substitute parts go through change control", "sample": "10 substitute-part requests", "conformity_evidence": "A change-control reference on each", "red_flags": ["Substitution with no reference"], "cites": ["FND-0004"]},
-   {"kind": "test_point", "group": "Materials and spares", "requirement": "Stores checks the specification at issue", "sample": "Issue records for critical spares", "conformity_evidence": "A specification reference at issue", "red_flags": ["Issue with no specification check"], "cites": ["FND-0001", "EVD-0001"]},
-   {"kind": "test_point", "group": "Materials and spares", "requirement": "Local purchases of critical spares are reported", "sample": "Monthly purchasing reports", "conformity_evidence": "Local critical-spares purchases listed", "red_flags": ["Local purchases missing from the report"], "cites": ["FND-0001", "EVD-0001"]},
-   {"kind": "test_point", "group": "Alarm management", "requirement": "Gas alarms are classed by the action they need", "sample": "The alarm list for the area", "conformity_evidence": "An action class for each gas alarm", "red_flags": ["Display-only gas alarms with no action set"], "cites": ["FND-0002", "EVD-0002"]},
-   {"kind": "test_point", "group": "Alarm management", "requirement": "Alarm changes are approved by the technical authority", "sample": "Alarm change records", "conformity_evidence": "An approval on each change", "red_flags": ["Change with no approval"], "cites": ["FND-0002", "EVD-0002"]},
-   {"kind": "test_point", "group": "Management review", "requirement": "Management review covers spares and testing indicators", "sample": "Last four management review minutes", "conformity_evidence": "The indicators discussed with actions", "red_flags": ["Indicators not reviewed"], "cites": ["FND-0003", "EVD-0003"]}]},
+   {"kind": "test_point", "group": "Maintenance and testing", "requirement": "Every restart after pressure-boundary work has a leak-test record",
+    "sample": "10 recent restarts from the CMMS", "conformity_evidence": "A signed test record on each work order",
+    "red_flags": ["Work order closed with no test entry"], "cites": ["FND-0002", "EVD-0001"]},
+   {"kind": "test_point", "group": "Materials and spares", "requirement": "Critical spares are bought to a specification",
+    "sample": "20 critical-spares purchase orders", "conformity_evidence": "A specification reference on each order",
+    "red_flags": ["Local purchase with no technical approval"], "cites": ["FND-0003", "EVD-0003"]}]},
   {"id": "cross-site", "heading": "Cross-site verification protocol", "items": [
-   {"kind": "table", "columns": ["Condition", "Records to pull", "Interview", "Walk-path stop"], "rows": [["Restart without a test", "Last 10 restart work orders", "Maintenance supervisor", "Pump bay"]], "row_cites": [["FND-0002"]]}]},
+   {"kind": "table", "columns": ["Condition", "Records to pull", "Interview", "Walk-path stop"],
+    "rows": [["Restart without a test", "Last 10 restart work orders", "Maintenance supervisor", "Pump bay"]],
+    "row_cites": [["FND-0002"]]}]},
   {"id": "evidence-requests", "heading": "Evidence request list", "items": [
    {"kind": "check", "group": "Maintenance", "text": "Return-to-service procedure and its revision history", "cites": ["FND-0002"]},
    {"kind": "check", "group": "Procurement", "text": "Critical-spares purchase orders since March 2022", "cites": ["FND-0003"]}]},
   {"id": "reporting", "heading": "Reporting", "items": [
    {"kind": "para", "text": "Grade each test point: conforming, partly, not, or not tested."},
-   {"kind": "table", "columns": ["Test point", "Grade", "Notes"], "rows": [["Restart leak-test record", "", ""], ["Spares to specification", "", ""]]}]}]}
+   {"kind": "table", "columns": ["Test point", "Grade", "Notes"],
+    "rows": [["Restart leak-test record", "", ""], ["Spares to specification", "", ""]]}]}]}

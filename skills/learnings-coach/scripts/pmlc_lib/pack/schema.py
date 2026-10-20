@@ -16,6 +16,7 @@ from ..select import _filter, select_args
 from ..workspace import downgraded_findings, linked_evidence, load_ws, record_pack_check
 from .. import lint
 from . import profiles
+from .profiles import top_rated_of
 
 
 SCHEMA_VERSION = 1
@@ -167,13 +168,6 @@ def relevant_findings(w, scope=None) -> list:
         return [f["id"] for f in w["findings"] if f["id"] in rel]
     top = max(((f.get("rating") or 0) for f in w["findings"]), default=0)
     return [f["id"] for f in w["findings"] if top and (f.get("rating") or 0) == top]
-
-
-def top_rated_of(w, ids) -> list:
-    """The findings among ids with the highest rating any of them has (top-rated within the pack's scope, L6-19)."""
-    R = {f["id"]: (f.get("rating") or 0) for f in w["findings"]}
-    top = max((R.get(x, 0) for x in ids), default=0)
-    return [x for x in ids if top and R.get(x, 0) == top]
 
 
 def _check_field(v, f, path, bad):
@@ -577,7 +571,7 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
     for i, x in enumerate(excluded_ids(pack)):
         if x in ids:
             bad(f"exclusions[{i}].id", f"{x} is also cited; a finding is either cited or left out on purpose")
-    prof = profiles.profile_for(pack.get("pack"))
+    prof, top = profiles.profile_for(pack.get("pack")), None
     if not P:
         rel = [x for x in relevant_findings(w, pack.get("scope")) if x not in excluded_ids(pack)]
         top = top_rated_of(w, rel)
@@ -587,7 +581,7 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
             if floor != profiles.DEFAULT_COVERAGE_FLOOR:
                 low = low.replace("a quarter", f"{floor:.0%}")
             W.append(f"coverage: cites {got} of {len(rel)} relevant findings; {low}")
-    strict_msgs = profiles.check(pack, prof, w) if prof else []
+    strict_msgs = profiles.check(pack, prof, top) if prof else []
     strict_msgs += [f"items: {x}" for x in profiles.padding(pack)]
     strict_msgs += [f"scope: {x}" for x in profiles.scope_drift(pack, profiles.load_audiences())]
     (P if strict else W).extend(strict_msgs)

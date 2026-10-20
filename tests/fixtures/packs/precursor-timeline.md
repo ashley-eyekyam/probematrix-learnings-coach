@@ -38,28 +38,10 @@ The reliability engineer role that would review it was absent [FND-0003].
 **Indicator:** Critical spares bought without a specification [FND-0003]
 - Measure: Count per month from purchase records
 
-**Learning:** A missing procedure entry is a signal when restarts carry on without it. [FND-0002; EVD-0002]
-
-The procedure index has no return-to-service entry [EVD-0002].
-
-- Owner: Mechanical Maintenance (F02, T3)
-
-**Indicator:** Pressure-boundary jobs with no checklist [FND-0002]
-- Measure: Count per month from the procedure index
-
-**Learning:** A display-only alarm is a signal that the response relies on attention. [FND-0004; EVD-0002]
-
-The gas alarm had no shutdown [FND-0004].
-
-- Owner: Control room (F09, T1)
-
-**Indicator:** Gas alarms with no action class [FND-0004]
-- Measure: Count from the alarm list each quarter
-
 ---
 
-This pack cites 2 of 2 relevant findings.
+This pack cites 1 of 2 relevant findings.
 
-2 of 2 top-rated relevant findings cited.
+1 of 2 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a4 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

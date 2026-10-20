@@ -1,14 +1,22 @@
 {"pack": "engineering-integrity-learnings", "schema": 1, "title": "Engineering and Integrity Learnings: Synthetic pump fire, 2024",
  "audience": "Engineering, integrity, MOC and I&C", "status": "Learning purposes: not a statutory document",
- "bottom_line": [
-  {"text": "Seals bought without a specification entered service with no technical approval.", "cites": ["FND-0003"]}],
+ "bottom_line": [{"text": "Seals bought without a specification entered service with no technical approval.", "cites": ["FND-0003"]}],
  "scope": {"tags": ["engineering"]},
  "sections": [
   {"id": "themes", "heading": "Technical learnings by theme", "items": [
-   {"kind": "learning", "group": "Specification and substitution", "lesson": "A part without a specification is an unreviewed design change.", "explanation": "Seals were bought locally without a specification from March 2022 [FND-0003; EVD-0003].", "owner": "Reliability engineering", "cites": ["FND-0003"]},
-   {"kind": "barrier", "group": "Specification and substitution", "barrier": "Technical approval of substitute parts", "type": "prevention", "owner": "Reliability engineer (absent)", "state": "absent", "failure_mode": "No approval step existed for local purchases", "hoc_tier": "engineering", "fix": "Block critical-spares orders without a specification in the purchasing system", "indicator": "% of critical-spares orders with a specification reference", "cites": ["FND-0003"]},
-   {"kind": "recommendation", "group": "Specification and substitution", "change": "Route every substitute part through change control", "hoc_tier": "administrative", "indicator": "Substitutions approved through change control", "cites": ["FND-0003", "EVD-0003"]}]},
+   {"kind": "learning", "group": "Specification and substitution", "lesson": "A part without a specification is an unreviewed design change.",
+    "explanation": "Seals were bought locally without a specification from March 2022 [FND-0003; EVD-0003].",
+    "owner": "Reliability engineering", "cites": ["FND-0003"]},
+   {"kind": "barrier", "group": "Specification and substitution", "barrier": "Technical approval of substitute parts", "type": "prevention",
+    "owner": "Reliability engineer (absent)", "state": "absent", "failure_mode": "No approval step existed for local purchases",
+    "hoc_tier": "engineering", "fix": "Block critical-spares orders without a specification in the purchasing system",
+    "indicator": "% of critical-spares orders with a specification reference", "cites": ["FND-0003"]},
+   {"kind": "recommendation", "group": "Specification and substitution", "change": "Route every substitute part through change control",
+    "hoc_tier": "administrative", "indicator": "Substitutions approved through change control", "cites": ["FND-0003"]}]},
   {"id": "decisions", "heading": "Engineering decisions pending", "items": [
-   {"kind": "decision", "decision": "Which leak test applies after a seal change, and at what pressure?", "options": ["Set by the technical authority per pump class", "One site-wide test standard"], "owner": "Technical authority", "cites": ["FND-0001"]}]},
+   {"kind": "decision", "decision": "Which leak test applies after a seal change, and at what pressure?",
+    "options": ["Set by the technical authority per pump class", "One site-wide test standard"], "owner": "Technical authority",
+    "cites": ["FND-0001"]}]},
   {"id": "records", "heading": "Data and records", "items": [
-   {"kind": "check", "text": "Each critical spare's record names its specification and approver.", "when": "at receipt", "cites": ["FND-0003", "EVD-0003"]}]}]}
+   {"kind": "check", "text": "Each critical spare's record names its specification and approver.", "when": "at receipt",
+    "cites": ["FND-0003"]}]}]}

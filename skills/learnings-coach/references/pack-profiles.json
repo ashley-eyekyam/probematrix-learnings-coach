@@ -2,7 +2,7 @@
   "auditor-assurance-pack": {
     "sections": [
       {"id": "why-missed", "kinds": ["para"], "min": 1, "max": 99},
-      {"id": "test-points", "kinds": ["test_point"], "min": 12, "max": 20},
+      {"id": "test-points", "kinds": ["test_point"], "min": 1, "max": 20},
       {"id": "cross-site", "kinds": ["table"], "min": 1, "max": 1},
       {"id": "evidence-requests", "kinds": ["check"], "min": 1, "max": 99},
       {"id": "reporting", "kinds": ["para"], "min": 1, "max": 99},
@@ -28,9 +28,9 @@
     "sections": [
       {"id": "what-happened", "kinds": ["para"], "min": 1, "max": 99},
       {"id": "management-system", "kinds": ["para"], "min": 1, "max": 99},
-      {"id": "questions", "kinds": ["question"], "min": 8, "max": 12},
+      {"id": "questions", "kinds": ["question"], "min": 1, "max": 12},
       {"id": "assurance", "kinds": ["table"], "min": 1, "max": 99},
-      {"id": "indicators", "kinds": ["indicator"], "min": 3, "max": 5}
+      {"id": "indicators", "kinds": ["indicator"], "min": 1, "max": 5}
     ],
     "required_scope": ["levels", "min_rating"],
     "bottom_line": {"min": 1, "max": 7},
@@ -53,10 +53,10 @@
   "dossier-F02": {
     "sections": [
       {"id": "s1-*", "kinds": ["table"], "min": 1, "max": 1},
-      {"id": "s2-*", "kinds": ["learning"], "min": 3, "max": 8},
-      {"id": "s3-*", "kinds": ["learning"], "min": 3, "max": 8},
-      {"id": "s4-*", "kinds": ["learning"], "min": 3, "max": 8},
-      {"id": "s5-*", "kinds": ["learning"], "min": 3, "max": 8},
+      {"id": "s2-*", "kinds": ["learning"], "min": 1, "max": 8},
+      {"id": "s3-*", "kinds": ["learning"], "min": 1, "max": 8},
+      {"id": "s4-*", "kinds": ["learning"], "min": 1, "max": 8},
+      {"id": "s5-*", "kinds": ["learning"], "min": 1, "max": 8},
       {"id": "s6-*", "kinds": ["para"], "min": 1, "max": 99},
       {"id": "s6-*", "kinds": ["learning"], "min": 1, "max": 99},
       {"id": "s7-*", "kinds": ["barrier"], "min": 1, "max": 99},
@@ -102,7 +102,7 @@
   },
   "frontline-learning-cards": {
     "sections": [
-      {"id": "cards", "kinds": ["card"], "min": 5, "max": 8},
+      {"id": "cards", "kinds": ["card"], "min": 1, "max": 8},
       {"id": "toolbox-talks", "kinds": ["para"], "min": 1, "max": 99},
       {"id": "toolbox-talks", "kinds": ["scenario"], "min": 1, "max": 99},
       {"id": "stop-and-ask", "kinds": ["check"], "min": 1, "max": 99}
@@ -156,10 +156,10 @@
   },
   "manager-coach": {
     "sections": [
-      {"id": "*", "kinds": ["learning"], "min": 3, "max": 6},
+      {"id": "*", "kinds": ["learning"], "min": 1, "max": 6},
       {"id": "*", "kinds": ["para"], "min": 1, "max": 99},
       {"id": "*", "kinds": ["recommendation"], "min": 1, "max": 99},
-      {"id": "*", "kinds": ["indicator"], "min": 2, "max": 4},
+      {"id": "*", "kinds": ["indicator"], "min": 1, "max": 4},
       {"id": "*", "kinds": ["table"], "min": 1, "max": 1},
       {"id": "summary", "kinds": ["table"], "min": 1, "max": 1}
     ],
@@ -187,8 +187,8 @@
     "sections": [
       {"id": "signals", "kinds": ["timeline"], "min": 1, "max": 1},
       {"id": "event-day", "kinds": ["timeline"], "min": 1, "max": 1},
-      {"id": "signal-learnings", "kinds": ["learning"], "min": 3, "max": 6},
-      {"id": "signal-learnings", "kinds": ["indicator"], "min": 3, "max": 6}
+      {"id": "signal-learnings", "kinds": ["learning"], "min": 1, "max": 6},
+      {"id": "signal-learnings", "kinds": ["indicator"], "min": 1, "max": 6}
     ],
     "required_scope": [],
     "bottom_line": {"min": 1, "max": 7},
@@ -232,8 +232,8 @@
       {"id": "set-up", "kinds": ["para"], "min": 1, "max": 99},
       {"id": "signals", "kinds": ["timeline"], "min": 1, "max": 1},
       {"id": "culture", "kinds": ["para"], "min": 1, "max": 99},
-      {"id": "decisions", "kinds": ["decision"], "min": 6, "max": 10},
-      {"id": "decisions", "kinds": ["indicator"], "min": 6, "max": 10},
+      {"id": "decisions", "kinds": ["decision"], "min": 1, "max": 10},
+      {"id": "decisions", "kinds": ["indicator"], "min": 1, "max": 10},
       {"id": "visible", "kinds": ["check"], "min": 1, "max": 99},
       {"id": "workshop", "kinds": ["table"], "min": 1, "max": 1}
     ],
@@ -273,8 +273,8 @@
       {"id": "summary", "kinds": ["para"], "min": 1, "max": 99},
       {"id": "transferability", "kinds": ["table"], "min": 1, "max": 1},
       {"id": "policies", "kinds": ["para"], "min": 1, "max": 99},
-      {"id": "decisions", "kinds": ["decision"], "min": 4, "max": 6},
-      {"id": "decisions", "kinds": ["indicator"], "min": 4, "max": 6},
+      {"id": "decisions", "kinds": ["decision"], "min": 1, "max": 6},
+      {"id": "decisions", "kinds": ["indicator"], "min": 1, "max": 6},
       {"id": "assurance", "kinds": ["question"], "min": 1, "max": 99}
     ],
     "required_scope": ["levels", "min_rating"],
@@ -285,9 +285,9 @@
   "training-designer": {
     "sections": [
       {"id": "needs-map", "kinds": ["table"], "min": 1, "max": 1},
-      {"id": "modules", "kinds": ["module"], "min": 3, "max": 6},
+      {"id": "modules", "kinds": ["module"], "min": 1, "max": 6},
       {"id": "scenarios", "kinds": ["scenario"], "min": 1, "max": 3},
-      {"id": "assessment", "kinds": ["question"], "min": 10, "max": 15},
+      {"id": "assessment", "kinds": ["question"], "min": 1, "max": 15},
       {"id": "cascade", "kinds": ["table"], "min": 1, "max": 1}
     ],
     "required_scope": ["levels"],

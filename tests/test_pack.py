@@ -1169,15 +1169,16 @@ import pmlc_lib.pack.profiles as profiles  # noqa: E402
 
 def _board_with_questions(n):
     p = fixture("board-brief")
-    qs = [dict(MIN["question"], kind="question", question=f"Question {i}?", cites=[["FND-0002"], ["FND-0003"]][i % 2])
-          for i in range(n)]
+    pool = [["FND-0002"], ["FND-0003"], ["FND-0002", "EVD-0002"], ["FND-0003", "EVD-0003"], ["FND-0002", "FND-0003"],
+            ["FND-0003", "EVD-0001"], ["FND-0001", "FND-0002"]]
+    qs = [dict(MIN["question"], kind="question", question=f"Question {i}?", cites=pool[i % len(pool)]) for i in range(n)]
     next(s for s in p["sections"] if s["id"] == "questions")["items"] = qs
     return p
 
 
 def test_profile_violation_warns_then_strict_fails(w, ws, tmp_path):  # noqa: F811
-    p = _board_with_questions(3)
-    msg = "section questions: 3 question items, expected 8-12"
+    p = _board_with_questions(13)                           # ruling X25 (L2-17): up to 12, at least 1
+    msg = "section questions: 13 question items, expected 1-12"
     r = pp.check_pack(p, w)
     assert msg in r.warnings and msg not in r.problems
     assert msg in pp.check_pack(p, w, strict=True).problems
@@ -1237,6 +1238,22 @@ def test_padding_warning(w):
     assert not any("possible padding" in x for x in pp.check_pack(two, w).warnings)
 
 
+def test_padding_counts_a_group_once(w):                                            # ruling X24
+    c = ["FND-0003"]
+    triplet = [item("learning", group="Spares", cites=c), item("barrier", group="Spares", cites=c),
+               item("recommendation", group="Spares", cites=c)]
+    assert not any("possible padding" in x for x in pp.check_pack(pack_with(*triplet), w, strict=True).problems)
+    three_groups = [item("para", text=f"t{g}", group=g, cites=c) for g in ("A", "B", "C")]
+    assert "items: 3 items share the same cites (FND-0003): possible padding" in pp.check_pack(
+        pack_with(*three_groups), w).warnings
+    mixed = triplet + [item("para", text="u1", cites=c), item("para", text="u2", cites=c)]   # 1 group + 2 ungrouped
+    assert "items: 5 items share the same cites (FND-0003): possible padding" in pp.check_pack(pack_with(*mixed), w).warnings
+    e = fixture("engineering-integrity-learnings")                  # SKILL.md triplet, all citing FND-0003
+    th = e["sections"][0]["items"]
+    assert {tuple(it["cites"]) for it in th} == {("FND-0003",)} and len({it["group"] for it in th}) == 1
+    assert pp.check_pack(e, w, strict=True).problems == []
+
+
 def test_scope_drift_warning(w):
     p = fixture("supervisor-coach")
     msg = "scope: scope differs from the supervisor audience default (T2)"
@@ -1289,7 +1306,8 @@ def test_profile_sections_kinds_and_bottom_line(w):
         assert m in got, got
     m = fixture("manager-coach")
     m["sections"] = [s for s in m["sections"] if s["id"] == "summary"]
-    assert "a section matching *: missing (learning items, expected 3-6)" in _strict(m, w)
+    assert "a section matching *: missing (learning items, expected 1-6)" in _strict(m, w)
+    assert not any("expected" in x for x in _strict(_board_with_questions(1), w))     # one question is enough
 
 
 def test_profile_required_scope_and_word_limit(w):

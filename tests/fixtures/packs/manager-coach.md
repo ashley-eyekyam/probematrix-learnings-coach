@@ -26,18 +26,6 @@ The procedure index has no return-to-service entry [EVD-0002].
 
 - Owner: Maintenance manager
 
-**Learning:** A work order could close with no test result recorded. [FND-0001; EVD-0001]
-
-The work order shows no test [EVD-0001].
-
-- Owner: Mechanical maintenance
-
-**Learning:** Parts without a specification reached the job with no check at the workshop. [FND-0001; FND-0003]
-
-Local seals had no specification [FND-0003].
-
-- Owner: Mechanical maintenance
-
 ### Interfaces you share
 
 Stores buys the seals that maintenance fits; agree who approves a substitute part [FND-0003].
@@ -55,10 +43,6 @@ Stores buys the seals that maintenance fits; agree who approves a substitute par
 **Indicator:** Restarts with a test record [FND-0001]
 - Measure: % of pump restarts in the CMMS with a leak-test record attached
 - Deterioration looks like: Any restart without one
-
-**Indicator:** Jobs with a checklist [FND-0002; EVD-0002]
-- Measure: % of pressure-boundary jobs with a return-to-service checklist attached
-- Deterioration looks like: Any job without one
 
 ### 90-day agenda
 

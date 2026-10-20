@@ -36,36 +36,6 @@ Spares were bought locally without a specification, and assurance did not see th
 - Why it matters: The pump restarted without one.
 - Good evidence looks like: A list of return-to-service hold points with test records.
 
-**Q: Which sites buy critical spares locally today?** [FND-0003; EVD-0003]
-- Why it matters: Local buying ran without a specification check.
-- Good evidence looks like: A site-by-site list of local critical-spares purchases.
-- Put to: Chief Operating Officer
-
-**Q: Who approves a substitute part, and is that role filled at every site?** [FND-0003; EVD-0001]
-- Why it matters: The approving role was absent here.
-- Good evidence looks like: A list of named roles with their approval records.
-- Put to: Chief Operating Officer
-
-**Q: How often do procedures change without a review of the hold points?** [FND-0002; EVD-0002]
-- Why it matters: The return-to-service checklist was missing.
-- Good evidence looks like: A procedure review log with hold points checked.
-- Put to: Chief Executive
-
-**Q: What do we know about restarts without test records elsewhere?** [FND-0001; FND-0002]
-- Why it matters: This restart had no test record.
-- Good evidence looks like: A sampled count of restarts with and without test records.
-- Put to: Chief Operating Officer
-
-**Q: How are spares and testing risks reported to this board?** [FND-0002; FND-0003]
-- Why it matters: Neither risk reached the board before the event.
-- Good evidence looks like: A board report line for each risk with its indicator.
-- Put to: Company Secretary
-
-**Q: Which actions from this event need capital, and when will we decide?** [FND-0001; FND-0003]
-- Why it matters: System fixes may need budget, not only instructions.
-- Good evidence looks like: A costed list of actions above the administrative tier.
-- Put to: Chief Financial Officer
-
 ## Assurance the board should request
 
 | Verification | Sites | By when | Cites |
@@ -78,16 +48,6 @@ Spares were bought locally without a specification, and assurance did not see th
 - Measure: % of critical-spares orders with a specification reference
 - Deterioration looks like: Any month below 100%
 - Owner: Head of procurement
-
-**Indicator:** Restarts with a test record [FND-0001; FND-0002]
-- Measure: % of restarts after pressure-boundary work with a signed test record
-- Deterioration looks like: Any restart without one
-- Owner: Chief Operating Officer
-
-**Indicator:** Procedures with reviewed hold points [FND-0002; EVD-0002]
-- Measure: % of maintenance procedures whose hold points were reviewed this year
-- Deterioration looks like: Below 90%
-- Owner: Head of maintenance
 
 ---
 

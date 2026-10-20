@@ -10,17 +10,17 @@
   {"id": "management-system", "heading": "What the investigation says about the management system", "items": [
    {"kind": "para", "text": "Spares were bought locally without a specification, and assurance did not see the gap [FND-0003]."}]},
   {"id": "questions", "heading": "Questions for directors to ask management", "items": [
-   {"kind": "question", "question": "How do we know critical spares meet their specification at every site?", "why": "Local purchasing bypassed the specification for two years.", "good_evidence": "A sampled audit of critical-spares purchase records against specifications.", "to": "Chief Executive", "cites": ["FND-0003"]},
-   {"kind": "question", "question": "Which equipment can return to service without a documented test?", "why": "The pump restarted without one.", "good_evidence": "A list of return-to-service hold points with test records.", "cites": ["FND-0002"]},
-   {"kind": "question", "question": "Which sites buy critical spares locally today?", "why": "Local buying ran without a specification check.", "good_evidence": "A site-by-site list of local critical-spares purchases.", "to": "Chief Operating Officer", "cites": ["FND-0003", "EVD-0003"]},
-   {"kind": "question", "question": "Who approves a substitute part, and is that role filled at every site?", "why": "The approving role was absent here.", "good_evidence": "A list of named roles with their approval records.", "to": "Chief Operating Officer", "cites": ["FND-0003", "EVD-0001"]},
-   {"kind": "question", "question": "How often do procedures change without a review of the hold points?", "why": "The return-to-service checklist was missing.", "good_evidence": "A procedure review log with hold points checked.", "to": "Chief Executive", "cites": ["FND-0002", "EVD-0002"]},
-   {"kind": "question", "question": "What do we know about restarts without test records elsewhere?", "why": "This restart had no test record.", "good_evidence": "A sampled count of restarts with and without test records.", "to": "Chief Operating Officer", "cites": ["FND-0001", "FND-0002"]},
-   {"kind": "question", "question": "How are spares and testing risks reported to this board?", "why": "Neither risk reached the board before the event.", "good_evidence": "A board report line for each risk with its indicator.", "to": "Company Secretary", "cites": ["FND-0002", "FND-0003"]},
-   {"kind": "question", "question": "Which actions from this event need capital, and when will we decide?", "why": "System fixes may need budget, not only instructions.", "good_evidence": "A costed list of actions above the administrative tier.", "to": "Chief Financial Officer", "cites": ["FND-0001", "FND-0003"]}]},
+   {"kind": "question", "question": "How do we know critical spares meet their specification at every site?",
+    "why": "Local purchasing bypassed the specification for two years.",
+    "good_evidence": "A sampled audit of critical-spares purchase records against specifications.", "to": "Chief Executive",
+    "cites": ["FND-0003"]},
+   {"kind": "question", "question": "Which equipment can return to service without a documented test?",
+    "why": "The pump restarted without one.", "good_evidence": "A list of return-to-service hold points with test records.",
+    "cites": ["FND-0002"]}]},
   {"id": "assurance", "heading": "Assurance the board should request", "items": [
-   {"kind": "table", "columns": ["Verification", "Sites", "By when"], "rows": [["Independent check of critical-spares specifications", "All sites", "Next quarter"]], "row_cites": [["FND-0003"]]}]},
+   {"kind": "table", "columns": ["Verification", "Sites", "By when"],
+    "rows": [["Independent check of critical-spares specifications", "All sites", "Next quarter"]], "row_cites": [["FND-0003"]]}]},
   {"id": "indicators", "heading": "Indicators for the board dashboard", "items": [
-   {"kind": "indicator", "name": "Critical spares bought to specification", "measure": "% of critical-spares orders with a specification reference", "deterioration": "Any month below 100%", "owner": "Head of procurement", "cites": ["FND-0003"]},
-   {"kind": "indicator", "name": "Restarts with a test record", "measure": "% of restarts after pressure-boundary work with a signed test record", "deterioration": "Any restart without one", "owner": "Chief Operating Officer", "cites": ["FND-0001", "FND-0002"]},
-   {"kind": "indicator", "name": "Procedures with reviewed hold points", "measure": "% of maintenance procedures whose hold points were reviewed this year", "deterioration": "Below 90%", "owner": "Head of maintenance", "cites": ["FND-0002", "EVD-0002"]}]}]}
+   {"kind": "indicator", "name": "Critical spares bought to specification",
+    "measure": "% of critical-spares orders with a specification reference", "deterioration": "Any month below 100%",
+    "owner": "Head of procurement", "cites": ["FND-0003"]}]}]}

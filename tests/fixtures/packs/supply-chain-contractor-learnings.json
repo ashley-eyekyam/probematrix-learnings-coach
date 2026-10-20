@@ -1,13 +1,23 @@
-{"pack": "supply-chain-contractor-learnings", "schema": 1, "title": "Supply Chain and Contractor Learnings: Synthetic pump fire, 2024",
+{"pack": "supply-chain-contractor-learnings", "schema": 1,
+ "title": "Supply Chain and Contractor Learnings: Synthetic pump fire, 2024",
  "audience": "Procurement, stores, vendors and contractors", "status": "Learning purposes: not a statutory document",
- "bottom_line": [
-  {"text": "Seals were bought locally without a specification, and no one approved them technically.", "cites": ["FND-0003", "EVD-0003"]}],
+ "bottom_line": [{"text": "Seals were bought locally without a specification, and no one approved them technically.",
+                  "cites": ["FND-0003", "EVD-0003"]}],
  "scope": {"tags": ["supply", "contractor"]},
  "sections": [
   {"id": "path", "heading": "How the part reached the job", "items": [
-   {"kind": "timeline", "events": [{"date": "2022-03", "text": "Seals bought locally without a specification", "received_by": "Stores/procurement officer", "response": "No technical approval recorded", "cites": ["FND-0003", "EVD-0003"]}, {"date": "2024-03-12", "text": "Seal changed on the pump", "received_by": "Pump technician (seal change crew)", "cites": ["FND-0001"]}]}]},
+   {"kind": "timeline", "events": [
+     {"date": "2022-03", "text": "Seals bought locally without a specification", "received_by": "Stores/procurement officer",
+      "response": "No technical approval recorded", "cites": ["FND-0003", "EVD-0003"]},
+     {"date": "2024-03-12", "text": "Seal changed on the pump", "received_by": "Pump technician (seal change crew)",
+      "cites": ["FND-0001"]}]}]},
   {"id": "learnings", "heading": "Learnings", "items": [
-   {"kind": "learning", "group": "Procurement and stores", "lesson": "A critical spare needs a specification before it is bought.", "explanation": "Purchase records show local buying without a specification [EVD-0003].", "owner": "Stores/procurement", "cites": ["FND-0003"]},
-   {"kind": "learning", "group": "Engineering at the supply interface", "lesson": "Someone must own the approval of a substitute.", "explanation": "The reliability engineer role named in the findings was absent [FND-0003].", "owner": "Reliability engineering", "cites": ["FND-0003"]}]},
+   {"kind": "learning", "group": "Procurement and stores", "lesson": "A critical spare needs a specification before it is bought.",
+    "explanation": "Purchase records show local buying without a specification [EVD-0003].", "owner": "Stores/procurement",
+    "cites": ["FND-0003"]},
+   {"kind": "learning", "group": "Engineering at the supply interface", "lesson": "Someone must own the approval of a substitute.",
+    "explanation": "The reliability engineer role named in the findings was absent [FND-0003].", "owner": "Reliability engineering",
+    "cites": ["FND-0003"]}]},
   {"id": "recommendations", "heading": "Recommendations and indicators", "items": [
-   {"kind": "recommendation", "change": "Hold critical-spares orders until a specification is attached", "hoc_tier": "engineering", "indicator": "% of critical spares with an approved specification", "owner": "Head of procurement", "cites": ["FND-0003", "EVD-0003"]}]}]}
+   {"kind": "recommendation", "change": "Hold critical-spares orders until a specification is attached", "hoc_tier": "engineering",
+    "indicator": "% of critical spares with an approved specification", "owner": "Head of procurement", "cites": ["FND-0003", "EVD-0003"]}]}]}

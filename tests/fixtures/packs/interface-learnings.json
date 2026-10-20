@@ -1,16 +1,22 @@
 {"pack": "interface-learnings", "schema": 1, "title": "Interface Learnings: Synthetic pump fire, 2024",
  "audience": "Department managers", "status": "Learning purposes: not a statutory document",
- "bottom_line": [
-  {"text": "Maintenance fitted what stores bought, and the findings show no one owned the specification between them.", "cites": ["FND-0003", "FND-0001"]}],
+ "bottom_line": [{"text": "Maintenance fitted what stores bought, and the findings show no one owned the specification between them.",
+                  "cites": ["FND-0003", "FND-0001"]}],
  "sections": [
   {"id": "matrix", "heading": "Interface matrix", "items": [
-   {"kind": "table", "columns": ["Interface", "Shared findings", "Cross-entity causal mentions"], "rows": [["F02 Mechanical Maintenance × F06 Materials Management", 0, 3], ["F05 Asset Integrity × F13 Plant & Asset Leadership", 1, 0]], "row_cites": [["FND-0001", "FND-0003"], ["FND-0003"]]}]},
+   {"kind": "table", "columns": ["Interface", "Shared findings", "Cross-entity causal mentions"],
+    "rows": [["F02 Mechanical Maintenance × F06 Materials Management", 0, 3], ["F05 Asset Integrity × F13 Plant & Asset Leadership", 1, 0]],
+    "row_cites": [["FND-0001", "FND-0003"], ["FND-0003"]]}]},
   {"id": "f02-f06", "heading": "Mechanical Maintenance and Materials Management", "items": [
    {"kind": "para", "group": "The seam", "text": "A seal passes from stores to the fitters [FND-0003]."},
-   {"kind": "para", "group": "What went wrong at the seam", "text": "The seal had no specification, and the restart had no test to catch a bad part [FND-0003; FND-0001]."},
+   {"kind": "para", "group": "What went wrong at the seam",
+    "text": "The seal had no specification, and the restart had no test to catch a bad part [FND-0003; FND-0001]."},
    {"kind": "para", "group": "Why neither side saw it", "text": "The findings show no check by either side [FND-0003; FND-0001]."},
-   {"kind": "learning", "group": "The learning for each side", "lesson": "Stores: a critical spare needs a specification before purchase.", "owner": "Materials Management (F06)", "cites": ["FND-0003"]},
-   {"kind": "learning", "group": "The learning for each side", "lesson": "Maintenance: no restart without a leak test, whatever the part.", "owner": "Mechanical Maintenance (F02)", "cites": ["FND-0001"]},
-   {"kind": "recommendation", "group": "Joint fix", "change": "Add a specification check at the stores issue counter", "hoc_tier": "administrative", "indicator": "% of critical spares issued with a specification reference", "cites": ["FND-0003"]}]},
+   {"kind": "learning", "group": "The learning for each side", "lesson": "Stores: a critical spare needs a specification before purchase.",
+    "owner": "Materials Management (F06)", "cites": ["FND-0003"]},
+   {"kind": "learning", "group": "The learning for each side", "lesson": "Maintenance: no restart without a leak test, whatever the part.",
+    "owner": "Mechanical Maintenance (F02)", "cites": ["FND-0001"]},
+   {"kind": "recommendation", "group": "Joint fix", "change": "Add a specification check at the stores issue counter",
+    "hoc_tier": "administrative", "indicator": "% of critical spares issued with a specification reference", "cites": ["FND-0003"]}]},
   {"id": "who-meets", "heading": "Who must meet whom", "items": [
    {"kind": "check", "text": "Maintenance planner and stores lead: monthly review of critical-spares substitutions", "cites": ["FND-0003", "EVD-0003"]}]}]}

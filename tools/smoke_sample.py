@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Smoke test: ingest the Hazira sample into a temp root and check the baseline.
 
-Uses only the standard library. Exits non-zero naming the failing assertion.
+Exits non-zero naming the failing assertion. Needs requirements-dev.txt (openpyxl, and pytest for the synthetic
+export that tests/test_pmlc.py builds, used by the fixture --strict check).
 Later tasks add assertions here.
 """
 import json

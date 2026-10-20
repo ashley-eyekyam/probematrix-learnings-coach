@@ -29,27 +29,11 @@ Draft because: no finding is marked as edited by a person
 
 The work order shows no test [EVD-0001].
 
-**Learning:** A seal change was treated as routine work with no test step in the plan. [FND-0001; EVD-0001]
+## S3 Preconditions (L2)
 
-The work order lists the seal change and no test [EVD-0001].
-
-**Learning:** The crew relied on the part being right because nothing told them otherwise. [FND-0001; FND-0003]
-
-The seal came from a local purchase with no specification [FND-0003].
-
-## Preconditions
-
-**Learning:** An unfamiliar seal gave no cue that a test mattered more than usual. [FND-0003; EVD-0003]
+**Learning:** An unfamiliar seal gave no cue that a test mattered more than usual. [FND-0001; FND-0003]
 
 The findings show local seals without a specification [FND-0003].
-
-**Learning:** No test record field on the work order made the omission invisible. [FND-0001]
-
-The work order closed without a test entry [EVD-0001].
-
-**Learning:** The gas alarm gave the crew no automatic protection once the leak started. [FND-0004; EVD-0002]
-
-The alarm was display-only [FND-0004].
 
 ## S4 Supervision (L3)
 
@@ -57,29 +41,13 @@ The alarm was display-only [FND-0004].
 
 The procedure index has no entry [EVD-0002].
 
-**Learning:** Release to service depended on memory, not a signed hold point. [FND-0002; EVD-0002]
+## S5 Organisational influences (L4)
 
-No return-to-service checklist exists [EVD-0002].
-
-**Learning:** Supervision had no record to check before approving the restart. [FND-0001; FND-0002]
-
-The work order shows no test [EVD-0001].
-
-## Organisational influences
-
-**Learning:** The spares programme let critical seals in without a specification. [FND-0003]
+**Learning:** The spares programme let critical seals in without a specification. [FND-0003; EVD-0003]
 
 Purchase records show local buying since March 2022 [EVD-0003].
 
-**Learning:** The procedure set had no owner checking that hold points covered return to service. [FND-0002]
-
-The procedure index has no entry [EVD-0002].
-
-**Learning:** Budget pressure on spares was not weighed against the risk of unknown parts. [FND-0002; FND-0003]
-
-The findings name the plant manager as budget owner [FND-0003].
-
-## Interfaces
+## S6 Interfaces
 
 Maintenance fits what stores buys, and neither side checked the specification [FND-0003; FND-0001].
 
@@ -87,7 +55,7 @@ Maintenance fits what stores buys, and neither side checked the specification [F
 
 ## S7 Barriers
 
-**Barrier:** Leak test before return to service [FND-0001; FND-0002]
+**Barrier:** Leak test before return to service [FND-0002]
 - Failure mode: No checklist required it
 - Type: prevention
 - State on the day: absent
@@ -115,7 +83,7 @@ Make the leak test a hold point you sign [FND-0002].
 - Barrier: Leak test before return to service
 - Leading indicator: % of restarts with a test record
 
-## Competence
+## S11 Competence
 
 | Tier | Competence | Cites |
 |---|---|---|
