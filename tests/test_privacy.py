@@ -919,6 +919,10 @@ def test_share_keeps_pack_link_ids(tmp_path, shws, mode):
     doc["sections"][0]["items"][0].update(text="Pump P-101 was restarted untested.", learning="LR-01",
                                           clauses=["ISO45001-10.2"], comparator_refs=["REC-03", "OBS-12"])
     doc["sections"][0]["items"][1]["barrier_id"] = "BR-07"
+    clause = "ISO45001-8.1.3; OSHA 1910.119(l)"                 # ISO45001 would be masked as an equipment tag in prose
+    doc["sections"][0]["items"].append({"kind": "test_point", "requirement": "Restarts are tested", "sample": "10 restarts",
+                                        "conformity_evidence": "Signed test records", "clause": clause,
+                                        "cites": ["EVD-0001"]})
     p = sign(ws, write_doc(tmp_path, doc), "--classification", mode, "--legal-review", "cleared")
     out = tmp_path / "out"
     r = _cli("pack", str(ws), str(p), "--share", mode, "--orgs", str(orgs), "--out", str(out))
@@ -928,6 +932,7 @@ def test_share_keeps_pack_link_ids(tmp_path, shws, mode):
     for doc_ in (t, md):
         assert "Clauses: ISO45001-10.2" in doc_ and "LR-01" in doc_ and "Barrier ID: BR-07" in doc_
         assert "P-101" not in doc_ and "Pump [equipment tag] was restarted untested." in doc_
+        assert f"Clause: {clause}" in doc_
     assert 'data-lr="LR-01"' in t
     shared = pv.share_doc(doc, pv.ShareCtx(mode, [], [], {}))
     assert shared["sections"][0]["items"][0]["comparator_refs"] == ["REC-03", "OBS-12"]
