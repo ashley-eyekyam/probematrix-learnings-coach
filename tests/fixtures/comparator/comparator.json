@@ -1,0 +1,14 @@
+{"source": {"title": "Synthetic review panel report", "issuer_role": "Independent review panel",
+            "statutory_status": "Non-statutory", "kind": "official-report"},
+ "items": [
+  {"id": "OBS-01", "type": "observation", "section": "Maintenance", "text": "Seal replaced without a leak test.",
+   "group": "Maintenance", "hoc_tier": ""},
+  {"id": "RC-01", "type": "root_cause", "section": "Maintenance", "text": "No return-to-service checklist existed.",
+   "group": "Maintenance", "hoc_tier": ""},
+  {"id": "REC-01", "type": "recommendation", "section": "Maintenance", "text": "Interlock pressurisation on a test record.",
+   "group": "Maintenance", "hoc_tier": "Engineering control"},
+  {"id": "REC-02", "type": "recommendation", "section": "Operations", "text": "Retrain operators on alarm response.",
+   "group": "Operations", "hoc_tier": "Training"},
+  {"id": "REC-03", "type": "recommendation", "section": "Operations", "text": "Review the alarm philosophy.",
+   "group": "Operations", "hoc_tier": "Administrative (procedure)"}
+ ]}

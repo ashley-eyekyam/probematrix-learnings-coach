@@ -46,3 +46,26 @@ For each **comparator item**: which learnings or findings cover it? An item with
 ## 6. Report
 
 A coverage matrix, counts by value and reason class, and short side-by-side examples. Where the other report is stronger (for example, specific engineering recommendations), say so explicitly.
+
+## 7. File shapes and the engine
+
+The inventory in section 2 is kept in the workspace as two files that `pmlc compare` reads and checks.
+
+`comparator.json`:
+
+```json
+{"source": {"title": "...", "issuer_role": "...", "statutory_status": "...",
+            "kind": "official-report|own-action-plan|company-report"},
+ "items": [{"id": "REC-01", "type": "observation|root_cause|recommendation|action",
+            "section": "...", "text": "...", "group": "...", "hoc_tier": "..."}]}
+```
+
+Ids are `OBS-nn`, `RC-nn`, `REC-nn` and `ACT-nn` (observation, root cause, recommendation, action), unique, with at least two digits.
+
+`comparison-map.json`: `[{"lr_id": "LR-01", "ref": "REC-03", "match": "yes|partial|none"}]`. An item or learning with no row counts as `none`.
+
+- **Extracting the text.** Use `pdftotext -layout report.pdf report.txt` as the default extractor. If the PDF is scanned (the text file is empty or garbled), run OCR if available; otherwise transcribe the items by hand and say so on page 1. Never guess an item.
+- **Action-plan mode.** Set `source.kind` to `own-action-plan` to compare the learnings with the organisation's own action plan (items are mostly `ACT-nn`); the output then reads "against the organisation's action plan".
+- **Regulator-safe (client-safe) variant.** Keep the same section ids as the main pack and change only the content: roles for names, functions for companies, no `none` reason classes that read as a verdict. `pmlc compare --client-safe VARIANT --main PACK` checks the section ids match.
+- **In a pack.** An item may carry `comparator_refs` (a list of item ids); `check-pack` checks them against `comparator.json`. `pmlc select --text "<quoted phrase>" --in-evidence` finds the findings whose linked evidence quotes it.
+- Run `pmlc compare <ws> --register <register.json> --json` for the ready tables.

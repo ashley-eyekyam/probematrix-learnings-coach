@@ -1,0 +1,4 @@
+[{"lr_id": "LR-01", "ref": "REC-01", "match": "yes"},
+ {"lr_id": "LR-01", "ref": "RC-01", "match": "partial"},
+ {"lr_id": "LR-02", "ref": "REC-03", "match": "partial"},
+ {"lr_id": "LR-02", "ref": "REC-02", "match": "none"}]

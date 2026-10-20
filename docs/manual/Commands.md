@@ -96,6 +96,12 @@ pmlc 2.0.0a4
 | [templates](commands/templates.md) | Writes a blank adoption.csv, distribution.csv or verification.jsonl for your organisation to fill in |
 | [export-actions](commands/export-actions.md) | Writes actions.csv and actions.json (owner, due date and status left blank) for your action-tracking system |
 
+### 4a. Compare with another report
+
+| Command | What it does |
+|---|---|
+| [compare](commands/compare.md) | Checks the comparator inventory and prints both-direction coverage tables as ready pack items |
+
 ### 5. Repository upkeep
 
 | Command | What it does |
@@ -113,6 +119,8 @@ pmlc 2.0.0a4
   ```text
   usage: pmlc [-h] [--version]
               {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,status,run-path,check-samples,check-pack,pack,causal-item,sign-off,scan-names,run-manifest,purge} ...
+
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,status,run-path,check-samples,check-pack,pack,causal-item,sign-off,scan-names,compare} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

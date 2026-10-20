@@ -13,6 +13,19 @@ from . import __version__
 from .util import _abs, _overlay_path, _s, iso_date, REFS, write_json
 
 
+def read_comparator_ids(path) -> tuple:
+    """(sorted item ids, None) of a comparator.json, or (None, the reason it is unusable). Never raises."""
+    try:
+        c = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, ValueError, RecursionError) as e:
+        return None, f"cannot be read as JSON ({e.__class__.__name__})"
+    if not isinstance(c, dict):
+        return None, "must be a JSON object"
+    if not isinstance(c.get("items"), list):
+        return None, "has no items list"
+    return sorted({i["id"] for i in c["items"] if isinstance(i, dict) and isinstance(i.get("id"), str)}), None
+
+
 def load_ws(ws_dir: Path) -> dict:
     ws_dir = Path(ws_dir)
     out = {}
@@ -22,6 +35,13 @@ def load_ws(ws_dir: Path) -> dict:
             out[name] = json.loads(p.read_text(encoding="utf-8"))
     sp = ws_dir / "singleton_roles.json"
     out["singletons"] = json.loads(sp.read_text(encoding="utf-8")).get("roles", []) if sp.exists() else []
+    cp = ws_dir / "comparator.json"   # the item ids check-pack validates comparator_refs against
+    if cp.is_file():
+        ids, why = read_comparator_ids(cp)
+        if why:
+            out["comparator_error"] = why
+        else:
+            out["comparator_ids"] = ids
     if "findings" not in out:
         sys.exit(f"No findings.json in {ws_dir}. Run: pmlc.py ingest <export.xlsx> --slug <site>-<event>")
     return out
