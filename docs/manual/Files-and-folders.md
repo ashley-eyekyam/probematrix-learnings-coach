@@ -51,7 +51,7 @@ These are the files in a fresh Hazira workspace after `ingest`, `profile` and `c
 | `profile.md` | `profile --out` | The readable summary: counts by level, rating and sub-category, the most frequent factors and roles, evidence types and data-quality flags. |
 | `clusters.json` | `classify` | For every finding, its entities (F), tiers (T) and relations (R); the role map (how each role string was placed, and why); the taxonomy and overlays used; the overrides applied. |
 | `unresolved_roles.json` | `classify` | Role strings with no entity (F99) or no tier (T9). 96 on Hazira before the resolution pass. |
-| `singleton_roles.json` | `classify` | Roles that could point to one person: a role with an instance number or letter (a gate, post, shift, desk, cabin or control room number, or a number in a closing bracket or after a dash), or the only role at its tier in Plant & Asset Leadership or Corporate & Board. A date alone, such as "(Dec-2019)", does not make a role a singleton. Each comes with a general label to use instead. 8 on Hazira. |
+| `singleton_roles.json` | `classify` | Roles that could point to one person, each with its reason (`qualifier` or `single-holder`) and a general label (its function and tier) to use instead. The rule is under [Singleton roles](#singleton-roles) below. 8 on Hazira. |
 | `org-chart-ids.json` | `classify --org-chart` | The F-ids given to your own departments (`F20`, `F21` and so on), so they keep their ID on every re-run. |
 | `role_overrides.json` | you, or the agent with your agreement | Your decisions for roles the rules could not place or placed wrongly: `{"<role>": {"F": [...], "T": "...", "R": "..."}}`. Read on every `classify`. Never rebuilt: keep it. |
 | `causal_graph.json`, `causal_graph.mmd` | `causal` | The factor-to-factor links, with mention counts and supporting finding IDs; the `.mmd` file is the same graph for tools that draw Mermaid diagrams. |
@@ -62,6 +62,23 @@ These are the files in a fresh Hazira workspace after `ingest`, `profile` and `c
 | `comparator.json` | the agent, in the report-comparison skill | The other report's numbered items (`OBS-`, `RC-`, `REC-`, `ACT-nn`), its issuer role and its statutory status. [compare](commands/compare.md) reads it. |
 | `comparison-map.json` | the agent, in the report-comparison skill | Which learning matches which item of the other report: `[{"lr_id", "ref", "match": "yes" or "partial" or "none"}]`. |
 | `sel-<F-id>.md`, `top.json` | `select --out` | Saved selections that some skills write while gathering. They are working notes, not outputs. |
+
+### Singleton roles
+
+`classify` lists a role in `singleton_roles.json` when it could point to one person, by this rule (from the engine's `privacy.py`):
+
+1. **Group roles are never singletons.** Take the role up to its first bracket or spaced dash (" - "). If that part ends in *operators*, *crew*, *team*, *staff*, *workers* or *personnel*, the role is skipped, whatever follows. "Control Room Operators" and "Seal change crew (Shift B)" are not singletons.
+2. **Dates are ignored.** Dates are removed from the role before the next test: "Dec-2019", "24 May 2020", "18-Sep-2020", "12/03/2020", "2020-03-12" and bare years such as "2019". A date alone never makes a role a singleton, so "Calibration supervisor (Dec-2019)" is not one.
+3. **A qualifier makes a role a singleton** (reason `qualifier`) when what is left contains any of:
+   - one of the words *post*, *gate*, *shift*, *grade*, *No.* (or *No*), *desk*, *cabin*, *CR* or *control room*, followed by a number or a single capital letter, with or without a space or hyphen: "Gate 3", "Shift A", "Grade-2", "No. 4", "CR2";
+   - a `#` followed by a number: "Pump operator #2";
+   - a spaced dash (" - ") followed by text with a number in it, at the end of the role: "Security Guard - Gate 3", "Fitter - bay 7";
+   - a closing bracket with a number in it, at the end of the role: "Shift engineer (unit 2)".
+4. **A sole post holder is a singleton** (reason `single-holder`) when the role maps to Plant & Asset Leadership (F13) or Corporate & Board (F14) and is the only role mapped to that entity at its tier. The list of such entities is `single_holder_entities` in `references/lint-terms.json`.
+
+Anything else is not a singleton. On Hazira, 8 roles meet the rule. Until 2.0.0a5 a date counted as a qualifier, and the same export gave 15; the 7 roles dropped are all ones whose only qualifier was a date.
+
+The language check (JC7) flags a singleton role in your own wording, and a shared copy (`--share external` or `public`) replaces it with its general label.
 
 `status` reports each derived file as `current`, `stale` (an input changed since it was built, with the reason) or `unknown` (built before the manifest existed). See the recipe [Re-run after the export changes, using status](Workflows-and-recipes.md#re-run-after-the-export-changes-using-status).
 
