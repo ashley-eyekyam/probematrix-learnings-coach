@@ -42,13 +42,13 @@ python3 $E interfaces $WS --top 6
 | Interface | Shared findings | Cross-entity causal mentions |
 |---|---:|---:|
 | F01 Operations & Control Room ↔ F02 Mechanical Maintenance | 71 | 391 |
+| F02 Mechanical Maintenance ↔ F13 Plant & Asset Leadership | 27 | 331 |
+| F01 Operations & Control Room ↔ F13 Plant & Asset Leadership | 45 | 224 |
 | F02 Mechanical Maintenance ↔ F08 Work Management & Planning | 27 | 213 |
 | F02 Mechanical Maintenance ↔ F07 Engineering, Design, Documents & MOC | 34 | 189 |
 | F02 Mechanical Maintenance ↔ F05 Asset Integrity, Corrosion & Inspection | 40 | 166 |
-| F02 Mechanical Maintenance ↔ F13 Plant & Asset Leadership | 18 | 227 |
-| F02 Mechanical Maintenance ↔ F04 Instrumentation, Control & Calibration | 6 | 253 |
 
-Wrote hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/workspace/interfaces.json (125 pairs across 17 entities).
+Wrote hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/workspace/interfaces.json (126 pairs across 17 entities).
 ```
 
 The pairs are ranked by three times the shared findings plus the causal mentions, so a pair the investigation names together often comes first.

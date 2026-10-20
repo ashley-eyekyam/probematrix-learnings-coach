@@ -56,7 +56,7 @@ The direction of each link follows the four levels: the higher-level factor enab
 287 of 436 findings name other factors in their causal explanation. 555 distinct links. Wrote causal_graph.json and causal_graph.mmd (top 60).
 ```
 
-With `causal --include-justification` the count rose to 675 distinct links. The strongest link was OIR 1.6 (Failure in Maintenance/ Spares/ Support Programme, level 4) to SVF 3.4 (level 3), with 7 mentions. `causal-item --top 40` gave a graph of 26 factors and 40 links.
+With `causal --include-justification` the count rose to 675 distinct links. The strongest link was SVI 1.4 (Failed to Provide Appropriate Policy/ Guidance, level 3) to ASBE 1.2 (level 1), with 8 mentions, tied with SVI 1.4 to PTE 2.7; ties print in code order. `causal-item --top 40` gave a graph of 26 factors and 40 links.
 
 ## Related skills
 

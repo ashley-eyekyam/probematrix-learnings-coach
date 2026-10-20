@@ -43,13 +43,13 @@ python3 $E causal $WS --top 8
 | From | To | Mentions |
 |---|---|---:|
 | OIR 1.6 (L4) | SVF 3.4 (L3) | 7 |
+| OIR 1.6 (L4) | SVV 4.1 (L3) | 6 |
 | SVI 1.1 (L3) | ASBE 1.2 (L1) | 6 |
 | SVI 1.4 (L3) | ASBE 1.2 (L1) | 6 |
 | SVI 1.4 (L3) | PTE 2.7 (L2) | 6 |
-| OIR 1.6 (L4) | SVV 4.1 (L3) | 6 |
-| SVI 1.4 (L3) | AJDE 2.11 (L1) | 5 |
-| SVV 4.1 (L3) | ASBE 1.2 (L1) | 5 |
-| OIR 1.6 (L4) | SVI 1.6 (L3) | 5 |
+| OIC 2.1 (L4) | AV 1.1 (L1) | 5 |
+| OIC 2.7 (L4) | AJDE 2.11 (L1) | 5 |
+| OIC 2.7 (L4) | ASBE 1.2 (L1) | 5 |
 ```
 
 Read as: "a failure in the maintenance, spares and support programme (OIR 1.6, level 4) is named seven times as leading to an ineffective action against an identified risk (SVF 3.4, level 3)".
@@ -65,8 +65,8 @@ python3 $E causal $WS --top 3 --include-justification
 
 | From | To | Mentions |
 |---|---|---:|
-| SVI 1.4 (L3) | PTE 2.7 (L2) | 8 |
 | SVI 1.4 (L3) | ASBE 1.2 (L1) | 8 |
+| SVI 1.4 (L3) | PTE 2.7 (L2) | 8 |
 | OIR 1.6 (L4) | SVF 3.4 (L3) | 7 |
 ```
 
