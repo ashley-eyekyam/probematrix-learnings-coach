@@ -22,7 +22,6 @@ name, often a side and an owner). If it does, map each barrier you write to its 
 
 ```bash
 PMLC select <ws> --top-rated --brief                     # the highest-rated findings, and the incident narrative in <ws>/incident.json
-PMLC table-item <ws> hoc --pack <run>/outputs/barrier-learnings.json   # after writing: the control-tier counts of your fixes
 ```
 
 List only the barriers the findings mention, under the headings of `barriers-and-controls.md` §5:
@@ -79,6 +78,7 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/barrier-learnings.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/barrier-learnings.json                  # -> barrier-learnings.html and .md
+PMLC table-item <ws> hoc --pack <run>/outputs/barrier-learnings.json   # the control-tier counts of your fixes
 ```
 
 Tell the user the share of fixes above the administrative tier, the controls to verify first, and how many

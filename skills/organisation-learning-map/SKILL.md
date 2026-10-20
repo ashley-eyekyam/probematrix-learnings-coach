@@ -53,8 +53,8 @@ detail.
 | 5 | `fixes` | Strength of fixes | The `table-item hoc` table | `table` | 1 |
 | 6 | `cascade` | Cascade plan | A `table` with the columns Audience, Pack, Channel, Deliverer role, Window (relative weeks), Feedback, Completion measure; one row per audience pack, `row_cites` | `table` | 1 |
 
-**The cascade** replaces the old rollout order. Each row names the audience, the pack (and the skill that writes
-it, from `audiences.md`), the channel (toolbox talk, briefing, committee, board paper), the deliverer role (a
+**The cascade** replaces the old rollout order. Each row names the audience, the pack name as `distribution.csv` will record it (with the skill that
+writes it, from `audiences.md`), the channel (toolbox talk, briefing, committee, board paper), the deliverer role (a
 role, never a person), the window (relative weeks), such as "weeks 1–2", how feedback comes back (questions raised,
 concerns escalated) and the completion measure (for example "every crew has a `distribution.csv` row"). It has
 no dates and no names: the organisation sets those. Usually site leadership and supervisors come first, then the

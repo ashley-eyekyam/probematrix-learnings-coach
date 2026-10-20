@@ -28,7 +28,8 @@ report (`company-report`), or the organisation's **own action plan** (`own-actio
    PMLC select <ws> --text "<quoted phrase>" --in-evidence --brief   # findings whose evidence quotes it
    ```
 
-   If any do, the comparison is **sighted**: report coverage, not independent discovery. Say so on page 1.
+   Count the findings that quote them and give the count on page 1. If any do, the comparison is **sighted**:
+   report coverage, not independent discovery.
 3. **Write `<ws>/comparator.json` first** (shape in `comparison-method.md` §7): `source` with `title`,
    `issuer_role`, `statutory_status` (as the report states it, e.g. "statutory enquiry under …" or
    "non-statutory") and `kind`, then one item per observation (`OBS-nn`), root cause (`RC-nn`), recommendation
@@ -106,5 +107,7 @@ PMLC pack <ws> <run>/outputs/report-comparison-regulator-safe.json --embed summa
 ```
 
 Run the variant lines only for the copies the user asked for (the same lines serve the client-safe copy). Check
-quoted comparator text with `check-language --names` using the comparator's names. Prompt for legal review
+quoted comparator text against the comparator's names (one per line in a file), with
+`PMLC check-language <ws> <run>/outputs/report-comparison.json --names <names file>` or
+`PMLC scan-names <names file> <run>/outputs`. Prompt for legal review
 before any copy leaves the organisation; never run `sign-off` yourself.

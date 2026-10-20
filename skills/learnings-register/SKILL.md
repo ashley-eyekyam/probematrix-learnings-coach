@@ -34,7 +34,7 @@ PMLC facts <ws>                                          # counts, levels and th
 ## Write
 
 Write `<run>/outputs/learnings-register.json` in the shape in `register-schema.md` (it is a register, not a
-pack). One entry per learning:
+pack). One entry per learning, classified against every section A–K of `register-schema.md`:
 
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
@@ -42,6 +42,10 @@ pack). One entry per learning:
 | B | `lesson` | Lesson | A generalisable sentence ("If X, then Y, because Z") that makes sense at another site, not a restatement of the event; `owner_entity`, `tiers` | text | 1 |
 | C | `finding_ids` | Evidence | Finding IDs and Evidence IDs (`evidence_ids`), `evidence_strength`, `confidence` | ID list | at least 1 |
 | D | `hfacs_level` | Causal classification | Level plus sub-category as the export writes it; `barrier` and `org_system` in the shared vocabulary | text | 1 |
+| D | `causal_role` | Causal classification | `initiating`, `contributory`, `escalating` or `failed mitigation`, with `hazard`, `activity` and `performance_mode` (skill / rule / knowledge; slip / lapse / mistake / violation) | value | 1 |
+| E | `pattern` | Pattern | Recurrence or cross-incident pattern, and `precursors` (dated weak signals, from `precursor-timeline` when it ran) | text | optional |
+| F | `comparison` | Comparison | `not compared` unless a comparator is supplied; then `yes` / `partial` / `none` with `reason_class` | value | 1 |
+| H | `audiences` | Dissemination | Who must learn, `learning_level` (individual / team / organisational; single- or double-loop, by the criteria in `indicators-and-effectiveness.md`) and `formats` (brief, card, toolbox talk, module) | list | 1 |
 | G | `priority` | Significance | 1, 2 or 3, with `worst_case` and `transferability` | value | 1 |
 | I | `recommendations` | Recommendations | Each with `what`, `hoc_tier`, `leading_indicator`; at least one above the administrative tier for a priority-1 learning, or say why in `why_not_stronger` | list | 1–3 |
 | J | `tier_messages` | Tier messages | One short, concrete message per tier that must act (T1 … T5), omitting tiers with nothing to do | object | up to 5 |
@@ -53,8 +57,8 @@ pack). One entry per learning:
 | K | `why_not_stronger` | Why not stronger | Only for a priority-1 learning with no fix above the administrative tier: why elimination, substitution or engineering is not possible | text | optional |
 
 Use the controlled values in `register-schema.md` for `hfacs_level`, `hoc_tier`, `priority`, `urgency`,
-`recommendation_class`, `learning_level` and `comparison`; put nuance in free text. Leave `comparison` as
-`not compared` unless a comparator report is supplied (then use `report-comparison`). Owners and due dates stay
+`recommendation_class`, `learning_level` and `comparison`; put nuance in free text. For a comparison, use
+`report-comparison`. Owners and due dates stay
 blank unless the user asks (`learning-principles.md` §6).
 
 ## If the evidence is thin
@@ -87,6 +91,11 @@ PMLC register-md <ws> <run>/outputs/learnings-register.json               # -> l
 PMLC register-xlsx <run>/outputs/learnings-register.json                  # -> learnings-register.xlsx
 PMLC dashboard <ws> --register <run>/outputs/learnings-register.json      # -> organisation-learning-map.html
 ```
+
+Add `--date <corrected date>` and `--title "<plain title>"` to `dashboard` when the profile flagged the
+summary-sheet date. The dashboard has two tabs: Overview (the learning × tier matrix, a plan per level, fix
+strength, heatmaps) and Detailed register (every field, each cited finding and evidence item in full, and
+stakeholder lenses).
 
 `check-register --strict` validates IDs, evidence links, controlled values, tier messages and indicators, makes
 the priority-1 rule a problem, flags findings with reviewer downgrade votes, and lists high-rated findings no
