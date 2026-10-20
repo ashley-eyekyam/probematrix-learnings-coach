@@ -1121,3 +1121,25 @@ def test_summary_mode_builds_the_embedded_records_once(monkeypatch, tmp_path, sh
                             no_md=True, names=None, orgs=None)
     ph.cmd_pack(ns)
     assert len(calls) == 1
+
+
+def test_share_dashboard_masks_org_file_text(tmp_path, shws):
+    """INT-7: a bad enum cell echoed in an org-file warning, and a pack name in distribution.csv, are masked."""
+    ws, orgs = shws
+    rp = write_doc(tmp_path, copy.deepcopy(MINI_REG), "reg.json")
+    sign(ws, rp, "--classification", "public", "--legal-review", "cleared")
+    names = tmp_path / "names.txt"
+    names.write_text("Quillon Vantress\n", encoding="utf-8")
+    outs = ws.parent / "outputs"
+    outs.mkdir(exist_ok=True)
+    (outs / "distribution.csv").write_text("pack,contractors_included\nb,Quillon Vantress\n", encoding="utf-8")
+    r = _cli("dashboard", str(ws), "--register", str(rp), "--share", "public", "--names", str(names))
+    assert r.returncode == 0, r.stderr
+    t = (outs / "organisation-learning-map.public.html").read_text(encoding="utf-8")
+    assert "Quillon" not in t and "Vantress" not in t and "Quillon" not in r.stderr and "[name]" in t
+    (outs / "distribution.csv").write_text("pack,contractors_included,date\nQuillon Vantress,yes,2026-01-05\n",
+                                           encoding="utf-8")
+    r = _cli("dashboard", str(ws), "--register", str(rp), "--share", "public", "--names", str(names))
+    assert r.returncode == 0, r.stderr
+    t = (outs / "organisation-learning-map.public.html").read_text(encoding="utf-8")
+    assert "Quillon" not in t and "Vantress" not in t
