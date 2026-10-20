@@ -150,7 +150,7 @@ def record_export(ws, xlsx) -> None:
     _save_manifest(ws, m)
 
 
-def record_pack_check(ws, pack_name, pack_path, ok, n_problems) -> None:
+def record_pack_check(ws, pack_name, pack_path, ok, n_problems, coverage=None) -> None:
     ws = Path(ws)
     m = load_manifest(ws)
     p = Path(pack_path)
@@ -159,6 +159,9 @@ def record_pack_check(ws, pack_name, pack_path, ok, n_problems) -> None:
     table[_path_key(p)] = {
         "pack": pack_name, "sha256": file_sha256(p) if p.is_file() else "", "path": _path_key(p),
         "ok": bool(ok), "problems": n_problems, "checked": _now()}
+    if isinstance(coverage, dict):
+        table[_path_key(p)]["coverage"] = {k: coverage[k] for k in ("cited", "relevant", "top_cited", "top_relevant")
+                                           if k in coverage}
     _save_manifest(ws, m)
 
 

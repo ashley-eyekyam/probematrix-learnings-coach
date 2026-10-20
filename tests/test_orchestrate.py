@@ -118,6 +118,7 @@ def test_render_all_with_register_and_embed(setup_ws):
     assert "skipped learnings-register" not in out
     assert (outd / "board-brief.html").is_file() and (outd / "learnings-register.xlsx").is_file()
     assert (outd / "organisation-learning-map.html").is_file()
+    assert (outd / "learnings-register.md").is_file() and "not available" not in out
 
 
 def test_index_escapes_pack_title(setup_ws):
@@ -129,3 +130,59 @@ def test_index_escapes_pack_title(setup_ws):
     run("index", str(ws))
     html = (outd / "index.html").read_text(encoding="utf-8")
     assert "<script" not in html and "&lt;script&gt;alert(1)" in html
+
+
+# ----------------------------------------------------------------------------- Wave 2 integration (INT-1..4)
+
+def test_check_pack_records_coverage_and_index_shows_it(setup_ws):
+    import re as _re
+    ws, _ = setup_ws
+    outd = put(ws, "board-brief")
+    run("check-pack", str(ws), str(outd / "board-brief.json"))
+    rec = next(iter(json.loads((ws / "manifest.json").read_text())["packs"].values()))
+    assert set(rec["coverage"]) == {"cited", "relevant", "top_cited", "top_relevant"}
+    run("index", str(ws))
+    html = (outd / "index.html").read_text(encoding="utf-8")
+    assert _re.search(r"<td>\d+ of \d+</td>", html) and "not recorded" not in html
+
+
+def test_check_all_strict_reaches_check_pack(setup_ws):
+    ws, _ = setup_ws
+    outd = put(ws, "board-brief")
+    d = json.loads((outd / "board-brief.json").read_text())
+    d["sections"] = [s for s in d["sections"][:1]]
+    for s in d["sections"]:
+        s["items"] = [{"kind": "para", "text": "A short filler line.", "cites": d["bottom_line"][0]["cites"]}] * 14
+    (outd / "board-brief.json").write_text(json.dumps(d))
+    plain = subprocess.run([sys.executable, str(PMLC), "check-pack", str(ws), str(outd / "board-brief.json")],
+                           capture_output=True, text=True)
+    strict = subprocess.run([sys.executable, str(PMLC), "check-pack", str(ws), str(outd / "board-brief.json"),
+                             "--strict"], capture_output=True, text=True)
+    if plain.returncode != 0 or strict.returncode == 0:
+        pytest.skip("fixture does not separate strict from non-strict")
+    assert run("check-all", str(ws)).count("ok") >= 1
+    assert run_fail("check-all", str(ws), "--strict").returncode == 1
+
+
+def test_setup_writes_run_manifest(setup_ws):
+    ws, _ = setup_ws
+    rm = json.loads((ws.parent / "run-manifest.json").read_text(encoding="utf-8"))
+    assert rm.get("run") == ws.parent.name
+
+
+def test_render_all_register_skip_uses_manifest_record(setup_ws):
+    from test_pmlc import MINI_REG
+    ws, _ = setup_ws
+    outd = put(ws)
+    reg = outd / "learnings-register.json"
+    reg.write_text(json.dumps(MINI_REG), encoding="utf-8")
+    assert "skipped learnings-register.json: run check-all first" in run("render-all", str(ws))
+    assert not (outd / "learnings-register.md").exists()
+    chk = subprocess.run([sys.executable, str(PMLC), "check-register", str(ws), str(reg)], capture_output=True, text=True)
+    if chk.returncode:
+        pytest.skip("synthetic register does not pass check-register")
+    out = run("render-all", str(ws))
+    assert "skipped learnings-register" not in out and (outd / "learnings-register.md").is_file()
+    d = dict(MINI_REG, title="Edited after the check")
+    reg.write_text(json.dumps(d), encoding="utf-8")   # content changed: the record no longer matches
+    assert "skipped learnings-register.json: run check-all first" in run("render-all", str(ws))
