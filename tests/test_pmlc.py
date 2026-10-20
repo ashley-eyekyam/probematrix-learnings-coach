@@ -1730,6 +1730,7 @@ def test_make_uat_inputs(tmp_path, where):
     for n in ("uat-votes-pack.json", "uat-unlinked-pack.json"):
         assert json.loads((d / n).read_text(encoding="utf-8"))["schema"] == 1
     _check_phase2_uat_inputs(d, tmp_path)
+    _check_phase3_uat_inputs(d, tmp_path)
 
 
 def _check_phase2_uat_inputs(d, tmp_path):
@@ -1772,6 +1773,49 @@ def _check_phase2_uat_inputs(d, tmp_path):
     run("pack", str(w), str(sp), "--out", str(tmp_path / "signed"))    # the sign-off holds (X25): no ribbon
     page = (tmp_path / "signed" / "uat-shareable-pack.html").read_text(encoding="utf-8")
     assert 'class="ribbon"' not in page and "Review: approved by HSE Manager on " in page
+
+
+def _check_phase3_uat_inputs(d, tmp_path):
+    """Phase 3 inputs (docs/uat/v2.0-consolidated-uat.md): the strict-register copy, the card and unknown-LR packs,
+    the Excel-saved organisation files, the org chart and the comparator, each run through the engine."""
+    from pmlc_lib.templates import load_adoption, load_distribution
+    reg = d / "uat-hazira-register.json"
+    assert "why_not_stronger" not in reg.read_text(encoding="utf-8")
+    hz = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire" / "2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+    run("ingest", str(hz), "--slug", "hazira-gas-release-fire", "--root", str(tmp_path / "hz"))
+    hw = tmp_path / "hz" / "pmlc-runs" / "2020-09-24-hazira-gas-release-fire" / "workspace"
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(hw), str(reg), "--strict", "--json"],
+                       capture_output=True, text=True)
+    assert r.returncode == 1 and [p.split()[2] for p in json.loads(r.stdout)["problems"]] == ["LR-08", "LR-12"], r.stdout
+    run("classify", str(hw), "--overlay", "india-process-site")
+    cards = json.loads((d / "uat-hazira-cards.json").read_text(encoding="utf-8"))
+    assert [c["learning"] for c in cards["sections"][0]["items"]] == ["LR-02", "LR-10"]
+    assert "OK:" in run("check-pack", str(hw), str(d / "uat-hazira-cards.json"), "--strict", "--register", str(reg))
+    r = run_fail("check-pack", str(hw), str(d / "uat-unknown-lr-pack.json"), "--strict", "--register", str(reg))
+    assert r.returncode == 1 and "sections[0].items[1].learning: unknown learning LR-99" in r.stdout + r.stderr, r.stdout
+    raw = (d / "uat-adoption-filled.csv").read_bytes()               # Excel's habits: BOM, CRLF, blank rows
+    assert raw.startswith(b"\xef\xbb\xbf") and raw.count(b"\r\n") == 28 and raw.endswith(b",,,,,,\r\n")
+    out = tmp_path / "org"
+    out.mkdir()
+    (out / "adoption.csv").write_bytes(raw)
+    (out / "distribution.csv").write_bytes((d / "uat-distribution-filled.csv").read_bytes())
+    resp = {r["lr_id"]: r["response"] for r in load_adoption(out) if r["response"]}
+    assert resp == {"LR-01": "accepted", "LR-02": "accepted", "LR-03": "modified", "LR-09": "accepted",
+                    "LR-10": "accepted", "LR-12": "modified", "LR-24": "rejected"}
+    dist = load_distribution(out)
+    assert [r["pack"] for r in dist] == ["uat-hazira-cards"] * 3 and sum(1 for r in dist if r["date"]) == 2
+    x = tmp_path / "p3" / "uat-approvable.xlsx"                      # the org chart and the comparator, on the pump
+    x.parent.mkdir()
+    x.write_bytes((d / "uat-approvable.xlsx").read_bytes())
+    run("ingest", str(x), "--slug", "pump-approvable")
+    pw = next((x.parent / "pmlc-runs").glob("*/workspace"))
+    out = run("classify", str(pw), "--org-chart", str(d / "uat-org-chart.csv"))
+    assert "2 of 4 findings mapped to your departments" in out and "0 need resolution" in out, out
+    items = json.loads(run("compare", str(pw), "--comparator", str(d / "uat-comparator.json"), "--mapping",
+                           str(d / "uat-comparison-map.json"), "--register", str(d / "uat-register.json"), "--json"))
+    both = next(i for i in items if i.get("columns") == ["Direction", "Yes", "Partial", "None"])
+    assert both["rows"] == [["Learnings against comparator items", 2, 0, 0],
+                            ["Comparator items against learnings", 3, 2, 2]], both
 
 
 def test_dashboard_with_no_ratings(tmp_path):

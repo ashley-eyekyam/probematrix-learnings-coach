@@ -1,0 +1,27 @@
+[
+ {
+  "lr_id": "LR-01",
+  "ref": "OBS-01",
+  "match": "yes"
+ },
+ {
+  "lr_id": "LR-01",
+  "ref": "RC-01",
+  "match": "yes"
+ },
+ {
+  "lr_id": "LR-01",
+  "ref": "REC-01",
+  "match": "partial"
+ },
+ {
+  "lr_id": "LR-02",
+  "ref": "RC-02",
+  "match": "yes"
+ },
+ {
+  "lr_id": "LR-02",
+  "ref": "ACT-01",
+  "match": "partial"
+ }
+]

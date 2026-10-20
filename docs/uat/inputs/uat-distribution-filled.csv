@@ -1,0 +1,4 @@
+pack,audience,channel,date,delivered_by_role,attendees,contractors_included,questions_raised,concerns_escalated
+uat-hazira-cards,Frontline crews (T1),Toolbox talk,2026-11-05,Shift In-charge,14,no,Where is the test record kept?,
+uat-hazira-cards,Frontline crews (T1),Toolbox talk,2026-11-06,Maintenance Supervisor,9,yes,,Spare seals in the store carry no part numbers
+uat-hazira-cards,Frontline crews (T1),Toolbox talk,,Shift In-charge,,,,
