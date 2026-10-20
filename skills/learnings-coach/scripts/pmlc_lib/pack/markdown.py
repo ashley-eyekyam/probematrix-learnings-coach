@@ -210,11 +210,13 @@ def _md_block(it, inc_date=None) -> str:
     return out + _md_lint_ok(it, "\n  " if it["kind"] == "check" else "\n\n")
 
 
-def _handling_lines(eh, share):
-    """The handling lines, masked for a shared copy, then the 'Shared <mode>' line."""
+def _handling_lines(eh, share, markdown=True):
+    """The handling lines, masked for a shared copy, then the 'Shared <mode>' line. markdown=False for the HTML pack,
+    which escapes the lines itself."""
+    lines = handling_lines(eh, markdown=markdown)
     if not share:
-        return handling_lines(eh, markdown=True)
-    return [privacy.share_text(x, share) for x in handling_lines(eh, markdown=True)] + [SHARED_LINE.format(mode=share.mode)]
+        return lines
+    return [privacy.share_text(x, share) for x in lines] + [SHARED_LINE.format(mode=share.mode)]
 
 
 def render_pack_md(pack, w, eh=None, share=None) -> str:

@@ -305,7 +305,7 @@ def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, shar
     title = _h(pack["title"])
     status = _h(status_line(pack["status"]))
     ribbon = RIBBON_HTML + "\n" if is_draft(eh) else ""
-    handling = "".join(f'<p class="handling">{_h(x)}</p>' for x in _handling_lines(eh, share))
+    handling = "".join(f'<p class="handling">{_h(x)}</p>' for x in _handling_lines(eh, share, markdown=False))
     css = (DASHBOARD_ASSETS / "pack.css").read_text(encoding="utf-8")
     js = (DASHBOARD_ASSETS / "pack.js").read_text(encoding="utf-8")
     payload = embed_json(data)

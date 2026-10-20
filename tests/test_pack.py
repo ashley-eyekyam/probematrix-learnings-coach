@@ -1635,6 +1635,11 @@ def test_markdown_pack_shows_the_escaped_reviewer(w):
     assert "approved by HSE \\*lead\\* on 2026-10-19" in md
 
 
+def test_html_pack_shows_the_reviewer_unescaped(w):
+    t = pp.render_pack_html(w, pack_with(item("para", cites=["FND-0001"])), "r", "d", eh=_eh(role="HSE_lead <ops>"))
+    assert "approved by HSE_lead &lt;ops&gt; on 2026-10-19" in t and "HSE\\_lead" not in t
+
+
 def test_lint_ok_note_is_escaped_in_markdown(w):
     p = pack_with(item("para", text="The restart was unlawful.", cites=["FND-0001"],
                        lint_ok={"rule": "JC5", "reason": "quotes the *title* of <the> rule"}))
