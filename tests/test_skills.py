@@ -44,7 +44,7 @@ PENDING = {
     "frontline-learning-cards", "supervisor-coach", "safety-committee-guide", "training-designer",
     "emergency-response-learnings", "engineering-integrity-learnings", "supply-chain-contractor-learnings",
 }
-HUB_PENDING = {"learnings-coach"}          # Task 24 removes it when the hub is rewritten
+HUB_PENDING: set = set()                   # Task 24 rewrote the hub (empty from here on)
 
 SKELETON = ("Before you start", "Gather", "Write", "If the evidence is thin", "Not covered here",
             "Check and hand over")                                        # P3-19, in this order
@@ -339,7 +339,44 @@ def test_hub_headings():
     idx = heading_order(heads, HUB_HEADINGS)
     assert None not in idx, f"hub: missing {[h for h, i in zip(HUB_HEADINGS, idx) if i is None]}"
     assert idx == sorted(idx), f"hub: headings out of order {heads}"
+    for h in HUB_HEADINGS:
+        assert sum(1 for x in heads if re.match(rf"^{re.escape(h)}\b", x)) == 1, f"hub: '{h}' more than once"
     assert COMMON_LINK.split("learnings-coach/", 1)[1] in skill_md(HUB)
+
+
+def test_hub_description_and_principles():
+    """Task 20 review m-9: the hub meets the description and principles-link rules the other 22 meet."""
+    t = skill_md(HUB)
+    d = description(t)
+    assert "ProbeMatrix" in d and "Use when" in d
+    assert len(d) <= 1024, f"hub: description is {len(d)} characters"
+    assert PRINCIPLES_LINK in t
+    assert len(t.splitlines()) <= 150, len(t.splitlines())
+
+
+def test_hub_plans_and_waits():
+    """Spec section 2.4 and D11: set up, ask one question at a time, plan, wait for the OK, run, index."""
+    t = skill_md(HUB)
+    s1, s2 = section(t, "Step 1: set up"), section(t, "Step 2: work out the intent")
+    s3, s4, s5 = section(t, "Step 3: plan and confirm"), section(t, "Step 4: run the plan"), section(t, "Step 5: finish")
+    review = section(t, "Review and sharing")
+    assert "PMLC setup" in s1 and "PMLC run-manifest" in s1 and "--jurisdiction" in s1 and "--intended-use" in s1
+    assert "one question at a time" in s2 and "p1_by_tier" in s2 and "PMLC facts" in s2
+    presets = json.loads(read(REFS / "workflows.json"))
+    for p in presets:
+        assert f"`{p}`" in s2, f"hub: preset {p} is not in the routing table"
+    for s in NON_HUB:
+        assert f"`{s}`" in s2, f"hub: skill {s} is not in the routing table"
+    assert "PMLC plan" in s3 and "wait" in s3.lower() and "OK" in s3
+    assert "plan --next" in s4 or "PMLC plan <ws> --next" in s4
+    assert "PMLC index" in s5 and "HTML" in s5
+    assert "templates <ws> distribution" in s5 and "templates <ws> verification" in s5
+    assert "sign-off" in s5 and "never" in s5.lower()
+    assert "never run sign-off unless" in review
+    assert "skill-common.md` §7" in review                                    # X29: sharing rules moved there
+    assert "learning-principles.md` (§7)" not in t
+    for x in ("first-48-hours", "Direct invocation", "Thin export", "Portability"):
+        assert x in t, x
 
 
 # ------------------------------------------------------------------------------------- the parsers themselves

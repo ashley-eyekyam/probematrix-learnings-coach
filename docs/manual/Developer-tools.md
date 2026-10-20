@@ -224,12 +224,13 @@ The target folder is `$CODEX_SKILLS_DIR` when set, otherwise `~/.agents/skills`.
 
 ## `evals/run_evals.py`
 
-Checks and grades the eval set in `evals/evals.json`: prompts that should (or should not) trigger each skill, with machine-checkable expectations for the outputs.
+Checks and grades the eval set in `evals/evals.json`: prompts that should (or should not) trigger each skill, with machine-checkable expectations for the outputs, and the router evals: requests the hub must turn into the right preset or skill.
 
 | Command | What it does |
 |---|---|
-| `run_evals.py check [--file F]` | Checks the structure of the eval file, its paths, kinds and per-skill counts. The automatic checks run this |
+| `run_evals.py check [--file F]` | Checks the structure of the eval file, its paths, kinds and per-skill counts, and the router set: at least 30 router evals, every target a skill folder or a `workflows.json` preset, all 9 presets and 22 sub-skills covered, at least 8 sibling collisions. The automatic checks run this |
 | `run_evals.py grade <run-dir> [--ids 3,7] [--file F]` | Grades the machine expectations against a run folder's `outputs/` and `workspace/`. Expectations that need a person, such as which skill the agent chose, are reported as `manual` |
+| `run_evals.py routes <answers.json> [--file F]` | Scores the router evals against a JSON object `{"<eval id>": "<preset or skill the agent picked>"}`. Prints `Routing: x/y router evals (z%); floor 90%.` and exits 1 below 90% |
 
 | Flag | Value | Default | What it does |
 |---|---|---|---|
@@ -241,7 +242,7 @@ python3 evals/run_evals.py check
 ```
 
 ```text
-71 evals over 23 skills: 25 trigger, 23 no-trigger, 23 collision
+105 evals over 23 skills: 25 trigger, 23 no-trigger, 23 collision, 34 router
 OK
 ```
 

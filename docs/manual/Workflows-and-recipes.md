@@ -4,6 +4,60 @@ Each recipe is one job you are likely to want. It gives the goal, the prompt to 
 
 Commands are written `pmlc <command>`; your agent fills in the real path (see [Getting started](Getting-started.md)). `<ws>` is the workspace folder and `<run>` the run folder. All recipes assume the workspace exists: if not, the agent runs Step 1 of [Getting started](Getting-started.md) first.
 
+## Let the coach plan the work
+
+**Goal.** Start from a fresh export and let the hub ([learnings-coach](skills/learnings-coach.md)) choose and order the skills, with a plan you approve before anything runs.
+
+**Prompt.**
+
+> Here is our ProbeMatrix export. What should we learn from it? Show me the plan before you start.
+
+**Engine commands.**
+
+```bash
+pmlc setup <export.xlsx> --slug <site>-<event> [--date YYYY-MM-DD]
+pmlc run-manifest <ws> --intended-use "internal learning" --jurisdiction in
+pmlc facts <ws>
+pmlc plan <ws> --workflow full-cascade
+pmlc plan <ws> --next                     # after your OK, once per step
+pmlc check-all <ws> --strict
+pmlc index <ws>
+```
+
+The nine presets are `first-48-hours`, `full-cascade`, `leadership`, `assurance`, `investigation-quality`, `action-design`, `sister-sites`, `training` and `follow-up` (in `references/workflows.json`). Instead of a preset, the agent can plan `--audiences board,supervisors` or `--skills causal-map,interface-learnings`.
+
+**What to check.**
+
+- The agent asks one question at a time (what the learnings are for, then the jurisdiction, then what you want if it is unclear) and offers two to four suggestions each time.
+- It shows the numbered plan and does nothing until you say OK. Steps marked `planned for v2.0, Phase N` are skipped: their skill has not shipped yet.
+- Each step passes its gate (`check-pack --strict` or `check-register --strict`) before the next starts. `plan --next` ends with exit code 2 when the plan is complete.
+- It ends with the path of `outputs/index.html` first, then each pack's HTML. It never runs `sign-off` for you, and it leaves owners and due dates blank.
+- On Hazira, `facts` before any register ranks the tiers by finding counts (`T1: 227; T2: 219; T3: 247; T4: 63; T5: 1`); with the sample register, priority-1 learnings sit at every tier from T1 to T4, so the suggestion is `full-cascade`.
+
+## The first 48 hours
+
+**Goal.** Something useful within two days of the export: a draft register and the supervisor briefing, with the full cascade later.
+
+**Prompt.**
+
+> We need to brief the shifts by Monday from this investigation. What can we put out now?
+
+**Engine commands.**
+
+```bash
+pmlc plan <ws> --workflow first-48-hours
+pmlc plan <ws> --next
+pmlc check-register <ws> <run>/outputs/learnings-register.json --strict
+pmlc check-pack <ws> <run>/outputs/supervisor-coach.json --strict
+pmlc pack <ws> <run>/outputs/supervisor-coach.json
+```
+
+**What to check.**
+
+- On Hazira the plan has five steps: ingest and classify (done), the draft register, `safety-alert` (planned for Phase 6, skipped) and the supervisor coach.
+- The register is a draft: say so when it is shared. The full register, the organisation map and the other audiences follow with `full-cascade`.
+- After the packs are reviewed, `pmlc templates <ws> distribution` gives the record of who received each one.
+
 ## Brief the board
 
 **Goal.** A two-to-three page paper for the board or its safety committee: what the investigation says about governance and assurance, and the questions directors should ask.

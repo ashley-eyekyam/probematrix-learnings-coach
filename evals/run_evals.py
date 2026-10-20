@@ -4,9 +4,11 @@
   run_evals.py check [--file F]                     structure, paths, kinds and per-skill counts (CI runs this)
   run_evals.py grade <run-dir> [--ids 3,7] [--file F]
                                                     machine checks against <run-dir>/outputs and <run-dir>/workspace
+  run_evals.py routes <answers.json> [--file F]     score the router evals against recorded routing answers
 
 Standard library only (Python 3.9+). `grade` calls the engine for check-pack / check-register and reuses
-pmlc_pack.coverage for coverage_min. `routes_to` needs a human (or a transcript) and is reported as `manual`.
+pmlc_pack.coverage for coverage_min. `routes_to` needs a human (or a transcript) and is reported as `manual`;
+`routes` scores the router evals (kind "router") from a file of the targets an agent picked.
 """
 from __future__ import annotations
 
@@ -23,8 +25,12 @@ DEFAULT = ROOT / "evals" / "evals.json"
 SCRIPTS = ROOT / "skills" / "learnings-coach" / "scripts"
 ENGINE = SCRIPTS / "pmlc.py"
 SKILLS = sorted(p.name for p in (ROOT / "skills").iterdir() if (p / "SKILL.md").exists())
-KINDS = ("trigger", "no-trigger", "collision")
+HUB = "learnings-coach"
+PRESETS = sorted(json.loads((ROOT / "skills" / HUB / "references" / "workflows.json").read_text(encoding="utf-8")))
+TARGETS = set(PRESETS) | (set(SKILLS) - {HUB})   # what the router may route to: a preset or a sub-skill
+KINDS = ("trigger", "no-trigger", "collision", "router")
 REQUIRED = ("id", "owner", "skill", "kind", "prompt", "files", "expectations")
+ROUTER_REQUIRED = ("id", "owner", "kind", "prompt", "files", "expectations")
 EXPECT = {                                   # expectation type -> its required parameters
     "pack_exists": ("pack",),
     "check_pack_ok": ("pack",),
@@ -38,6 +44,7 @@ EXPECT = {                                   # expectation type -> its required 
 }
 ABS_PATH = re.compile(r"(?:^|[\s\"'(])(?:/(?:home|Users|tmp|var|mnt|opt|etc|root|srv)/|~/|[A-Za-z]:[\\/])")
 MIN_EVALS, MIN_NO_TRIGGER, MIN_COLLISION = 3, 1, 1
+MIN_ROUTER, MIN_ROUTER_COLLISION, ROUTING_FLOOR = 30, 8, 0.9     # spec section 2.5
 
 
 def load(path) -> dict:
@@ -49,10 +56,42 @@ def load(path) -> dict:
 
 # ----------------------------------------------------------------------------- check
 
+def _target_problem(v) -> str:
+    return "" if v in TARGETS else f"{v} is neither a skill folder nor a workflows.json preset"
+
+
+def _check_router(e, tag, bad):
+    """A router eval: {"kind": "router", "owner": "learnings-coach", "prompt", "files",
+    "expectations": [{"type": "routes_to", "value": <preset or sub-skill>}], "sibling": optional}."""
+    if e.get("owner") != HUB:
+        bad(f"{tag}: a router eval is owned by {HUB}")
+    if "skill" in e:
+        bad(f"{tag}: a router eval has no skill (its target is the routes_to value)")
+    exps = e.get("expectations") if isinstance(e.get("expectations"), list) else []
+    routes = [x for x in exps if isinstance(x, dict) and x.get("type") == "routes_to"]
+    if len(routes) != 1 or len(exps) != 1:
+        bad(f"{tag}: a router eval has exactly one expectation, routes_to")
+    value = None
+    for x in routes:
+        if "value" not in x:
+            bad(f"{tag}: routes_to needs value")
+            continue
+        value = x["value"]
+        if _target_problem(value):
+            bad(f"{tag}: routes_to: {_target_problem(value)}")
+    sib = e.get("sibling")
+    if sib is not None:
+        if _target_problem(sib):
+            bad(f"{tag}: sibling: {_target_problem(sib)}")
+        elif sib == value:
+            bad(f"{tag}: sibling must differ from the routes_to value")
+    return value
+
+
 def _check_eval(e, seen, bad):
     eid = e.get("id")
     tag = f"eval {eid}"
-    for k in REQUIRED:
+    for k in ROUTER_REQUIRED if e.get("kind") == "router" else REQUIRED:
         if k not in e:
             bad(f"{tag}: missing {k}")
     if not isinstance(eid, int) or isinstance(eid, bool):
@@ -63,6 +102,13 @@ def _check_eval(e, seen, bad):
     kind = e.get("kind")
     if kind not in KINDS:
         bad(f"{tag}: kind: {kind} is not one of {', '.join(KINDS)}")
+    if kind == "router":
+        _check_files(e, tag, bad)
+        if not isinstance(e.get("prompt"), str) or not e.get("prompt", "").strip():
+            bad(f"{tag}: prompt must be non-empty text")
+        elif ABS_PATH.search(e["prompt"]):
+            bad(f"{tag}: prompt: absolute path")
+        return _check_router(e, tag, bad)
     if "owner" in e and e["owner"] not in SKILLS:
         bad(f"{tag}: owner: {e['owner']} is not a skill folder")
     if not isinstance(e.get("prompt"), str) or not e.get("prompt", "").strip():
@@ -86,19 +132,11 @@ def _check_eval(e, seen, bad):
             bad(f"{tag}: sibling must differ from skill")
     elif "sibling" in e:
         bad(f"{tag}: only a collision eval has a sibling")
-    files = e.get("files", [])
-    if not isinstance(files, list):
-        bad(f"{tag}: files must be a list")
-        files = []
+    files = _check_files(e, tag, bad)
     if kind == "trigger" and not files:
         bad(f"{tag}: a trigger eval needs files")
     if kind == "no-trigger" and files:
         bad(f"{tag}: a no-trigger eval has no files")
-    for f in files:
-        if isinstance(f, str) and (Path(f).is_absolute() or ABS_PATH.search(f)):
-            bad(f"{tag}: files: absolute path {f}")
-        elif not isinstance(f, str) or not (ROOT / f).exists():
-            bad(f"{tag}: files: {f} does not exist")
     if isinstance(e.get("prompt"), str) and ABS_PATH.search(e["prompt"]):
         bad(f"{tag}: prompt: absolute path")
     exps = e.get("expectations", [])
@@ -123,6 +161,20 @@ def _check_eval(e, seen, bad):
             bad(f"{tag}: card_fields needs a non-empty list of field names")
         if t == "coverage_min" and not (isinstance(x.get("ratio"), (int, float)) and 0 <= x.get("ratio", -1) <= 1):
             bad(f"{tag}: coverage_min ratio must be between 0 and 1")
+    return None
+
+
+def _check_files(e, tag, bad) -> list:
+    files = e.get("files", [])
+    if not isinstance(files, list):
+        bad(f"{tag}: files must be a list")
+        return []
+    for f in files:
+        if isinstance(f, str) and (Path(f).is_absolute() or ABS_PATH.search(f)):
+            bad(f"{tag}: files: absolute path {f}")
+        elif not isinstance(f, str) or not (ROOT / f).exists():
+            bad(f"{tag}: files: {f} does not exist")
+    return files
 
 
 def check(path) -> int:
@@ -138,15 +190,19 @@ def check(path) -> int:
     if not isinstance(evals, list) or not evals:
         bad("evals: must be a non-empty list")
         evals = []
-    seen = set()
+    seen, routed = set(), []
     for e in evals:
         if isinstance(e, dict):
-            _check_eval(e, seen, bad)
+            v = _check_eval(e, seen, bad)
+            if e.get("kind") == "router":
+                routed.append((v, e.get("sibling")))
         else:
             bad("evals: every entry must be an object")
     evals = [e for e in evals if isinstance(e, dict)]
-    owned = Counter(e.get("owner") for e in evals)
-    kinds = Counter((e.get("owner"), e.get("kind")) for e in evals)
+    _check_router_set(routed, bad)
+    evals_own = [e for e in evals if e.get("kind") != "router"]   # router evals never count towards a skill's floor
+    owned = Counter(e.get("owner") for e in evals_own)
+    kinds = Counter((e.get("owner"), e.get("kind")) for e in evals_own)
     for s in SKILLS:
         if owned[s] < MIN_EVALS:
             bad(f"{s}: needs at least {MIN_EVALS} evals (has {owned[s]})")
@@ -167,6 +223,42 @@ def check(path) -> int:
 
 
 # ----------------------------------------------------------------------------- grade
+
+def _check_router_set(routed, bad):
+    """At least 30 router evals, every preset and sub-skill routed to at least once, at least 8 sibling collisions."""
+    if len(routed) < MIN_ROUTER:
+        bad(f"router: needs at least {MIN_ROUTER} router evals (has {len(routed)})")
+    hit = {v for v, _ in routed}
+    for t in sorted(TARGETS - hit):
+        bad(f"router: no router eval routes to {t}")
+    n_sib = sum(1 for _, s in routed if s)
+    if n_sib < MIN_ROUTER_COLLISION:
+        bad(f"router: needs at least {MIN_ROUTER_COLLISION} sibling collisions (has {n_sib})")
+
+
+# ----------------------------------------------------------------------------- routes
+
+def routes(answers_path, path) -> int:
+    """Score the router evals against {"<id>": "<target the agent picked>"}; exit 1 below the 90% floor."""
+    answers = load(answers_path)
+    if not isinstance(answers, dict):
+        sys.exit(f"{answers_path}: must be a JSON object {{\"<eval id>\": \"<preset or skill>\"}}")
+    router = [e for e in load(path).get("evals", []) if isinstance(e, dict) and e.get("kind") == "router"]
+    if not router:
+        sys.exit(f"No router evals in {path}.")
+    print("| id | expected | picked | pass/fail |")
+    print("|---|---|---|---|")
+    passed = 0
+    for e in router:
+        want = next((x.get("value") for x in e.get("expectations", []) if x.get("type") == "routes_to"), None)
+        got = answers.get(str(e.get("id")))
+        ok = got == want
+        passed += ok
+        print(f"| {e.get('id')} | {want} | {got if got is not None else '(no answer)'} | {'pass' if ok else 'fail'} |")
+    rate = passed / len(router)
+    print(f"\nRouting: {passed}/{len(router)} router evals ({100 * rate:.0f}%); floor {100 * ROUTING_FLOOR:.0f}%.")
+    return 0 if rate >= ROUTING_FLOOR else 1
+
 
 def _engine(cmd, ws, path) -> tuple:
     r = subprocess.run([sys.executable, str(ENGINE), cmd, str(ws), str(path)], capture_output=True, text=True)
@@ -247,7 +339,7 @@ def grade_one(x, ws, out) -> tuple:
 def _label(x) -> str:
     t = x["type"]
     if t == "routes_to":
-        return f"routes_to {x.get('skill') or '(no learnings-coach skill)'}"
+        return f"routes_to {x.get('value') or x.get('skill') or '(no learnings-coach skill)'}"
     if t == "coverage_min":
         return f"coverage_min {x['pack']} >= {x['ratio']}"
     return f"{t} {x['pack']}"
@@ -278,7 +370,7 @@ def grade(run_dir, path, ids=None) -> int:
                 total += 1
                 passed += res == "pass"
             cell = f"{res}: {detail}" if detail else res
-            print(f"| {e['id']} | {e.get('skill') or '(none)'} | {_label(x)} | {cell.replace('|', '/')} |")
+            print(f"| {e['id']} | {e.get('skill') or ('(router)' if e.get('kind') == 'router' else '(none)')} | {_label(x)} | {cell.replace('|', '/')} |")
     if not total:
         print("\nno outputs graded")
         return 1
@@ -296,9 +388,14 @@ def main(argv=None) -> int:
     g.add_argument("run_dir")
     g.add_argument("--ids", help="comma-separated eval ids (default: evals whose packs exist in the run)")
     g.add_argument("--file", default=str(DEFAULT))
+    r = sub.add_parser("routes", help="score the router evals against recorded routing answers")
+    r.add_argument("answers", help='JSON {"<eval id>": "<preset or skill the agent picked>"}')
+    r.add_argument("--file", default=str(DEFAULT))
     a = ap.parse_args(argv)
     if a.cmd == "check":
         return check(a.file)
+    if a.cmd == "routes":
+        return routes(a.answers, a.file)
     ids = None
     if a.ids:
         try:
