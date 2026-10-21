@@ -81,6 +81,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `srt` | data | `<pack>.<item-id>.srt` | Subtitles from each `script` item: one cue per segment, timed cumulatively from 00:00:00,000, the narration wrapped at 42 characters and 2 lines a cue (a longer narration splits into cues that share the segment's time). No status line: it would show on screen. Prints "nothing to write" when the pack has no script item |
 | `narration` | data | `<pack>.<item-id>.narration.txt` | Each `script` item's narration only, one paragraph per segment, for a voice-over or a PA reader. No status line and no citations: the text is spoken. The shooting script in the html and md carries the status |
 | `pptx` | document | `<pack>.pptx` | A 16:9 slide deck for a briefing. In order: a title slide (title, audience, incident, status, DRAFT label, handling), one slide per bottom-line entry, one slide per decision, module and question, one slide per other section with up to six item summaries (further items go on slides titled "(continued)"), one slide per graph drawn as boxes and arrows you can edit, with every label in full, and a closing slide with the coverage lines. Every slide carries the status phrase and the ProbeMatrix credit in its footer, and DRAFT while the pack is a draft. The slides show no Finding or Evidence IDs: each slide's speaker notes hold the items' full text, their citations and the cited findings (label, level, rating). With `--view learner`, `<pack>.learner.pptx` leaves the answers out of slides and notes alike |
+| `scorm` | document | `<pack>.scorm.zip` | A SCORM 1.2 package for a learning management system (LMS): `imsmanifest.xml`, `index.html` and `scorm.js`. The page is the learner view of the pack (the line "Learner view: answers are hidden" sits under the status, whatever `--view` says), then a quiz: each typed question is scored, and a question without a type is a "Reflect (not scored)" box. The browser grades the quiz and reports `cmi.core.score.raw` (0 to 100) and `cmi.core.lesson_status`: `passed` at 80% of the scored questions or more, `failed` below it, and `completed` when the pack has no scored questions. The answer keys travel inside `index.html` as data, as in any quiz graded in the browser, so a learner who reads the page source can find them: use it for learning, not for a test that matters. The page and the manifest carry the status phrase, the ProbeMatrix line and, until the pack is approved, DRAFT |
 
 A typed question has a `type` (`single`, `multi`, `truefalse` or `short`) and `options`, a list of `{"text": ..., "correct": true or false}`. `check-pack` stops a `single` or `truefalse` question without exactly one correct option, a `multi` with none, a `truefalse` without exactly two options, and a `short` whose accepted answers are not all marked correct. With the learner view the correct-option flags are left out, and a `short` question's options (its answers) are left out altogether. A pack with no questions has nothing to write for these three formats.
 
@@ -191,6 +192,17 @@ python3 $E pack $WS $OUT/training-designer.json --view learner
 …
 HTML written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/training-designer.learner.html
 Markdown written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/training-designer.learner.md
+```
+
+A SCORM package of a training pack, to upload to the LMS as a course:
+
+```bash
+python3 $E pack $WS $OUT/training-designer.json --format scorm
+```
+
+```text
+…
+scorm written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/training-designer.scorm.zip
 ```
 
 Field cards for a crew briefing, with a QR code on each card that opens it in the published pack:

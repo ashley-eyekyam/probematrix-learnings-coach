@@ -198,5 +198,19 @@
  "ui.pptx.entries": "{n} entries",
  "ui.pptx.cited_records": "Cited records",
  "ui.html.skip": "Skip to the sections",
- "ui.docx.logo_alt": "Organisation logo"
+ "ui.docx.logo_alt": "Organisation logo",
+ "ui.scorm.quiz": "Check your learning",
+ "ui.scorm.intro": "Answer the questions, then submit your answers. The pass mark is {pass}% of the scored questions.",
+ "ui.scorm.choose_one": "Choose one",
+ "ui.scorm.choose_any": "Choose all that apply",
+ "ui.scorm.your_answer": "Your answer",
+ "ui.scorm.reflect": "Reflect (not scored)",
+ "ui.scorm.submit": "Submit answers",
+ "ui.scorm.no_questions": "This pack has no scored questions. Read it, then mark it as complete.",
+ "ui.scorm.finish": "Mark as complete",
+ "ui.scorm.result": "Score: {raw}% (pass mark {pass}%): {status}",
+ "ui.scorm.passed": "passed",
+ "ui.scorm.failed": "below the pass mark",
+ "ui.scorm.completed": "Completed",
+ "ui.scorm.no_lms": "No learning system was found, so the result was not recorded."
 }
