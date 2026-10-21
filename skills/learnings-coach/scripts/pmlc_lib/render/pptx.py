@@ -16,7 +16,7 @@ import zipfile
 
 from .. import BRAND, DRAFT_LABEL, STATUS_PHRASE
 from ..handling import is_draft, status_line
-from ..pack.graph_layout import layout_graph, NODE_H, NODE_W
+from ..pack.graph_layout import GAP_X, layout_graph, NODE_H, NODE_W, PAD
 from ..pack.markdown import _handling_lines as _px_handling_lines, coverage, event_when, sorted_events
 from ..pack.schema import ID_RX, TOP_PRINT_LINE
 from ..workspace import incident_date
@@ -71,8 +71,10 @@ class _PxStyle:
 
 
 def _px_strip_cites(s) -> str:
-    """Slide text: inline [FND-…; EVD-…] groups go to the notes, not the slide."""
-    return PX_CITE_GROUP_RX.sub("", str(s))
+    """Slide text: inline [FND-…; EVD-…] groups, and any bare Finding or Evidence ID, go to the notes, not the
+    slide."""
+    t = PX_CITE_GROUP_RX.sub("", str(s))
+    return re.sub(r"[ \t]{2,}", " ", ID_RX.sub("", t)) if ID_RX.search(t) else t
 
 
 def _px_clip(s: str, n: int = PX_SUMMARY_MAX) -> str:
@@ -381,6 +383,8 @@ def _px_graph_layout(it: dict) -> dict:
     from layout_graph's drawing, plus the layout size and the omitted count."""
     nodes = [n for n in it.get("nodes") or [] if isinstance(n, dict) and "id" in n]
     edges = [e for e in it.get("edges") or [] if isinstance(e, dict) and "from" in e and "to" in e]
+    # Task 15 adds label_max=None to layout_graph; pass it here once merged (only the <text> child changes, which
+    # this reader never uses: the full label comes from aria-label).
     res = layout_graph(nodes, edges, str(it.get("id") or "g"))
     svg = res["svg"]
     vb = re.search(r'viewBox="0 0 (\d+) (\d+)"', svg)
@@ -405,9 +409,31 @@ def _px_node_size(label_text: str, cx: int, cy: int) -> int:
     return 600
 
 
+def _px_route(cls: str, u: tuple, v: tuple, g: dict, k: int) -> list:
+    """A link's path in layout pixels, as points. A link between neighbouring layers is one straight line from the
+    right side of u to the left side of v, through the gap between the columns. Any other link (a skip, or a back
+    link) would pass behind the nodes in between, so it is routed through clear space only: out of u's right side
+    into the gap beside it, through the band above the nodes (a skip) or below them (a back link), down or up the gap
+    before v's column, and into v's left side. k staggers the routed links so two never share a line."""
+    W, H = NODE_W, NODE_H
+    start, end = (u[0] + W, u[1] + H / 2), (v[0], v[1] + H / 2)
+    if "skip" not in cls and "back" not in cls:
+        return [start, end]
+    lane = GAP_X // 3 + (k % 3) * (GAP_X // 9)
+    right = u[0] + W + (lane if u[0] + W + PAD < g["width"] else PAD / 2)
+    left = v[0] - (lane if v[0] > PAD else PAD / 2)
+    if "back" in cls:
+        band = min(g["height"] - 2, g["bottom"] + 8 + (k % 5) * 6)
+    else:
+        band = max(2, g["top"] - 8 - (k % 5) * 6)
+    return [start, (right, start[1]), (right, band), (left, band), (left, end[1]), end]
+
+
 def _px_graph_slide(deck: _PxDeck, heading: str, it: dict, inc_date) -> None:
-    """A graph as rounded rectangles (one per drawn node, the label in full) and straight connectors (one per link),
-    scaled from layout_graph's coordinates into the slide body. Back links are dashed, bottom to bottom."""
+    """A graph as rounded rectangles (one per drawn node, the label in full) and straight connectors, scaled from
+    layout_graph's coordinates into the slide body. Every link is one object: a single connector, or a group of
+    straight connector segments routed around the nodes (_px_route), so no link runs behind a node. Back links are
+    dashed. The links are drawn after the nodes."""
     st, L = deck.st, deck.L
     g = _px_graph_layout(it)
     bx, by, bw, bh = PX_BODY
@@ -422,40 +448,60 @@ def _px_graph_slide(deck: _PxDeck, heading: str, it: dict, inc_date) -> None:
         nodes.append(_px_sp(sid, f"Node {k + 1}", (ox + x * s, oy + y * s, cx, cy), paras, anchor="ctr",
                             geom="roundRect", fill="FFFFFF", line=st.accent, inset=45720))
         sid += 1
-    shapes = []                                          # links first, so the nodes are drawn over their ends
-    for cls, (sx, sy), (ex, ey) in g["links"]:
+    ys = [y for _lab, _x, y in g["nodes"]]
+    g = dict(g, top=min(ys, default=0), bottom=max(ys, default=0) + NODE_H)
+    links, routed = [], 0
+    for n, (cls, (sx, sy), (ex, ey)) in enumerate(g["links"], 1):
         if "back" in cls:
-            u, v, a, b = (sx - NODE_W // 2, sy - NODE_H), (ex - NODE_W // 2, ey - NODE_H), 2, 2
-            p1 = (u[0] + NODE_W / 2, u[1] + NODE_H)
-            p2 = (v[0] + NODE_W / 2, v[1] + NODE_H)
+            u, v = (sx - NODE_W // 2, sy - NODE_H), (ex - NODE_W // 2, ey - NODE_H)
+        elif "skip" in cls:
+            u, v = (sx - NODE_W // 2, sy), (ex - NODE_W // 2, ey)
         else:
-            if "skip" in cls:
-                u, v = (sx - NODE_W // 2, sy), (ex - NODE_W // 2, ey)
-            else:
-                u, v = (sx - NODE_W, sy - NODE_H // 2), (ex, ey - NODE_H // 2)
-            a, b = 3, 1
-            p1, p2 = (u[0] + NODE_W, u[1] + NODE_H / 2), (v[0], v[1] + NODE_H / 2)
-        shapes.append(_px_cxn(sid, at.get(u), at.get(v), a, b, (ox + p1[0] * s, oy + p1[1] * s),
-                              (ox + p2[0] * s, oy + p2[1] * s), st.accent, dashed="back" in cls))
-        sid += 1
+            u, v = (sx - NODE_W, sy - NODE_H // 2), (ex, ey - NODE_H // 2)
+        pts = _px_route(cls, u, v, g, routed)
+        routed += len(pts) > 2
+        emu = [(ox + px * s, oy + py * s) for px, py in pts]
+        dashed = "back" in cls
+        if len(emu) == 2:
+            links.append(_px_cxn(sid, f"Link {n}", at.get(u), at.get(v), emu[0], emu[1], st.accent, dashed=dashed))
+            sid += 1
+            continue
+        gid, sid, segs = sid, sid + 1, []
+        last = len(emu) - 2
+        for j, (p1, p2) in enumerate(zip(emu, emu[1:])):
+            segs.append(_px_cxn(sid, f"Link {n} part {j + 1}", at.get(u) if j == 0 else None,
+                                at.get(v) if j == last else None, p1, p2, st.accent, dashed=dashed, arrow=j == last))
+            sid += 1
+        links.append(_px_group(gid, f"Link {n}", emu, "".join(segs)))
     notes = []
     if g["omitted"]:
         notes.append(label(L, "ui.graph_omitted", n=g["omitted"]))
     notes += _px_item_notes(it, L, inc_date)
-    deck.add(heading, "", notes + _px_records_block(deck, _px_ids(it)), shapes="".join(shapes + nodes))
+    deck.add(heading, "", notes + _px_records_block(deck, _px_ids(it)), shapes="".join(nodes + links))
 
 
-def _px_cxn(sid, start, end, a, b, p1, p2, color, dashed=False) -> str:
-    """A straight connector from p1 to p2 (EMU), glued to the node shapes' connection sites when they are known."""
+def _px_group(sid, name, pts, inner) -> str:
+    """A group shape around one routed link's segments (child coordinates equal slide coordinates)."""
+    x, y = int(min(p[0] for p in pts)), int(min(p[1] for p in pts))
+    cx, cy = max(int(max(p[0] for p in pts)) - x, 1), max(int(max(p[1] for p in pts)) - y, 1)
+    box = f'<a:off x="{x}" y="{y}"/><a:ext cx="{cx}" cy="{cy}"/><a:chOff x="{x}" y="{y}"/><a:chExt cx="{cx}" cy="{cy}"/>'
+    return (f'<p:grpSp><p:nvGrpSpPr><p:cNvPr id="{sid}" name="{name}"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>'
+            f'<p:grpSpPr><a:xfrm>{box}</a:xfrm></p:grpSpPr>{inner}</p:grpSp>')
+
+
+def _px_cxn(sid, name, start, end, p1, p2, color, dashed=False, arrow=True) -> str:
+    """A straight connector from p1 to p2 (EMU), glued to the node shapes' right (start) and left (end) connection
+    sites when they are known; an arrowhead at p2 when arrow."""
     x, y = min(p1[0], p2[0]), min(p1[1], p2[1])
     cx, cy = abs(p2[0] - p1[0]), abs(p2[1] - p1[1])
     flip = (' flipH="1"' if p2[0] < p1[0] else "") + (' flipV="1"' if p2[1] < p1[1] else "")
-    glue = (f'<a:stCxn id="{start}" idx="{a}"/>' if start else "") + (f'<a:endCxn id="{end}" idx="{b}"/>' if end else "")
+    glue = (f'<a:stCxn id="{start}" idx="3"/>' if start else "") + (f'<a:endCxn id="{end}" idx="1"/>' if end else "")
     dash = '<a:prstDash val="dash"/>' if dashed else ""
-    return (f'<p:cxnSp><p:nvCxnSpPr><p:cNvPr id="{sid}" name="Link {sid}"/><p:cNvCxnSpPr>{glue}</p:cNvCxnSpPr><p:nvPr/>'
+    tail = '<a:tailEnd type="triangle"/>' if arrow else ""
+    return (f'<p:cxnSp><p:nvCxnSpPr><p:cNvPr id="{sid}" name="{name}"/><p:cNvCxnSpPr>{glue}</p:cNvCxnSpPr><p:nvPr/>'
             f'</p:nvCxnSpPr><p:spPr><a:xfrm{flip}><a:off x="{int(x)}" y="{int(y)}"/><a:ext cx="{int(cx)}" '
             f'cy="{int(cy)}"/></a:xfrm><a:prstGeom prst="straightConnector1"><a:avLst/></a:prstGeom>'
-            f'<a:ln w="15875"><a:solidFill><a:srgbClr val="{color}"/></a:solidFill>{dash}<a:tailEnd type="triangle"/>'
+            f'<a:ln w="15875"><a:solidFill><a:srgbClr val="{color}"/></a:solidFill>{dash}{tail}'
             f'</a:ln></p:spPr></p:cxnSp>')
 
 

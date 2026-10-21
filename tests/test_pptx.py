@@ -157,6 +157,71 @@ def test_pptx_continued_slides(w):
     assert [sum(f"Point number {i} " in s for i in range(1, 15)) for s in sec] == [6, 6, 2]
 
 
+SP_RX = re.compile(r"<p:sp>.*?</p:sp>", re.S)
+CXN_RX = re.compile(r'<p:cxnSp><p:nvCxnSpPr><p:cNvPr id="\d+" name="Link (\d+)(?: part \d+)?"/>.*?</p:cxnSp>', re.S)
+XFRM_RX = re.compile(r'<a:xfrm( flipH="1")?( flipV="1")?><a:off x="(-?\d+)" y="(-?\d+)"/><a:ext cx="(\d+)" cy="(\d+)"/>')
+
+
+def graph_geometry(x: str):
+    """The graph slide's node boxes ({label: (x0, y0, x1, y1)}) and links ({n: [segments (p, q, arrow)]})."""
+    nodes = {}
+    for sp in SP_RX.findall(x):
+        if 'prst="roundRect"' in sp:
+            _fh, _fv, a, b, c, d = XFRM_RX.search(sp).groups()
+            a, b, c, d = int(a), int(b), int(c), int(d)
+            nodes["".join(re.findall(r"<a:t>([^<]*)</a:t>", sp))] = (a, b, a + c, b + d)
+    links = {}
+    for m in CXN_RX.finditer(x):
+        fh, fv, a, b, c, d = XFRM_RX.search(m.group(0)).groups()
+        a, b, c, d = int(a), int(b), int(c), int(d)
+        p, q = (a + (c if fh else 0), b + (d if fv else 0)), (a + (0 if fh else c), b + (0 if fv else d))
+        links.setdefault(int(m.group(1)), []).append((p, q, "tailEnd" in m.group(0)))
+    return nodes, links
+
+
+def crosses(p, q, r, eps=2) -> bool:
+    """True when segment pq enters the interior of rectangle r (Liang-Barsky clipping)."""
+    x0, y0, x1, y1 = r[0] + eps, r[1] + eps, r[2] - eps, r[3] - eps
+    dx, dy = q[0] - p[0], q[1] - p[1]
+    t0, t1 = 0.0, 1.0
+    for pv, qv in ((-dx, p[0] - x0), (dx, x1 - p[0]), (-dy, p[1] - y0), (dy, y1 - p[1])):
+        if pv == 0:
+            if qv < 0:
+                return False
+        else:
+            t = qv / pv
+            if pv < 0:
+                t0 = max(t0, t)
+            else:
+                t1 = min(t1, t)
+    return t0 < t1
+
+
+def near(a, b, tol=3) -> bool:
+    return abs(a[0] - b[0]) <= tol and abs(a[1] - b[1]) <= tol
+
+
+def check_links_visible(x: str, n_edges: int) -> dict:
+    """Every link is one connected path, from the right side of one node to the left side of another, with one
+    arrowhead at its end; no segment of it runs through any node box. Returns {n: (from label, to label)}."""
+    nodes, links = graph_geometry(x)
+    assert len(links) == n_edges
+    ends = {}
+    for n, segs in links.items():
+        for (p, q, _), (p2, _q2, _) in zip(segs, segs[1:]):
+            assert near(q, p2), (n, segs)
+        assert [a for _, _, a in segs] == [False] * (len(segs) - 1) + [True]
+        for p, q, _ in segs:
+            hit = [lab for lab, r in nodes.items() if crosses(p, q, r)]
+            assert not hit, (n, p, q, hit)
+        start, end = segs[0][0], segs[-1][1]
+        src = [lab for lab, r in nodes.items() if abs(start[0] - r[2]) <= 3 and r[1] <= start[1] <= r[3]]
+        dst = [lab for lab, r in nodes.items() if abs(end[0] - r[0]) <= 3 and r[1] <= end[1] <= r[3]]
+        assert len(src) == 1 and len(dst) == 1 and src != dst, (n, start, end)
+        ends[n] = (src[0], dst[0])
+    return ends
+
+
 def test_pptx_graph_native_shapes():
     pack = fixture("causal-map")
     g = pack["sections"][0]["items"][0]
@@ -164,13 +229,18 @@ def test_pptx_graph_native_shapes():
     xs = [x for x in slide_xml(o.data) if 'prst="roundRect"' in x]
     assert len(xs) == 1
     x = xs[0]
-    nodes = re.findall(r'<p:sp>(?:(?!</p:sp>).)*?prst="roundRect"(?:(?!</p:sp>).)*?</p:sp>', x, re.S)
+    nodes = [sp for sp in SP_RX.findall(x) if 'prst="roundRect"' in sp]
     assert len(nodes) == len(g["nodes"])
     texts = sorted("".join(re.findall(r"<a:t>([^<]*)</a:t>", n)) for n in nodes)
     assert texts == sorted(n["label"] for n in g["nodes"])
     assert max(len(t) for t in texts) > 28                                  # longer than the SVG's clip
-    assert x.count("<p:cxnSp>") == len(g["edges"])
-    assert x.count('prst="straightConnector1"') == len(g["edges"])
+    assert x.count("<p:cxnSp>") >= len(g["edges"])
+    assert x.count("<p:cxnSp>") == x.count('prst="straightConnector1"')
+    # I-1: every link is drawn, visibly: none runs behind a node, so the L4 -> L1 skip link is not hidden
+    ends = check_links_visible(x, len(g["edges"]))
+    lab = {n["id"]: n["label"] for n in g["nodes"]}
+    assert sorted(ends.values()) == sorted((lab[e["from"]], lab[e["to"]]) for e in g["edges"])
+    assert x.rindex('prst="roundRect"') < x.index("<p:cxnSp>")             # links drawn above the boxes
     # every shape lies inside the slide
     boxes = re.findall(r'<a:off x="(-?\d+)" y="(-?\d+)"/><a:ext cx="(\d+)" cy="(\d+)"/>', x)
     assert len(boxes) >= len(g["nodes"]) + len(g["edges"])
@@ -182,23 +252,37 @@ def test_pptx_graph_native_shapes():
 
 
 def test_pptx_graph_back_edge_and_omitted(w):
-    nodes = [{"id": f"N{i}", "label": f"Node {i}"} for i in range(1, 5)]
+    nodes = [{"id": f"N{i}", "label": f"Node {i}"} for i in range(1, 6)]
     edges = [{"from": "N1", "to": "N2"}, {"from": "N2", "to": "N3"}, {"from": "N3", "to": "N1"},
-             {"from": "N1", "to": "N3"}, {"from": "N3", "to": "N4", "label": "leads to"}]
+             {"from": "N1", "to": "N3"}, {"from": "N3", "to": "N4", "label": "leads to"},
+             {"from": "N4", "to": "N2"}, {"from": "N1", "to": "N4"}, {"from": "N5", "to": "N4"}]
     g = item("graph", nodes=nodes, edges=edges, cites=["FND-0001"])
     o = one(R.render("pptx", ctx_for(w, pack_with(g))))
     assert ooxml_check.check_package(o.data) == []
     x = [s for s in slide_xml(o.data) if 'prst="roundRect"' in s][0]
-    assert x.count("<p:cxnSp>") == 5 and x.count('<a:prstDash val="dash"/>') == 1        # N3 -> N1 goes back
-    assert x.count("<a:stCxn ") == 5 and x.count("<a:endCxn ") == 5                       # glued to the nodes
+    ends = check_links_visible(x, len(edges))
+    assert sorted(ends.values()) == sorted((f"Node {e['from'][1]}", f"Node {e['to'][1]}") for e in edges)
+    dashed = re.findall(r'name="Link (\d+) part 1"/>(?:(?!</p:cxnSp>).)*?prstDash', x, re.S)
+    assert sorted(dashed) == ["3", "6"]                                     # N3 -> N1 and N4 -> N2 go back
+    assert x.count("<a:stCxn ") == len(edges) and x.count("<a:endCxn ") == len(edges)   # glued at both ends
     from pmlc_lib.render import pptx as PX
     many = [{"id": f"M{i}", "label": f"Many {i}"} for i in range(70)]
     g2 = item("graph", nodes=many, edges=[{"from": "M0", "to": f"M{i}"} for i in range(1, 70)], cites=["FND-0001"])
     o2 = one(R.render("pptx", ctx_for(w, pack_with(g2))))
     x2 = [s for s in slide_xml(o2.data) if 'prst="roundRect"' in s][0]
     assert x2.count('prst="roundRect"') == 60
+    check_links_visible(x2, 59)
     assert "10 nodes with the fewest links are not drawn" in "\n".join(pptx_notes_text(o2.data))
     assert PX.PX_SLIDE_W == 12192000
+
+
+def test_pptx_bare_ids_stay_off_the_slide(w):
+    p = pack_with(item("para", text="See FND-0001 and EVD-0001 for the seal record.", cites=["FND-0001"]))
+    o = one(R.render("pptx", ctx_for(w, p)))
+    slides, notes = pptx_slides_text(o.data), "\n".join(pptx_notes_text(o.data))
+    assert not [s for s in slides if ID_RX.search(s)]
+    assert any("See and for the seal record." in s for s in slides)
+    assert "See FND-0001 and EVD-0001 for the seal record." in notes
 
 
 def test_pptx_learner_view(w):
