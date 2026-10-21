@@ -31,6 +31,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
           [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
           [--format FORMATS] [--view {full,learner}] [--start YYYY-MM-DD]
           [--brand FILE]
+          [--layout {cards,toolbox,poster,checklist,paper,field}] [--paper {A4,A5}] [--base-url URL]
 ```
 
 ## Arguments
@@ -54,6 +55,9 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `--view` | `full` or `learner` | `full` | `learner` writes a learner copy of each document format, named `<pack>.learner.<ext>`: answers, good-evidence notes and the correct-option flags are left out, and the line "Learner view: answers are hidden" sits under the status. Data formats ignore it |
 | `--start` | date, `YYYY-MM-DD` | none | The day that the follow-up offsets of `--format ics` count from. Without it, `ics` says `ics: needs --start YYYY-MM-DD; nothing written (the coach never sets dates by itself)` and writes nothing |
 | `--brand` | file | none | A `brand.json` that sets your organisation's look: `organisation` (a name), `accent` (a `#RRGGBB` colour) and `logo` (a PNG or JPEG next to the file, at most 200 KB). Any other key is refused, because the footer and the status line are fixed. The accent must reach a contrast of 4.5:1 against white (WCAG AA), or the command stops with the ratio it found. The page shows the logo (embedded in the file) and the name in its header |
+| `--layout` | `cards`, `toolbox`, `poster`, `checklist`, `paper` or `field` | none | Also write a print layout, `<pack>.<layout>.html`, beside the other files; see [Print layouts](#print-layouts). It never changes `<pack>.html` |
+| `--paper` | `A4` or `A5` | `A4` | The page size of `--layout cards`. The other layouts have a fixed size; with any other layout, or none, the command says `--paper applies to --layout cards only; ignored` |
+| `--base-url` | an `http://` or `https://` URL | none | Where the pack page is published. The print layouts put a QR code on each printed item that links to `<URL>#i/<item id>`, and the poster one that links to the URL itself |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ### Formats
@@ -78,6 +82,23 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `narration` | data | `<pack>.<item-id>.narration.txt` | Each `script` item's narration only, one paragraph per segment, for a voice-over or a PA reader. No status line and no citations: the text is spoken. The shooting script in the html and md carries the status |
 
 A typed question has a `type` (`single`, `multi`, `truefalse` or `short`) and `options`, a list of `{"text": ..., "correct": true or false}`. `check-pack` stops a `single` or `truefalse` question without exactly one correct option, a `multi` with none, a `truefalse` without exactly two options, and a `short` whose accepted answers are not all marked correct. With the learner view the correct-option flags are left out, and a `short` question's options (its answers) are left out altogether. A pack with no questions has nothing to write for these three formats.
+
+### Print layouts
+
+`--layout` writes one more page, made to be printed from the browser (Ctrl+P). Every printed page carries the status phrase, the short footer ("ProbeMatrix Learnings Coach v… · ProbeMatrix by Eyekyam") and, until the pack is approved, the DRAFT label.
+
+| Layout | Page | What it prints |
+|---|---|---|
+| `cards` | A4, or A5 with `--paper A5` | One page per card, toolbox talk, test point and scenario inject. A last page gives the bottom line and "<n> more items are in the full pack" for the rest |
+| `field` | A4 | As `cards`, with the citations as numbered end-notes on a page of their own, then a printable delivery record |
+| `toolbox` | A4 | One page per toolbox talk (its opening question, story, warning signs, one change and crew question, in that order), then the delivery record. A pack without toolbox talks writes nothing: `toolbox: nothing to write (no toolbox items)` |
+| `checklist` | A4 | The checks and test points, grouped by section, each with a ☐ box; hold points are marked "Hold point", and each section ends with "Checked by (role): ________   Date: ________   Shift: ________". A pack without checks writes nothing |
+| `poster` | A3 landscape | One page: the title, the bottom line, up to 6 card or learning titles, the pack's timeline events in one line, and the QR code when `--base-url` is given |
+| `paper` | A4 | A board paper: a cover (title, incident, status, handling, reading time), "Decisions requested" with the bottom line, numbered paragraphs (`1.`, `1.1`) for the other items, Annex A for questions and Annex B for tables and indicators |
+
+The delivery record has the columns of `distribution.csv` after `pack` and `audience` (`channel`, `date`, `delivered_by_role`, `attendees`, `contractors_included`, `questions_raised`, `concerns_escalated`) and blank rows to fill in by hand. Write roles, never personal names, then copy the rows into `distribution.csv` (see [templates](templates.md)).
+
+With `--view learner` the layout is written as `<pack>.<layout>.learner.html`, and a shared copy as `<pack>.<layout>.external.html` or `.public.html`.
 
 A shared copy (`--share external` or `public`) of any format is built from the masked pack, and the mode goes just before the last extension of its file name: `<pack>.normalised.external.json`, `<pack>.learner.external.html`. Every format's text goes through the name check.
 
@@ -160,6 +181,21 @@ HTML written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/trai
 Markdown written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/training-designer.learner.md
 ```
 
+Field cards for a crew briefing, with a QR code on each card that opens it in the published pack:
+
+```bash
+python3 $E pack $WS $OUT/frontline-learning-cards.json --layout field --base-url https://intranet.example.org/learning/frontline-learning-cards.html
+```
+
+```text
+…
+HTML written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/frontline-learning-cards.html
+Markdown written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/frontline-learning-cards.md
+field layout written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/frontline-learning-cards.field.html
+```
+
+Open `frontline-learning-cards.field.html` and print it. The A5 cards for a pocket book: `--layout cards --paper A5`.
+
 A smaller page for an internal working group, without quotes or evidence descriptions. On this pack the page drops from about 205 KB (`cited`) to about 168 KB; with `--embed full` it is about 1.2 MB:
 
 ```bash
@@ -237,6 +273,9 @@ warning: no handling block: rendered as draft (internal)
 - **"argument --format: unknown format …".** The name is not a format; the message lists the ones there are. Separate several with commas and no spaces: `--format html,normalised`.
 - **"already exists and may hold your organisation's entries".** `--format csv` never overwrites `<pack>.actions.csv`. Move the old file, or pass a new `--out`.
 - **Word shows the citations as small numbers.** They are endnotes: the cited findings and evidence are listed at the end of the document, one note per item.
+- **"toolbox: nothing to write (no toolbox items)" or "checklist: nothing to write (no check or test_point items)".** The pack has nothing that layout prints; the other files are still written. Pick another layout.
+- **"QR codes left out: the link is too long for a QR code".** The `--base-url` is too long to encode; the pages print without the codes. Use a shorter address.
+- **"argument --base-url: needs an http:// or https:// URL".** Give the full address of the published pack page.
 - **Where did the files go?** Without `--out`, into the run's outputs folder; [run-path](run-path.md) prints it.
 
 ## Related
