@@ -149,5 +149,11 @@
  "ui.quiz.cut": "Question {id} has more than {n} options: the quiz CSV holds the first {n}.",
  "ui.email.cited": "Findings and evidence cited",
  "ui.email.full_pack": "Open the full pack",
- "ui.email.sections_left": "{n} more sections are in the full pack"
+ "ui.email.sections_left": "{n} more sections are in the full pack",
+ "ui.docx.decisions_requested": "Decisions requested",
+ "ui.docx.annex_a": "Annex A: Questions",
+ "ui.docx.annex_b": "Annex B: Tables and indicators",
+ "ui.docx.when": "When",
+ "ui.docx.what": "What happened",
+ "ui.docx.correct": "correct"
 }

@@ -149,5 +149,11 @@
  "ui.quiz.cut": "प्रश्न {id} में {n} से अधिक विकल्प हैं: क्विज़ CSV में पहले {n} ही रहते हैं।",
  "ui.email.cited": "उद्धृत निष्कर्ष और साक्ष्य",
  "ui.email.full_pack": "पूरा पैक खोलें",
- "ui.email.sections_left": "{n} और खंड पूरे पैक में हैं"
+ "ui.email.sections_left": "{n} और खंड पूरे पैक में हैं",
+ "ui.docx.decisions_requested": "मांगे गए निर्णय",
+ "ui.docx.annex_a": "अनुलग्नक A: प्रश्न",
+ "ui.docx.annex_b": "अनुलग्नक B: तालिकाएं और संकेतक",
+ "ui.docx.when": "कब",
+ "ui.docx.what": "क्या हुआ",
+ "ui.docx.correct": "सही"
 }

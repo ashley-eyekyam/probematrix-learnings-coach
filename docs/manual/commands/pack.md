@@ -69,6 +69,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `quiz-csv` | data | `<pack>.quiz.csv` | One row per question: `id,type,question,option_1,...,option_6,correct,why,cites`. `correct` holds the 1-based option numbers joined by `;`. A question without a type has the type `discussion` and no options. Cells that start with `=`, `+`, `-` or `@` get a leading `'` so a spreadsheet never runs them. Options beyond the sixth are left out, and the command says so |
 | `email` | document | `<pack>.email.html` and `<pack>.email.txt` | An email-safe digest: the title, status, DRAFT label and reading time, the bottom line in full, each section's items in order, the cited finding and evidence IDs, the coverage line and the brand. The HTML uses inline styles only (no script, style sheet, link or image) and stays under 100 KB; when a long pack does not fit, each section ends with "N more items are in the full pack". The `.txt` twin has the same content, wrapped at 78 columns. When a base web address is given, it holds one link to that address and no other |
 | `csv` | data | `<pack>.actions.csv` | Every recommendation, decision and indicator item, in the same columns and order as [export-actions](export-actions.md); owner, due, status, CAPA reference and effectiveness check are blank for your organisation. The file is never replaced: if `<pack>.actions.csv` exists, the command exits 1 with `<file> already exists and may hold your organisation's entries; move it or pass a new --out` and writes nothing |
+| `docx` | document | `<pack>.docx` (`<pack>.paper.docx` with the `paper` layout) | A Word document on A4: the title with the status line under it, the DRAFT line, the handling lines and the reading time, then the bottom line, one heading per section, coverage, gaps and limits. Tables are real Word tables whose header row repeats on each page. Each item's citations are one endnote, listing every cited finding as `ID: label · L<level> · rating <r>` and every cited evidence item as `ID: type`. The footer of every page carries the status phrase, the ProbeMatrix credit and the page number; a draft has DRAFT in its header. The file has no author. With the `paper` layout a board paper is written as well: a cover page, "Decisions requested" (decision items, then the bottom line), numbered paragraphs (`1.`, `1.1`), Annex A for questions and Annex B for tables and indicators |
 
 A typed question has a `type` (`single`, `multi`, `truefalse` or `short`) and `options`, a list of `{"text": ..., "correct": true or false}`. `check-pack` stops a `single` or `truefalse` question without exactly one correct option, a `multi` with none, a `truefalse` without exactly two options, and a `short` whose accepted answers are not all marked correct. With the learner view the correct-option flags are left out, and a `short` question's options (its answers) are left out altogether. A pack with no questions has nothing to write for these three formats.
 
@@ -128,6 +129,18 @@ ics written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/safet
 ```
 
 Without `--start` the command writes nothing and says `ics: needs --start YYYY-MM-DD; nothing written (the coach never sets dates by itself)`.
+
+The HTML page and a Word copy of the board brief:
+
+```bash
+python3 $E pack $WS $OUT/board-brief.json --format html,docx
+```
+
+```text
+…
+HTML written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.html
+docx written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.docx
+```
 
 A learner copy of a training pack, without the answer keys:
 
@@ -217,6 +230,7 @@ warning: no handling block: rendered as draft (internal)
 - **"refused: a listed name appears in the output".** A name from `--names` (or `PMLC_NAMES`) is still on the page. Fix the pack text, or redact the name when you ingest (`ingest --redact`).
 - **"argument --format: unknown format …".** The name is not a format; the message lists the ones there are. Separate several with commas and no spaces: `--format html,normalised`.
 - **"already exists and may hold your organisation's entries".** `--format csv` never overwrites `<pack>.actions.csv`. Move the old file, or pass a new `--out`.
+- **Word shows the citations as small numbers.** They are endnotes: the cited findings and evidence are listed at the end of the document, one note per item.
 - **Where did the files go?** Without `--out`, into the run's outputs folder; [run-path](run-path.md) prints it.
 
 ## Related

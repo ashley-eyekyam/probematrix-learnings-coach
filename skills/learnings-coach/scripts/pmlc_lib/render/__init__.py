@@ -169,6 +169,7 @@ def _load() -> None:
         "quiz",
         "email",
         "exports",
+        "docx",
     ):
         importlib.import_module(f"{__name__}.{mod}")
 
