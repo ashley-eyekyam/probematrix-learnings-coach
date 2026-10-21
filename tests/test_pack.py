@@ -36,6 +36,9 @@ MIN = {
     "timeline": {"events": [{"date": "2024-03-12", "text": "seal change"}]},
     "graph": {"nodes": [{"id": "a", "label": "A"}, {"id": "b", "label": "B"}], "edges": [{"from": "a", "to": "b"}]},
     "learning": {"lesson": "l", "cites": ["FND-0002"]},
+    "toolbox": {"opening_question": "o", "story": "s", "warning_signs": ["a", "b"], "one_change": "c",
+                "crew_question": "q", "cites": ["FND-0001"]},
+    "script": {"title": "t", "segments": [{"visual": "v", "narration": "n", "seconds": 30}], "cites": ["FND-0001"]},
 }
 
 

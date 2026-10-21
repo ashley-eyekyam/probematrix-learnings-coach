@@ -77,6 +77,20 @@ Draft because: no finding is marked as edited by a person
 |---|---|---|---|---|
 | Maintenance trainer | All fitters | The module and the scenario | % of restarts with a test record | FND-0001 |
 
+## Video and radio scripts
+
+**Script:** Before you restart [FND-0001]
+- Channel: video
+- Purpose: A one-minute film to open the return-to-service module.
+
+| Visual | Narration |
+|---|---|
+| 0:00–0:20 · A pump on its skid after a seal change. (On screen: Test, record, restart) | This pump was restarted after a seal change. Nobody had tested the new seal for leaks. |
+| 0:20–0:40 · A work order with no test line. | The work order had no line for a leak test, so the test was easy to miss. [FND-0002] |
+| 0:40–1:00 · A fitter hands over a signed test sheet. | Before any restart, ask for the signed leak-test record. No record, no restart. |
+
+Total duration: 1:00 (min:sec)
+
 ---
 
 This pack cites 1 of 2 relevant findings.

@@ -170,6 +170,7 @@ def _load() -> None:
         "email",
         "exports",
         "docx",
+        "script",
     ):
         importlib.import_module(f"{__name__}.{mod}")
 

@@ -48,6 +48,7 @@ MODULES = [
     "pmlc_lib.render.email",
     "pmlc_lib.render.exports",
     "pmlc_lib.render.docx",
+    "pmlc_lib.render.script",
     "pmlc_lib.pack.command",
     "pmlc_lib.cli",
 ]

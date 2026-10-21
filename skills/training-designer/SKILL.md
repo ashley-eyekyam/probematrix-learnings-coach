@@ -49,6 +49,7 @@ scope as above.
 | 3 | `scenarios` | Scenario exercises | Decision-point scenarios from the event, with facilitator notes in `prompts` | `scenario` | up to 3 |
 | 4 | `assessment` | Assessment | `why` = what it tests, `answer` = the answer key, `good_evidence`, `cites` = the finding it tests; include questions on the level of a cause (L1–L4) | `question` | up to 15 |
 | 5 | `cascade` | Cascade plan | Columns Who, Trains whom, Materials, Transfer measure at 90 days | `table` | 1 |
+| 6 | `scripts` | Video and radio scripts | A short film, radio or PA message: `segments` of visual, narration and seconds (`--format srt,narration`) | `script` | optional, up to 3 |
 
 - **Competence standard and refresher.** Each module's `content` ends with two lines: "Competence standard:
   <the organisation's competence-standard id>" and "Refresher interval: <interval>". Use an id or interval only

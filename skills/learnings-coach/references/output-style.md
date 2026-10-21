@@ -30,7 +30,7 @@ In a pack these are the `card`, `question` and `test_point` item kinds. A learni
 
 **Learning Brief paragraph**: lesson in one sentence → why it matters here → what changes for this audience → evidence trail.
 
-**Toolbox talk** (five minutes): opening question → the story in 90 seconds → two warning signs → one thing to do differently tomorrow → one question to the crew.
+**Toolbox talk** (five minutes): opening question → the story in 90 seconds → two warning signs → one thing to do differently tomorrow → one question to the crew. Write it as one `toolbox` item (`pack-schema.md`): `opening_question`, `story`, `warning_signs` (two), `one_change`, `crew_question`, and an optional `duration`; the page and the Markdown show the five parts in this order.
 
 **Board question**: the question → why it matters (one line) → what good assurance evidence would look like.
 

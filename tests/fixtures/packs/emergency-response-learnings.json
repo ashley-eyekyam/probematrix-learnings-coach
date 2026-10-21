@@ -20,7 +20,10 @@
    {"kind": "para", "text": "Where the emergency plan is a regulated plan, a change to it may need review by, or notice to, an authority: the plan owner should check this before revising the plan."}]},
   {"id": "drills", "heading": "Drill scenarios", "items": [
    {"kind": "scenario", "situation": "Inject: a gas alarm appears on the display during a shift handover.",
-    "prompts": ["Who sees it first?", "Time standard: alarm to isolation decision"], "cites": ["FND-0004"]}]},
+    "prompts": ["Who sees it first?", "Time standard: alarm to isolation decision"], "cites": ["FND-0004"],
+    "injects": [{"offset": "+00:02", "text": "The gas alarm shows on the display only; nothing trips."},
+                {"offset": "+00:10", "text": "The field operator does not answer the radio.",
+                 "decision": "Isolate from the control room now, or send someone to look?"}]}]},
   {"id": "readiness", "heading": "Readiness indicators", "items": [
    {"kind": "indicator", "name": "Alarm to isolation decision in drills", "measure": "Minutes from inject to decision",
     "cites": ["FND-0004"]}]}]}

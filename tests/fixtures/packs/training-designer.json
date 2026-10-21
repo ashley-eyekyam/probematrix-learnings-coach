@@ -37,4 +37,14 @@
   {"id": "cascade", "heading": "Cascade plan", "items": [
    {"kind": "table", "columns": ["Who", "Trains whom", "Materials", "Transfer measure at 90 days"],
     "rows": [["Maintenance trainer", "All fitters", "The module and the scenario", "% of restarts with a test record"]],
-    "row_cites": [["FND-0001"]]}]}]}
+    "row_cites": [["FND-0001"]]}]},
+  {"id": "scripts", "heading": "Video and radio scripts", "items": [
+   {"kind": "script", "id": "restart-video", "title": "Before you restart", "channel": "video",
+    "purpose": "A one-minute film to open the return-to-service module.", "cites": ["FND-0001"],
+    "segments": [
+     {"visual": "A pump on its skid after a seal change.", "narration": "This pump was restarted after a seal change. Nobody had tested the new seal for leaks.",
+      "seconds": 20, "on_screen": "Test, record, restart"},
+     {"visual": "A work order with no test line.", "narration": "The work order had no line for a leak test, so the test was easy to miss.",
+      "seconds": 20, "cites": ["FND-0002"]},
+     {"visual": "A fitter hands over a signed test sheet.", "narration": "Before any restart, ask for the signed leak-test record. No record, no restart.",
+      "seconds": 20}]}]}]}

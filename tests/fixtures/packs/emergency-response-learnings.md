@@ -49,6 +49,11 @@ Where the emergency plan is a regulated plan, a change to it may need review by,
 1. Who sees it first?
 2. Time standard: alarm to isolation decision
 
+**Injects:**
+1. **+00:02** The gas alarm shows on the display only; nothing trips.
+2. **+00:10** The field operator does not answer the radio.
+   - **Decision point:** Isolate from the control room now, or send someone to look?
+
 ## Readiness indicators
 
 **Indicator:** Alarm to isolation decision in drills [FND-0004]
