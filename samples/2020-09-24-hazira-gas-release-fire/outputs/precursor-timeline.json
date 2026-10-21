@@ -110,6 +110,19 @@
        ]
       },
       {
+       "date": "2017",
+       "text": "A thickness analysis report identifies several pipes with significant wall loss that need corrective action.",
+       "signal": true,
+       "received_by": "Asset Integrity, Corrosion & Inspection (F05, T3)",
+       "response": "None recorded: no corrective plan in the three years that followed.",
+       "knowable_then": "The report was issued and acknowledged; what it asked for was stated in it.",
+       "cites": [
+        "FND-C6992EAF",
+        "FND-7EB223DE",
+        "EVD-5527"
+       ]
+      },
+      {
        "date": "2018",
        "text": "A gas header change in the LPG plant goes ahead without the published management-of-change procedure; no MOC is used at the plant after 2018.",
        "signal": true,
@@ -129,6 +142,19 @@
         "FND-EB48C68C",
         "FND-EEC2407A",
         "FND-F7FE8463"
+       ]
+      },
+      {
+       "date": "2018-02",
+       "text": "An external safety audit makes 308 recommendations; 12 are later extended without the approval the procedure requires.",
+       "signal": true,
+       "received_by": "Plant & Asset Leadership (F13, T4)",
+       "response": "Target dates extended; no record of the required approval.",
+       "knowable_then": "The open recommendations and their due dates were in the action tracking.",
+       "cites": [
+        "FND-1D713648",
+        "FND-5A742738",
+        "EVD-6852"
        ]
       },
       {
@@ -298,32 +324,6 @@
         "FND-A3D7D53F",
         "FND-C4E06264",
         "FND-FDFA6FF5"
-       ]
-      },
-      {
-       "date": "2017",
-       "text": "A thickness analysis report identifies several pipes with significant wall loss that need corrective action.",
-       "signal": true,
-       "received_by": "Asset Integrity, Corrosion & Inspection (F05, T3)",
-       "response": "None recorded: no corrective plan in the three years that followed.",
-       "knowable_then": "The report was issued and acknowledged; what it asked for was stated in it.",
-       "cites": [
-        "FND-C6992EAF",
-        "FND-7EB223DE",
-        "EVD-5527"
-       ]
-      },
-      {
-       "date": "2018-02",
-       "text": "An external safety audit makes 308 recommendations; 12 are later extended without the approval the procedure requires.",
-       "signal": true,
-       "received_by": "Plant & Asset Leadership (F13, T4)",
-       "response": "Target dates extended; no record of the required approval.",
-       "knowable_then": "The open recommendations and their due dates were in the action tracking.",
-       "cites": [
-        "FND-1D713648",
-        "FND-5A742738",
-        "EVD-6852"
        ]
       }
      ],

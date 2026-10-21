@@ -435,7 +435,7 @@
      "owner": "Operations & Control Room (F01, T2)",
      "state": "worked partly",
      "failure_mode": "Security staff saw the release first, but their reports went through the CCTV control room and reached the gas terminal control room as 'some vapour cloud or steam leakage' (L4, L2).",
-     "fix": "Install a direct line from the perimeter posts and the CCTV room to each process control room, and adopt a standard release message drilled jointly.",
+     "fix": "Install a direct line from the perimeter posts and the CCTV room to each process control room, with a manual call point at the watch towers.",
      "hoc_tier": "engineering",
      "indicator": "Time from first detection to control-room notification in joint drills.",
      "learning": "LR-13",

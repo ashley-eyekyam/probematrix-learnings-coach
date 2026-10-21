@@ -980,7 +980,7 @@
      ],
      "lint_ok": {
       "rule": "JC6",
-      "reason": "the scheduling and escalation change is the system fix for the inspection programme; the engineering fix for the wall loss itself is in the barrier-learnings pack"
+      "reason": "the scheduling and escalation change is itself the system fix for an inspection cycle that slipped; no elimination, substitution or engineering control applies to a schedule"
      }
     }
    ]
@@ -1217,8 +1217,7 @@
      "cites": [
       "FND-8C0BB623",
       "FND-FD617187"
-     ],
-     "learning": "LR-01"
+     ]
     },
     {
      "kind": "para",
@@ -1227,8 +1226,7 @@
      "cites": [
       "FND-852B7EC7",
       "FND-C4E06264"
-     ],
-     "learning": "LR-01"
+     ]
     },
     {
      "kind": "para",
@@ -1237,8 +1235,7 @@
      "cites": [
       "FND-DE30BD8B",
       "FND-137BC719"
-     ],
-     "learning": "LR-01"
+     ]
     },
     {
      "kind": "para",
@@ -1247,8 +1244,7 @@
      "cites": [
       "FND-23139BF9",
       "FND-50C7319E"
-     ],
-     "learning": "LR-01"
+     ]
     },
     {
      "kind": "para",
@@ -1256,8 +1252,7 @@
      "text": "Ask for assurance that legacy (pre-2000) pressure equipment has current part specifications and controlled spares.",
      "cites": [
       "FND-55F68376"
-     ],
-     "learning": "LR-01"
+     ]
     }
    ]
   },

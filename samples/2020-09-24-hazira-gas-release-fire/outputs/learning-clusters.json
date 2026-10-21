@@ -1185,7 +1185,7 @@
       ],
       [
        "Stores/Procurement (responsible for substitute O-ring sourcing)",
-       "Proposed F06 / T1 / owner (engine: F06 / T9)",
+       "Proposed F06 / T3 / owner (engine: F06 / T9)",
        "the qualifier names an owner"
       ],
       [
@@ -1195,8 +1195,8 @@
       ],
       [
        "Supervision/management (implicit through lack of corrective action)",
-       "Proposed F02 / T2 / absent (engine: F99 / T3)",
-       "the qualifier says no corrective action"
+       "Proposed F02 / T2 / actor (engine: F99 / T3)",
+       "present but took no corrective action, so actor rather than absent"
       ],
       [
        "Supervisor approving the painting-only action",

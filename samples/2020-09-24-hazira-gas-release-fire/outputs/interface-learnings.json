@@ -2,7 +2,7 @@
  "pack": "interface-learnings",
  "schema": 1,
  "title": "Interface Learnings: Hazira gas terminal release and fire, 2020",
- "audience": "Maintenance and materials management, with engineering",
+ "audience": "Maintenance and materials management; operations and emergency planning",
  "status": "Learning purposes: not a statutory document; draft: the investigation status is in progress",
  "incident": {
   "title": "Hazira gas terminal condensate release and fire",
@@ -51,13 +51,14 @@
    "learning": "LR-01"
   },
   {
-   "text": "This seam sits on the prevention side, at pressure-boundary integrity. The mitigation-side seams in the matrix, such as Operations & Control Room with Emergency Planning & Command, are listed for a joint review but not opened in this pack.",
+   "text": "That seam sits on the prevention side, at pressure-boundary integrity. On the mitigation side, the seam between Operations & Control Room (F01) and Emergency Planning & Command (F09b) carried the isolation decision: 31 findings name both, and the plan gave neither side the criteria or the authority to isolate.",
    "cites": [
-    "FND-314D34C5",
-    "FND-81E3EEA0",
+    "FND-82761CC5",
+    "FND-8DAFDADC",
     "EVD-4052"
    ],
-   "evidence_strength": "direct"
+   "evidence_strength": "corroborated",
+   "learning": "LR-07"
   },
   {
    "text": "The largest seams by shared findings are Operations & Control Room with Mechanical Maintenance (71) and Mechanical Maintenance with Asset Integrity, Corrosion & Inspection (40). Each needs its own joint review.",
@@ -383,7 +384,7 @@
     {
      "kind": "para",
      "group": "Why neither side saw it",
-     "text": "With no recorded authority and a flat authority gradient, staff at the working level made the substitution and no one above them reviewed it [FND-2CEE8915; FND-42BEF461]. Each side could reasonably take the part as settled: stores supplied what the job used, and the job used what stores supplied. Three replacements in 22 months did not prompt a review [FND-AC9A1E69; EVD-1494].",
+     "text": "With no recorded authority and a flat authority gradient, staff at the working level made the substitution, and the practice was authorised without being reviewed against a specification [FND-2CEE8915; FND-42BEF461]. Each side could reasonably take the part as settled: stores supplied what the job used, and the job used what stores supplied. Three replacements in 22 months did not prompt a review [FND-AC9A1E69; EVD-1494].",
      "cites": [
       "FND-2CEE8915",
       "FND-42BEF461",
@@ -442,9 +443,110 @@
    ]
   },
   {
+   "id": "f01-f09b",
+   "heading": "F01 Operations & Control Room and F09b Emergency Planning & Command",
+   "items": [
+    {
+     "kind": "para",
+     "group": "The seam",
+     "text": "What passes between them is a decision: whether, when and by whom the plant is isolated in a major release. Emergency planning writes it into the on-site disaster management plan; the control room and the shift in-charges have to take it on the night [FND-500E0B2D; FND-82761CC5; EVD-4052; EVD-3932].",
+     "cites": [
+      "FND-500E0B2D",
+      "FND-82761CC5",
+      "EVD-4052",
+      "EVD-3932"
+     ],
+     "evidence_strength": "corroborated",
+     "learning": "LR-07"
+    },
+    {
+     "kind": "para",
+     "group": "What went wrong at the seam",
+     "text": "Authority with neither side. The plan named hydrocarbon leakage but gave no isolation or stoppage criteria [FND-446A7956; EVD-4052], isolation authority was not allocated to the on-shift operators [FND-8DAFDADC; EVD-7340], and the isolation intent was never passed to the night shift through the plan or standing orders [FND-BB4CC662]. The decision went up the chain by phone, and the first isolation valve was closed 46 minutes after the leak was first detected [FND-36179046; FND-AEA16F83; EVD-6414].",
+     "cites": [
+      "FND-446A7956",
+      "EVD-4052",
+      "FND-8DAFDADC",
+      "EVD-7340",
+      "FND-BB4CC662",
+      "FND-36179046",
+      "FND-AEA16F83",
+      "EVD-6414"
+     ],
+     "evidence_strength": "corroborated",
+     "learning": "LR-07"
+    },
+    {
+     "kind": "para",
+     "group": "Why neither side saw it",
+     "text": "The major-leak scenario was formally identified in the plan, but its isolation criteria were never defined and the risk of leaving them out was never assessed [FND-33D32D4C; FND-6472CD15]. Each side could reasonably take the decision as covered: the plan named the scenario, and the shift followed the escalation chain it knew [FND-D1DF4895; EVD-3932].",
+     "cites": [
+      "FND-33D32D4C",
+      "FND-6472CD15",
+      "FND-D1DF4895",
+      "EVD-3932"
+     ],
+     "evidence_strength": "inferred",
+     "learning": "LR-07"
+    },
+    {
+     "kind": "learning",
+     "group": "Learning for each side",
+     "lesson": "An emergency plan that names a release scenario but not who may isolate, and on what criteria, leaves the decision to escalation.",
+     "explanation": "The plan's hydrocarbon-leak guidance omitted isolation and stoppage criteria and delegated authority [FND-730D0DCA; FND-5C7B163D; EVD-4052].",
+     "owner": "Emergency Planning & Command (F09b)",
+     "learning": "LR-07",
+     "cites": [
+      "FND-730D0DCA",
+      "FND-5C7B163D",
+      "EVD-4052"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "group": "Learning for each side",
+     "lesson": "When a release blocks access to the source, the shift's task changes from finding the leak to isolating from a distance, and it needs the authority to do so at once.",
+     "explanation": "Dense vapour stopped anyone approaching the source, while the isolation decision waited on senior staff who were called at about 02:35 [FND-BDD73BA2; FND-4245FBF2; EVD-9612].",
+     "owner": "Operations & Control Room (F01)",
+     "learning": "LR-08",
+     "cites": [
+      "FND-BDD73BA2",
+      "FND-4245FBF2",
+      "EVD-9612"
+     ],
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "recommendation",
+     "group": "Joint fix",
+     "change": "Write isolation and stoppage criteria, the isolation valve list and delegated authority down to control-room shift level into the plan, as one jointly owned section, and test it in unannounced night-shift drills without senior staff present.",
+     "hoc_tier": "administrative",
+     "barrier": "emergency command and decision authority",
+     "owner": "Emergency Planning & Command (F09b)",
+     "co_owner": "Operations & Control Room (F01)",
+     "indicator": "Time from confirmed release to the isolation decision in night-shift drills, recorded in the drill record both sides read.",
+     "why_not_stronger": "The stronger control, remote isolation of the gas terminal valves (LR-09), needs these criteria and this authority to be used without waiting for escalation; the two go together.",
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "the written criteria and delegated authority are the system fix for the plan (L4); the engineering control they pair with is the remote isolation of LR-09"
+     },
+     "learning": "LR-07",
+     "cites": [
+      "FND-82761CC5",
+      "FND-5C7B163D",
+      "FND-31405D96",
+      "EVD-4052",
+      "EVD-3932"
+     ],
+     "evidence_strength": "corroborated"
+    }
+   ]
+  },
+  {
    "id": "agenda",
    "heading": "Joint-review agenda",
-   "intro": "For the meeting the two sides hold, with the engineering authority present.",
+   "intro": "For the meetings each pair holds. F02 and F06 meet with the engineering authority present; F01 and F09b meet with plant leadership present.",
    "items": [
     {
      "kind": "table",
@@ -476,6 +578,20 @@
        "Who checks a seal against its specification, and where",
        "Job manning for the 18 September 2020 repair; receipt records",
        "Where the independent check sits: at receipt, at issue or at the job"
+      ],
+      [
+       "F01 and F09b",
+       "Shift in-charges; control-room lead; emergency planner; plant leadership",
+       "Who may order isolation of the gas terminal on the night shift, and on what criteria",
+       "The disaster management plan's hydrocarbon-leak section; the plant organogram for the night shift",
+       "Delegated isolation authority written down to control-room shift level"
+      ],
+      [
+       "F01 and F09b",
+       "Control-room lead; emergency planner; fire service lead",
+       "Whether drills test isolation when the source cannot be approached",
+       "Drill records; the reconstructed response timeline for 24 September 2020",
+       "A night-shift drill on the major-release scenario, with timed isolation"
       ]
      ],
      "row_cites": [
@@ -490,6 +606,14 @@
       [
        "FND-615DB819",
        "FND-F8C125D5"
+      ],
+      [
+       "FND-8DAFDADC",
+       "FND-82761CC5"
+      ],
+      [
+       "FND-500E0B2D",
+       "FND-6472CD15"
       ]
      ]
     }
@@ -584,7 +708,7 @@
   }
  ],
  "limits": [
-  "This pack opens one seam, F02 with F06 (the 27 findings both name). The other seams in the matrix need their own sections, starting with the mitigation-side ones.",
+  "This pack opens two seams: F02 with F06 (the 27 findings both name; the pack's scope) and, on the mitigation side, F01 with F09b (31 findings). The other seams in the matrix need their own sections.",
   "The export does not record who in stores or maintenance decided to use the O-rings, or when the practice began."
  ],
  "gaps": [
