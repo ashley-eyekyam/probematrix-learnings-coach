@@ -2464,6 +2464,7 @@ def test_dashboard_pack_cell_rules(ws, tmp_path):
     t, _ = _dash(w, tmp_path)
     assert "<i>maybe</i>" not in t and "&lt;i&gt;maybe&lt;/i&gt;" in t
 
+
 def test_dashboard_compliance_filter_count(ws, tmp_path):
     w = _org_ws(ws, tmp_path)
     reg = json.loads(json.dumps(MINI_REG))

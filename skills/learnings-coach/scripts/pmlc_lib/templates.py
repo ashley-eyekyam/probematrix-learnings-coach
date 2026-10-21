@@ -110,7 +110,10 @@ def _tpl_checked(rows: list, problem) -> list:
     good, problems = [], []
     for r in rows:
         p = problem(r)
-        (problems.append(p) if p else good.append(r))
+        if p:
+            problems.append(p)
+        else:
+            good.append(r)
     if problems:
         raise OrgFileError(problems, good)
     return good
@@ -158,7 +161,10 @@ def load_verification(run) -> list:
             if not line.strip():
                 continue
             d, p = _tpl_verification_row(n, line)
-            (problems.append(p) if p else rows.append(d))
+            if p:
+                problems.append(p)
+            else:
+                rows.append(d)
     if problems:
         raise OrgFileError(problems, rows)
     return rows

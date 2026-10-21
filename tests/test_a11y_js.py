@@ -13,11 +13,13 @@ import pytest
 
 from test_pack import fixture, render_fixture
 from test_pmlc import MINI_REG, make_export, run
+from pmlc_lib.render import find_browser  # noqa: E402  (test_pmlc puts the scripts folder on sys.path)
 
 ROOT = Path(__file__).resolve().parents[1]
 JS_DIR = ROOT / "tests" / "js"
 AXE_RUN = JS_DIR / "axe_run.js"
 NODE = shutil.which("node")
+BROWSER = find_browser()
 NPM_HINT = "run: npm ci --prefix tests/js"
 BLOCKING = ("serious", "critical")
 FIXTURES = ("all-kinds", "board-brief", "dossier-F02")      # the html of 3 fixtures
@@ -126,6 +128,7 @@ PAGES = ([("html", n, "") for n in FIXTURES] + [("layout", x, "") for x in LAYOU
 @pytest.mark.skipif(not NODE, reason="node not installed")
 @pytest.mark.parametrize("kind,arg,fragment", PAGES, ids=[f"{k}-{a or 'page'}{f}" for k, a, f in PAGES])
 def test_axe_zero_serious(kind, arg, fragment, tmp_path, request):
+    need_node_modules()      # before any sibling-pending skip, so a missing npm ci fails every case alike
     rs = request.getfixturevalue("run_outputs") if kind in ("index", "dashboard") else None
     page = _page(kind, arg, tmp_path, rs)
     assert page.is_file(), page
@@ -208,12 +211,18 @@ dom.window.addEventListener("load", () => {{
     assert r.returncode == 0, r.stderr
     assert json.loads(r.stdout.strip().splitlines()[-1]) == [False, "false", False, "true", True, "false", False]
 
+
 def test_skip_link():
     t = render_fixture("board-brief", "html")[0].data
     body = t.split("<body>", 1)[1]
     assert body.startswith('<a class="skip" href="#content">Skip to the sections</a>'), body[:120]
     assert '<div class="content" id="content" tabindex="-1">' in t
-    assert ".skip{" in t and ".skip:focus{" in t
+    css = re.search(r"<style>(.*?)</style>", t, re.S).group(1)
+    skip = re.search(r"\.skip\{([^}]*)\}", css).group(1)
+    focus = re.search(r"\.skip:focus\{([^}]*)\}", css).group(1)
+    # clipped, never pushed off-screen: an offset of -9999px scrolls sideways on an rtl page (WCAG 1.4.10)
+    assert "clip:rect(0,0,0,0)" in skip and "width:1px" in skip and not re.search(r"(left|right):-", css)
+    assert "clip:auto" in focus and "inset-inline-start:8px" in focus and "left:" not in focus
     hi = fixture("board-brief")
     hi["lang"] = "hi"
     th = render_fixture("board-brief", "html", pack=hi)[0].data
@@ -226,3 +235,27 @@ def test_axe_run_cli_usage():
     r = subprocess.run([NODE, str(AXE_RUN)], capture_output=True, text=True)
     assert r.returncode == 2 and "usage: node axe_run.js <html-file>" in r.stderr
 
+
+
+def _scroll_widths(page: Path, out: Path) -> list:
+    """[scrollWidth, innerWidth] at load and again with the skip link focused, measured in a headless browser."""
+    probe = ("<script>var r=[document.documentElement.scrollWidth,innerWidth];document.querySelector('.skip').focus();"
+             "r.push(document.documentElement.scrollWidth,innerWidth);document.title='W'+r.join(',')+'W';</script>")
+    page.write_text(page.read_text(encoding="utf-8").replace("</body>", probe + "</body>"), encoding="utf-8")
+    r = subprocess.run([BROWSER, "--headless", "--disable-gpu", "--no-sandbox", f"--user-data-dir={out}",
+                        "--window-size=800,600", "--dump-dom", page.as_uri()], capture_output=True, text=True,
+                       timeout=120)
+    m = re.search(r"<title>W([\d,]+)W</title>", r.stdout)
+    assert m, r.stderr[-500:]
+    return [int(x) for x in m.group(1).split(",")]
+
+
+@pytest.mark.skipif(not BROWSER, reason="no Chromium-family browser")
+@pytest.mark.parametrize("tdir", ["ltr", "rtl"])
+def test_skip_link_adds_no_horizontal_scroll(tdir, tmp_path):
+    """Review I-1: the hidden skip link must not widen the page, in either direction (WCAG 1.4.10 Reflow)."""
+    pack = dict(fixture("board-brief"), dir=tdir)
+    page = _write(tmp_path, f"{tdir}.html", render_fixture("board-brief", "html", pack=pack)[0].data)
+    assert ('dir="rtl"' in page.read_text(encoding="utf-8")[:80]) == (tdir == "rtl")
+    sw, iw, sw_focus, iw_focus = _scroll_widths(page, tmp_path / "profile")
+    assert sw <= iw and sw_focus <= iw_focus, (sw, iw, sw_focus, iw_focus)

@@ -25,6 +25,8 @@ jobs:
         if: matrix.node
         with:
           node-version: "20"
+          cache: npm
+          cache-dependency-path: tests/js/package-lock.json
       - name: Install the test-only npm packages (axe-core, jsdom; Ruling P4-17)
         if: matrix.node
         run: npm ci --prefix tests/js

@@ -139,6 +139,7 @@ def test_org_files_keep_good_rows_and_report_all(rund):
         assert f"verification.jsonl line {n}:" in str(e)
     assert [(r["lr_id"], r["level"]) for r in e.rows] == [("LR-02", "applied"), ("LR-03", None)]
 
+
 def test_export_actions_ids_and_blank_owner(rund):
     assert cli("export-actions", str(rund)).returncode == 0
     out = rund.parent / "outputs"

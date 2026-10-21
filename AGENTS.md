@@ -51,7 +51,7 @@ Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write it
 
 ## Development
 
-- Setup: `python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt`. Tests: `.venv/bin/python -m pytest tests` (they build a synthetic export; no real data needed; the JS tests need Node and are skipped without it).
+- Setup: `python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt`. Tests: `.venv/bin/python -m pytest tests` (they build a synthetic export; no real data needed; the JS tests need Node and are skipped without it; with Node, run `npm ci --prefix tests/js` once for the accessibility tests, which fail without those packages).
 - Keep each `SKILL.md` under ~150 lines; put shared material in `skills/learnings-coach/references/`.
 - New audience skill: copy an existing audience skill, change the audience, the `select` filters and the structure, and add it to `references/audiences.md` and the README table.
 

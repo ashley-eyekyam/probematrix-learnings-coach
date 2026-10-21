@@ -46,7 +46,7 @@ details.sec>summary h2{font-size:17px;margin:0}
 .badge.strong{border-color:var(--acc);color:var(--fg);background:color-mix(in srgb,var(--acc) 16%,transparent)}
 .badge.hold{border-color:var(--warn,#c2410c);color:var(--warn,#c2410c);font-weight:600}
 .badge.strength{border-style:dashed}
-.pm-learning{font:inherit;font-size:12px;line-height:1.6;padding:0 8px;border-radius:999px;border:1px solid var(--acc);background:transparent;color:var(--fg);cursor:pointer;margin:0 4px 2px 0}
+.pm-learning{font:inherit;font-size:12px;line-height:1.6;padding:0 8px;border-radius:999px;border:1px solid var(--acc);background:transparent;color:var(--fg);cursor:pointer;margin:0 0 2px;margin-inline-end:4px}
 .pm-clause{border-color:var(--acc);color:var(--fg)}
 .gaps{border:1px dashed var(--warn,#c2410c);border-radius:8px;padding:8px 16px;margin:16px 0}
 .limits ul{color:var(--mut)}

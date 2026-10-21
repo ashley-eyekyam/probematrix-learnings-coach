@@ -115,7 +115,7 @@ def test_rtl_pack_css_uses_logical_properties(monkeypatch):
     css = re.search(r"<style>(.*?)</style>", page, re.S).group(1)
     rules = dict(re.findall(r"(?m)^([^{}@\n]+)\{([^{}]*)\}", css))
     for sel in (".bottom", ".dq", ".indicator-line", ".timeline", ".tablewrap th,.tablewrap td", ".timeline time",
-                ".badge"):
+                ".badge", ".pm-learning"):
         body = rules[sel]
         assert not re.search(r"border-left|border-right|text-align:(left|right)|margin-(left|right)|padding-(left|right)",
                              body), (sel, body)
@@ -123,6 +123,7 @@ def test_rtl_pack_css_uses_logical_properties(monkeypatch):
         assert "border-inline-start:" in rules[sel], sel
     assert "text-align:start" in rules[".tablewrap th,.tablewrap td"]
     assert "margin-inline-end:8px" in rules[".timeline time"] and "padding-inline-start:16px" in rules[".timeline"]
+
 
 def test_lang_validated(w):
     base = fixture("frontline-learning-cards")

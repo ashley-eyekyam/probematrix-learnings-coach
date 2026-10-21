@@ -41,8 +41,12 @@ function check() {
   });
 }
 
-// The page scripts start on DOMContentLoaded, so axe runs once the page has loaded.
-new Promise((resolve) => window.addEventListener("load", resolve))
+// The page scripts start on DOMContentLoaded, so axe runs once the page has loaded (or fails after 60 s).
+const LOAD_TIMEOUT_MS = 60000;
+new Promise((resolve, reject) => {
+  const t = setTimeout(() => reject(new Error("the page did not finish loading in 60 s")), LOAD_TIMEOUT_MS);
+  window.addEventListener("load", () => { clearTimeout(t); resolve(); });
+})
   .then(check)
   .then((res) => {
     const violations = res.violations.map((v) => ({

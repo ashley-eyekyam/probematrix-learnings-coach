@@ -389,8 +389,8 @@ main{{max-width:1180px;margin:0 auto;padding:24px 16px 48px}}
 h1{{font-size:24px;margin:0 0 4px}} p.m{{color:var(--mut);margin:0 0 8px}}
 footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}}
 {HANDLING_CSS}
-.skip{{position:absolute;left:-9999px;top:0}}
-.skip:focus{{left:8px;top:8px;z-index:100;background:var(--card);color:var(--fg);padding:8px 12px;border:2px solid var(--acc);border-radius:6px}}
+.skip{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
+.skip:focus{{top:8px;inset-inline-start:8px;width:auto;height:auto;margin:0;overflow:visible;clip:auto;z-index:100;background:var(--card);color:var(--fg);padding:8px 12px;border:2px solid var(--acc);border-radius:6px}}
 {css}
 </style></head><body><a class="skip" href="#content">{t("ui.html.skip")}</a><main>
 {ribbon}<h1>{title}</h1>
