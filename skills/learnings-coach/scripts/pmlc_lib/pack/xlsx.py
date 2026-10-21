@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .. import DRAFT_LABEL, STATUS_PHRASE, VERSION_STAMP
 from ..handling import (
-    effective_handling, is_draft, refuse_internal_overwrite, share_ctx, share_gate, shared_copy, shared_name,
+    effective_handling, is_draft, name_guard, refuse_internal_overwrite, share_ctx, share_gate, shared_copy, shared_name,
     SHARED_LINE,
 )
 from ..register.xlsx import reset_docprops, SHARED_EPOCH, text_cells
@@ -48,7 +48,9 @@ def cmd_pack_xlsx(a):
         for c in row:
             c.alignment = Alignment(wrap_text=True, vertical="top")
     sh.freeze_panes = "A2"
-    sh.oddHeader.center.text = STATUS_PHRASE + (f" · {DRAFT_LABEL}" if is_draft(eh) else "")
+    name_guard([str(c.value) for row in sh.iter_rows() for c in row if c.value is not None], a)   # any mode
+    sh.oddHeader.center.text = (STATUS_PHRASE + (f" · {DRAFT_LABEL}" if is_draft(eh) else "")
+                                + (f" · {SHARED_LINE.format(mode=mode)}" if share else ""))
     sh.oddFooter.center.text = VERSION_STAMP
     internal = outputs_dir(_abs(a.ws)) / f"{pack['pack']}-{slug}.xlsx"
     out = Path(a.out) if a.out else shared_name(internal, mode)

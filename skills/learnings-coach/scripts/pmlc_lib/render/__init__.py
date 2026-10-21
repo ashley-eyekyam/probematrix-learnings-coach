@@ -58,6 +58,9 @@ def register(name: str, fn, *, kind: str = "document", help: str = "") -> None: 
     """Add format `name`; a document format is read by a person, a data format is imported by a tool (P4-2)."""
     if kind not in FORMAT_KINDS:
         raise ValueError(f"format kind must be one of {', '.join(FORMAT_KINDS)}")
+    old = FORMATS.get(name)
+    if old is not None and old.fn is not fn:
+        raise ValueError(f"format {name!r} is already registered by another function")
     FORMATS[name] = Format(name, fn, kind, help)
 
 
@@ -165,6 +168,7 @@ def _load() -> None:
         "ics",
         "quiz",
         "email",
+        "exports",
     ):
         importlib.import_module(f"{__name__}.{mod}")
 

@@ -378,6 +378,8 @@ def build_parser():
     s.add_argument("ws")
     add_embed_arg(s)
     add_share_args(s)
+    s.add_argument("--format", type=parse_formats, metavar="FORMATS", default=None,
+                   help=f"comma-separated formats passed to pack (default: html,md); one of: {', '.join(FORMATS)}")
     s.set_defaults(fn=cmd_render_all)
 
     s = sp.add_parser("index", help="write outputs/index.html: one row per pack", allow_abbrev=False)
@@ -434,7 +436,7 @@ def build_parser():
     s.add_argument("--level", nargs="+", type=int, metavar="N", help="count only findings of these HFACS levels")
     s.add_argument("--top", type=int, default=15, help="rows to keep (default 15)")
     s.add_argument("--register", help="Learnings Register JSON (hoc, adoption)")
-    s.add_argument("--pack", help="pack JSON whose recommendations and barriers hoc counts")
+    s.add_argument("--pack", help="pack JSON: hoc counts its recommendations and barriers; every kind drops the ids its exclusions list from the cites")
     s.set_defaults(fn=cmd_table_item)
 
     s = sp.add_parser("register-items", help="a tier's learnings from the register as learning items (JSON on stdout)", allow_abbrev=False)

@@ -208,8 +208,25 @@ def table_item(ws, kind, a) -> dict:
     sys.exit(f"Unknown table kind {kind}")
 
 
+def drop_excluded(item: dict, pack_path) -> dict:
+    """INT-B: with --pack, remove every id the pack lists in `exclusions` from row_cites and cites, so a generated
+    table never cites what the pack leaves out on purpose. A row left with no cites keeps an empty list."""
+    from .schema import excluded_ids
+    try:
+        gone = set(excluded_ids(json.loads(Path(pack_path).read_text(encoding="utf-8"))))
+    except (OSError, ValueError):
+        sys.exit(f"Cannot read the pack {pack_path}")
+    if gone and isinstance(item.get("row_cites"), list):
+        item["row_cites"] = [[x for x in c if x not in gone] for c in item["row_cites"]]
+        item["cites"] = sorted({x for c in item["row_cites"] for x in c})
+    return item
+
+
 def cmd_table_item(a):
-    print(json.dumps(table_item(_abs(a.ws), a.kind, a), indent=1, ensure_ascii=False))
+    item = table_item(_abs(a.ws), a.kind, a)
+    if a.pack:
+        item = drop_excluded(item, a.pack)
+    print(json.dumps(item, indent=1, ensure_ascii=False))
 
 
 # ----------------------------------------------------------------------------- register -> learning items
@@ -222,7 +239,7 @@ def register_items(entries, tier) -> list:
     out = []
     for e in mine:
         msg = (e.get("tier_messages") or {}).get(tier)
-        it = {"kind": "learning", "id": str(e["lr_id"]).lower(), "learning": e["lr_id"],
+        it = {"kind": "learning", "id": f"{tier.lower()}-{str(e['lr_id']).lower()}", "learning": e["lr_id"],
               "lesson": msg or e.get("lesson") or e.get("title", "")}
         expl = e.get("lesson") if msg else e.get("context")
         if expl:

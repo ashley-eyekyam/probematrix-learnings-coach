@@ -46,6 +46,7 @@ MODULES = [
     "pmlc_lib.render.ics",
     "pmlc_lib.render.quiz",
     "pmlc_lib.render.email",
+    "pmlc_lib.render.exports",
     "pmlc_lib.pack.command",
     "pmlc_lib.cli",
 ]

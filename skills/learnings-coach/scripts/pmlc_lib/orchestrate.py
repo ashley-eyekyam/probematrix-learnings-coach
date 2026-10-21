@@ -164,6 +164,7 @@ def cmd_render_all(a):
     share_flags = [x for flag, v in (("--share", a.share), ("--names", a.names), ("--orgs", a.orgs)) if v
                    for x in (flag, v)]
     extra = (["--embed", a.embed] if a.embed else []) + share_flags   # pack and dashboard take both
+    pack_extra = extra + (["--format", ",".join(a.format)] if getattr(a, "format", None) else [])   # pack only
     failed = 0
 
     def go(label, argv):
@@ -179,7 +180,7 @@ def cmd_render_all(a):
         if not check_current(m, p):
             print(f"skipped {p.name}: run check-all first")
             continue
-        go(p.name, ["pack", str(ws), str(p)] + extra)
+        go(p.name, ["pack", str(ws), str(p)] + pack_extra)
     reg = out / REGISTER_NAME
     if reg.is_file():
         if not check_current(m, reg):
@@ -223,19 +224,60 @@ def _coverage(rec) -> str:
     return str(c) if c not in (None, "") else "not recorded"
 
 
+def _pack_skills() -> dict:
+    """pack name -> the skill folder that makes it (skills/<skill>/skill.json: its name and its produces.pack)."""
+    res = {}
+    for f in sorted((HERE.parent.parent).glob("*/skill.json")):
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        prod = d.get("produces") if isinstance(d, dict) else None
+        for n in (d.get("name") if isinstance(d, dict) else None, prod.get("pack") if isinstance(prod, dict) else None):
+            if isinstance(n, str):
+                res.setdefault(n, f.parent.name)
+    return res
+
+
+def _skill_name(d, skills) -> str:
+    """The skill a pack belongs to: its own `skill` field (P4-22), else the skill that produces a pack of that name."""
+    if isinstance(d, dict):
+        if isinstance(d.get("skill"), str) and d["skill"]:
+            return d["skill"]
+        return skills.get(d.get("pack"), d.get("pack") if isinstance(d.get("pack"), str) else "other")
+    return "other"
+
+
+def _files_of(out: Path, stem: str) -> list:
+    """Every file of one pack in outputs/: <stem>.<anything> (formats, layouts, .external. / .public. copies, item
+    files) and <stem>-test-points.* / <stem>-questions.* (pack-xlsx), without the source <stem>.json. Internal files
+    first, then shared copies."""
+    names = []
+    for p in sorted(out.iterdir()) if out.is_dir() else []:
+        n = p.name
+        if not p.is_file() or n == f"{stem}.json":
+            continue
+        if n.startswith(stem + ".") or n.startswith((stem + "-test-points.", stem + "-questions.")):
+            names.append(n)
+    return sorted(names, key=lambda n: (bool(re.search(r"\.(external|public)\.", n)), n))
+
+
 def _row(ws, w, out, dest, p, d, rec, aud, kind):
     stem = p.stem
-    fmts = [f for f, ext in (("html", ".html"), ("md", ".md"), ("xlsx", ".xlsx")) if (out / f"{stem}{ext}").is_file()]
+    files = _files_of(out, stem)
+    fmts = [n[len(stem):].lstrip(".-") for n in files]
     eh = effective_handling(d, w, src=str(p), ws=str(ws))
     status = DRAFT_LABEL if eh["effective_status"] == "draft" else eh["effective_status"].capitalize()
-    target = next((out / f"{stem}{e}" for e in (".html", ".xlsx", ".md") if (out / f"{stem}{e}").is_file()), p)
-    link = Path(_relpath(target, dest.parent)).as_posix()
+    primary = next((n for e in (".html", ".xlsx", ".md") for n in files if n == f"{stem}{e}"), None)
+    ordered = ([primary] if primary else []) + [n for n in files if n != primary]
+    links = " ".join(f'<a href="{escape(Path(_relpath(out / n, dest.parent)).as_posix(), quote=True)}">'
+                     f'{escape(n)}</a>' for n in ordered) or \
+        f'<a href="{escape(Path(_relpath(p, dest.parent)).as_posix(), quote=True)}">{escape(p.name)}</a>'
     title = d.get("title") if isinstance(d, dict) and isinstance(d.get("title"), str) else stem
     date = dt.date.fromtimestamp(p.stat().st_mtime).isoformat()
     cls = ' class="draft"' if status == DRAFT_LABEL else ""
     cells = [escape(title), escape(", ".join(aud) or "n/a"), escape(_coverage(rec)),
-             escape(", ".join(fmts) or "json"), date, f'<span{cls}>{escape(status)}</span>',
-             f'<a href="{escape(link, quote=True)}">{escape(target.name)}</a>']
+             escape(", ".join(fmts) or "json"), date, f'<span{cls}>{escape(status)}</span>', links]
     return "<tr>" + "".join(f"<td>{c}</td>" for c in cells) + "</tr>"
 
 
@@ -250,10 +292,11 @@ def cmd_index(a):
     out = outputs_dir(ws)
     dest = Path(a.out) if a.out else out / "index.html"
     m = load_manifest(ws)
-    auds = _skill_audiences()
-    rows = []
+    auds, skills = _skill_audiences(), _pack_skills()
+    groups = {}                                                       # skill name -> its rows (L4-29)
     for p, d in _pack_files(out):
-        rows.append(_row(ws, w, out, dest, p, d, pack_record(m, p), auds.get(d.get("pack"), []), "pack"))
+        groups.setdefault(_skill_name(d, skills), []).append(
+            _row(ws, w, out, dest, p, d, pack_record(m, p), auds.get(d.get("pack"), []), "pack"))
     reg = out / REGISTER_NAME
     if reg.is_file():
         try:
@@ -262,7 +305,11 @@ def cmd_index(a):
             rd = {}
         rd = rd if isinstance(rd, dict) else {}
         rd.setdefault("title", "Learnings register")
-        rows.append(_row(ws, w, out, dest, reg, rd, None, ["all"], "register"))
+        groups.setdefault("learnings-register", []).append(_row(ws, w, out, dest, reg, rd, None, ["all"], "register"))
+    rows = []
+    for s in sorted(groups):
+        rows.append(f'<tr class="skill"><th colspan="7">{escape(s)}</th></tr>')
+        rows += groups[s]
     inc = w.get("incident", {}).get("fields", {}).get("Incident Title", "")
     title = f"Learning outputs: {inc}" if inc else "Learning outputs"
     text = (_INDEX_TEMPLATES / "index.html").read_text(encoding="utf-8")
@@ -271,7 +318,7 @@ def cmd_index(a):
         rows="\n".join(rows) if rows else '<tr><td colspan="7">No packs in outputs/ yet.</td></tr>')
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(page, encoding="utf-8")
-    print(f"Index written to {dest} ({len(rows)} row(s))")
+    print(f"Index written to {dest} ({sum(len(v) for v in groups.values())} row(s))")
 
 
 # ----------------------------------------------------------------------------- dossier-index

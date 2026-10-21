@@ -33,7 +33,7 @@ pmlc table-item ws {clusters,tiers,relations,hubs,interfaces,evidence-types,enti
 | `--level` | one or more of 1 to 4 | all | Count only findings of these HFACS levels (`clusters`, `tiers`, `relations`, `entity-tier`) or factors of these levels (`hubs`) |
 | `--top` | number | 15 | Rows to keep |
 | `--register` | file | `<run>/outputs/learnings-register.json` for `adoption` | Register whose recommendations `hoc` counts, or whose findings `adoption` cites |
-| `--pack` | file | none | Pack whose recommendation and barrier items `hoc` counts. `hoc` needs `--register` or `--pack` |
+| `--pack` | file | none | Pack whose recommendation and barrier items `hoc` counts (`hoc` needs `--register` or `--pack`). For every kind, the ids that pack lists in `exclusions` are removed from `row_cites` and `cites`, so the table never cites a finding the pack leaves out; a row left with no cites keeps an empty list |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 The `kind` argument takes one of `clusters`, `tiers`, `relations`, `hubs`, `interfaces`, `evidence-types`, `entity-tier`, `hoc` or `adoption`.
@@ -52,6 +52,7 @@ With no `adoption.csv` yet, `adoption` prints one row that reads `No adoption re
 
 - **"Needs clusters.json. Run: pmlc.py classify <ws>".** Run [classify](classify.md) first.
 - **"table-item hoc needs --register or --pack".** Say where the recommendations are.
+- **check-pack says "FND-0007 is also cited at …".** A table row cites a finding that the pack leaves out in `exclusions`. Run `table-item` again with `--pack` pointing at the pack: it drops excluded ids from the table's cites. The message also gives the path of the cite; remove the id there, or remove it from `exclusions`. A pack either cites a finding or leaves it out on purpose.
 - **A count is a number of findings, not a measure of strength.** Count learnings, not findings.
 
 ## Related

@@ -2,7 +2,7 @@
 
 ## What it does
 
-Writes `outputs/index.html`, one page with a row for each pack (and the register): title, audience (from the skill's `skill.json`), coverage (from the last check record, or "not recorded"), formats present (`html`, `md`, `xlsx`), date (the file's modified date), status (the effective review status, `DRAFT` until signed off) and a relative link. The page carries the status phrase and the version footer, and has no JavaScript.
+Writes `outputs/index.html`, one page with a row for each pack (and the register), grouped under a heading for the skill that made it (the pack's `skill` field, or the skill that produces a pack of that name): title, audience (from the skill's `skill.json`), coverage (from the last check record, or "not recorded"), formats present (every file of that pack in `outputs/`: `html`, `md`, `docx`, layouts such as `cards.html`, `normalised.json`, the pack-xlsx sheets, and the shared copies such as `external.html` or `questions.external.xlsx`), date (the file's modified date), status (the effective review status, `DRAFT` until signed off) and a relative link to each of those files. The page carries the status phrase and the version footer, and has no JavaScript.
 
 ## When to use it
 
