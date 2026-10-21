@@ -58,7 +58,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `md` | document | `<pack>.md` | The same content as Markdown (default) |
 | `normalised` | data | `<pack>.normalised.json` | The pack for other tools: every item id filled in, the status line, the brand, the effective status, the word count and reading time, the coverage counts and the cited findings (label, level, rating) and evidence (type). A shared copy carries no run slug |
 
-A shared copy (`--share external` or `public`) of any format is built from the masked pack, and its file name carries the mode: `<pack>.external.normalised.json`. Every format's text goes through the name check.
+A shared copy (`--share external` or `public`) of any format is built from the masked pack, and the mode goes just before the last extension of its file name: `<pack>.normalised.external.json`, `<pack>.learner.external.html`. Every format's text goes through the name check.
 
 ## Examples
 

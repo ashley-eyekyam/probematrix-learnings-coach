@@ -460,3 +460,14 @@ def test_normalised_file_is_not_a_pack_for_check_all(w, tmp_path):
     o = R.render("normalised", ctx_for(w, "board-brief"))[0]
     (tmp_path / o.name).write_text(o.data, encoding="utf-8")
     assert [p.name for p, _ in _pack_files(tmp_path)] == ["board-brief.json"]
+
+
+def test_shared_names_put_the_mode_before_the_last_extension():
+    """I1 (review): shared_name (the Phase 2 contract) inserts the mode before the last suffix, after output_name."""
+    from pmlc_lib.handling import shared_name
+    p = Path("out")
+    assert shared_name(p / R.output_name("bb", "normalised.json"), "external").name == "bb.normalised.external.json"
+    assert shared_name(p / R.output_name("bb", "html", view="learner"), "public").name == "bb.learner.public.html"
+    text = (Path(__file__).resolve().parents[1] / "docs" / "manual" / "commands" / "pack.md").read_text(encoding="utf-8")
+    assert "`<pack>.normalised.external.json`" in text and "`<pack>.learner.external.html`" in text
+    assert "<pack>.external.normalised.json" not in text
