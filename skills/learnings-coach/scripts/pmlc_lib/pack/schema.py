@@ -34,7 +34,7 @@ COVERAGE_WARNING = "under a quarter of the top-rated relevant findings are cited
 KINDS = {
     "para": {"req": ["text"], "opt": []},
     "check": {"req": ["text"], "opt": ["hold_point", "when"]},
-    "question": {"req": ["question", "why"], "opt": ["answer", "good_evidence", "to"]},
+    "question": {"req": ["question", "why"], "opt": ["answer", "good_evidence", "to", "type", "options"]},
     "recommendation": {"req": ["change", "indicator", "hoc_tier"],
                        "opt": ["barrier", "owner", "by_when", "co_owner", "why_not_stronger", "barrier_id"], "cite": True},
     "decision": {"req": ["decision"], "opt": ["options", "trade_offs", "owner", "by_when"]},
@@ -58,7 +58,8 @@ KINDS = {
 FIELD_ROLES = {
     "para": [["text", "body"]],
     "check": [["hold_point", "badge"], ["text", "body"], ["when", "badge"]],
-    "question": [["question", "title"], ["to", "badge"], ["why", "body"], ["answer", "body"], ["good_evidence", "body"]],
+    "question": [["question", "title"], ["to", "badge"], ["type", "badge"], ["options", "choices"], ["why", "body"],
+                 ["answer", "body"], ["good_evidence", "body"]],
     "recommendation": [["change", "title"], ["hoc_tier", "badge"], ["barrier", "badge"], ["barrier_id", "badge"],
                        ["owner", "badge"], ["co_owner", "badge"], ["by_when", "badge"], ["indicator", "indicator"],
                        ["why_not_stronger", "body"]],
@@ -259,6 +260,43 @@ def _check_field(v, f, path, bad):
         bad(path, "must be non-empty text")
 
 
+QUESTION_TYPES = ("single", "multi", "truefalse", "short")
+QUIZ_CSV_OPTIONS = 6
+
+
+def _check_question(it, ip, bad, warn):
+    """P4-10: a question's type (single|multi|truefalse|short) and its options, a list of {text, correct}."""
+    typ, ops = it.get("type"), it.get("options")
+    if "type" in it and typ not in QUESTION_TYPES:
+        bad(f"{ip}.type", f"must be one of {', '.join(QUESTION_TYPES)}")
+        typ = None
+    if "options" in it:
+        if not isinstance(ops, list) or not ops or any(
+                not isinstance(o, dict) or not _text(o.get("text")) or not isinstance(o.get("correct"), bool)
+                for o in ops):
+            bad(f"{ip}.options", "must be a non-empty list of {text, correct} objects (text non-empty, correct true or false)")
+            return
+        if "type" not in it:
+            warn(f"{ip}.options", "options without type are ignored")
+            return
+    if typ is None:
+        return
+    if "options" not in it:
+        bad(f"{ip}.options", f"a {typ} question needs options")
+        return
+    n = sum(1 for o in ops if o["correct"])
+    if typ in ("single", "truefalse") and n != 1:
+        bad(f"{ip}.options", f"a {typ} question needs exactly one correct option (found {n})")
+    elif typ == "multi" and n < 1:
+        bad(f"{ip}.options", "a multi question needs at least one correct option")
+    elif typ == "short" and n != len(ops):
+        bad(f"{ip}.options", "a short question lists accepted answers: mark every option correct")
+    if typ == "truefalse" and len(ops) != 2:
+        bad(f"{ip}.options", f"a truefalse question needs exactly 2 options (found {len(ops)})")
+    if len(ops) > QUIZ_CSV_OPTIONS:
+        warn(f"{ip}.options", f"the quiz CSV holds {QUIZ_CSV_OPTIONS} options; the rest are left out of it")
+
+
 def _check_table(it, ip, bad):
     cols, rows = it.get("columns"), it.get("rows")
     if not isinstance(cols, list) or not isinstance(rows, list):
@@ -383,7 +421,7 @@ def _check_item(it, ip, bad, warn):
         if f not in it:
             bad(f"{ip}.{f}", f"required for {kind}")
     for f in known:
-        if f in it:
+        if f in it and not (kind == "question" and f == "options"):        # a question's options are objects (P4-10)
             _check_field(it[f], f, f"{ip}.{f}", bad)
     if "cites" in it and not _id_list(it["cites"]):
         bad(f"{ip}.cites", "must be a list of Finding or Evidence IDs")
@@ -397,6 +435,8 @@ def _check_item(it, ip, bad, warn):
         bad(f"{ip}.hoc_tier", f"must name a hierarchy-of-controls tier: {', '.join(HOC_TIERS)}")
     {"table": _check_table, "timeline": _check_timeline, "graph": _check_graph,
      "barrier": _check_barrier}.get(kind, lambda *x: None)(it, ip, bad)
+    if kind == "question":
+        _check_question(it, ip, bad, warn)
     if not spec.get("cite") and not any(True for _ in _walk_ids(_citable_item(it), "")):
         warn(ip, "no Finding or Evidence ID cited")
 

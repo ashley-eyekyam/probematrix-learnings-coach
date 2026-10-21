@@ -91,6 +91,16 @@ def _numbered(xs):
     return "\n".join(f"{i}. {x}" for i, x in enumerate(xs, 1))
 
 
+def _typed_options_md(it, f, t) -> str:
+    """A typed question's options as a list, the correct ones marked when the key is present (P4-10)."""
+    ops = it.get("options")
+    if not it.get("type") or not isinstance(ops, list) or not all(isinstance(o, dict) for o in ops):
+        return ""
+    short = it["type"] == "short"
+    rows = [f"  - {o['text']}" + (f" **({t('ui.quiz.correct')})**" if o.get("correct") and not short else "") for o in ops]
+    return f"- {t('ui.quiz.accepted') if short else f('options')}:\n" + "\n".join(rows) + "\n"
+
+
 def _lines(pairs):
     return "\n".join(f"- {k}: {v}" for k, v in pairs if v)
 
@@ -125,7 +135,7 @@ def _md_item(it, inc_date=None, labels=None) -> str:
         when = f" *({it['when']})*" if g("when") else ""
         return f"- [ ] {hold}{it['text']}{when}{c}"
     if k == "question":
-        return (f"**{t('ui.q')}: {it['question']}**{c}\n"
+        return (f"**{t('ui.q')}: {it['question']}**{c}\n" + _typed_options_md(it, f, t)
                 + _lines([(f("why"), it["why"]), (f("answer"), g("answer")),
                           (f("good_evidence"), g("good_evidence")), (f("to"), g("to"))]))
     if k == "recommendation":

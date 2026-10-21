@@ -56,6 +56,21 @@ Draft because: no finding is marked as edited by a person
 - Answer: L3 supervision.
 - Good evidence looks like: Names supervision, not the fitter
 
+**Q: Which fix addresses the missing checklist at the level that owns it?** [FND-0001]
+- Options:
+  - Make the leak-test hold point part of the permit **(correct)**
+  - Remind the fitter to be more careful
+  - Repeat the toolbox talk
+- Why it matters: Checks that the learner reaches for a system fix, not retraining.
+- Answer: The hold point in the permit, because it changes the system.
+
+**Q: A missing checklist is best explained by one fitter's lapse.** [FND-0001; FND-0002]
+- Options:
+  - True
+  - False **(correct)**
+- Why it matters: Checks that the learner looks for the condition behind the act.
+- Answer: False: look for the condition that made the omission likely.
+
 ## Cascade plan
 
 | Who | Trains whom | Materials | Transfer measure at 90 days | Cites |
