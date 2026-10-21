@@ -1,0 +1,668 @@
+{
+ "pack": "frontline-learning-cards",
+ "schema": 1,
+ "title": "Frontline Learning Cards: Gas terminal release and fire, 2020",
+ "audience": "Frontline crews (T1): maintenance fitters, instrument and electrical technicians, control-room staff and security staff",
+ "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress.",
+ "incident": {
+  "title": "Hazira gas terminal condensate release and fire",
+  "date": "2020-09-24"
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the export's investigation status is in progress and no finding is marked as edited by a person. Validate every item before adoption.",
+   "cites": []
+  }
+ ],
+ "scope": {
+  "tiers": [
+   "T1"
+  ]
+ },
+ "bottom_line": [
+  {
+   "text": "No specification, no fit: a seal that does not match the original is a change, not a spare.",
+   "learning": "LR-01",
+   "cites": [
+    "FND-8C0BB623",
+    "EVD-8645"
+   ]
+  },
+  {
+   "text": "A joint you opened is not proven until it has passed a recorded test to the written test pressure.",
+   "learning": "LR-02",
+   "cites": [
+    "FND-212DC9B7",
+    "EVD-2894"
+   ]
+  },
+  {
+   "text": "When the same fault comes back, say so on the job record; a repeat is a warning, not a routine job.",
+   "learning": "LR-05",
+   "cites": [
+    "FND-69067A1C",
+    "EVD-1494"
+   ]
+  },
+  {
+   "text": "On this site a gas alarm only informs, and it can come after people have seen the cloud: report a release at once, to the control room that can act.",
+   "learning": "LR-10",
+   "cites": [
+    "FND-A245072B",
+    "FND-5AB5DFA3",
+    "EVD-8657",
+    "EVD-4286"
+   ]
+  },
+  {
+   "text": "If a release stops you reaching the source, stop approaching and switch to isolation from where you can.",
+   "learning": "LR-08",
+   "cites": [
+    "FND-F887999D",
+    "EVD-9612"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "delivery",
+   "heading": "Using these cards",
+   "items": [
+    {
+     "kind": "para",
+     "text": "These cards are read by the crews whose work appears in the findings. Talk them through with the people involved before wide release, and do not single out the person who held a post on a small crew: talk about the task, not the post. Each card ends with what the organisation is being asked to change, never with an appeal for more care. The crew's supervisor delivers each card at a shift briefing, paired with a coaching scenario from the supervisor pack. The changes named on the cards are the Learnings Register's recommendations; the organisation has not yet decided on them, so present them as proposals.",
+     "cites": [
+      "FND-8C0BB623",
+      "FND-A245072B"
+     ]
+    },
+    {
+     "kind": "table",
+     "columns": [
+      "Card",
+      "Delivered by",
+      "Pair with",
+      "Contractor crews to brief"
+     ],
+     "rows": [
+      [
+       "Fit only the seal the specification calls for",
+       "Maintenance supervisor",
+       "supervisor-coach coaching-1",
+       "Not covered by the findings"
+      ],
+      [
+       "Prove the joint before it goes back into service",
+       "Maintenance supervisor",
+       "supervisor-coach coaching-1",
+       "Not covered by the findings"
+      ],
+      [
+       "Ask for the second check on a high-consequence job",
+       "Maintenance supervisor",
+       "supervisor-coach coaching-1",
+       "Not covered by the findings"
+      ],
+      [
+       "Say so when you are fixing the same fault again",
+       "Maintenance supervisor",
+       "supervisor-coach coaching-2",
+       "Not covered by the findings"
+      ],
+      [
+       "A gas alarm is late news",
+       "Shift supervisor (control room)",
+       "supervisor-coach coaching-3",
+       "Not covered by the findings"
+      ],
+      [
+       "If you cannot reach the source, think isolation from a distance",
+       "Shift supervisor (control room)",
+       "supervisor-coach coaching-3",
+       "Not covered by the findings"
+      ],
+      [
+       "Call the control room that can act, and say what you see",
+       "Security supervisor, with the shift supervisor (control room)",
+       "supervisor-coach coaching-3",
+       "Not covered by the findings"
+      ],
+      [
+       "A flameproof fitting with a bolt missing is not flameproof",
+       "Electrical maintenance supervisor",
+       "supervisor-coach coaching scenarios",
+       "Not covered by the findings"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-8C0BB623"
+      ],
+      [
+       "FND-212DC9B7"
+      ],
+      [
+       "FND-28F8790B"
+      ],
+      [
+       "FND-69067A1C"
+      ],
+      [
+       "FND-A245072B"
+      ],
+      [
+       "FND-F887999D"
+      ],
+      [
+       "FND-5AB5DFA3"
+      ],
+      [
+       "FND-784A23E4"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cards",
+   "heading": "Learning Cards",
+   "items": [
+    {
+     "kind": "card",
+     "title": "Fit only the seal the specification calls for",
+     "what_happened": "The condensate meter, in service since 1986, was built for a rectangular-slot gasket. Its original specification was not on file, so locally bought round O-rings were fitted as regular practice, with no specification, quality check or recorded approval. The seal fitted on 18 Sep 2020 is the probable source of the release on 24 Sep 2020.",
+     "why_made_sense": "The job had to be done, the usual O-ring was on hand, and nothing in the system said stop: there was no specification, no approved substitute and no owner for either [FND-23139BF9]. Earlier replacements had used the same part, so it felt normal [FND-8CE00707].",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: re-establish the seal specification, stock only certified parts against it, and have stores refuse to issue a pressure-boundary seal without a specification reference.",
+     "warning_signs": [
+      "The part does not match the shape of the groove it goes into",
+      "Nobody can show you a specification for the seal",
+      "\"This is what we normally use\" is the only reason given"
+     ],
+     "good_looks_like": "No specification, no fit: the crew stops and asks the supervisor for the specification before fitting any seal on a pressure part.",
+     "discussion": [
+      "Which pressure parts on our unit have no specification we can find?",
+      "Who do we ask when the spare in stores does not match the original?",
+      "What would make it easy to stop this job and ask?"
+     ],
+     "learning": "LR-01",
+     "cites": [
+      "FND-8C0BB623",
+      "FND-7A32AC87",
+      "FND-23139BF9",
+      "FND-8CE00707",
+      "EVD-8645",
+      "EVD-0064",
+      "EVD-1494"
+     ],
+     "supporting_cites": [
+      "FND-89962239",
+      "FND-B356F15B",
+      "FND-91B45FF9",
+      "FND-DA67926D",
+      "FND-54180594",
+      "FND-82673283",
+      "FND-45363DCA",
+      "FND-A443D288",
+      "FND-CEE4B00B",
+      "FND-3746C7B6",
+      "FND-852B7EC7",
+      "FND-DEAA7F90"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "Prove the joint before it goes back into service",
+     "what_happened": "After the gasket change on 18 Sep 2020, the system was only pressurised to operating pressure and isolated; no hydro test to design pressure was done. The meter went back online the next day and was in use when it failed.",
+     "why_made_sense": "No procedure covered calibration or return to service of these high-pressure meters, so the quickest available check became the normal one [FND-257C1100]. Holding at operating pressure looked like proof that the joint was tight [FND-86CB3683].",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: a return-to-service procedure that sets the test, the test pressure and the witness, and a work-order system that will not release the equipment until a test result is entered.",
+     "warning_signs": [
+      "Nobody can tell you the test pressure for the joint you opened",
+      "The only test planned is \"put it back on line and watch\"",
+      "No one is named to witness the test"
+     ],
+     "good_looks_like": "Every job that opens a pressure boundary ends with a recorded test to the written test pressure, witnessed by a second person, before operations accept the equipment.",
+     "discussion": [
+      "What test proves a joint we have just made?",
+      "Where do we write the test result, and who signs it?",
+      "What do we do if the test equipment is not available?"
+     ],
+     "learning": "LR-02",
+     "cites": [
+      "FND-212DC9B7",
+      "FND-7C5ED5B3",
+      "FND-257C1100",
+      "FND-86CB3683",
+      "EVD-2894",
+      "EVD-0185"
+     ],
+     "supporting_cites": [
+      "FND-FD617187",
+      "FND-15279F97",
+      "FND-7FA02383",
+      "FND-4944554C",
+      "FND-FDFA6FF5",
+      "FND-1662466D",
+      "FND-9174A5B0",
+      "FND-611A8BFC",
+      "FND-C4E06264",
+      "FND-3AB996FC",
+      "FND-491EDE74",
+      "FND-50C7319E"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "Ask for the second check on a high-consequence job",
+     "what_happened": "The seal job on 18 Sep 2020 was planned and manned like routine work. No one was assigned to check the seal specification, its quality or the joint after it was made, so the fitter's knowledge was the only barrier.",
+     "why_made_sense": "Nobody had classed pressure-boundary maintenance on hydrocarbon lines as safety-critical, so no inspector, test witness or close-out reviewer was planned for it [FND-615DB819; FND-F8C125D5].",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: a safety-critical maintenance category in work planning that adds inspection, test-witness and close-out steps by itself.",
+     "warning_signs": [
+      "You are the only person who will look at the part, the method and the test",
+      "The job card for a pressure part looks the same as for routine work"
+     ],
+     "good_looks_like": "On a job that could cause a major release, a second person checks the part, the method and the test, and the crew asks for that check if nobody comes.",
+     "discussion": [
+      "Which of our jobs could cause a major release if one step goes wrong?",
+      "Who is the second pair of eyes on those jobs today?",
+      "How would you ask for a check without it sounding like you doubt yourself?"
+     ],
+     "learning": "LR-03",
+     "cites": [
+      "FND-28F8790B",
+      "FND-615DB819",
+      "FND-F8C125D5",
+      "EVD-8645",
+      "EVD-2894"
+     ],
+     "supporting_cites": [
+      "FND-2FAB8D51",
+      "FND-A6312B6B",
+      "FND-59A2F497",
+      "FND-7DF14ADB",
+      "FND-31459031"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "Say so when you are fixing the same fault again",
+     "what_happened": "The same meter had its gasket replaced three times in about 22 months, and a malfunction notification was raised on 17 Sep 2020. Each repair was treated as the first, and none led to a root-cause review.",
+     "why_made_sense": "Nothing in the maintenance system counted repeat failures on one item, and no reliability role was looking for the pattern, so each failure looked routine [FND-82FC718D].",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: an automatic repeat-failure trigger in the maintenance system that opens a root-cause investigation.",
+     "warning_signs": [
+      "You have done this exact repair on this item before",
+      "The fix is the same part that failed last time"
+     ],
+     "good_looks_like": "The crew writes \"repeat failure\" on the job record, and that note starts a root-cause review rather than another identical repair.",
+     "discussion": [
+      "Which items on our unit do we keep fixing?",
+      "Where on the job record would a repeat be noticed?",
+      "Who decides whether we repair again or replace?"
+     ],
+     "learning": "LR-05",
+     "cites": [
+      "FND-69067A1C",
+      "FND-82FC718D",
+      "EVD-1494",
+      "EVD-0591"
+     ],
+     "supporting_cites": [
+      "FND-71D631C1",
+      "FND-D14B8424",
+      "FND-FEC84761",
+      "FND-3A34BAD3",
+      "FND-E0AE86A6",
+      "FND-55F68376",
+      "FND-F0D015E1"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "A gas alarm is late news",
+     "what_happened": "The gas detectors only lit the annunciator panel; they did not shut anything down. The first control-room alarm came at about 02:20, after the camera had recorded the leak and security staff had already seen the cloud.",
+     "why_made_sense": "The detection system was designed to inform, not to act, and its signals were not kept in the control system for history, so the alarm looked like any other display alert [FND-C5000A82; FND-5BC96E8A].",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: confirmed-gas logic that starts isolation by itself in the metering and gas terminal areas, and history for every detector signal.",
+     "warning_signs": [
+      "A gas alarm with no automatic action behind it",
+      "A report of vapour or noise arriving before any alarm"
+     ],
+     "good_looks_like": "Crews treat a gas alarm as a confirmed release until proved otherwise, and know which alarms trip equipment and which wait for a person.",
+     "discussion": [
+      "Which gas alarms on our unit trip equipment by themselves?",
+      "What is the first thing you do when one sounds?",
+      "Who do you tell, and in what words?"
+     ],
+     "learning": "LR-10",
+     "cites": [
+      "FND-A245072B",
+      "FND-C5000A82",
+      "FND-5BC96E8A",
+      "EVD-8657",
+      "EVD-1284"
+     ],
+     "supporting_cites": [
+      "FND-94C28ACE",
+      "FND-9399FA02",
+      "FND-D45021AD",
+      "FND-01C3DE98",
+      "FND-6155A1C2",
+      "FND-5897D1E4",
+      "FND-A31F75EF",
+      "FND-5134D887",
+      "FND-789D5D60"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "If you cannot reach the source, think isolation from a distance",
+     "what_happened": "The control-room engineers went out to find the leak and were driven back by the dense cloud. Senior shift staff reached the gate but could not enter. The first isolation valve was closed by hand at 03:01, about 46 minutes after the first detection.",
+     "why_made_sense": "Normal leak response is to find and fix the leak. The isolation valves could only be worked at the valve, inside the cloud, and the emergency plan gave no isolation criteria or authority, so the crew kept trying to approach and kept calling up the chain [FND-A7137BC4; FND-82761CC5].",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: isolation decision aids for each area at the control-room console, remote-operated emergency valves, and written authority to isolate on defined criteria.",
+     "warning_signs": [
+      "The cloud stops you getting near the source",
+      "You are phoning for permission while the cloud grows"
+     ],
+     "good_looks_like": "As soon as access is denied, the crew reports \"access denied\" to the control room and switches to the isolation points it can reach safely.",
+     "discussion": [
+      "Which valves isolate our section, and where are they worked from?",
+      "What would you do if you could not get near them?",
+      "Who tells you that you may isolate?"
+     ],
+     "learning": "LR-08",
+     "cites": [
+      "FND-F887999D",
+      "FND-A7137BC4",
+      "FND-82761CC5",
+      "EVD-9612",
+      "EVD-1460",
+      "EVD-3932"
+     ],
+     "supporting_cites": [
+      "FND-AEA16F83",
+      "FND-744032B6",
+      "FND-13708453"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "Call the control room that can act, and say what you see",
+     "what_happened": "Security staff at a watch tower and at the gate saw the cloud at about 02:15. Their calls went to the security network, the fire station and another control room. The gas terminal control room heard of it at about 02:18 as \"some vapour cloud or steam leakage\".",
+     "why_made_sense": "Security posts had no direct line to the gas terminal control room, and there were no standard words for a hydrocarbon release, so each relay checked the report and described it again [FND-2F736E5F].",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: a direct line from perimeter posts and the camera room to each process control room, and a standard release message drilled jointly by security and operations.",
+     "warning_signs": [
+      "You see vapour or hear a roar and do not know which control room covers that area",
+      "Your report is being passed on by someone who did not see it"
+     ],
+     "good_looks_like": "The first call goes to the control room for that area and says \"hydrocarbon release\", where, and how big.",
+     "discussion": [
+      "Which control room covers each area you watch?",
+      "What words would you use to report a release?",
+      "What stops you calling that control room directly today?"
+     ],
+     "learning": "LR-13",
+     "cites": [
+      "FND-5AB5DFA3",
+      "FND-C75F81B9",
+      "FND-2F736E5F",
+      "EVD-4286",
+      "EVD-1460",
+      "EVD-6234",
+      "EVD-8871"
+     ],
+     "supporting_cites": [
+      "FND-BC00FF3A",
+      "FND-57281AC5",
+      "FND-37BC45CF",
+      "FND-95F9205E",
+      "FND-439E0DF7",
+      "FND-A9C42ABE",
+      "FND-0A64F629"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "A flameproof fitting with a bolt missing is not flameproof",
+     "what_happened": "A flameproof lamp at the skid had three bolts missing and its glass case open by a few centimetres. The investigating committee named it as the probable ignition source. Nearby fittings were intact.",
+     "why_made_sense": "Electrical maintenance mainly answered breakdowns, and a lamp that still lit did not look broken, so the missing bolts did not trigger a repair [FND-5E08D0F8; FND-1280E788].",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: replace the old flameproof lamps in zoned areas with certified fittings, and set up an inspection programme for explosion-protected equipment with records for each item.",
+     "warning_signs": [
+      "A missing bolt, an open cover or a loose gland on a fitting in a hazardous area",
+      "A fitting that still works, so nobody reports it"
+     ],
+     "good_looks_like": "Anyone who sees a damaged flameproof fitting reports it, and it is made safe the same shift.",
+     "discussion": [
+      "Where are the flameproof fittings on our rounds?",
+      "Who do we tell when one is damaged, and how fast is it made safe?",
+      "What stops us reporting a fitting that still works?"
+     ],
+     "learning": "LR-11",
+     "cites": [
+      "FND-784A23E4",
+      "FND-5E08D0F8",
+      "FND-1280E788",
+      "EVD-6916",
+      "EVD-0496"
+     ],
+     "supporting_cites": [
+      "FND-74A80D24",
+      "FND-C7F16268",
+      "FND-1D61DC3A",
+      "FND-ADC25F29",
+      "FND-675D99DD",
+      "FND-ABF11182",
+      "FND-CCE6F868",
+      "FND-76BE46EF",
+      "FND-198069BD",
+      "FND-02C51A67",
+      "FND-B1D1AAC1",
+      "FND-30EC643B"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "toolbox-talks",
+   "heading": "Toolbox talks",
+   "items": [
+    {
+     "kind": "para",
+     "group": "Returning equipment to service",
+     "text": "Opening question: when did you last fit a part that was not quite the original? The story: a meter in service since 1986 kept leaking at its gasket. Its specification was lost, so the crew fitted the O-ring they always used. After the last change the system was only brought up to operating pressure, and the meter went back online the next day. Six days later the seal failed and the release found an ignition source. Two warning signs: a part that does not match the groove, and a job closed with no test record. One thing to do differently tomorrow: no specification, no fit; no test record, no hand-back. Question to the crew: which job on our unit would we struggle to test properly today?",
+     "learning": "LR-01",
+     "cites": [
+      "FND-7FA02383",
+      "FND-B356F15B",
+      "EVD-2894",
+      "EVD-8645"
+     ],
+     "supporting_cites": [
+      "FND-8C0BB623",
+      "FND-7A32AC87",
+      "FND-89962239",
+      "FND-91B45FF9",
+      "FND-DA67926D",
+      "FND-54180594",
+      "FND-82673283",
+      "FND-45363DCA"
+     ]
+    },
+    {
+     "kind": "scenario",
+     "group": "Returning equipment to service",
+     "learning": "LR-02",
+     "situation": "Late in the shift you finish replacing a seal on a high-pressure meter. The original seal is not in stores, so you used the one the crew always uses. Operations want the meter back by morning.",
+     "prompts": [
+      "What do you check before you hand the meter back?",
+      "Who do you call if no test pressure is written down?",
+      "What would make it easy for you to say \"not yet\"?"
+     ],
+     "cites": [
+      "FND-7FA02383",
+      "FND-89962239",
+      "EVD-2894",
+      "EVD-8645"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "Responding to a release",
+     "text": "Opening question: if you saw a white cloud near the metering skid tonight, who would you call first? The story: security staff saw the cloud first and called their own network. The control room heard of it as \"some vapour cloud or steam leakage\". The engineers went out to find the leak and could not get near it. The valves that would stop it could only be worked by hand, inside the cloud. Two warning signs: a report passed on by someone who did not see it, and being unable to reach the source. One thing to do differently tomorrow: report a release in plain words to the control room that can act, and say \"access denied\" as soon as you cannot get near. Question to the crew: which isolation points could we reach if the metering area filled with vapour?",
+     "learning": "LR-08",
+     "cites": [
+      "FND-01ADF0AA",
+      "FND-37BC45CF",
+      "EVD-1460",
+      "EVD-8871",
+      "EVD-9612"
+     ],
+     "supporting_cites": [
+      "FND-AEA16F83",
+      "FND-F887999D",
+      "FND-744032B6",
+      "FND-13708453",
+      "FND-BC00FF3A",
+      "FND-5AB5DFA3",
+      "FND-C75F81B9",
+      "FND-57281AC5"
+     ]
+    },
+    {
+     "kind": "scenario",
+     "group": "Responding to a release",
+     "learning": "LR-08",
+     "situation": "At night you hear a roar and see vapour drifting across the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong.",
+     "prompts": [
+      "Who do you call, and what exactly do you say?",
+      "When do you stop trying to reach the source?",
+      "What do you need to know to isolate from a safe place?"
+     ],
+     "cites": [
+      "FND-F887999D",
+      "FND-C75F81B9",
+      "EVD-1460",
+      "EVD-9612"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "stop-and-ask",
+   "heading": "Stop and ask",
+   "items": [
+    {
+     "kind": "check",
+     "when": "The seal or gasket in your hand does not match the original, or nobody can show a specification",
+     "text": "Stop and ask the supervisor for the specification. Expect the job to wait until one is found or an approved substitute is recorded.",
+     "learning": "LR-01",
+     "cites": [
+      "FND-89962239",
+      "FND-B356F15B",
+      "EVD-8645"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "Pressure-boundary work is finished and no test pressure or witness is named",
+     "text": "Do not hand the equipment back. Ask the supervisor for the written test and the witness; expect the release to wait for the test record.",
+     "learning": "LR-02",
+     "cites": [
+      "FND-15279F97",
+      "FND-FDFA6FF5",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "A hazardous job is about to start on a maintenance notification, with no permit or job safety plan",
+     "text": "A notification is not a permit. Pause and ask the permit issuer for the permit and the job safety plan before work on hydrocarbon equipment.",
+     "learning": "LR-22",
+     "cites": [
+      "FND-AA571C63",
+      "EVD-5105"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "You are repeating a repair you have done on the same item before",
+     "text": "Write \"repeat failure\" on the job record and tell the supervisor, so the repeat can be reviewed rather than repaired again unseen.",
+     "learning": "LR-05",
+     "cites": [
+      "FND-69067A1C",
+      "EVD-1494"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "A calibration setting is changed during the job, even one you change back",
+     "text": "Record every change, with as-found and as-left values, before the record is signed. Ask for a checklist if none is provided.",
+     "learning": "LR-16",
+     "cites": [
+      "FND-85748D86",
+      "FND-13E2037D",
+      "EVD-2506"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "The drawing does not match the valves and meters you see in the field",
+     "text": "Stop and report it before anyone plans an isolation from that drawing.",
+     "learning": "LR-19",
+     "cites": [
+      "FND-733F5A1A",
+      "EVD-0933"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "A pressure transmitter on your screen shows no value or a flat line",
+     "text": "Raise it as a defect, not a nuisance; the control room loses early warning without it.",
+     "learning": "LR-15",
+     "cites": [
+      "FND-2B5C46B9",
+      "EVD-6470"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "A flameproof fitting in a hazardous area has a missing bolt, an open cover or a loose gland",
+     "text": "Report it and ask for it to be made safe the same shift.",
+     "learning": "LR-11",
+     "cites": [
+      "FND-C7F16268",
+      "EVD-6916"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "A fire-water pump trips on test or in use",
+     "text": "Record what happened and raise a defect the same shift, so the cause is found before the pump is needed.",
+     "learning": "LR-23",
+     "cites": [
+      "FND-A4B843EB",
+      "EVD-2432"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "A release blocks your way to the source",
+     "text": "Stop approaching. Tell the control room \"access denied\" and ask which isolation points can be reached safely.",
+     "learning": "LR-09",
+     "cites": [
+      "FND-BDD73BA2",
+      "FND-01ADF0AA",
+      "EVD-9612"
+     ]
+    }
+   ]
+  }
+ ],
+ "exclusions": [
+  {
+   "id": "FND-44219027",
+   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; left out here for the same reason."
+  }
+ ],
+ "limits": [
+  "The organisational conditions behind these cards (lost specifications, no return-to-service procedure, no remote isolation, no isolation criteria in the emergency plan) are for supervisor-coach and manager-coach; they are described here only so crews recognise the trap.",
+  "The contractor selection finds no contractor crews in this event, so no card is written for them."
+ ]
+}

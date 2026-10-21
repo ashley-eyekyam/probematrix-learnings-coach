@@ -1,0 +1,439 @@
+{
+ "pack": "supply-chain-contractor-learnings",
+ "schema": 1,
+ "title": "Supply Chain and Contractor Learnings: Gas terminal release and fire, 2020",
+ "audience": "Procurement, stores and materials management, vendors and equipment makers, and the functions that manage contractors",
+ "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress.",
+ "incident": {
+  "title": "Hazira gas terminal condensate release and fire",
+  "date": "2020-09-24"
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the export's investigation status is in progress and no finding is marked as edited by a person. Validate every item before adoption.",
+   "cites": []
+  }
+ ],
+ "scope": {
+  "tags": [
+   "supply",
+   "contractor"
+  ]
+ },
+ "bottom_line": [
+  {
+   "text": "A seal with no specification and no quality check was bought, issued and fitted as regular practice; it is the probable source of the release.",
+   "learning": "LR-01",
+   "cites": [
+    "FND-EBB66554",
+    "FND-7A32AC87",
+    "EVD-8645",
+    "EVD-0064"
+   ]
+  },
+  {
+   "text": "No role owned the specification of the legacy part, or the approval of a substitute.",
+   "learning": "LR-01",
+   "cites": [
+    "FND-23139BF9",
+    "EVD-8645"
+   ]
+  },
+  {
+   "text": "The substitution never went through change review: a part chosen at the stores counter is a change.",
+   "learning": "LR-06",
+   "cites": [
+    "FND-5A5F6AB3",
+    "EVD-2986"
+   ]
+  },
+  {
+   "text": "A vendor-prepared drawing was used without the operator's check, and it did not match the field.",
+   "learning": "LR-19",
+   "cites": [
+    "FND-82687B50",
+    "EVD-0933"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "path",
+   "heading": "How the part reached the job",
+   "items": [
+    {
+     "kind": "timeline",
+     "events": [
+      {
+       "date": "1986",
+       "text": "The condensate meter is commissioned with a rectangular-slot gasket supplied by the original equipment maker.",
+       "received_by": "Original equipment maker",
+       "cites": [
+        "FND-B86F67F0",
+        "FND-7A32AC87",
+        "EVD-0064",
+        "EVD-8645"
+       ]
+      },
+      {
+       "date": "2018-11",
+       "text": "The meters are cleaned, serviced and calibrated. The findings do not record when the original gasket specification was lost, or when and by whom buying from the equipment maker stopped.",
+       "received_by": "Maintenance function",
+       "response": "No record of the date or authority of the switch to local O-rings",
+       "cites": [
+        "FND-23139BF9",
+        "FND-B56701CA",
+        "EVD-8645",
+        "EVD-1494"
+       ]
+      },
+      {
+       "date": "2019-02-25",
+       "text": "The meter is cleaned and its gasket changed, with the locally bought O-ring used as regular practice.",
+       "received_by": "Maintenance crew",
+       "response": "No specification or quality check recorded",
+       "cites": [
+        "FND-8CE00707",
+        "EVD-1494",
+        "EVD-8645"
+       ]
+      },
+      {
+       "date": "2020-09-17",
+       "text": "A maintenance notification is raised for a malfunction of the meter.",
+       "received_by": "Maintenance planning",
+       "cites": [
+        "FND-2FAB8D51",
+        "EVD-0591"
+       ]
+      },
+      {
+       "date": "2020-09-18",
+       "text": "Need met from stock: the gasket is replaced with a locally purchased round O-ring in place of the rectangular-slot gasket; the O-rings were bought with no specification and no quality control.",
+       "received_by": "Stores and procurement",
+       "response": "No technical approval recorded",
+       "cites": [
+        "FND-EBB66554",
+        "FND-A0017E28",
+        "EVD-8645"
+       ]
+      },
+      {
+       "date": "2020-09-18",
+       "text": "Installation: the O-ring is fitted and the system is only pressurised to operating pressure; no change review is raised for the substitution.",
+       "received_by": "Maintenance crew",
+       "response": "No change review recorded",
+       "cites": [
+        "FND-5A5F6AB3",
+        "FND-82673283",
+        "EVD-2986",
+        "EVD-2894"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "text": "The installed seal fails and is the probable source of the release.",
+       "received_by": "Operations",
+       "cites": [
+        "FND-BC4FD086",
+        "FND-7A32AC87",
+        "EVD-0064"
+       ]
+      }
+     ],
+     "cites": [
+      "FND-EBB66554",
+      "EVD-8645"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "learnings",
+   "heading": "Learnings",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "Procurement and stores",
+     "lesson": "If stores can buy and issue a pressure-boundary seal with no specification and no quality check, the substitute becomes the normal part.",
+     "explanation": "Locally purchased O-rings were bought and issued as regular practice in place of the original rectangular-slot gasket, with no specification or quality control at purchase. Nothing in the purchasing or issue step asked for a specification reference.",
+     "owner": "Materials management function",
+     "evidence_strength": "direct",
+     "learning": "LR-01",
+     "cites": [
+      "FND-EBB66554",
+      "FND-A0017E28",
+      "FND-D66ACA7B",
+      "EVD-8645"
+     ],
+     "supporting_cites": [
+      "FND-7A32AC87",
+      "FND-82673283",
+      "FND-A2048FB8",
+      "FND-FFE174D0",
+      "FND-CEE4B00B",
+      "FND-3746C7B6",
+      "FND-42BEF461",
+      "FND-852B7EC7",
+      "FND-DEAA7F90",
+      "FND-A3D7D53F"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Procurement and stores",
+     "lesson": "If no role owns the specification of a legacy part, nobody re-establishes it when it is lost, and buying fills the gap by habit.",
+     "explanation": "No accountable owner or recorded authority existed for the gasket's material specification and its procurement, and no substitute specification or quality-control information reached the maintainers.",
+     "owner": "Plant leadership, with the materials management and engineering functions",
+     "evidence_strength": "direct",
+     "learning": "LR-01",
+     "cites": [
+      "FND-23139BF9",
+      "FND-B56701CA",
+      "FND-DE30BD8B",
+      "EVD-8645"
+     ],
+     "supporting_cites": [
+      "FND-7A32AC87",
+      "FND-82673283",
+      "FND-A2048FB8",
+      "FND-FFE174D0",
+      "FND-CEE4B00B",
+      "FND-3746C7B6",
+      "FND-42BEF461",
+      "FND-D66ACA7B",
+      "FND-852B7EC7",
+      "FND-DEAA7F90"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Engineering at the supply interface",
+     "lesson": "A substitute part chosen at the stores counter is a change, and it needs the change review even when it has been used before.",
+     "explanation": "The decision to use locally procured O-rings was never recorded or reviewed under management of change, and no change had gone through that procedure since 2018. People did not see a like-for-unlike replacement as a change.",
+     "owner": "Engineering function (owner of management of change)",
+     "evidence_strength": "direct",
+     "learning": "LR-06",
+     "cites": [
+      "FND-5A5F6AB3",
+      "FND-B440C1BF",
+      "EVD-2986",
+      "EVD-8645"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Vendors and OEMs",
+     "lesson": "When the original maker's parts stop being bought for ageing equipment, the specification and the support go with them unless someone asks for them.",
+     "explanation": "The meter dated from 1986, its gaskets were no longer procured from the original equipment maker, and the original specification was not available. The findings record no request to the maker or another supplier for the specification.",
+     "owner": "Materials management function, with the engineering function",
+     "evidence_strength": "direct",
+     "learning": "LR-01",
+     "cites": [
+      "FND-B86F67F0",
+      "FND-8CE00707",
+      "EVD-8645",
+      "EVD-0064"
+     ],
+     "supporting_cites": [
+      "FND-7A32AC87",
+      "FND-82673283",
+      "FND-A2048FB8",
+      "FND-FFE174D0",
+      "FND-CEE4B00B",
+      "FND-3746C7B6",
+      "FND-42BEF461",
+      "FND-D66ACA7B",
+      "FND-852B7EC7",
+      "FND-DEAA7F90"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Vendors and OEMs",
+     "lesson": "A drawing prepared by a vendor is not a controlled document until the operator has checked and approved it.",
+     "explanation": "After the original metering drawings were lost, a vendor prepared new ones. They were not checked or approved, and the valve and meter configuration on them did not match the field.",
+     "owner": "Engineering document control",
+     "evidence_strength": "direct",
+     "learning": "LR-19",
+     "cites": [
+      "FND-82687B50",
+      "FND-583EB5FE",
+      "FND-72DCEE68",
+      "EVD-0933"
+     ],
+     "supporting_cites": [
+      "FND-D25BF914",
+      "FND-83AD4621",
+      "FND-107C8238"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Contractors and outsourced roles",
+     "lesson": "Work handed to a drawing contractor needs the same acceptance check as work done in-house; the contractor's drawing entered use because the host's acceptance step was missing.",
+     "explanation": "The replacement as-built drawing was prepared outside the organisation and not verified before it took the place of the original. The gap sits in the host's document control, not in the contractor.",
+     "owner": "Engineering document control",
+     "evidence_strength": "direct",
+     "learning": "LR-19",
+     "cites": [
+      "FND-D25BF914",
+      "FND-107C8238",
+      "EVD-0933"
+     ],
+     "supporting_cites": [
+      "FND-72DCEE68",
+      "FND-82687B50",
+      "FND-583EB5FE",
+      "FND-83AD4621"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "recommendations",
+   "heading": "Recommendations and indicators",
+   "items": [
+    {
+     "kind": "recommendation",
+     "change": "Make the stores system refuse to issue a pressure-boundary seal without a specification reference and an approved-substitute record.",
+     "barrier": "Procurement control of pressure-boundary parts",
+     "hoc_tier": "engineering",
+     "indicator": "Pressure-part issues blocked or referred for engineering approval each quarter, and their closure time",
+     "learning": "LR-01",
+     "cites": [
+      "FND-EBB66554",
+      "EVD-8645"
+     ],
+     "supporting_cites": [
+      "FND-7A32AC87",
+      "FND-82673283",
+      "FND-A2048FB8",
+      "FND-FFE174D0",
+      "FND-CEE4B00B",
+      "FND-3746C7B6"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "change": "Re-establish the seal design for the meter flange from the maker's data or an engineered equivalent, stock only certified parts against that specification, and quarantine non-conforming seals.",
+     "barrier": "Pressure-boundary integrity (correct seal)",
+     "hoc_tier": "substitution",
+     "indicator": "% of critical pressure-boundary spares with a specification and certificate on file",
+     "learning": "LR-01",
+     "cites": [
+      "FND-D66ACA7B",
+      "FND-B86F67F0",
+      "EVD-8645",
+      "EVD-0064"
+     ],
+     "supporting_cites": [
+      "FND-7A32AC87",
+      "FND-82673283",
+      "FND-A2048FB8",
+      "FND-FFE174D0",
+      "FND-CEE4B00B",
+      "FND-3746C7B6"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "change": "Survey legacy equipment for lost specifications, and plan replacement of items that can no longer be maintained to specification.",
+     "barrier": "Equipment obsolescence management",
+     "hoc_tier": "elimination",
+     "indicator": "% of legacy items surveyed, and the number with a replacement or re-specification decision recorded",
+     "learning": "LR-01",
+     "cites": [
+      "FND-B440C1BF",
+      "EVD-8645"
+     ],
+     "supporting_cites": [
+      "FND-7A32AC87",
+      "FND-82673283",
+      "FND-A2048FB8",
+      "FND-FFE174D0",
+      "FND-CEE4B00B",
+      "FND-3746C7B6"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "change": "Build a change-review trigger into the stores issue and work-order screens: a non-catalogue or substitute part needs a management-of-change reference before issue.",
+     "barrier": "Management of change",
+     "hoc_tier": "engineering",
+     "indicator": "% of substitute-part issues with a management-of-change reference, and change reviews raised per month",
+     "learning": "LR-06",
+     "cites": [
+      "FND-5A5F6AB3",
+      "EVD-2986"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "change": "Give one named function ownership of pressure-part specifications and of approving any substitute, with quality checks at receipt for those parts.",
+     "barrier": "Procurement control of pressure-boundary parts",
+     "hoc_tier": "administrative",
+     "why_not_stronger": "The stores interlock and the re-specification above are the stronger controls; they need an owner to keep the specifications they enforce up to date.",
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "Assigning the owner is the organisational fix for an L4 ownership gap and pairs with the engineering and substitution changes in this section."
+     },
+     "indicator": "% of pressure-boundary part receipts with a recorded quality check against the specification",
+     "learning": "LR-01",
+     "cites": [
+      "FND-23139BF9",
+      "FND-DE30BD8B",
+      "EVD-8645"
+     ],
+     "supporting_cites": [
+      "FND-7A32AC87",
+      "FND-82673283",
+      "FND-A2048FB8",
+      "FND-FFE174D0",
+      "FND-CEE4B00B",
+      "FND-3746C7B6"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "change": "Require operator checking and approval of every vendor or contractor drawing before it becomes a controlled document, starting with a field check of the metering and emergency isolation drawings.",
+     "barrier": "Controlled as-built drawings",
+     "hoc_tier": "administrative",
+     "why_not_stronger": "Drawing control is a records process; no engineering control replaces the check of a drawing against the field.",
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "Approval of vendor drawings is the document-control system fix for this L3/L4 gap; no stronger tier applies to a records process."
+     },
+     "indicator": "% of vendor drawings in use with a recorded operator approval",
+     "learning": "LR-19",
+     "cites": [
+      "FND-82687B50",
+      "FND-D25BF914",
+      "EVD-0933"
+     ],
+     "supporting_cites": [
+      "FND-72DCEE68",
+      "FND-583EB5FE",
+      "FND-83AD4621",
+      "FND-107C8238"
+     ]
+    }
+   ]
+  }
+ ],
+ "gaps": [
+  {
+   "text": "[GAP] No record of when, or by whose authority, gasket purchasing switched from the equipment maker to locally bought O-rings.",
+   "cites": [
+    "FND-23139BF9",
+    "EVD-8645"
+   ],
+   "evidence_needed": "Purchase orders and stores issue records for the meter's gaskets, and any approval of the substitute."
+  }
+ ],
+ "limits": [
+  "The findings involve no contractor or agency workers on the job, so the briefing for contractor crews is left out; the only contractor finding concerns a drawing prepared outside the organisation.",
+  "Few findings carry the supply and contractor functions; most supply-chain conditions are recorded against maintenance, which is why the learnings cite maintenance findings alongside them.",
+  "Written to be shared outside the organisation only after skill-common §7: run check-pack --share external and complete legal review first."
+ ]
+}
