@@ -61,7 +61,7 @@
     },
     {
      "kind": "para",
-     "text": "Sighted comparison. The evidence behind the export is the committee's report itself: 8 of the 46 evidence items quote or point to its recommendations, and 92 of the 436 findings refer to them in their reasoning. This is report coverage, not independent discovery. The committee had site access, eyewitness interviews, CCTV and control-room records; the export re-analyses the committee's account of them through the four HFACS levels.",
+     "text": "Sighted comparison. The evidence behind the export is the committee's report itself: 8 of the 46 evidence items quote or point to its recommendations, and 92 of the 436 findings refer to them in their reasoning (a search of each finding's label, summary, justification and causal text for pages 34 to 36, a recommendation number such as B.5, or the committee recommending). This is report coverage, not independent discovery. The committee had site access, eyewitness interviews, CCTV and control-room records; the export re-analyses the committee's account of them through the four HFACS levels.",
      "cites": [
       "EVD-0185",
       "EVD-2506",
@@ -1060,9 +1060,9 @@
       ],
       [
        "OBS-11 Incidents are not classified properly, NIL reports are sent, and no review by HSE, operations or the plant head is in place",
-       "None",
+       "—",
        "none",
-       "evidence present but not interpreted"
+       "evidence present in the source report, not extracted or coded"
       ],
       [
        "OBS-12 Some original work permits are missing and no record is kept of the missing permits",
@@ -1078,9 +1078,9 @@
       ],
       [
        "OBS-14 Fire-water storage and pumping capacity in Phase I, and the pumps being commissioned in Phase II, are described",
-       "None",
+       "—",
        "none",
-       "evidence present but not interpreted"
+       "evidence present in the source report, not extracted or coded"
       ],
       [
        "OBS-15 Electric and diesel fire pumps are run for 30 minutes per week, which does not meet the applicable industry norms",
@@ -1114,9 +1114,9 @@
       ],
       [
        "OBS-20 During shifts the fire crews report to the operator's shift in-charge, not to the fire chief",
-       "None",
+       "—",
        "none",
-       "evidence present but not interpreted"
+       "evidence present in the source report, not extracted or coded"
       ],
       [
        "OBS-21 During the December 2019 calibration, a condensate meter's calibration range was changed and later changed back, with no mention in the signed calibration documents",
@@ -1252,9 +1252,9 @@
       ],
       [
        "OBS-43 Logbooks are ordinary registers; alarms and events are not logged properly and handover is not recorded",
-       "None",
+       "—",
        "none",
-       "evidence present but not interpreted"
+       "evidence present in the source report, not extracted or coded"
       ],
       [
        "RC-01 Loss of containment in the condensate metering area from failure of the O-ring of the orifice retaining plate",
@@ -1330,9 +1330,9 @@
       ],
       [
        "REC-07 Analyse and report all incidents per the operator's corporate policy, categorise near misses and minor incidents correctly, review them quarterly and circulate lessons to all plants",
-       "None",
+       "—",
        "none",
-       "evidence present but not interpreted"
+       "evidence present in the source report, not extracted or coded"
       ],
       [
        "REC-08 Carry out all non-routine and hazardous work under a permit to work with proper authorisation",
@@ -1450,9 +1450,9 @@
       ],
       [
        "REC-27 Formalise storage and inventory management of rubber items, with documentation",
-       "None",
+       "—",
        "none",
-       "evidence present but not interpreted"
+       "evidence present in the source report, not extracted or coded"
       ],
       [
        "REC-28 Display important telephone numbers properly in the control room",
@@ -1474,9 +1474,9 @@
       ],
       [
        "REC-31 Lay out the panels in the gas-terminal control room to improve visibility and access",
-       "None",
+       "—",
        "none",
-       "evidence present but not interpreted"
+       "evidence present in the source report, not extracted or coded"
       ],
       [
        "REC-32 Train control-room operating staff for at least one month, preferably on simulators, before assigning control-room duties",
@@ -1498,9 +1498,9 @@
       ],
       [
        "REC-35 Develop plant-wise control-room logbooks and an SOP for logging records, events and alarms, including handover details",
-       "None",
+       "—",
        "none",
-       "evidence present but not interpreted"
+       "evidence present in the source report, not extracted or coded"
       ]
      ],
      "row_cites": [
@@ -2014,7 +2014,7 @@
        4
       ],
       [
-       "Ppe",
+       "PPE",
        0,
        0
       ]
@@ -2172,7 +2172,7 @@
     },
     {
      "kind": "para",
-     "text": "It also covers topics the export does not code as conditions of their own: incident classification and review (OBS-11, REC-07), logbooks and handover records (OBS-43, REC-35), control-room panel layout (REC-31) and storage of rubber spares (REC-27). They come from the committee's own review of records it was given [EVD-3452].",
+     "text": "It also covers topics the export does not code as conditions of their own: incident classification and review (OBS-11, REC-07), logbooks and handover records (OBS-43, REC-35), control-room panel layout (REC-31) and storage of rubber spares (REC-27). They rest on the committee's own review of records and its site inspection, which the export does not reproduce.",
      "comparator_refs": [
       "OBS-11",
       "REC-07",
@@ -2202,7 +2202,7 @@
     },
     {
      "kind": "para",
-     "text": "Transcription: the comparator inventory was typed by hand from the text layer of the report PDF, with roles in place of names and functions in place of company names. Recommendations were split by their sub-numbers (A.1 into its drawing and control-system parts; B.5, C.1, C.2 and D.1 to D.3 by sub-item). The control tiers of the committee's recommendations are this comparison's classification, not the committee's."
+     "text": "Transcription: the comparator inventory was typed by hand from the text layer of the report PDF, with roles in place of names and functions in place of company names. Recommendations were split by their sub-numbers (A.1 into its drawing and control-system parts; B.5, C.1, C.2 and D.1 to D.3 by sub-item). The control tiers of the committee's recommendations are this comparison's classification, not the committee's. Section 11's narrative conclusions and its reconstruction are not inventoried as separate items; its six numbered root causes stand for them."
     },
     {
      "kind": "para",

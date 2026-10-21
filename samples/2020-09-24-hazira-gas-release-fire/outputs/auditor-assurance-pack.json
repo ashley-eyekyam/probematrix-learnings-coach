@@ -113,7 +113,10 @@
       "FND-554BFB4A",
       "EVD-6916"
      ],
-     "text": "The records an audit would sample did not show the conditions: the malfunction notification for the meter was left open after the work, the signed calibration record did not show a setting change, and electrical maintenance records listed only repaired items, not the inspection of the rest."
+     "comparator_refs": [
+      "OBS-27"
+     ],
+     "text": "The records an audit would sample did not show the conditions: the malfunction notification for the meter was left open after the work and the signed calibration record did not show a setting change; the committee's report adds that electrical maintenance records listed only repaired items, not the inspection of the rest (OBS-27)."
     },
     {
      "kind": "para",
@@ -240,6 +243,11 @@
       "EVD-6916"
      ],
      "evidence_strength": "direct",
+     "comparator_refs": [
+      "OBS-27",
+      "OBS-28",
+      "OBS-29"
+     ],
      "supporting_cites": [
       "FND-ADC25F29",
       "FND-0B35D995",
@@ -583,6 +591,9 @@
      "evidence_strength": "direct",
      "clauses": [
       "ISO45001-10.2"
+     ],
+     "comparator_refs": [
+      "OBS-24"
      ]
     },
     {

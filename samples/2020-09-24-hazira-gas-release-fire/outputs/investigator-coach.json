@@ -42,11 +42,13 @@
    "learning": "LR-01"
   },
   {
-   "text": "The response timeline needs reconciling: control-room clocks differed by 2 to 12 minutes, and the operator's briefing and the shift accounts disagree on when the shift in-charges were told.",
+   "text": "The response timeline needs reconciling: control-room clocks differed by 2 to 12 minutes, and the control-room and shift in-charge accounts disagree on when the shift in-charges were told.",
    "cites": [
     "FND-4245FBF2",
     "FND-4108DB15",
+    "FND-01ADF0AA",
     "EVD-5532",
+    "EVD-1460",
     "EVD-9612",
     "EVD-6414"
    ],
@@ -219,9 +221,11 @@
       "EVD-7340",
       "EVD-6414",
       "FND-4108DB15",
-      "EVD-5532"
+      "EVD-5532",
+      "FND-01ADF0AA",
+      "EVD-1460"
      ],
-     "text": "Conflicts between sources: the report gives two years for one seal change, and the export follows the later one without a record that settles it; the operator's briefing has the shift in-charges told at 02:20, while their own accounts give about 02:35; and control-room clocks differed by 2 to 12 minutes. None of the three is resolved in the export."
+     "text": "Conflicts between sources: the report gives two years for one seal change, and the export follows the later one without a record that settles it; the gas-terminal control-room account has the shift in-charges told soon after the 02:20 alarm, while their own accounts give about 02:35; and control-room clocks differed by 2 to 12 minutes. None of the three is resolved in the export."
     },
     {
      "kind": "para",
@@ -231,7 +235,13 @@
       "EVD-0591",
       "EVD-1494"
      ],
-     "text": "Quotation accuracy: two findings quote recommendations numbered D.2.iii and D.2.iv, which the report does not contain, and one estimates the operating pressure with no record behind it. Some evidence items give page references one page earlier than the text in the report."
+     "comparator_refs": [
+      "REC-19",
+      "REC-20",
+      "OBS-22",
+      "OBS-23"
+     ],
+     "text": "Quotation accuracy: two findings quote recommendations numbered D.2.iii and D.2.iv, while the committee's report has only D.2 (i) and (ii) (REC-19, REC-20); both estimate the operating pressure with no record behind it. Some evidence items give page references one page earlier than the report's text (OBS-22 and OBS-23 are on page 28)."
     },
     {
      "kind": "para",
@@ -263,7 +273,7 @@
     },
     {
      "kind": "check",
-     "text": "The team included someone who knows the process, and a contract employee where contractor work was involved. [GAP] The export has no Investigation Team field; contractor work is part of the event (the thickness survey agency, the vendor-made drawings).",
+     "text": "The team included someone who knows the process, and a contract employee where contractor work was involved. [GAP] The export has no Investigation Team field; contractor work is part of the event (the drawings were made by a vendor).",
      "clauses": [
       "PSM-(m)(3)"
      ],
@@ -584,7 +594,7 @@
       ]
      ],
      "finding_notes": {
-      "FND-7A32AC87": "Its reasoning quotes a recommendation numbered D.2.iii that the committee's report does not contain; check the quotation against the report and correct the finding text.",
+      "FND-7A32AC87": "Its reasoning quotes a recommendation numbered D.2.iii that the committee's report does not contain, and estimates the operating pressure with no record behind it; check the quotation against the report and correct the finding text.",
       "FND-212DC9B7": "Its reasoning quotes a recommendation numbered D.2.iv that the committee's report does not contain, and estimates the operating pressure with no record behind it; check and correct the finding text."
      }
     }
@@ -627,11 +637,11 @@
      "why": "Tests the hypothesis that operating-pressure checks were the accepted standard (LR-02).",
      "to": "Mechanical maintenance fitter (seal-change crew)",
      "group": "Mechanical maintenance fitter (seal-change crew)",
-     "learning": "LR-01",
+     "learning": "LR-02",
      "cites": [
-      "FND-8C0BB623",
-      "FND-7A32AC87",
-      "EVD-8645"
+      "FND-7C5ED5B3",
+      "FND-FD617187",
+      "EVD-2894"
      ]
     },
     {
@@ -640,10 +650,10 @@
      "why": "Tests whether any independent check existed (LR-03).",
      "to": "Mechanical maintenance fitter (seal-change crew)",
      "group": "Mechanical maintenance fitter (seal-change crew)",
-     "learning": "LR-01",
+     "learning": "LR-03",
      "cites": [
-      "FND-8C0BB623",
-      "FND-7A32AC87",
+      "FND-2FAB8D51",
+      "FND-A6312B6B",
       "EVD-8645"
      ]
     },
@@ -715,7 +725,7 @@
     {
      "kind": "question",
      "question": "How are rubber spares stored and issued?",
-     "why": "The committee recommended formalising this; the export has no finding on it.",
+     "why": "The committee's report recommends formalising this (REC-27); the export has no finding on it.",
      "to": "Stores and procurement officer",
      "group": "Stores and procurement officer",
      "learning": "LR-01",
@@ -723,12 +733,15 @@
       "FND-8C0BB623",
       "FND-7A32AC87",
       "EVD-8645"
+     ],
+     "comparator_refs": [
+      "REC-27"
      ]
     },
     {
      "kind": "question",
      "question": "How do you know which flameproof fittings were inspected on the last scheduled job?",
-     "why": "Fittings carried no unique identity, so inspection coverage cannot be shown from records.",
+     "why": "The committee's report records that the fittings carried no unique identity (OBS-29); the export does not hold this, so ask how coverage is shown.",
      "to": "Electrical maintenance supervisor",
      "group": "Electrical maintenance supervisor",
      "learning": "LR-11",
@@ -736,12 +749,15 @@
       "FND-784A23E4",
       "FND-74A80D24",
       "EVD-6916"
+     ],
+     "comparator_refs": [
+      "OBS-29"
      ]
     },
     {
      "kind": "question",
      "question": "What happens to the schedule when a preventive job is delayed?",
-     "why": "The report found that a delayed job moved the next one back with no reason recorded.",
+     "why": "The committee's report records that a delayed job moved the next one back with no reason recorded (OBS-27).",
      "to": "Electrical maintenance supervisor",
      "group": "Electrical maintenance supervisor",
      "learning": "LR-11",
@@ -749,12 +765,15 @@
       "FND-784A23E4",
       "FND-74A80D24",
       "EVD-6916"
+     ],
+     "comparator_refs": [
+      "OBS-27"
      ]
     },
     {
      "kind": "question",
      "question": "What made the scheduled inspection due in 2020 not happen?",
-     "why": "No reason for the missed job is in the evidence.",
+     "why": "The committee's report records that this job was not done, with no reason recorded (OBS-28); the export holds neither.",
      "to": "Electrical maintenance supervisor",
      "group": "Electrical maintenance supervisor",
      "learning": "LR-11",
@@ -762,6 +781,9 @@
       "FND-784A23E4",
       "FND-74A80D24",
       "EVD-6916"
+     ],
+     "comparator_refs": [
+      "OBS-28"
      ]
     },
     {
@@ -822,11 +844,11 @@
      "why": "Drill records held no observations or actions (LR-24).",
      "to": "Emergency plan owner",
      "group": "Emergency plan owner",
-     "learning": "LR-07",
+     "learning": "LR-24",
      "cites": [
-      "FND-314D34C5",
-      "FND-DE132C95",
-      "EVD-4052"
+      "FND-DC0751CF",
+      "FND-B8B75D91",
+      "EVD-2130"
      ]
     },
     {
@@ -938,6 +960,13 @@
      ],
      "learning": "LR-01",
      "situation": "FND-7A32AC87 quotes a committee recommendation numbered D.2.iii.",
+     "comparator_refs": [
+      "REC-19",
+      "REC-20",
+      "REC-25",
+      "REC-26",
+      "REC-27"
+     ],
      "prompts": [
       "Find the recommendation in section 12 of the committee's report.",
       "What does the report actually recommend on spares (sections E.1 to E.3)?",
@@ -949,7 +978,9 @@
      "cites": [
       "FND-4245FBF2",
       "FND-4108DB15",
+      "FND-01ADF0AA",
       "EVD-5532",
+      "EVD-1460",
       "EVD-6414"
      ],
      "learning": "LR-08",

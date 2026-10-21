@@ -61,7 +61,7 @@
     },
     {
      "kind": "para",
-     "text": "Sighted comparison: 8 of the 46 evidence items behind the second analysis quote or point to the committee's recommendations, and 92 of the 436 findings refer to them. The comparison shows how the committee's facts read when sorted into learnings by organisational level; it is not a second investigation and makes no finding about the enquiry.",
+     "text": "Sighted comparison: 8 of the 46 evidence items behind the second analysis quote or point to the committee's recommendations, and 92 of the 436 findings refer to them (a search of each finding's label, summary, justification and causal text for pages 34 to 36, a recommendation number such as B.5, or the committee recommending). The comparison shows how the committee's facts read when sorted into learnings by organisational level; it is not a second investigation and makes no finding about the enquiry.",
      "cites": [
       "EVD-0185",
       "EVD-2506",
@@ -1060,7 +1060,7 @@
       ],
       [
        "OBS-11 Incidents are not classified properly, NIL reports are sent, and no review by HSE, operations or the plant head is in place",
-       "None",
+       "—",
        "none",
        "not taken up as a learning in the second analysis"
       ],
@@ -1078,7 +1078,7 @@
       ],
       [
        "OBS-14 Fire-water storage and pumping capacity in Phase I, and the pumps being commissioned in Phase II, are described",
-       "None",
+       "—",
        "none",
        "not taken up as a learning in the second analysis"
       ],
@@ -1114,7 +1114,7 @@
       ],
       [
        "OBS-20 During shifts the fire crews report to the operator's shift in-charge, not to the fire chief",
-       "None",
+       "—",
        "none",
        "not taken up as a learning in the second analysis"
       ],
@@ -1252,7 +1252,7 @@
       ],
       [
        "OBS-43 Logbooks are ordinary registers; alarms and events are not logged properly and handover is not recorded",
-       "None",
+       "—",
        "none",
        "not taken up as a learning in the second analysis"
       ],
@@ -1330,7 +1330,7 @@
       ],
       [
        "REC-07 Analyse and report all incidents per the operator's corporate policy, categorise near misses and minor incidents correctly, review them quarterly and circulate lessons to all plants",
-       "None",
+       "—",
        "none",
        "not taken up as a learning in the second analysis"
       ],
@@ -1450,7 +1450,7 @@
       ],
       [
        "REC-27 Formalise storage and inventory management of rubber items, with documentation",
-       "None",
+       "—",
        "none",
        "not taken up as a learning in the second analysis"
       ],
@@ -1474,7 +1474,7 @@
       ],
       [
        "REC-31 Lay out the panels in the gas-terminal control room to improve visibility and access",
-       "None",
+       "—",
        "none",
        "not taken up as a learning in the second analysis"
       ],
@@ -1498,7 +1498,7 @@
       ],
       [
        "REC-35 Develop plant-wise control-room logbooks and an SOP for logging records, events and alarms, including handover details",
-       "None",
+       "—",
        "none",
        "not taken up as a learning in the second analysis"
       ]
@@ -2014,7 +2014,7 @@
        4
       ],
       [
-       "Ppe",
+       "PPE",
        0,
        0
       ]
@@ -2172,7 +2172,7 @@
     },
     {
      "kind": "para",
-     "text": "It covers topics the second analysis does not take up: incident classification and review (OBS-11, REC-07), logbooks and handover records (OBS-43, REC-35), control-room panel layout (REC-31) and storage of rubber spares (REC-27) [EVD-3452].",
+     "text": "It covers topics the second analysis does not take up: incident classification and review (OBS-11, REC-07), logbooks and handover records (OBS-43, REC-35), control-room panel layout (REC-31) and storage of rubber spares (REC-27).",
      "comparator_refs": [
       "OBS-11",
       "REC-07",
@@ -2202,7 +2202,7 @@
     },
     {
      "kind": "para",
-     "text": "The second analysis was built from the committee's written report only, without site access, interviews or records. The inventory of the committee's items was typed by hand from the report's text, with roles in place of names and functions in place of company names; the control tiers of its recommendations are this comparison's classification [FND-82FC718D; EVD-1494]."
+     "text": "The second analysis was built from the committee's written report only, without site access, interviews or records. The inventory of the committee's items was typed by hand from the report's text, with roles in place of names and functions in place of company names; the control tiers of its recommendations are this comparison's classification [FND-82FC718D; EVD-1494]. Section 11's narrative conclusions and its reconstruction are not inventoried as separate items; its six numbered root causes stand for them."
     },
     {
      "kind": "para",

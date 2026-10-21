@@ -47,3 +47,6 @@ def test_group_d_samples_pass_strict(hz_d, pack):
     if pack.startswith("report-comparison-"):           # a variant keeps the main pack's sections, in order
         run("compare", str(hz_d), "--client-safe", str(path), "--main",
             str(SAMPLE / "outputs" / "report-comparison.json"))
+        out = run("check-pack", str(hz_d), str(path), "--strict", "--share", "external",   # the skill's variant gate
+                  "--register", str(REGISTER))
+        assert "OK:" in out, out
