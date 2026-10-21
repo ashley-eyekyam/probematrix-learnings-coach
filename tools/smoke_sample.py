@@ -5,7 +5,7 @@ Exits non-zero naming the failing assertion. Needs requirements-dev.txt (openpyx
 export that tests/test_pmlc.py builds, used by the fixture --strict check).
 Checks: ingest cross-check, finding and evidence counts, check-register (also --strict) and check-language on
 the sample register, facts --json, plan --workflow for every preset, every fixture pack under --strict, and the
-Phase 4 exit-gate format loop: every Hazira golden pack with a pack profile passes check-pack --strict and renders in
+Phase 4 exit-gate format loop: every Hazira golden pack (every pack JSON in outputs/) passes check-pack --strict and renders in
 html,md,docx,pptx,email,csv (each docx and pptx a sound package).
 """
 import json
@@ -24,7 +24,6 @@ EXPORT = os.path.join(SAMPLE, "2020-09-24-hazira-gas-release-fire_probematrix-fi
 REGISTER = os.path.join(SAMPLE, "outputs", "learnings-register.json")
 WORKFLOWS = os.path.join(ROOT, "skills", "learnings-coach", "references", "workflows.json")
 RUN_NAME = "2020-09-24-hazira-gas-release-fire"
-PROFILES = os.path.join(ROOT, "skills", "learnings-coach", "references", "pack-profiles.json")
 GATE_FORMATS = "html,md,docx,pptx,email,csv"
 GATE_FILES = ("html", "md", "docx", "pptx", "email.html", "email.txt")
 
@@ -112,8 +111,8 @@ def strict_fixtures(tmp):
 
 
 def format_loop(tmp):
-    """The Phase 4 exit gate (Task 23): every Hazira golden pack that has a pack profile (so not the register and not
-    dossier-index) passes check-pack --strict against a freshly set-up Hazira workspace, then renders in every exit-gate
+    """The Phase 4 exit gate (Task 23): every Hazira golden pack (each JSON in outputs/ with sections, so not the
+    register) passes check-pack --strict against a freshly set-up Hazira workspace, then renders in every exit-gate
     format. The samples stay drafts: nothing here signs them off."""
     sys.path.insert(0, os.path.join(ROOT, "tests"))
     from ooxml_check import check_package  # noqa: E402  (stdlib-only structural check, Ruling P4-28)
@@ -123,12 +122,16 @@ def format_loop(tmp):
     run_dir = os.path.join(root, "pmlc-runs", RUN_NAME)
     ws = os.path.join(run_dir, "workspace")
     shutil.copy(REGISTER, os.path.join(run_dir, "outputs", "learnings-register.json"))
-    with open(PROFILES, encoding="utf-8") as fh:
-        profiled = set(json.load(fh))
     outputs = os.path.join(SAMPLE, "outputs")
-    names = sorted(f[:-5] for f in os.listdir(outputs) if f.endswith(".json") and f[:-5] in profiled)
+    names = []
+    for f in sorted(os.listdir(outputs)):
+        if f.endswith(".json"):
+            with open(os.path.join(outputs, f), encoding="utf-8") as fh:
+                doc = json.load(fh)
+            if isinstance(doc, dict) and "sections" in doc:
+                names.append(f[:-5])
     if not names:
-        fail("no Hazira golden pack with a pack profile in " + outputs)
+        fail("no Hazira golden pack in " + outputs)
     out = os.path.join(tmp, "hazira-gate-out")
     for name in names:
         path = os.path.join(outputs, name + ".json")

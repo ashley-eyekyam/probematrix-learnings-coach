@@ -129,7 +129,7 @@ wrote uat/uat-comparison-map.json
 
 ## `tools/smoke_sample.py`
 
-A quick end-to-end check: ingests the Hazira sample into a temporary folder and checks the baseline numbers. Then, as the Phase 4 exit gate, every Hazira golden pack that has a pack profile must pass `check-pack --strict` and render with `--format html,md,docx,pptx,email,csv`. It takes no flags and exits non-zero naming the failing check.
+A quick end-to-end check: ingests the Hazira sample into a temporary folder and checks the baseline numbers. Then, as the Phase 4 exit gate, every Hazira golden pack must pass `check-pack --strict` and render with `--format html,md,docx,pptx,email,csv`. It takes no flags and exits non-zero naming the failing check.
 
 ```bash
 python3 tools/smoke_sample.py

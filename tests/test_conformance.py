@@ -30,6 +30,7 @@ from pmlc_lib import BRAND, DRAFT_LABEL, STATUS_PHRASE  # noqa: E402
 from pmlc_lib import render as R  # noqa: E402
 from pmlc_lib import strings as ST  # noqa: E402
 from pmlc_lib.handling import effective_handling  # noqa: E402
+from pmlc_lib.privacy import name_pattern  # noqa: E402
 from pmlc_lib.pack.schema import with_item_ids  # noqa: E402
 from pmlc_lib.render.layouts import LAYOUTS, render_layout  # noqa: E402
 
@@ -74,20 +75,24 @@ def _runs(xml: bytes, tag: str, sep: str) -> str:
 
 
 def _slots(name: str, data) -> dict:
-    """{"status": [...], "brand": [...], "draft": [...]}: each status and brand slot must hold STATUS_PHRASE and BRAND;
-    each draft slot holds DRAFT exactly when the pack is a draft. P4-20 says where each format keeps them."""
+    """{"status": [...], "brand": [...], "draft": [...], "seen": [...]}: each status and brand slot must hold
+    STATUS_PHRASE and BRAND; each draft slot holds DRAFT exactly when the pack is a draft (P4-20 says where each format
+    keeps them); "seen" is every visible part of a zip format (each docx part, pptx slide and notes slide, xlsx sheet),
+    none of which may show DRAFT once the pack is approved."""
     if name.endswith((".docx", ".pptx", ".zip")):
         z = zipfile.ZipFile(io.BytesIO(data))
         parts = {n: z.read(n) for n in z.namelist()}
         if name.endswith(".docx"):                                     # the footer part; DRAFT in the header
             foot = [_runs(b, "w:t", "") for n, b in sorted(parts.items()) if re.fullmatch(r"word/footer\d*\.xml", n)]
-            head = " ".join(_runs(b, "w:t", "") for n, b in sorted(parts.items())
-                            if re.fullmatch(r"word/header\d*\.xml", n))
-            return {"status": foot, "brand": foot, "draft": [head]}
+            head = [_runs(b, "w:t", "") for n, b in sorted(parts.items()) if re.fullmatch(r"word/header\d*\.xml", n)]
+            seen = [_runs(b, "w:t", " ") for n, b in sorted(parts.items()) if re.fullmatch(r"word/[^/]+\.xml", n)]
+            return {"status": foot, "brand": foot, "draft": head or [""], "seen": seen}
         if name.endswith(".pptx"):                                     # on every slide
             slides = [_runs(b, "a:t", " ") for n, b in sorted(parts.items()) if re.fullmatch(r"ppt/slides/slide\d+\.xml", n)]
-            return {"status": slides, "brand": slides, "draft": slides}
-        out = {"status": [], "brand": [], "draft": []}                 # any other zip: each HTML page in it (SCORM)
+            notes = [_runs(b, "a:t", " ") for n, b in sorted(parts.items())
+                     if re.fullmatch(r"ppt/notesSlides/notesSlide\d+\.xml", n)]
+            return {"status": slides, "brand": slides, "draft": slides, "seen": slides + notes}
+        out = {"status": [], "brand": [], "draft": [], "seen": []}     # any other zip: each HTML page in it (SCORM)
         for n, b in sorted(parts.items()):
             if n.endswith(".html"):
                 for k, v in _slots(n, b.decode("utf-8")).items():
@@ -98,18 +103,20 @@ def _slots(name: str, data) -> dict:
         wb = openpyxl.load_workbook(io.BytesIO(data))
         hf = [_norm(" ".join(p.text or "" for hf in (s.oddHeader, s.oddFooter) for p in (hf.left, hf.center, hf.right)))
               for s in wb.worksheets]
-        return {"status": hf, "brand": hf, "draft": hf}
+        cells = [_norm(" ".join(str(c) for row in s.iter_rows(values_only=True) for c in row if c is not None))
+                 for s in wb.worksheets]
+        return {"status": hf, "brand": hf, "draft": hf, "seen": hf + cells}
     text = data.decode("utf-8") if isinstance(data, bytes) else data
     if name.endswith(".html"):
         pages = re.split(r'(?=<section class="page[ "])', text)[1:]
         if pages:                                                      # a print layout: every printed page
             seen = [_visible(p) for p in pages]
-            return {"status": seen, "brand": [_visible(text)], "draft": seen}
+            return {"status": seen, "brand": [_visible(text)], "draft": seen, "seen": [_visible(text)]}
         seen = [_visible(text)]
-        return {"status": seen, "brand": seen, "draft": seen}
+        return {"status": seen, "brand": seen, "draft": seen, "seen": seen}
     if name.endswith((".md", ".txt")):
         seen = [_norm(text)]
-        return {"status": seen, "brand": seen, "draft": seen}
+        return {"status": seen, "brand": seen, "draft": seen, "seen": seen}
     raise AssertionError(f"{name}: no conformance reader for this document file; add one to _slots")
 
 
@@ -122,6 +129,9 @@ def _assert_conforms(name, data, draft):
         assert BRAND in t, f"{name} slot {i}: no brand"
     for i, t in enumerate(s["draft"]):
         assert bool(DRAFT_RX.search(t)) == draft, f"{name} slot {i}: DRAFT shown is {not draft}, pack draft is {draft}"
+    if not draft:                                  # approved: DRAFT nowhere a reader looks (body, footers, notes, cells)
+        for i, t in enumerate(s["seen"]):
+            assert not DRAFT_RX.search(t), f"{name} visible part {i}: DRAFT on an approved pack"
 
 
 # ----------------------------------------------------------------------------- the workspace and the signed packs
@@ -275,8 +285,14 @@ def _xml_el(text: str, tag: str) -> str:
 
 
 def _qti_slot(data):
+    """The general description in the manifest's <lom> (or a plain <description>), not the title (P4-20)."""
     man = zipfile.ZipFile(io.BytesIO(data)).read("imsmanifest.xml").decode("utf-8")
-    return _xml_el(man, "lom:string") + " " + _xml_el(man, "description")
+    general = "".join(re.findall(r"<lom:general>(.*?)</lom:general>", man, re.S))
+    return _xml_el(_xml_el_raw(general, "lom:description"), "lom:string") + " " + _xml_el(man, "description")
+
+
+def _xml_el_raw(text: str, tag: str) -> str:
+    return " ".join(re.findall(rf"<{tag}(?: [^>]*)?>(.*?)</{tag}>", text, re.S))
 
 
 DATA_SLOTS = {   # P4-20: where each data format keeps the status and the brand
@@ -473,11 +489,12 @@ def test_every_format_shared_copy_masked(shared, tmp_path, target):
     got = sorted(x.name for x in out.iterdir()) if out.exists() else []
     if fmt not in ("png",) and not lay:
         assert got, f"{target}: nothing written"
+    rx = name_pattern(NAMES)          # the engine guard's own matching: any case, any whitespace run, across lines
     for f in got:
         assert ".external." in f, f
         for part, data in _zip_or_bytes((out / f).read_bytes()).items():
-            for n in NAMES:
-                assert n.encode("utf-8") not in data, (f, part, n)
+            text = data.decode("utf-8", "replace")
+            assert not rx.search(text) and not rx.search(re.sub(r"<[^>]+>", "", text)), (f, part)
     # The Outputs themselves: rendered from the masked pack and workspace, as cmd_pack builds them.
     w = pmlc.load_ws(shared["ws"])
     share = share_ctx(argparse.Namespace(names=str(shared["names"]), orgs=str(shared["orgs"])), w, "external")
@@ -487,11 +504,10 @@ def test_every_format_shared_copy_masked(shared, tmp_path, target):
                           eh=effective_handling(doc, w, src=shared["pack"], ws=shared["ws"]))
     outs = render_layout(ctx) if lay else R.render(fmt, ctx)
     plain = dataclasses.replace(ctx, w=w, pack=with_item_ids(doc), share=None, notes=[])
-    assert any(n in o.guard_text for o in (render_layout(plain) if lay else R.render(fmt, plain)) for n in NAMES), \
+    assert any(rx.search(o.guard_text) for o in (render_layout(plain) if lay else R.render(fmt, plain))), \
         f"{target}: the unmasked output holds no name, so the masking is not tested"
     for o in outs:
-        for n in NAMES:
-            assert n not in o.guard_text and n not in html.unescape(o.guard_text), (o.name, n)
+        assert not rx.search(o.guard_text) and not rx.search(html.unescape(o.guard_text)), o.name
 
 
 # ----------------------------------------------------------------------------- the exit gate's formats
