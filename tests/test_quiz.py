@@ -102,7 +102,7 @@ def test_learner_view_hides_keys_everywhere(w):
     # the full view marks the keys, and has no banner
     html_f, md_f = _html_md(w, pack, "full")
     assert "SECRET-ANSWER" in html_f and R.LEARNER_BANNER not in html_f and R.LEARNER_BANNER not in md_f
-    assert "correct" in html_f.lower() or "✓" in html_f
+    assert html_f.count("<b>(correct)</b>") == 4 and md_f.count("**(correct)**") == 4
     # item_blocks hides them too (the layouts, docx, pptx and email all read blocks)
     from pmlc_lib.render.fields import item_blocks
     from pmlc_lib.render.labels import load_labels
@@ -185,6 +185,7 @@ def test_gift_roundtrip(w):
 def test_gift_escape_and_hostile_text(w):
     assert Q.gift_escape("a~b=c#d{e}f:g") == r"a\~b\=c\#d\{e\}f\:g"
     assert Q.gift_escape("plain") == "plain"
+    assert Q.gift_escape("%50 of workers") == "\\%50 of workers"
     assert Q.gift_escape("back\\slash") == "back\\\\slash"
     hostile = dict(SINGLE, question="Is x = y {maybe}: yes # no ~?",
                    options=opts(("a ~ b", True), ("c = d {e}", False)))
@@ -241,6 +242,12 @@ def test_qti_package(w):
     assert essay.find(".//q:correctResponse", NS) is None
     blob = b" ".join(z.read(n) for n in names).decode("utf-8")
     assert "DRAFT" in blob
+    from pmlc_lib import STATUS_PHRASE
+    lom = "{http://ltsc.ieee.org/xsd/LOM}"
+    desc = man.find(f".//c:metadata/{lom}lom/{lom}general/{lom}description/{lom}string", NS)
+    assert desc is not None
+    for needle in (STATUS_PHRASE, BRAND, DRAFT_LABEL):
+        assert needle in desc.text, needle
     for c in re.findall(r"<!--(.*?)-->", blob, flags=re.S):
         assert "--" not in c
     assert o.guard_text and SINGLE["question"] in o.guard_text

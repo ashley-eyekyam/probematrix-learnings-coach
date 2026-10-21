@@ -23,12 +23,14 @@ _QZ_TRUE = ("true", "t", "yes", "y")
 _QZ_FALSE = ("false", "f", "no", "n")
 _QZ_QTI_NS = "http://www.imsglobal.org/xsd/imsqti_v2p1"
 _QZ_CP_NS = "http://www.imsglobal.org/xsd/imscp_v1p1"
+_QZ_LOM_NS = "http://ltsc.ieee.org/xsd/LOM"
 _QZ_XSI = "http://www.w3.org/2001/XMLSchema-instance"
 
 
 def gift_escape(s) -> str:
     """s with the GIFT special characters `~ = # { } :` (and the backslash itself) escaped with a backslash."""
-    return _QZ_GIFT_SPECIAL.sub(r"\\\1", "" if s is None else str(s))
+    t = _QZ_GIFT_SPECIAL.sub(r"\\\1", "" if s is None else str(s))
+    return "\\" + t if t.startswith("%") else t                 # a leading % would read as an answer weight
 
 
 def _qz_line(s) -> str:
@@ -172,6 +174,7 @@ def render_qti(ctx) -> list:
     qs = _qz_questions_or_note(ctx, "qti")
     if not qs:
         return []
+    lang = ctx.pack.get("lang") or "en"
     head, draft, used = _qz_head(ctx), bool(ctx.eh and is_draft(ctx.eh)), set()
     parts, resources = {}, []
     for q in qs:
@@ -183,7 +186,9 @@ def render_qti(ctx) -> list:
     parts["imsmanifest.xml"] = (
         '<?xml version="1.0" encoding="UTF-8"?>\n' + _qz_comment(head) + "\n"
         f'<manifest xmlns="{_QZ_CP_NS}" identifier="MANIFEST_{_qz_ident(ctx.pack["pack"], set())}">'
-        "<metadata><schema>QTIv2.1 Package</schema><schemaversion>1.0.0</schemaversion></metadata>"
+        "<metadata><schema>QTIv2.1 Package</schema><schemaversion>1.0.0</schemaversion>"
+        f'<lom:lom xmlns:lom="{_QZ_LOM_NS}"><lom:general><lom:description><lom:string language="{xml_text(lang)}">'
+        + xml_text(" | ".join(head)) + "</lom:string></lom:description></lom:general></lom:lom></metadata>"
         "<organizations/><resources>" + "".join(resources) + "</resources></manifest>\n")
     guard = "\n".join(head + [t for q in qs for t in [q["stem"], q["why"]] + [_qz_line(o["text"]) for o in q["ops"]]])
     return [Output(output_name(ctx.pack["pack"], "qti.zip"), zip_bytes(parts), guard)]
