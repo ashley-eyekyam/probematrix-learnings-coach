@@ -37,7 +37,8 @@ def cmd_pack(a):
     share = share_ctx(a, w, mode) if mode != "internal" else None
     rw, rpack = (shared_copy(w, share, w), shared_copy(pack, share, w)) if share else (w, pack)
     ctx = RenderContext(w=rw, pack=with_item_ids(rpack), run=run, generated=build_date(), embed=embed, eh=eh,
-                        share=share, view=getattr(a, "view", None) or "full", src=Path(a.pack))
+                        share=share, view=getattr(a, "view", None) or "full", src=Path(a.pack),
+                        start=getattr(a, "start", None))
     outs = [(fmt, o) for fmt in pack_formats(a) for o in render(fmt, ctx)]
     name_guard([o.guard_text or "" for _, o in outs], a)
     for note in ctx.notes:

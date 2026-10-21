@@ -11,6 +11,7 @@ import importlib
 import os
 import pathlib
 import shutil
+import sys
 
 READING_TIME = "About {n} min read"
 TRANSLATION_NOTE = "Translated with AI assistance: have a fluent speaker check it before use"
@@ -112,6 +113,7 @@ def find_browser():
         hit = env if os.path.isfile(env) and os.access(env, os.X_OK) else shutil.which(env)
         if hit:
             return hit
+        print(f"warning: PMLC_BROWSER={env} is not an executable; looking for a browser on PATH", file=sys.stderr)
     for n in BROWSERS:
         hit = shutil.which(n)
         if hit:
@@ -155,6 +157,9 @@ def _load() -> None:
     """Import every format module; each registers itself, so FORMATS is complete once this package is imported."""
     for mod in (
         "normalise",
+        "graphs",
+        "bowtie",
+        "ics",
     ):
         importlib.import_module(f"{__name__}.{mod}")
 

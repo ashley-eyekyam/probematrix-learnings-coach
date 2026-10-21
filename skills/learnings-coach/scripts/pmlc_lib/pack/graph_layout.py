@@ -16,12 +16,31 @@ def _clip(s, n=LABEL_MAX):
     return s if len(s) <= n else s[: n - 1] + "…"
 
 
-def layout_graph(nodes, edges, uid, max_nodes=60) -> dict:
+def _wrap_text(label, width=26, lines=3) -> str:
+    """A node label, whole, as a <text> of up to `lines` lines of about `width` characters; the last line takes the
+    rest. The pieces rejoin to the label (the break spaces stay at the end of each line)."""
+    words, rows = " ".join(str(label).split()).split(" "), [""]
+    for wd in words:
+        if rows[-1] and len(rows) < lines and len(rows[-1]) + len(wd) > width:
+            rows[-1] += " "
+            rows.append("")
+        rows[-1] += (" " if rows[-1] and not rows[-1].endswith(" ") else "") + wd
+    size = 13 if len(rows) == 1 else 11
+    y0 = NODE_H / 2 + 5 - (len(rows) - 1) * 6.5
+    sq = ' textLength="%d" lengthAdjust="spacingAndGlyphs"' % (NODE_W - 20)       # a row that still will not fit
+    spans = "".join(f'<tspan x="10" y="{y0 + k * 13:g}"{sq if len(r) > width + 4 else ""}>{html.escape(r)}</tspan>'
+                    for k, r in enumerate(rows))
+    return f'<text font-size="{size}">{spans}</text>'
+
+
+def layout_graph(nodes, edges, uid, max_nodes=60, label_max=LABEL_MAX) -> dict:
     """Deterministic left-to-right layered drawing of a small graph as inline SVG (no library).
     Layers follow the longest path from the sources; back edges (found by depth-first search in input order)
     are ignored for layering and drawn as dashed curves below the nodes; a link that skips a layer arcs above them,
     so it never lies on a chain through the layers between; four barycentre passes order each layer.
-    Over max_nodes, the nodes with the most links are kept and the rest counted in 'omitted'."""
+    Over max_nodes, the nodes with the most links are kept and the rest counted in 'omitted'.
+    label_max clips a label to that many characters; None clips nothing and wraps a long label over up to three lines
+    (the standalone SVG export, where the full label has to be in the file)."""
     order = [n["id"] for n in nodes]
     label = {n["id"]: n.get("label") or n["id"] for n in nodes}
     deg = collections.Counter()
@@ -109,6 +128,8 @@ def layout_graph(nodes, edges, uid, max_nodes=60) -> dict:
         x, y = xy[i]
         out.append(f'<g class="node" tabindex="0" role="img" aria-label="{esc(label[i])}" transform="translate({x},{y})">'
                    f'<rect width="{NODE_W}" height="{NODE_H}" rx="8"/>'
-                   f'<text x="10" y="{NODE_H // 2 + 5}">{esc(_clip(label[i]))}</text><title>{esc(label[i])}</title></g>')
+                   + (f'<text x="10" y="{NODE_H // 2 + 5}">{esc(_clip(label[i], label_max))}</text>' if label_max
+                      else _wrap_text(label[i]))
+                   + f'<title>{esc(label[i])}</title></g>')
     out.append("</svg>")
     return {"svg": "".join(out), "omitted": omitted, "shown": len(order)}
