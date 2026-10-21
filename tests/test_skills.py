@@ -532,7 +532,7 @@ from pmlc_lib.render.layouts import LAYOUTS as _P4S_LAYOUTS  # noqa: E402
 
 P4S_SAMPLE_OUT = "samples/2020-09-24-hazira-gas-release-fire/outputs/"
 P4S_WORKED = re.compile(r"^Worked example: `?" + re.escape(P4S_SAMPLE_OUT)
-                        + r"([a-z0-9-]+\.json)`? \(repository only\)\.?$", re.M)
+                        + r"([A-Za-z0-9-]+\.json)`? \(repository only\)\.?$", re.M)
 P4S_GROUP_A = ("board-brief", "top-management-brief", "site-leadership-coach", "manager-coach",
                "safety-committee-guide", "organisation-learning-map", "learnings-register")
 
