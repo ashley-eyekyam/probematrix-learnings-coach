@@ -34,3 +34,5 @@ docs/briefs/reference-adhoc-render-script.py
 
 # Office lock files
 .~lock.*#
+# test-only npm packages (npm ci --prefix tests/js)
+tests/js/node_modules/

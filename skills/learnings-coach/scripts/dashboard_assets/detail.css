@@ -78,3 +78,10 @@ a.ref{color:var(--acc);text-decoration:none;border-bottom:1px dotted var(--acc)}
 }
 .filter-chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:700}
 .chip.resp{border-color:var(--acc);color:var(--fg)}
+/* L4-18: the learnings matrix holds each tier message as visually hidden text; the toggle shows it in the cell. */
+.mx-toggle{font:inherit;font-size:14px;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:36px;margin:0 0 8px;cursor:pointer}
+.mx-toggle[aria-pressed=true]{border-color:var(--acc);font-weight:600}
+.mx-toggle:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+table.show-msg td:not(.z) .vh{position:static!important;width:auto;height:auto;margin:0;overflow:visible;clip:auto;white-space:normal;font-weight:400;text-align:left}
+table.show-msg td:not(.z){min-width:14em;text-align:left}
+table.show-msg td:not(.z) [aria-hidden=true]{display:none}

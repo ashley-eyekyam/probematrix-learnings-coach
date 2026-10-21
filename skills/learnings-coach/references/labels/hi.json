@@ -195,5 +195,6 @@
  "ui.layout.annex_b": "अनुलग्नक B: तालिकाएँ और संकेतक",
  "ui.pptx.continued": "{heading} (जारी)",
  "ui.pptx.entries": "{n} प्रविष्टियाँ",
- "ui.pptx.cited_records": "उद्धृत रिकॉर्ड"
+ "ui.pptx.cited_records": "उद्धृत रिकॉर्ड",
+ "ui.html.skip": "खंडों पर जाएँ"
 }

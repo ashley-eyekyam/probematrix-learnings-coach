@@ -11,7 +11,7 @@ python3 -m venv .venv
 .venv/bin/ruff check .                     # style checks (Python 3.9, lines up to 120 characters)
 ```
 
-The JavaScript tests need Node.js and are skipped without it.
+The JavaScript tests need Node.js and are skipped without it. With Node installed, run `npm ci --prefix tests/js` once: it installs the pinned axe-core and jsdom that the accessibility tests use, and those tests fail (naming that command) when Node is present without them.
 
 ## `tools/make-public-sample.py`
 

@@ -34,10 +34,10 @@ pmlc templates ws mode [--register FILE] [--out PATH]
 | File | Columns |
 |---|---|
 | `adoption.csv` | `lr_id`, `title` (filled), then `response` (accepted, modified or rejected), `reason`, `owning_role`, `target_window` |
-| `distribution.csv` | `pack`, `audience` (filled, one row per pack in outputs), then `channel`, `date`, `delivered_by_role`, `attendees`, `contractors_included` (yes or no), `questions_raised`, `concerns_escalated` |
+| `distribution.csv` | `pack`, `audience` (filled, one row per pack in outputs), then `channel`, `date`, `delivered_by_role`, `attendees`, `contractors_included` (yes or no; `y` and `n` count too), `questions_raised`, `concerns_escalated` |
 | `verification.jsonl` | One JSON line per learning: `lr_id`, then `check_date`, `level` (communicated, understood, applied or effective), `evidence`, `assessed_by_role`, all `null` |
 
-Open the CSV files in Excel and save them as CSV again; the engine reads the saved file (extra or reordered columns, blank rows and Excel's byte-order mark are fine). A value outside the allowed ones is reported with its file and row, for example `adoption.csv row 3: response 'maybe' must be one of accepted, modified, rejected`.
+Open the CSV files in Excel and save them as CSV again; the engine reads the saved file (extra or reordered columns, blank rows and Excel's byte-order mark are fine). A value outside the allowed ones is reported with its file and row, for example `adoption.csv row 3: response 'maybe' must be one of accepted, modified, rejected`. Every bad row is reported, not only the first, and the good rows are still read.
 
 ## Examples
 

@@ -1,0 +1,11 @@
+{
+  "name": "pmlc-js-tests",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Test-only dependencies for the accessibility checks (Ruling P4-17); never shipped with the skills",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "axe-core": "4.10.2",
+    "jsdom": "25.0.1"
+  }
+}

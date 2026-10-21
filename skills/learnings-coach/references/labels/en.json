@@ -195,5 +195,6 @@
  "ui.layout.annex_b": "Annex B: Tables and indicators",
  "ui.pptx.continued": "{heading} (continued)",
  "ui.pptx.entries": "{n} entries",
- "ui.pptx.cited_records": "Cited records"
+ "ui.pptx.cited_records": "Cited records",
+ "ui.html.skip": "Skip to the sections"
 }
