@@ -45,6 +45,14 @@ def big_pack(n=300):
     return p
 
 
+def stress_pack(sections=120, intro_words=400):
+    intro = "A long introduction about isolation, seals and handover practice. " * (intro_words // 9)
+    secs = [{"id": f"s{i}", "heading": f"Section number {i}", "intro": intro,
+             "items": [item("para", text="Short synthetic point. " * 6, cites=["FND-0002"]) for _ in range(5)]}
+            for i in range(sections)]
+    return pack_with(item("para", text="x"), sections=secs)
+
+
 def test_email_is_registered_as_a_document_format():
     assert R.FORMATS["email"].kind == "document"
 
@@ -177,3 +185,32 @@ def test_email_hindi_labels_exist():
     en, hi = RL.load_labels("en"), RL.load_labels("hi")
     for k in ("ui.email.cited", "ui.email.full_pack"):
         assert en[k] and hi[k] and hi[k] != en[k]
+
+
+def test_email_stress_120_sections_long_intros_stays_under_100k(w):
+    page, txt = both(w, stress_pack())
+    assert len(page.encode("utf-8")) < 100_000
+    assert page.count("Section number") == 120                                    # every heading still fits
+    assert txt.count(R.MORE_IN_PACK.format(n=5)) >= 100                           # later sections: heading + line only
+
+
+def test_email_headings_that_cannot_fit_end_in_one_line(w):
+    page, txt = both(w, stress_pack(1500, 20))
+    assert len(page.encode("utf-8")) < 100_000
+    m = re.search(r"(\d+) more sections are in the full pack", txt)
+    assert m and plain(page).count(m.group(0)) == 1
+    assert page.count("Section number") + int(m.group(1)) == 1500
+    assert "Section number 0" in page and R.MORE_IN_PACK.format(n=5) in page      # first sections keep a heading and a line
+
+
+@pytest.mark.parametrize("sections,words", [(1, 20000), (3, 8000), (40, 900), (300, 30)])
+def test_email_every_part_is_charged_to_the_budget(w, sections, words):
+    page, _ = both(w, stress_pack(sections, words))
+    assert len(page.encode("utf-8")) < 100_000
+
+
+def test_email_txt_url_line_is_the_only_one_over_78(w):
+    url = "https://learn.example.org/" + "a" * 100 + "/board-brief.html"
+    _, txt = both(w, "board-brief", base_url=url)
+    # a wrapped URL would be a broken link, so the URL line alone is exempt from the 78-column rule
+    assert [x for x in txt.splitlines() if len(x) > 78] == [url]

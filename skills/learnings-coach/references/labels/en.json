@@ -144,5 +144,6 @@
  "ui.js.linked_to": "Linked to {code}",
  "ui.js.matching": "{n} matching items",
  "ui.email.cited": "Findings and evidence cited",
- "ui.email.full_pack": "Open the full pack"
+ "ui.email.full_pack": "Open the full pack",
+ "ui.email.sections_left": "{n} more sections are in the full pack"
 }

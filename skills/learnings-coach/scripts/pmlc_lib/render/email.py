@@ -19,7 +19,6 @@ from .labels import label, load_labels, text_dir
 
 EM_BUDGET = 90_000                  # bytes of HTML the sections may fill (P4-24); the hard limit is 100,000
 EM_WIDTH = 78                       # columns of the plain-text twin
-EM_RESERVE = 600                    # bytes kept for one section's heading and its "more items" line
 EM_FONT = "font-family:Arial,Helvetica,sans-serif;"
 EM_INK, EM_MUTED, EM_ACCENT, EM_LINE = "#1a1a1a", "#555555", "#0b5c8a", "#cfd8dc"
 EM_CTRL_RX = re.compile(r"[\x00-\x08\x0e-\x1f\x7f]")
@@ -203,40 +202,6 @@ def render_email(ctx) -> list:
     t_full = label(L, "ui.email.full_pack")
 
     bottom = [_em_clean(b["text"]) + _em_cites(b.get("cites")) for b in pack["bottom_line"]]
-    # the part of the page that is always shown: its size sets how many items the sections may add
-    fixed_html = (len(_em_html_p(pack["title"])) + sum(len(_em_html_p(x)) for x in bottom) + len(cited_text)
-                  + len(_em_html_h2(t_cited)) + 3000 + len(url or "") * 2)
-    budget = EM_BUDGET - fixed_html - EM_RESERVE * len(pack["sections"])
-    used = 0
-
-    sec_html, sec_txt = [], []
-    for s in pack["sections"]:
-        h, tx = [_em_html_h2(s["heading"])], _em_txt_h2(_em_clean(s["heading"]))
-        if s.get("intro"):
-            h.append(_em_html_p(_em_clean(s["intro"]), muted=True))
-            tx += _em_wrap(_em_clean(s["intro"]))
-        shown, prev, full = 0, None, True
-        for it in s["items"]:
-            lines = ([("h", _em_clean(it["group"]))] if it.get("group") and it["group"] != prev else [])
-            lines += _em_item_lines(it, L, inc_date, ctx.view)
-            html_part = "".join(_em_html_line(x) for x in lines)
-            if full and used + len(html_part.encode("utf-8")) <= budget:
-                used += len(html_part.encode("utf-8"))
-                h.append(html_part)
-                tx += [y for x in lines for y in _em_txt_line(x)]
-                shown += 1
-                prev = it.get("group")
-            else:
-                full = False                                          # items stay in order: no gaps in the middle
-        left = len(s["items"]) - shown
-        if left:
-            more = MORE_IN_PACK.format(n=left)
-            h.append(_em_html_p(more, muted=True))
-            tx += ["", *_em_wrap(more)]
-        sec_html.append("".join(h))
-        sec_txt += tx
-
-    # ---- HTML
     top = []
     for text, kind in head:
         if kind == "title":
@@ -249,22 +214,81 @@ def render_email(ctx) -> list:
     if url:
         top.append(f'<p style="{EM_FONT}font-size:15px;margin:8px 0 0 0;"><a href="{_em_h(url)}" '
                    f'style="color:{EM_ACCENT};font-weight:bold;">{_em_h(t_full)}</a></p>')
-    body = "".join(top) + _em_html_h2(t_bottom)
-    body += '<ul style="margin:0 0 8px 0;padding:0 0 0 20px;">' + "".join(
-        f'<li style="{EM_FONT}color:{EM_INK};font-size:15px;line-height:1.5;margin:0 0 6px 0;">{_em_h(b)}</li>'
-        for b in bottom) + "</ul>"
-    body += "".join(sec_html)
-    body += _em_html_h2(t_cited) + _em_html_p(cited_text, muted=True, size=12)
-    body += _em_html_h2(t_cov) + "".join(_em_html_p(x) for x in cov_lines)
-    body += (f'<p style="{EM_FONT}color:{EM_MUTED};font-size:12px;border-top:1px solid {EM_LINE};padding-top:10px;'
-             f'margin:24px 0 0 0;">{_em_h(BRAND)}</p>')
-    page = (f'<!doctype html><html lang="{_em_h(lang)}" dir="{_em_h(tdir)}"><head><meta charset="utf-8">'
-            f'<meta name="viewport" content="width=device-width,initial-scale=1"><title>{_em_h(_em_clean(pack["title"]))}'
-            f'</title></head><body style="margin:0;padding:0;background-color:#f4f6f8;">'
-            f'<table role="presentation" width="100%" style="border-collapse:collapse;background-color:#f4f6f8;">'
-            f'<tr><td align="center" style="padding:16px;"><table role="presentation" width="640" '
-            f'style="border-collapse:collapse;max-width:640px;width:100%;background-color:#ffffff;">'
-            f'<tr><td style="padding:24px;">{body}</td></tr></table></td></tr></table></body></html>\n')
+
+    def assemble(sec_html: list, omitted: str) -> str:
+        body = "".join(top) + _em_html_h2(t_bottom)
+        body += '<ul style="margin:0 0 8px 0;padding:0 0 0 20px;">' + "".join(
+            f'<li style="{EM_FONT}color:{EM_INK};font-size:15px;line-height:1.5;margin:0 0 6px 0;">{_em_h(b)}</li>'
+            for b in bottom) + "</ul>"
+        body += "".join(sec_html) + omitted
+        body += _em_html_h2(t_cited) + _em_html_p(cited_text, muted=True, size=12)
+        body += _em_html_h2(t_cov) + "".join(_em_html_p(x) for x in cov_lines)
+        body += (f'<p style="{EM_FONT}color:{EM_MUTED};font-size:12px;border-top:1px solid {EM_LINE};'
+                 f'padding-top:10px;margin:24px 0 0 0;">{_em_h(BRAND)}</p>')
+        return (f'<!doctype html><html lang="{_em_h(lang)}" dir="{_em_h(tdir)}"><head><meta charset="utf-8">'
+                f'<meta name="viewport" content="width=device-width,initial-scale=1"><title>'
+                f'{_em_h(_em_clean(pack["title"]))}</title></head><body style="margin:0;padding:0;background-color:#f4f6f8;">'
+                f'<table role="presentation" width="100%" style="border-collapse:collapse;background-color:#f4f6f8;">'
+                f'<tr><td align="center" style="padding:16px;"><table role="presentation" width="640" '
+                f'style="border-collapse:collapse;max-width:640px;width:100%;background-color:#ffffff;">'
+                f'<tr><td style="padding:24px;">{body}</td></tr></table></td></tr></table></body></html>\n')
+
+    def size(x: str) -> int:
+        return len(x.encode("utf-8"))
+
+    # Everything that goes into the page is charged to the budget (P4-24): the fixed parts first, then, for each
+    # section, its heading and "more items" line (kept while they fit), then its intro, then its items in order.
+    secs = pack["sections"]
+    remaining = EM_BUDGET - size(assemble([], ""))
+    mins = [size(_em_html_h2(s["heading"])) + size(_em_html_p(MORE_IN_PACK.format(n=len(s["items"])), muted=True))
+            for s in secs]
+    omit_line = lambda n: _em_html_p(label(L, "ui.email.sections_left", n=n), muted=True)   # noqa: E731
+    keep = len(secs)
+    while keep and sum(mins[:keep]) + (size(omit_line(len(secs) - keep)) if keep < len(secs) else 0) > remaining:
+        keep -= 1
+    left_out = len(secs) - keep
+    remaining -= sum(mins[:keep]) + (size(omit_line(left_out)) if left_out else 0)
+
+    sec_html, sec_txt = [], []
+    for i, s in enumerate(secs[:keep]):
+        h, tx = [_em_html_h2(s["heading"])], _em_txt_h2(_em_clean(s["heading"]))
+        remaining += mins[i]                                  # this section's own minimum is spent below
+        spent = size(h[0]) + size(_em_html_p(MORE_IN_PACK.format(n=len(s["items"])), muted=True))
+        shown, prev, full = 0, None, True
+        if s.get("intro"):
+            intro = _em_html_p(_em_clean(s["intro"]), muted=True)
+            if size(intro) <= remaining - spent:
+                h.append(intro)
+                spent += size(intro)
+                tx += _em_wrap(_em_clean(s["intro"]))
+            else:
+                full = False
+        for it in s["items"]:
+            lines = ([("h", _em_clean(it["group"]))] if it.get("group") and it["group"] != prev else [])
+            lines += _em_item_lines(it, L, inc_date, ctx.view)
+            html_part = "".join(_em_html_line(x) for x in lines)
+            if full and spent + size(html_part) <= remaining:
+                spent += size(html_part)
+                h.append(html_part)
+                tx += [y for x in lines for y in _em_txt_line(x)]
+                shown += 1
+                prev = it.get("group")
+            else:
+                full = False                                  # items stay in order: no gaps in the middle
+        left = len(s["items"]) - shown
+        if left:
+            more = MORE_IN_PACK.format(n=left)
+            h.append(_em_html_p(more, muted=True))
+            tx += ["", *_em_wrap(more)]
+            remaining -= spent
+        else:
+            remaining -= spent - size(_em_html_p(MORE_IN_PACK.format(n=len(s["items"])), muted=True))
+        sec_html.append("".join(h))
+        sec_txt += tx
+    omitted = omit_line(left_out) if left_out else ""
+    if left_out:
+        sec_txt += ["", *_em_wrap(label(L, "ui.email.sections_left", n=left_out))]
+    page = assemble(sec_html, omitted)
 
     # ---- plain text
     txt = []

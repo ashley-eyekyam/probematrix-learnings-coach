@@ -144,5 +144,6 @@
  "ui.js.linked_to": "{code} से जुड़ा",
  "ui.js.matching": "{n} मिलते आइटम",
  "ui.email.cited": "उद्धृत निष्कर्ष और साक्ष्य",
- "ui.email.full_pack": "पूरा पैक खोलें"
+ "ui.email.full_pack": "पूरा पैक खोलें",
+ "ui.email.sections_left": "{n} और खंड पूरे पैक में हैं"
 }
