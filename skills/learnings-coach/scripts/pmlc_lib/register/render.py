@@ -25,6 +25,7 @@ RR_FORMATS = ("docx", "email")
 RR_REFUSED = ("md", "xlsx")
 RR_USE_OTHER = "use register-md / register-xlsx"
 RR_NAME = "learnings-register"
+RR_LEFT_KEY = "ui.email.learnings_left"      # "{n} more learnings are in the full register (...)"
 RR_ROWS_PER_TABLE = 8              # the email adds items in order, so the all-learnings table is cut into small ones
 RR_META = (("owner_entity", "Owner entity"), ("hfacs_level", "HFACS level"), ("urgency", "Urgency"),
            ("recommendation_class", "Class"), ("recipient_role", "Recipient"),
@@ -136,20 +137,21 @@ def _rr_pack(entries, title, status) -> dict:
     for e in (e for e in entries if _flat(e.get("priority")) == "1"):
         group = f"{e.get('lr_id', '?')}: {_flat(e.get('title'))}"
         paras = [f"{label}: {text}" if label else text for label, text in _rr_full_paras(e) + _rr_tail_paras(e)]
-        p1_items.append({"kind": "para", "text": paras[0], "group": group, "cites": _rr_cites(e)})
-        p1_items += [{"kind": "para", "text": t, "group": group} for t in paras[1:]]
+        p1_items.append({"kind": "para", "text": paras[0], "group": group, "cites": _rr_cites(e), "count": 1})
+        p1_items += [{"kind": "para", "text": t, "group": group, "count": 0} for t in paras[1:]]
         rows = _rr_rec_rows(e)
         if rows:
-            p1_items.append({"kind": "table", "columns": RR_REC_COLS, "rows": rows, "group": group})
+            p1_items.append({"kind": "table", "columns": RR_REC_COLS, "rows": rows, "group": group, "count": 0})
     if not p1_items:
         p1_items = [{"kind": "para", "text": "None."}]
     rows = _rr_all_rows(entries)
-    all_items = [{"kind": "table", "columns": RR_ALL_COLS, "rows": rows[i:i + RR_ROWS_PER_TABLE]}
+    all_items = [{"kind": "table", "columns": RR_ALL_COLS, "rows": rows[i:i + RR_ROWS_PER_TABLE],
+                  "count": len(rows[i:i + RR_ROWS_PER_TABLE])}
                  for i in range(0, len(rows), RR_ROWS_PER_TABLE)] or [{"kind": "para", "text": "None."}]
     return {"pack": RR_NAME, "title": title, "status": status, "lang": "en", "bottom_line": [
             {"text": sentence, "cites": []}], "sections": [
-            {"heading": "Summary", "items": summary}, {"heading": "Priority 1 learnings", "items": p1_items},
-            {"heading": "All learnings", "items": all_items}]}
+            {"heading": "Summary", "items": summary}, {"heading": "Priority 1 learnings", "items": p1_items, "left_key": RR_LEFT_KEY},
+            {"heading": "All learnings", "items": all_items, "left_key": RR_LEFT_KEY}]}
 
 
 def render_register(entries, ctx, formats=RR_FORMATS, title="Learnings Register", status="") -> list:

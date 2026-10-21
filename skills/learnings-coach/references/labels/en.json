@@ -176,5 +176,6 @@
  "f.what_you_can_do": "What can you do?",
  "ui.decision_point": "Decision point",
  "ui.script_time": "Time",
- "ui.total_duration": "Total duration: {time} (min:sec)"
+ "ui.total_duration": "Total duration: {time} (min:sec)",
+ "ui.email.learnings_left": "{n} more learnings are in the full register (learnings-register.docx / .md)"
 }

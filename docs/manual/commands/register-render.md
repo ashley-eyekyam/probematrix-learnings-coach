@@ -44,7 +44,7 @@ python3 $E register-render $WS $OUT/learnings-register.json --format docx
 - **"use register-md / register-xlsx".** You asked for `md` or `xlsx`; run those commands instead.
 - **The files say DRAFT.** The register is not signed off in this workspace, or the investigation is unfinished; see [sign-off](sign-off.md).
 - **"cannot share externally".** A shared copy needs an approved sign-off, the right classification and legal review cleared; the message lists what is missing.
-- **The email ends with "n more items are in the full pack".** The digest keeps to 100 KB; the Word file holds every learning.
+- **The email says "n more learnings are in the full register".** The digest keeps to 100 KB; the Word file holds every learning.
 
 ## Related
 

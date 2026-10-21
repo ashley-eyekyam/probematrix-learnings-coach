@@ -277,7 +277,10 @@ def render_email(ctx) -> list:
                 full = False                                  # items stay in order: no gaps in the middle
         left = len(s["items"]) - shown
         if left:
-            more = MORE_IN_PACK.format(n=left)
+            # A section may count its own unit (the register counts learnings, not tables): `left_key` is the label
+            # of the line and an item's `count` is how many units it holds (default 1).
+            units = sum(int(x.get("count", 1)) for x in s["items"][shown:]) if s.get("left_key") else left
+            more = label(L, s["left_key"], n=units) if s.get("left_key") and units else MORE_IN_PACK.format(n=left)
             h.append(_em_html_p(more, muted=True))
             tx += ["", *_em_wrap(more)]
             remaining -= spent

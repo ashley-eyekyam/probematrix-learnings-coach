@@ -207,3 +207,25 @@ def test_register_blocks_order_and_cites():
     assert cited == [["FND-0001", "FND-0002", "EVD-0001"]]
     assert blocks[-1] == ("note", BRAND, None)
     assert not re.search(r"owner|due", " ".join(str(b[1]) for b in blocks if b[0] == "heading1"), re.I)
+
+
+def test_register_email_counts_learnings_left_out(mws, tmp_path):
+    reg = copy.deepcopy(MINI_REG)
+    base = reg["entries"][0]
+    reg["entries"] = [dict(copy.deepcopy(base), lr_id=f"LR-{n:03d}", priority=3,
+                           title=f"Learning {n} " + "word " * 60) for n in range(1, 161)]
+    rp = write_doc(tmp_path, reg, "reg.json")
+    assert render_to(mws, rp, tmp_path / "o", "--format", "email").returncode == 0
+    txt = (tmp_path / "o" / "learnings-register.email.txt").read_text("utf-8")
+    html = (tmp_path / "o" / "learnings-register.email.html").read_text("utf-8")
+    shown = len(re.findall(r"^  - LR-\d{3} \|", txt, re.M))
+    said = re.findall(r"(\d+) more learnings are in the full register \(learnings-register\.docx / \.md\)",
+                      " ".join(txt.split()))
+    assert 0 < shown < 160 and said == [str(160 - shown)]
+    assert said[0] in html and "more items are in the full pack" not in txt
+
+
+def test_register_left_key_labels_in_both_languages():
+    from pmlc_lib.render.labels import load_labels
+    for lang in ("en", "hi"):
+        assert "{n}" in load_labels(lang)["ui.email.learnings_left"]
