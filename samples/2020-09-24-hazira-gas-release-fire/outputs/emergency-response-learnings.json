@@ -1,0 +1,741 @@
+{
+ "pack": "emergency-response-learnings",
+ "schema": 1,
+ "title": "Emergency Response Learnings: Gas terminal release and fire, 2020",
+ "audience": "Emergency response: fire and fire-water teams, emergency planners, shift and site controllers, security and camera-room staff",
+ "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress.",
+ "incident": {
+  "title": "Hazira gas terminal condensate release and fire",
+  "date": "2020-09-24"
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the export's investigation status is in progress and no finding is marked as edited by a person. Validate every item before adoption.",
+   "cites": []
+  }
+ ],
+ "scope": {
+  "tags": [
+   "emergency"
+  ]
+ },
+ "bottom_line": [
+  {
+   "text": "About 46 minutes passed from the first sighting to the first isolation; the plan gave no isolation criteria and no one on shift held standing authority to isolate.",
+   "learning": "LR-07",
+   "cites": [
+    "FND-AE629313",
+    "FND-82761CC5",
+    "EVD-6414",
+    "EVD-4052"
+   ]
+  },
+  {
+   "text": "The isolation valves could only be closed by hand, inside the cloud they were meant to stop.",
+   "learning": "LR-09",
+   "cites": [
+    "FND-31405D96",
+    "EVD-9612"
+   ]
+  },
+  {
+   "text": "People saw the release before any alarm, but the warning reached the control room that could act late and in softened words.",
+   "learning": "LR-13",
+   "cites": [
+    "FND-37BC45CF",
+    "FND-5AB5DFA3",
+    "EVD-8871",
+    "EVD-4286"
+   ]
+  },
+  {
+   "text": "Gas detection only informed: it alarmed after the cloud was seen and started no protective action.",
+   "learning": "LR-10",
+   "cites": [
+    "FND-6155A1C2",
+    "EVD-8657"
+   ]
+  },
+  {
+   "text": "Fire protection held because the electrical pumps kept running; the diesel back-up and the drill records would not have shown the gap in time.",
+   "learning": "LR-23",
+   "cites": [
+    "FND-B6BB0738",
+    "FND-B8B75D91",
+    "EVD-2432",
+    "EVD-2130"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "timeline",
+   "heading": "Response timeline",
+   "intro": "Times are those the cited records give for the event day. The narrative also lists later recovery steps; those without a cited record are left out.",
+   "items": [
+    {
+     "kind": "timeline",
+     "id": "response-timeline",
+     "events": [
+      {
+       "date": "2020-09-24",
+       "time": "02:12",
+       "text": "Leak onset recorded by the camera covering the metering skid. The camera did not alert anyone, and no detector raised an alarm in the control room at this point.",
+       "received_by": "No one (recorded only)",
+       "signal": true,
+       "knowable_then": "Visible on camera; nobody was alerted",
+       "cites": [
+        "FND-B5C0CE8F",
+        "FND-F91D4A48",
+        "EVD-1284"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "time": "02:15",
+       "text": "Detection: security staff at a watch tower see the cloud and hear the noise, and call the security main gate, the fire station and another plant's control room. Gap since onset: about 2 minutes.",
+       "received_by": "Security network, fire station and another control room",
+       "signal": true,
+       "knowable_then": true,
+       "cites": [
+        "FND-5AB5DFA3",
+        "FND-95F9205E",
+        "EVD-4286"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "time": "02:16",
+       "text": "Security staff at the gas terminal gate, who also saw the cloud at 02:15, call the camera control room and the security main gate. Gap: about 1 minute.",
+       "received_by": "Camera control room (security)",
+       "signal": true,
+       "knowable_then": true,
+       "cites": [
+        "FND-1ABF45B7",
+        "FND-2F736E5F",
+        "EVD-6234"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "time": "02:18",
+       "text": "First call: the camera control room confirms heavy leakage on screen and calls the gas terminal control room, describing \"some vapour cloud or steam leakage\". Gap: about 2 minutes.",
+       "received_by": "Gas terminal control room",
+       "signal": true,
+       "knowable_then": true,
+       "cites": [
+        "FND-37BC45CF",
+        "FND-57281AC5",
+        "EVD-8871",
+        "EVD-1460"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "time": "02:20",
+       "text": "Alarm: the gas alarm sounds on the annunciator panel in the gas terminal control room, about 7 minutes after the camera recorded the leak. The control-room engineers go out, see a heavy cloud and cannot approach the source; they phone the shift in-charges. Gap: about 2 minutes.",
+       "received_by": "Gas terminal control-room engineers",
+       "signal": true,
+       "knowable_then": true,
+       "cites": [
+        "FND-A245072B",
+        "FND-C5000A82",
+        "FND-F887999D",
+        "EVD-8657",
+        "EVD-1460",
+        "EVD-9220"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "time": "02:35",
+       "text": "Decision: the shift in-charges, called from their quarters, reach the gas terminal gate and cannot enter because of the gas. The overall shift in-charge instructs closure of the 36-inch pressure control valve and informs senior management one after another. Gap: about 15 minutes.",
+       "received_by": "Shift in-charges (operations)",
+       "knowable_then": true,
+       "cites": [
+        "FND-594A80E9",
+        "FND-36179046",
+        "FND-A206DFD6",
+        "EVD-9612",
+        "EVD-7340"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "time": "03:01",
+       "text": "Isolation: the first isolation valve on the condensate inlet is closed by hand at the valve, about 46 minutes after the first detection. The valves had no remote operation from the control room. Gap: about 26 minutes.",
+       "received_by": "Shift in-charge (operations)",
+       "cites": [
+        "FND-AE629313",
+        "FND-31405D96",
+        "EVD-9612",
+        "EVD-6414"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "time": "03:04",
+       "text": "The 36-inch pressure control valve is closed. Gap: about 3 minutes.",
+       "cites": [
+        "FND-C92C29DB",
+        "EVD-7340",
+        "EVD-6414"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "time": "03:08",
+       "text": "Ignition: the cloud already in the air ignites, after both isolation actions; the probable ignition source is a damaged flameproof lamp. Seconds later the only camera view is lost when its cable burns through. Gap: about 4 minutes.",
+       "cites": [
+        "FND-74A80D24",
+        "FND-AEA16F83",
+        "FND-AA71AC71",
+        "EVD-4507",
+        "EVD-6916",
+        "EVD-2752"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "time": "03:50",
+       "text": "Control: active fire-cooling begins, carried by electrical fire-water pumps; fire-water tank level and header pressure stay healthy.",
+       "received_by": "Fire team",
+       "cites": [
+        "FND-B6BB0738",
+        "EVD-2432"
+       ]
+      },
+      {
+       "date": "2020-09-24",
+       "time": "06:00",
+       "text": "The fire is extinguished. The diesel fire-water pumps were not the ones that carried the response: two of four were under maintenance and one tripped.",
+       "received_by": "Fire team",
+       "cites": [
+        "FND-B955FBD6",
+        "FND-B6BB0738",
+        "EVD-2432"
+       ]
+      }
+     ],
+     "cites": [
+      "FND-AEA16F83",
+      "EVD-6414"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "by-phase",
+   "heading": "Learnings by response phase",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "Detection and alarm",
+     "lesson": "If fire and gas detection only lights a panel, every protective step waits for people to notice, check and decide.",
+     "explanation": "The detectors were configured to the annunciator panel only, with no history in the control system and no automatic shutdown or suppression. The first control-room alarm came after the camera had recorded the leak and after security staff had seen the cloud, so detection added little time to the response.",
+     "owner": "Instrumentation and fire-protection engineering",
+     "evidence_strength": "corroborated",
+     "learning": "LR-10",
+     "cites": [
+      "FND-6155A1C2",
+      "FND-15B4E60F",
+      "FND-A245072B",
+      "EVD-8657",
+      "EVD-3452"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Detection and alarm",
+     "lesson": "One panning camera recorded the start of the release but alerted no one, and its record ended when the fire started.",
+     "explanation": "A single pan-and-tilt camera with a slow pan gave the only view of the skid. It recorded the leak at onset but had no alarm function, and its cable burned through seconds after ignition. The coverage risk had not been assessed.",
+     "owner": "Security and surveillance function",
+     "evidence_strength": "direct",
+     "learning": "LR-14",
+     "cites": [
+      "FND-F91D4A48",
+      "FND-934DCBE1",
+      "FND-FBC20DA0",
+      "EVD-0210",
+      "EVD-2752",
+      "EVD-1284"
+     ],
+     "supporting_cites": [
+      "FND-B59A077E",
+      "FND-6A00BC2F",
+      "FND-38F0B929",
+      "FND-2E2F2A38",
+      "FND-A528DBE5",
+      "FND-E63EB689"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Communication and escalation",
+     "lesson": "People saw the release first, but their warnings reached the control room that could act late and in softened words.",
+     "explanation": "Two security posts saw the cloud at about 02:15. Their calls went first to the security network, the fire station and another control room, and the gas terminal control room was told of \"some vapour cloud or steam leakage\" at about 02:18. Each relay checked the report and described it again; there was no direct line and no standard release message.",
+     "owner": "Security function with operations",
+     "evidence_strength": "corroborated",
+     "learning": "LR-13",
+     "cites": [
+      "FND-5AB5DFA3",
+      "FND-1ABF45B7",
+      "FND-37BC45CF",
+      "FND-2F736E5F",
+      "EVD-4286",
+      "EVD-6234",
+      "EVD-8871"
+     ],
+     "supporting_cites": [
+      "FND-BC00FF3A",
+      "FND-C75F81B9",
+      "FND-57281AC5",
+      "FND-95F9205E",
+      "FND-439E0DF7",
+      "FND-0A64F629"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Communication and escalation",
+     "lesson": "Escalation ran up the chain one call at a time, and the chain had to be climbed before anyone isolated.",
+     "explanation": "The overall shift in-charge informed senior management one after another rather than through a parallel call-out, and the site-controller role was handed over during the event. The plan's structure, not the people on shift, set the pace.",
+     "owner": "Owner of the emergency plan",
+     "evidence_strength": "direct",
+     "learning": "LR-07",
+     "cites": [
+      "FND-A206DFD6",
+      "FND-7505B1AF",
+      "EVD-7340"
+     ],
+     "supporting_cites": [
+      "FND-314D34C5",
+      "FND-AE629313",
+      "FND-81E3EEA0",
+      "FND-500E0B2D",
+      "FND-8DAFDADC",
+      "FND-2EC435D0",
+      "FND-BB4CC662",
+      "FND-D4A3EF8A"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Authority and decision to isolate",
+     "lesson": "If no one on shift holds standing authority to isolate, isolation waits for the call that grants it.",
+     "explanation": "No role between the shift in-charge and the plant manager held standing authority to close the emergency isolation valves, and isolation authority was not allocated to the on-shift crew. People reasonably believed they needed permission to shut in a major supply.",
+     "owner": "Plant leadership",
+     "evidence_strength": "corroborated",
+     "learning": "LR-07",
+     "cites": [
+      "FND-8DAFDADC",
+      "FND-82761CC5",
+      "FND-BB4CC662",
+      "EVD-3932",
+      "EVD-4052"
+     ],
+     "supporting_cites": [
+      "FND-314D34C5",
+      "FND-AE629313",
+      "FND-81E3EEA0",
+      "FND-500E0B2D",
+      "FND-2EC435D0",
+      "FND-D4A3EF8A",
+      "FND-4F687CC5",
+      "FND-D1DF4895"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Authority and decision to isolate",
+     "lesson": "When the cloud denies access, the response has to switch from \"find the leak\" to \"isolate from a distance\", and nothing prepared the shift for that switch.",
+     "explanation": "The control-room engineers and then the shift in-charges tried to approach and were driven back by the gas. First isolation came at 03:01 and the 36-inch control valve at 03:04. This is a learning about decision support, not about the people who responded.",
+     "owner": "Operations function",
+     "evidence_strength": "corroborated",
+     "learning": "LR-08",
+     "cites": [
+      "FND-C92C29DB",
+      "FND-4245FBF2",
+      "FND-36179046",
+      "EVD-9612",
+      "EVD-7340"
+     ],
+     "supporting_cites": [
+      "FND-5F3E97E1",
+      "FND-AEA16F83",
+      "FND-82D49143"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Authority and decision to isolate",
+     "lesson": "Emergency isolation valves that can only be closed at the valve are out of reach in exactly the event they exist for.",
+     "explanation": "The gas terminal emergency valves had no remote operation from the control room, and the risk that a release would make them inaccessible had not been assessed. The first valve was closed by hand once the shift in-charge reached it.",
+     "owner": "Operations and engineering functions",
+     "evidence_strength": "corroborated",
+     "learning": "LR-09",
+     "cites": [
+      "FND-31405D96",
+      "FND-044D1DEC",
+      "FND-9B406A83",
+      "EVD-9612",
+      "EVD-3932",
+      "EVD-9941"
+     ],
+     "supporting_cites": [
+      "FND-594A80E9",
+      "FND-BDD73BA2",
+      "FND-FD0EF0F5"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Plan coverage",
+     "lesson": "The emergency plan named the hydrocarbon-leak scenario but not the decision it needed: when to isolate, which valves, and who decides.",
+     "explanation": "The on-site plan included guidance for hydrocarbon leakage but not isolation or stoppage of facilities and pipelines, and the regulated plan's major-leak scenarios did not mention the isolation decision. Each responder had to improvise.",
+     "owner": "Owner of the emergency plan",
+     "evidence_strength": "direct",
+     "learning": "LR-07",
+     "cites": [
+      "FND-81E3EEA0",
+      "FND-D1DF4895",
+      "FND-DF1144C3",
+      "FND-2EC435D0",
+      "EVD-4052"
+     ],
+     "supporting_cites": [
+      "FND-314D34C5",
+      "FND-AE629313",
+      "FND-500E0B2D",
+      "FND-8DAFDADC",
+      "FND-BB4CC662",
+      "FND-D4A3EF8A",
+      "FND-4F687CC5",
+      "FND-7A2429CE"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Plan coverage",
+     "lesson": "Drill records with no observations or actions cannot show whether readiness is improving, or reveal a gap such as missing isolation criteria.",
+     "explanation": "Monthly fire drill reports held dates but no actions or recommendations, and a separate data set was kept outside the approved guidelines. The fire team performed well on the night; the learning is about what the drills could not show.",
+     "owner": "Fire and emergency function",
+     "evidence_strength": "direct",
+     "learning": "LR-24",
+     "cites": [
+      "FND-B8B75D91",
+      "FND-C69E0C67",
+      "FND-BC32F8F7",
+      "EVD-2130"
+     ],
+     "supporting_cites": [
+      "FND-DC0751CF",
+      "FND-BFABC63C",
+      "FND-332DC593",
+      "FND-7F27ED51",
+      "FND-A532B8F8"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Fire-water and fire-protection readiness",
+     "lesson": "Fire protection depended on the electrical fire-water pumps surviving the event, because three of four diesel pumps were unavailable or unreliable.",
+     "explanation": "Tank level and header pressure stayed healthy and electrical pumps carried the cooling. But two diesel pumps were under maintenance and one tripped after about two minutes, with no cause found or action recorded.",
+     "owner": "Fire-protection function",
+     "evidence_strength": "direct",
+     "learning": "LR-23",
+     "cites": [
+      "FND-B6BB0738",
+      "FND-694B2DA0",
+      "FND-DF7337F2",
+      "EVD-2432"
+     ],
+     "supporting_cites": [
+      "FND-A4B843EB",
+      "FND-814A8889",
+      "FND-D8BC7096",
+      "FND-26BF96E1",
+      "FND-20CC87C0",
+      "FND-075C4510",
+      "FND-E7FB469A",
+      "FND-D9E0CE71"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Command structure",
+     "lesson": "The people expected to lead the first response had general training only, so a rare, time-critical event was their first practice.",
+     "explanation": "Control-room training was a four-day general course, with no defined qualification and no simulator practice, and the night-shift crew had no member with practised emergency-isolation competence.",
+     "owner": "HR, training and competence function",
+     "evidence_strength": "direct",
+     "learning": "LR-12",
+     "cites": [
+      "FND-337CB67F",
+      "FND-4B285961",
+      "FND-8EC441F3",
+      "EVD-5634"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "plan-review",
+   "heading": "Plan review input",
+   "items": [
+    {
+     "kind": "table",
+     "columns": [
+      "Plan section",
+      "Change",
+      "Evidence"
+     ],
+     "rows": [
+      [
+       "Hydrocarbon release scenarios: isolation decision criteria",
+       "Add, for each release scenario, the conditions that call for isolation or stoppage of facilities and pipelines, and the valves that isolate each section.",
+       "The plan covers hydrocarbon leakage but not isolation or stoppage; responders improvised."
+      ],
+      [
+       "Delegated authority",
+       "Give the control-room shift and the shift in-charges standing written authority to isolate on those criteria, without calling up the chain.",
+       "No role below the plant manager held standing authority to close the emergency valves."
+      ],
+      [
+       "Remote isolation and access-denied scenarios",
+       "Add a scenario in which the release denies access to the valves, with the isolation strategy from a safe place, and record which valves are local-only.",
+       "The emergency valves were local-only and the cloud made them unreachable."
+      ],
+      [
+       "Communications and call-out",
+       "Add a direct line from security posts and the camera room to each process control room, a standard release message, and a parallel call-out instead of a serial one.",
+       "Security saw the cloud first, but the control room heard of it late and in softened words; escalation ran one call at a time."
+      ],
+      [
+       "Fire-water readiness",
+       "Add a minimum number of available diesel fire-water pumps and the action when it is not met.",
+       "Three of four diesel pumps were unavailable or unreliable on the night."
+      ],
+      [
+       "Drills and records",
+       "Require drill records with timings (detection, notification, isolation), observations and tracked actions, in one system.",
+       "Drill reports held no actions or observations, and a second record sat outside the guidelines."
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-81E3EEA0",
+       "EVD-4052"
+      ],
+      [
+       "FND-82761CC5",
+       "EVD-3932"
+      ],
+      [
+       "FND-31405D96",
+       "EVD-9612"
+      ],
+      [
+       "FND-2F736E5F",
+       "FND-A206DFD6",
+       "EVD-8871"
+      ],
+      [
+       "FND-DF7337F2",
+       "EVD-2432"
+      ],
+      [
+       "FND-B8B75D91",
+       "EVD-2130"
+      ]
+     ]
+    },
+    {
+     "kind": "para",
+     "cites": [
+      "FND-81E3EEA0",
+      "EVD-4052"
+     ],
+     "text": "Regulated-plan note. Where the emergency plan is a regulated plan, a change to it may need review by, or notice to, an authority. For this run's jurisdiction (India), the coach's jurisdiction notes name the PNGRB ERDMP Regulations 2010 as applying to gas installations of this type. The plan owner should check whether these changes must go to the authority. This table is input for the plan owner's review, not a revised plan, and states no legal conclusion."
+    }
+   ]
+  },
+  {
+   "id": "drills",
+   "heading": "Drill scenarios",
+   "items": [
+    {
+     "kind": "scenario",
+     "learning": "LR-07",
+     "situation": "Night shift, no senior staff on site. Inject 1: a security post reports a roar and a white cloud near the metering skid. Inject 2: the gas alarm sounds on the panel. Inject 3: the engineers who go out report that the cloud stops them reaching the source. Inject 4: the shift in-charge is still on the way from quarters.",
+     "prompts": [
+      "Decision point: who decides to isolate, and on what criterion?",
+      "Decision point: which valves isolate the section, and which can be reached safely?",
+      "Measure: time from the first report to the isolation decision, and to the first valve closed, against a time standard the site sets from its consequence study.",
+      "Debrief: record each observation and one action in the drill record."
+     ],
+     "cites": [
+      "FND-AE629313",
+      "FND-8DAFDADC",
+      "FND-9B406A83",
+      "EVD-9612",
+      "EVD-4052"
+     ]
+    },
+    {
+     "kind": "scenario",
+     "learning": "LR-13",
+     "situation": "A joint security and operations drill. Inject 1: a watch-tower post sees vapour in an area covered by a process control room. Inject 2: the camera room can see the cloud on screen. Inject 3: the process control room has had no alarm.",
+     "prompts": [
+      "Decision point: whom does the post call first?",
+      "Decision point: what words carry the size and place of the release?",
+      "Measure: time from first sighting to the process control room receiving a release message in the standard words."
+     ],
+     "cites": [
+      "FND-5AB5DFA3",
+      "FND-37BC45CF",
+      "EVD-4286",
+      "EVD-8871"
+     ]
+    },
+    {
+     "kind": "scenario",
+     "learning": "LR-23",
+     "situation": "A fire-cooling exercise. Inject 1: electrical supply to the fire-water pumps is lost. Inject 2: one diesel pump is under maintenance and another trips shortly after starting.",
+     "prompts": [
+      "Decision point: how is cooling kept up, and who decides?",
+      "Measure: time to establish cooling water from the diesel pumps alone.",
+      "Debrief: record the trip cause, or record that it is not known, and the action."
+     ],
+     "cites": [
+      "FND-B6BB0738",
+      "FND-694B2DA0",
+      "EVD-2432"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "readiness",
+   "heading": "Readiness indicators",
+   "items": [
+    {
+     "kind": "indicator",
+     "name": "Detection-to-isolation time in drills",
+     "measure": "Minutes from the first report of a release to the first isolation valve closed, per drill, by shift",
+     "deterioration": "A rising time, or drills in which isolation waits for a senior role to arrive",
+     "learning": "LR-07",
+     "cites": [
+      "FND-AEA16F83",
+      "EVD-6414"
+     ],
+     "supporting_cites": [
+      "FND-314D34C5",
+      "FND-AE629313",
+      "FND-81E3EEA0",
+      "FND-500E0B2D",
+      "FND-8DAFDADC",
+      "FND-2EC435D0"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "name": "Detection-to-notification time",
+     "measure": "Minutes from first sighting to the process control room receiving a release message in the standard words, in joint drills",
+     "deterioration": "Reports reaching the control room through another post first, or without the standard words",
+     "learning": "LR-13",
+     "cites": [
+      "FND-2F736E5F",
+      "EVD-8871"
+     ],
+     "supporting_cites": [
+      "FND-BC00FF3A",
+      "FND-5AB5DFA3",
+      "FND-1ABF45B7",
+      "FND-C75F81B9",
+      "FND-57281AC5",
+      "FND-37BC45CF"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "name": "Diesel fire-water pump availability",
+     "measure": "% of diesel fire-water pumps available and passing their run test, each week",
+     "deterioration": "Any pump unavailable beyond the site's allowed outage, or a trip with no recorded cause",
+     "learning": "LR-23",
+     "cites": [
+      "FND-DF7337F2",
+      "EVD-2432"
+     ],
+     "supporting_cites": [
+      "FND-A4B843EB",
+      "FND-814A8889",
+      "FND-B6BB0738",
+      "FND-D8BC7096",
+      "FND-694B2DA0",
+      "FND-26BF96E1"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "name": "Plan scenarios with tested isolation steps",
+     "measure": "% of release scenarios in the plan with written isolation criteria, valves and delegated authority that a drill has tested",
+     "deterioration": "Scenarios added to the plan without isolation steps, or not drilled",
+     "learning": "LR-07",
+     "cites": [
+      "FND-81E3EEA0",
+      "EVD-4052"
+     ],
+     "supporting_cites": [
+      "FND-314D34C5",
+      "FND-AE629313",
+      "FND-500E0B2D",
+      "FND-8DAFDADC",
+      "FND-2EC435D0",
+      "FND-BB4CC662"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "name": "Drills that produce learning",
+     "measure": "% of drills with timings, at least one recorded observation and a tracked action",
+     "deterioration": "Drill records with dates only",
+     "learning": "LR-24",
+     "cites": [
+      "FND-B8B75D91",
+      "EVD-2130"
+     ],
+     "supporting_cites": [
+      "FND-DC0751CF",
+      "FND-BFABC63C",
+      "FND-C69E0C67",
+      "FND-332DC593",
+      "FND-BC32F8F7",
+      "FND-7F27ED51"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "name": "Emergency-qualified cover",
+     "measure": "% of shifts with at least one person qualified and practised in emergency isolation in each control room",
+     "deterioration": "Shifts rostered with general training only",
+     "learning": "LR-12",
+     "cites": [
+      "FND-4B285961",
+      "EVD-5634"
+     ]
+    }
+   ]
+  }
+ ],
+ "exclusions": [
+  {
+   "id": "FND-44219027",
+   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; left out here for the same reason."
+  }
+ ],
+ "limits": [
+  "The findings say nothing about mutual aid, the public fire service or neighbouring communities, so the external responders phase is left out.",
+  "Recovery steps after the fire was extinguished appear in the incident narrative only, without cited records, so no recovery learning is written.",
+  "The barrier analysis behind detection and isolation is for barrier-learnings; the build-up before the day is for precursor-timeline."
+ ]
+}
