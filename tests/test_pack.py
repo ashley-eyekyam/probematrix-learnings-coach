@@ -219,10 +219,21 @@ WAVE2 = ["frontline-learning-cards", "manager-coach", "site-leadership-coach", "
          "engineering-integrity-learnings", "supply-chain-contractor-learnings", "safety-committee-guide"]
 WAVE3 = ["causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings", "learning-clusters",
          "cluster-learning-dossier", "report-comparison", "organisation-learning-map"]
-PACK_OF = {"cluster-learning-dossier": "dossier-F02", "organisation-learning-map": "organisation-learning-plan"}
-# Variant packs beside a skill's main pack (pack-schema.md pack-name exceptions): variant -> skill.
-VARIANT_OF = {"report-comparison-client-safe": "report-comparison",
-              "report-comparison-regulator-safe": "report-comparison"}
+
+
+def fixture_skills() -> dict:
+    """fixture name -> its top-level `skill` (Ruling P4-22), for the fixtures that carry one: the packs named after
+    something other than their skill, and the variants."""
+    out = {}
+    for p in sorted(FIX.glob("*.json")):
+        d = json.loads(p.read_text(encoding="utf-8"))
+        if isinstance(d, dict) and isinstance(d.get("skill"), str):
+            out[p.stem] = d["skill"]
+    return out
+
+
+# skill -> its fixture, where the pack is not named after the skill and is not a <skill>-<variant> pack
+PACK_OF = {s: n for n, s in fixture_skills().items() if n != s and not n.startswith(s + "-")}
 DOC_NAME = {"cluster-learning-dossier": "dossier-<F-id>"}          # how SKILL.md writes the pack file name
 DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3}                                     # tasks 15 and 24 add waves 2 and 3
 VERSION = pmlc.__version__
@@ -235,7 +246,8 @@ def pack_fixtures() -> list:
 
 
 def skill_of(pack) -> str:
-    return VARIANT_OF.get(pack) or {v: k for k, v in PACK_OF.items()}.get(pack, pack)
+    """The skill a fixture belongs to: its `skill` field, else its own name."""
+    return fixture_skills().get(pack, pack)
 
 
 def fixture(name):
@@ -334,18 +346,29 @@ def golden_ws():
 
 
 def render_fixture(name, fmt="html", **ctx_overrides) -> list:
-    """Render fixture <name> as format fmt with SOURCE_DATE_EPOCH=1600905600 (the golden helper, P4-3)."""
-    import datetime as _dt
-    w_ = ctx_overrides.pop("w", None) or pmlc.load_ws(golden_ws())
-    generated = _dt.datetime.fromtimestamp(int(GOLDEN_EPOCH), _dt.timezone.utc).date().isoformat()
-    assert fmt == "html" and not ctx_overrides
-    return [(f"{name}.html", pp.render_pack_html(w_, fixture(name), RUN, generated), None)]
+    """The Outputs of fixture <name> in format fmt, rendered through the registry with SOURCE_DATE_EPOCH=1600905600
+    (the golden helper, P4-3). ctx_overrides set RenderContext fields (w defaults to the golden workspace)."""
+    from pmlc_lib import render as R
+    from pmlc_lib.handling import effective_handling
+    old = os.environ.get("SOURCE_DATE_EPOCH")
+    os.environ["SOURCE_DATE_EPOCH"] = GOLDEN_EPOCH
+    try:
+        w_ = ctx_overrides.pop("w", None) or pmlc.load_ws(golden_ws())
+        pack = ctx_overrides.pop("pack", None) or fixture(name)
+        ctx = R.RenderContext(**{"w": w_, "pack": pp.with_item_ids(pack), "run": RUN, "generated": R.build_date(),
+                                 "embed": "cited", "eh": effective_handling(pack, w_), **ctx_overrides})
+        return R.render(fmt, ctx)
+    finally:
+        if old is None:
+            os.environ.pop("SOURCE_DATE_EPOCH", None)
+        else:
+            os.environ["SOURCE_DATE_EPOCH"] = old
 
 
 @pytest.mark.parametrize("name", pack_fixtures() + ["all-kinds"])
 def test_fixture_html_matches_golden(name):
     import hashlib
-    data = render_fixture(name, "html")[0][1]
+    data = render_fixture(name, "html")[0].data
     got = hashlib.sha256(data.encode("utf-8")).hexdigest()
     table = json.loads(HTML_GOLDEN.read_text(encoding="utf-8")) if HTML_GOLDEN.exists() else {}
     if os.environ.get("PMLC_UPDATE_GOLDEN"):
@@ -357,7 +380,7 @@ def test_fixture_html_matches_golden(name):
 @pytest.mark.parametrize("name", pack_fixtures())
 def test_fixture_belongs_to_a_skill(name):
     assert fixture(name)["pack"] == name
-    assert skill_of(name) in WAVE1 + WAVE2 + WAVE3, f"{name}: add its skill to a wave list or PACK_OF"
+    assert skill_of(name) in WAVE1 + WAVE2 + WAVE3, f"{name}: add its skill to a wave list, or a `skill` field to the fixture"
 
 
 def _pack_data(t):

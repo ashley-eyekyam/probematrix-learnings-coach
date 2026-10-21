@@ -36,10 +36,16 @@ MODULES = [
     "pmlc_lib.plan",
     "pmlc_lib.compare",
     "pmlc_lib.facts",
+    "pmlc_lib.render",
+    "pmlc_lib.render.labels",
+    "pmlc_lib.render.fields",
+    "pmlc_lib.render.ooxml",
+    "pmlc_lib.render.normalise",
+    "pmlc_lib.pack.command",
     "pmlc_lib.cli",
 ]
 PACK_MODULES = ["pmlc_lib.pack.profiles", "pmlc_lib.pack.schema", "pmlc_lib.pack.graph_layout", "pmlc_lib.pack.items",
-                "pmlc_lib.pack.markdown", "pmlc_lib.pack.html", "pmlc_lib.pack.xlsx"]
+                "pmlc_lib.pack.markdown", "pmlc_lib.pack.html", "pmlc_lib.pack.xlsx", "pmlc_lib.pack.command"]
 LINT_MODULES = ["pmlc_lib.lint"]
 PRIVACY_MODULES = ["pmlc_lib.privacy"]
 

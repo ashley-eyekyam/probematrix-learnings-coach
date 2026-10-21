@@ -97,7 +97,7 @@ def strict_fixtures(tmp):
     pmlc("ingest", str(make_export(pathlib.Path(d))), "--legacy-out", os.path.join(d, "ws"))
     pmlc("classify", os.path.join(d, "ws"))
     fix = os.path.join(ROOT, "tests", "fixtures", "packs")
-    names = sorted(f for f in os.listdir(fix) if f.endswith(".json") and f not in ("all-kinds.json", "bad-l3-01.json"))
+    names = sorted(f for f in os.listdir(fix) if f.endswith(".json") and f not in ("all-kinds.json", "bad-l3-01.json", "html-golden.json"))
     for f in names:
         pmlc("check-pack", os.path.join(d, "ws"), os.path.join(fix, f), "--strict")
     return len(names)

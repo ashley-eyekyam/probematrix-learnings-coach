@@ -1,4 +1,4 @@
-{"pack": "report-comparison-client-safe", "schema": 1, "title": "Report Comparison (client-safe): Synthetic pump fire, 2024",
+{"pack": "report-comparison-client-safe", "skill": "report-comparison", "schema": 1, "title": "Report Comparison (client-safe): Synthetic pump fire, 2024",
  "audience": "The organisation that wrote the other report", "status": "Learning purposes: not a statutory document",
  "bottom_line": [{"text": "Both analyses reach the return-to-service test; the second look adds the spares specification and the alarm response.",
                   "cites": ["FND-0001", "FND-0003"]}],

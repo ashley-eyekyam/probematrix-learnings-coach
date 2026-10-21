@@ -148,7 +148,10 @@ The run-level contracts are on this page: `run-manifest.json` above, `plan.json`
 |---|---|---|
 | `PMLC_NAMES` | `check-language`, `check-pack`, `check-register`, `pack`, `dashboard` and `register-xlsx` | Path to a names file used when `--names` is not given. One name per line; blank lines and lines starting with `#` are skipped. |
 | `PMLC_ORGS` | the same commands | Path to an organisation names file used when `--orgs` is not given. Same format. |
-| `PMLC_UPDATE_GOLDEN` | the repository's test suite (contributors only; `tools/release.py` prints the reminder) | Set to `1` to regenerate the golden Markdown fixtures. Not used when you analyse an investigation. |
+| `PMLC_UPDATE_GOLDEN` | the repository's test suite (contributors only; `tools/release.py` prints the reminder) | Set to `1` to regenerate the golden Markdown fixtures and the HTML hashes in `tests/fixtures/packs/html-golden.json`. Not used when you analyse an investigation. |
+| `SOURCE_DATE_EPOCH` | `pack` | A time in seconds since 1970. When set, its date is the generated date written into every output, and the time of every entry in a zipped output, so the same pack gives the same files on every run. |
+| `PMLC_BROWSER` | `pack --format png` | The Chromium-family browser to draw PNG images with, tried before `chromium`, `chromium-browser`, `google-chrome`, `google-chrome-stable`, `microsoft-edge` and `msedge` on the PATH. |
+| `PMLC_LABELS_DIR` | the repository's test suite (contributors only) | A folder searched before `references/labels/` for the label files (`<language>.json`). Not used when you analyse an investigation. |
 
 If a variable points to a file that does not exist, the command stops with, for example, `PMLC_NAMES: file not found: <path>`.
 

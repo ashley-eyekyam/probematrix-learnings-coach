@@ -1113,6 +1113,7 @@ def test_share_out_may_not_be_the_internal_copy(tmp_path, shws):
 
 def test_summary_mode_builds_the_embedded_records_once(monkeypatch, tmp_path, shws):
     import pmlc_lib.pack.html as ph
+    from pmlc_lib.pack.command import cmd_pack
     ws, _ = shws
     p = write_doc(tmp_path, SPACK)
     calls = []
@@ -1121,7 +1122,7 @@ def test_summary_mode_builds_the_embedded_records_once(monkeypatch, tmp_path, sh
     import argparse
     ns = argparse.Namespace(ws=str(ws), pack=str(p), cmd="pack", share=None, embed="summary", out=str(tmp_path / "o"),
                             no_md=True, names=None, orgs=None)
-    ph.cmd_pack(ns)
+    cmd_pack(ns)
     assert len(calls) == 1
 
 

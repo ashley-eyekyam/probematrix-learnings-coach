@@ -1,33 +1,29 @@
-"""Learning packs: the HTML renderer and the pack command."""
+"""Learning packs: the HTML renderer (the pack command is in pack/command.py)."""
 from __future__ import annotations
 
-import datetime as dt
 import html
 import json
 import re
-from pathlib import Path
 
 from .. import BRAND, brand_payload, STATUS_PHRASE
 from ..dashboard.data import (
-    DASHBOARD_ASSETS, EMBED_DEFAULT, embed_json, embedded_records, print_witness_note, resolve_embed
+    DASHBOARD_ASSETS, EMBED_DEFAULT, embed_json, embedded_records
 )
 from ..dashboard.render import PAGE_TOKENS_CSS, WIDE_CSS
 from ..handling import (
-    effective_handling, HANDLING_CSS, is_draft, name_guard, public_records, RIBBON_HTML, share_ctx, share_gate,
-    shared_copy, SHARED_LINE, shared_name, status_line
+    effective_handling, HANDLING_CSS, is_draft, public_records, RIBBON_HTML, status_line
 )
 from ..pack.graph_layout import layout_graph
 from ..pack.markdown import (
-    _handling_lines, _knowable, _pack_incident_date, coverage, event_when, lint_ok_notes, render_pack_md,
-    sorted_events
+    _handling_lines, _knowable, _pack_incident_date, coverage, event_when, lint_ok_notes, sorted_events
 )
 from ..pack.schema import (
-    _checked, cited_ids, embedded_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, record_check, relevant_findings,
+    cited_ids, embedded_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, relevant_findings,
     TOP_PRINT_LINE, UNCOVERED_PRINT_LINE, with_item_ids
 )
 from ..register.check import norm_hoc
-from ..util import _abs, write_json
-from ..workspace import is_standard_ws, outputs_dir, warn_stale
+from ..util import write_json
+from ..workspace import outputs_dir
 
 
 # ----------------------------------------------------------------------------- HTML
@@ -199,8 +195,24 @@ def _html_item(it, graphs, inc_date=None) -> str:
         body = (f'<p><b>{_inline(it["lesson"])}</b> {_badges([("Owner", g("owner"))])}</p>'
                 + (_rich(it["explanation"]) if g("explanation") else "") + c)
     else:
-        raise ValueError(f"unknown kind {k!r}")
+        body = _html_fields(it) + c
     return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}{_extras(it)}{_lint_ok_html(it)}</div>'
+
+
+def _html_block_value(v) -> str:
+    if isinstance(v, list):
+        return _list([" | ".join(map(str, x)) if isinstance(x, list) else x for x in v])
+    if isinstance(v, dict):
+        return _list([f"{k}: {x}" for k, x in v.items()])
+    return _inline(v)
+
+
+def _html_fields(it) -> str:
+    """A kind this renderer has no layout for: its fields as a labelled list, in KINDS field order (P4-5)."""
+    from ..render.fields import item_blocks
+    from ..render.labels import load_labels
+    rows = "".join(f"<dt>{_h(b.label)}</dt><dd>{_html_block_value(b.value)}</dd>" for b in item_blocks(it, load_labels()))
+    return f'<dl class="fields">{rows}</dl>'
 
 
 def _section_items(items, graphs, inc_date=None) -> str:
@@ -377,41 +389,3 @@ def update_gaps(ws, pack):
     keep = [g for g in old if isinstance(g, dict) and g.get("pack") != pack["pack"]] if isinstance(old, list) else []
     write_json(path, {"gaps": keep + mine})
     return path
-
-
-def cmd_pack(a):
-    """Render a checked pack. --share external|public: the share gate first (P2-9), then the page is rendered from
-    masked copies of the pack and the workspace. In any mode the render name guard runs before anything is written."""
-    w, pack, res = _checked(a, record_ok=False)
-    warn_stale(a.ws)
-    mode = share_gate(pack, w, a, src=a.pack, ws=a.ws)
-    record_check(a, pack, res, w)                                  # only now: a refused share records nothing
-    ws = _abs(a.ws)
-    run = ws.parent.name if is_standard_ws(ws) else ws.name
-    embed = resolve_embed(a)
-    eh = effective_handling(pack, w, src=a.pack, ws=a.ws)
-    share = share_ctx(a, w, mode) if mode != "internal" else None
-    rw, rpack = (shared_copy(w, share, w), shared_copy(pack, share, w)) if share else (w, pack)
-    page_html = render_pack_html(rw, rpack, run, dt.date.today().isoformat(), embed, eh=eh, share=share)
-    md_text = None if a.no_md else render_pack_md(rpack, rw, eh=eh, share=share)
-    name_guard([page_html, md_text or ""], a)
-    out = Path(a.out) if a.out else outputs_dir(ws)
-    out.mkdir(parents=True, exist_ok=True)
-    page = shared_name(out / f"{pack['pack']}.html", mode)
-    page.write_text(page_html, encoding="utf-8")
-    if embed != "summary":                                      # summary drops the text the note is about
-        print_witness_note(embedded_records(rw, *embedded_ids(pack), (), embed, linked=False)[1], embed)
-    print(f"HTML written to {page}")
-    if md_text is not None:
-        md = shared_name(out / f"{pack['pack']}.md", mode)
-        md.write_text(md_text, encoding="utf-8")
-        print(f"Markdown written to {md}")
-    if mode != "internal":
-        print(SHARED_LINE.format(mode=mode))
-    gj = update_gaps(ws, pack)
-    if gj:
-        print(f"Gaps written to {gj}")
-    if pack["pack"] == "investigator-coach" and mode == "internal":   # interview plans never leave the team
-        fu = out / "follow-up.json"
-        write_json(fu, follow_up(pack))
-        print(f"Follow-up fields written to {fu}")

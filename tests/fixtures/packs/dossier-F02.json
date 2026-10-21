@@ -1,4 +1,4 @@
-{"pack": "dossier-F02", "schema": 1, "title": "Cluster Learning Dossier F02 Mechanical Maintenance: Synthetic pump fire, 2024",
+{"pack": "dossier-F02", "skill": "cluster-learning-dossier", "schema": 1, "title": "Cluster Learning Dossier F02 Mechanical Maintenance: Synthetic pump fire, 2024",
  "audience": "Mechanical Maintenance (F02), all tiers", "status": "Learning purposes: not a statutory document",
  "bottom_line": [{"text": "Return to service had no test step, and the crew restarted the pump untested.", "cites": ["FND-0001", "FND-0002"]}],
  "scope": {"entities": ["F02"]},
@@ -11,12 +11,11 @@
     "measure": "% of restarts with a signed leak-test record", "deterioration": "Any restart without one", "cites": ["FND-0002"]}]},
   {"id": "s1-profile", "heading": "S1 Profile", "items": [
    {"kind": "table", "columns": ["Level", "Findings"], "rows": [["L1 Unsafe acts", 1], ["L3 Supervision", 1]],
-    "row_cites": [["FND-0001"], ["FND-0002"]]},
-   {"kind": "para", "text": "S13 Comparison is left out: no comparator report was supplied."}]},
+    "row_cites": [["FND-0001"], ["FND-0002"]]}]},
   {"id": "s2-practice", "heading": "S2 Practice (L1)", "items": [
    {"kind": "learning", "lesson": "Restarting without a test went unchallenged because nothing asked for one.",
     "explanation": "The work order shows no test [EVD-0001].", "cites": ["FND-0001"]}]},
-  {"id": "s3-preconditions", "heading": "S3 Preconditions (L2)", "items": [
+  {"id": "s3-preconditions", "heading": "S3 Conditions (L2)", "items": [
    {"kind": "learning", "lesson": "An unfamiliar seal gave no cue that a test mattered more than usual.",
     "explanation": "The findings show local seals without a specification [FND-0003].", "cites": ["FND-0001", "FND-0003"]}]},
   {"id": "s4-supervision", "heading": "S4 Supervision (L3)", "items": [
@@ -49,4 +48,5 @@
     "row_cites": [["FND-0002"]]}]},
   {"id": "s14-formats", "heading": "S14 Formats", "items": [
    {"kind": "table", "columns": ["Learning", "Format"], "rows": [["Test what you disturb", "Learning Card and toolbox talk"]],
-    "row_cites": [["FND-0001"]]}]}]}
+    "row_cites": [["FND-0001"]]}]}],
+ "limits": ["S13 Comparison is left out: no comparator report was supplied."]}

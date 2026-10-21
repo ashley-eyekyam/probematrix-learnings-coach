@@ -8,6 +8,8 @@ Turns a learning pack JSON into the files people read:
 - `<pack>.md`: the same content as Markdown, for email, a wiki or a document.
 - `gaps.json`, when the pack has `gaps`: the run's outputs folder collects every pack's evidence gaps there for the investigator. Each run replaces this pack's entries and keeps the other packs'. It is always written to the run's outputs folder, even with `--out`.
 
+`--format` chooses which of these files to write (the default, `html,md`, writes exactly the two above). The formats are listed under [Formats](#formats).
+
 It first runs the full [check-pack](check-pack.md). If the check finds a problem, nothing is written. A pack that has not been signed off renders with a **DRAFT** label.
 
 Two flags decide what the page carries and who it is for:
@@ -24,6 +26,7 @@ After [check-pack](check-pack.md) passes. Run it again after every edit of the J
 ```text
 pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
           [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
+          [--format FORMATS] [--view {full,learner}]
 ```
 
 ## Arguments
@@ -43,7 +46,19 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `--share` | `internal`, `external` or `public` | `internal` | Who the copy is for. `external` (named people outside, such as a regulator) and `public` write a masked copy named `<pack>.external.html` or `<pack>.public.html` (and `.md`), and need an approved sign-off with that classification or wider, `legal_review` cleared and `--embed summary` |
 | `--names` | file | `$PMLC_NAMES` | A names file, one name per line (blank lines and lines starting with `#` are skipped). A shared copy masks these names. In every mode the page is refused if one of them still appears in it |
 | `--orgs` | file | `$PMLC_ORGS` | An organisation names file, one per line. A shared copy masks these names |
+| `--format` | comma-separated format names | `html,md` | Which files to write; see [Formats](#formats). An unknown name stops the command (exit 2) and lists the formats. `--no-md` still removes `md`. A format with nothing to write in this pack says `<format>: nothing to write (<why>)` and writes nothing |
+| `--view` | `full` or `learner` | `full` | `learner` writes a learner copy of each document format, named `<pack>.learner.<ext>`: answers, good-evidence notes and the correct-option flags are left out, and the line "Learner view: answers are hidden" sits under the status. Data formats ignore it |
 | `-h`, `--help` | none | | Show the flags and stop |
+
+### Formats
+
+| Format | Kind | File | What it is |
+|---|---|---|---|
+| `html` | document | `<pack>.html` | The offline page (default) |
+| `md` | document | `<pack>.md` | The same content as Markdown (default) |
+| `normalised` | data | `<pack>.normalised.json` | The pack for other tools: every item id filled in, the status line, the brand, the effective status, the word count and reading time, the coverage counts and the cited findings (label, level, rating) and evidence (type). A shared copy carries no run slug |
+
+A shared copy (`--share external` or `public`) of any format is built from the masked pack, and its file name carries the mode: `<pack>.external.normalised.json`. Every format's text goes through the name check.
 
 ## Examples
 
@@ -72,6 +87,31 @@ warning: coverage: cites 3 of 308 relevant findings; under a quarter of the top-
 …
 warning: no handling block: rendered as draft (internal)
 HTML written to print/board-brief.html
+```
+
+The normalised pack only, for another tool, with the build date fixed (`SOURCE_DATE_EPOCH`, seconds since 1970) so the file is the same on every run:
+
+```bash
+SOURCE_DATE_EPOCH=1600905600 python3 $E pack $WS $OUT/board-brief.json --format normalised
+```
+
+```text
+warning: coverage: cites 3 of 308 relevant findings; under a quarter of the top-rated relevant findings are cited (3 of 101)
+…
+warning: no handling block: rendered as draft (internal)
+normalised written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.normalised.json
+```
+
+A learner copy of a training pack, without the answer keys:
+
+```bash
+python3 $E pack $WS $OUT/training-designer.json --view learner
+```
+
+```text
+…
+HTML written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/training-designer.learner.html
+Markdown written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/training-designer.learner.md
 ```
 
 A smaller page for an internal working group, without quotes or evidence descriptions. On this pack the page drops from about 205 KB (`cited`) to about 168 KB; with `--embed full` it is about 1.2 MB:
@@ -148,6 +188,7 @@ warning: no handling block: rendered as draft (internal)
 - **"cannot share externally: …" or "cannot share publicly: …".** Each condition after the colon is one that is not met. Sign the pack off with the right classification and legal review (`sign-off --classification external --legal-review cleared`), and leave `--embed` out (or give `summary`). Edit nothing after the sign-off: any change turns the pack back into a draft.
 - **A shared copy is refused by the language check.** At the external level the check is stricter: an organisation's name or a singleton role in the pack's own text is an error. Masking covers the embedded export records, not your wording; rewrite the text with roles and functions.
 - **"refused: a listed name appears in the output".** A name from `--names` (or `PMLC_NAMES`) is still on the page. Fix the pack text, or redact the name when you ingest (`ingest --redact`).
+- **"argument --format: unknown format …".** The name is not a format; the message lists the ones there are. Separate several with commas and no spaces: `--format html,normalised`.
 - **Where did the files go?** Without `--out`, into the run's outputs folder; [run-path](run-path.md) prints it.
 
 ## Related

@@ -11,7 +11,8 @@ Checks a **learning pack**: the JSON file an audience skill writes (a board brie
 - the `scope` (levels, tiers, entities) is valid;
 - the `handling` block, when present, is valid;
 - the language rules JC1 to JC12, the same as [check-language](check-language.md);
-- the optional v2.0 fields: a `learning` id has the shape `LR-01` and is in the Learnings Register; every id in `clauses` is in `standards-crosswalk.json`; `gaps` and `limits` are well formed.
+- the optional v2.0 fields: a `learning` id has the shape `LR-01` and is in the Learnings Register; every id in `clauses` is in `standards-crosswalk.json`; `gaps` and `limits` are well formed;
+- the optional `skill` names a skill in `skills/`, and the pack is that skill's pack or one of its variants (`pack <p> is not a pack or variant of skill <s>` otherwise).
 
 It also gives **warnings**, which do not fail the check: low coverage of the top-rated relevant findings, an Evidence ID not linked to the findings its item cites, an ID written in the text but not in `cites`, a missing handling block, `learning ids not verified: no register` when the pack uses `learning` and no register is found, an administrative or training recommendation without `why_not_stronger`, and language warnings. Five more warnings become **problems under `--strict`**:
 

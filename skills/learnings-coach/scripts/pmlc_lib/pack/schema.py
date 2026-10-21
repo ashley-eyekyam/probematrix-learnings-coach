@@ -52,6 +52,43 @@ KINDS = {
     "graph": {"req": ["nodes", "edges"], "opt": []},
     "learning": {"req": ["lesson"], "opt": ["explanation", "owner"], "cite": True},
 }
+# Field roles (Ruling P4-5): each kind's fields in the HTML page's order, with the role a renderer gives them
+# (title|body|list|badge|indicator|table|events|graph|segments|choices|injects). Labels are the f.<field> keys of
+# references/labels/<locale>.json. Cite fields are not listed: every renderer shows them its own way.
+FIELD_ROLES = {
+    "para": [["text", "body"]],
+    "check": [["hold_point", "badge"], ["text", "body"], ["when", "badge"]],
+    "question": [["question", "title"], ["to", "badge"], ["why", "body"], ["answer", "body"], ["good_evidence", "body"]],
+    "recommendation": [["change", "title"], ["hoc_tier", "badge"], ["barrier", "badge"], ["barrier_id", "badge"],
+                       ["owner", "badge"], ["co_owner", "badge"], ["by_when", "badge"], ["indicator", "indicator"],
+                       ["why_not_stronger", "body"]],
+    "decision": [["decision", "title"], ["options", "list"], ["trade_offs", "body"], ["owner", "badge"],
+                 ["by_when", "badge"]],
+    "indicator": [["name", "title"], ["measure", "body"], ["deterioration", "body"], ["owner", "body"]],
+    "card": [["title", "title"], ["what_happened", "body"], ["why_made_sense", "body"], ["organisation_changing", "body"],
+             ["warning_signs", "list"], ["good_looks_like", "body"], ["discussion", "list"]],
+    "scenario": [["situation", "body"], ["prompts", "list"]],
+    "table": [["columns", "table"], ["rows", "table"], ["finding_notes", "list"]],
+    "test_point": [["requirement", "title"], ["clause", "badge"], ["sample", "body"], ["conformity_evidence", "body"],
+                   ["red_flags", "list"]],
+    "module": [["title", "title"], ["audience", "badge"], ["duration", "badge"], ["objective", "body"],
+               ["content", "list"], ["assessment", "list"]],
+    "barrier": [["barrier", "title"], ["hoc_tier", "badge"], ["barrier_id", "badge"], ["type", "badge"],
+                ["state", "badge"], ["owner", "badge"], ["failure_mode", "body"], ["fix", "body"],
+                ["indicator", "indicator"]],
+    "timeline": [["events", "events"]],
+    "graph": [["nodes", "graph"], ["edges", "graph"]],
+    "learning": [["lesson", "title"], ["owner", "badge"], ["explanation", "body"]],
+}
+
+
+def _ps_attach_fields() -> None:
+    """KINDS[kind]["fields"] = FIELD_ROLES[kind] (a kind added later brings its own "fields")."""
+    for kind, roles in FIELD_ROLES.items():
+        KINDS[kind].setdefault("fields", roles)
+
+
+_ps_attach_fields()
 STR_LIST_FIELDS = {"options", "warning_signs", "discussion", "prompts", "columns", "content", "assessment", "red_flags"}
 OBJ_LIST_FIELDS = {"rows", "row_cites", "row_supporting_cites", "events", "nodes", "edges"}
 MAP_FIELDS = {"finding_notes"}
@@ -115,6 +152,16 @@ GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength"
                   "comparator_refs")
 
 
+def inline_fields(kind) -> list:
+    """The fields of a kind that render citation buttons: INLINE_FIELDS, else (a kind it does not list) the kind's
+    fields with role body or list (Ruling P4-5)."""
+    if not isinstance(kind, str):
+        return []
+    if kind in INLINE_FIELDS:
+        return INLINE_FIELDS[kind]
+    return [f for f, role in (KINDS.get(kind) or {}).get("fields", []) if role in ("body", "list")]
+
+
 def _pick(d, keys) -> dict:
     return {k: d[k] for k in keys if k in d} if isinstance(d, dict) else {}
 
@@ -124,7 +171,7 @@ def _citable_item(it) -> dict:
     if not isinstance(it, dict):
         return {}
     kind = it.get("kind")
-    out = _pick(it, INLINE_FIELDS.get(kind if isinstance(kind, str) else "", []) + CITE_FIELDS)
+    out = _pick(it, inline_fields(kind) + CITE_FIELDS)
     if kind == "timeline" and isinstance(it.get("events"), list):
         out["events"] = [_pick(e, ["text", "cites"]) for e in it["events"]]
     return out
@@ -569,6 +616,51 @@ def _check_gaps_limits(pack, w, bad):
         bad("limits", "must be a non-empty list of text")
 
 
+SKILLS_DIR = REFS.parent.parent                                  # skills/<name>/skill.json
+DOSSIER_PACK_RX = re.compile(r"dossier-(?:F\d+[a-z]?|index)")
+VARIANT_RX = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+
+
+def skill_pack(skill):
+    """skills/<skill>/skill.json produces.pack, or None; KeyError when there is no such skill."""
+    if not (isinstance(skill, str) and SLUG_RX.fullmatch(skill)):
+        raise KeyError(skill)
+    try:
+        man = json.loads((SKILLS_DIR / skill / "skill.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        raise KeyError(skill) from e
+    pk = (man.get("produces") or {}).get("pack") if isinstance(man, dict) else None
+    return pk if isinstance(pk, str) else None
+
+
+def pack_fits_skill(name, skill) -> bool:
+    """Ruling P4-22: pack name `name` is the skill's produces.pack, or <produces.pack>-<variant>, or (for
+    cluster-learning-dossier only) dossier-F<nn>[a-z] or dossier-index. False for an unknown skill."""
+    try:
+        main = skill_pack(skill)
+    except KeyError:
+        return False
+    if not isinstance(name, str) or not main:
+        return False
+    if skill == "cluster-learning-dossier":
+        return bool(DOSSIER_PACK_RX.fullmatch(name))
+    return name == main or (name.startswith(main + "-") and bool(VARIANT_RX.fullmatch(name[len(main) + 1:])))
+
+
+def _check_skill(pack, bad):
+    """Optional top-level `skill` (L4-29): a folder in skills/ with a skill.json, which produces this pack."""
+    if "skill" not in pack:
+        return
+    sk = pack["skill"]
+    try:
+        skill_pack(sk)
+    except KeyError:
+        bad("skill", f"unknown skill {sk}")
+        return
+    if _text(pack.get("pack")) and not pack_fits_skill(pack["pack"], sk):
+        bad("skill", f"pack {pack['pack']} is not a pack or variant of skill {sk}")
+
+
 def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register=None) -> Result:
     """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings). register: a
     loaded Learnings Register, against which learning ids are checked (P3-12). strict (Ruling P3-5): pack-profile
@@ -599,6 +691,7 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
         bad("schema", f"must be {SCHEMA_VERSION}")
     if _text(pack.get("pack")) and not PACK_NAME_RX.fullmatch(pack["pack"]):
         bad("pack", "must be lowercase words joined by hyphens (or dossier-F<nn>)")
+    _check_skill(pack, bad)
     inc = pack.get("incident")
     if inc is not None:
         if not isinstance(inc, dict):
