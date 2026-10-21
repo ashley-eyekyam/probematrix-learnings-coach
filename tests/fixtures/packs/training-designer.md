@@ -8,7 +8,7 @@ Draft because: no finding is marked as edited by a person
 
 *Learning purposes: not a statutory document · Learnings drafted by an AI agent from AI-assisted findings*
 
-*About 1 min read*
+*About 2 min read*
 
 **Audience:** Training and L&D
 
