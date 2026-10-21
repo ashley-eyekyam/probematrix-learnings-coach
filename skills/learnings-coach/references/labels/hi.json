@@ -176,5 +176,6 @@
  "f.what_you_can_do": "आप क्या कर सकते हैं?",
  "ui.decision_point": "फ़ैसले का बिंदु",
  "ui.script_time": "समय",
- "ui.total_duration": "कुल समय: {time} (मिनट:सेकंड)"
+ "ui.total_duration": "कुल समय: {time} (मिनट:सेकंड)",
+ "ui.email.learnings_left": "{n} और सीख पूरे रजिस्टर में हैं (learnings-register.docx / .md)"
 }
