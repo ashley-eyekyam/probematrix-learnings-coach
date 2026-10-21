@@ -80,6 +80,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `docx` | document | `<pack>.docx` (`<pack>.paper.docx` with the `paper` layout) | A Word document on A4: the title with the status line under it, the DRAFT line, the handling lines and the reading time, then the bottom line, one heading per section, coverage, gaps and limits. Tables are real Word tables whose header row repeats on each page. Each item's citations are one endnote, listing every cited finding as `ID: label · L<level> · rating <r>` and every cited evidence item as `ID: type`. The footer of every page carries the status phrase, the ProbeMatrix credit and the page number; a draft has DRAFT in its header. The file has no author. With the `paper` layout a board paper is written as well: a cover page, "Decisions requested" (decision items, then the bottom line), numbered paragraphs (`1.`, `1.1`), Annex A for questions and Annex B for tables and indicators |
 | `srt` | data | `<pack>.<item-id>.srt` | Subtitles from each `script` item: one cue per segment, timed cumulatively from 00:00:00,000, the narration wrapped at 42 characters and 2 lines a cue (a longer narration splits into cues that share the segment's time). No status line: it would show on screen. Prints "nothing to write" when the pack has no script item |
 | `narration` | data | `<pack>.<item-id>.narration.txt` | Each `script` item's narration only, one paragraph per segment, for a voice-over or a PA reader. No status line and no citations: the text is spoken. The shooting script in the html and md carries the status |
+| `pptx` | document | `<pack>.pptx` | A 16:9 slide deck for a briefing. In order: a title slide (title, audience, incident, status, DRAFT label, handling), one slide per bottom-line entry, one slide per decision, module and question, one slide per other section with up to six item summaries (further items go on slides titled "(continued)"), one slide per graph drawn as boxes and arrows you can edit, with every label in full, and a closing slide with the coverage lines. Every slide carries the status phrase and the ProbeMatrix credit in its footer, and DRAFT while the pack is a draft. The slides show no Finding or Evidence IDs: each slide's speaker notes hold the items' full text, their citations and the cited findings (label, level, rating). With `--view learner`, `<pack>.learner.pptx` leaves the answers out of slides and notes alike |
 
 A typed question has a `type` (`single`, `multi`, `truefalse` or `short`) and `options`, a list of `{"text": ..., "correct": true or false}`. `check-pack` stops a `single` or `truefalse` question without exactly one correct option, a `multi` with none, a `truefalse` without exactly two options, and a `short` whose accepted answers are not all marked correct. With the learner view the correct-option flags are left out, and a `short` question's options (its answers) are left out altogether. A pack with no questions has nothing to write for these three formats.
 
@@ -167,6 +168,17 @@ python3 $E pack $WS $OUT/board-brief.json --format html,docx
 …
 HTML written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.html
 docx written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.docx
+```
+
+A slide deck of the site leadership coach, for the leadership team's meeting:
+
+```bash
+python3 $E pack $WS $OUT/site-leadership-coach.json --format pptx
+```
+
+```text
+…
+pptx written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/site-leadership-coach.pptx
 ```
 
 A learner copy of a training pack, without the answer keys:

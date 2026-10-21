@@ -192,5 +192,8 @@
  "ui.layout.more_events": "{n} और घटनाएँ पूरे पैक में हैं",
  "ui.layout.decisions_requested": "माँगे गए निर्णय",
  "ui.layout.annex_a": "अनुलग्नक A: प्रश्न",
- "ui.layout.annex_b": "अनुलग्नक B: तालिकाएँ और संकेतक"
+ "ui.layout.annex_b": "अनुलग्नक B: तालिकाएँ और संकेतक",
+ "ui.pptx.continued": "{heading} (जारी)",
+ "ui.pptx.entries": "{n} प्रविष्टियाँ",
+ "ui.pptx.cited_records": "उद्धृत रिकॉर्ड"
 }

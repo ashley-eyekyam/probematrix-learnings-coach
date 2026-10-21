@@ -192,5 +192,8 @@
  "ui.layout.more_events": "{n} more events are in the full pack",
  "ui.layout.decisions_requested": "Decisions requested",
  "ui.layout.annex_a": "Annex A: Questions",
- "ui.layout.annex_b": "Annex B: Tables and indicators"
+ "ui.layout.annex_b": "Annex B: Tables and indicators",
+ "ui.pptx.continued": "{heading} (continued)",
+ "ui.pptx.entries": "{n} entries",
+ "ui.pptx.cited_records": "Cited records"
 }
