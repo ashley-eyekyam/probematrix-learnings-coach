@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "skill.schema.json",
   "title": "ProbeMatrix Learnings Coach skill manifest",
-  "description": "Machine-readable contract for one skill (skills/<name>/skill.json). Uses only the keyword subset the engine validates: type, enum, required, properties, additionalProperties, items, pattern, const.",
+  "description": "Machine-readable contract for one skill (skills/<name>/skill.json). Uses only the keyword subset the engine validates (pmlc_lib/contracts.py SUPPORTED_KEYWORDS).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -124,7 +124,8 @@
             "string",
             "null"
           ],
-          "description": "Pack name, or null."
+          "pattern": "^[a-z][a-z0-9-]*(-<[A-Za-z-]+>)?$",
+          "description": "One pack name (or one pattern such as dossier-<F-id>), or null. Never a comma-joined list: a skill that writes several packs names its main one here and lists the rest under files."
         },
         "files": {
           "type": "array",

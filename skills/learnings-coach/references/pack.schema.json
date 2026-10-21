@@ -1,0 +1,1672 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pack.schema.json",
+  "title": "ProbeMatrix Learnings Coach pack",
+  "description": "Structural contract for one learning pack (schema version 1). It checks shape only. The engine's `check-pack` also checks that every cited ID exists in the workspace, the language rules, handling, scope, profiles and coverage. Items allow extra fields, which check-pack warns about. Uses only the keyword subset the engine validates (pmlc_lib/contracts.py SUPPORTED_KEYWORDS). Each item kind has its own $defs/item_<kind>, chosen by its `kind` constant.",
+  "type": "object",
+  "required": [
+    "pack",
+    "schema",
+    "title",
+    "audience",
+    "status",
+    "bottom_line",
+    "sections"
+  ],
+  "properties": {
+    "pack": {
+      "$ref": "#/$defs/pack_name"
+    },
+    "schema": {
+      "const": 1
+    },
+    "title": {
+      "$ref": "#/$defs/text"
+    },
+    "audience": {
+      "$ref": "#/$defs/text"
+    },
+    "status": {
+      "$ref": "#/$defs/text"
+    },
+    "skill": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "The skill that wrote the pack, when its name differs from the pack name."
+    },
+    "lang": {
+      "$ref": "#/$defs/lang"
+    },
+    "dir": {
+      "enum": [
+        "ltr",
+        "rtl"
+      ]
+    },
+    "translation_of": {
+      "$ref": "#/$defs/pack_name"
+    },
+    "incident": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "date": {
+          "$ref": "#/$defs/iso_date"
+        }
+      }
+    },
+    "bottom_line": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/bottom_line_entry"
+      },
+      "description": "At most 7 entries (checked by check-pack)."
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "data_quality": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "text": {
+            "$ref": "#/$defs/text"
+          },
+          "cites": {
+            "$ref": "#/$defs/cites"
+          }
+        }
+      }
+    },
+    "exclusions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "reason"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^FND-[0-9A-Za-z]{4,}$"
+          },
+          "reason": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "text",
+          "evidence_needed"
+        ],
+        "properties": {
+          "text": {
+            "$ref": "#/$defs/text"
+          },
+          "cites": {
+            "$ref": "#/$defs/cites"
+          },
+          "evidence_needed": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "limits": {
+      "$ref": "#/$defs/text_list"
+    },
+    "handling": {
+      "$ref": "#/$defs/handling"
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/section"
+      }
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "id_list": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(FND-[0-9A-Za-z]{4,}|EVD-\\d{3,})$"
+      },
+      "description": "Finding or Evidence IDs (FND-..., EVD-...)."
+    },
+    "cites": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(FND-[0-9A-Za-z]{4,}|EVD-\\d{3,})$"
+      }
+    },
+    "cites_required": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^(FND-[0-9A-Za-z]{4,}|EVD-\\d{3,})$"
+      }
+    },
+    "text_list": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "pack_name": {
+      "type": "string",
+      "pattern": "^(?:[a-z0-9]+(?:-[a-z0-9]+)*|dossier-F\\d+[a-z]?)$"
+    },
+    "iso_date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "partial_date": {
+      "type": "string",
+      "pattern": "^\\d{4}(?:-\\d{2}(?:-\\d{2})?)?$"
+    },
+    "evidence_strength": {
+      "enum": [
+        "direct",
+        "corroborated",
+        "inferred"
+      ]
+    },
+    "learning_id": {
+      "type": "string",
+      "pattern": "^LR-\\d{2,}$"
+    },
+    "comparator_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(OBS|RC|REC|ACT)-\\d{2,}$"
+      }
+    },
+    "cell": {
+      "type": [
+        "string",
+        "number"
+      ]
+    },
+    "lang": {
+      "type": "string",
+      "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$",
+      "description": "BCP 47 language tag; default en."
+    },
+    "bottom_line_entry": {
+      "type": "object",
+      "required": [
+        "text",
+        "cites"
+      ],
+      "properties": {
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites_required"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        }
+      }
+    },
+    "question_option": {
+      "type": "object",
+      "required": [
+        "text",
+        "correct"
+      ],
+      "properties": {
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "correct": {
+          "type": "boolean"
+        }
+      }
+    },
+    "inject": {
+      "type": "object",
+      "required": [
+        "offset",
+        "text"
+      ],
+      "properties": {
+        "offset": {
+          "type": "string",
+          "pattern": "^\\+\\d{1,3}:[0-5]\\d$"
+        },
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "decision": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "timeline_event": {
+      "type": "object",
+      "required": [
+        "date",
+        "text"
+      ],
+      "properties": {
+        "date": {
+          "$ref": "#/$defs/partial_date"
+        },
+        "time": {
+          "type": "string",
+          "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "signal": {
+          "type": "boolean"
+        },
+        "knowable_then": {
+          "type": [
+            "boolean",
+            "string"
+          ]
+        },
+        "received_by": {
+          "$ref": "#/$defs/text"
+        },
+        "response": {
+          "$ref": "#/$defs/text"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        }
+      }
+    },
+    "graph_node": {
+      "type": "object",
+      "required": [
+        "id",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/text"
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "graph_edge": {
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/text"
+        },
+        "to": {
+          "$ref": "#/$defs/text"
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "script_segment": {
+      "type": "object",
+      "required": [
+        "visual",
+        "narration",
+        "seconds"
+      ],
+      "properties": {
+        "visual": {
+          "$ref": "#/$defs/text"
+        },
+        "narration": {
+          "$ref": "#/$defs/text"
+        },
+        "seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "on_screen": {
+          "$ref": "#/$defs/text"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        }
+      }
+    },
+    "item_para": {
+      "type": "object",
+      "required": [
+        "kind",
+        "text"
+      ],
+      "properties": {
+        "kind": {
+          "const": "para"
+        },
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_check": {
+      "type": "object",
+      "required": [
+        "kind",
+        "text"
+      ],
+      "properties": {
+        "kind": {
+          "const": "check"
+        },
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "hold_point": {
+          "type": "boolean"
+        },
+        "when": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_question": {
+      "type": "object",
+      "required": [
+        "kind",
+        "question",
+        "why"
+      ],
+      "properties": {
+        "kind": {
+          "const": "question"
+        },
+        "question": {
+          "$ref": "#/$defs/text"
+        },
+        "why": {
+          "$ref": "#/$defs/text"
+        },
+        "answer": {
+          "$ref": "#/$defs/text"
+        },
+        "good_evidence": {
+          "$ref": "#/$defs/text"
+        },
+        "to": {
+          "$ref": "#/$defs/text"
+        },
+        "type": {
+          "enum": [
+            "single",
+            "multi",
+            "truefalse",
+            "short"
+          ],
+          "description": "Quiz type. Without it the question is a discussion question."
+        },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/question_option"
+          },
+          "description": "single and truefalse need exactly one correct option, multi at least one; short lists the accepted answers (all correct)."
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "if": {
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "const": "short"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "options": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "item_recommendation": {
+      "type": "object",
+      "required": [
+        "kind",
+        "change",
+        "indicator",
+        "hoc_tier",
+        "cites"
+      ],
+      "properties": {
+        "kind": {
+          "const": "recommendation"
+        },
+        "change": {
+          "$ref": "#/$defs/text"
+        },
+        "indicator": {
+          "$ref": "#/$defs/text"
+        },
+        "hoc_tier": {
+          "$ref": "#/$defs/text"
+        },
+        "barrier": {
+          "$ref": "#/$defs/text"
+        },
+        "owner": {
+          "$ref": "#/$defs/text"
+        },
+        "by_when": {
+          "$ref": "#/$defs/text"
+        },
+        "co_owner": {
+          "$ref": "#/$defs/text"
+        },
+        "why_not_stronger": {
+          "$ref": "#/$defs/text"
+        },
+        "barrier_id": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites_required"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_decision": {
+      "type": "object",
+      "required": [
+        "kind",
+        "decision"
+      ],
+      "properties": {
+        "kind": {
+          "const": "decision"
+        },
+        "decision": {
+          "$ref": "#/$defs/text"
+        },
+        "options": {
+          "$ref": "#/$defs/text_list"
+        },
+        "trade_offs": {
+          "$ref": "#/$defs/text"
+        },
+        "owner": {
+          "$ref": "#/$defs/text"
+        },
+        "by_when": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_indicator": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "measure"
+      ],
+      "properties": {
+        "kind": {
+          "const": "indicator"
+        },
+        "name": {
+          "$ref": "#/$defs/text"
+        },
+        "measure": {
+          "$ref": "#/$defs/text"
+        },
+        "deterioration": {
+          "$ref": "#/$defs/text"
+        },
+        "owner": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_card": {
+      "type": "object",
+      "required": [
+        "kind",
+        "title",
+        "what_happened",
+        "warning_signs",
+        "good_looks_like",
+        "cites"
+      ],
+      "properties": {
+        "kind": {
+          "const": "card"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "what_happened": {
+          "$ref": "#/$defs/text"
+        },
+        "warning_signs": {
+          "$ref": "#/$defs/text_list"
+        },
+        "good_looks_like": {
+          "$ref": "#/$defs/text"
+        },
+        "why_made_sense": {
+          "$ref": "#/$defs/text"
+        },
+        "organisation_changing": {
+          "$ref": "#/$defs/text"
+        },
+        "discussion": {
+          "$ref": "#/$defs/text_list"
+        },
+        "did_you_know": {
+          "$ref": "#/$defs/text_list"
+        },
+        "what_you_can_do": {
+          "$ref": "#/$defs/text_list"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites_required"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_scenario": {
+      "type": "object",
+      "required": [
+        "kind",
+        "situation",
+        "prompts"
+      ],
+      "properties": {
+        "kind": {
+          "const": "scenario"
+        },
+        "situation": {
+          "$ref": "#/$defs/text"
+        },
+        "prompts": {
+          "$ref": "#/$defs/text_list"
+        },
+        "injects": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/inject"
+          }
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_table": {
+      "type": "object",
+      "required": [
+        "kind",
+        "columns",
+        "rows"
+      ],
+      "properties": {
+        "kind": {
+          "const": "table"
+        },
+        "columns": {
+          "$ref": "#/$defs/text_list"
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/cell"
+            }
+          }
+        },
+        "row_cites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cites"
+          }
+        },
+        "row_supporting_cites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cites"
+          }
+        },
+        "finding_notes": {
+          "type": "object"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_test_point": {
+      "type": "object",
+      "required": [
+        "kind",
+        "requirement",
+        "sample",
+        "conformity_evidence",
+        "cites"
+      ],
+      "properties": {
+        "kind": {
+          "const": "test_point"
+        },
+        "requirement": {
+          "$ref": "#/$defs/text"
+        },
+        "sample": {
+          "$ref": "#/$defs/text"
+        },
+        "conformity_evidence": {
+          "$ref": "#/$defs/text"
+        },
+        "red_flags": {
+          "$ref": "#/$defs/text_list"
+        },
+        "clause": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites_required"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_module": {
+      "type": "object",
+      "required": [
+        "kind",
+        "title",
+        "objective",
+        "content"
+      ],
+      "properties": {
+        "kind": {
+          "const": "module"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "objective": {
+          "$ref": "#/$defs/text"
+        },
+        "content": {
+          "$ref": "#/$defs/text_list"
+        },
+        "audience": {
+          "$ref": "#/$defs/text"
+        },
+        "duration": {
+          "$ref": "#/$defs/text"
+        },
+        "assessment": {
+          "$ref": "#/$defs/text_list"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_barrier": {
+      "type": "object",
+      "required": [
+        "kind",
+        "barrier",
+        "failure_mode",
+        "hoc_tier",
+        "cites"
+      ],
+      "properties": {
+        "kind": {
+          "const": "barrier"
+        },
+        "barrier": {
+          "$ref": "#/$defs/text"
+        },
+        "failure_mode": {
+          "$ref": "#/$defs/text"
+        },
+        "hoc_tier": {
+          "$ref": "#/$defs/text"
+        },
+        "type": {
+          "$ref": "#/$defs/text"
+        },
+        "fix": {
+          "$ref": "#/$defs/text"
+        },
+        "owner": {
+          "$ref": "#/$defs/text"
+        },
+        "state": {
+          "enum": [
+            "absent",
+            "degraded",
+            "defeated",
+            "worked partly",
+            "worked"
+          ]
+        },
+        "indicator": {
+          "$ref": "#/$defs/text"
+        },
+        "barrier_id": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites_required"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_timeline": {
+      "type": "object",
+      "required": [
+        "kind",
+        "events"
+      ],
+      "properties": {
+        "kind": {
+          "const": "timeline"
+        },
+        "events": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/timeline_event"
+          }
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_graph": {
+      "type": "object",
+      "required": [
+        "kind",
+        "nodes",
+        "edges"
+      ],
+      "properties": {
+        "kind": {
+          "const": "graph"
+        },
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/graph_node"
+          }
+        },
+        "edges": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/graph_edge"
+          }
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_learning": {
+      "type": "object",
+      "required": [
+        "kind",
+        "lesson",
+        "cites"
+      ],
+      "properties": {
+        "kind": {
+          "const": "learning"
+        },
+        "lesson": {
+          "$ref": "#/$defs/text"
+        },
+        "explanation": {
+          "$ref": "#/$defs/text"
+        },
+        "owner": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites_required"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_toolbox": {
+      "type": "object",
+      "required": [
+        "kind",
+        "opening_question",
+        "story",
+        "warning_signs",
+        "one_change",
+        "crew_question",
+        "cites"
+      ],
+      "properties": {
+        "kind": {
+          "const": "toolbox"
+        },
+        "opening_question": {
+          "$ref": "#/$defs/text"
+        },
+        "story": {
+          "$ref": "#/$defs/text"
+        },
+        "warning_signs": {
+          "$ref": "#/$defs/text_list"
+        },
+        "one_change": {
+          "$ref": "#/$defs/text"
+        },
+        "crew_question": {
+          "$ref": "#/$defs/text"
+        },
+        "duration": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites_required"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_script": {
+      "type": "object",
+      "required": [
+        "kind",
+        "title",
+        "segments",
+        "cites"
+      ],
+      "properties": {
+        "kind": {
+          "const": "script"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/script_segment"
+          }
+        },
+        "purpose": {
+          "$ref": "#/$defs/text"
+        },
+        "channel": {
+          "enum": [
+            "video",
+            "radio",
+            "pa",
+            "screen"
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites_required"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/item_para"
+        },
+        {
+          "$ref": "#/$defs/item_check"
+        },
+        {
+          "$ref": "#/$defs/item_question"
+        },
+        {
+          "$ref": "#/$defs/item_recommendation"
+        },
+        {
+          "$ref": "#/$defs/item_decision"
+        },
+        {
+          "$ref": "#/$defs/item_indicator"
+        },
+        {
+          "$ref": "#/$defs/item_card"
+        },
+        {
+          "$ref": "#/$defs/item_scenario"
+        },
+        {
+          "$ref": "#/$defs/item_table"
+        },
+        {
+          "$ref": "#/$defs/item_test_point"
+        },
+        {
+          "$ref": "#/$defs/item_module"
+        },
+        {
+          "$ref": "#/$defs/item_barrier"
+        },
+        {
+          "$ref": "#/$defs/item_timeline"
+        },
+        {
+          "$ref": "#/$defs/item_graph"
+        },
+        {
+          "$ref": "#/$defs/item_learning"
+        },
+        {
+          "$ref": "#/$defs/item_toolbox"
+        },
+        {
+          "$ref": "#/$defs/item_script"
+        }
+      ]
+    },
+    "section": {
+      "type": "object",
+      "required": [
+        "id",
+        "heading",
+        "items"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "heading": {
+          "$ref": "#/$defs/text"
+        },
+        "intro": {
+          "$ref": "#/$defs/text"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/item"
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tiers": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "T1",
+              "T2",
+              "T3",
+              "T4",
+              "T5"
+            ]
+          }
+        },
+        "levels": {
+          "type": "array",
+          "items": {
+            "enum": [
+              1,
+              2,
+              3,
+              4
+            ]
+          }
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "min_rating": {
+          "type": [
+            "integer",
+            "string"
+          ],
+          "description": "A whole number or \"top\"."
+        },
+        "entity_mode": {
+          "enum": [
+            "any",
+            "all"
+          ]
+        }
+      }
+    },
+    "handling": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "draft",
+            "reviewed",
+            "approved"
+          ]
+        },
+        "reviewer_role": {
+          "$ref": "#/$defs/text"
+        },
+        "reviewed_on": {
+          "$ref": "#/$defs/iso_date"
+        },
+        "classification": {
+          "enum": [
+            "internal",
+            "restricted",
+            "external",
+            "public"
+          ]
+        },
+        "legal_review": {
+          "enum": [
+            "not-required",
+            "requested",
+            "cleared"
+          ]
+        },
+        "distribution": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "version": {
+          "$ref": "#/$defs/text"
+        },
+        "retention_review": {
+          "$ref": "#/$defs/iso_date"
+        },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}

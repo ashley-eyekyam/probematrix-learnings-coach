@@ -129,6 +129,7 @@ These files in the skills folder (`skills/learnings-coach/references/` unless st
 |---|---|---|
 | `skills/<skill>/skill.json` | One per skill: its kind (hub, analysis, audience, register or dissemination today; interactive and multi-incident are reserved for later skills), audiences, scope, what it requires and produces, the default share level and the questions to ask | `plan`, `index`, the hub |
 | `skill.schema.json` | The schema every `skill.json` must follow | the engine's contract check and the test suite |
+| `pack.schema.json` | The published JSON Schema (draft 2020-12) for a learning pack: its shape, every item kind and every optional field. It checks structure only; `check-pack` also checks that cited IDs exist, the language rules, handling and coverage. Other tools can use it to validate a pack before it reaches the engine | the test suite; your own validators |
 | `artefacts.json` | Every file a step can produce or need (workspace, clusters, register, gaps, adoption and so on), with its path in the run folder and what produces it | `plan` |
 | `workflows.json` | The nine workflow presets and their steps, in order | `plan`, the hub |
 | `audiences.json` | One entry per audience: who they are, what they control, what they need, their tier and levels, and the skill that serves them. `audiences.md` is generated from it | `plan --audiences`, the hub |
