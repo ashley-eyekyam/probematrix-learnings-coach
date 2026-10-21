@@ -124,7 +124,8 @@ def find_browser():
 def _rn_html(ctx: RenderContext) -> list:
     from ..handling import status_line
     from ..pack.html import render_pack_html
-    page = render_pack_html(ctx.w, ctx.pack, ctx.run, ctx.generated, ctx.embed, eh=ctx.eh, share=ctx.share)
+    page = render_pack_html(ctx.w, ctx.pack, ctx.run, ctx.generated, ctx.embed, eh=ctx.eh, share=ctx.share,
+                            labels=ctx.labels)
     if ctx.view == "learner":
         status = f'<p class="status">{_rn_esc(status_line(ctx.pack["status"]))}</p>\n'
         page = page.replace(status, status + f'<p class="status learner">{LEARNER_BANNER}</p>\n', 1)
@@ -139,7 +140,7 @@ def _rn_esc(s) -> str:
 def _rn_md(ctx: RenderContext) -> list:
     from ..handling import status_line
     from ..pack.markdown import render_pack_md
-    text = render_pack_md(ctx.pack, ctx.w, eh=ctx.eh, share=ctx.share)
+    text = render_pack_md(ctx.pack, ctx.w, eh=ctx.eh, share=ctx.share, labels=ctx.labels)
     if ctx.view == "learner":
         status = f"*{status_line(ctx.pack['status'])}*"
         text = text.replace(status, f"{status}\n\n*{LEARNER_BANNER}*", 1)
