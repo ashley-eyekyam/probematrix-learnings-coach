@@ -1,0 +1,1555 @@
+{
+ "pack": "dossier-F02",
+ "schema": 1,
+ "title": "Cluster Learning Dossier F02 Mechanical Maintenance: Hazira gas terminal release and fire, 2020",
+ "audience": "Mechanical Maintenance (F02), all tiers",
+ "status": "Learning purposes: not a statutory document; draft: the investigation status is in progress",
+ "incident": {
+  "title": "Hazira gas terminal condensate release and fire",
+  "date": "2020-09-24"
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the ProbeMatrix investigation status is in progress and no finding is marked as edited by a person. Validate before adoption."
+  },
+  {
+   "text": "The export mentions regulator involvement but its summary sheet says 'Reportable to Regulator: No'. Confirm the reporting status with the organisation; this pack does not decide it."
+  }
+ ],
+ "scope": {
+  "entities": [
+   "F02"
+  ]
+ },
+ "bottom_line": [
+  {
+   "text": "No one owned the specification for the meter seal, so a locally bought O-ring with no specification or quality check became the regular part.",
+   "cites": [
+    "FND-23139BF9",
+    "FND-B56701CA",
+    "EVD-8645"
+   ],
+   "learning": "LR-01",
+   "evidence_strength": "corroborated"
+  },
+  {
+   "text": "No procedure required a test to design pressure after the repair; the joint went back into service proved only at operating pressure.",
+   "cites": [
+    "FND-50C7319E",
+    "FND-4944554C",
+    "EVD-2894"
+   ],
+   "learning": "LR-02",
+   "evidence_strength": "direct"
+  },
+  {
+   "text": "The repair was planned and manned like routine work, with no independent check of the part, the method or the test.",
+   "cites": [
+    "FND-615DB819",
+    "FND-F8C125D5",
+    "EVD-2894"
+   ],
+   "learning": "LR-03",
+   "evidence_strength": "corroborated"
+  },
+  {
+   "text": "Repeat seal failures on the same meter were fixed one at a time and never escalated for root cause.",
+   "cites": [
+    "FND-1A251687",
+    "FND-D14B8424",
+    "EVD-1494"
+   ],
+   "learning": "LR-05",
+   "evidence_strength": "direct"
+  },
+  {
+   "text": "The notification for the malfunction stayed open after the repair, so no close-out review looked at the part or the test.",
+   "cites": [
+    "FND-FA807C69",
+    "FND-678E51A3",
+    "EVD-0591"
+   ],
+   "learning": "LR-04",
+   "evidence_strength": "direct"
+  }
+ ],
+ "sections": [
+  {
+   "id": "front-sheet",
+   "heading": "Front sheet: decisions and indicators",
+   "items": [
+    {
+     "kind": "decision",
+     "group": "Seal specification",
+     "decision": "Give one function ownership of every pressure-part specification on the site and of approving any substitute.",
+     "options": [
+      "Maintenance owns the specification and engineering approves substitutes",
+      "Engineering owns both, with maintenance and stores bound to its specification list"
+     ],
+     "trade_offs": "Ownership in maintenance sits close to the work; ownership in engineering keeps the design authority in one place. Either way the stores issue rule must follow it.",
+     "learning": "LR-01",
+     "cites": [
+      "FND-23139BF9",
+      "FND-B56701CA",
+      "EVD-8645"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "Return to service",
+     "decision": "Make a test to design pressure, or an engineered equivalent, a hold point before any pressure-boundary joint returns to service.",
+     "options": [
+      "A written procedure with a hold point in the work order",
+      "The same, with the work-order system refusing release until a test result is entered"
+     ],
+     "trade_offs": "A system block is stronger than a procedure but needs the work-order system changed; both lengthen the return to service.",
+     "learning": "LR-02",
+     "cites": [
+      "FND-50C7319E",
+      "FND-137BC719",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "Repeat failures",
+     "decision": "Decide how a repeat failure of the same pressure item is escalated, and when an item is replaced rather than repaired again.",
+     "options": [
+      "An automatic repeat-failure trigger in the maintenance system",
+      "A monthly repeat-failure review owned by a reliability role"
+     ],
+     "trade_offs": "A trigger catches every repeat but needs someone to own the analysis it opens; a review needs a role the site does not have today.",
+     "learning": "LR-05",
+     "cites": [
+      "FND-1A251687",
+      "FND-AC8FBB26",
+      "EVD-1494"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "Seal specification",
+     "name": "Pressure-boundary spares with a specification",
+     "measure": "Share of critical pressure-boundary spares with a specification and certificate on file.",
+     "deterioration": "Any seal issued from stores without a specification reference.",
+     "cites": [
+      "FND-B56701CA"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "Return to service",
+     "name": "Returns to service with a test record",
+     "measure": "Share of pressure-boundary jobs returned to service with a recorded test result and witness signature.",
+     "deterioration": "Any return to service on an operating-pressure check only.",
+     "cites": [
+      "FND-50C7319E"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "Repeat failures",
+     "name": "Repeat failures reviewed",
+     "measure": "Number of pressure items with a second corrective job within 12 months, and the share with a completed root-cause review.",
+     "deterioration": "A third repair of the same item with no review.",
+     "cites": [
+      "FND-1A251687"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s1-profile",
+   "heading": "S1 Profile",
+   "intro": "194 findings name Mechanical Maintenance: 22 at L1, 36 at L2, 86 at L3 and 50 at L4. A finding can name roles at several tiers.",
+   "items": [
+    {
+     "kind": "table",
+     "id": "entity-tier-f02",
+     "columns": [
+      "Tier",
+      "Name",
+      "Findings",
+      "L1",
+      "L2",
+      "L3",
+      "L4",
+      "Top-rated"
+     ],
+     "rows": [
+      [
+       "T2",
+       "First-line supervision / shift in-charge",
+       127,
+       8,
+       27,
+       60,
+       32,
+       61
+      ],
+      [
+       "T1",
+       "Frontline / sharp end",
+       115,
+       18,
+       35,
+       37,
+       25,
+       61
+      ],
+      [
+       "T3",
+       "Function / department management",
+       101,
+       10,
+       11,
+       57,
+       23,
+       49
+      ],
+      [
+       "T9",
+       "Unresolved",
+       38,
+       1,
+       7,
+       8,
+       22,
+       19
+      ],
+      [
+       "T4",
+       "Plant / asset leadership",
+       16,
+       3,
+       6,
+       6,
+       1,
+       10
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-01ADF0AA",
+       "FND-110F964C",
+       "FND-1662466D",
+       "FND-257C1100",
+       "FND-28F8790B"
+      ],
+      [
+       "FND-01ADF0AA",
+       "FND-15279F97",
+       "FND-1662466D",
+       "FND-212DC9B7",
+       "FND-28F8790B"
+      ],
+      [
+       "FND-110F964C",
+       "FND-1280E788",
+       "FND-137BC719",
+       "FND-1A251687",
+       "FND-23139BF9"
+      ],
+      [
+       "FND-1A251687",
+       "FND-2FAB8D51",
+       "FND-3746C7B6",
+       "FND-3AB996FC",
+       "FND-42BEF461"
+      ],
+      [
+       "FND-1280E788",
+       "FND-314D34C5",
+       "FND-5919B328",
+       "FND-7505B1AF",
+       "FND-9B406A83"
+      ]
+     ],
+     "cites": [
+      "FND-01ADF0AA",
+      "FND-110F964C",
+      "FND-1280E788",
+      "FND-137BC719",
+      "FND-15279F97",
+      "FND-1662466D",
+      "FND-1A251687",
+      "FND-212DC9B7",
+      "FND-23139BF9",
+      "FND-257C1100",
+      "FND-28F8790B",
+      "FND-2FAB8D51",
+      "FND-314D34C5",
+      "FND-3746C7B6",
+      "FND-3AB996FC",
+      "FND-42BEF461",
+      "FND-5919B328",
+      "FND-7505B1AF",
+      "FND-9B406A83"
+     ]
+    },
+    {
+     "kind": "para",
+     "text": "Every sub-division has a grounded learning except S13 Comparison, which is left out: no comparator report was supplied for this dossier. Findings where mechanical staff took part in the emergency response (the isolation decision and control-room competence) are covered in S6, because their learning belongs to other functions.",
+     "cites": [
+      "FND-314D34C5",
+      "FND-2AA87E93"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2-practice",
+   "heading": "S2 Practice (L1)",
+   "items": [
+    {
+     "kind": "learning",
+     "lesson": "Fitting the locally bought O-ring had become the normal way to do the job, so it did not feel like a choice.",
+     "explanation": "The substitute was used as a regular practice, with no specification or quality check to compare it against [FND-91B45FF9; FND-8C0BB623; EVD-8645]. It made sense at the time: the job had to be done, the original part could not be specified, and nothing in the system said stop.",
+     "learning": "LR-01",
+     "cites": [
+      "FND-91B45FF9",
+      "FND-8C0BB623",
+      "EVD-8645"
+     ],
+     "evidence_strength": "corroborated",
+     "supporting_cites": [
+      "FND-7A32AC87",
+      "FND-89962239",
+      "FND-B356F15B"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "With no written test, the crew used the check it had: pressurising to operating pressure.",
+     "explanation": "After the gasket change on 18 September 2020 no hydro test was done; the system was pressurised to operating pressure and the meter went online the next day [FND-FD617187; FND-4944554C; EVD-2894; EVD-0185]. No procedure named a test pressure, so the quickest available check passed the joint.",
+     "learning": "LR-02",
+     "cites": [
+      "FND-FD617187",
+      "FND-4944554C",
+      "EVD-2894",
+      "EVD-0185"
+     ],
+     "evidence_strength": "direct",
+     "supporting_cites": [
+      "FND-7C5ED5B3",
+      "FND-212DC9B7",
+      "FND-15279F97",
+      "FND-7FA02383"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "Each seal failure was handled as a fresh repair.",
+     "explanation": "The recurring failures were read as routine and repaired the same way, so the pattern started no review [FND-8DA35CA9; EVD-1494]. Nothing on the job record asked whether this was a repeat.",
+     "learning": "LR-05",
+     "cites": [
+      "FND-8DA35CA9",
+      "EVD-1494"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Notifications stayed open once the job was done.",
+     "explanation": "Maintenance notifications were not closed after the work was completed [FND-56C66B96; FND-50775B5A; EVD-0591]. Closing them was not tied to returning the equipment, so leaving them open had no visible effect.",
+     "learning": "LR-04",
+     "cites": [
+      "FND-56C66B96",
+      "FND-50775B5A",
+      "EVD-0591"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Painting was chosen for metal loss on a line with no corrosion allowance.",
+     "explanation": "The July 2019 measurement found 1.03mm loss and heavy pitting, and painting was the corrective action [FND-5EC15274; EVD-2397]. The 2017 thickness findings had waited more than three years for a plan [FND-6D307E93; EVD-5527], so a painting job may have looked like progress.",
+     "learning": "LR-17",
+     "cites": [
+      "FND-5EC15274",
+      "EVD-2397",
+      "FND-6D307E93",
+      "EVD-5527"
+     ],
+     "evidence_strength": "inferred"
+    }
+   ]
+  },
+  {
+   "id": "s3-conditions",
+   "heading": "S3 Conditions (L2)",
+   "items": [
+    {
+     "kind": "learning",
+     "lesson": "The job was set up without the information it needed: no specification and no quality check for the part.",
+     "explanation": "The original gasket specification was lost and no substitute specification or quality check existed, so the 18 September 2020 repair used a locally bought O-ring without engineering guidance [FND-82673283; FND-54180594; EVD-8645].",
+     "learning": "LR-01",
+     "cites": [
+      "FND-82673283",
+      "FND-54180594",
+      "EVD-8645"
+     ],
+     "evidence_strength": "corroborated",
+     "supporting_cites": [
+      "FND-DA67926D"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "There was no procedure for taking a high-pressure meter back into service.",
+     "explanation": "No SOP covered calibration and return to service of the high-pressure meters, and no hydrostatic test followed the gasket replacement [FND-9174A5B0; FND-FDFA6FF5; EVD-2894].",
+     "learning": "LR-02",
+     "cites": [
+      "FND-9174A5B0",
+      "FND-FDFA6FF5",
+      "EVD-2894"
+     ],
+     "evidence_strength": "direct",
+     "supporting_cites": [
+      "FND-1662466D"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "The repair was planned and manned like routine work.",
+     "explanation": "The job was planned without the specification, part quality control, hydrostatic test or notification closure, and no material or quality verification roles were assigned [FND-2FAB8D51; FND-28F8790B; EVD-8645; EVD-2894].",
+     "learning": "LR-03",
+     "cites": [
+      "FND-2FAB8D51",
+      "FND-28F8790B",
+      "EVD-8645",
+      "EVD-2894"
+     ],
+     "evidence_strength": "corroborated",
+     "supporting_cites": [
+      "FND-A6312B6B"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "A meter that kept failing stayed in service.",
+     "explanation": "The meter was kept in service across three gasket replacements in 22 months [FND-69067A1C; EVD-1494; EVD-0591].",
+     "learning": "LR-05",
+     "cites": [
+      "FND-69067A1C",
+      "EVD-1494",
+      "EVD-0591"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "lesson": "A damaged flame-proof lamp stayed in service in the hazardous area.",
+     "explanation": "The lamp had three bolts missing and its glass case open, and was not repaired before ignition [FND-784A23E4; EVD-6916].",
+     "learning": "LR-11",
+     "cites": [
+      "FND-784A23E4",
+      "EVD-6916"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "lesson": "The metering drawing did not match the field.",
+     "explanation": "The original drawing was lost, the vendor replacement was not checked or approved, and the valve and meter configuration did not match [FND-72DCEE68; FND-733F5A1A; EVD-0933].",
+     "learning": "LR-19",
+     "cites": [
+      "FND-72DCEE68",
+      "FND-733F5A1A",
+      "EVD-0933"
+     ],
+     "evidence_strength": "direct"
+    }
+   ]
+  },
+  {
+   "id": "s4-supervision",
+   "heading": "S4 Supervision (L3)",
+   "items": [
+    {
+     "kind": "learning",
+     "lesson": "Supervisors had no rule to enforce on the seal, and the substitution became the modelled norm.",
+     "explanation": "Supervision tolerated and modelled the O-ring substitution, and authorised it as a regular practice, without any specification or quality control to hold it to [FND-A443D288; FND-42BEF461; FND-852B7EC7; EVD-8645]. What a supervisor should refuse: a pressure part with no specification behind it.",
+     "learning": "LR-01",
+     "cites": [
+      "FND-A443D288",
+      "FND-42BEF461",
+      "FND-852B7EC7",
+      "EVD-8645"
+     ],
+     "evidence_strength": "corroborated",
+     "supporting_cites": [
+      "FND-45363DCA",
+      "FND-A2048FB8",
+      "FND-FFE174D0",
+      "FND-72A7D26C",
+      "FND-CEE4B00B",
+      "FND-3746C7B6",
+      "FND-D66ACA7B",
+      "FND-DEAA7F90",
+      "FND-A3D7D53F",
+      "FND-DE30BD8B"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "Return to service was authorised without the test, and the omission was not caught.",
+     "explanation": "The meter was released without a hydrostatic test, and no one identified or corrected the omission before it went back online [FND-5919B328; FND-8ACDE078; EVD-2894; EVD-0185]. What a supervisor should see before signing: the test result and who witnessed it.",
+     "learning": "LR-02",
+     "cites": [
+      "FND-5919B328",
+      "FND-8ACDE078",
+      "EVD-2894",
+      "EVD-0185"
+     ],
+     "evidence_strength": "direct",
+     "supporting_cites": [
+      "FND-611A8BFC",
+      "FND-904FCA63",
+      "FND-C34A026C",
+      "FND-257C1100",
+      "FND-137BC719",
+      "FND-C4E06264",
+      "FND-7A10FF70",
+      "FND-71EE9734"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "Pressure-boundary work was ordered without an independent check or a job safety analysis.",
+     "explanation": "The job was authorised with no independent quality control, inspection or permit verification, and no formal risk assessment [FND-F8C125D5; FND-63B6D260; EVD-5105].",
+     "learning": "LR-03",
+     "cites": [
+      "FND-F8C125D5",
+      "FND-63B6D260",
+      "EVD-5105"
+     ],
+     "evidence_strength": "corroborated",
+     "supporting_cites": [
+      "FND-59A2F497"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "Repeat failures did not reach a supervisor as a pattern.",
+     "explanation": "The recurring seal failures were not escalated into a root-cause investigation or a corrective engineering change [FND-110F964C; FND-D14B8424; FND-FEC84761; EVD-1494].",
+     "learning": "LR-05",
+     "cites": [
+      "FND-110F964C",
+      "FND-D14B8424",
+      "FND-FEC84761",
+      "EVD-1494"
+     ],
+     "evidence_strength": "direct",
+     "supporting_cites": [
+      "FND-71D631C1",
+      "FND-CEE3D4D7",
+      "FND-4EDE038A",
+      "FND-AC9A1E69"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "The notification for the repair was never closed or reviewed by supervision.",
+     "explanation": "The notification raised on 17 September 2020 was left open with no supervisory closure review [FND-FA807C69; FND-AE60859C; EVD-0591].",
+     "learning": "LR-04",
+     "cites": [
+      "FND-FA807C69",
+      "FND-AE60859C",
+      "EVD-0591"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Integrity findings were accepted without a corrective plan.",
+     "explanation": "Supervision accepted painting for the July 2019 pitting and left the 2017 thickness findings without a corrective plan [FND-ABDADA0C; FND-C6992EAF; EVD-2397; EVD-5527].",
+     "learning": "LR-17",
+     "cites": [
+      "FND-ABDADA0C",
+      "FND-C6992EAF",
+      "EVD-2397",
+      "EVD-5527"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Calibration work had no checklist, and the signed record did not show a setting change.",
+     "explanation": "No checklist was provided for high-pressure calibration jobs, and the December 2019 setting change was not in the signed documents [FND-D58142C9; FND-E94D563C; EVD-2506].",
+     "learning": "LR-16",
+     "cites": [
+      "FND-D58142C9",
+      "FND-E94D563C",
+      "EVD-2506"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Permit and job safety plan gaps were left uncorrected.",
+     "explanation": "Missing permits were not tracked and job safety plans were not attached, and supervision did not correct either [FND-A3D2773A; FND-EFC192D7; EVD-5105].",
+     "learning": "LR-22",
+     "cites": [
+      "FND-A3D2773A",
+      "FND-EFC192D7",
+      "EVD-5105"
+     ],
+     "evidence_strength": "direct"
+    }
+   ]
+  },
+  {
+   "id": "s5-system",
+   "heading": "S5 System (L4)",
+   "items": [
+    {
+     "kind": "learning",
+     "lesson": "No one owned pressure-part specifications or the approval of substitutes.",
+     "explanation": "No role owned the gasket specification, the quality control of its purchase or the authority to approve a substitute, and the organisation came to trust the locally bought O-ring as a valid seal [FND-23139BF9; FND-B56701CA; FND-D40839C1; EVD-8645].",
+     "learning": "LR-01",
+     "cites": [
+      "FND-23139BF9",
+      "FND-B56701CA",
+      "FND-D40839C1",
+      "EVD-8645"
+     ],
+     "evidence_strength": "corroborated",
+     "supporting_cites": [
+      "FND-B86F67F0",
+      "FND-BC4FD086",
+      "FND-8CE00707",
+      "FND-6B3A6492",
+      "FND-A0017E28"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "The organisation trusted operating pressure to prove a repaired joint.",
+     "explanation": "There was no return-to-service SOP for high-pressure meter work, and operating-pressure pressurisation was taken as enough [FND-50C7319E; FND-86CB3683; EVD-2894].",
+     "learning": "LR-02",
+     "cites": [
+      "FND-50C7319E",
+      "FND-86CB3683",
+      "EVD-2894"
+     ],
+     "evidence_strength": "direct",
+     "supporting_cites": [
+      "FND-3AB996FC",
+      "FND-491EDE74",
+      "FND-B91D4A23"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "Safety-critical maintenance was resourced like routine work.",
+     "explanation": "The job was manned with no independent quality-control role, test witness or closing supervisor [FND-615DB819; EVD-2894; EVD-8645].",
+     "learning": "LR-03",
+     "cites": [
+      "FND-615DB819",
+      "EVD-2894",
+      "EVD-8645"
+     ],
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "learning",
+     "lesson": "There was no reliability programme for ageing pressure equipment.",
+     "explanation": "The meter was left to routine resealing, with no manufacturer spares, root-cause work or replacement programme, and kept in service with a 1986 pressure boundary [FND-1A251687; FND-55F68376; EVD-1494; EVD-0064].",
+     "learning": "LR-05",
+     "cites": [
+      "FND-1A251687",
+      "FND-55F68376",
+      "EVD-1494",
+      "EVD-0064"
+     ],
+     "evidence_strength": "direct",
+     "supporting_cites": [
+      "FND-82FC718D",
+      "FND-3A34BAD3",
+      "FND-E0AE86A6"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "The change procedure existed but was not used.",
+     "explanation": "The MOC policy was not implemented after 2018, which allowed an unapproved material substitution [FND-F7FE8463; EVD-2986].",
+     "learning": "LR-06",
+     "cites": [
+      "FND-F7FE8463",
+      "EVD-2986"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Electrical equipment in hazardous areas was maintained on breakdown.",
+     "explanation": "A breakdown-maintenance philosophy for flame-proof equipment in Zone 1 left a damaged fitting in service [FND-1280E788; EVD-9999; EVD-6916].",
+     "learning": "LR-11",
+     "cites": [
+      "FND-1280E788",
+      "EVD-9999",
+      "EVD-6916"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "lesson": "The inspection programme ran off its schedule with no escalation.",
+     "explanation": "The four-year thickness cycle was not kept, and the 2017 findings stayed unplanned [FND-A3DCEBD8; FND-C4842890; EVD-8307].",
+     "learning": "LR-18",
+     "cites": [
+      "FND-A3DCEBD8",
+      "FND-C4842890",
+      "EVD-8307"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Backup fire-water pumps were left degraded.",
+     "explanation": "Two diesel fire-water pumps were under maintenance and one had an undiagnosed tripping fault [FND-B955FBD6; FND-DF7337F2; EVD-2432].",
+     "learning": "LR-23",
+     "cites": [
+      "FND-B955FBD6",
+      "FND-DF7337F2",
+      "EVD-2432"
+     ],
+     "evidence_strength": "direct"
+    }
+   ]
+  },
+  {
+   "id": "s6-interfaces",
+   "heading": "S6 Interfaces",
+   "items": [
+    {
+     "kind": "para",
+     "text": "Mechanical Maintenance shares findings with almost every function. The largest seams are with Operations & Control Room (71 shared findings), Asset Integrity, Corrosion & Inspection (40), Engineering, Design, Documents & MOC (34), Work Management & Planning (27) and Materials Management (27) [FND-4944554C; FND-69067A1C; FND-137BC719; FND-1662466D; FND-2CEE8915].",
+     "cites": [
+      "FND-4944554C",
+      "FND-69067A1C",
+      "FND-137BC719",
+      "FND-1662466D",
+      "FND-2CEE8915"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "The seal fell between maintenance and stores: each could take the part as settled by the other.",
+     "explanation": "Stores bought locally available O-rings and maintenance fitted them, with no specification or approval on either side [FND-23139BF9; FND-6B3A6492; EVD-8645].",
+     "learning": "LR-01",
+     "cites": [
+      "FND-23139BF9",
+      "FND-6B3A6492",
+      "EVD-8645"
+     ],
+     "evidence_strength": "corroborated",
+     "supporting_cites": [
+      "FND-8C0BB623",
+      "FND-7A32AC87",
+      "FND-89962239",
+      "FND-B356F15B",
+      "FND-91B45FF9",
+      "FND-DA67926D",
+      "FND-54180594",
+      "FND-82673283",
+      "FND-45363DCA",
+      "FND-A2048FB8",
+      "FND-FFE174D0",
+      "FND-A443D288",
+      "FND-72A7D26C",
+      "FND-CEE4B00B",
+      "FND-3746C7B6",
+      "FND-42BEF461",
+      "FND-D66ACA7B",
+      "FND-852B7EC7",
+      "FND-DEAA7F90",
+      "FND-A3D7D53F",
+      "FND-B86F67F0",
+      "FND-D40839C1",
+      "FND-BC4FD086",
+      "FND-8CE00707",
+      "FND-A0017E28",
+      "FND-B56701CA",
+      "FND-DE30BD8B"
+     ],
+     "group": "F06 Materials Management",
+     "owner": "Mechanical Maintenance (F02) with Materials Management (F06)"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Operations accepted the meter back with no test record to look at.",
+     "explanation": "Return to service after the gasket change went ahead without design-pressure validation, and operations took the meter online the next day [FND-491EDE74; FND-3AB996FC; EVD-0185].",
+     "learning": "LR-02",
+     "cites": [
+      "FND-491EDE74",
+      "FND-3AB996FC",
+      "EVD-0185"
+     ],
+     "evidence_strength": "direct",
+     "supporting_cites": [
+      "FND-7C5ED5B3",
+      "FND-FD617187",
+      "FND-212DC9B7",
+      "FND-15279F97",
+      "FND-7FA02383",
+      "FND-4944554C",
+      "FND-FDFA6FF5",
+      "FND-1662466D",
+      "FND-9174A5B0",
+      "FND-611A8BFC",
+      "FND-904FCA63",
+      "FND-C34A026C",
+      "FND-257C1100",
+      "FND-137BC719",
+      "FND-8ACDE078",
+      "FND-5919B328",
+      "FND-C4E06264",
+      "FND-86CB3683",
+      "FND-50C7319E",
+      "FND-B91D4A23",
+      "FND-7A10FF70",
+      "FND-71EE9734"
+     ],
+     "group": "F01 Operations & Control Room",
+     "owner": "Mechanical Maintenance (F02) with Operations & Control Room (F01)"
+    },
+    {
+     "kind": "learning",
+     "lesson": "The closure of the job sat with no one between maintenance and work management.",
+     "explanation": "The notification close-out had no assigned review owner and was left open after the repair [FND-646BAC1F; FND-678E51A3; EVD-0591].",
+     "learning": "LR-04",
+     "cites": [
+      "FND-646BAC1F",
+      "FND-678E51A3",
+      "EVD-0591"
+     ],
+     "evidence_strength": "direct",
+     "group": "F08 Work Management & Planning",
+     "owner": "Mechanical Maintenance (F02) with Work Management & Planning (F08)"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Repeat failures and wall-loss findings sat between maintenance and integrity, with no reliability owner.",
+     "explanation": "Reliability planning across the seal-replacement history was missing, and the 2017 thickness findings had no corrective plan [FND-AC8FBB26; FND-1F685360; EVD-1494; EVD-5527].",
+     "learning": "LR-05",
+     "cites": [
+      "FND-AC8FBB26",
+      "FND-1F685360",
+      "EVD-1494",
+      "EVD-5527"
+     ],
+     "evidence_strength": "direct",
+     "supporting_cites": [
+      "FND-8DA35CA9",
+      "FND-69067A1C",
+      "FND-71D631C1",
+      "FND-CEE3D4D7",
+      "FND-D14B8424",
+      "FND-110F964C",
+      "FND-4EDE038A",
+      "FND-AC9A1E69",
+      "FND-FEC84761",
+      "FND-82FC718D",
+      "FND-3A34BAD3",
+      "FND-E0AE86A6",
+      "FND-1A251687",
+      "FND-55F68376"
+     ],
+     "group": "F05 Asset Integrity, Corrosion & Inspection",
+     "owner": "Mechanical Maintenance (F02) with Asset Integrity (F05)"
+    },
+    {
+     "kind": "learning",
+     "lesson": "A change made through a work order never reached engineering.",
+     "explanation": "The decision to use locally bought O-rings was never recorded or communicated under MOC [FND-5A5F6AB3; FND-CAF9833D; EVD-2986].",
+     "learning": "LR-06",
+     "cites": [
+      "FND-5A5F6AB3",
+      "FND-CAF9833D",
+      "EVD-2986"
+     ],
+     "evidence_strength": "direct",
+     "supporting_cites": [
+      "FND-F7FE8463"
+     ],
+     "group": "F07 Engineering, Design, Documents & MOC",
+     "owner": "Mechanical Maintenance (F02) with Engineering (F07)"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Mechanical staff on the night shift were part of an isolation response that had no criteria.",
+     "explanation": "The plan gave the control room no isolation decision criteria, and the night-shift crew included mechanical staff with general training only [FND-314D34C5; FND-2AA87E93; EVD-4052; EVD-5634].",
+     "learning": "LR-07",
+     "cites": [
+      "FND-314D34C5",
+      "FND-2AA87E93",
+      "EVD-4052",
+      "EVD-5634"
+     ],
+     "evidence_strength": "corroborated",
+     "supporting_cites": [
+      "FND-DE132C95",
+      "FND-7505B1AF",
+      "FND-D4A3EF8A",
+      "FND-D1DF4895"
+     ],
+     "group": "F09b Emergency Planning & Command",
+     "owner": "Emergency Planning & Command (F09b) with Mechanical Maintenance (F02)"
+    }
+   ]
+  },
+  {
+   "id": "s7-barriers",
+   "heading": "S7 Barriers",
+   "items": [
+    {
+     "kind": "barrier",
+     "barrier": "design and specification (substitution of parts)",
+     "type": "procedural",
+     "state": "absent",
+     "failure_mode": "No specification for the seal and no owner to re-establish it.",
+     "fix": "Re-establish the seal design and stock only certified parts against it.",
+     "hoc_tier": "substitution",
+     "learning": "LR-01",
+     "cites": [
+      "FND-B56701CA",
+      "FND-23139BF9",
+      "EVD-8645"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "barrier": "maintenance and testing (testing after maintenance)",
+     "type": "procedural",
+     "state": "absent",
+     "failure_mode": "No procedure required a test to design pressure; operating pressure only.",
+     "fix": "Block release of pressure-boundary jobs in the work-order system until a test result is entered.",
+     "hoc_tier": "engineering",
+     "learning": "LR-02",
+     "cites": [
+      "FND-50C7319E",
+      "FND-5919B328",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "barrier": "competence and staffing (independent verification)",
+     "type": "procedural",
+     "state": "absent",
+     "failure_mode": "No independent check of part, method or test was manned.",
+     "fix": "A safety-critical work category that adds inspection, witness and close-out steps.",
+     "hoc_tier": "engineering",
+     "learning": "LR-03",
+     "cites": [
+      "FND-615DB819",
+      "FND-F8C125D5",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "barrier": "inspection and integrity (repeat failures on ageing equipment)",
+     "type": "procedural",
+     "state": "absent",
+     "failure_mode": "No reliability review of repeat failures; the same repair each time.",
+     "fix": "An automatic repeat-failure trigger and a repair-or-replace decision per item.",
+     "hoc_tier": "engineering",
+     "learning": "LR-05",
+     "cites": [
+      "FND-1A251687",
+      "FND-82FC718D",
+      "EVD-1494"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "barrier": "inspection and integrity (thickness inspection)",
+     "type": "procedural",
+     "state": "degraded",
+     "failure_mode": "Thickness surveys ran six years apart against a four-year schedule, without baseline data.",
+     "fix": "Schedule inspections in the maintenance system with automatic escalation when overdue.",
+     "hoc_tier": "administrative",
+     "learning": "LR-18",
+     "cites": [
+      "FND-A3DCEBD8",
+      "FND-5ABEE30B",
+      "EVD-8307"
+     ],
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "the scheduling and escalation change is itself the system fix for an inspection cycle that slipped; no elimination, substitution or engineering control applies to a schedule"
+     }
+    }
+   ]
+  },
+  {
+   "id": "s8-precursors",
+   "heading": "S8 Precursors",
+   "intro": "The dated signals that reached Mechanical Maintenance. A year-only date means the source gives only the year.",
+   "items": [
+    {
+     "kind": "timeline",
+     "id": "f02-precursors",
+     "events": [
+      {
+       "date": "2011",
+       "text": "Pipe-wall thickness measured in 2011, then not again until 2017, against a four-year schedule.",
+       "signal": true,
+       "received_by": "Mechanical Maintenance (F02, T1)",
+       "response": "None recorded: the schedule slipped with no escalation.",
+       "knowable_then": "The schedule and the dates of the last measurements were in the inspection records.",
+       "cites": [
+        "EVD-8307",
+        "FND-10FEDDD8",
+        "FND-5ABEE30B",
+        "FND-6FA2CEDE",
+        "FND-75CEBE09",
+        "FND-A3DCEBD8",
+        "FND-B8E1F804",
+        "FND-C4842890",
+        "FND-E87DC506",
+        "FND-F9D69EC8",
+        "FND-FCCB9505"
+       ]
+      },
+      {
+       "date": "2018-11",
+       "text": "The two condensate meters are cleaned, serviced and calibrated: the first entry in the seal-repair history of the meter that later failed.",
+       "signal": true,
+       "received_by": "Mechanical Maintenance (F02, T2)",
+       "response": "Routine service; no review of the seal design recorded.",
+       "knowable_then": "The service record was in the maintenance history.",
+       "cites": [
+        "EVD-1494",
+        "FND-065439DE",
+        "FND-110F964C",
+        "FND-1A251687",
+        "FND-350C35AD",
+        "FND-3A34BAD3",
+        "FND-4EDE038A",
+        "FND-54180594",
+        "FND-55F68376",
+        "FND-69067A1C",
+        "FND-71D631C1",
+        "FND-82FC718D",
+        "FND-8B4A5414",
+        "FND-A3D7D53F",
+        "FND-AC8FBB26",
+        "FND-B86F67F0",
+        "FND-CEE3D4D7",
+        "FND-D14B8424",
+        "FND-E0AE86A6",
+        "FND-F0D015E1",
+        "FND-FEC84761"
+       ]
+      },
+      {
+       "date": "2019-02-25",
+       "text": "The same meter is cleaned and its gasket changed, with a locally bought O-ring as the usual substitute.",
+       "signal": true,
+       "received_by": "Mechanical Maintenance (F02, T2)",
+       "response": "Repaired like for like; no root-cause review or escalation recorded.",
+       "knowable_then": "A repeat job on the same meter was in the maintenance history, and the substitute O-ring practice was known to the crew and its supervisors.",
+       "cites": [
+        "EVD-1494",
+        "FND-065439DE",
+        "FND-110F964C",
+        "FND-1A251687",
+        "FND-350C35AD",
+        "FND-3A34BAD3",
+        "FND-4EDE038A",
+        "FND-54180594",
+        "FND-55F68376",
+        "FND-69067A1C",
+        "FND-71D631C1",
+        "FND-82FC718D",
+        "FND-8B4A5414",
+        "FND-A3D7D53F",
+        "FND-AC8FBB26",
+        "FND-B86F67F0",
+        "FND-CEE3D4D7",
+        "FND-D14B8424",
+        "FND-E0AE86A6",
+        "FND-F0D015E1",
+        "FND-FEC84761"
+       ]
+      },
+      {
+       "date": "2019-07",
+       "text": "A spot ultrasonic measurement finds 1.03mm wall loss with heavy pitting on a segment of the 36-inch pipeline at the gas terminal.",
+       "signal": true,
+       "received_by": "Mechanical Maintenance (F02, T2)",
+       "response": "Painting only, completed in December 2019.",
+       "knowable_then": "The measurement and the line's design thickness were on record when the painting-only repair was chosen.",
+       "cites": [
+        "EVD-2397",
+        "FND-159C9FD7",
+        "FND-20034564",
+        "FND-4722A2B8",
+        "FND-4DAC9500",
+        "FND-6E13192C",
+        "FND-7D59D47D",
+        "FND-8EFDE3D9",
+        "FND-999326F0",
+        "FND-ABDADA0C",
+        "FND-B2B200D4",
+        "FND-B412FF47",
+        "FND-B5D6A73E",
+        "FND-C90FA7A2",
+        "FND-E5C4209D",
+        "FND-FA73D914"
+       ]
+      },
+      {
+       "date": "2019-12-18",
+       "text": "During calibration a setting on the meter is changed and later changed back, with no mention in the signed calibration documents.",
+       "signal": true,
+       "received_by": "Mechanical Maintenance (F02, T1)",
+       "response": "None recorded: no checklist was used for the job.",
+       "knowable_then": "Only the calibration team knew of the change; the signed record did not show it.",
+       "cites": [
+        "EVD-2506",
+        "FND-0B651843",
+        "FND-0BA85877",
+        "FND-13E2037D",
+        "FND-403FD778",
+        "FND-6381588B",
+        "FND-693FEDD2",
+        "FND-7C8ADD7C",
+        "FND-7F829BEB",
+        "FND-85748D86",
+        "FND-89A8965A",
+        "FND-89D53630",
+        "FND-8D744668",
+        "FND-98F7C845",
+        "FND-A534A1C3",
+        "FND-B0BA0566",
+        "FND-C2B4989C",
+        "FND-E94D563C",
+        "FND-FD98468B"
+       ]
+      }
+     ],
+     "cites": [
+      "EVD-1494",
+      "EVD-2397",
+      "EVD-2506",
+      "EVD-8307",
+      "FND-065439DE",
+      "FND-0B651843",
+      "FND-0BA85877",
+      "FND-10FEDDD8",
+      "FND-110F964C",
+      "FND-13E2037D",
+      "FND-159C9FD7",
+      "FND-1A251687",
+      "FND-20034564",
+      "FND-350C35AD",
+      "FND-3A34BAD3",
+      "FND-403FD778",
+      "FND-4722A2B8",
+      "FND-4DAC9500",
+      "FND-4EDE038A",
+      "FND-54180594",
+      "FND-55F68376",
+      "FND-5ABEE30B",
+      "FND-6381588B",
+      "FND-69067A1C",
+      "FND-693FEDD2",
+      "FND-6E13192C",
+      "FND-6FA2CEDE",
+      "FND-71D631C1",
+      "FND-75CEBE09",
+      "FND-7C8ADD7C",
+      "FND-7D59D47D",
+      "FND-7F829BEB",
+      "FND-82FC718D",
+      "FND-85748D86",
+      "FND-89A8965A",
+      "FND-89D53630",
+      "FND-8B4A5414",
+      "FND-8D744668",
+      "FND-8EFDE3D9",
+      "FND-98F7C845",
+      "FND-999326F0",
+      "FND-A3D7D53F",
+      "FND-A3DCEBD8",
+      "FND-A534A1C3",
+      "FND-ABDADA0C",
+      "FND-AC8FBB26",
+      "FND-B0BA0566",
+      "FND-B2B200D4",
+      "FND-B412FF47",
+      "FND-B5D6A73E",
+      "FND-B86F67F0",
+      "FND-B8E1F804",
+      "FND-C2B4989C",
+      "FND-C4842890",
+      "FND-C90FA7A2",
+      "FND-CEE3D4D7",
+      "FND-D14B8424",
+      "FND-E0AE86A6",
+      "FND-E5C4209D",
+      "FND-E87DC506",
+      "FND-E94D563C",
+      "FND-F0D015E1",
+      "FND-F9D69EC8",
+      "FND-FA73D914",
+      "FND-FCCB9505",
+      "FND-FD98468B",
+      "FND-FEC84761"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s9-tier-messages",
+   "heading": "S9 Tier messages",
+   "intro": "From the register's tier messages for the seal (LR-01) and the return-to-service test (LR-02).",
+   "items": [
+    {
+     "kind": "para",
+     "group": "T1",
+     "text": "If you cannot confirm a seal or gasket matches the specification for a pressure part, stop and ask for the spec. Do not fit 'what we normally use'. After any work that opens a pressure boundary, ask: what test proves this joint, and who witnessed it? Write the answer on the job record.",
+     "cites": [
+      "FND-8C0BB623",
+      "FND-FD617187"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "T2",
+     "text": "Before signing off pressure-boundary work, check the part against a written specification. No spec means no sign-off. Do not accept equipment back from maintenance without a recorded leak/pressure test to the written test pressure.",
+     "cites": [
+      "FND-852B7EC7",
+      "FND-C4E06264"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "T3",
+     "text": "Find every pressure-boundary item with no specification on file and re-establish it (OEM, reverse engineering or an engineered substitute). Write and issue a return-to-service procedure for high-pressure equipment that sets test type, test pressure and witness.",
+     "cites": [
+      "FND-DE30BD8B",
+      "FND-137BC719"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "T4",
+     "text": "Give one named function ownership of pressure-part specifications and of approving any substitute. Treat return to service after pressure-boundary work as a hold point that operations must accept in writing.",
+     "cites": [
+      "FND-23139BF9",
+      "FND-50C7319E"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "T5",
+     "text": "Ask for assurance that legacy (pre-2000) pressure equipment has current part specifications and controlled spares.",
+     "cites": [
+      "FND-55F68376"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s10-recommendations",
+   "heading": "S10 Recommendations",
+   "items": [
+    {
+     "kind": "recommendation",
+     "change": "Re-establish the seal design for the meter flange (OEM data or engineered equivalent) and stock only certified parts against that specification; quarantine non-conforming seals.",
+     "hoc_tier": "substitution",
+     "barrier": "design and specification",
+     "indicator": "Share of critical pressure-boundary spares with a specification and certificate on file (target 100%).",
+     "learning": "LR-01",
+     "cites": [
+      "FND-B56701CA",
+      "FND-6B3A6492",
+      "EVD-8645",
+      "EVD-1494"
+     ],
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "recommendation",
+     "change": "Make the stores system refuse to issue a pressure-boundary seal without a specification reference and an approved-substitute record.",
+     "hoc_tier": "engineering",
+     "barrier": "materials and spares",
+     "indicator": "Number of pressure-part issues blocked or referred for engineering approval per quarter, and their closure time.",
+     "learning": "LR-01",
+     "cites": [
+      "FND-A0017E28",
+      "FND-8CE00707",
+      "EVD-8645"
+     ],
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "recommendation",
+     "change": "Survey legacy equipment for lost specifications and plan replacement of meters that can no longer be maintained to specification.",
+     "hoc_tier": "elimination",
+     "barrier": "design and specification",
+     "indicator": "Percentage of legacy items surveyed; number with a replacement or re-specification decision recorded.",
+     "learning": "LR-01",
+     "cites": [
+      "FND-55F68376",
+      "FND-6B3A6492",
+      "EVD-8645",
+      "EVD-0064"
+     ],
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "recommendation",
+     "change": "Issue a return-to-service procedure for pressure-boundary work stating test medium, test pressure (design-based), hold time and independent witness, with a hold point in the work order.",
+     "hoc_tier": "administrative",
+     "barrier": "maintenance and testing",
+     "indicator": "Share of pressure-boundary work orders closed with a recorded test result and witness signature (audited sample).",
+     "learning": "LR-02",
+     "cites": [
+      "FND-50C7319E",
+      "FND-137BC719",
+      "EVD-2894"
+     ],
+     "evidence_strength": "direct",
+     "why_not_stronger": "Paired with the engineering block in the work-order system below; the procedure sets the test the block enforces.",
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "Paired with the engineering block in the work-order system below; the procedure sets the test the block enforces."
+     }
+    },
+    {
+     "kind": "recommendation",
+     "change": "Configure the work-order system so a pressure-boundary job cannot be closed or the equipment released to operations until a test result is entered.",
+     "hoc_tier": "engineering",
+     "barrier": "maintenance and testing",
+     "indicator": "Number of attempted closures blocked for missing test data; trend to zero over two quarters.",
+     "learning": "LR-02",
+     "cites": [
+      "FND-5919B328",
+      "FND-491EDE74",
+      "EVD-2894",
+      "EVD-0185"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "recommendation",
+     "change": "Introduce a safety-critical maintenance category in work planning that automatically adds inspection, test-witness and close-out review steps.",
+     "hoc_tier": "engineering",
+     "barrier": "competence and staffing",
+     "indicator": "Share of safety-critical jobs with all verification steps signed by someone other than the performer.",
+     "learning": "LR-03",
+     "cites": [
+      "FND-615DB819",
+      "FND-F8C125D5",
+      "EVD-8645",
+      "EVD-2894"
+     ],
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "recommendation",
+     "change": "Require a job safety analysis and permit review for any work opening a hydrocarbon pressure boundary, separate from the maintenance notification.",
+     "hoc_tier": "administrative",
+     "barrier": "procedures and permits",
+     "indicator": "Audited share of pressure-boundary jobs with a completed JSA attached in the work system.",
+     "learning": "LR-03",
+     "cites": [
+      "FND-63B6D260",
+      "EVD-5105"
+     ],
+     "evidence_strength": "corroborated",
+     "why_not_stronger": "A job safety analysis is a planning control; the engineering part of this learning is the safety-critical work category above.",
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "A job safety analysis is a planning control; the engineering part of this learning is the safety-critical work category above."
+     }
+    },
+    {
+     "kind": "recommendation",
+     "change": "Set an automatic repeat-failure trigger in the CMMS (e.g. two corrective jobs on one tag in 12 months) that opens a root-cause investigation task.",
+     "hoc_tier": "engineering",
+     "barrier": "inspection and integrity",
+     "indicator": "Number of bad actors flagged per quarter and share with a completed root-cause analysis within 60 days.",
+     "learning": "LR-05",
+     "cites": [
+      "FND-1A251687",
+      "FND-D14B8424",
+      "EVD-1494"
+     ],
+     "evidence_strength": "direct"
+    }
+   ]
+  },
+  {
+   "id": "s11-competence",
+   "heading": "S11 Competence",
+   "items": [
+    {
+     "kind": "table",
+     "columns": [
+      "Tier",
+      "Competence"
+     ],
+     "rows": [
+      [
+       "T1",
+       "Recognise a pressure-boundary part with no specification on file and stop the job until one is provided; record the test that proves the joint and who witnessed it."
+      ],
+      [
+       "T2",
+       "Check the part against a written specification and the test record before signing off pressure-boundary work; raise a root-cause request when the same item fails twice."
+      ],
+      [
+       "T3",
+       "Plan pressure-boundary work as safety-critical, with inspection and witness points; run the repeat-failure report."
+      ],
+      [
+       "T4",
+       "Hold ownership of pressure-part specifications in one function, and treat return to service as a hold point."
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-54180594",
+       "FND-212DC9B7"
+      ],
+      [
+       "FND-3746C7B6",
+       "FND-110F964C"
+      ],
+      [
+       "FND-2FAB8D51",
+       "FND-D14B8424"
+      ],
+      [
+       "FND-23139BF9",
+       "FND-491EDE74"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s12-transferability",
+   "heading": "S12 Transferability",
+   "items": [
+    {
+     "kind": "table",
+     "columns": [
+      "Learning",
+      "Reach",
+      "Reason"
+     ],
+     "rows": [
+      [
+       "LR-01 Seal specification",
+       "Industry-wide",
+       "Any site with legacy pressure equipment whose original part data is lost"
+      ],
+      [
+       "LR-02 Test after maintenance",
+       "Industry-wide",
+       "Any pressure-boundary work returned to service"
+      ],
+      [
+       "LR-03 Independent verification",
+       "Industry-wide",
+       "Any high-consequence job resourced as routine work"
+      ],
+      [
+       "LR-05 Repeat failures",
+       "Industry-wide",
+       "Any maintenance system that does not count repeats"
+      ],
+      [
+       "LR-04 Notification close-out",
+       "Other sites",
+       "Sites using the same work-management system and closure practice"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-23139BF9"
+      ],
+      [
+       "FND-50C7319E"
+      ],
+      [
+       "FND-615DB819"
+      ],
+      [
+       "FND-1A251687"
+      ],
+      [
+       "FND-646BAC1F"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s14-formats",
+   "heading": "S14 Formats",
+   "items": [
+    {
+     "kind": "table",
+     "columns": [
+      "Learning",
+      "Format"
+     ],
+     "rows": [
+      [
+       "LR-01 Seal specification",
+       "Brief, Card, toolbox talk"
+      ],
+      [
+       "LR-02 Test after maintenance",
+       "Card, toolbox talk, Brief"
+      ],
+      [
+       "LR-03 Independent verification",
+       "Card, Brief"
+      ],
+      [
+       "LR-05 Repeat failures",
+       "Brief, Card"
+      ],
+      [
+       "LR-04 Notification close-out",
+       "Card"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-A0017E28"
+      ],
+      [
+       "FND-FDFA6FF5"
+      ],
+      [
+       "FND-28F8790B"
+      ],
+      [
+       "FND-55F68376"
+      ],
+      [
+       "FND-56C66B96"
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "limits": [
+  "Written from the labels and short texts of all 194 F02 findings and the full text of the highest-rated; the register's grouping of findings into learnings was reused.",
+  "No comparator report was supplied, so S13 is left out.",
+  "Owners and dates for the decisions and recommendations are for the organisation to set."
+ ]
+}
