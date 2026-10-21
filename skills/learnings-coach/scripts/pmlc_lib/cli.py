@@ -15,6 +15,7 @@ Subcommands
   dashboard       self-contained HTML organisational learning dashboard
   register-xlsx   write a Learnings Register JSON to a formatted .xlsx
   register-md     write a Learnings Register JSON to learnings-register.md
+  register-render write a Learnings Register JSON to a Word document and an email digest
   scan-names      deterministic zero-hit name scan over files (de-identification check)
   check-pack      check a learning pack JSON against the workspace
   sign-off        record a person's review of a pack or register (writes its handling block and content hash)
@@ -73,6 +74,7 @@ from .profile import cmd_profile
 from .render import DEFAULT_FORMATS, FORMATS, parse_formats
 from .register.check import cmd_check_register
 from .register.markdown import cmd_register_md
+from .register.render import cmd_register_render
 from .register.xlsx import cmd_register_xlsx
 from .samples import cmd_check_samples
 from .templates import cmd_templates, FILES as TEMPLATE_FILES
@@ -275,6 +277,16 @@ def build_parser():
     s.add_argument("register")
     s.add_argument("--out", help="default: <run>/outputs/learnings-register.md")
     s.set_defaults(fn=cmd_register_md)
+
+    s = sp.add_parser("register-render", help="Learnings Register JSON -> learnings-register.docx and .email.html/.txt",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("register")
+    s.add_argument("--format", default="docx,email",
+                   help="docx, email or docx,email (default). md and xlsx stay with register-md and register-xlsx")
+    s.add_argument("--out", help="folder to write to (default: <run>/outputs)")
+    add_share_args(s)
+    s.set_defaults(fn=cmd_register_render)
 
     s = sp.add_parser("status", help="show which workspace files are current or stale, and pack check history", allow_abbrev=False)
     s.add_argument("ws")

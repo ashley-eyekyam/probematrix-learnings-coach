@@ -83,6 +83,7 @@ pmlc 2.0.0a4
 | [pack-xlsx](commands/pack-xlsx.md) | Writes a pack's test points or questions to an Excel sheet |
 | [register-xlsx](commands/register-xlsx.md) | Writes a Learnings Register JSON to a formatted Excel workbook |
 | [register-md](commands/register-md.md) | Writes a Learnings Register JSON to `learnings-register.md` |
+| [register-render](commands/register-render.md) | Writes a Learnings Register JSON to a Word document and an email digest |
 
 ### Run it all
 
@@ -123,7 +124,7 @@ pmlc 2.0.0a4
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,table-item,register-items,timeline-item,facts,pack-xlsx} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,table-item,register-items,timeline-item,facts,pack-xlsx} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 
