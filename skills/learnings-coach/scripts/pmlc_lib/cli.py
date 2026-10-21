@@ -237,6 +237,7 @@ def build_parser():
     s.add_argument("--location", help="override the location shown in the header")
     add_embed_arg(s)
     add_share_args(s)
+    s.add_argument("--brand", metavar="FILE", help="brand.json: organisation, accent and logo (the footer and status line stay fixed)")
     s.set_defaults(fn=cmd_dashboard)
 
     s = sp.add_parser("check-register", help="validate a Learnings Register JSON against the workspace", allow_abbrev=False)
@@ -314,6 +315,7 @@ def build_parser():
                    help=f"comma-separated formats to write (default: html,md); one of: {', '.join(FORMATS)}")
     s.add_argument("--view", choices=("full", "learner"), default="full",
                    help="learner: <pack>.learner.<ext> without answers, for the document formats")
+    s.add_argument("--brand", metavar="FILE", help="brand.json: organisation, accent and logo (the footer and status line stay fixed)")
     s.set_defaults(fn=cmd_pack)
 
     s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)", allow_abbrev=False)

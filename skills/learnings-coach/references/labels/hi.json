@@ -97,6 +97,7 @@
  "ui.contents": "विषय-सूची",
  "ui.run": "रन {run}",
  "ui.generated": "बनाया गया {date}",
+ "ui.reading_time": "पढ़ने में लगभग {n} मिनट",
  "ui.incident": "घटना",
  "ui.control": "नियंत्रण: {tier}",
  "ui.learning_chip": "सीख {id}",

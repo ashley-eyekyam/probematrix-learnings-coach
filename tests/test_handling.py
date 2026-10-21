@@ -273,7 +273,7 @@ def test_md_handling_and_ai_status(tmp_path, okws):
     assert md.startswith(
         f"# {PACK['title']}\n\n**DRAFT**\n\nReview: draft · Classification: internal · Version 1.0\n\n"
         "Draft because: the investigation status is in progress; no finding is marked as edited by a person\n\n"
-        f"*{STATUS} · {AI_STATUS}*\n\n**Audience:** Testers")
+        f"*{STATUS} · {AI_STATUS}*\n\n*About 1 min read*\n\n**Audience:** Testers")
     doc = signed(tmp_path, okws, PACK)
     md = pp.render_pack_md(doc, pmlc.load_ws(okws), eh=eh_of(tmp_path, okws, doc))
     assert "**DRAFT**" not in md and "Draft because" not in md

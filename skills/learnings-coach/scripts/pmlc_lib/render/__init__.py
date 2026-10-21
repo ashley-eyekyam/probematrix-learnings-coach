@@ -125,7 +125,7 @@ def _rn_html(ctx: RenderContext) -> list:
     from ..handling import status_line
     from ..pack.html import render_pack_html
     page = render_pack_html(ctx.w, ctx.pack, ctx.run, ctx.generated, ctx.embed, eh=ctx.eh, share=ctx.share,
-                            labels=ctx.labels)
+                            labels=ctx.labels, brand=ctx.brand)
     if ctx.view == "learner":
         status = f'<p class="status">{_rn_esc(status_line(ctx.pack["status"]))}</p>\n'
         page = page.replace(status, status + f'<p class="status learner">{LEARNER_BANNER}</p>\n', 1)

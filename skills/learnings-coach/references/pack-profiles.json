@@ -41,6 +41,7 @@
     "required_scope": ["levels", "min_rating"],
     "bottom_line": {"min": 1, "max": 7},
     "word_limits": {},
+    "max_words": 1500,
     "coverage_floor": 0.25
   },
   "causal-map": {
@@ -80,6 +81,7 @@
     "required_scope": ["entities"],
     "bottom_line": {"min": 1, "max": 5},
     "word_limits": {},
+    "max_words": 9000,
     "coverage_floor": 0.25
   },
   "emergency-response-learnings": {
@@ -337,6 +339,7 @@
     "required_scope": ["levels", "min_rating"],
     "bottom_line": {"min": 1, "max": 3},
     "word_limits": {},
+    "max_words": 2000,
     "coverage_floor": 0.25
   },
   "training-designer": {

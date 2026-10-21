@@ -308,11 +308,14 @@ def _ph_reason(r, L) -> str:
     return _ph_t(L, en[r]) if r in en else r
 
 
-def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, share=None, labels=None) -> str:
+def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, share=None, labels=None, brand=None) -> str:
     """One self-contained offline page: server-rendered content, with pack.js adding behaviour. embed: see
     build_pack_data. eh and share: see render_pack_md; a shared copy shows no run slug or generated date. labels:
     the page labels, else those of the pack's lang; a page in another language than English carries them in its
-    payload for pack.js, and its <html> names its lang and dir (Ruling P4-15)."""
+    payload for pack.js, and its <html> names its lang and dir (Ruling P4-15). brand: the organisation brand
+    (Ruling P4-16): its accent, logo and name; the footer and status line never change."""
+    from ..render.brand import brand_css, brand_header
+    from ..render.fields import reading_minutes
     from ..render.labels import text_dir
     L = _ph_labels(labels, pack)
 
@@ -377,8 +380,12 @@ def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, shar
     css = (DASHBOARD_ASSETS / "pack.css").read_text(encoding="utf-8")
     js = (DASHBOARD_ASSETS / "pack.js").read_text(encoding="utf-8")
     payload = embed_json(data)
-    brand = _h(BRAND)
+    footer_brand = _h(BRAND)
     tokens, wide = PAGE_TOKENS_CSS, WIDE_CSS
+    bcss = brand_css(brand)
+    brand_style = "\n" + bcss if bcss else ""
+    brand_id = brand_header(brand)
+    reading = t("ui.reading_time", n=reading_minutes(pack))
     body = "".join(secs) + gaps_html + limits_html + cov_html + _trail(data, pack, L)
     return f"""<!doctype html>{html_open}<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
@@ -389,10 +396,11 @@ main{{max-width:1180px;margin:0 auto;padding:24px 16px 48px}}
 h1{{font-size:24px;margin:0 0 4px}} p.m{{color:var(--mut);margin:0 0 8px}}
 footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}}
 {HANDLING_CSS}
-{css}
+{css}{brand_style}
 </style></head><body><main>
-{ribbon}<h1>{title}</h1>
+{ribbon}{brand_id}<h1>{title}</h1>
 <p class="m">{meta}</p>
+<p class="m reading">{reading}</p>
 <p class="status">{status}</p>
 {handling}
 {dq_html}
@@ -402,7 +410,7 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 <button type="button" id="print">{t("ui.print")}</button>{clear}<span id="showing" aria-live="polite"></span></div>
 <div class="layout"><details class="rail" open><summary>{t("ui.contents")}</summary><ol>{rail}</ol></details>
 <div class="content">{body}</div></div>
-<footer>{brand}</footer>
+<footer>{footer_brand}</footer>
 </main>
 <script type="application/json" id="pmlc-pack-data">{payload}</script>
 <script>

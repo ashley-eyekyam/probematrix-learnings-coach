@@ -169,6 +169,15 @@ def _check_same_sections(pack, other, profiles, out):
         out.append(f"sections: must be the same sections as {other} ({', '.join(want)}), got {', '.join(map(str, got))}")
 
 
+def _check_max_words(pack, profile, out):
+    lim = profile.get("max_words")
+    if isinstance(lim, int) and not isinstance(lim, bool):
+        from ..render.fields import pack_words          # imported late: render.fields imports pack.schema
+        n = pack_words(pack)
+        if n > lim:
+            out.append(f"pack has {n} words; the {pack.get('pack')} profile allows {lim}")
+
+
 def check(pack, profile, top=None, profiles=None) -> list:
     """Profile violation messages for one pack. top: the top-rated relevant finding IDs (check_pack passes
     top_rated_of(w, relevant findings net of exclusions)); the follow-up-per-top rule is skipped without it."""
@@ -177,6 +186,7 @@ def check(pack, profile, top=None, profiles=None) -> list:
     out: list = []
     name = pack.get("pack")
     _check_sections(pack, profile, out)
+    _check_max_words(pack, profile, out)
     bl, lim = pack.get("bottom_line"), profile.get("bottom_line")
     if isinstance(bl, list) and isinstance(lim, dict) and not lim.get("min", 0) <= len(bl) <= lim.get("max", len(bl)):
         out.append(f"bottom_line: {len(bl)} entries, expected {lim.get('min', 0)}-{lim.get('max')}")

@@ -10,6 +10,8 @@ Turns a learning pack JSON into the files people read:
 
 `--format` chooses which of these files to write (the default, `html,md`, writes exactly the two above). The formats are listed under [Formats](#formats).
 
+Each page and Markdown file shows "About *n* min read" under the header (200 words a minute, at least 1), counted from the bottom line and the items.
+
 It first runs the full [check-pack](check-pack.md). If the check finds a problem, nothing is written. A pack that has not been signed off renders with a **DRAFT** label.
 
 Two flags decide what the page carries and who it is for:
@@ -26,7 +28,7 @@ After [check-pack](check-pack.md) passes. Run it again after every edit of the J
 ```text
 pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
           [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
-          [--format FORMATS] [--view {full,learner}]
+          [--format FORMATS] [--view {full,learner}] [--brand FILE]
 ```
 
 ## Arguments
@@ -48,6 +50,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `--orgs` | file | `$PMLC_ORGS` | An organisation names file, one per line. A shared copy masks these names |
 | `--format` | comma-separated format names | `html,md` | Which files to write; see [Formats](#formats). An unknown name stops the command (exit 2) and lists the formats. `--no-md` still removes `md`. A format with nothing to write in this pack says `<format>: nothing to write (<why>)` and writes nothing |
 | `--view` | `full` or `learner` | `full` | `learner` writes a learner copy of each document format, named `<pack>.learner.<ext>`: answers, good-evidence notes and the correct-option flags are left out, and the line "Learner view: answers are hidden" sits under the status. Data formats ignore it |
+| `--brand` | file | none | A `brand.json` that sets your organisation's look: `organisation` (a name), `accent` (a `#RRGGBB` colour) and `logo` (a PNG or JPEG next to the file, at most 200 KB). Any other key is refused, because the footer and the status line are fixed. The accent must reach a contrast of 4.5:1 against white (WCAG AA), or the command stops with the ratio it found. The page shows the logo (embedded in the file) and the name in its header |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ### Formats
