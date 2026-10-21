@@ -183,3 +183,7 @@ ProbeMatrix by Eyekyam is a human-in-the-loop, AI-assisted incident investigatio
 ## Licence
 
 MIT. See [`LICENSE`](LICENSE). Sample exports are derived from public-record reports; see each sample's README.
+
+## Third-party code
+
+The QR code encoder in `skills/learnings-coach/scripts/pmlc_lib/vendor/qrcodegen.py` is Project Nayuki's QR Code generator library (MIT, tag v1.8.0), vendored unmodified; its licence is in `LICENSE-qrcodegen` beside it.

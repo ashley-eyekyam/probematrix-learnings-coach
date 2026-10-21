@@ -4,6 +4,9 @@ source =
     skills/learnings-coach/scripts
     skills/learnings-coach/scripts/pmlc_lib
 
+omit =
+    */vendor/*
+
 [report]
 fail_under = 90
 show_missing = True
