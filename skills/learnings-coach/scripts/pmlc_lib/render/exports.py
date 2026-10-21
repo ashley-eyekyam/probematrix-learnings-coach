@@ -29,6 +29,9 @@ def _ex_csv_text(header, rows) -> str:
 def render_actions_csv(ctx) -> list:
     """<pack>.actions.csv: every recommendation, decision and indicator item, in export-actions' generic columns."""
     rows = actions.collect_actions(ctx.run, [ctx.pack], [])
+    if ctx.share:                                    # a shared copy carries no run slug (Ruling X6): <pack>/<item id>
+        for r in rows:
+            r["id"] = r["id"][len(ctx.run) + 1:]
     if not rows:
         ctx.notes.append(NOTHING_TO_WRITE.format(fmt="csv", why="the pack has no recommendation, decision or "
                                                                  "indicator items"))

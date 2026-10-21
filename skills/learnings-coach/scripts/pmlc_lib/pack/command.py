@@ -53,7 +53,9 @@ def cmd_pack(a):
             refuse_existing(shared_name(out / o.name, mode))
     for fmt, o in outs:
         path = shared_name(out / o.name, mode)
-        if isinstance(o.data, bytes):
+        if fmt in KEEP_FORMATS:                                      # keep \r\n rows as they are on every platform
+            path.write_bytes(o.data.encode("utf-8"))
+        elif isinstance(o.data, bytes):
             path.write_bytes(o.data)
         else:
             path.write_text(o.data, encoding="utf-8")

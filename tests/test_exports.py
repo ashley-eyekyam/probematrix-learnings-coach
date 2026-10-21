@@ -99,6 +99,11 @@ def test_actions_csv_shared_copy_is_masked_and_separate(tmp_path, shws):
     outs = ws.parent / "outputs"
     t = (outs / "test-pack.actions.external.csv").read_text(encoding="utf-8")
     assert "P-101" not in t and "[equipment tag]" in t
+    raw = (outs / "test-pack.actions.external.csv").read_bytes()
+    assert ws.parent.name.encode() not in raw and b"acme-pump-fire" not in raw          # Ruling X6: no run slug
+    assert b"\r\r" not in raw and raw.split(b"\r\n")[1].startswith(b"test-pack/s1-")
+    internal = (outs / "test-pack.actions.csv").read_bytes()
+    assert ws.parent.name.encode() in internal                                         # internal ids keep it
     assert (outs / "test-pack.actions.csv").is_file()
 
 
@@ -332,3 +337,30 @@ def test_csv_vs_json_doc():
     assert ".external." in ix and "skill" in ix
     px = (ROOT / "docs" / "manual" / "commands" / "pack-xlsx.md").read_text(encoding="utf-8")
     assert "Shared external: identifying details are masked" in px and "listed name" in px
+
+
+def test_table_item_pack_drops_excluded_ids(tmp_path):
+    """INT-B (ruling X13): table-item --pack removes the pack's excluded ids from row_cites and cites."""
+    from test_items import wrap
+    x = make_export(tmp_path)
+    run("ingest", str(x), "--slug", "test-pump", "--date", "2024-03-20", "--root", str(tmp_path))
+    ws = tmp_path / "pmlc-runs" / "2024-03-20-test-pump" / "workspace"
+    run("classify", str(ws))
+    plain = json.loads(cli("table-item", str(ws), "tiers").stdout)
+    assert "FND-0001" in plain["cites"]
+    doc = wrap({"kind": "para", "text": "Seen.", "cites": ["FND-0002"]})
+    doc["exclusions"] = [{"id": i, "reason": "Out of scope for this audience"} for i in plain["cites"]
+                         if i != "FND-0002"]
+    p = tmp_path / "pack.json"
+    p.write_text(json.dumps(doc), encoding="utf-8")
+    it = json.loads(cli("table-item", str(ws), "tiers", "--pack", str(p)).stdout)
+    gone = {e["id"] for e in doc["exclusions"]}
+    assert gone and not gone & set(it["cites"]) and all(not gone & set(c) for c in it["row_cites"])
+    assert len(it["row_cites"]) == len(plain["row_cites"])                              # rows keep their place
+    doc["sections"][0]["items"].append(it)
+    p.write_text(json.dumps(doc), encoding="utf-8")
+    r = cli("check-pack", str(ws), str(p))
+    assert r.returncode == 0, r.stdout + r.stderr                                     # empty row cites are tolerated
+    doc["sections"][0]["items"][-1] = plain                                            # without --pack: the trap
+    p.write_text(json.dumps(doc), encoding="utf-8")
+    assert "is also cited at" in cli("check-pack", str(ws), str(p)).stdout + cli("check-pack", str(ws), str(p)).stderr
