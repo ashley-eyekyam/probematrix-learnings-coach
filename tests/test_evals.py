@@ -409,3 +409,33 @@ def test_router_prompts_do_not_echo_the_hub_table():
         w = words(evals[n]["prompt"])
         echo = [" ".join(w[i:i + 3]) for i in range(len(w) - 2) if tuple(w[i:i + 3]) in grams]
         assert not echo, (n, echo)
+
+
+def test_p4h_routes_floor_exactly_90_percent(tmp_path):
+    """Task 24 m-7: 27 of 30 is exactly the 90% floor and passes; 26 of 30 does not."""
+    ef = _router_file(tmp_path, 30)
+    answers = {str(1000 + i): "board-brief" for i in range(30)}
+    for i in range(3):
+        answers[str(1000 + i)] = "leadership"
+    af = tmp_path / "answers.json"
+    af.write_text(json.dumps(answers))
+    r = runner("routes", str(af), "--file", str(ef))
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "Routing: 27/30 router evals (90%); floor 90%." in r.stdout
+    answers["1003"] = "leadership"
+    af.write_text(json.dumps(answers))
+    r = runner("routes", str(af), "--file", str(ef))
+    assert r.returncode == 1 and "Routing: 26/30 router evals (87%); floor 90%." in r.stdout
+
+
+def test_p4h_eval_98_does_not_echo_the_hub_table():
+    """X39: no router prompt repeats a four-word run of the hub's routing-table rows (here: eval 98)."""
+    import re
+    hub = (ROOT / "skills" / "learnings-coach" / "SKILL.md").read_text(encoding="utf-8")
+    e98 = next(e for e in json.loads(EVALS.read_text(encoding="utf-8"))["evals"] if e["id"] == 98)
+
+    def grams(t):
+        w = re.findall(r"[a-z]+", t.lower())
+        return {tuple(w[i:i + 4]) for i in range(len(w) - 3)}
+    rows = "\n".join(line for line in hub.splitlines() if line.startswith("| ") and "`" in line)
+    assert not grams(e98["prompt"]) & grams(rows)

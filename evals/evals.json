@@ -2394,7 +2394,7 @@
    "id": 98,
    "owner": "learnings-coach",
    "kind": "router",
-   "prompt": "Group the findings in this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) by function, tier and role, and help me place the roles the rules could not. No audience packs yet.",
+   "prompt": "Group the findings in this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) into the part of the organisation and the level each belongs to, and sort out the job titles the rules could not place. No audience packs yet.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
