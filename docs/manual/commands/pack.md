@@ -57,6 +57,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `html` | document | `<pack>.html` | The offline page (default) |
 | `md` | document | `<pack>.md` | The same content as Markdown (default) |
 | `normalised` | data | `<pack>.normalised.json` | The pack for other tools: every item id filled in, the status line, the brand, the effective status, the word count and reading time, the coverage counts and the cited findings (label, level, rating) and evidence (type). A shared copy carries no run slug |
+| `email` | document | `<pack>.email.html` and `<pack>.email.txt` | An email-safe digest: the title, status, DRAFT label and reading time, the bottom line in full, each section's items in order, the cited finding and evidence IDs, the coverage line and the brand. The HTML uses inline styles only (no script, style sheet, link or image) and stays under 100 KB; when a long pack does not fit, each section ends with "N more items are in the full pack". The `.txt` twin has the same content, wrapped at 78 columns. When a base web address is given, it holds one link to that address and no other |
 
 A shared copy (`--share external` or `public`) of any format is built from the masked pack, and the mode goes just before the last extension of its file name: `<pack>.normalised.external.json`, `<pack>.learner.external.html`. Every format's text goes through the name check.
 

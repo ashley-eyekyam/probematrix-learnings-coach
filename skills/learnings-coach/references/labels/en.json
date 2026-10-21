@@ -142,5 +142,7 @@
  "ui.js.evidence": "Evidence",
  "ui.js.type": "Type",
  "ui.js.linked_to": "Linked to {code}",
- "ui.js.matching": "{n} matching items"
+ "ui.js.matching": "{n} matching items",
+ "ui.email.cited": "Findings and evidence cited",
+ "ui.email.full_pack": "Open the full pack"
 }
