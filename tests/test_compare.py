@@ -184,3 +184,27 @@ def test_malformed_comparator_never_breaks_the_workspace(ws, tmp_path, name):  #
         assert r.returncode == 0
     else:   # a readable inventory that lacks REC-01: a clean problem line, not a crash
         assert r.returncode == 1 and "REC-01 is not in comparator.json" in out
+        assert "comparator.json is not valid: " in out and "no valid id" in out    # Task 13 minor: say so, too
+
+
+@pytest.mark.parametrize("name", sorted(MALFORMED))
+def test_p4h_malformed_comparator_compare_fails_cleanly(ws, tmp_path, name):  # noqa: F811
+    """Task 13 minor: `compare` reads the malformed inventory too: a one-line reason and exit 1, never a traceback."""
+    d = tmp_path / "ws"
+    shutil.copytree(ws, d)
+    (d / "comparator.json").write_text(MALFORMED[name], encoding="utf-8")
+    import subprocess
+    import sys
+    r = subprocess.run([sys.executable, str(ROOT / "skills" / "learnings-coach" / "scripts" / "pmlc.py"),
+                        "compare", str(d)], capture_output=True, text=True)
+    out = r.stdout + r.stderr
+    assert "Traceback" not in out and r.returncode == 1 and out.strip(), out
+
+
+def test_p4h_comparator_ids_must_match_the_id_pattern(tmp_path):
+    from pmlc_lib.workspace import read_comparator_ids, scan_comparator
+    f = tmp_path / "comparator.json"
+    f.write_text(json.dumps({"items": [{"id": "REC-01"}, {"id": "X-1"}, {"id": "bogus"}, {"id": 3}, "REC-02", None]}),
+                 encoding="utf-8")
+    assert read_comparator_ids(f) == (["REC-01"], None)
+    assert scan_comparator(f) == (["REC-01"], 5, None)

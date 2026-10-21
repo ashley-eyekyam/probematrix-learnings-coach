@@ -492,6 +492,9 @@ def _check_comparator_refs(pack, w, bad, warn):
                 for x in refs:
                     if x not in known:
                         bad(ip, f"{x} is not in comparator.json")
+                if w.get("comparator_bad_items"):
+                    warn(ip, f"comparator.json is not valid: {w['comparator_bad_items']} item(s) have no valid id "
+                             "and are ignored")
 
 
 LR_RX = re.compile(r"LR-\d{2,}")

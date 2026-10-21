@@ -13,17 +13,29 @@ from . import __version__
 from .util import _abs, _overlay_path, _s, iso_date, REFS, write_json
 
 
-def read_comparator_ids(path) -> tuple:
-    """(sorted item ids, None) of a comparator.json, or (None, the reason it is unusable). Never raises."""
+def scan_comparator(path) -> tuple:
+    """(sorted valid item ids, how many items have no valid id, None), or (None, 0, the reason it is unusable). An id
+    is valid when it looks like OBS-01, RC-01, REC-01 or ACT-01. Never raises."""
+    from .compare import ITEM_ID_RX
     try:
         c = json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, UnicodeDecodeError, ValueError, RecursionError) as e:
-        return None, f"cannot be read as JSON ({e.__class__.__name__})"
+        return None, 0, f"cannot be read as JSON ({e.__class__.__name__})"
     if not isinstance(c, dict):
-        return None, "must be a JSON object"
+        return None, 0, "must be a JSON object"
     if not isinstance(c.get("items"), list):
-        return None, "has no items list"
-    return sorted({i["id"] for i in c["items"] if isinstance(i, dict) and isinstance(i.get("id"), str)}), None
+        return None, 0, "has no items list"
+    ids = {i["id"] for i in c["items"] if isinstance(i, dict) and isinstance(i.get("id"), str)
+           and ITEM_ID_RX.fullmatch(i["id"])}
+    bad = sum(1 for i in c["items"] if not (isinstance(i, dict) and isinstance(i.get("id"), str)
+                                            and ITEM_ID_RX.fullmatch(i["id"])))
+    return sorted(ids), bad, None
+
+
+def read_comparator_ids(path) -> tuple:
+    """(sorted item ids, None) of a comparator.json, or (None, the reason it is unusable). Never raises."""
+    ids, _bad, why = scan_comparator(path)
+    return ids, why
 
 
 def load_ws(ws_dir: Path) -> dict:
@@ -37,11 +49,13 @@ def load_ws(ws_dir: Path) -> dict:
     out["singletons"] = json.loads(sp.read_text(encoding="utf-8")).get("roles", []) if sp.exists() else []
     cp = ws_dir / "comparator.json"   # the item ids check-pack validates comparator_refs against
     if cp.is_file():
-        ids, why = read_comparator_ids(cp)
+        ids, bad, why = scan_comparator(cp)
         if why:
             out["comparator_error"] = why
         else:
             out["comparator_ids"] = ids
+            if bad:
+                out["comparator_bad_items"] = bad
     if "findings" not in out:
         sys.exit(f"No findings.json in {ws_dir}. Run: pmlc.py ingest <export.xlsx> --slug <site>-<event>")
     return out
