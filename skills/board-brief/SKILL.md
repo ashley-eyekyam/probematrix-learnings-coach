@@ -32,7 +32,9 @@ PMLC table-item <ws> adoption                               # management's respo
 
 ## Write
 
-A board paper: the cover (bottom line and the ask of the board) on page one, the body in two to three pages, the questions as the annex. Write the pack `<run>/outputs/board-brief.json` in the shape in `learnings-coach/references/pack-schema.md`. Set `"scope": {"levels": [3, 4], "min_rating": "top"}`.
+A board paper: the cover (bottom line and the ask of the board) on page one, then the body in two to three pages. Write the sections in the order below; the paper layout (`--layout paper`, under Check and hand over) moves the questions to Annex A and the tables and indicators to Annex B by itself. Write the pack `<run>/outputs/board-brief.json` in the shape in `learnings-coach/references/pack-schema.md`. Set `"scope": {"levels": [3, 4], "min_rating": "top"}`.
+
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/board-brief.json (repository only)
 
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
@@ -83,6 +85,9 @@ Run `learnings-coach/references/skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/board-brief.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/board-brief.json                  # -> board-brief.html (open first) and board-brief.md
+PMLC pack <ws> <run>/outputs/board-brief.json --format docx --layout paper   # the board paper: .docx, .paper.docx, .paper.html
 ```
+
+The board paper (L4-20) is what a board secretary files: `board-brief.paper.docx` has a cover with the status and reading time, "Decisions requested" (the bottom line), numbered paragraphs, Annex A (the questions) and Annex B (the assurance table and indicators); `board-brief.paper.html` prints the same from a browser. Offer it whenever the brief goes to a board pack. Formats and channels: `skill-common.md` §8.
 
 Also confirm: the ask of the board is on the cover, every Requested reporting date is "for the board to set" or the user's date, and the governance paragraph draws no legal conclusion. This skill's `share_default` is `external`: a copy for anyone outside the organisation follows `skill-common.md` §7. Next: `top-management-brief` for the executive decisions the questions point to.

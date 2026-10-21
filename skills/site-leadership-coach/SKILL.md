@@ -36,6 +36,8 @@ PMLC register-items <ws> --tier T4                                          # th
 
 Write the pack `<run>/outputs/site-leadership-coach.json` in the shape in `learnings-coach/references/pack-schema.md`. Set `"scope": {"tiers": ["T4"]}`.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/site-leadership-coach.json (repository only)
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | The learnings for the leadership team, one sentence each | `bottom_line` | up to 5 |
@@ -45,7 +47,7 @@ Write the pack `<run>/outputs/site-leadership-coach.json` in the shape in `learn
 | 3 | `culture` | Culture signals | What had become normal, what leaders modelled or tolerated, where challenge was absent. Norms, not people | `para` | up to 4 |
 | 4 | `decisions` | Decisions for the leadership team | A choice with options, trade-off (cost, production, staffing, authority) and `owner` = a function; mark escalations (below) | `decision` | up to 10 |
 | 4 | `decisions` | (same section) | The leading indicator leadership will watch, after its decision in the same `group`, with `deterioration` | `indicator` | up to 10 |
-| 5 | `visible` | What leaders will do visibly | Walk-throughs, questions to ask in reviews, things to stop accepting; `when` = "next 30 days" | `check` | at least 1 |
+| 5 | `visible` | What leaders will do visibly | Walk-throughs, questions to ask in reviews, things to stop accepting; `when` = "next 30 days" | `check` | up to 6 |
 | 6 | `management-review` | Management review input | The six-row table (below) | `table` | optional, up to 1 |
 | 7 | `workshop` | Leadership workshop agenda (two hours) | Columns Time, Activity, Built on; built on sections 1, 3 and 4 | `table` | 1 |
 
@@ -81,6 +83,10 @@ Run `learnings-coach/references/skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/site-leadership-coach.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/site-leadership-coach.json                  # -> site-leadership-coach.html (open first) and .md
+PMLC pack <ws> <run>/outputs/site-leadership-coach.json --format pptx    # the workshop deck: site-leadership-coach.pptx
+PMLC pack <ws> <run>/outputs/site-leadership-coach.json --format docx    # the debrief as a Word paper
 ```
+
+**The workshop deck** (L4-04). Offer the `.pptx` for the two-hour workshop in section 7: one slide per bottom-line point and per decision, the causal map as boxes and arrows the facilitator can move, the citations and full text in the speaker notes, and the status line on every slide. Run the workshop from the deck and keep the HTML open for the evidence (`skill-common.md` §8).
 
 Also confirm: every decision is within site authority or marked "Needs corporate decision", and the management-review table, if present, has exactly the six rows. Next: `top-management-brief` for the escalated decisions, or `manager-coach` for the function agendas.

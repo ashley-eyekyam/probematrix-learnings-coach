@@ -34,12 +34,16 @@ PMLC facts <ws>                                          # counts, levels and th
 ## Write
 
 Write `<run>/outputs/learnings-register.json` in the shape in `register-schema.md` (it is a register, not a
-pack). One entry per learning, classified against every section A–K of `register-schema.md`:
+pack). One entry per learning, classified against every section A–K of `register-schema.md`.
+
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/learnings-register.json (repository only)
 
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | A | `lr_id` | Identity | `LR-01`, `LR-02` … with a short `title` | text | 1 |
+| A | `ml_id` | Identity | `ML-01` … only for a learning with no counterpart in a supplied comparator report (`report-comparison`); otherwise `""` | text | optional |
 | B | `lesson` | Lesson | A generalisable sentence ("If X, then Y, because Z") that makes sense at another site, not a restatement of the event; `owner_entity`, `tiers` | text | 1 |
+| B | `context` | Lesson | Two or three de-identified sentences, roles only, on where the lesson comes from; also why the owner departs from the owner rule, or that the evidence is inferred | text | 1 |
 | C | `finding_ids` | Evidence | Finding IDs and Evidence IDs (`evidence_ids`), `evidence_strength`, `confidence` | ID list | at least 1 |
 | D | `hfacs_level` | Causal classification | Level plus sub-category as the export writes it; `barrier` and `org_system` in the shared vocabulary | text | 1 |
 | D | `causal_role` | Causal classification | `initiating`, `contributory`, `escalating` or `failed mitigation`, with `hazard`, `activity` and `performance_mode` (skill / rule / knowledge; slip / lapse / mistake / violation) | value | 1 |
@@ -47,7 +51,7 @@ pack). One entry per learning, classified against every section A–K of `regist
 | F | `comparison` | Comparison | `not compared` unless a comparator is supplied; then `yes` / `partial` / `none` with `reason_class` | value | 1 |
 | H | `audiences` | Dissemination | Who must learn, `learning_level` (individual / team / organisational; single- or double-loop, by the criteria in `indicators-and-effectiveness.md`) and `formats` (brief, card, toolbox talk, module) | list | 1 |
 | G | `priority` | Significance | 1, 2 or 3, with `worst_case` and `transferability` | value | 1 |
-| I | `recommendations` | Recommendations | Each with `what`, `hoc_tier`, `leading_indicator`; at least one above the administrative tier for a priority-1 learning, or say why in `why_not_stronger` | list | 1–3 |
+| I | `recommendations` | Recommendations | Each with `what`, `level_barrier` (the HFACS level and barrier it strengthens, such as "L4 / emergency isolation"), `evidence_basis` (the EVD IDs, else the Finding IDs, it rests on), `hoc_tier`, `leading_indicator`; at least one above the administrative tier for a priority-1 learning, or say why in `why_not_stronger` | list | 1–3 |
 | J | `tier_messages` | Tier messages | One short, concrete message per tier that must act (T1 … T5), omitting tiers with nothing to do | object | up to 5 |
 | K | `urgency` | Urgency | `alert` (act now, a live risk elsewhere), `notice` (act within the normal cycle), `information` (awareness only) | value | optional |
 | K | `recommendation_class` | Class | `recommendation` (a change still to make), `observation` (worth knowing, no change asked), `action_taken` (already done; say so, with evidence) | value | optional |
@@ -90,7 +94,13 @@ PMLC check-register <ws> <run>/outputs/learnings-register.json --strict   # fix 
 PMLC register-md <ws> <run>/outputs/learnings-register.json               # -> learnings-register.md
 PMLC register-xlsx <run>/outputs/learnings-register.json                  # -> learnings-register.xlsx
 PMLC dashboard <ws> --register <run>/outputs/learnings-register.json      # -> organisation-learning-map.html
+PMLC register-render <ws> <run>/outputs/learnings-register.json --format docx,email   # Word copy and email digest
 ```
+
+Offer `register-render` when the register goes to people who read Word or email rather than Excel:
+`learnings-register.docx` holds every learning, with its IDs as endnotes; `learnings-register.email.html` and
+`.email.txt` hold the summary and as many learnings as fit in 100 KB, and say how many are left out. Both carry
+the status line and, until a person approves the register, DRAFT (`skill-common.md` §8).
 
 Add `--date <corrected date>` and `--title "<plain title>"` to `dashboard` when the profile flagged the
 summary-sheet date. The dashboard has two tabs: Overview (the learning × tier matrix, a plan per level, fix

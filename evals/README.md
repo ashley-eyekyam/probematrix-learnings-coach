@@ -43,6 +43,7 @@ Hazira sample (`samples/2020-09-24-hazira-gas-release-fire/`). Every skill owns 
 | `card_fields` | `pack`, `fields` | the pack has at least one `card` item and every card has each named field filled in |
 | `section_exists` | `pack`, `section` | the pack has a section whose `id` is `section` (or matches it as a glob, such as `t[1-5]`) |
 | `routes_to` | `skill` (or `null`); `value` in a router eval | judged by a person or from a transcript: reported as `manual` by `grade`, scored by `routes` |
+| `command_contains` | `command`; optional `flags` (`{"format": "docx", "layout": "paper"}`) and `contains` (a list of texts) | a line of the `--transcript` file (one command per line, as the agent ran it) runs `pmlc.py <command>` (or `PMLC`, `pmlc`, `$E` or `${E}` then `<command>`) with each flag holding its value (a comma list such as `--format email,docx` counts for `docx`) and holding each `contains` text; `manual` without a transcript. The format evals use it |
 
 Pack names follow each skill's SKILL.md: usually the skill name, `dossier-F02` for cluster-learning-dossier,
 `organisation-learning-plan` for organisation-learning-map, and `learnings-register` for the register.
@@ -60,6 +61,7 @@ fewer than 8 router evals carry a `sibling`.
 python3 evals/run_evals.py check                  # structure, paths, kinds, per-skill counts (CI runs this)
 python3 evals/run_evals.py grade <run-dir>        # grade evals whose packs exist in <run-dir>/outputs
 python3 evals/run_evals.py grade <run-dir> --ids 3,7
+python3 evals/run_evals.py grade <run-dir> --transcript commands.txt   # also grade command_contains
 python3 evals/run_evals.py routes <answers.json>  # score the router evals; exit 1 below the 90% floor
 ```
 
@@ -72,4 +74,6 @@ A missing answer counts as a fail. The pass rate goes in the CHANGELOG at the ph
 machine check fails, or when nothing was graded (it then prints `no outputs graded`). A pack that is not a JSON
 object, or whose `scope` is not an object, gives a failed expectation rather than a crash. To grade a skill, run it on the sample (see `skills/learnings-coach/SKILL.md`), then point
 `grade` at the run folder it printed (`<export-dir>/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/`).
+For the format evals, save the commands the agent ran (one per line, from its transcript) and pass them with
+`--transcript`; the evals with a `command_contains` expectation are then graded as well.
 Both commands take `--file <evals.json>` to use another eval file. Standard library only, Python 3.9+.

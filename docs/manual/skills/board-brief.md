@@ -33,6 +33,7 @@ pmlc timeline-item <ws> --before incident --top 8       # signals that existed b
 pmlc table-item <ws> adoption                           # management's response to each learning
 pmlc check-pack <ws> <run>/outputs/board-brief.json --strict
 pmlc pack <ws> <run>/outputs/board-brief.json
+pmlc pack <ws> <run>/outputs/board-brief.json --format docx --layout paper   # the board paper
 ```
 
 - [select](../commands/select.md): `--level 4` the Organisational Influences level; `--top-rated` the strongest findings; `--tag assurance` every function tagged assurance (HSE, process safety and audit in the default list); `--level 3 4` adds Supervision; `--text` finds earlier alerts, recommendations and overdue items; `--brief` short entries.
@@ -56,6 +57,8 @@ pmlc pack <ws> <run>/outputs/board-brief.json
 9. a reminder that minuted questions need tracked answers.
 
 The tone is neutral and factual: no blame of management or staff, and roles only. The skill's default sharing class is external: a copy for anyone outside the organisation follows [Review and sharing](../Review-and-sharing.md).
+
+**Formats.** `--format docx --layout paper` (see [pack](../commands/pack.md)) also writes the **board paper**: `board-brief.docx`, `board-brief.paper.docx` and `board-brief.paper.html`. The paper has a cover with the status and reading time, "Decisions requested" with the bottom line, numbered paragraphs, Annex A for the questions and Annex B for the assurance table and indicators. Section order in the JSON stays as above; the layout moves the questions to the annex.
 
 ## Worked example (Hazira)
 

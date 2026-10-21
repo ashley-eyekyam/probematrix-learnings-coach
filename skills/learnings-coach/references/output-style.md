@@ -2,7 +2,9 @@
 
 ## Default format
 
-Skills that produce a learning pack write JSON (`pack-schema.md`) and render it with `pmlc.py pack` to a self-contained HTML page (the primary deliverable) and generated Markdown, one pack per deliverable, in `<run>/outputs/`. `learnings-register` keeps its own register formats (JSON, .xlsx, .md) and `organisation-learning-map.html`. Convert to .docx, .pdf, .pptx or .xlsx only when the user asks, using whatever document tools the host provides. `pmlc.py register-xlsx` writes the Learnings Register spreadsheet and `pmlc.py dashboard` writes the HTML learning map.
+Skills that produce a learning pack write JSON (`pack-schema.md`) and render it with `pmlc.py pack` to a self-contained HTML page (the primary deliverable) and generated Markdown, one pack per deliverable, in `<run>/outputs/`. The engine writes every other format from the same JSON: `pack --format docx`, `pptx`, `email`, `csv` and the data formats, and `pack --layout cards|field|toolbox|checklist|poster|paper` for print. Which format suits which channel, and each skill's offered formats, are in `skill-common.md` §8. `learnings-register` keeps its own formats: the JSON, `register-md` (.md), `register-xlsx` (.xlsx), `register-render --format docx,email` (Word and email) and the `dashboard` (`organisation-learning-map.html`).
+
+Never rebuild a pack by hand in another tool, and never hand-edit a rendered file: change the JSON and render again, so the status line, footer, citations and checks stay with every copy. There is no PDF format: print the HTML or a print layout to PDF from the browser, or save the .docx as PDF in Word. For a format the engine does not write (such as a spreadsheet of one pack's questions or test points, `PMLC pack-xlsx`), use the engine command first and the host's document tools only when the user asks for something none of them writes.
 
 ## Every document
 
@@ -50,4 +52,8 @@ Measurable, forward-looking, and owned by the audience reading it: e.g. "% of pr
 
 ## Converted files
 
-When converting a pack to .pdf or .docx, blank the author field (and the creator and last-modified-by properties) so the file carries no personal name.
+The engine's own files carry no personal name: the .docx and .pptx it writes have no creator and no last-modified-by property, the .xlsx names only the library that wrote it (`openpyxl`), and the email, calendar and data files name no sender, organiser or attendee. Keep it so:
+
+- Saving a .docx or .pptx again in Word or PowerPoint stamps the editor's name as last-modified-by; clear it (File > Info > Inspect Document, or the host's equivalent) before the file leaves.
+- When the user asks for a conversion the engine does not make (for example a PDF of the .docx), blank the author, creator and last-modified-by properties of the converted file.
+- A converted file keeps the status line, the DRAFT label and the ProbeMatrix footer exactly as the engine wrote them.
