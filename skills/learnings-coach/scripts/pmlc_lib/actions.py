@@ -63,17 +63,17 @@ def collect_actions(slug: str, packs: list, entries: list) -> list:
     return rows
 
 
-FORMULA_LEAD = ("=", "+", "-", "@", "\t", "\r")
+_ACTIONS_FORMULA_LEAD = ("=", "+", "-", "@", "\t", "\r")
 
 
-def _flat(v) -> str:
+def _flat_cell(v) -> str:
     return "; ".join(str(x) for x in v) if isinstance(v, list) else v
 
 
 def _csv_cell(v) -> str:
     """X20: a CSV cell that starts with = + - @ tab or CR gets a leading single quote, so Excel never runs it."""
-    s = _flat(v)
-    return "'" + s if isinstance(s, str) and s.startswith(FORMULA_LEAD) else s
+    s = _flat_cell(v)
+    return "'" + s if isinstance(s, str) and s.startswith(_ACTIONS_FORMULA_LEAD) else s
 
 
 def _slug(ws: Path) -> str:

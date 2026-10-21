@@ -158,3 +158,15 @@ def test_retention_line_rendered(tmp_path):
     plain = pmlc.handling_lines({"classification": "internal", "version": "1.0", "effective_status": "draft",
                                  "draft_reasons": []})
     assert plain == ["Review: draft · Classification: internal · Version 1.0"]
+
+
+def test_p4h_purge_manual_says_a_later_outputs_purge_is_refused(tmp_path):
+    """Task 16 minor: after `--keep outputs` the workspace manifest is gone, so purge refuses the outputs later; the
+    manual says so."""
+    rd = make_run(tmp_path)
+    assert purge(str(rd), "--keep", "outputs", "--yes").returncode == 0
+    r = purge(str(rd), "--yes")
+    assert r.returncode == 1 and (rd / "outputs").exists()
+    from pathlib import Path
+    page = (Path(__file__).resolve().parents[1] / "docs" / "manual" / "commands" / "purge.md").read_text(encoding="utf-8")
+    assert "After `--keep outputs`" in page and "delete the outputs folder by hand" in page

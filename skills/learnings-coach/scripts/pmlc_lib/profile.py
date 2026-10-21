@@ -27,14 +27,17 @@ def _has_dated_text(w) -> bool:
     texts = [w.get("incident", {}).get("narrative", "")]
     texts += [_s(v) for f in w["findings"] for v in f.values() if isinstance(v, str)]
     texts += [_s(e.get("description")) for e in w.get("evidence", {}).values()]
-    return any(_parse_dates(t) for t in texts if t)
+    return any(h[1] < 3 for t in texts if t for h in _parse_dates(t))     # a bare year (pattern 3) orders nothing
 
 
 def _thin_export_flags(w, ws) -> list:
     """Thin-export flags (P3-8). F99 and T9 shares and tier counts need clusters.json."""
     F, E = w["findings"], w.get("evidence", {})
     out = []
-    if not E:
+    sheets = {_s(n).strip().lower() for n in w.get("incident", {}).get("sheets") or []}
+    if not E and sheets & {"evidence links", "evidence"}:
+        out.append('Evidence Links sheet is empty: learnings rest on findings only; use evidence_strength "inferred"')
+    elif not E:
         out.append('No Evidence Links sheet: learnings rest on findings only; use evidence_strength "inferred"')
     if not w.get("incident", {}).get("narrative", "").strip():
         out.append("No narrative text")

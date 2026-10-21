@@ -321,3 +321,15 @@ def test_every_fixture_pack_still_passes_check_pack(wsdir):
             continue
         r = subprocess.run([sys.executable, str(PMLC), "check-pack", str(wsdir), str(f)], capture_output=True, text=True)
         assert r.returncode == 0, (f.name, r.stdout, r.stderr)
+
+
+def test_p4h_xlsx_empty_recommendations_sheet_has_header_and_no_table(tmp_path):
+    """Task 6 minor: a register with no recommendations still writes the sheet, without an Excel Table or links."""
+    reg = two_entry_reg()
+    for e in reg["entries"]:
+        e["recommendations"] = []
+    wb = build(tmp_path, reg, "norecs")
+    ws = wb["Recommendations"]
+    assert ws.max_row == 1 and [c.value for c in ws[1]][0] == "LR-ID"
+    assert not ws.tables and not ws._hyperlinks
+    assert list(wb["Learnings Register"].tables) == ["LearningsRegister"]

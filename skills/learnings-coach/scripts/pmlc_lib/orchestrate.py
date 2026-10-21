@@ -17,7 +17,7 @@ from .util import HERE, write_json
 from .workspace import check_current, load_manifest, load_ws, outputs_dir, pack_record
 
 REGISTER_NAME = "learnings-register.json"
-TEMPLATES = Path(__file__).resolve().parent / "dashboard" / "templates"
+_INDEX_TEMPLATES = Path(__file__).resolve().parent / "dashboard" / "templates"
 
 
 def _run(argv, capture=True):
@@ -264,7 +264,7 @@ def cmd_index(a):
         rows.append(_row(ws, w, out, dest, reg, rd, None, ["all"], "register"))
     inc = w.get("incident", {}).get("fields", {}).get("Incident Title", "")
     title = f"Learning outputs: {inc}" if inc else "Learning outputs"
-    text = (TEMPLATES / "index.html").read_text(encoding="utf-8")
+    text = (_INDEX_TEMPLATES / "index.html").read_text(encoding="utf-8")
     page = string.Template(text).substitute(
         title=escape(title), status_phrase=escape(STATUS_PHRASE), brand=escape(BRAND),
         rows="\n".join(rows) if rows else '<tr><td colspan="7">No packs in outputs/ yet.</td></tr>')

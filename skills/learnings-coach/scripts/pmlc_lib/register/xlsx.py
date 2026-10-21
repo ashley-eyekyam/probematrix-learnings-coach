@@ -171,11 +171,11 @@ def cmd_register_xlsx(a):
     sheet(ws, reg_cols, entries, "LearningsRegister", [("priority", PRIORITIES), ("comparison", COMPARISONS)])
     lr_row = {e.get("lr_id"): n for n, e in enumerate(entries, 2)}
     recs = [dict(r, lr_id=e.get("lr_id")) for e in entries for r in (e.get("recommendations") or [])]
-    rws = wb.create_sheet("Recommendations")
-    sheet(rws, REC_COLS, recs, "Recommendations", [("hoc_tier", HOC_TIERS)])
+    rec_ws = wb.create_sheet("Recommendations")
+    sheet(rec_ws, REC_COLS, recs, "Recommendations", [("hoc_tier", HOC_TIERS)])
     for n, r in enumerate(recs, 2):
         if r.get("lr_id") in lr_row:
-            cell = rws.cell(n, 1)
+            cell = rec_ws.cell(n, 1)
             cell.hyperlink = Hyperlink(ref=cell.coordinate, location=f"'Learnings Register'!A{lr_row[r['lr_id']]}")
             cell.font = Font(color="0563C1", underline="single")
     plan_cols = [("lr_id", "LR-ID"), ("title", "Title"), ("priority", "Priority")] + \

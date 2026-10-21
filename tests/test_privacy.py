@@ -1189,3 +1189,16 @@ def test_share_dashboard_masks_matrix_packs_and_adoption_ids(tmp_path, shws):
     t = (outs / "organisation-learning-map.public.html").read_text(encoding="utf-8")
     assert "Quillon" not in t and "Vantress" not in t and "Quillon" not in r.stderr
     assert "row 2: lr_id is not an LR-nn identifier" in t
+
+
+def test_p4h_masked_name_collision_numbered():
+    """INT-7 residual: two different invented names that mask to the same key stay apart as [name-1] and [name-2]."""
+    ctx = pv.ShareCtx("external", ["Quillon Marsh", "Tamsin Verrow"], [], {})
+    cl = {"role_map": {"Quillon Marsh": {"F": ["F02"], "T": "T1", "R": ["actor"]},
+                       "Tamsin Verrow": {"F": ["F03"], "T": "T2", "R": ["owner"]},
+                       "Pump fitter": {"F": ["F04"], "T": "T1", "R": ["actor"]}}}
+    out = pv.share_doc(cl, ctx)["role_map"]
+    assert list(out) == ["[name-1]", "[name-2]", "Pump fitter"]
+    assert out["[name-1]"]["F"] == ["F02"] and out["[name-2]"]["F"] == ["F03"]
+    only = pv.share_doc({"role_map": {"Quillon Marsh": {"F": ["F02"]}}}, ctx)["role_map"]
+    assert list(only) == ["[name]"]
