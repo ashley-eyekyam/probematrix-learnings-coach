@@ -16,6 +16,8 @@ The HTML is a self-contained offline page:
 
 The Markdown is generated from the same JSON. Never hand-edit either file; change the pack and run `pack` again.
 
+The shape of a pack is also published as a JSON Schema, [`pack.schema.json`](pack.schema.json) (draft 2020-12). It covers the fields and kinds below and checks structure only; `check-pack` remains the full check (cited IDs exist, language rules, handling, coverage).
+
 ## Top level
 
 ```json
