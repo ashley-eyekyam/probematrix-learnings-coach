@@ -383,9 +383,9 @@ def _px_graph_layout(it: dict) -> dict:
     from layout_graph's drawing, plus the layout size and the omitted count."""
     nodes = [n for n in it.get("nodes") or [] if isinstance(n, dict) and "id" in n]
     edges = [e for e in it.get("edges") or [] if isinstance(e, dict) and "from" in e and "to" in e]
-    # Task 15 adds label_max=None to layout_graph; pass it here once merged (only the <text> child changes, which
-    # this reader never uses: the full label comes from aria-label).
-    res = layout_graph(nodes, edges, str(it.get("id") or "g"))
+    # label_max=None (Task 15): nothing is clipped; only the <text> child changes, which this reader never uses (the
+    # full label comes from aria-label).
+    res = layout_graph(nodes, edges, str(it.get("id") or "g"), label_max=None)
     svg = res["svg"]
     vb = re.search(r'viewBox="0 0 (\d+) (\d+)"', svg)
     drawn = [(px_std_html.unescape(lab), int(x), int(y)) for lab, x, y in PX_NODE_RX.findall(svg)]
