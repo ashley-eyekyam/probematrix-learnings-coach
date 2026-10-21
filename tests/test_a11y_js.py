@@ -1,6 +1,5 @@
 """Accessibility (WCAG 2.2 AA, L4-18): axe-core over every generated page type (Ruling P4-17), the dashboard matrix
 text and the pack page's skip link (Task 20)."""
-import importlib.util
 import io
 import json
 import re
@@ -87,13 +86,19 @@ def _registered(fmt: str, task: int) -> None:
 
 
 def _layout_page(layout: str, tmp_path) -> Path:
-    """<pack>.<layout>.html of the frontline fixture. Layouts come from Task 13: through the registry when it is
-    there (a format named after the layout, or html with ctx.layout), else skipped."""
+    """<pack>.<layout>.html of the frontline fixture, written by Task 13's render_layout (the layouts sit beside the
+    registry formats, as cmd_pack runs them), on the golden workspace."""
     from pmlc_lib import render as R
-    if importlib.util.find_spec("pmlc_lib.render.layouts") is None:
-        pytest.skip("the layouts are not registered yet (Task 13)")
+    from pmlc_lib.handling import effective_handling
+    from pmlc_lib.pack.schema import with_item_ids
+    from pmlc_lib.render.layouts import render_layout
+    from test_pack import golden_ws, RUN, pmlc
+    w = pmlc.load_ws(golden_ws())
+    pack = fixture(LAYOUT_PACK)
+    ctx = R.RenderContext(w=w, pack=with_item_ids(pack), run=RUN, generated="2020-09-24", embed="cited",
+                          eh=effective_handling(pack, w), layout=layout, base_url="https://example.org/pack.html")
     want = R.output_name(LAYOUT_PACK, "html", layout=layout)
-    outs = render_fixture(LAYOUT_PACK, layout if layout in R.FORMATS else "html", layout=layout)
+    outs = render_layout(ctx)
     page = [o for o in outs if o.name == want]
     assert page, f"no {want} among {[o.name for o in outs]}"
     return _write(tmp_path, want, page[0].data)
