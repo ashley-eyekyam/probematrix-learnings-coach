@@ -66,6 +66,19 @@ def _list(xs, tag="ul") -> str:
     return f"<{tag}>" + "".join(f"<li>{_inline(x)}</li>" for x in xs) + f"</{tag}>" if xs else ""
 
 
+def _typed_options(it, f, t) -> str:
+    """A typed question's options (P4-10): choices with the correct ones marked when the key is present (the learner
+    view has none), or the accepted answers of a short question. Options without a type are ignored."""
+    ops = it.get("options")
+    if not it.get("type") or not isinstance(ops, list) or not all(isinstance(o, dict) for o in ops):
+        return ""
+    short = it["type"] == "short"
+    mark = f' <b>({_h(t("ui.quiz.correct"))})</b>'
+    lis = "".join("<li class=\"correct\">" + _inline(o["text"]) + ("" if short else mark) + "</li>" if o.get("correct")
+                  else "<li>" + _inline(o["text"]) + "</li>" for o in ops)
+    return f'<span class="label">{_h(t("ui.quiz.accepted") if short else f("options"))}</span><ul>{lis}</ul>'
+
+
 def _badges(pairs) -> str:
     return "".join(f'<span class="badge">{_h(k)}: {_h(v)}</span>' for k, v in pairs if v)
 
@@ -139,7 +152,8 @@ def _html_item(it, graphs, inc_date=None, labels=None) -> str:
                 f'aria-labelledby="tl-{key}"><span id="tl-{key}">{hold}{_inline(it["text"])}{when}</span></div>{c}')
     elif k == "question":
         to = f' <span class="badge">{_h(f("to"))}: {_h(g("to"))}</span>' if g("to") else ""
-        body = (f'<p><b>{_inline(it["question"])}</b>{to}</p>' + lab("why", it["why"])
+        ops = _typed_options(it, f, t)
+        body = (f'<p><b>{_inline(it["question"])}</b>{to}</p>' + ops + lab("why", it["why"])
                 + lab("answer", g("answer"))
                 + lab("good_evidence", g("good_evidence")) + c)
     elif k == "recommendation":

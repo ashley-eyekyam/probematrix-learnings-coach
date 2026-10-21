@@ -40,6 +40,8 @@ def item_blocks(it: dict, labels: dict, *, view: str = "full") -> list:
         if v is None or (view == "learner" and f in LEARNER_DROP):
             continue
         if view == "learner" and f == "options" and isinstance(v, list):
+            if it.get("kind") == "question" and it.get("type") == "short":
+                continue                                  # a short question's options ARE the accepted answers
             v = [{k: x for k, x in o.items() if k != "correct"} if isinstance(o, dict) else o for o in v]
         out.append(Block(f, role, lab, v))
     return out
@@ -85,7 +87,7 @@ def reading_minutes(pack: dict) -> int:
 
 
 def learner_view(pack: dict) -> dict:
-    """A deep copy without answer, good_evidence and every option's correct flag (P4-9)."""
+    """A deep copy without answer, good_evidence, every option's correct flag and a short question's options (P4-9)."""
     p = copy.deepcopy(pack)
     for s in p.get("sections") or []:
         for it in s.get("items") or [] if isinstance(s, dict) else []:
@@ -93,6 +95,8 @@ def learner_view(pack: dict) -> dict:
                 continue
             for f in LEARNER_DROP:
                 it.pop(f, None)
+            if it.get("kind") == "question" and it.get("type") == "short":
+                it.pop("options", None)                   # the accepted answers are the key (P4-10)
             for o in it.get("options") or [] if isinstance(it.get("options"), list) else []:
                 if isinstance(o, dict):
                     o.pop("correct", None)

@@ -142,5 +142,9 @@
  "ui.js.evidence": "Evidence",
  "ui.js.type": "Type",
  "ui.js.linked_to": "Linked to {code}",
- "ui.js.matching": "{n} matching items"
+ "ui.js.matching": "{n} matching items",
+ "ui.quiz.correct": "correct",
+ "ui.quiz.accepted": "Accepted answers",
+ "ui.quiz.none": "{format}: nothing to write (the pack has no questions)",
+ "ui.quiz.cut": "Question {id} has more than {n} options: the quiz CSV holds the first {n}."
 }

@@ -10,6 +10,7 @@ import datetime as dt
 import importlib
 import os
 import pathlib
+import re
 import shutil
 import sys
 
@@ -124,13 +125,14 @@ def find_browser():
 # ----------------------------------------------------------------------------- html and md (the v1 renderers)
 
 def _rn_html(ctx: RenderContext) -> list:
-    from ..handling import status_line
     from ..pack.html import render_pack_html
     page = render_pack_html(ctx.w, ctx.pack, ctx.run, ctx.generated, ctx.embed, eh=ctx.eh, share=ctx.share,
                             labels=ctx.labels)
     if ctx.view == "learner":
-        status = f'<p class="status">{_rn_esc(status_line(ctx.pack["status"]))}</p>\n'
-        page = page.replace(status, status + f'<p class="status learner">{LEARNER_BANNER}</p>\n', 1)
+        banner = f'<p class="status learner">{LEARNER_BANNER}</p>'
+        page, n = re.subn(r'(<p class="status">.*?</p>)', lambda m: m.group(1) + "\n" + banner, page, count=1, flags=re.S)
+        if not n:                                       # no status line to sit under: the banner still shows
+            page = page.replace("</h1>", "</h1>\n" + banner, 1)
     return [Output(output_name(ctx.pack["pack"], "html", view=ctx.view), page, page)]
 
 
@@ -145,7 +147,8 @@ def _rn_md(ctx: RenderContext) -> list:
     text = render_pack_md(ctx.pack, ctx.w, eh=ctx.eh, share=ctx.share, labels=ctx.labels)
     if ctx.view == "learner":
         status = f"*{status_line(ctx.pack['status'])}*"
-        text = text.replace(status, f"{status}\n\n*{LEARNER_BANNER}*", 1)
+        banner = f"*{LEARNER_BANNER}*"
+        text = text.replace(status, f"{status}\n\n{banner}", 1) if status in text else banner + "\n\n" + text
     return [Output(output_name(ctx.pack["pack"], "md", view=ctx.view), text, text)]
 
 
@@ -160,6 +163,7 @@ def _load() -> None:
         "graphs",
         "bowtie",
         "ics",
+        "quiz",
     ):
         importlib.import_module(f"{__name__}.{mod}")
 

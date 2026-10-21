@@ -142,5 +142,9 @@
  "ui.js.evidence": "सबूत",
  "ui.js.type": "प्रकार",
  "ui.js.linked_to": "{code} से जुड़ा",
- "ui.js.matching": "{n} मिलते आइटम"
+ "ui.js.matching": "{n} मिलते आइटम",
+ "ui.quiz.correct": "सही",
+ "ui.quiz.accepted": "स्वीकार्य उत्तर",
+ "ui.quiz.none": "{format}: लिखने को कुछ नहीं (पैक में कोई प्रश्न नहीं है)",
+ "ui.quiz.cut": "प्रश्न {id} में {n} से अधिक विकल्प हैं: क्विज़ CSV में पहले {n} ही रहते हैं।"
 }

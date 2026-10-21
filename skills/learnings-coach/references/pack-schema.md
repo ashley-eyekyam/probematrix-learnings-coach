@@ -69,7 +69,7 @@ The shape of a pack is also published as a JSON Schema, [`pack.schema.json`](pac
 |---|---|---|
 | `para` | text* | narrative, explanation |
 | `check` | text*, hold_point (true/false), when | checklists, hold points, what to refuse; readers can tick them on screen |
-| `question` | question*, why*, answer (an answer key), good_evidence, to (role the question is put to) | board questions, questions to raise, interview questions |
+| `question` | question*, why*, answer (an answer key), good_evidence, to (role the question is put to), type (`single`, `multi`, `truefalse` or `short`), options (a list of `{"text", "correct"}` objects; with `short`, the accepted answers, all `correct`). `single` and `truefalse` need exactly one correct option, `multi` at least one, `truefalse` exactly two options. Without a `type` the question is a discussion question and `options` are ignored (a warning) | board questions, questions to raise, interview questions |
 | `recommendation` | change*, indicator*, hoc_tier*, barrier, barrier_id, owner, by_when, why_not_stronger; **must cite** | what should change, with its leading indicator and hierarchy-of-controls tier |
 | `decision` | decision*, options[], trade_offs, owner, by_when | decisions for leaders, pending engineering decisions |
 | `indicator` | name*, measure*, deterioration, owner | leading indicators, readiness indicators |
@@ -83,7 +83,7 @@ The shape of a pack is also published as a JSON Schema, [`pack.schema.json`](pac
 | `graph` | nodes[]*: {id*, label*}; edges[]*: {from*, to*, label} | causal maps, interfaces; drawn as SVG with a text list of links. `PMLC causal-item <ws> --top 40` prints a ready graph item from `causal_graph.json` (run `PMLC causal` first) |
 | `learning` | lesson* (one sentence), explanation (two to four sentences), owner (who must learn it); **must cite** | a learning: the lesson, why, and its evidence (dossiers, manager and leadership coaches, signal and interface learnings) |
 
-Each kind also lists its fields in display order, each with a role (`title`, `body`, `list`, `badge`, `indicator`, `table`, `events` or `graph`), in `KINDS[kind]["fields"]` of `pack/schema.py`; the labels are the `f.<field>` keys of `references/labels/en.json`. Formats without a layout of their own for a kind use them, and a kind the HTML and Markdown renderers do not know is shown as a labelled list of its fields, where its `body` and `list` fields carry citations.
+Each kind also lists its fields in display order, each with a role (`title`, `body`, `list`, `badge`, `indicator`, `table`, `events`, `graph` or `choices`), in `KINDS[kind]["fields"]` of `pack/schema.py`; the labels are the `f.<field>` keys of `references/labels/en.json`. Formats without a layout of their own for a kind use them, and a kind the HTML and Markdown renderers do not know is shown as a labelled list of its fields, where its `body` and `list` fields carry citations.
 
 ## Optional on every pack and item
 
