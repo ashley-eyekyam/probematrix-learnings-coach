@@ -26,7 +26,7 @@ After [check-pack](check-pack.md) passes. Run it again after every edit of the J
 ```text
 pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
           [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
-          [--format FORMATS] [--view {full,learner}]
+          [--format FORMATS] [--view {full,learner}] [--start YYYY-MM-DD]
 ```
 
 ## Arguments
@@ -48,6 +48,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `--orgs` | file | `$PMLC_ORGS` | An organisation names file, one per line. A shared copy masks these names |
 | `--format` | comma-separated format names | `html,md` | Which files to write; see [Formats](#formats). An unknown name stops the command (exit 2) and lists the formats. `--no-md` still removes `md`. A format with nothing to write in this pack says `<format>: nothing to write (<why>)` and writes nothing |
 | `--view` | `full` or `learner` | `full` | `learner` writes a learner copy of each document format, named `<pack>.learner.<ext>`: answers, good-evidence notes and the correct-option flags are left out, and the line "Learner view: answers are hidden" sits under the status. Data formats ignore it |
+| `--start` | date, `YYYY-MM-DD` | none | The day that the follow-up offsets of `--format ics` count from. Without it, `ics` says `ics: needs --start YYYY-MM-DD; nothing written (the coach never sets dates by itself)` and writes nothing |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ### Formats
@@ -57,6 +58,11 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `html` | document | `<pack>.html` | The offline page (default) |
 | `md` | document | `<pack>.md` | The same content as Markdown (default) |
 | `normalised` | data | `<pack>.normalised.json` | The pack for other tools: every item id filled in, the status line, the brand, the effective status, the word count and reading time, the coverage counts and the cited findings (label, level, rating) and evidence (type). A shared copy carries no run slug |
+| `svg` | data | `<pack>.<item-id>.svg` | One stand-alone SVG for each graph item, with every label whole (the page clips them at 28 characters). The status phrase and the ProbeMatrix credit sit in its `<desc>` |
+| `png` | data | `<pack>.<item-id>.png` | The same drawing as a picture, made by a Chromium-family browser: `$PMLC_BROWSER`, else `chromium`, `chromium-browser`, `google-chrome`, `google-chrome-stable`, `microsoft-edge` or `msedge` on the PATH. With none, the command says `png: no Chromium-family browser found; open the .svg in a browser and export it, or set PMLC_BROWSER`, writes no PNG and still exits 0. If the browser fails, it says `png: the browser did not produce an image (<reason>)` |
+| `graphml` | data | `<pack>.graphml` | The graph for yEd and other graph tools: one node for each node (with a `label`), one edge for each link, and a `<desc>` with the status and credit. A pack with several graph items gets `<pack>.<item-id>.graphml` for each |
+| `bowtie-csv` | data | `<pack>.bowtie.csv` | One row for each barrier item, for a bow-tie tool or a spreadsheet. Columns: `side,barrier,barrier_id,state,type,hoc_tier,failure_mode,fix,owner_role,indicator,cites`. `side` is `threat` for a group that starts with "prevent", `consequence` for "mitigat" or "recover", and blank otherwise. `owner_role` is the pack's role text and `cites` are joined with `;`. It is an import file, so it carries no status line |
+| `ics` | data | `<pack>.ics` | One all-day event for each check (`when`), decision (`by_when`) or recommendation (`by_when`) whose time is `<n> days`, `Day <n>` or `<n> weeks`, counted from `--start`. The summary is the item text cut to 70 characters; the description has the cites and the status phrase. No attendee and no organiser are written, and no date is ever invented
 
 A shared copy (`--share external` or `public`) of any format is built from the masked pack, and the mode goes just before the last extension of its file name: `<pack>.normalised.external.json`, `<pack>.learner.external.html`. Every format's text goes through the name check.
 
@@ -101,6 +107,19 @@ warning: coverage: cites 3 of 308 relevant findings; under a quarter of the top-
 warning: no handling block: rendered as draft (internal)
 normalised written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.normalised.json
 ```
+
+The follow-up dates of the Hazira safety-committee guide, counted from the day the committee first meets. Five of the guide's checks say "30 days", "60 days" or "90 days", so the calendar gets five all-day events: two on 2 December 2026, two on 1 January 2027 and one on 31 January 2027. None has an attendee or an organiser:
+
+```bash
+python3 $E pack $WS $OUT/safety-committee-guide.json --format ics --start 2026-11-02
+```
+
+```text
+…
+ics written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/safety-committee-guide.ics
+```
+
+Without `--start` the command writes nothing and says `ics: needs --start YYYY-MM-DD; nothing written (the coach never sets dates by itself)`.
 
 A learner copy of a training pack, without the answer keys:
 

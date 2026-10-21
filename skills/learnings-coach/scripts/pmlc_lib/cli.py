@@ -117,6 +117,15 @@ def add_embed_arg(s):
                         "reasons) or full (every relevant record)")
 
 
+def _cli_iso_date(text):
+    """argparse type for --start: an ISO date (YYYY-MM-DD)."""
+    import datetime as dt
+    try:
+        return dt.date.fromisoformat(text)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"{text!r} is not a date; use YYYY-MM-DD") from None
+
+
 def build_parser():
     p = argparse.ArgumentParser(prog="pmlc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                 allow_abbrev=False)
@@ -314,6 +323,8 @@ def build_parser():
                    help=f"comma-separated formats to write (default: html,md); one of: {', '.join(FORMATS)}")
     s.add_argument("--view", choices=("full", "learner"), default="full",
                    help="learner: <pack>.learner.<ext> without answers, for the document formats")
+    s.add_argument("--start", type=_cli_iso_date, metavar="YYYY-MM-DD",
+                   help="the day the ics follow-ups count from (--format ics); the coach never picks a date itself")
     s.set_defaults(fn=cmd_pack)
 
     s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)", allow_abbrev=False)

@@ -1,6 +1,5 @@
 """Vendored Nayuki QR encoder (unmodified) and the qr_svg wrapper."""
 import hashlib
-import os
 import re
 import shutil
 import subprocess
@@ -12,7 +11,7 @@ import pytest
 SCRIPTS = Path(__file__).resolve().parent.parent / "skills" / "learnings-coach" / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from pmlc_lib.render import qr  # noqa: E402
+from pmlc_lib.render import find_browser, qr  # noqa: E402
 
 VENDOR = SCRIPTS / "pmlc_lib" / "vendor"
 TEXT = "https://example.org/p#i/c-1"
@@ -84,10 +83,7 @@ def test_qr_svg_escapes_label():
 
 
 def _browser():
-    cands = [os.environ.get("PMLC_BROWSER")] + [
-        shutil.which(n) for n in ("chromium", "chromium-browser", "google-chrome", "google-chrome-stable",
-                                  "microsoft-edge", "msedge")]
-    return next((c for c in cands if c), None)
+    return find_browser()
 
 
 @pytest.mark.skipif(not (shutil.which("zbarimg") and _browser()), reason="zbarimg or a browser is missing")
