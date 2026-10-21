@@ -99,7 +99,7 @@ def _counts(values):
     return [c[m] for m in MATCHES]
 
 
-def _table(columns, rows):
+def _md_table(columns, rows):
     return {"kind": "table", "columns": columns, "rows": rows}
 
 
@@ -114,24 +114,24 @@ def build_items(c, mapping, entries) -> list:
         label = "Comparison against the other report"
     out = [{"kind": "para", "text": f"{label}: {src['title']} ({src['issuer_role']}; {src['statutory_status']}). "
                                     "The comparison covers analysis coverage, not the quality of either investigation."}]
-    out.append(_table(["Item type", "Items"], [[t, sum(1 for i in its if i["type"] == t)] for t in TYPE_PREFIX]))
+    out.append(_md_table(["Item type", "Items"], [[t, sum(1 for i in its if i["type"] == t)] for t in TYPE_PREFIX]))
     by_lr, by_ref = collections.defaultdict(list), collections.defaultdict(list)
     for r in mapping:
         by_lr[r["lr_id"]].append(r["match"])
         by_ref[r["ref"]].append(r["match"])
     lr_ids = [e["lr_id"] for e in entries] if entries is not None else sorted(by_lr)
-    out.append(_table(["Direction", "Yes", "Partial", "None"], [
+    out.append(_md_table(["Direction", "Yes", "Partial", "None"], [
         ["Learnings against comparator items"] + _counts([_best(by_lr.get(x, [])) for x in lr_ids]),
         ["Comparator items against learnings"] + _counts([_best(by_ref.get(x, [])) for x in ids])]))
     tiers = collections.Counter(norm_hoc(i.get("hoc_tier")) for i in its if i["type"] in ("recommendation", "action"))
-    out.append(_table(["Control tier", "Recommendations"],
+    out.append(_md_table(["Control tier", "Recommendations"],
                       [[t, tiers[t]] for t in HOC_TIERS + ["unclassified"] if tiers[t] or t != "unclassified"]))
     if entries is not None:
         owner = {e["lr_id"]: norm_entity(e.get("owner_entity")) for e in entries}
         grp = {i["id"]: _s(i.get("group")) or "(none)" for i in its}
         cross = collections.Counter((grp[r["ref"]], owner[r["lr_id"]]) for r in mapping
                                     if r["match"] != "none" and r["lr_id"] in owner)
-        out.append(_table(["Comparator group", "Learning owner entity", "Matches"],
+        out.append(_md_table(["Comparator group", "Learning owner entity", "Matches"],
                           [[g, o, n] for (g, o), n in sorted(cross.items())]))
     return out
 

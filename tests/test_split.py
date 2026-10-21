@@ -98,3 +98,30 @@ def test_manifest_record_accessors_key_by_bare_name(tmp_path):
     assert workspace.sign_off_entry(m, tmp_path / "elsewhere" / "board-brief.json") == {"status": "approved"}
     assert workspace.sign_off_entry(m, "board-brief") is None and workspace.sign_off_entry({}, "x.json") is None
     assert pmlc.pack_record is workspace.pack_record and pmlc.sign_off_entry is workspace.sign_off_entry
+
+
+def _rebindings(modules):
+    """[(name, first module, later module)] for every exported name that a later module binds to a different object."""
+    import types
+    seen, out = {}, []
+    for name in modules:
+        mod = importlib.import_module(name)
+        for k, v in vars(mod).items():
+            if (k.startswith("__") and k != "__version__") or (isinstance(v, types.ModuleType)
+                                                                 and v.__name__ == f"{name}.{k}"):
+                continue
+            if k in seen and seen[k][1] is not v:
+                out.append((k, seen[k][0], name))
+            seen.setdefault(k, (name, v))
+    return out
+
+
+def test_p4h_no_compat_rebinding():
+    """M-2: _compat lets a later module win, so a later module's private helper must never take a v1 name over."""
+    from pmlc_lib import _compat
+    for group in (_compat.MODULES, _compat.PACK_MODULES):
+        assert _rebindings(group) == []
+    import pmlc_lib.util as util
+    assert pmlc._flat is util._flat and pmlc._table is importlib.import_module("pmlc_lib.register.markdown")._table
+    assert pmlc.FORMULA_LEAD == ("=", "+", "-", "@")
+    assert pmlc.TEMPLATES.name == "templates" and pmlc.TEMPLATES.parent.name == "dashboard"
