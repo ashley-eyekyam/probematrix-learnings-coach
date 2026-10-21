@@ -24,12 +24,19 @@ def _item(pack, kind):
     return next(it for s in pack["sections"] for it in s["items"] if it["kind"] == kind)
 
 
+def _is_pack(path):
+    """A pack fixture is a JSON object with a `sections` key; other fixtures (e.g. html-golden.json) are not packs."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return isinstance(data, dict) and "sections" in data
+
+
 def test_every_fixture_validates():
-    files = sorted(FIX.glob("*.json"))
+    files = [f for f in sorted(FIX.glob("*.json")) if _is_pack(f)]
     assert len(files) >= 20
     for f in files:
         assert validate(json.loads(f.read_text(encoding="utf-8")), SCHEMA) == [], f.name
     assert (FIX / "all-kinds.json") in files
+    assert (FIX / "html-golden.json") not in files
 
 
 def _bad_missing_sections(p):
