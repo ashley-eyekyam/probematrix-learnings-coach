@@ -60,7 +60,6 @@ The tone is neutral and factual: no blame of management or staff, and roles only
 
 **Formats.** `--format docx --layout paper` (see [pack](../commands/pack.md)) also writes the **board paper**: `board-brief.docx`, `board-brief.paper.docx` and `board-brief.paper.html`. The paper has a cover with the status and reading time, "Decisions requested" with the bottom line, numbered paragraphs, Annex A for the questions and Annex B for the assurance table and indicators. Section order in the JSON stays as above; the layout moves the questions to the annex.
 
-
 ## Worked example (Hazira)
 
 On the base classification, `select --level 4 --top-rated --brief` returned 47 findings, `--tag assurance --level 3 4 --brief` returned 69, and the earlier-warnings `--text` call returned 40. With the sample register in the outputs folder, `register-items --tier T5` gave 12 learnings, and `timeline-item --before incident --top 8` gave 8 dated signals. With no `adoption.csv`, `table-item adoption` prints one row, "No adoption record yet", so the brief leaves the management response section out and says so in its limits.

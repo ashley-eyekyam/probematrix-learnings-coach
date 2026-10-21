@@ -429,16 +429,29 @@ def test_p4h_routes_floor_exactly_90_percent(tmp_path):
 
 
 def test_p4h_eval_98_does_not_echo_the_hub_table():
-    """X39: no router prompt repeats a four-word run of the hub's routing-table rows (here: eval 98)."""
+    """X39, extended by Task 24 (review I-1): no router prompt and no format prompt (an eval with a command_contains
+    expectation) repeats a four-word run of the hub's SKILL.md: its routing tables, its Formats bullets or any other
+    line. The eval's own file paths are left out of the comparison."""
     import re
     hub = (ROOT / "skills" / "learnings-coach" / "SKILL.md").read_text(encoding="utf-8")
-    e98 = next(e for e in json.loads(EVALS.read_text(encoding="utf-8"))["evals"] if e["id"] == 98)
 
     def grams(t):
         w = re.findall(r"[a-z]+", t.lower())
         return {tuple(w[i:i + 4]) for i in range(len(w) - 3)}
-    rows = "\n".join(line for line in hub.splitlines() if line.startswith("| ") and "`" in line)
-    assert not grams(e98["prompt"]) & grams(rows)
+    hub_grams = grams(hub)
+    evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
+    scanned = [e for e in evals if e["kind"] == "router"
+               or any(x["type"] == "command_contains" for x in e["expectations"])]
+    assert any(e["id"] == 98 for e in scanned) and len(scanned) >= 40
+    echoes = {}
+    for e in scanned:
+        prompt = e["prompt"]
+        for f in e.get("files", []):
+            prompt = prompt.replace(f, " ")
+        shared = grams(prompt) & hub_grams
+        if shared:
+            echoes[e["id"]] = sorted(" ".join(g) for g in shared)
+    assert echoes == {}, echoes
 
 
 # ------------------------------------------------- Task 24: format evals and the command_contains expectation
@@ -509,3 +522,14 @@ def test_p4s_format_evals():
             if x["type"] == "command_contains" and x["command"] == "pack":
                 vals = [v for k, v in x.get("flags", {}).items() if k in ("format", "layout")]
                 assert vals and set(vals) <= known, (e["id"], vals)
+
+
+def test_p4s_command_contains_engine_forms():
+    """Review m-2: the AGENTS.md form `python3 $E pack …` matches; a flag inside a comment does not."""
+    sys.path.insert(0, str(ROOT / "evals"))
+    import run_evals
+    x = {"command": "pack", "flags": {"format": "docx"}}
+    assert run_evals._cmd_matches("python3 $E pack $WS o/b.json --format docx", x)
+    assert run_evals._cmd_matches("python3 ${E} pack $WS o/b.json --format=pptx,docx", x)
+    assert not run_evals._cmd_matches("python3 $E pack $WS o/b.json  # --format docx", x)
+    assert not run_evals._cmd_matches("python3 tool.py pack o/b.json --format docx", x)

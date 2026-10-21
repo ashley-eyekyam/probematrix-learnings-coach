@@ -43,7 +43,7 @@ Hazira sample (`samples/2020-09-24-hazira-gas-release-fire/`). Every skill owns 
 | `card_fields` | `pack`, `fields` | the pack has at least one `card` item and every card has each named field filled in |
 | `section_exists` | `pack`, `section` | the pack has a section whose `id` is `section` (or matches it as a glob, such as `t[1-5]`) |
 | `routes_to` | `skill` (or `null`); `value` in a router eval | judged by a person or from a transcript: reported as `manual` by `grade`, scored by `routes` |
-| `command_contains` | `command`; optional `flags` (`{"format": "docx", "layout": "paper"}`) and `contains` (a list of texts) | a line of the `--transcript` file runs `pmlc.py <command>` (or `PMLC <command>`) with each flag holding its value (a comma list such as `--format email,docx` counts for `docx`) and holding each `contains` text; `manual` without a transcript. The format evals use it |
+| `command_contains` | `command`; optional `flags` (`{"format": "docx", "layout": "paper"}`) and `contains` (a list of texts) | a line of the `--transcript` file (one command per line, as the agent ran it) runs `pmlc.py <command>` (or `PMLC`, `pmlc`, `$E` or `${E}` then `<command>`) with each flag holding its value (a comma list such as `--format email,docx` counts for `docx`) and holding each `contains` text; `manual` without a transcript. The format evals use it |
 
 Pack names follow each skill's SKILL.md: usually the skill name, `dossier-F02` for cluster-learning-dossier,
 `organisation-learning-plan` for organisation-learning-map, and `learnings-register` for the register.

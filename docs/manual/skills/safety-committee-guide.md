@@ -58,7 +58,6 @@ pmlc templates <ws> distribution                    # the session record, once p
 
 **Formats.** `--layout checklist` writes `safety-committee-guide.checklist.html`: the look-for and follow-up checks with a box each and a "Checked by (role) / Date / Shift" line per section, to print and carry on site. `--format pptx` gives slides for the meeting. `--format ics --start <meeting date>` turns the 30, 60 and 90-day follow-ups into all-day reminders with no attendees. A Hindi or other-language copy goes through [strings](../commands/strings.md). See [pack](../commands/pack.md).
 
-
 ## Worked example (Hazira)
 
 `facts` gave `l34_share` 0.706 (308 of 436 findings at the Supervision and Organisational levels), so the guide can say plainly that most causes sit above the frontline. `select --tier T1 T2 --brief` returned 347 findings and `--level 4 --top-rated --brief` returned 47. The relation filter returned only 4, so the culture questions use the fallback: `--prefix OIC --top-rated --brief` returned 19 Organisational Climate findings.

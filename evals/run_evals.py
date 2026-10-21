@@ -48,6 +48,7 @@ EXPECT = {                                   # expectation type -> its required 
     "command_contains": ("command",),
 }
 CMD_NAME = re.compile(r"^[a-z][a-z0-9-]*$")
+ENGINE_TOKENS = ("PMLC", "pmlc", "$E", "${E}")
 ABS_PATH = re.compile(r"(?:^|[\s\"'(])(?:/(?:home|Users|tmp|var|mnt|opt|etc|root|srv)/|~/|[A-Za-z]:[\\/])")
 MIN_EVALS, MIN_NO_TRIGGER, MIN_COLLISION = 3, 1, 1
 MIN_ROUTER, MIN_ROUTER_COLLISION, ROUTING_FLOOR = 30, 8, 0.9     # spec section 2.5
@@ -328,9 +329,11 @@ def _cmd_flags(tokens) -> dict:
 
 
 def _cmd_matches(line: str, x) -> bool:
-    """True when line runs `<pmlc> <command>` (pmlc.py, PMLC or pmlc) with every flag value and every contains text."""
+    """True when line runs `<engine> <command>` with every flag value and every contains text. The engine is a token
+    ending in pmlc.py, or PMLC, pmlc, $E or ${E} (the AGENTS.md form `python3 $E pack …`). A `#` comment is ignored."""
+    line = line.split(" #", 1)[0]
     tokens = line.split()
-    at = next((i for i, tok in enumerate(tokens) if tok in ("PMLC", "pmlc") or tok.endswith("pmlc.py")), None)
+    at = next((i for i, tok in enumerate(tokens) if tok in ENGINE_TOKENS or tok.endswith("pmlc.py")), None)
     if at is None or at + 1 >= len(tokens) or tokens[at + 1] != x["command"]:
         return False
     flags = _cmd_flags(tokens[at + 2:])

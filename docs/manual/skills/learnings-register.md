@@ -53,7 +53,6 @@ Each learning has an ID such as `LR-01` (see [LR-ID](../Glossary.md#lr-id)). Aud
 
 **Formats.** [register-render](../commands/register-render.md) writes `learnings-register.docx` (every learning, its IDs as endnotes) and `learnings-register.email.html` with `.email.txt` (the summary and as many learnings as fit in 100 KB, saying how many are left out), for readers who use Word or email rather than Excel.
 
-
 ## Worked example (Hazira)
 
 `select --top-rated --brief` returned 150 findings at rating 4. The committed sample register groups the whole export into 25 learnings. `check-register` on it printed:

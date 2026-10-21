@@ -2018,7 +2018,7 @@
    "id": 74,
    "owner": "learnings-coach",
    "kind": "router",
-   "prompt": "We want everyone from the operators to the board to learn from this investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): a pack for each level in a sensible order, and a record of who received what.",
+   "prompt": "We want everyone from the operators to the board to take something away from what happened (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): a pack for each level in a sensible order, and a log showing which people got which pack.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -2222,7 +2222,7 @@
    "id": 87,
    "owner": "learnings-coach",
    "kind": "router",
-   "prompt": "What decisions does the site leadership team need to take after Hazira? Here is the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Only the site level, not the board.",
+   "prompt": "What decisions do the plant manager and the heads of department need to take after Hazira? Here is the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Only the site level, not the board.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -2657,7 +2657,7 @@
    "owner": "board-brief",
    "skill": "board-brief",
    "kind": "trigger",
-   "prompt": "Our company secretary files everything for the board in Word. From the ProbeMatrix export of the Hazira fire (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), make the board brief a Word board paper with a cover page and the directors' questions in an annex.",
+   "prompt": "Our company secretary files everything for the board in Word. From the ProbeMatrix export of the Hazira fire (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), our directors want the brief as something they can open in Word, set out like a formal paper with a cover page and the directors' questions at the back.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -2836,7 +2836,7 @@
    "owner": "causal-map",
    "skill": "causal-map",
    "kind": "trigger",
-   "prompt": "I need to show how the factors connected in this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Please draw the causal map as a picture I can drop onto a slide for our quarterly safety review.",
+   "prompt": "I need to show how the factors connected in this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). I need the cause chart as an image to drop into slides for our quarterly safety review.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -2930,7 +2930,20 @@
      "command": "register-render",
      "contains": [
       "learnings-register.json"
-     ]
+     ],
+     "flags": {
+      "format": "docx"
+     }
+    },
+    {
+     "type": "command_contains",
+     "command": "register-render",
+     "contains": [
+      "learnings-register.json"
+     ],
+     "flags": {
+      "format": "email"
+     }
     },
     {
      "type": "routes_to",

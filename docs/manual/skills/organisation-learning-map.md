@@ -55,7 +55,6 @@ Do not edit the HTML by hand. Change the register or the plan JSON and run the c
 
 **Formats.** The learning plan also renders as slides (`--format pptx`) for the leadership team and as an email digest (`--format email`) when the cascade starts by mail; see [pack](../commands/pack.md). The dashboard stays HTML.
 
-
 ## Worked example (Hazira)
 
 With the sample register (25 learnings, 44 recommendations), `dashboard --register` printed `Dashboard written to …/outputs/organisation-learning-map.html`. `interfaces --top 10` put F01 Operations & Control Room and F02 Mechanical Maintenance at the top, with 71 shared findings and 391 cross-entity causal mentions, out of 126 pairs across 17 entities (with the india-process-site overlay). The plan would therefore name that seam among the strongest interfaces. Its cascade usually starts with site leadership and supervisors, then the largest clusters, then the board and auditors.

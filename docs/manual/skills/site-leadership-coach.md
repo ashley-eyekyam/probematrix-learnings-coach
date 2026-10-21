@@ -54,12 +54,11 @@ pmlc pack <ws> <run>/outputs/site-leadership-coach.json --format docx   # the de
 3. **signals that reached leadership**, and what happened to them;
 4. **culture signals**: what had become normal, what was modelled or tolerated, where challenge was absent. Norms, not people;
 5. up to ten **decisions**, each a choice with its trade-off and the indicator leadership will watch. A decision that needs corporate authority is marked "Needs corporate decision" and feeds the [top-management-brief](top-management-brief.md);
-6. **what leaders will do visibly** in the next 30 days;
+6. up to six things **leaders will do visibly** in the next 30 days;
 7. optionally, the **management review input**: exactly six rows, each citing its findings or reading "not in this investigation";
 8. a **two-hour workshop agenda**.
 
 **Formats.** For the workshop, `--format pptx` writes `site-leadership-coach.pptx`: one slide per bottom-line point and per decision, the causal map as boxes and arrows you can move, the citations and full text in the speaker notes, and the status line on every slide. `--format docx` gives the same content as a Word paper. See [pack](../commands/pack.md).
-
 
 ## Worked example (Hazira)
 
