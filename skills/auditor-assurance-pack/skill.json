@@ -29,6 +29,9 @@
     "pack": "auditor-assurance-pack",
     "files": []
   },
+  "formats": [
+    "checklist"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,

@@ -23,6 +23,9 @@
       "outputs/report-comparison-regulator-safe.json"
     ]
   },
+  "formats": [
+    "docx"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,

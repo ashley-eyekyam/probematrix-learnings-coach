@@ -33,6 +33,7 @@ pmlc interfaces <ws>                                                            
 pmlc timeline-item <ws> --before incident --top 12                               # S8
 pmlc check-pack <ws> <run>/outputs/dossier-<F-id>.json --strict
 pmlc pack <ws> <run>/outputs/dossier-<F-id>.json
+pmlc pack <ws> <run>/outputs/dossier-<F-id>.json --format docx   # the reference file in Word
 pmlc dossier-index <ws>                                                          # the index of every dossier
 ```
 
@@ -55,6 +56,9 @@ pmlc dossier-index <ws>                                                         
 - **S14 Formats**: which learnings become Learning Cards, brief paragraphs or toolbox talks.
 
 For all clusters, one dossier per cluster with at least 3 findings, largest first, and a `dossier-index` pack.
+
+With `--format docx`, `dossier-<F-id>.docx` is the function's reference file in Word. The S14 Formats table names, for each learning, the skill and layout that carries it, such as `frontline-learning-cards --layout toolbox`.
+
 
 ## Worked example (Hazira)
 

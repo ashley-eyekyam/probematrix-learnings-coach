@@ -18,6 +18,9 @@
     "pack": "barrier-learnings",
     "files": []
   },
+  "formats": [
+    "bowtie-csv"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,

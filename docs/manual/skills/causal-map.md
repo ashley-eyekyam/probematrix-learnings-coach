@@ -30,6 +30,10 @@ pmlc causal-item <ws> --top 40                        # the graph item to paste 
 pmlc select <ws> --code "<code>" --brief              # read the findings behind a link
 pmlc check-pack <ws> <run>/outputs/causal-map.json --strict
 pmlc pack <ws> <run>/outputs/causal-map.json
+pmlc pack <ws> <run>/outputs/causal-map.json --format svg       # the graph as a picture
+pmlc pack <ws> <run>/outputs/causal-map.json --format png       # the same, as a PNG (needs a Chromium-family browser)
+pmlc pack <ws> <run>/outputs/causal-map.json --format graphml   # the graph for yEd, Gephi or Cytoscape
+pmlc pack <ws> <run>/outputs/causal-map.json --format pptx      # a slide deck with the graph drawn as shapes
 ```
 
 - [causal](../commands/causal.md) writes `causal_graph.json` and `causal_graph.mmd` (a Mermaid file for other tools; the pack's HTML graph is the main view). `--top` sets how many links it prints, `--hubs` also prints the factors with the most links out, and `--include-justification` also reads the AI justification text.
@@ -51,6 +55,9 @@ The direction of each link follows the four levels: the higher-level factor enab
 - **sequence:** the order from latent conditions to the trigger.
 
 When the graph is sparse, the skill re-runs `causal` with `--include-justification`, then reports the missing links as gaps rather than inventing them.
+
+The skill also offers the graph on its own: `causal-map.<graph-id>.svg` and `.png` for a report or a slide, `causal-map.<graph-id>.graphml` for a graph tool, and `causal-map.pptx`, whose graph slide is drawn as editable shapes. Without a Chromium-family browser, `png` writes nothing and says so; the svg still works.
+
 
 ## Worked example (Hazira)
 

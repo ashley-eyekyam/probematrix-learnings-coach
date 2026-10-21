@@ -36,6 +36,7 @@ pmlc classify <ws> --no-overlay                      # drop the overlay again
 pmlc table-item <ws> clusters                        # the cluster, tier and relation tables for the pack
 pmlc check-pack <ws> <run>/outputs/learning-clusters.json --strict
 pmlc pack <ws> <run>/outputs/learning-clusters.json
+pmlc pack <ws> <run>/outputs/learning-clusters.json --format docx   # the tables as a Word document
 ```
 
 - [classify](../commands/classify.md) writes `clusters.json`, `unresolved_roles.json` and `singleton_roles.json`. It reads `role_overrides.json` on every run; `--overrides FILE` names another file and `--no-overrides` ignores it. `--org-chart FILE.csv` adds the organisation's departments (columns department, entity, match and tier; rows with no entity become F20, F21 …), and `--no-org-chart` forgets it. A plain `classify` reuses the taxonomy, overlays and org chart of the previous run.
@@ -52,6 +53,9 @@ The resolution pass stops when F99 and T9 are empty or explained. If more than 1
 - `singleton_roles.json`: roles that could point to one person, each with a general label to use instead.
 - `role_overrides.json`: your corrections, kept for every later run.
 - A report pack `learning-clusters.html` and `.md`: the cluster table, the tier table, the relation mix, up to five top clusters, the decisions on unplaced roles, the statutory posts named (when there are any) and any taxonomy adaptation.
+
+Ask for a Word copy and the skill adds `--format docx`: `learning-clusters.docx` holds the same tables as real Word tables ([pack](../commands/pack.md) lists every format).
+
 
 ## Worked example (Hazira)
 

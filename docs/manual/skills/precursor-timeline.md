@@ -28,6 +28,7 @@ pmlc timeline-item <ws> --before incident --top 12    # the same candidates as a
 pmlc timeline <ws> --on incident                      # clock times on the day -> timeline_event_day.json
 pmlc check-pack <ws> <run>/outputs/precursor-timeline.json --strict
 pmlc pack <ws> <run>/outputs/precursor-timeline.json
+pmlc pack <ws> <run>/outputs/precursor-timeline.json --layout poster   # one A3 poster
 ```
 
 - [timeline](../commands/timeline.md) lists every dated mention in findings and evidence in `timeline_candidates.json`. `--before incident` keeps only dates up to the incident date, and `--on incident` writes the clock times of the day. Other flags: `--entity` (one function's findings), `--min-precision` (drop year-only dates), `--per-date` and `--show` (how much it prints).
@@ -45,6 +46,9 @@ The engine finds dates; the agent decides which are signals. Many candidates are
 - **Signal learnings:** up to six patterns in how signals were handled, each with the function and tier that must change and a leading indicator.
 
 On an export with no dated text, or only year-only dates, the timeline shows the order the findings state, marks unknown dates as unknown, and says it is partial.
+
+With `--layout poster`, `precursor-timeline.poster.html` prints the bottom line, up to six signal learnings and the timeline on one A3 landscape page; `--base-url` adds a QR code to the published pack.
+
 
 ## Worked example (Hazira)
 

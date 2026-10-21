@@ -64,6 +64,8 @@ skills, which select by tag, still find them.
 
 Write `<run>/outputs/learning-clusters.json` in the shape in `learnings-coach/references/pack-schema.md`.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/learning-clusters.json (repository only).
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | Where the learning sits; cite the highest-rated finding of each top cluster | `bottom_line` | up to 7 |
@@ -96,6 +98,7 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/learning-clusters.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/learning-clusters.json                  # -> learning-clusters.html and .md
+PMLC pack <ws> <run>/outputs/learning-clusters.json --format docx    # -> learning-clusters.docx, the tables as Word tables
 ```
 
 Tell the user the F99 and T9 shares after resolution, and which audience packs the largest clusters point to.

@@ -35,6 +35,8 @@ pmlc pack <ws> <run>/outputs/report-comparison.json
 pmlc compare <ws> --client-safe <run>/outputs/report-comparison-regulator-safe.json --main <run>/outputs/report-comparison.json
 pmlc check-pack <ws> <run>/outputs/report-comparison-regulator-safe.json --strict --share external
 pmlc pack <ws> <run>/outputs/report-comparison-regulator-safe.json --embed summary
+pmlc pack <ws> <run>/outputs/report-comparison-regulator-safe.json --embed summary --format docx
+pmlc pack <ws> <run>/outputs/report-comparison-client-safe.json --format docx
 ```
 
 - [select](../commands/select.md) with `--text` (a regular expression over the finding text) and `--brief` finds findings that quote the other report's recommendation sections. If any do, the comparison is **sighted**, and the first page says so. `--in-evidence` also searches the findings' linked evidence for a quoted phrase.
@@ -53,6 +55,8 @@ pmlc pack <ws> <run>/outputs/report-comparison-regulator-safe.json --embed summa
   - `report-comparison-regulator-safe.json`, for a regulator or other authority: "additional learning" wording (never "missed"), no product claims, the comparator's statutory status in the basis, a reminder that it needs legal review, rendered with `--embed summary`. It leaves the organisation only after legal review and an approved sign-off (see [Review and sharing](../Review-and-sharing.md)).
 
 The other report's IDs (`OBS-nn`, `RC-nn`, `REC-nn`, `ACT-nn`) are plain text in tables; an item can list them in `comparator_refs`, which `check-pack` checks against `comparator.json`.
+
+The client-safe and regulator-safe copies are offered in Word too (`--format docx`), for the organisation that wrote the other report or for the authority.
 
 ## Worked example (Hazira)
 

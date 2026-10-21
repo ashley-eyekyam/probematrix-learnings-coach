@@ -32,6 +32,7 @@ pmlc select <ws> --preset auditor-assurance-pack   # the three calls above at on
 pmlc table-item <ws> hoc --register <run>/outputs/learnings-register.json
 pmlc check-pack <ws> <run>/outputs/auditor-assurance-pack.json --strict
 pmlc pack <ws> <run>/outputs/auditor-assurance-pack.json
+pmlc pack <ws> <run>/outputs/auditor-assurance-pack.json --layout checklist   # a printable checklist
 pmlc pack-xlsx <ws> <run>/outputs/auditor-assurance-pack.json --kind test_point
 pmlc templates <ws> verification
 ```
@@ -54,6 +55,9 @@ pmlc templates <ws> verification
 6. **reporting**: a grading scale (conforming, major or minor nonconformity, opportunity for improvement, not tested) and a results template with a blank "response to finding" column for the audited organisation's documented response (PSM (o)(4)).
 
 An audit of other sites against this event's conditions creates new findings that must each be answered, and they may be discoverable: agree its scope and handling with legal and compliance advisers first.
+
+With `--layout checklist`, `auditor-assurance-pack.checklist.html` prints the test points and evidence requests by section, each with a box to tick and a "Checked by (role)" line for the audit team on site.
+
 
 ## Worked example (Hazira)
 

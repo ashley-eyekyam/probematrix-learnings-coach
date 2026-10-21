@@ -16,6 +16,9 @@
     "pack": "learning-clusters",
     "files": []
   },
+  "formats": [
+    "docx"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,

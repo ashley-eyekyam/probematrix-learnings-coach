@@ -39,6 +39,8 @@ list it in the `unmapped` table, with the register rows the findings touch but n
 Write `<run>/outputs/barrier-learnings.json` in the shape in `learnings-coach/references/pack-schema.md`, with
 `"scope": {"min_rating": "top"}`.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/barrier-learnings.json (repository only).
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | Which barriers carried the most weight, which side the failures clustered on, and the share of fixes above the administrative tier | `bottom_line` | up to 7 |
@@ -78,8 +80,11 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/barrier-learnings.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/barrier-learnings.json                  # -> barrier-learnings.html and .md
+PMLC pack <ws> <run>/outputs/barrier-learnings.json --format bowtie-csv   # -> barrier-learnings.bowtie.csv
 PMLC table-item <ws> hoc --pack <run>/outputs/barrier-learnings.json   # the control-tier counts of your fixes
 ```
 
 Tell the user the share of fixes above the administrative tier, the controls to verify first, and how many
-barriers stayed unmapped. For a bow-tie, map the `barrier` items as in `barriers-and-controls.md` §2.
+barriers stayed unmapped. For a bow-tie, offer `barrier-learnings.bowtie.csv`: one row per `barrier` item, with
+`side` = threat (Prevention) or consequence (Mitigation) and the `barrier_id`, in a generic layout a bow-tie tool
+or spreadsheet imports (`barriers-and-controls.md` §2). It carries no status line: send it with the pack.
