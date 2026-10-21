@@ -9,7 +9,7 @@ import sys
 import zipfile
 from pathlib import Path
 
-from .. import BRAND, DRAFT_LABEL, STATUS_PHRASE, VERSION_STAMP
+from .. import BRAND, DRAFT_LABEL, STATUS_PHRASE
 from ..classify import TIER_LABELS
 from ..handling import (
     effective_handling, is_draft, REASON_NO_WORKSPACE, review_text, share_ctx, share_gate, shared_copy, SHARED_LINE,
@@ -212,7 +212,7 @@ def cmd_register_xlsx(a):
     ab.column_dimensions["B"].width = 60
     for sh in wb.worksheets:
         sh.oddHeader.center.text = STATUS_PHRASE + (f" · {DRAFT_LABEL}" if is_draft(eh) else "")
-        sh.oddFooter.center.text = VERSION_STAMP
+        sh.oddFooter.center.text = BRAND              # BRAND holds the version stamp (P4-20)
         sh.page_setup.orientation = "landscape"
         sh.page_setup.fitToWidth, sh.page_setup.fitToHeight = 1, 0
         sh.sheet_properties.pageSetUpPr = PageSetupProperties(fitToPage=True)

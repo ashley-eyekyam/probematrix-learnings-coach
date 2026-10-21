@@ -11,7 +11,7 @@ REFS = ROOT / "skills" / "learnings-coach" / "references"
 FIX = Path(__file__).resolve().parent / "fixtures" / "packs"
 sys.path.insert(0, str(ROOT / "skills" / "learnings-coach" / "scripts"))
 from pmlc_lib.contracts import unsupported_keywords, validate  # noqa: E402
-from pmlc_lib.pack.schema import KINDS  # noqa: E402
+from pmlc_lib.pack.schema import GENERIC_FIELDS, KINDS  # noqa: E402
 
 SCHEMA = json.loads((REFS / "pack.schema.json").read_text(encoding="utf-8"))
 
@@ -122,6 +122,23 @@ def test_schema_covers_kinds():
     for new in ("toolbox", "script"):
         assert new in by_kind
     assert {r["$ref"].split("/")[-1] for r in defs["item"]["anyOf"]} == {f"item_{k}" for k in by_kind}
+
+
+def test_kinds_cover_schema():
+    """The reverse of test_schema_covers_kinds: every item_<kind> in the schema is a kind the engine knows, and it
+    declares and requires no field the engine's KINDS entry (or GENERIC_FIELDS) does not."""
+    defs = SCHEMA["$defs"]
+    items = {n: d for n, d in defs.items() if n.startswith("item_")}
+    assert items
+    for n, d in items.items():
+        kind = d["properties"]["kind"]["const"]
+        assert n == f"item_{kind}" and kind in KINDS, n
+        spec = KINDS[kind]
+        known = set(spec["req"]) | set(spec["opt"]) | set(GENERIC_FIELDS)
+        assert set(d["properties"]) <= known, f"{n}: {sorted(set(d['properties']) - known)} not in KINDS"
+        extra = set(d.get("required", [])) - set(spec["req"]) - {"kind"} - ({"cites"} if spec.get("cite") else set())
+        assert not extra, f"{n}: requires {sorted(extra)}, which KINDS does not"
+    assert len(items) == len(KINDS)
 
 
 def test_validator_keywords_closed():
