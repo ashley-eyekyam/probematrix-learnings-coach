@@ -142,5 +142,11 @@
  "ui.js.evidence": "सबूत",
  "ui.js.type": "प्रकार",
  "ui.js.linked_to": "{code} से जुड़ा",
- "ui.js.matching": "{n} मिलते आइटम"
+ "ui.js.matching": "{n} मिलते आइटम",
+ "ui.docx.decisions_requested": "मांगे गए निर्णय",
+ "ui.docx.annex_a": "अनुलग्नक A: प्रश्न",
+ "ui.docx.annex_b": "अनुलग्नक B: तालिकाएं और संकेतक",
+ "ui.docx.when": "कब",
+ "ui.docx.what": "क्या हुआ",
+ "ui.docx.correct": "सही"
 }

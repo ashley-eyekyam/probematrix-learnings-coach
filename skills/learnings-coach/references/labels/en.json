@@ -142,5 +142,11 @@
  "ui.js.evidence": "Evidence",
  "ui.js.type": "Type",
  "ui.js.linked_to": "Linked to {code}",
- "ui.js.matching": "{n} matching items"
+ "ui.js.matching": "{n} matching items",
+ "ui.docx.decisions_requested": "Decisions requested",
+ "ui.docx.annex_a": "Annex A: Questions",
+ "ui.docx.annex_b": "Annex B: Tables and indicators",
+ "ui.docx.when": "When",
+ "ui.docx.what": "What happened",
+ "ui.docx.correct": "correct"
 }

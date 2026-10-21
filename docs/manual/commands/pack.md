@@ -57,6 +57,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `html` | document | `<pack>.html` | The offline page (default) |
 | `md` | document | `<pack>.md` | The same content as Markdown (default) |
 | `normalised` | data | `<pack>.normalised.json` | The pack for other tools: every item id filled in, the status line, the brand, the effective status, the word count and reading time, the coverage counts and the cited findings (label, level, rating) and evidence (type). A shared copy carries no run slug |
+| `docx` | document | `<pack>.docx` (`<pack>.paper.docx` with the `paper` layout) | A Word document on A4: the title with the status line under it, the DRAFT line, the handling lines and the reading time, then the bottom line, one heading per section, coverage, gaps and limits. Tables are real Word tables whose header row repeats on each page. Each item's citations are one endnote, listing every cited finding as `ID: label · L<level> · rating <r>` and every cited evidence item as `ID: type`. The footer of every page carries the status phrase, the ProbeMatrix credit and the page number; a draft has DRAFT in its header. The file has no author. With the `paper` layout a board paper is written as well: a cover page, "Decisions requested" (decision items, then the bottom line), numbered paragraphs (`1.`, `1.1`), Annex A for questions and Annex B for tables and indicators |
 
 A shared copy (`--share external` or `public`) of any format is built from the masked pack, and the mode goes just before the last extension of its file name: `<pack>.normalised.external.json`, `<pack>.learner.external.html`. Every format's text goes through the name check.
 
@@ -100,6 +101,18 @@ warning: coverage: cites 3 of 308 relevant findings; under a quarter of the top-
 …
 warning: no handling block: rendered as draft (internal)
 normalised written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.normalised.json
+```
+
+The HTML page and a Word copy of the board brief:
+
+```bash
+python3 $E pack $WS $OUT/board-brief.json --format html,docx
+```
+
+```text
+…
+HTML written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.html
+docx written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.docx
 ```
 
 A learner copy of a training pack, without the answer keys:
@@ -189,6 +202,7 @@ warning: no handling block: rendered as draft (internal)
 - **A shared copy is refused by the language check.** At the external level the check is stricter: an organisation's name or a singleton role in the pack's own text is an error. Masking covers the embedded export records, not your wording; rewrite the text with roles and functions.
 - **"refused: a listed name appears in the output".** A name from `--names` (or `PMLC_NAMES`) is still on the page. Fix the pack text, or redact the name when you ingest (`ingest --redact`).
 - **"argument --format: unknown format …".** The name is not a format; the message lists the ones there are. Separate several with commas and no spaces: `--format html,normalised`.
+- **Word shows the citations as small numbers.** They are endnotes: the cited findings and evidence are listed at the end of the document, one note per item.
 - **Where did the files go?** Without `--out`, into the run's outputs folder; [run-path](run-path.md) prints it.
 
 ## Related
