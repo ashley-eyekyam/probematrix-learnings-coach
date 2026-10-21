@@ -129,14 +129,14 @@ def _gx_graphml(ctx, it) -> str:
 
 
 def render_graphml(ctx) -> list:
-    """One file for a pack with one graph item (<pack>.graphml), one per item (<pack>.<item-id>.graphml) otherwise."""
+    """One <pack>.<item-id>.graphml for each graph item (the name does not change with the item count)."""
     items = _gx_items(ctx)
     if not items:
         ctx.notes.append(NOTHING_TO_WRITE.format(fmt="graphml", why="the pack has no graph item"))
     outs = []
     for it in items:
         text = _gx_graphml(ctx, it)
-        name = output_name(ctx.pack["pack"], "graphml", item_id=None if len(items) == 1 else it["id"])
+        name = output_name(ctx.pack["pack"], "graphml", item_id=it["id"])
         outs.append(Output(name, text, _gx_text(text)))
     return outs
 
@@ -145,4 +145,4 @@ register("svg", render_svg, kind="data", help="<pack>.<item-id>.svg: each graph 
          "no label clipped")
 register("png", render_png, kind="data", help="<pack>.<item-id>.png: the same through a Chromium-family browser "
          "(PMLC_BROWSER, chromium, google-chrome, microsoft-edge)")
-register("graphml", render_graphml, kind="data", help="<pack>.graphml: the graph for yEd and other graph tools")
+register("graphml", render_graphml, kind="data", help="<pack>.<item-id>.graphml: the graph for yEd and other graph tools")

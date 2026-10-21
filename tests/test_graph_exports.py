@@ -69,7 +69,9 @@ def test_layout_label_max_default_is_unchanged():
 
 def test_graphml_yed_shape(w):
     outs = render_fixture("x", "graphml", w=w, pack=graph_pack())
-    assert [o.name for o in outs] == ["test-pack.graphml"]
+    assert [o.name for o in outs] == ["test-pack.g1.graphml"]
+    two = render_fixture("x", "graphml", w=w, pack=pack_with(GRAPH, dict(GRAPH, id="g2")))
+    assert [o.name for o in two] == ["test-pack.g1.graphml", "test-pack.g2.graphml"]
     root = ET.fromstring(outs[0].data.encode("utf-8"))
     ns = "{http://graphml.graphdrawing.org/xmlns}"
     assert root.tag == ns + "graphml"
@@ -107,7 +109,7 @@ def test_png_no_browser_through_the_command(tmp_path):
     assert r.returncode == 0, r.stderr
     assert R.PNG_NO_BROWSER in r.stderr
     names = sorted(x.name for x in (tmp_path / "o").iterdir())
-    assert "test-pack.g1.svg" in names and "test-pack.graphml" in names and not any(n.endswith(".png") for n in names)
+    assert "test-pack.g1.svg" in names and "test-pack.g1.graphml" in names and not any(n.endswith(".png") for n in names)
 
 
 @pytest.mark.skipif(R.find_browser() is None, reason="no Chromium-family browser")
@@ -249,7 +251,7 @@ def test_graph_formats_shared_copy(tmp_path):
              "--format", "svg,graphml,bowtie-csv,ics", "--start", "2026-11-02", "--out", str(tmp_path / "o"))
     assert r.returncode == 0, r.stderr
     names = sorted(x.name for x in (tmp_path / "o").iterdir())
-    assert names == ["test-pack.bowtie.external.csv", "test-pack.external.graphml", "test-pack.external.ics",
+    assert names == ["test-pack.bowtie.external.csv", "test-pack.external.ics", "test-pack.g1.external.graphml",
                      "test-pack.g1.external.svg"]
     for n in names:
         t = (tmp_path / "o" / n).read_text(encoding="utf-8")
