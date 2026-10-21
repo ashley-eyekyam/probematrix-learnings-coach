@@ -41,6 +41,7 @@ MODULES = [
     "pmlc_lib.render.fields",
     "pmlc_lib.render.ooxml",
     "pmlc_lib.render.normalise",
+    "pmlc_lib.render.script",
     "pmlc_lib.pack.command",
     "pmlc_lib.cli",
 ]

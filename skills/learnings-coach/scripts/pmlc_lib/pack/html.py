@@ -15,7 +15,7 @@ from ..handling import (
 )
 from ..pack.graph_layout import layout_graph
 from ..pack.markdown import (
-    _handling_lines, _knowable, _pack_incident_date, coverage, event_when, lint_ok_notes, sorted_events
+    _handling_lines, _knowable, _pack_incident_date, _pm_clock, coverage, event_when, lint_ok_notes, sorted_events
 )
 from ..pack.schema import (
     cited_ids, embedded_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, relevant_findings,
@@ -162,10 +162,11 @@ def _html_item(it, graphs, inc_date=None, labels=None) -> str:
                 + lab("why_made_sense", g("why_made_sense"))
                 + lab("organisation_changing", g("organisation_changing"))
                 + f'<span class="label">{_h(f("warning_signs"))}</span>' + _list(it["warning_signs"])
-                + lab("good_looks_like", it["good_looks_like"]) + disc + c + PFOOT + "</div>")
+                + lab("good_looks_like", it["good_looks_like"]) + _ph_lablist(f("did_you_know"), g("did_you_know"))
+                + _ph_lablist(f("what_you_can_do"), g("what_you_can_do")) + disc + c + PFOOT + "</div>")
     elif k == "scenario":
         body = (f'<p><b>{_h(t("ui.scenario_lead"))}</b> {_inline(it["situation"])}</p><details><summary>'
-                f'{_h(f("prompts"))}</summary>' + _list(it["prompts"], "ol") + f"</details>{c}")
+                f'{_h(f("prompts"))}</summary>' + _list(it["prompts"], "ol") + f"</details>{_ph_injects(g('injects'), L)}{c}")
     elif k == "table":
         rc, rs = g("row_cites"), g("row_supporting_cites")
         cols = list(it["columns"]) + ([f("cites")] if rc or rs else [])
@@ -224,9 +225,59 @@ def _html_item(it, graphs, inc_date=None, labels=None) -> str:
     elif k == "learning":
         body = (f'<p><b>{_inline(it["lesson"])}</b> {_badges([(f("owner"), g("owner"))])}</p>'
                 + (_rich(it["explanation"]) if g("explanation") else "") + c)
+    elif k == "toolbox":
+        body = _ph_toolbox(it, L) + c + PFOOT + "</div>"
+    elif k == "script":
+        body = _ph_script(it, L) + c
     else:
         body = _html_fields(it, L) + c
     return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}{_extras(it, L)}{_lint_ok_html(it, L)}</div>'
+
+
+def _ph_lablist(label, xs) -> str:
+    """A labelled bullet list (the card's R3 fields), or "" when there is nothing to list."""
+    return f'<span class="label">{_h(label)}</span>' + _list(xs) if xs else ""
+
+
+def _ph_injects(injects, L) -> str:
+    """A scenario's injects (L4-30): an ordered list, each with its +HH:MM offset and any decision point."""
+    if not injects:
+        return ""
+    lis = "".join(f'<li><time>{_h(x["offset"])}</time>{_inline(x["text"])}'
+                  + (f'<p class="m"><span class="badge hold">{_h(_ph_t(L, "ui.decision_point"))}</span> '
+                     f'{_inline(x["decision"])}</p>' if x.get("decision") else "") + "</li>" for x in injects)
+    return f'<span class="label">{_h(_ph_t(L, "f.injects"))}</span><ol class="timeline injects">{lis}</ol>'
+
+
+def _ph_toolbox(it, L) -> str:
+    """A toolbox talk (L2-18): the five parts of output-style.md, in order, as an ordered list on a card. The caller
+    closes the card after the citations and the print footer."""
+    dur = it.get("duration")
+    meta = f'<p><span class="badge">{_h(_ph_t(L, "f.duration"))}: {_h(dur)}</span></p>' if dur else ""
+    parts = [("opening_question", f'<p>{_inline(it["opening_question"])}</p>'), ("story", _rich(it["story"])),
+             ("warning_signs", _list(it["warning_signs"])), ("one_change", f'<p>{_inline(it["one_change"])}</p>'),
+             ("crew_question", f'<p>{_inline(it["crew_question"])}</p>')]
+    lis = "".join(f'<li><span class="label">{_h(_ph_t(L, "f." + n))}</span>{v}</li>' for n, v in parts)
+    return f'<div class="card"><h3>{_h(_ph_t(L, "k.toolbox"))}</h3>{meta}<ol>{lis}</ol>'
+
+
+def _ph_script(it, L) -> str:
+    """A shooting script (L4-19): the two-column Visual | Narration table, each visual led by its time, then the
+    total duration."""
+    rows, t0 = [], 0
+    for sg in it["segments"]:
+        t1 = t0 + sg["seconds"]
+        shown = (f'<p class="m">{_h(_ph_t(L, "f.on_screen"))}: {_inline(sg["on_screen"])}</p>'
+                 if sg.get("on_screen") else "")
+        rows.append(f'<tr><td><time>{_pm_clock(t0)}–{_pm_clock(t1)}</time><p>{_inline(sg["visual"])}</p>{shown}</td>'
+                    f'<td><p>{_inline(sg["narration"])}</p>{_chips(sg.get("cites"))}</td></tr>')
+        t0 = t1
+    head = "".join(f'<th scope="col">{_h(_ph_t(L, "f." + x))}</th>' for x in ("visual", "narration"))
+    meta = "".join(f'<span class="badge">{_h(_ph_t(L, "f." + x))}: {_h(it[x])}</span>' for x in ("channel",) if it.get(x))
+    purpose = _labelled(_ph_t(L, "f.purpose"), it.get("purpose"))
+    return (f'<p><b>{_h(it["title"])}</b> <span class="badge">{_h(_ph_t(L, "k.script"))}</span>{meta}</p>{purpose}'
+            f'<div class="tablewrap" tabindex="0"><table><thead><tr>{head}</tr></thead><tbody>{"".join(rows)}</tbody>'
+            f'</table></div><p class="m">{_h(_ph_t(L, "ui.total_duration", time=_pm_clock(t0)))}</p>')
 
 
 def _html_block_value(v) -> str:

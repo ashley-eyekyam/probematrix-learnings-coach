@@ -41,6 +41,13 @@ These cards are read by the crews whose work appears in the findings: talk them 
 
 **What good looks like:** No restart until the leak-test record is signed.
 
+**Did you know?**
+- A leak test takes about ten minutes with the rig on site.
+
+**What can you do?**
+- Ask for the signed leak-test record before any restart.
+- Say so if the test rig is not available.
+
 **Questions for discussion:**
 1. Where is the test record kept?
 2. Who signs it?
@@ -73,6 +80,18 @@ Five minutes on the leak test: why it matters and where the record goes [FND-000
 
 1. What do you say to the supervisor?
 2. Who can authorise a delay?
+
+### Toolbox talk [FND-0001; FND-0002]
+
+*Duration: 5 min*
+
+1. **Opening question:** Who here has restarted a pump after a seal change?
+2. **The story (90 seconds):** A pump went back into service after a seal change without a leak test. The work order had no line for the test, so nobody asked for it [FND-0002].
+3. **Warning signs:**
+   - No test record on the work order
+   - A seal that looks different from the usual part
+4. **One thing to do differently tomorrow:** Ask for the signed leak-test record before any restart.
+5. **Question to the crew:** Where is the test record kept on this unit?
 
 ## Stop and ask
 

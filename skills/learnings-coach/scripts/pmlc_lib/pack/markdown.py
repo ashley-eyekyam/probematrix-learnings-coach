@@ -149,11 +149,13 @@ def _md_item(it, inc_date=None, labels=None) -> str:
             parts.append(f"**{f('organisation_changing')}:** {it['organisation_changing']}")
         parts.append(f"**{f('warning_signs')}:**\n" + "\n".join(f"- {x}" for x in it["warning_signs"]))
         parts.append(f"**{f('good_looks_like')}:** {it['good_looks_like']}")
+        parts += [f"**{f(x)}**\n" + "\n".join(f"- {y}" for y in it[x]) for x in ("did_you_know", "what_you_can_do")
+                  if g(x)]                                     # the labels end in "?" (R3)
         if g("discussion"):
             parts.append(f"**{f('discussion')}:**\n" + _numbered(it["discussion"]))
         return "\n\n".join(parts)
     if k == "scenario":
-        return f"**{t('k.scenario')}:** {it['situation']}{c}\n\n" + _numbered(it["prompts"])
+        return f"**{t('k.scenario')}:** {it['situation']}{c}\n\n" + _numbered(it["prompts"]) + _pm_injects(g("injects"), L)
     if k == "table":
         cols, rows = list(it["columns"]), [list(r) for r in it["rows"]]
         rc, rs = g("row_cites"), g("row_supporting_cites")
@@ -202,7 +204,60 @@ def _md_item(it, inc_date=None, labels=None) -> str:
         if g("explanation"):
             out += f"\n\n{it['explanation']}"
         return out + (f"\n\n- {f('owner')}: {it['owner']}" if g("owner") else "")
+    if k == "toolbox":
+        return _pm_toolbox(it, c, L)
+    if k == "script":
+        return _pm_script(it, c, L)
     return _md_fields(it, L) + c
+
+
+def _pm_clock(seconds) -> str:
+    """Seconds as m:ss (75 -> 1:15), for a script's segment times and total duration."""
+    return f"{seconds // 60}:{seconds % 60:02d}"
+
+
+def _pm_injects(injects, L) -> str:
+    """A scenario's injects (L4-30) as a numbered list after its prompts: **+HH:MM** text, then its decision point."""
+    if not injects:
+        return ""
+    out = []
+    for n, x in enumerate(injects, 1):
+        out.append(f"{n}. **{x['offset']}** {x['text']}")
+        if x.get("decision"):
+            out.append(f"   - **{_pm_t(L, 'ui.decision_point')}:** {x['decision']}")
+    return f"\n\n**{_pm_t(L, 'f.injects')}:**\n" + "\n".join(out)
+
+
+def _pm_toolbox(it, c, L) -> str:
+    """A toolbox talk (L2-18) in the five parts of output-style.md, numbered in order."""
+    def f(name):
+        return _pm_t(L, "f." + name)
+
+    head = f"### {_pm_t(L, 'k.toolbox')}{c}" + (f"\n\n*{f('duration')}: {it['duration']}*" if it.get("duration") else "")
+    signs = "\n".join(f"   - {x}" for x in it["warning_signs"])
+    return head + "\n\n" + "\n".join([
+        f"1. **{f('opening_question')}:** {it['opening_question']}", f"2. **{f('story')}:** {it['story']}",
+        f"3. **{f('warning_signs')}:**\n{signs}", f"4. **{f('one_change')}:** {it['one_change']}",
+        f"5. **{f('crew_question')}:** {it['crew_question']}"])
+
+
+def _pm_script(it, c, L) -> str:
+    """A shooting script (L4-19): the two-column Visual | Narration table, each visual led by its time, then the
+    total duration. The SRT and narration files (render/script.py) carry the narration alone."""
+    def f(name):
+        return _pm_t(L, "f." + name)
+
+    rows, t0 = [], 0
+    for sg in it["segments"]:
+        t1 = t0 + sg["seconds"]
+        vis = f"{_pm_clock(t0)}–{_pm_clock(t1)} · {sg['visual']}" + (
+            f" ({f('on_screen')}: {sg['on_screen']})" if sg.get("on_screen") else "")
+        rows.append(f"| {_md_cell(vis)} | {_md_cell(sg['narration'] + _c(sg.get('cites')))} |")
+        t0 = t1
+    out = f"**{_pm_t(L, 'k.script')}:** {it['title']}{c}"
+    meta = _lines([(f("channel"), it.get("channel")), (f("purpose"), it.get("purpose"))])
+    table = "\n".join([f"| {f('visual')} | {f('narration')} |", "|---|---|", *rows])
+    return out + (f"\n{meta}" if meta else "") + f"\n\n{table}\n\n{_pm_t(L, 'ui.total_duration', time=_pm_clock(t0))}"
 
 
 def _md_fields(it, labels=None) -> str:

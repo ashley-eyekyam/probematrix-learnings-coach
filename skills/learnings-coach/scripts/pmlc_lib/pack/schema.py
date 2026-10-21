@@ -152,6 +152,77 @@ GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength"
                   "comparator_refs")
 
 
+# Phase 4, Task 16 (L2-18, L4-19, L4-30, R3): the toolbox and script kinds, scenario injects and the card fields.
+# Appended, so the KINDS literal above stays as it was.
+SCRIPT_CHANNELS = ("video", "radio", "pa", "screen")
+OFFSET_RX = re.compile(r"\+\d{1,3}:[0-5]\d")                # used with fullmatch: "+00:15" after the start
+TOOLBOX_SIGNS = 2                                           # output-style.md: two warning signs
+
+
+def _ps_p4_media_kinds() -> None:
+    KINDS["toolbox"] = {"req": ["opening_question", "story", "warning_signs", "one_change", "crew_question"],
+                        "opt": ["duration"], "cite": True,
+                        "fields": [["duration", "badge"], ["opening_question", "title"], ["story", "body"],
+                                   ["warning_signs", "list"], ["one_change", "body"], ["crew_question", "body"]]}
+    KINDS["script"] = {"req": ["title", "segments"], "opt": ["purpose", "channel"], "cite": True,
+                       "fields": [["title", "title"], ["channel", "badge"], ["purpose", "body"],
+                                  ["segments", "segments"]]}
+    KINDS["scenario"]["opt"].append("injects")
+    KINDS["scenario"]["fields"].append(["injects", "injects"])
+    KINDS["card"]["opt"] += ["did_you_know", "what_you_can_do"]
+    roles = KINDS["card"]["fields"]
+    at = next((i for i, (f, _) in enumerate(roles) if f == "discussion"), len(roles))
+    roles[at:at] = [["did_you_know", "list"], ["what_you_can_do", "list"]]
+    STR_LIST_FIELDS.update(("did_you_know", "what_you_can_do"))
+    OBJ_LIST_FIELDS.update(("segments", "injects"))
+    INLINE_FIELDS["toolbox"] = ["opening_question", "story", "warning_signs", "one_change", "crew_question"]
+    INLINE_FIELDS["script"] = ["purpose", "segments"]
+    INLINE_FIELDS["scenario"] = INLINE_FIELDS["scenario"] + ["injects"]
+    INLINE_FIELDS["card"] = INLINE_FIELDS["card"] + ["did_you_know", "what_you_can_do"]
+
+
+_ps_p4_media_kinds()
+
+
+def _check_script(it, ip, bad):
+    """script (L4-19): channel is one of SCRIPT_CHANNELS; each segment {visual*, narration*, seconds* (1-600),
+    on_screen, cites}."""
+    if "channel" in it and it["channel"] not in SCRIPT_CHANNELS:
+        bad(f"{ip}.channel", f"must be one of {', '.join(SCRIPT_CHANNELS)}")
+    segs = it.get("segments")
+    for k, sg in enumerate(segs if isinstance(segs, list) else []):
+        sp = f"{ip}.segments[{k}]"
+        if not isinstance(sg, dict):
+            bad(sp, "must be an object with visual, narration and seconds")
+            continue
+        for f in ("visual", "narration"):
+            if not _text(sg.get(f)):
+                bad(f"{sp}.{f}", "required")
+        s = sg.get("seconds")
+        if isinstance(s, bool) or not isinstance(s, int) or not 1 <= s <= 600:
+            bad(f"{sp}.seconds", "must be a whole number from 1 to 600")
+        if "on_screen" in sg and not _text(sg["on_screen"]):
+            bad(f"{sp}.on_screen", "must be non-empty text")
+        if "cites" in sg and not _id_list(sg["cites"]):
+            bad(f"{sp}.cites", "must be a list of Finding or Evidence IDs")
+
+
+def _check_injects(it, ip, bad):
+    """scenario injects (L4-30): each {offset* (+HH:MM after the exercise starts), text*, decision}."""
+    injects = it.get("injects")
+    for k, x in enumerate(injects if isinstance(injects, list) else []):
+        xp = f"{ip}.injects[{k}]"
+        if not isinstance(x, dict):
+            bad(xp, "must be an object with offset and text")
+            continue
+        if not (isinstance(x.get("offset"), str) and OFFSET_RX.fullmatch(x["offset"])):
+            bad(f"{xp}.offset", "must be +HH:MM after the start of the exercise, e.g. +00:15")
+        if not _text(x.get("text")):
+            bad(f"{xp}.text", "required")
+        if "decision" in x and not _text(x["decision"]):
+            bad(f"{xp}.decision", "must be non-empty text")
+
+
 def inline_fields(kind) -> list:
     """The fields of a kind that render citation buttons: INLINE_FIELDS, else (a kind it does not list) the kind's
     fields with role body or list (Ruling P4-5)."""
@@ -397,6 +468,7 @@ def _check_item(it, ip, bad, warn):
         bad(f"{ip}.hoc_tier", f"must name a hierarchy-of-controls tier: {', '.join(HOC_TIERS)}")
     {"table": _check_table, "timeline": _check_timeline, "graph": _check_graph,
      "barrier": _check_barrier}.get(kind, lambda *x: None)(it, ip, bad)
+    {"script": _check_script, "scenario": _check_injects}.get(kind, lambda *x: None)(it, ip, bad)
     if not spec.get("cite") and not any(True for _ in _walk_ids(_citable_item(it), "")):
         warn(ip, "no Finding or Evidence ID cited")
 
@@ -780,6 +852,9 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
             if (isinstance(it, dict) and it.get("kind") == "card" and not it.get("organisation_changing")
                     and t1_pack):
                 warn(f"card {iid or ip}", "add organisation_changing (what the organisation is changing)")
+            if (isinstance(it, dict) and it.get("kind") == "toolbox" and isinstance(it.get("warning_signs"), list)
+                    and len(it["warning_signs"]) != TOOLBOX_SIGNS):
+                warn(f"toolbox {iid or ip}", "a toolbox talk has two warning signs")
     if pack.get("pack") == "investigator-coach":
         _check_follow_up(secs, bad)
     _check_gaps_limits(pack, w, bad)

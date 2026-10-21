@@ -15,6 +15,8 @@
     "organisation_changing": "Work orders now require a recorded leak test before the pump is released.",
     "warning_signs": ["No test record on the work order", "A seal that looks different from the usual part"],
     "good_looks_like": "No restart until the leak-test record is signed.",
+    "did_you_know": ["A leak test takes about ten minutes with the rig on site."],
+    "what_you_can_do": ["Ask for the signed leak-test record before any restart.", "Say so if the test rig is not available."],
     "discussion": ["Where is the test record kept?", "Who signs it?", "What do you do if the test rig is not available?"],
     "learning": "LR-01", "cites": ["FND-0001", "FND-0002", "EVD-0001"]},
    {"kind": "card", "title": "Know what the gas alarm does", "what_happened": "The gas alarm showed on the display but did not shut anything down.",
@@ -27,7 +29,13 @@
    {"kind": "para", "group": "Returning equipment to service",
     "text": "Five minutes on the leak test: why it matters and where the record goes [FND-0001]."},
    {"kind": "scenario", "group": "Returning equipment to service", "situation": "The test rig is out of service and the pump is needed.",
-    "prompts": ["What do you say to the supervisor?", "Who can authorise a delay?"], "cites": ["FND-0001"]}]},
+    "prompts": ["What do you say to the supervisor?", "Who can authorise a delay?"], "cites": ["FND-0001"]},
+   {"kind": "toolbox", "group": "Returning equipment to service", "duration": "5 min",
+    "opening_question": "Who here has restarted a pump after a seal change?",
+    "story": "A pump went back into service after a seal change without a leak test. The work order had no line for the test, so nobody asked for it [FND-0002].",
+    "warning_signs": ["No test record on the work order", "A seal that looks different from the usual part"],
+    "one_change": "Ask for the signed leak-test record before any restart.",
+    "crew_question": "Where is the test record kept on this unit?", "cites": ["FND-0001", "FND-0002"]}]},
   {"id": "stop-and-ask", "heading": "Stop and ask", "items": [
    {"kind": "check", "text": "Stop and ask if there is no leak-test record before a restart.", "when": "before restart", "cites": ["FND-0001"]},
    {"kind": "check", "text": "Stop and ask if a gas alarm shows and nobody has said what to do.", "when": "any gas alarm", "cites": ["FND-0004"]}]}]}

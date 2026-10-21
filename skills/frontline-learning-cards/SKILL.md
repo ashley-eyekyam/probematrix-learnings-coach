@@ -59,6 +59,7 @@ Pack `<run>/outputs/frontline-learning-cards.json` (shape: `learnings-coach/refe
 | 2 | `cards` | Learning Cards | title, what_happened, `why_made_sense`, `organisation_changing` (both required here), warning_signs, good_looks_like, three `discussion` questions; under 250 words; primary cite L1 or L2 | `card` | up to 8 |
 | 3 | `toolbox-talks` | Toolbox talks | One `para` per five-minute talk, `group` = the task ("returning equipment to service") | `para` | up to 3 |
 | 3 | `toolbox-talks` | Toolbox talks | One discussion `scenario` per talk, same `group` | `scenario` | up to 3 |
+| 3 | `toolbox-talks` | Toolbox talks | The talk itself as one `toolbox` item: opening question, story, two warning signs, one change, crew question | `toolbox` | optional, up to 3 |
 | 4 | `stop-and-ask` | Stop and ask | Situations from this event where anyone should pause the job and ask, with the support to expect; `when` = the situation | `check` | up to 10 |
 
 - **Deliverer.** Each card names who delivers it, usually the crew's supervisor (a role, never a person), in the

@@ -57,6 +57,8 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `html` | document | `<pack>.html` | The offline page (default) |
 | `md` | document | `<pack>.md` | The same content as Markdown (default) |
 | `normalised` | data | `<pack>.normalised.json` | The pack for other tools: every item id filled in, the status line, the brand, the effective status, the word count and reading time, the coverage counts and the cited findings (label, level, rating) and evidence (type). A shared copy carries no run slug |
+| `srt` | data | `<pack>.<item-id>.srt` | Subtitles from each `script` item: one cue per segment, timed cumulatively from 00:00:00,000, the narration wrapped at 42 characters and 2 lines a cue (a longer narration splits into cues that share the segment's time). No status line: it would show on screen. Prints "nothing to write" when the pack has no script item |
+| `narration` | data | `<pack>.<item-id>.narration.txt` | Each `script` item's narration only, one paragraph per segment, for a voice-over or a PA reader. No status line and no citations: the text is spoken. The shooting script in the html and md carries the status |
 
 A shared copy (`--share external` or `public`) of any format is built from the masked pack, and the mode goes just before the last extension of its file name: `<pack>.normalised.external.json`, `<pack>.learner.external.html`. Every format's text goes through the name check.
 
