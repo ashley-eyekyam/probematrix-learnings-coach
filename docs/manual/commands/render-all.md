@@ -11,7 +11,7 @@ After [check-all](check-all.md) is clean.
 ## Synopsis
 
 ```text
-pmlc render-all ws [--embed {cited,summary,full}] [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
+pmlc render-all ws [--embed {cited,summary,full}] [--format FORMATS] [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
 ```
 
 ## Arguments
@@ -25,6 +25,7 @@ pmlc render-all ws [--embed {cited,summary,full}] [--share {internal,external,pu
 | Flag | Value | Default | What it does |
 |---|---|---|---|
 | `--embed` | `cited`, `summary` or `full` | `cited` | Records each page embeds, as for pack |
+| `--format` | comma-separated format names | `html,md` | Passed to [pack](pack.md) for every pack, for example `--format html,md,docx`. The register is not affected. A `csv` format refuses to replace an existing `<pack>.actions.csv`, which makes that pack count as failed |
 | `--share` | `internal`, `external` or `public` | `internal` | A masked copy for outside the organisation; needs a sign-off |
 | `--names` | file | `$PMLC_NAMES` | Personal names, one per line |
 | `--orgs` | file | `$PMLC_ORGS` | Organisation names, one per line |

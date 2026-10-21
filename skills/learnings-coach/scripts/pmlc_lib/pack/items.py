@@ -222,7 +222,7 @@ def register_items(entries, tier) -> list:
     out = []
     for e in mine:
         msg = (e.get("tier_messages") or {}).get(tier)
-        it = {"kind": "learning", "id": str(e["lr_id"]).lower(), "learning": e["lr_id"],
+        it = {"kind": "learning", "id": f"{tier.lower()}-{str(e['lr_id']).lower()}", "learning": e["lr_id"],
               "lesson": msg or e.get("lesson") or e.get("title", "")}
         expl = e.get("lesson") if msg else e.get("context")
         if expl:

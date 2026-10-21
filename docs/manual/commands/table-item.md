@@ -52,6 +52,7 @@ With no `adoption.csv` yet, `adoption` prints one row that reads `No adoption re
 
 - **"Needs clusters.json. Run: pmlc.py classify <ws>".** Run [classify](classify.md) first.
 - **"table-item hoc needs --register or --pack".** Say where the recommendations are.
+- **check-pack says "FND-0007 is also cited at …".** A table row cites a finding that the pack leaves out in `exclusions`. The message gives the path of the cite (for a table, `…row_cites[n]`). Remove the id from that cite list, or remove it from `exclusions`; a pack either cites a finding or leaves it out on purpose.
 - **A count is a number of findings, not a measure of strength.** Count learnings, not findings.
 
 ## Related

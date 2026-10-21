@@ -10,6 +10,7 @@ from ..handling import effective_handling, name_guard, share_ctx, share_gate, sh
 from ..pack.html import follow_up, update_gaps
 from ..pack.schema import _checked as _pack_checked, embedded_ids, record_check, with_item_ids
 from ..render import build_date, DEFAULT_FORMATS, render, RenderContext
+from ..render.exports import follow_up_csv, KEEP_FORMATS, refuse_existing
 from ..util import _abs, write_json
 from ..workspace import is_standard_ws, outputs_dir, warn_stale
 
@@ -39,12 +40,17 @@ def cmd_pack(a):
     ctx = RenderContext(w=rw, pack=with_item_ids(rpack), run=run, generated=build_date(), embed=embed, eh=eh,
                         share=share, view=getattr(a, "view", None) or "full", src=Path(a.pack))
     outs = [(fmt, o) for fmt in pack_formats(a) for o in render(fmt, ctx)]
-    name_guard([o.guard_text or "" for _, o in outs], a)
+    coach = pack["pack"] == "investigator-coach" and mode == "internal"   # interview plans never leave the team
+    fu_csv = follow_up_csv(pack) if coach else ""
+    name_guard([o.guard_text or "" for _, o in outs] + [fu_csv], a)
     for note in ctx.notes:
         print(note, file=sys.stderr)
     out = Path(a.out) if a.out else outputs_dir(ws)
     if outs:
         out.mkdir(parents=True, exist_ok=True)
+    for fmt, o in outs:                                            # files the organisation fills in: refuse first
+        if fmt in KEEP_FORMATS:
+            refuse_existing(shared_name(out / o.name, mode))
     for fmt, o in outs:
         path = shared_name(out / o.name, mode)
         if isinstance(o.data, bytes):
@@ -59,8 +65,10 @@ def cmd_pack(a):
     gj = update_gaps(ws, pack)
     if gj:
         print(f"Gaps written to {gj}")
-    if pack["pack"] == "investigator-coach" and mode == "internal":   # interview plans never leave the team
+    if coach:
         fu = out / "follow-up.json"
         out.mkdir(parents=True, exist_ok=True)
         write_json(fu, follow_up(pack))
         print(f"Follow-up fields written to {fu}")
+        (out / "follow-up.csv").write_bytes(fu_csv.encode("utf-8"))
+        print(f"follow-up.csv written to {out / 'follow-up.csv'}")

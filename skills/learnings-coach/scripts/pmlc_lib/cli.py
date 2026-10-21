@@ -367,6 +367,8 @@ def build_parser():
     s.add_argument("ws")
     add_embed_arg(s)
     add_share_args(s)
+    s.add_argument("--format", type=parse_formats, metavar="FORMATS", default=None,
+                   help=f"comma-separated formats passed to pack (default: html,md); one of: {', '.join(FORMATS)}")
     s.set_defaults(fn=cmd_render_all)
 
     s = sp.add_parser("index", help="write outputs/index.html: one row per pack", allow_abbrev=False)

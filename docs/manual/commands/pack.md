@@ -6,6 +6,7 @@ Turns a learning pack JSON into the files people read:
 
 - `<pack>.html`: a self-contained page that works offline and prints well. Each cited ID opens the finding or evidence it refers to, the findings in scope that the pack does not cite are listed, and the footer carries the status phrase and the ProbeMatrix credit;
 - `<pack>.md`: the same content as Markdown, for email, a wiki or a document.
+- `follow-up.json` and `follow-up.csv`, for an internal `investigator-coach` pack only: the follow-up table by Finding ID. The CSV header is the export's own: `Finding ID,Evidence to Collect,Key Questions,Suggested Interviews,Causal Hypothesis`. A shared copy never writes either file, because interview plans stay inside the team;
 - `gaps.json`, when the pack has `gaps`: the run's outputs folder collects every pack's evidence gaps there for the investigator. Each run replaces this pack's entries and keeps the other packs'. It is always written to the run's outputs folder, even with `--out`.
 
 `--format` chooses which of these files to write (the default, `html,md`, writes exactly the two above). The formats are listed under [Formats](#formats).
@@ -57,6 +58,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `html` | document | `<pack>.html` | The offline page (default) |
 | `md` | document | `<pack>.md` | The same content as Markdown (default) |
 | `normalised` | data | `<pack>.normalised.json` | The pack for other tools: every item id filled in, the status line, the brand, the effective status, the word count and reading time, the coverage counts and the cited findings (label, level, rating) and evidence (type). A shared copy carries no run slug |
+| `csv` | data | `<pack>.actions.csv` | Every recommendation, decision and indicator item, in the same columns and order as [export-actions](export-actions.md); owner, due, status, CAPA reference and effectiveness check are blank for your organisation. The file is never replaced: if `<pack>.actions.csv` exists, the command exits 1 with `<file> already exists and may hold your organisation's entries; move it or pass a new --out` and writes nothing |
 
 A shared copy (`--share external` or `public`) of any format is built from the masked pack, and the mode goes just before the last extension of its file name: `<pack>.normalised.external.json`, `<pack>.learner.external.html`. Every format's text goes through the name check.
 
@@ -189,6 +191,7 @@ warning: no handling block: rendered as draft (internal)
 - **A shared copy is refused by the language check.** At the external level the check is stricter: an organisation's name or a singleton role in the pack's own text is an error. Masking covers the embedded export records, not your wording; rewrite the text with roles and functions.
 - **"refused: a listed name appears in the output".** A name from `--names` (or `PMLC_NAMES`) is still on the page. Fix the pack text, or redact the name when you ingest (`ingest --redact`).
 - **"argument --format: unknown format …".** The name is not a format; the message lists the ones there are. Separate several with commas and no spaces: `--format html,normalised`.
+- **"already exists and may hold your organisation's entries".** `--format csv` never overwrites `<pack>.actions.csv`. Move the old file, or pass a new `--out`.
 - **Where did the files go?** Without `--out`, into the run's outputs folder; [run-path](run-path.md) prints it.
 
 ## Related

@@ -35,6 +35,12 @@ pmlc export-actions ws [--packs PACK ...] [--register FILE] [--profile {generic,
 
 `id`, `lr_id`, `change`, `hoc_tier`, `barrier`, `indicator`, `owner`, `due`, `status`, `capa_ref`, `effectiveness_check`, `cites`, `evidence_strength`. The `id` is `<run>/<pack>/<item id>` for a pack item and `<run>/register/<LR id>/R<n>` for a register recommendation. In the CSV, lists such as `cites` are joined with `; `.
 
+### CSV and JSON differ for formula-led cells
+
+Spreadsheet programs run a cell that starts with `=`, `+`, `-`, `@`, a tab or a carriage return as a formula. So the CSV (and `pack --format csv`) writes such a cell with a single quote in front: a change that starts with a leading `-` comes out as `'-1 start ...`. The JSON keeps the text exactly as the pack has it, with no quote. If you import the CSV into a tracker, strip the single quote there; if you import the JSON, nothing is added.
+
+`pack --format csv` writes the same rows and columns for one pack as `<pack>.actions.csv`, with the same quoting.
+
 ### Profiles
 
 `generic` uses our own column names. The `enablon`, `intelex`, `cority` and `sap-ehs` profiles are editable column mappings in `references/actions-profiles.json`, marked `"verified": false`: the target names are placeholders, not checked against any product. The command says so on stderr; check the names against your system's import template and edit the file before importing.

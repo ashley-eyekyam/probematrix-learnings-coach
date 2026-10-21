@@ -2,7 +2,7 @@
 
 ## What it does
 
-Prints the Learnings Register entries that one tier must learn as a JSON list of **learning items** for a learning pack. Priority 1 comes first, then 2 and 3, ties by LR-ID. Each item carries `learning` (the LR-ID), the lesson (the register's message for that tier when it has one, otherwise the lesson statement), an explanation, and the entry's Finding and Evidence IDs as `cites`.
+Prints the Learnings Register entries that one tier must learn as a JSON list of **learning items** for a learning pack. Priority 1 comes first, then 2 and 3, ties by LR-ID. Each item's `id` is the tier and the LR-ID in lowercase (`t3-lr-08`), so a pack that pastes several tiers has no duplicate ids. Each item carries `learning` (the LR-ID), the lesson (the register's message for that tier when it has one, otherwise the lesson statement), an explanation, and the entry's Finding and Evidence IDs as `cites`.
 
 It prints to the screen only; it writes no file.
 

@@ -817,7 +817,9 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
                 warn(upath, f"{x} is not linked to any finding this item cites")
     for i, x in enumerate(excluded_ids(pack)):
         if x in ids:
-            bad(f"exclusions[{i}].id", f"{x} is also cited; a finding is either cited or left out on purpose")
+            at = min(p_ for p_, y in cit if y == x)
+            bad(f"exclusions[{i}].id", f"{x} is also cited at {at}; a finding is either cited or left out on purpose: "
+                                       f"remove it from that cite list, or from exclusions")
     prof, top = profiles.profile_for(pack.get("pack")), None
     if not P:
         rel = [x for x in relevant_findings(w, pack.get("scope")) if x not in excluded_ids(pack)]
