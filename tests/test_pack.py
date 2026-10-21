@@ -229,8 +229,9 @@ VERSION = pmlc.__version__
 
 
 def pack_fixtures() -> list:
-    """Every per-skill fixture pack (tests/fixtures/packs/<pack>.json), all-kinds and the bad L3-01 pack excepted."""
-    return sorted(p.stem for p in FIX.glob("*.json") if p.stem not in ("all-kinds", "bad-l3-01"))
+    """Every per-skill fixture pack (tests/fixtures/packs/<pack>.json): all-kinds, the bad L3-01 pack and the
+    html-golden.json table excepted."""
+    return sorted(p.stem for p in FIX.glob("*.json") if p.stem not in ("all-kinds", "bad-l3-01", "html-golden"))
 
 
 def skill_of(pack) -> str:
@@ -307,6 +308,50 @@ def test_fixture_html_renders(w, name):
     assert t.count('id="pmlc-pack-data"') == 1 and STATUS in t and pmlc.BRAND in t
     for kind in {it["kind"] for s in pack["sections"] for it in s["items"]}:
         assert f'class="item k-{kind}"' in t, kind
+
+
+GOLDEN_EPOCH = "1600905600"                       # 2020-09-24: SOURCE_DATE_EPOCH for every golden render (P4-3)
+HTML_GOLDEN = FIX / "html-golden.json"
+RUN = "2024-03-20-pump-fire"
+
+
+_GOLDEN_WS = []
+
+
+def golden_ws():
+    """A workspace built once per session from the synthetic export (the same steps as the ws fixture), so the
+    golden helper needs no pytest fixture."""
+    if not _GOLDEN_WS:
+        import atexit
+        import shutil
+        import tempfile
+        d = Path(tempfile.mkdtemp(prefix="pmlc-golden-"))
+        atexit.register(shutil.rmtree, d, True)
+        run("ingest", str(make_export(d)), "--legacy-out", str(d / "ws"))
+        run("classify", str(d / "ws"))
+        _GOLDEN_WS.append(d / "ws")
+    return _GOLDEN_WS[0]
+
+
+def render_fixture(name, fmt="html", **ctx_overrides) -> list:
+    """Render fixture <name> as format fmt with SOURCE_DATE_EPOCH=1600905600 (the golden helper, P4-3)."""
+    import datetime as _dt
+    w_ = ctx_overrides.pop("w", None) or pmlc.load_ws(golden_ws())
+    generated = _dt.datetime.fromtimestamp(int(GOLDEN_EPOCH), _dt.timezone.utc).date().isoformat()
+    assert fmt == "html" and not ctx_overrides
+    return [(f"{name}.html", pp.render_pack_html(w_, fixture(name), RUN, generated), None)]
+
+
+@pytest.mark.parametrize("name", pack_fixtures() + ["all-kinds"])
+def test_fixture_html_matches_golden(name):
+    import hashlib
+    data = render_fixture(name, "html")[0][1]
+    got = hashlib.sha256(data.encode("utf-8")).hexdigest()
+    table = json.loads(HTML_GOLDEN.read_text(encoding="utf-8")) if HTML_GOLDEN.exists() else {}
+    if os.environ.get("PMLC_UPDATE_GOLDEN"):
+        table[name] = got
+        HTML_GOLDEN.write_text(json.dumps(dict(sorted(table.items())), indent=1) + "\n", encoding="utf-8")
+    assert table.get(name) == got, f"{name}: HTML differs from html-golden.json (PMLC_UPDATE_GOLDEN=1, then review)"
 
 
 @pytest.mark.parametrize("name", pack_fixtures())
