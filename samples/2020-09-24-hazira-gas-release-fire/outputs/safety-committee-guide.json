@@ -1,0 +1,730 @@
+{
+ "pack": "safety-committee-guide",
+ "schema": 1,
+ "title": "Safety Committee Guide: Hazira gas terminal release and fire, 2020",
+ "audience": "Workforce representatives and the joint safety committee",
+ "status": "Learning purposes: not a statutory document. Draft learnings from a ProbeMatrix investigation export; validate them before adoption.",
+ "scope": {
+  "tiers": [
+   "T1",
+   "T2"
+  ]
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the export's Investigation Status is in_progress and no finding is marked as edited by a person, so this pack stays a draft until the investigation is completed and reviewed.",
+   "cites": []
+  }
+ ],
+ "exclusions": [
+  {
+   "id": "FND-44219027",
+   "reason": "A reviewer voted to downgrade this finding; the Learnings Register leaves it out too."
+  }
+ ],
+ "bottom_line": [
+  {
+   "text": "The seal that leaked was a locally bought part fitted as regular practice, because the original specification was lost and no one owned it.",
+   "cites": [
+    "FND-B86F67F0",
+    "EVD-8645"
+   ],
+   "learning": "LR-01"
+  },
+  {
+   "text": "After the repair, the meter was pressurised to operating pressure only and went back online the next day; no procedure asked for more.",
+   "cites": [
+    "FND-491EDE74",
+    "EVD-2894"
+   ],
+   "learning": "LR-02"
+  },
+  {
+   "text": "The night shift had no written rule on when to isolate and no authority to do it without calling up the chain, and the valves could only be closed by hand inside the cloud.",
+   "cites": [
+    "FND-82761CC5",
+    "FND-7D28BE30",
+    "EVD-4052",
+    "EVD-3932"
+   ],
+   "learning": "LR-07"
+  },
+  {
+   "text": "A flameproof light fitting with three missing bolts was the probable ignition source; electrical fittings were repaired on breakdown, not inspected.",
+   "cites": [
+    "FND-675D99DD",
+    "FND-5E08D0F8",
+    "EVD-6916"
+   ],
+   "learning": "LR-11"
+  },
+  {
+   "text": "Most of what the analysis found sits with supervision and the organisation, not with the people doing the work.",
+   "cites": [
+    "FND-23139BF9",
+    "FND-F7FE8463"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "what-happened",
+   "heading": "What happened",
+   "items": [
+    {
+     "kind": "para",
+     "text": "In the early hours of 24 September 2020, condensate vapour escaped from a seal on an old metering skid at the gas terminal. Security staff on the perimeter heard the noise and saw the cloud first, and they phoned it in through the CCTV room. The alarm in the gas terminal control room came after that [FND-439E0DF7; FND-95F9205E; FND-9399FA02; EVD-4286; EVD-6234; EVD-8657]."
+    },
+    {
+     "kind": "para",
+     "text": "Control-room staff went out to find the leak, but the cloud was so dense that nobody could get near it. The emergency valves could only be closed by hand at the valve, and the plan did not say when the shift could isolate on its own. The decision went up the chain by phone, and the first valve was closed about 46 minutes after the leak was first seen [FND-BDD73BA2; FND-82761CC5; FND-AE629313; EVD-9220; EVD-6414]."
+    },
+    {
+     "kind": "para",
+     "text": "A few minutes after the valves were closed, the cloud reached a damaged flameproof light fitting and caught fire. The seal had been replaced on 18 September with a locally bought O-ring, the same kind of part used in earlier repairs [FND-675D99DD; FND-74A80D24; FND-BC4FD086; FND-7A32AC87; EVD-4507; EVD-2894; EVD-1494]."
+    }
+   ]
+  },
+  {
+   "id": "system",
+   "heading": "What the investigation says about the system",
+   "items": [
+    {
+     "kind": "learning",
+     "id": "lr-01",
+     "learning": "LR-01",
+     "lesson": "If you cannot confirm a seal or gasket matches the specification for a pressure part, stop and ask for the spec. Do not fit 'what we normally use'.",
+     "explanation": "If the original specification for a pressure-boundary part is lost and no role owns re-establishing it, maintainers will fit whatever part is to hand, and the substitute becomes normal practice, because the job has to be done and nothing in the system says 'stop'.",
+     "cites": [
+      "FND-8C0BB623",
+      "FND-7A32AC87",
+      "FND-89962239",
+      "FND-B356F15B",
+      "FND-91B45FF9",
+      "FND-DA67926D",
+      "FND-54180594",
+      "FND-82673283",
+      "FND-45363DCA",
+      "FND-A2048FB8",
+      "FND-FFE174D0",
+      "FND-A443D288",
+      "FND-72A7D26C",
+      "FND-CEE4B00B",
+      "FND-3746C7B6",
+      "FND-42BEF461",
+      "FND-D66ACA7B",
+      "FND-852B7EC7",
+      "FND-DEAA7F90",
+      "FND-A3D7D53F",
+      "FND-B86F67F0",
+      "FND-D40839C1",
+      "FND-BC4FD086",
+      "FND-23139BF9",
+      "FND-EBB66554",
+      "FND-B440C1BF",
+      "FND-8CE00707",
+      "FND-6B3A6492",
+      "FND-A0017E28",
+      "FND-B56701CA",
+      "FND-2B0A49CB",
+      "FND-35861FFB",
+      "FND-2CEE8915",
+      "FND-48C48354",
+      "FND-9A8F3D7A",
+      "FND-7832DDF6",
+      "FND-DE30BD8B",
+      "EVD-8645",
+      "EVD-1494",
+      "EVD-0064"
+     ]
+    },
+    {
+     "kind": "learning",
+     "id": "lr-02",
+     "learning": "LR-02",
+     "lesson": "After any work that opens a pressure boundary, ask: what test proves this joint, and who witnessed it? Write the answer on the job record.",
+     "explanation": "If no procedure defines how a high-pressure joint is tested before return to service, crews will use the quickest available check (pressurising to operating pressure), and a weak joint will pass, because operating pressure does not prove the joint against the pressures it must withstand.",
+     "cites": [
+      "FND-7C5ED5B3",
+      "FND-FD617187",
+      "FND-212DC9B7",
+      "FND-15279F97",
+      "FND-7FA02383",
+      "FND-4944554C",
+      "FND-FDFA6FF5",
+      "FND-1662466D",
+      "FND-9174A5B0",
+      "FND-611A8BFC",
+      "FND-904FCA63",
+      "FND-C34A026C",
+      "FND-257C1100",
+      "FND-137BC719",
+      "FND-8ACDE078",
+      "FND-5919B328",
+      "FND-C4E06264",
+      "FND-3AB996FC",
+      "FND-86CB3683",
+      "FND-491EDE74",
+      "FND-50C7319E",
+      "FND-B91D4A23",
+      "FND-7A10FF70",
+      "FND-71EE9734",
+      "EVD-2894",
+      "EVD-0185"
+     ]
+    },
+    {
+     "kind": "learning",
+     "id": "lr-07",
+     "learning": "LR-07",
+     "lesson": "On a confirmed major hydrocarbon release, isolation is your first job. You are authorised to do it; report while you act.",
+     "explanation": "If an emergency plan names a release scenario but not who may isolate, and on what criteria, isolation waits for escalation up the chain, because people at the scene reasonably believe they need permission to shut in a major supply.",
+     "cites": [
+      "FND-314D34C5",
+      "FND-DE132C95",
+      "FND-AE629313",
+      "FND-81E3EEA0",
+      "FND-500E0B2D",
+      "FND-8DAFDADC",
+      "FND-7505B1AF",
+      "FND-2EC435D0",
+      "FND-BB4CC662",
+      "FND-D4A3EF8A",
+      "FND-4F687CC5",
+      "FND-D1DF4895",
+      "FND-7A2429CE",
+      "FND-33D32D4C",
+      "FND-DF1144C3",
+      "FND-82761CC5",
+      "FND-730D0DCA",
+      "FND-6472CD15",
+      "FND-E009D26B",
+      "FND-5C7B163D",
+      "FND-446A7956",
+      "FND-D4A6F6B6",
+      "FND-A206DFD6",
+      "FND-8A8F94A5",
+      "EVD-4052",
+      "EVD-6414",
+      "EVD-3932",
+      "EVD-9612",
+      "EVD-7340"
+     ]
+    },
+    {
+     "kind": "learning",
+     "id": "lr-11",
+     "learning": "LR-11",
+     "lesson": "A flameproof fitting with a missing bolt or open cover is not flameproof. Report it and make it safe the same shift.",
+     "explanation": "If electrical maintenance in hazardous areas responds to breakdowns instead of inspecting explosion-protected equipment, defects that do not stop the equipment working (missing bolts, open enclosures) stay in service until a release finds them.",
+     "cites": [
+      "FND-784A23E4",
+      "FND-74A80D24",
+      "FND-C7F16268",
+      "FND-554BFB4A",
+      "FND-1D61DC3A",
+      "FND-ADC25F29",
+      "FND-0B35D995",
+      "FND-5E08D0F8",
+      "FND-675D99DD",
+      "FND-1280E788",
+      "FND-ABF11182",
+      "FND-CCE6F868",
+      "FND-76BE46EF",
+      "FND-E6759E06",
+      "FND-D1709E71",
+      "FND-198069BD",
+      "FND-9066FB74",
+      "FND-5C43E7A3",
+      "FND-FD533742",
+      "FND-02C51A67",
+      "FND-B1D1AAC1",
+      "FND-30EC643B",
+      "EVD-6916",
+      "EVD-9999",
+      "EVD-0496"
+     ]
+    },
+    {
+     "kind": "learning",
+     "id": "lr-12",
+     "learning": "LR-12",
+     "lesson": "Ask for practice on the emergencies you are expected to handle. If you have never practised one, tell your supervisor.",
+     "explanation": "If no qualification is defined for control-room operators, people are assigned to emergency duty after general training only, and a rare, time-critical event becomes their first practice, because rostering fills posts with whoever is available.",
+     "cites": [
+      "FND-337CB67F",
+      "FND-E4596837",
+      "FND-4C146B0E",
+      "FND-02B682F3",
+      "FND-D2343F46",
+      "FND-4B285961",
+      "FND-7885BCF5",
+      "FND-F2D32B1D",
+      "FND-E3D07562",
+      "FND-FA1C9404",
+      "FND-78ED8552",
+      "FND-8EC441F3",
+      "FND-0AEE9898",
+      "FND-64E24A9E",
+      "FND-2AA87E93",
+      "FND-E44E0EDA",
+      "FND-42043FE6",
+      "FND-F6B552F6",
+      "FND-268CA069",
+      "FND-6CBACB54",
+      "FND-14D093BD",
+      "FND-47E58DF8",
+      "FND-057E89A7",
+      "FND-954553FD",
+      "EVD-5634",
+      "EVD-1460",
+      "EVD-9220"
+     ]
+    },
+    {
+     "kind": "para",
+     "text": "The analysis places most causes at supervision and organisational level: 71% of the findings sit at levels 3 and 4. The conditions the crews worked in (a lost specification, no test procedure, an emergency plan without isolation rules, valves that could not be closed from a safe place) were set by the organisation [FND-23139BF9; FND-B91D4A23; FND-DF1144C3; FND-7D28BE30].",
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "the figure is the l34_share that PMLC facts reports for this export, as the skill requires"
+     }
+    }
+   ]
+  },
+  {
+   "id": "questions",
+   "heading": "Questions to raise with management",
+   "items": [
+    {
+     "kind": "question",
+     "question": "Which pressure seals and gaskets on our units have no specification on file, and what stops a crew fitting 'what we normally use'?",
+     "why": "The leaking seal was a local part fitted as regular practice for lack of a specification.",
+     "to": "Maintenance manager",
+     "cites": [
+      "FND-B86F67F0",
+      "FND-B56701CA",
+      "EVD-8645"
+     ],
+     "learning": "LR-01"
+    },
+    {
+     "kind": "question",
+     "question": "What test is now required before pressure-boundary work goes back into service, and who witnesses it?",
+     "why": "The meter went back online after an operating-pressure soak, with no procedure for a design-pressure test.",
+     "to": "Maintenance manager",
+     "cites": [
+      "FND-491EDE74",
+      "FND-B91D4A23",
+      "EVD-2894"
+     ],
+     "learning": "LR-02"
+    },
+    {
+     "kind": "question",
+     "question": "Who on the night shift may isolate a major release without phoning for permission, and is that written down?",
+     "why": "No role below the plant manager had standing authority to close the isolation valve.",
+     "to": "Operations manager",
+     "cites": [
+      "FND-82761CC5",
+      "EVD-3932"
+     ],
+     "learning": "LR-07"
+    },
+    {
+     "kind": "question",
+     "question": "Which emergency valves on our units can only be closed by hand at the valve, and what is the plan for them?",
+     "why": "The valves here had no remote operation, and the cloud kept people away from them.",
+     "to": "Operations manager",
+     "cites": [
+      "FND-7D28BE30",
+      "EVD-3932"
+     ],
+     "learning": "LR-09"
+    },
+    {
+     "kind": "question",
+     "question": "What qualification and emergency practice does someone need before they work alone in a control room?",
+     "why": "Control-room staff had a four-day general course, no defined qualification and no simulator practice.",
+     "to": "Operations manager",
+     "cites": [
+      "FND-337CB67F",
+      "EVD-5634"
+     ],
+     "learning": "LR-12"
+    },
+    {
+     "kind": "question",
+     "question": "When will flameproof fittings in zoned areas be inspected on a plan, and how do crews report a damaged one?",
+     "why": "A fitting with three missing bolts stayed in service and was the probable ignition source.",
+     "to": "Electrical maintenance manager",
+     "cites": [
+      "FND-5E08D0F8",
+      "FND-675D99DD",
+      "EVD-6916"
+     ],
+     "learning": "LR-11"
+    },
+    {
+     "kind": "question",
+     "question": "Who may stop a job when the permit or job safety plan is missing, and are missing permits now tracked?",
+     "why": "Some work permits were missing with no tracking, and job safety plans were absent.",
+     "to": "HSE manager",
+     "cites": [
+      "FND-7E1F2B3F",
+      "EVD-5105"
+     ],
+     "learning": "LR-22"
+    },
+    {
+     "kind": "question",
+     "question": "When a crew fixes the same fault again, what happens to that report, and who reviews it?",
+     "why": "The same seal was changed three times in about 22 months with no root-cause review.",
+     "to": "Maintenance manager",
+     "cites": [
+      "FND-82FC718D",
+      "EVD-1494"
+     ],
+     "learning": "LR-05"
+    },
+    {
+     "kind": "question",
+     "question": "How are concerns raised by crews recorded, answered and reported back to the committee?",
+     "why": "The repeat seal changes and the substitute part were known on site, but nothing recorded shows they reached a decision.",
+     "to": "Site leadership",
+     "cites": [
+      "FND-A443D288",
+      "FND-3A34BAD3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "look-for",
+   "heading": "What to look for on site",
+   "items": [
+    {
+     "kind": "check",
+     "text": "Seals, gaskets or other pressure parts kept in stores without a specification or certificate.",
+     "cites": [
+      "FND-EBB66554",
+      "EVD-8645"
+     ],
+     "learning": "LR-01"
+    },
+    {
+     "kind": "check",
+     "text": "Pressure-boundary jobs closed with no test record or witness signature.",
+     "cites": [
+      "FND-491EDE74",
+      "EVD-2894"
+     ],
+     "learning": "LR-02"
+    },
+    {
+     "kind": "check",
+     "text": "Maintenance notifications left open on equipment that is back in service.",
+     "cites": [
+      "FND-267F1E09",
+      "EVD-0591"
+     ],
+     "learning": "LR-04"
+    },
+    {
+     "kind": "check",
+     "text": "Flameproof fittings in zoned areas with missing bolts, open covers or damaged glands.",
+     "cites": [
+      "FND-675D99DD",
+      "EVD-6916"
+     ],
+     "learning": "LR-11"
+    },
+    {
+     "kind": "check",
+     "text": "Emergency isolation valves that can only be operated by hand in an area a release could fill.",
+     "cites": [
+      "FND-7D28BE30",
+      "EVD-3932"
+     ],
+     "learning": "LR-09"
+    },
+    {
+     "kind": "check",
+     "text": "Work under way without a permit or job safety plan at the job.",
+     "cites": [
+      "FND-7E1F2B3F",
+      "EVD-5105"
+     ],
+     "learning": "LR-22"
+    },
+    {
+     "kind": "check",
+     "text": "Drawings at the job that do not match the valves and meters in the field.",
+     "cites": [
+      "FND-583EB5FE",
+      "EVD-0933"
+     ],
+     "learning": "LR-19"
+    },
+    {
+     "kind": "check",
+     "text": "Fire-water pumps under maintenance or tripping on test with no recorded reason.",
+     "cites": [
+      "FND-D8BC7096",
+      "EVD-2432"
+     ],
+     "learning": "LR-23"
+    }
+   ]
+  },
+  {
+   "id": "running",
+   "heading": "Running the discussion",
+   "items": [
+    {
+     "kind": "para",
+     "text": "Ground rules: no names, no blame, and the discussion stays on conditions, not on people. The aim is to find what made the work hard and what the organisation is changing. Remind the committee that this guide is a draft from an analysis no person has finished reviewing [FND-23139BF9; FND-B91D4A23]."
+    },
+    {
+     "kind": "para",
+     "text": "Anonymity: offer an anonymous route for concerns and record each concern by topic, not by who raised it. Do not describe a person so that the crew can tell who it is; a small crew's single operator is identifiable by role alone. Minutes and the concerns log go to management without names [FND-A443D288; FND-71EE9734]."
+    },
+    {
+     "kind": "table",
+     "columns": [
+      "Minutes",
+      "Item"
+     ],
+     "rows": [
+      [
+       "0-5",
+       "Purpose and ground rules"
+      ],
+      [
+       "5-15",
+       "What happened, in plain words"
+      ],
+      [
+       "15-30",
+       "What the investigation says about the system"
+      ],
+      [
+       "30-45",
+       "Questions to raise with management: agree the five that matter most here"
+      ],
+      [
+       "45-55",
+       "Concerns log: add what members have seen on site"
+      ],
+      [
+       "55-60",
+       "Agree the follow-up and who will ask"
+      ]
+     ],
+     "row_cites": [
+      [],
+      [
+       "FND-BDD73BA2"
+      ],
+      [
+       "FND-23139BF9"
+      ],
+      [
+       "FND-82761CC5"
+      ],
+      [
+       "FND-B86F67F0"
+      ],
+      []
+     ]
+    }
+   ]
+  },
+  {
+   "id": "concerns-log",
+   "heading": "Concerns log",
+   "items": [
+    {
+     "kind": "table",
+     "columns": [
+      "Concern",
+      "Condition seen",
+      "Location type",
+      "Date raised",
+      "Response requested"
+     ],
+     "rows": [
+      [
+       "Pressure parts without a specification",
+       "Locally bought O-rings fitted as regular practice, with no specification or quality check",
+       "Metering area and stores",
+       "",
+       "A list of pressure parts with no specification, and how fitting them is stopped"
+      ],
+      [
+       "Return to service without a test",
+       "Meter back online after an operating-pressure soak only",
+       "Metering area",
+       "",
+       "The written return-to-service test and witness requirement"
+      ],
+      [
+       "No authority to isolate",
+       "Isolation decision passed up the chain by phone during the release",
+       "Control room",
+       "",
+       "Written isolation criteria and the shift roles who may act on them"
+      ],
+      [
+       "Hand-only emergency valves",
+       "Valves could only be closed at the valve, inside the vapour cloud",
+       "Gas terminal process area",
+       "",
+       "The list of hand-only valves and the plan for each"
+      ],
+      [
+       "Damaged flameproof fittings",
+       "Light fitting with three missing bolts and an open glass case left in service",
+       "Zoned process area",
+       "",
+       "A planned inspection of zoned fittings and a reporting route"
+      ],
+      [
+       "Missing permits",
+       "Work permits missing with no tracking; job safety plans absent",
+       "Maintenance work sites",
+       "",
+       "Permit reconciliation and the right to stop work without a permit"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-EBB66554",
+       "EVD-8645"
+      ],
+      [
+       "FND-491EDE74",
+       "EVD-2894"
+      ],
+      [
+       "FND-82761CC5",
+       "EVD-3932"
+      ],
+      [
+       "FND-7D28BE30",
+       "EVD-3932"
+      ],
+      [
+       "FND-675D99DD",
+       "EVD-6916"
+      ],
+      [
+       "FND-7E1F2B3F",
+       "EVD-5105"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "follow-up",
+   "heading": "Follow-up",
+   "items": [
+    {
+     "kind": "check",
+     "text": "Ask to see the list of pressure parts with no specification and the written return-to-service test. Ask: the maintenance manager.",
+     "when": "30 days",
+     "cites": [
+      "FND-B56701CA",
+      "FND-B91D4A23",
+      "EVD-8645",
+      "EVD-2894"
+     ],
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "a follow-up horizon the skill sets for the committee, not a fact about the incident"
+     },
+     "learning": "LR-02"
+    },
+    {
+     "kind": "check",
+     "text": "Ask to see the emergency plan's isolation criteria and the shift roles authorised to act on them. Ask: the operations manager.",
+     "when": "30 days",
+     "cites": [
+      "FND-DF1144C3",
+      "EVD-4052"
+     ],
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "a follow-up horizon the skill sets for the committee, not a fact about the incident"
+     },
+     "learning": "LR-07"
+    },
+    {
+     "kind": "check",
+     "text": "Ask for the inspection plan for flameproof fittings in zoned areas and the first results. Ask: the electrical maintenance manager.",
+     "when": "60 days",
+     "cites": [
+      "FND-5E08D0F8",
+      "EVD-6916"
+     ],
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "a follow-up horizon the skill sets for the committee, not a fact about the incident"
+     },
+     "learning": "LR-11"
+    },
+    {
+     "kind": "check",
+     "text": "Ask for the control-room qualification and how many on each shift hold it. Ask: the operations manager.",
+     "when": "60 days",
+     "cites": [
+      "FND-337CB67F",
+      "EVD-5634"
+     ],
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "a follow-up horizon the skill sets for the committee, not a fact about the incident"
+     },
+     "learning": "LR-12"
+    },
+    {
+     "kind": "check",
+     "text": "Ask for the answers to every concern in the log, and report them back to the crews. Ask: site leadership.",
+     "when": "90 days",
+     "cites": [
+      "FND-A443D288",
+      "FND-3A34BAD3"
+     ],
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "a follow-up horizon the skill sets for the committee, not a fact about the incident"
+     }
+    }
+   ]
+  },
+  {
+   "id": "rights",
+   "heading": "Committee and representative rights",
+   "items": [
+    {
+     "kind": "para",
+     "text": "Safety committees and workforce representatives may have statutory rights, for example to be consulted, to see investigation documents, or to inspect after an incident. This guide does not replace those rights and states no legal conclusion. The run names no jurisdiction, so no regime is named here; the committee should confirm its rights with its own adviser [FND-82761CC5; FND-A443D288]."
+    }
+   ]
+  }
+ ],
+ "gaps": [
+  {
+   "text": "[GAP] The export holds no account from the crews of what was normal on shift or how concerns were raised before the event.",
+   "evidence_needed": "Interviews with maintenance and control-room crews, held as learning interviews with a representative present.",
+   "cites": [
+    "FND-A443D288",
+    "FND-71EE9734"
+   ]
+  }
+ ],
+ "limits": [
+  "The analysis is a desk review of the published enquiry report; it had no site access or interviews.",
+  "The delivery record for committee sessions is distribution.csv, not a table in this pack."
+ ]
+}

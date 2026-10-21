@@ -1,0 +1,520 @@
+{
+ "pack": "top-management-brief",
+ "schema": 1,
+ "title": "Top Management Brief: Hazira gas terminal release and fire, 2020",
+ "audience": "Chief executive, executive committee, corporate HSE and corporate function heads",
+ "status": "Learning purposes: not a statutory document. Draft learnings from a ProbeMatrix investigation export; validate them before adoption.",
+ "scope": {
+  "levels": [
+   4
+  ],
+  "min_rating": "top"
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the export's Investigation Status is in_progress and no finding is marked as edited by a person, so this pack stays a draft until the investigation is completed and reviewed.",
+   "cites": []
+  }
+ ],
+ "exclusions": [
+  {
+   "id": "FND-44219027",
+   "reason": "A reviewer voted to downgrade this finding; the Learnings Register leaves it out too."
+  }
+ ],
+ "bottom_line": [
+  {
+   "text": "Specifications, change control and emergency isolation rules existed only on paper or not at all for legacy equipment; any site of the same vintage can carry the same gaps.",
+   "cites": [
+    "FND-23139BF9",
+    "FND-F7FE8463",
+    "FND-5C7B163D",
+    "EVD-8645",
+    "EVD-2986",
+    "EVD-4052"
+   ],
+   "learning": "LR-01",
+   "evidence_strength": "corroborated"
+  },
+  {
+   "text": "Protective systems were designed around people reaching the hazard: detection that only displays an alarm and isolation valves that can only be closed by hand at the valve.",
+   "cites": [
+    "FND-2D90823E",
+    "FND-05841EDA",
+    "EVD-8657",
+    "EVD-3932"
+   ],
+   "learning": "LR-10",
+   "evidence_strength": "corroborated"
+  },
+  {
+   "text": "Enterprise assurance did not see these conditions: audits recorded compliance without plant data, and overdue recommendations were extended without the approval the procedure required.",
+   "cites": [
+    "FND-9E1AB5BA",
+    "FND-2A77BAFB",
+    "EVD-9692",
+    "EVD-6852"
+   ],
+   "learning": "LR-20",
+   "evidence_strength": "direct"
+  }
+ ],
+ "sections": [
+  {
+   "id": "summary",
+   "heading": "Executive summary",
+   "items": [
+    {
+     "kind": "para",
+     "text": "On 24 September 2020 condensate vapour escaped from a seal on a 1986 metering skid at the gas terminal. The cloud spread for about 46 minutes before the first isolation valve was closed by hand, and it ignited at 03:08:15 from a damaged flameproof light fitting [FND-322112EE; FND-CCE6F868; EVD-6414; EVD-6916]."
+    },
+    {
+     "kind": "para",
+     "text": "The analysis uses the four HFACS levels: unsafe acts (what people did at the point of work), preconditions (the conditions around them), supervision (how work was planned, checked and corrected) and organisational influences (resources, policy, process and culture). This brief draws on the organisational level only, because that is where enterprise decisions act [FND-B440C1BF; FND-1280E788]."
+    },
+    {
+     "kind": "para",
+     "text": "The committee is asked to decide on four enterprise standards (pressure-part specifications, change control in use, emergency isolation, and fire and gas executive action) and to note two matters within function authority (hazardous-area electrical maintenance and audit quality); they are set out under 'Decisions for top management' [FND-23139BF9; FND-F7FE8463; FND-5C7B163D; FND-4458E0C0; FND-1280E788]."
+    }
+   ]
+  },
+  {
+   "id": "transferability",
+   "heading": "Transferability",
+   "items": [
+    {
+     "kind": "table",
+     "columns": [
+      "Learning",
+      "Transferability",
+      "Reason"
+     ],
+     "rows": [
+      [
+       "LR-01 Lost specifications for legacy pressure-boundary parts, with no owner",
+       "Likely at similar sites",
+       "Vintage of equipment: any site with original-build meters and flanges whose OEM data is no longer on file"
+      ],
+      [
+       "LR-06 Change-control procedure published but not in use",
+       "Enterprise-wide",
+       "Shared standard: the procedure is a corporate document, so its use is a question for every site"
+      ],
+      [
+       "LR-07 Emergency plan without isolation criteria or delegated authority",
+       "Enterprise-wide",
+       "Shared standard: every major-hazard site writes its emergency plan to the same regulations"
+      ],
+      [
+       "LR-09 Emergency isolation valves operable only by hand at the valve",
+       "Likely at similar sites",
+       "Vintage of equipment: valves installed before remote operation became the expectation"
+      ],
+      [
+       "LR-10 Gas detection that only displays an alarm",
+       "Likely at similar sites",
+       "Shared system: detection set up as annunciation without executive action"
+      ],
+      [
+       "LR-11 Breakdown-led maintenance of hazardous-area electrical fittings",
+       "Enterprise-wide",
+       "Culture: a maintenance philosophy, not a single defect"
+      ],
+      [
+       "LR-20 Audits recording compliance without plant data",
+       "Enterprise-wide",
+       "Shared standard: the audit method and checklists are set centrally"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-23139BF9",
+       "EVD-8645"
+      ],
+      [
+       "FND-F7FE8463",
+       "EVD-2986"
+      ],
+      [
+       "FND-5C7B163D",
+       "EVD-4052"
+      ],
+      [
+       "FND-02310148",
+       "EVD-3932"
+      ],
+      [
+       "FND-5897D1E4",
+       "EVD-8657"
+      ],
+      [
+       "FND-1280E788",
+       "EVD-6916"
+      ],
+      [
+       "FND-9E1AB5BA",
+       "EVD-9692"
+      ]
+     ],
+     "row_supporting_cites": [
+      [
+       "FND-B86F67F0",
+       "FND-D40839C1",
+       "FND-BC4FD086",
+       "FND-23139BF9",
+       "FND-EBB66554",
+       "FND-B440C1BF"
+      ],
+      [],
+      [
+       "FND-DF1144C3",
+       "FND-82761CC5",
+       "FND-730D0DCA",
+       "FND-6472CD15",
+       "FND-E009D26B"
+      ],
+      [
+       "FND-7D28BE30",
+       "FND-05841EDA",
+       "FND-322112EE",
+       "FND-044D1DEC"
+      ],
+      [
+       "FND-119E6CF7",
+       "FND-5BC96E8A",
+       "FND-2D90823E",
+       "FND-01C3DE98",
+       "FND-6155A1C2"
+      ],
+      [
+       "FND-5E08D0F8",
+       "FND-675D99DD",
+       "FND-1280E788",
+       "FND-ABF11182"
+      ],
+      []
+     ]
+    }
+   ]
+  },
+  {
+   "id": "policies",
+   "heading": "Policies, standards and legal requirements implicated",
+   "items": [
+    {
+     "kind": "para",
+     "group": "Spares and specification control",
+     "text": "The original gasket specification for the 1986 meter was not on file and no role owned it, so locally bought O-rings were used as regular practice with no specification or quality check at purchase. The enterprise spares standard did not reach legacy pressure-boundary parts [FND-23139BF9; FND-6B3A6492; EVD-8645].",
+     "evidence_strength": "direct",
+     "learning": "LR-01",
+     "supporting_cites": [
+      "FND-B86F67F0",
+      "FND-D40839C1",
+      "FND-BC4FD086",
+      "FND-EBB66554",
+      "FND-B440C1BF",
+      "FND-8CE00707",
+      "FND-A0017E28",
+      "FND-B56701CA"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "Management of change",
+     "text": "The management-of-change procedure was published in August 2016, but no change had gone through it since 2018, including the switch to a different seal. The standard existed; its use was not checked [FND-F7FE8463; EVD-2986].",
+     "evidence_strength": "direct",
+     "learning": "LR-06"
+    },
+    {
+     "kind": "para",
+     "group": "Emergency planning (PNGRB ERDMP Regulations)",
+     "text": "The site emergency plan named the major hydrocarbon leak as a scenario but gave no criteria for isolation or stoppage and no authority below the plant manager to order it. What the evidence shows is a gap between the scenario and the decision; whether the plan meets the regulations is for the competent authority [FND-5C7B163D; FND-82761CC5; EVD-4052; EVD-3932].",
+     "evidence_strength": "direct",
+     "learning": "LR-07",
+     "clauses": [
+      "IN-ERDMP"
+     ],
+     "supporting_cites": [
+      "FND-DF1144C3",
+      "FND-730D0DCA",
+      "FND-6472CD15",
+      "FND-E009D26B",
+      "FND-446A7956"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "Maintenance strategy for hazardous areas",
+     "text": "Electrical maintenance of flameproof fittings in the Zone 1 area was breakdown-led, and a fitting with three missing bolts stayed in service until it became the probable ignition source [FND-1280E788; FND-ABF11182; EVD-6916].",
+     "evidence_strength": "direct",
+     "learning": "LR-11",
+     "supporting_cites": [
+      "FND-5E08D0F8",
+      "FND-675D99DD",
+      "FND-CCE6F868"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "Competence",
+     "text": "No qualification for control-room staff was defined in the HR or operations policy; new staff received a four-day general course and no simulator practice before emergency duties [FND-6CBACB54; FND-268CA069; EVD-5634].",
+     "evidence_strength": "direct",
+     "learning": "LR-12",
+     "clauses": [
+      "ISO45001-7.2"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "Audit and corrective action (OISD standards; ISO 45001 9.2 and 10.2)",
+     "text": "The self-safety audit checklist was not specific to the plant and recorded compliance where data was later found incomplete and not in line with OISD standards. Twelve external-audit recommendations from 2018 were extended to April 2021 without the approval the procedure required [FND-9E1AB5BA; FND-2A77BAFB; EVD-9692; EVD-6852].",
+     "evidence_strength": "direct",
+     "learning": "LR-20",
+     "clauses": [
+      "ISO45001-9.2",
+      "ISO45001-10.2",
+      "IN-OISD"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "decisions",
+   "heading": "Decisions for top management",
+   "items": [
+    {
+     "kind": "decision",
+     "group": "For decision: pressure-part specifications",
+     "decision": "Set one enterprise rule that no critical pressure-boundary part is fitted without a specification and an approved-substitute record, and that one function owns those specifications",
+     "options": [
+      "Mandatory enterprise standard with a stores block on issue",
+      "Guidance to sites, checked by audit"
+     ],
+     "trade_offs": "A stores block stops unspecified parts at the point of issue but needs specifications re-established first for legacy equipment; guidance is quicker to issue and relies on the audit process this event showed did not detect the gap.",
+     "learning": "LR-01",
+     "cites": [
+      "FND-23139BF9",
+      "FND-B440C1BF",
+      "EVD-8645"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "For decision: pressure-part specifications",
+     "name": "Critical spares with a specification",
+     "measure": "Share of critical pressure-boundary spares with a specification and certificate on file, by site",
+     "deterioration": "Any site below the previous quarter, or any part issued without a specification",
+     "owner": "Engineering function",
+     "learning": "LR-01",
+     "cites": [
+      "FND-B56701CA",
+      "EVD-8645"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "For decision: change control in use",
+     "decision": "Require each site to show that its management-of-change procedure is in use, not only published",
+     "options": [
+      "Quarterly MOC activity report with a sampled field check",
+      "Annual audit of MOC records"
+     ],
+     "trade_offs": "A quarterly report with field sampling finds silent procedures within months but adds reporting load; an annual audit adds less load and leaves a gap of up to a year.",
+     "learning": "LR-06",
+     "cites": [
+      "FND-F7FE8463",
+      "EVD-2986"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "For decision: change control in use",
+     "name": "MOC activity",
+     "measure": "MOC records opened and closed per site per quarter, and field changes found without a record",
+     "deterioration": "A quarter with no MOC records at an operating site, or any unrecorded change found",
+     "owner": "Engineering function",
+     "learning": "LR-06",
+     "cites": [
+      "FND-F7FE8463",
+      "EVD-2986"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "For decision: emergency isolation",
+     "decision": "Set an enterprise standard for emergency isolation: written isolation criteria in every emergency plan, isolation authority delegated to the shift, and remote operation for emergency isolation valves that need access to the hazard area",
+     "options": [
+      "Criteria and delegation first, remote operation by a capital programme",
+      "All three together at the highest-risk sites"
+     ],
+     "trade_offs": "Criteria and delegation can be issued quickly at low cost; remote operation needs capital and shutdown windows, but it is the only option that removes the need to walk into the release.",
+     "learning": "LR-09",
+     "cites": [
+      "FND-5C7B163D",
+      "FND-02310148",
+      "FND-05841EDA",
+      "EVD-4052",
+      "EVD-3932"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "For decision: emergency isolation",
+     "name": "Time to isolation in drills",
+     "measure": "Time from a confirmed release to first isolation in drills, by site, and the share of emergency isolation valves operable remotely",
+     "deterioration": "A drill in which isolation waits for authority above the shift, or no change in the remote share over two reporting periods",
+     "owner": "Operations function",
+     "learning": "LR-07",
+     "cites": [
+      "FND-82761CC5",
+      "FND-044D1DEC",
+      "FND-D1DF4895",
+      "EVD-6414"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "For decision: fire and gas executive action",
+     "decision": "Decide whether gas detection at major-hazard sites must trigger automatic shutdown or protection, rather than only display an alarm",
+     "options": [
+      "Executive action at all major-hazard sites",
+      "Executive action where a risk study shows manual response is too slow"
+     ],
+     "trade_offs": "Executive action removes reliance on a manual chain but brings spurious-trip risk and engineering cost; a risk-based approach targets cost but needs a study at each site first.",
+     "learning": "LR-10",
+     "cites": [
+      "FND-4458E0C0",
+      "FND-2D90823E",
+      "EVD-8657"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "For decision: fire and gas executive action",
+     "name": "Detection systems with executive action",
+     "measure": "Share of fire and gas systems at major-hazard sites with defined executive actions, tested in the last test cycle",
+     "deterioration": "Any system found display-only with no recorded risk decision",
+     "owner": "Engineering function",
+     "learning": "LR-10",
+     "cites": [
+      "FND-5897D1E4",
+      "EVD-8657"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "For noting: hazardous-area electrical maintenance",
+     "decision": "Electrical maintenance of flameproof fittings in hazardous areas moves from breakdown repair to planned inspection, within the maintenance function's authority",
+     "options": [
+      "Planned inspection with recorded condition of each fitting"
+     ],
+     "trade_offs": "Planned inspection needs crew time and access; the evidence shows breakdown repair left a compromised fitting in service.",
+     "learning": "LR-11",
+     "cites": [
+      "FND-1280E788",
+      "FND-ABF11182",
+      "EVD-6916"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "For noting: hazardous-area electrical maintenance",
+     "name": "Hazardous-area fittings inspected",
+     "measure": "Share of hazardous-area electrical fittings with a recorded inspection in the planned interval",
+     "deterioration": "Any fitting found with missing fasteners or an open enclosure",
+     "owner": "Maintenance function",
+     "learning": "LR-11",
+     "cites": [
+      "FND-5E08D0F8",
+      "EVD-6916"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "For noting: audit quality",
+     "decision": "Audit checklists are written for each plant and filled checklists are retained, within the HSE function's authority",
+     "options": [
+      "Plant-specific checklists with retained records"
+     ],
+     "trade_offs": "Plant-specific checklists take longer to write and audit; generic checklists here recorded compliance without plant data.",
+     "learning": "LR-20",
+     "cites": [
+      "FND-9E1AB5BA",
+      "FND-0621F920",
+      "EVD-9692",
+      "EVD-7681"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "For noting: audit quality",
+     "name": "Audit findings re-tested",
+     "measure": "Share of sampled 'compliant' audit findings that an independent re-test confirms",
+     "deterioration": "Any sample in which a 'compliant' finding is not supported by site data",
+     "owner": "HSE and process safety function",
+     "learning": "LR-20",
+     "cites": [
+      "FND-C9C77FB7",
+      "EVD-9692"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "assurance",
+   "heading": "Assurance",
+   "items": [
+    {
+     "kind": "question",
+     "question": "How will we know the specification, change-control and isolation standards are applied at every site, not only issued?",
+     "why": "At this site each control existed on paper or was assumed, and assurance did not test it.",
+     "good_evidence": "Independent test points sampled at each site (see auditor-assurance-pack), reported to the executive committee with the open items.",
+     "to": "HSE and process safety function",
+     "cites": [
+      "FND-F7FE8463",
+      "FND-23139BF9",
+      "FND-5C7B163D",
+      "EVD-2986"
+     ],
+     "learning": "LR-06",
+     "supporting_cites": [
+      "FND-B86F67F0",
+      "FND-D40839C1",
+      "FND-BC4FD086",
+      "FND-EBB66554",
+      "FND-B440C1BF",
+      "FND-8CE00707"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "Who approved each extension of an overdue safety recommendation, across all sites?",
+     "why": "Extensions here had no record of the approval the procedure required.",
+     "good_evidence": "A cross-site list of extended recommendations with the approving authority and its record.",
+     "to": "HSE and process safety function",
+     "cites": [
+      "FND-2A77BAFB",
+      "FND-856F80CE",
+      "EVD-6852"
+     ],
+     "learning": "LR-21"
+    }
+   ]
+  }
+ ],
+ "gaps": [
+  {
+   "text": "[GAP] The export does not show which other sites hold equipment of the same vintage or the same detection and isolation design.",
+   "evidence_needed": "An asset register extract by site for legacy metering skids, emergency isolation valves and fire and gas systems.",
+   "cites": [
+    "FND-02310148",
+    "FND-5897D1E4"
+   ]
+  }
+ ],
+ "limits": [
+  "No finding names corporate leadership directly; the enterprise learnings are drawn from organisational-level findings about the site.",
+  "A management-review input table is not included; add it when the brief goes to a management review.",
+  "The analysis is a desk review of the published enquiry report; it had no site access or interviews."
+ ]
+}
