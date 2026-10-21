@@ -246,6 +246,7 @@ def build_parser():
     s.add_argument("--location", help="override the location shown in the header")
     add_embed_arg(s)
     add_share_args(s)
+    s.add_argument("--brand", metavar="FILE", help="brand.json: organisation, accent and logo (the footer and status line stay fixed)")
     s.set_defaults(fn=cmd_dashboard)
 
     s = sp.add_parser("check-register", help="validate a Learnings Register JSON against the workspace", allow_abbrev=False)
@@ -325,6 +326,7 @@ def build_parser():
                    help="learner: <pack>.learner.<ext> without answers, for the document formats")
     s.add_argument("--start", type=_cli_iso_date, metavar="YYYY-MM-DD",
                    help="the day the ics follow-ups count from (--format ics); the coach never picks a date itself")
+    s.add_argument("--brand", metavar="FILE", help="brand.json: organisation, accent and logo (the footer and status line stay fixed)")
     s.set_defaults(fn=cmd_pack)
 
     s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)", allow_abbrev=False)

@@ -332,6 +332,7 @@ def render_pack_md(pack, w, eh=None, share=None, labels=None) -> str:
     """The pack as Markdown: generated, never hand-written, so it always agrees with the HTML. eh is the effective
     handling when the caller computed it on the unmasked pack; share is the ShareCtx of a shared copy (pack and w
     are then already masked). labels: the page labels, else those of the pack's lang (P4-15)."""
+    from ..render.fields import reading_minutes
     L = _pm_labels(labels, pack)
 
     def t(key, **fmt):
@@ -341,7 +342,8 @@ def render_pack_md(pack, w, eh=None, share=None, labels=None) -> str:
     eh = eh or effective_handling(pack, w)
     cov = coverage(w, pack)
     out = [f"# {pack['title']}"] + ([f"**{DRAFT_LABEL}**"] if is_draft(eh) else [])
-    out += _handling_lines(eh, share) + [f"*{status_line(pack['status'])}*", f"**{t('f.audience')}:** {pack['audience']}"]
+    out += _handling_lines(eh, share) + [f"*{status_line(pack['status'])}*", f"*{t('ui.reading_time', n=reading_minutes(pack))}*",
+                                      f"**{t('f.audience')}:** {pack['audience']}"]
     fields, inc = w.get("incident", {}).get("fields", {}), pack.get("incident") or {}
     shown = [str(x) for x in (inc.get("title") or fields.get("Incident Title"), inc.get("date") or fields.get("Date")) if x]
     if shown:

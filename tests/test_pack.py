@@ -279,7 +279,7 @@ def test_markdown_per_kind(w):
     for expected in [
         "# All kinds: Synthetic pump fire\n\n**DRAFT**\n\nReview: draft · Classification: internal · Version 1.0\n\n"
         "Draft because: no finding is marked as edited by a person\n\n*Learning purposes: not a statutory document · "
-        "Learnings drafted by an AI agent from AI-assisted findings*\n\n**Audience:** Test readers",
+        "Learnings drafted by an AI agent from AI-assisted findings*\n\n*About 1 min read*\n\n**Audience:** Test readers",
         "## Bottom line\n\n- Test before service. [FND-0002]",
         "## Every item kind\n\nOne of each kind.",
         "- [ ] **Hold point:** Leak-test record attached. *(before return to service)* [FND-0001]",
@@ -1389,7 +1389,8 @@ def test_every_profile_names_a_fixture():
 
 def test_profiles_have_the_contract_shape():
     for name, prof in profiles.load().items():
-        assert set(prof) <= {"sections", "required_scope", "bottom_line", "word_limits", "coverage_floor", "rules"}, name
+        assert set(prof) <= {"sections", "required_scope", "bottom_line", "word_limits", "coverage_floor", "rules",
+                           "max_words"}, name
         for e in prof["sections"]:
             assert set(e) == {"id", "kinds", "min", "max"} and 0 <= e["min"] <= e["max"], (name, e)
             assert all(k in pp.KINDS for k in e["kinds"]), (name, e)

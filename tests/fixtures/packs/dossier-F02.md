@@ -8,6 +8,8 @@ Draft because: no finding is marked as edited by a person
 
 *Learning purposes: not a statutory document · Learnings drafted by an AI agent from AI-assisted findings*
 
+*About 2 min read*
+
 **Audience:** Mechanical Maintenance (F02), all tiers
 
 **Incident:** Synthetic pump fire · 2024-03-20

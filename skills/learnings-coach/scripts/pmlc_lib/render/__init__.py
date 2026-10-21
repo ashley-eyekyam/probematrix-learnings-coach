@@ -130,7 +130,7 @@ def find_browser():
 def _rn_html(ctx: RenderContext) -> list:
     from ..pack.html import render_pack_html
     page = render_pack_html(ctx.w, ctx.pack, ctx.run, ctx.generated, ctx.embed, eh=ctx.eh, share=ctx.share,
-                            labels=ctx.labels)
+                            labels=ctx.labels, brand=ctx.brand)
     if ctx.view == "learner":
         banner = f'<p class="status learner">{LEARNER_BANNER}</p>'
         page, n = re.subn(r'(<p class="status">.*?</p>)', lambda m: m.group(1) + "\n" + banner, page, count=1, flags=re.S)

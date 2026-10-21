@@ -8,6 +8,8 @@ Draft because: no finding is marked as edited by a person
 
 *Learning purposes: not a statutory document · Learnings drafted by an AI agent from AI-assisted findings*
 
+*About 1 min read*
+
 **Audience:** Emergency response, fire and control-room roles
 
 **Incident:** Synthetic pump fire · 2024-03-20

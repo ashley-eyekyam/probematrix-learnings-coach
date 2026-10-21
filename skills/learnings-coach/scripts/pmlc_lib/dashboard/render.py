@@ -15,6 +15,7 @@ from ..handling import (
     effective_handling, HANDLING_CSS, handling_lines, is_draft, name_guard, public_records, RIBBON_HTML, share_ctx,
     refuse_internal_overwrite, share_gate, shared_copy, SHARED_LINE, shared_name, SHARED_SOURCE, status_line
 )
+from ..render.brand import brand_css, brand_header, load_brand
 from ..register.check import HOC_TIERS, norm_entity, norm_hoc
 from ..register.xlsx import refuse_pack_as_register
 from ..util import _int, _s
@@ -88,6 +89,7 @@ def mask_org(org: dict, share) -> dict:
 
 
 def cmd_dashboard(a):
+    brand = load_brand(a.brand) if getattr(a, "brand", None) else None      # before anything is read or written
     ws = Path(a.ws)
     w = load_ws(ws)
     if "clusters" not in w:
@@ -210,7 +212,9 @@ def cmd_dashboard(a):
         body = (overview + '\n<p class="m">Run <code>pmlc.py dashboard --register &lt;learnings-register.json&gt;</code> '
                 "to add the detailed register tab.</p>")
         extra_css = scripts = ""
-    ribbon = RIBBON_HTML + "\n" if is_draft(eh) else ""
+    ribbon = (RIBBON_HTML + "\n" if is_draft(eh) else "") + brand_header(brand)
+    bcss = brand_css(brand)
+    extra_css = extra_css + ("\n" + bcss if bcss else "")
     lines = handling_lines(eh)
     if share:
         lines = [privacy.share_text(x, share) for x in lines] + [SHARED_LINE.format(mode=mode)]

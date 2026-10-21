@@ -17,6 +17,7 @@ For an overview meeting, a safety committee, or anyone who asks "where in the or
 ```text
 pmlc dashboard ws [--out OUT] [--register REGISTER] [--title TITLE] [--date DATE] [--location LOCATION]
                [--embed {cited,summary,full}] [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
+               [--brand FILE]
 ```
 
 ## Arguments
@@ -38,6 +39,7 @@ pmlc dashboard ws [--out OUT] [--register REGISTER] [--title TITLE] [--date DATE
 | `--share` | `internal`, `external` or `public` | `internal` | Who the copy is for. `external` and `public` need `--register` with a register signed off as approved, a classification at that level or wider and `legal_review` cleared, and `--embed summary` (the default when sharing). Names, organisations, equipment tags, singleton roles, clock times and full dates are masked, and the register's source file name becomes "a ProbeMatrix investigation export" |
 | `--names` | file | `$PMLC_NAMES` | A names file, one name per line. A shared copy masks these names; in every mode the page is refused if one of them still appears in it |
 | `--orgs` | file | `$PMLC_ORGS` | An organisation names file, one per line. A shared copy masks these names |
+| `--brand` | file | none | A `brand.json` that sets your organisation's look: `organisation` (a name), `accent` (a `#RRGGBB` colour) and `logo` (a PNG or JPEG next to the file, at most 200 KB). Any other key is refused, because the footer and the status line are fixed. The accent must reach a contrast of 4.5:1 against white (WCAG AA), or the command stops with the ratio it found. The dashboard shows the logo (embedded in the file) and the name in its header |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples

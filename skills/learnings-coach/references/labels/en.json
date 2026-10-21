@@ -97,6 +97,7 @@
  "ui.contents": "Contents",
  "ui.run": "run {run}",
  "ui.generated": "generated {date}",
+ "ui.reading_time": "About {n} min read",
  "ui.incident": "Incident",
  "ui.control": "Control: {tier}",
  "ui.learning_chip": "Learning {id}",
