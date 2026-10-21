@@ -155,7 +155,7 @@ def test_unknown_kind_degrades_to_field_list(w, monkeypatch, tmp_path):
 def test_every_kind_has_fields_and_labels():
     en = json.loads((RL.LABELS_DIR / "en.json").read_text(encoding="utf-8"))
     assert en["_language"] == "English" and en["_dir"] == "ltr" and en["_review"] is None
-    assert all(k.startswith(("_", "f.", "k.")) for k in en)
+    assert all(k.startswith(("_", "f.", "k.", "ui.")) for k in en)
     for kind, spec in PS.KINDS.items():
         named = [f for f, _ in spec["fields"]]
         assert set(named) >= set(spec["req"] + spec["opt"]) - set(PS.CITE_FIELDS), kind

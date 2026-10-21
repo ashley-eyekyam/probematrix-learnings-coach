@@ -1,0 +1,8 @@
+{
+ "_language": "العربية",
+ "_dir": "rtl",
+ "_review": "Test-only right-to-left locale: three keys, the rest fall back to English",
+ "ui.bottom_line": "الخلاصة",
+ "ui.coverage": "التغطية",
+ "ui.contents": "المحتويات"
+}

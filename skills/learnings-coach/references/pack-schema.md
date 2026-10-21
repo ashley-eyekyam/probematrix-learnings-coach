@@ -41,6 +41,11 @@ The Markdown is generated from the same JSON. Never hand-edit either file; chang
 
   Both copies have exactly the sections of `report-comparison` (profile rule `same-sections-as:report-comparison`).
 - **`skill` (optional):** the skill that wrote the pack, a folder in `skills/` with a `skill.json`. With it, `pack` must be that skill's `produces.pack`, or `<produces.pack>-<variant>` (lowercase words joined by hyphens, as `report-comparison-client-safe`), or for `cluster-learning-dossier` `dossier-F<nn>` or `dossier-index`; otherwise `check-pack` reports `pack <p> is not a pack or variant of skill <s>`. Give it on every pack whose name is not its skill's name.
+- **`lang` and `dir` (optional):**
+  - `lang` is a language tag such as `en` (the default), `hi` or `pt-BR`. The page's own words (headings, buttons, field labels, the citation pop-up) then come from `references/labels/<lang>.json`, and any word that file lacks stays in English. The pack's own text is never translated by the engine.
+  - `dir` is `ltr` or `rtl`; by default it is the label file's `_dir`. A page in another language than English carries `lang` and `dir` on its `<html>` element.
+  - The fixed copy (the status line, the DRAFT label, the coverage lines and the ProbeMatrix footer) always stays in English, word for word.
+  - `hi.json` (Hindi) is AI-drafted: have a fluent speaker check it before use.
 - **`status`:** must contain `Learning purposes: not a statutory document`.
 - **`bottom_line`:** 1 to 7 takeaways, each citing at least one Finding or Evidence ID.
 - **`scope` (optional):**

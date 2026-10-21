@@ -70,133 +70,163 @@ def _badges(pairs) -> str:
     return "".join(f'<span class="badge">{_h(k)}: {_h(v)}</span>' for k, v in pairs if v)
 
 
-def _hoc(v) -> str:
+def _ph_labels(labels=None, pack=None) -> dict:
+    """labels as given, else the labels of the pack's lang (English without a pack). Imported late: render/ imports
+    this module (Ruling P4-15)."""
+    if labels is not None:
+        return labels
+    from ..render.labels import load_labels
+    return load_labels((pack or {}).get("lang") or "en")
+
+
+def _ph_t(L, key, **fmt) -> str:
+    from ..render.labels import label
+    return label(_ph_labels(L), key, **fmt)
+
+
+def _hoc(v, labels=None) -> str:
     t = norm_hoc(v)
     cls = "badge strong" if t in STRONG_HOC else "badge"
-    return f'<span class="{cls}">Control: {_h(t)}</span>'
+    return f'<span class="{cls}">{_h(_ph_t(labels, "ui.control", tier=t))}</span>'
 
 
-def _links(d) -> str:
+def _links(d, labels=None) -> str:
     """The learning chip (a button that searches the pack for its LR id, pack.js) and the clauses badge."""
+    L = _ph_labels(labels)
     lr, cl = d.get("learning"), d.get("clauses")
-    chip = (f' <button type="button" class="pm-learning" data-lr="{_h(lr)}">Learning {_h(lr)}</button>'
+    chip = (f' <button type="button" class="pm-learning" data-lr="{_h(lr)}">{_h(_ph_t(L, "ui.learning_chip", id=lr))}</button>'
             if isinstance(lr, str) and lr else "")
-    return chip + (f' <span class="badge pm-clauses">Clauses: {_h(", ".join(cl))}</span>' if cl else "")
+    return chip + (f' <span class="badge pm-clauses">{_h(_ph_t(L, "f.clauses"))}: {_h(", ".join(cl))}</span>' if cl else "")
 
 
-def _extras(d) -> str:
+def _ph_more(sup, L) -> str:
+    """The '+N supporting' disclosure of supporting citations."""
+    return (f'<details class="more"><summary>{_h(_ph_t(L, "ui.supporting", n=len(sup)))}</summary>{_chips(sup)}</details>'
+            if sup else "")
+
+
+def _extras(d, labels=None) -> str:
+    L = _ph_labels(labels)
     s = d.get("evidence_strength")
-    badge = f' <span class="badge strength">Evidence: {_h(s)}</span>' if s else ""
-    sup = d.get("supporting_cites") or []
-    more = f'<details class="more"><summary>+{len(sup)} supporting</summary>{_chips(sup)}</details>' if sup else ""
-    return _links(d) + badge + more
+    badge = f' <span class="badge strength">{_h(_ph_t(L, "f.evidence_strength"))}: {_h(s)}</span>' if s else ""
+    return _links(d, L) + badge + _ph_more(d.get("supporting_cites") or [], L)
 
 
-def _lint_ok_html(d) -> str:
-    return "".join(f'<p class="lint-ok">{_h(n)}</p>' for n in lint_ok_notes(d))
+def _lint_ok_html(d, labels=None) -> str:
+    return "".join(f'<p class="lint-ok">{_h(n)}</p>' for n in lint_ok_notes(d, labels))
 
 
-def _html_item(it, graphs, inc_date=None) -> str:
+def _html_item(it, graphs, inc_date=None, labels=None) -> str:
+    L = _ph_labels(labels)
     k, g, c = it["kind"], it.get, _chips(it.get("cites"))
+
+    def t(key, **fmt):
+        return _ph_t(L, key, **fmt)
+
+    def f(name):
+        return t("f." + name)
+
+    def lab(name, value):
+        return _labelled(f(name), value)
+
     if k == "para":
         body = _rich(it["text"]) + c
     elif k == "check":
         key = _h(it["id"])
-        hold = '<span class="badge hold">Hold point</span> ' if g("hold_point") else ""
+        hold = f'<span class="badge hold">{_h(f("hold_point"))}</span> ' if g("hold_point") else ""
         when = f' <span class="badge">{_h(g("when"))}</span>' if g("when") else ""
         body = (f'<div class="check"><input type="checkbox" class="tick" id="t-{key}" data-key="{key}" '
                 f'aria-labelledby="tl-{key}"><span id="tl-{key}">{hold}{_inline(it["text"])}{when}</span></div>{c}')
     elif k == "question":
-        to = f' <span class="badge">Put to: {_h(g("to"))}</span>' if g("to") else ""
-        body = (f'<p><b>{_inline(it["question"])}</b>{to}</p>' + _labelled("Why it matters", it["why"])
-                + _labelled("Answer", g("answer"))
-                + _labelled("Good evidence looks like", g("good_evidence")) + c)
+        to = f' <span class="badge">{_h(f("to"))}: {_h(g("to"))}</span>' if g("to") else ""
+        body = (f'<p><b>{_inline(it["question"])}</b>{to}</p>' + lab("why", it["why"])
+                + lab("answer", g("answer"))
+                + lab("good_evidence", g("good_evidence")) + c)
     elif k == "recommendation":
-        meta = _hoc(it["hoc_tier"]) + _badges([("Barrier", g("barrier")), ("Barrier ID", g("barrier_id")),
-                                               ("Owner", g("owner")), ("Co-owner", g("co_owner")),
-                                               ("By", g("by_when"))])
+        meta = _hoc(it["hoc_tier"], L) + _badges([(f("barrier"), g("barrier")), (f("barrier_id"), g("barrier_id")),
+                                                  (f("owner"), g("owner")), (f("co_owner"), g("co_owner")),
+                                                  (t("ui.by"), g("by_when"))])
         body = (f'<p><b>{_inline(it["change"])}</b></p><p>{meta}</p><p class="indicator-line">'
-                f'<span class="label">Leading indicator</span>{_inline(it["indicator"])}</p>'
-                + _labelled("Why not stronger", g("why_not_stronger")) + c)
+                f'<span class="label">{_h(f("indicator"))}</span>{_inline(it["indicator"])}</p>'
+                + lab("why_not_stronger", g("why_not_stronger")) + c)
     elif k == "decision":
-        opts = '<span class="label">Options</span>' + _list(g("options")) if g("options") else ""
-        body = (f'<p><b>{_inline(it["decision"])}</b></p>{opts}' + _labelled("Trade-offs", g("trade_offs"))
-                + f'<p>{_badges([("Owner", g("owner")), ("By", g("by_when"))])}</p>{c}')
+        opts = f'<span class="label">{_h(f("options"))}</span>' + _list(g("options")) if g("options") else ""
+        body = (f'<p><b>{_inline(it["decision"])}</b></p>{opts}' + lab("trade_offs", g("trade_offs"))
+                + f'<p>{_badges([(f("owner"), g("owner")), (t("ui.by"), g("by_when"))])}</p>{c}')
     elif k == "indicator":
-        body = (f'<div class="card"><p><b>{_inline(it["name"])}</b></p>' + _labelled("Measure", it["measure"])
-                + _labelled("Deterioration looks like", g("deterioration")) + _labelled("Owner", g("owner")) + c + "</div>")
+        body = (f'<div class="card"><p><b>{_inline(it["name"])}</b></p>' + lab("measure", it["measure"])
+                + lab("deterioration", g("deterioration")) + lab("owner", g("owner")) + c + "</div>")
     elif k == "card":
-        disc = '<span class="label">Questions for discussion</span>' + _list(g("discussion"), "ol") if g("discussion") else ""
-        body = (f'<div class="card"><h3>{_h(it["title"])}</h3>' + _labelled("What happened", it["what_happened"])
-                + _labelled("Why it made sense at the time", g("why_made_sense"))
-                + _labelled("What the organisation is changing", g("organisation_changing"))
-                + '<span class="label">Warning signs</span>' + _list(it["warning_signs"])
-                + _labelled("What good looks like", it["good_looks_like"]) + disc + c + PFOOT + "</div>")
+        disc = f'<span class="label">{_h(f("discussion"))}</span>' + _list(g("discussion"), "ol") if g("discussion") else ""
+        body = (f'<div class="card"><h3>{_h(it["title"])}</h3>' + lab("what_happened", it["what_happened"])
+                + lab("why_made_sense", g("why_made_sense"))
+                + lab("organisation_changing", g("organisation_changing"))
+                + f'<span class="label">{_h(f("warning_signs"))}</span>' + _list(it["warning_signs"])
+                + lab("good_looks_like", it["good_looks_like"]) + disc + c + PFOOT + "</div>")
     elif k == "scenario":
-        body = (f'<p><b>Scenario.</b> {_inline(it["situation"])}</p><details><summary>Discussion prompts</summary>'
-                + _list(it["prompts"], "ol") + f"</details>{c}")
+        body = (f'<p><b>{_h(t("ui.scenario_lead"))}</b> {_inline(it["situation"])}</p><details><summary>'
+                f'{_h(f("prompts"))}</summary>' + _list(it["prompts"], "ol") + f"</details>{c}")
     elif k == "table":
         rc, rs = g("row_cites"), g("row_supporting_cites")
-        cols = list(it["columns"]) + (["Cites"] if rc or rs else [])
+        cols = list(it["columns"]) + ([f("cites")] if rc or rs else [])
         head = "".join(f'<th scope="col">{_h(x)}</th>' for x in cols)
         rows = []
         for r, row in enumerate(it["rows"]):
             cites = ""
             if rc or rs:
-                sup = rs[r] if rs else []
-                more = (f'<details class="more"><summary>+{len(sup)} supporting</summary>{_chips(sup)}</details>'
-                        if sup else "")
+                more = _ph_more(rs[r] if rs else [], L)
                 cites = f'<td class="cites-cell">{_chips(rc[r]) if rc else ""}{more}</td>'
             rows.append("<tr>" + "".join(f"<td>{_inline(x)}</td>" for x in row) + cites + "</tr>")
         notes = g("finding_notes")
-        note_html = ('<span class="label">Notes per finding</span><ul class="notes">'
+        note_html = (f'<span class="label">{_h(f("finding_notes"))}</span><ul class="notes">'
                      + "".join(f"<li>{_chip(x)} {_h(v)}</li>" for x, v in notes.items()) + "</ul>") if notes else ""
         body = (f'<div class="tablewrap" tabindex="0"><table><thead><tr>{head}</tr></thead>'
                 f'<tbody>{"".join(rows)}</tbody></table></div>{note_html}{c}')
     elif k == "test_point":
-        flags = ('<span class="label">Red flags seen in this investigation</span>' + _list(g("red_flags"))
+        flags = (f'<span class="label">{_h(f("red_flags"))}</span>' + _list(g("red_flags"))
                  if g("red_flags") else "")
-        clause = f'<p><span class="badge pm-clause">Clause: {_h(g("clause"))}</span></p>' if g("clause") else ""
+        clause = (f'<p><span class="badge pm-clause">{_h(f("clause"))}: {_h(g("clause"))}</span></p>'
+                  if g("clause") else "")
         body = (f'<div class="card"><p><b>{_inline(it["requirement"])}</b></p>{clause}'
-                + _labelled("What to sample", it["sample"])
-                + _labelled("Evidence of conformity", it["conformity_evidence"]) + flags + c + PFOOT + "</div>")
+                + lab("sample", it["sample"])
+                + lab("conformity_evidence", it["conformity_evidence"]) + flags + c + PFOOT + "</div>")
     elif k == "module":
-        meta = "".join(f'<span class="badge">{_h(g(f))}</span>' for f in ("audience", "duration") if g(f))
-        assess = ("<details><summary>Assessment</summary>" + _list(g("assessment"), "ol") + "</details>"
+        meta = "".join(f'<span class="badge">{_h(g(x))}</span>' for x in ("audience", "duration") if g(x))
+        assess = (f"<details><summary>{_h(f('assessment'))}</summary>" + _list(g("assessment"), "ol") + "</details>"
                   if g("assessment") else "")
-        body = (f'<div class="card"><h3>Module: {_h(it["title"])}</h3><p>{meta}</p>' + _labelled("Objective", it["objective"])
-                + '<span class="label">Content</span>' + _list(it["content"], "ol") + assess + c + "</div>")
+        body = (f'<div class="card"><h3>{_h(t("ui.module_title", title=it["title"]))}</h3><p>{meta}</p>'
+                + lab("objective", it["objective"])
+                + f'<span class="label">{_h(f("content"))}</span>' + _list(it["content"], "ol") + assess + c + "</div>")
     elif k == "barrier":
-        meta = _hoc(it["hoc_tier"]) + _badges([("Barrier ID", g("barrier_id")), ("Type", g("type")), ("State", g("state")),
-                                               ("Owner", g("owner"))])
-        body = (f'<p><b>{_inline(it["barrier"])}</b></p><p>{meta}</p>' + _labelled("Failure mode", it["failure_mode"])
-                + _labelled("Fix", g("fix")) + _labelled("Leading indicator", g("indicator")) + c)
+        meta = _hoc(it["hoc_tier"], L) + _badges([(f("barrier_id"), g("barrier_id")), (f("type"), g("type")),
+                                                  (t("ui.state"), g("state")), (f("owner"), g("owner"))])
+        body = (f'<p><b>{_inline(it["barrier"])}</b></p><p>{meta}</p>' + lab("failure_mode", it["failure_mode"])
+                + lab("fix", g("fix")) + lab("indicator", g("indicator")) + c)
     elif k == "timeline":
         lis = []
         for e in sorted_events(it["events"]):
-            sig = '<span class="badge hold">Weak signal</span> ' if e.get("signal") else ""
-            when = _h(event_when(e, inc_date))
-            more = "".join(f'<p class="m">{lab}: {_h(e[f])}</p>'
-                           for f, lab in (("received_by", "Received by"), ("response", "Response")) if e.get(f))
+            sig = f'<span class="badge hold">{_h(t("ui.weak_signal"))}</span> ' if e.get("signal") else ""
+            when = _h(event_when(e, inc_date, L))
+            more = "".join(f'<p class="m">{_h(t(key))}: {_h(e[fl])}</p>'
+                           for fl, key in (("received_by", "ui.received_by"), ("response", "ui.response")) if e.get(fl))
             if "knowable_then" in e:
-                more += f'<p class="m">Knowable then: {_h(_knowable(e["knowable_then"]))}</p>'
+                more += f'<p class="m">{_h(t("ui.knowable_then"))}: {_h(_knowable(e["knowable_then"], L))}</p>'
             lis.append(f'<li><time>{when}</time>{sig}{_inline(e["text"])} {_chips(e.get("cites"))}{more}</li>')
         body = f'<ol class="timeline">{"".join(lis)}</ol>{c}'
     elif k == "graph":
         gr = graphs[it["id"]]
-        lab = {n["id"]: n["label"] for n in it["nodes"]}
-        note = (f'<p class="m">{gr["omitted"]} nodes with the fewest links are not drawn; every link is listed below.</p>'
-                if gr["omitted"] else "")
-        links = "".join(f'<li>{_h(lab[e["from"]])} → {_h(lab[e["to"]])}'
+        names = {n["id"]: n["label"] for n in it["nodes"]}
+        note = f'<p class="m">{_h(t("ui.graph_omitted", n=gr["omitted"]))}</p>' if gr["omitted"] else ""
+        links = "".join(f'<li>{_h(names[e["from"]])} → {_h(names[e["to"]])}'
                         + (f' ({_h(e["label"])})' if e.get("label") else "") + "</li>" for e in it["edges"])
-        body = (f'<div class="graphwrap">{gr["svg"]}</div>{note}<details><summary>Links as text ({len(it["edges"])})'
-                f'</summary><ul>{links}</ul></details>{c}')
+        body = (f'<div class="graphwrap">{gr["svg"]}</div>{note}<details><summary>'
+                f'{_h(t("ui.links_as_text", n=len(it["edges"])))}</summary><ul>{links}</ul></details>{c}')
     elif k == "learning":
-        body = (f'<p><b>{_inline(it["lesson"])}</b> {_badges([("Owner", g("owner"))])}</p>'
+        body = (f'<p><b>{_inline(it["lesson"])}</b> {_badges([(f("owner"), g("owner"))])}</p>'
                 + (_rich(it["explanation"]) if g("explanation") else "") + c)
     else:
-        body = _html_fields(it) + c
-    return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}{_extras(it)}{_lint_ok_html(it)}</div>'
+        body = _html_fields(it, L) + c
+    return f'<div class="item k-{k}" id="i-{_h(it["id"])}">{body}{_extras(it, L)}{_lint_ok_html(it, L)}</div>'
 
 
 def _html_block_value(v) -> str:
@@ -207,15 +237,15 @@ def _html_block_value(v) -> str:
     return _inline(v)
 
 
-def _html_fields(it) -> str:
+def _html_fields(it, labels=None) -> str:
     """A kind this renderer has no layout for: its fields as a labelled list, in KINDS field order (P4-5)."""
     from ..render.fields import item_blocks
-    from ..render.labels import load_labels
-    rows = "".join(f"<dt>{_h(b.label)}</dt><dd>{_html_block_value(b.value)}</dd>" for b in item_blocks(it, load_labels()))
+    rows = "".join(f"<dt>{_h(b.label)}</dt><dd>{_html_block_value(b.value)}</dd>"
+                   for b in item_blocks(it, _ph_labels(labels)))
     return f'<dl class="fields">{rows}</dl>'
 
 
-def _section_items(items, graphs, inc_date=None) -> str:
+def _section_items(items, graphs, inc_date=None, labels=None) -> str:
     out, run, prev = [], [], None
 
     def flush():
@@ -229,7 +259,7 @@ def _section_items(items, graphs, inc_date=None) -> str:
             flush()
             out.append(f'<h3 class="group">{_h(g)}</h3>')
         prev = g
-        h = _html_item(it, graphs, inc_date)
+        h = _html_item(it, graphs, inc_date, labels)
         if it["kind"] in GRID_KINDS:
             run.append(h)
             continue
@@ -255,25 +285,50 @@ def build_pack_data(w, pack, run, embed=EMBED_DEFAULT, share=None) -> dict:
     return data
 
 
-def _trail(data, pack) -> str:
+def _trail(data, pack, labels=None) -> str:
     """The print-only evidence trail: the cited findings and evidence only (L4-01), in citation order."""
+    L = _ph_labels(labels, pack)
     fids, eids = cited_ids(pack)
     rows = [f'<dt>{_h(i)}</dt><dd>{_h(f.get("label") or f.get("name"))} · L{_h(f.get("level"))} · '
-            f'rating {_h(f.get("rating"))}. {_h(f.get("short"))}</dd>'
+            f'{_h(_ph_t(L, "ui.rating", rating=_ph_blank(f.get("rating"))))}. {_h(f.get("short"))}</dd>'
             for i, f in ((x, data["findings"].get(x)) for x in fids) if f]
     rows += [f'<dt>{_h(i)}</dt><dd>{_h(e.get("type"))}' + (f': {_h(e["description"])}' if e.get("description") else "")
              + "</dd>" for i, e in ((x, data["evidence"].get(x)) for x in eids) if e]
-    return f'<section class="trail"><h2>Evidence trail</h2><dl>{"".join(rows)}</dl></section>'
+    return f'<section class="trail"><h2>{_h(_ph_t(L, "ui.evidence_trail"))}</h2><dl>{"".join(rows)}</dl></section>'
 
 
-def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, share=None) -> str:
+def _ph_blank(v):
+    """None as an empty string, as _h shows it."""
+    return "" if v is None else v
+
+
+def _ph_reason(r, L) -> str:
+    """An uncovered finding's reason from coverage(), in the page's language."""
+    en = {"reviewer downgrade vote": "ui.reason_downgrade", "not cited in this pack": "ui.reason_uncited"}
+    return _ph_t(L, en[r]) if r in en else r
+
+
+def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, share=None, labels=None) -> str:
     """One self-contained offline page: server-rendered content, with pack.js adding behaviour. embed: see
-    build_pack_data. eh and share: see render_pack_md; a shared copy shows no run slug or generated date."""
+    build_pack_data. eh and share: see render_pack_md; a shared copy shows no run slug or generated date. labels:
+    the page labels, else those of the pack's lang; a page in another language than English carries them in its
+    payload for pack.js, and its <html> names its lang and dir (Ruling P4-15)."""
+    from ..render.labels import text_dir
+    L = _ph_labels(labels, pack)
+
+    def t(key, **fmt):
+        return _h(_ph_t(L, key, **fmt))
+
+    lang = pack.get("lang") or "en"
+    tdir = pack.get("dir") or text_dir(L)
+    html_open = f'<html lang="{_h(lang)}">' if lang == "en" and tdir == "ltr" else f'<html lang="{_h(lang)}" dir="{_h(tdir)}">'
     inc_date = _pack_incident_date(pack, w)
     eh = eh or effective_handling(pack, w)  # before with_item_ids, which would change the content hash
     pack = with_item_ids(pack)
     fields = w.get("incident", {}).get("fields", {})
     data = build_pack_data(w, pack, run, embed, share)
+    if lang != "en":
+        data["labels"] = L
     cov = coverage(w, pack)
     graphs = {it["id"]: layout_graph(it["nodes"], it["edges"], uid=it["id"])
               for s in pack["sections"] for it in s["items"] if it["kind"] == "graph"}
@@ -286,33 +341,33 @@ def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, shar
         intro = f'<div class="intro">{_rich(s["intro"])}</div>' if s.get("intro") else ""
         secs.append(f'<details class="sec" id="s-{_h(s["id"])}" open><summary><h2>{_h(s["heading"])}</h2>'
                     f'<span class="n">{len(s["items"])}</span></summary><div class="sec-body">{intro}'
-                    f'{_section_items(s["items"], graphs, inc_date)}</div></details>')
+                    f'{_section_items(s["items"], graphs, inc_date, L)}</div></details>')
     dq = pack.get("data_quality") or []
-    dq_html = ('<section class="dq"><h2>Data quality and limits</h2><ul>'
+    dq_html = (f'<section class="dq"><h2>{t("ui.data_quality")}</h2><ul>'
                + "".join(f'<li>{_inline(n["text"])} {_chips(n.get("cites"))}</li>' for n in dq) + "</ul></section>") if dq else ""
     gaps = pack.get("gaps") or []
-    gaps_html = ('<section class="gaps"><h2>Gaps in the evidence</h2><ul>'
-                 + "".join(f'<li>{_h(x["text"])} {_chips(x.get("cites"))}<p class="m">Evidence needed: '
+    gaps_html = (f'<section class="gaps"><h2>{t("ui.gaps")}</h2><ul>'
+                 + "".join(f'<li>{_h(x["text"])} {_chips(x.get("cites"))}<p class="m">{t("ui.evidence_needed")}: '
                            f'{_h(x["evidence_needed"])}</p></li>' for x in gaps) + "</ul></section>") if gaps else ""
     limits = pack.get("limits") or []
-    limits_html = ('<section class="limits"><h2>Limits of this pack</h2><ul>'
+    limits_html = (f'<section class="limits"><h2>{t("ui.limits")}</h2><ul>'
                    + "".join(f"<li>{_h(x)}</li>" for x in limits) + "</ul></section>") if limits else ""
     exc = "".join(f'<li>{_chip(e["id"])} {_h(e["label"])} · {_h(e["reason"])}</li>' for e in cov["excluded"])
-    unc = "".join(f'<li>{_chip(u["id"])} {_h(u["label"])} · rating {_h(u["rating"])} · L{_h(u["level"])} · '
-                  f'{_h(u["reason"])}</li>' for u in cov["uncovered"])
-    cov_html = ('<section class="coverage"><h2>Coverage</h2>'
+    unc = "".join(f'<li>{_chip(u["id"])} {_h(u["label"])} · {t("ui.rating", rating=_ph_blank(u["rating"]))} · L{_h(u["level"])} · '
+                  f'{_h(_ph_reason(u["reason"], L))}</li>' for u in cov["uncovered"])
+    cov_html = (f'<section class="coverage"><h2>{t("ui.coverage")}</h2>'
                 f'<p class="noprint">This pack cites {cov["cited"]} of {cov["relevant"]} relevant findings.</p>'
                 f'<p class="printonly">{_h(UNCOVERED_PRINT_LINE.format(x=cov["cited"], y=cov["relevant"]))}</p>'
                 f'<p class="top-rated">{_h(TOP_PRINT_LINE.format(x=cov["top_cited"], y=cov["top_relevant"]))}</p>'
                 + (f'<details class="noprint"><summary>Not covered here ({len(cov["uncovered"])})</summary>'
                    f'<ul>{unc}</ul></details>' if unc else "")
-                + (f'<details><summary>Left out on purpose ({len(cov["excluded"])})</summary><ul>{exc}</ul></details>'
+                + (f'<details><summary>{t("ui.left_out")} ({len(cov["excluded"])})</summary><ul>{exc}</ul></details>'
                    if exc else "") + "</section>")
-    bottom = "".join(f'<li>{_inline(b["text"])} {_chips(b.get("cites"))}{_extras(b)}{_lint_ok_html(b)}</li>'
+    bottom = "".join(f'<li>{_inline(b["text"])} {_chips(b.get("cites"))}{_extras(b, L)}{_lint_ok_html(b, L)}</li>'
                      for b in pack["bottom_line"])
-    clear = '<button type="button" id="clear-ticks">Clear ticks</button>' if has_checks else ""
+    clear = f'<button type="button" id="clear-ticks">{t("ui.clear_ticks")}</button>' if has_checks else ""
     inc = pack.get("incident") or {}
-    trace = () if share else (f"run {run}", f"generated {generated}")
+    trace = () if share else (_ph_t(L, "ui.run", run=run), _ph_t(L, "ui.generated", date=generated))
     meta = " · ".join(_h(x) for x in (pack["audience"], inc.get("title") or fields.get("Incident Title"),
                                       inc.get("date") or fields.get("Date"), *trace) if x)
     title = _h(pack["title"])
@@ -324,8 +379,8 @@ def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, shar
     payload = embed_json(data)
     brand = _h(BRAND)
     tokens, wide = PAGE_TOKENS_CSS, WIDE_CSS
-    body = "".join(secs) + gaps_html + limits_html + cov_html + _trail(data, pack)
-    return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    body = "".join(secs) + gaps_html + limits_html + cov_html + _trail(data, pack, L)
+    return f"""<!doctype html>{html_open}<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
 <style>
 {tokens}
@@ -341,11 +396,11 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 <p class="status">{status}</p>
 {handling}
 {dq_html}
-<section class="bottom"><h2>Bottom line</h2><ul>{bottom}</ul></section>
-<div class="toolbar" role="search"><input id="q" type="search" placeholder="Search this pack" aria-label="Search this pack">
-<button type="button" id="expand-all">Expand all</button><button type="button" id="collapse-all">Collapse all</button>
-<button type="button" id="print">Print</button>{clear}<span id="showing" aria-live="polite"></span></div>
-<div class="layout"><details class="rail" open><summary>Contents</summary><ol>{rail}</ol></details>
+<section class="bottom"><h2>{t("ui.bottom_line")}</h2><ul>{bottom}</ul></section>
+<div class="toolbar" role="search"><input id="q" type="search" placeholder="{t("ui.search")}" aria-label="{t("ui.search")}">
+<button type="button" id="expand-all">{t("ui.expand_all")}</button><button type="button" id="collapse-all">{t("ui.collapse_all")}</button>
+<button type="button" id="print">{t("ui.print")}</button>{clear}<span id="showing" aria-live="polite"></span></div>
+<div class="layout"><details class="rail" open><summary>{t("ui.contents")}</summary><ol>{rail}</ol></details>
 <div class="content">{body}</div></div>
 <footer>{brand}</footer>
 </main>
