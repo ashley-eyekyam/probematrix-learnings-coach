@@ -45,6 +45,7 @@ MODULES = [
     "pmlc_lib.render.bowtie",
     "pmlc_lib.render.ics",
     "pmlc_lib.render.quiz",
+    "pmlc_lib.render.email",
     "pmlc_lib.pack.command",
     "pmlc_lib.cli",
 ]

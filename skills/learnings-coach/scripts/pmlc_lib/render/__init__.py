@@ -164,6 +164,7 @@ def _load() -> None:
         "bowtie",
         "ics",
         "quiz",
+        "email",
     ):
         importlib.import_module(f"{__name__}.{mod}")
 

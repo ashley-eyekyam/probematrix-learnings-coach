@@ -146,5 +146,8 @@
  "ui.quiz.correct": "correct",
  "ui.quiz.accepted": "Accepted answers",
  "ui.quiz.none": "{format}: nothing to write (the pack has no questions)",
- "ui.quiz.cut": "Question {id} has more than {n} options: the quiz CSV holds the first {n}."
+ "ui.quiz.cut": "Question {id} has more than {n} options: the quiz CSV holds the first {n}.",
+ "ui.email.cited": "Findings and evidence cited",
+ "ui.email.full_pack": "Open the full pack",
+ "ui.email.sections_left": "{n} more sections are in the full pack"
 }
