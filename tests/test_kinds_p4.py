@@ -284,3 +284,11 @@ def test_srt_and_narration_shared_copy(w, tmp_path):
         out = R.render(fmt, ctx)
         assert out and "Vantress" not in out[0].data and "[name]" in out[0].data, fmt
         assert shared_name(tmp_path / out[0].name, "external").name.endswith(".external." + out[0].name.rsplit(".", 1)[1])
+
+
+def test_script_channel_is_not_counted_as_words():
+    """A script's channel (`video`, `radio`, `pa`, `screen`) is a badge, not reading text (Task 16 m9)."""
+    from pmlc_lib.render import fields as RF
+    with_channel, without = copy.deepcopy(SCRIPT), copy.deepcopy(SCRIPT)
+    del without["channel"]
+    assert RF.pack_words(pack_with(with_channel)) == RF.pack_words(pack_with(without))
