@@ -53,6 +53,7 @@ MODULES = [
     "pmlc_lib.render.layouts",
     "pmlc_lib.render.pptx",
     "pmlc_lib.pack.command",
+    "pmlc_lib.strings",
     "pmlc_lib.cli",
 ]
 PACK_MODULES = ["pmlc_lib.pack.profiles", "pmlc_lib.pack.schema", "pmlc_lib.pack.graph_layout", "pmlc_lib.pack.items",

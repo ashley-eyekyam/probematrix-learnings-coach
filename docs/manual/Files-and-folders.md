@@ -138,7 +138,7 @@ These files in the skills folder (`skills/learnings-coach/references/` unless st
 | `actions-profiles.json` | Column mappings for EHS systems (generic, and unverified mappings for Enablon, Intelex, Cority and SAP EHS) | `export-actions --profile` |
 | `standards-crosswalk.json` | Requirement IDs (such as `ISO45001-10.2`) for a pack item's `clauses` | `check-pack` |
 | `hfacs-codes.json` | The HFACS levels, categories and sub-categories with their definitions | `profile`, the skills |
-| `glossary.json` | The terms the packs and pages use, each with a definition and an empty `translations` slot (English only for now) | a shared word list for writers and translators; this manual's [Glossary](Glossary.md) explains the same terms |
+| `glossary.json` | The terms the packs and pages use, each with a definition and its `translations` (Hindi, `hi`, AI-drafted: check with a fluent speaker) | a shared word list for writers and translators; this manual's [Glossary](Glossary.md) explains the same terms |
 | `taxonomy.json` | The Learning Cluster rules, with a `version` (2.0) that `classify` records with a fingerprint | `classify` |
 
 The run-level contracts are on this page: `run-manifest.json` above, `plan.json` among the workspace files, and `gaps.json` and the files your organisation fills in among the outputs.

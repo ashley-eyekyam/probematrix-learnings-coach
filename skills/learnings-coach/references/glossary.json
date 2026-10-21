@@ -1,6 +1,9 @@
 {
  "version": 1,
- "_about": "English glossary for the Learnings Coach (Ruling P3-21: translations land in Phase 4). do_not_translate marks names, codes and acronyms to keep as written in every language.",
+ "_about": "English glossary for the Learnings Coach (translations: Ruling P4-15). do_not_translate marks names, codes and acronyms to keep as written in every language. translations.hi: AI-drafted Hindi: check with a fluent speaker (owner decision OD4-1).",
+ "_review": {
+  "hi": "AI-drafted Hindi: check with a fluent speaker"
+ },
  "terms": [
   {
    "term": "ProbeMatrix",
@@ -24,13 +27,17 @@
    "term": "Level",
    "definition": "One of the four HFACS levels, numbered 1 (Unsafe Acts) to 4 (Organisational Influences). The higher level enables the lower.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "स्तर"
+   }
   },
   {
    "term": "Sub-category",
    "definition": "The HFACS category within a level, as written in the export's Subcategory column, for example \"Failure to Correct Known Problem\".",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "उप-श्रेणी"
+   }
   },
   {
    "term": "Nanocode",
@@ -42,13 +49,17 @@
    "term": "Prefix",
    "definition": "The letters before the space in a Nanocode (for example OIR), mapped one to one to a level and sub-category in hfacs-codes.json.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "कोड के शुरुआती अक्षर"
+   }
   },
   {
    "term": "Finding",
    "definition": "One evidence-linked factor identified by the analysis, with an ID such as FND-0012. Findings are the evidence beneath learnings, never the headline count.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "निष्कर्ष"
+   }
   },
   {
    "term": "Finding ID",
@@ -60,13 +71,17 @@
    "term": "Instance",
    "definition": "One occurrence of a factor; the same Nanocode can appear as several findings, each an instance.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "उदाहरण"
+   }
   },
   {
    "term": "Evidence",
    "definition": "A document, record, statement or observation in the export's Evidence sheet, with an ID such as EVD-007. The only source of facts about the incident.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "सबूत"
+   }
   },
   {
    "term": "Evidence ID",
@@ -78,205 +93,273 @@
    "term": "Specific Reference",
    "definition": "The export field that quotes or locates the part of an evidence item that supports a finding. Quote facts from here, not from the AI justification.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "सबूत का ठीक-ठीक हिस्सा"
+   }
   },
   {
    "term": "AI Justification",
    "definition": "The analysis's reasoning for a finding. Quote it only as \"the analysis states\", never as a fact.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "AI का कारण"
+   }
   },
   {
    "term": "Rating",
    "definition": "The export's 1 to 5 score for how strongly a finding contributed; higher is stronger.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "रेटिंग"
+   }
   },
   {
    "term": "Corroborated",
    "definition": "Supported by two or more independent evidence items.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "एक से ज़्यादा सबूतों से पुष्ट"
+   }
   },
   {
    "term": "Learning",
    "definition": "A condition the organisation should change, stated once and supported by one or more findings. The unit the Learnings Coach counts.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "सीख"
+   }
   },
   {
    "term": "Lesson identified",
    "definition": "A learning written down in a register, pack or briefing, not yet shown to have changed how work is done.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "पहचानी गई सीख"
+   }
   },
   {
    "term": "Lesson learned",
    "definition": "A learning that has changed how work is done, with the change checked to hold. See indicators-and-effectiveness.md.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "अपनाई गई सीख"
+   }
   },
   {
    "term": "Learning Cluster",
    "definition": "A group of findings that share an owning entity (F), an organisational tier (T) and a relation (R). See ontology.md.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "सीख का समूह"
+   }
   },
   {
    "term": "Entity",
    "definition": "The function or part of the organisation that owns a learning (layer F in the taxonomy), such as Mechanical Maintenance.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "विभाग या इकाई"
+   }
   },
   {
    "term": "Tier",
    "definition": "The organisational level that learns (layer T): frontline, first-line supervision, function management, plant leadership, corporate and board.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "संगठन का स्तर"
+   }
   },
   {
    "term": "Relation",
    "definition": "How a role relates to a factor (layer R): actor, approver, owner, absent, norm_setter, learner or challenger.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "संबंध"
+   }
   },
   {
    "term": "Role",
    "definition": "The job or position named in a finding, used in place of any person's name.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "भूमिका"
+   }
   },
   {
    "term": "Interface",
    "definition": "A seam between two functions where findings or causal links are shared and responsibility can fall between them.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "विभागों के बीच की कड़ी"
+   }
   },
   {
    "term": "Causal link",
    "definition": "A connection from one factor to another written in the export's causal explanation or Causal Chain sheet. Arrows run from the enabling factor to the factor it enabled.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "कारण की कड़ी"
+   }
   },
   {
    "term": "Precursor",
    "definition": "An earlier event, report or condition that pointed to the hazard before the incident.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "पहले मिला संकेत"
+   }
   },
   {
    "term": "Weak signal",
    "definition": "A small or ambiguous early sign of a developing problem, easy to dismiss at the time.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "कमज़ोर संकेत"
+   }
   },
   {
    "term": "Near miss",
    "definition": "An event that could have caused harm but did not, by chance or because a late barrier acted.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "बाल-बाल बची घटना"
+   }
   },
   {
    "term": "Hazard",
    "definition": "A source of potential harm, such as a flammable gas under pressure.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "ख़तरा"
+   }
   },
   {
    "term": "Top event",
    "definition": "In a bow-tie, the moment control of the hazard is lost, such as a loss of containment.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "मुख्य घटना"
+   }
   },
   {
    "term": "Threat",
    "definition": "In a bow-tie, a way the top event can come about.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "ख़तरे का कारण"
+   }
   },
   {
    "term": "Consequence",
    "definition": "In a bow-tie, an outcome that can follow the top event.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "नतीजा"
+   }
   },
   {
    "term": "Escalation factor",
    "definition": "A condition that weakens a barrier, such as a detector out of service.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "बचाव को कमज़ोर करने वाली बात"
+   }
   },
   {
    "term": "Bow-tie",
    "definition": "A diagram with threats and prevention barriers on the left of a top event, and mitigation barriers and outcomes on the right.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "बो-टाई आरेख"
+   }
   },
   {
    "term": "Barrier",
    "definition": "Anything that stands between a hazard and harm, by preventing a loss of control or limiting what follows it. See barriers-and-controls.md.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "सुरक्षा बचाव"
+   }
   },
   {
    "term": "Prevention barrier",
    "definition": "A barrier between a threat and the top event.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "रोकथाम वाला बचाव"
+   }
   },
   {
    "term": "Mitigation barrier",
    "definition": "A barrier between the top event and an outcome, such as detection, isolation or fire protection.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "नुकसान घटाने वाला बचाव"
+   }
   },
   {
    "term": "Barrier state",
    "definition": "How a barrier performed on the day: absent, degraded, defeated, worked partly or worked.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "बचाव की हालत"
+   }
   },
   {
    "term": "Control",
    "definition": "A measure that delivers or supports a barrier: a design feature, device, procedure, check or competence.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "नियंत्रण"
+   }
   },
   {
    "term": "Critical control",
    "definition": "A control whose absence or failure would significantly raise the risk of a major event, even with other controls in place.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "अहम नियंत्रण"
+   }
   },
   {
    "term": "Hierarchy of controls",
    "definition": "The order of control strength: elimination, substitution, engineering, administrative, training, PPE.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "नियंत्रणों का क्रम"
+   }
   },
   {
    "term": "Elimination",
    "definition": "A control that removes the hazard.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "ख़तरे को हटाना"
+   }
   },
   {
    "term": "Substitution",
    "definition": "A control that replaces the hazard with a lesser one.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "कम ख़तरनाक चीज़ से बदलना"
+   }
   },
   {
    "term": "Engineering control",
    "definition": "A control that designs the hazard away from people or acts on it automatically, including isolation, separation, interlocks and trips.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "इंजीनियरिंग नियंत्रण"
+   }
   },
   {
    "term": "Administrative control",
    "definition": "A control that changes how work is organised: procedures, checks, permits, plans, reviews, audits and sign-offs.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "काम के तरीक़े से जुड़ा नियंत्रण"
+   }
   },
   {
    "term": "PPE",
@@ -288,139 +371,185 @@
    "term": "Permit-to-work",
    "definition": "A formal written system that authorises specific hazardous work, with its precautions, at a stated place and time.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "काम की अनुमति (परमिट)"
+   }
   },
   {
    "term": "Hold point",
    "definition": "A step in a job that must not be passed until a named role has checked and accepted the work so far.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "रुककर जाँचने का बिंदु"
+   }
   },
   {
    "term": "Management of change (MOC)",
    "definition": "The process for reviewing and approving a change to plant, process, procedure or organisation before it is made.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "बदलाव का प्रबंधन (MOC)"
+   }
   },
   {
    "term": "Lockout/tagout (LOTO)",
    "definition": "Physical isolation of energy sources with locks and tags so that equipment cannot be started while work is under way.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "ताला और टैग लगाना (LOTO)"
+   }
   },
   {
    "term": "Isolation",
    "definition": "Separating equipment from its energy or process sources; physical isolation is an engineering control, the isolation procedure an administrative one.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "ऊर्जा से अलग करना"
+   }
   },
   {
    "term": "Leading indicator",
    "definition": "A measure of barrier health or of the activities that keep it healthy, which changes before harm happens.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "पहले से चेताने वाला संकेतक"
+   }
   },
   {
    "term": "Lagging indicator",
    "definition": "A measure of outcomes, such as releases or injuries, which confirms a trend after the fact.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "नतीजे बताने वाला संकेतक"
+   }
   },
   {
    "term": "Deterioration trigger",
    "definition": "The indicator value or pattern that starts a defined response by its owner.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "हालत बिगड़ने का संकेत"
+   }
   },
   {
    "term": "Single-loop learning",
    "definition": "Learning that corrects the work within the existing rules, goals and assumptions.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "काम सुधारने वाली सीख"
+   }
   },
   {
    "term": "Double-loop learning",
    "definition": "Learning that changes the rules, goals, assumptions or norms that let the condition arise.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "नियम और सोच बदलने वाली सीख"
+   }
   },
   {
    "term": "Just culture",
    "definition": "An approach in which people are not blamed for actions that match their experience and training, while the organisation fixes the system conditions behind them.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "न्यायपूर्ण संस्कृति"
+   }
   },
   {
    "term": "Sighted",
    "definition": "In a report comparison, a learning that the comparator report also contains.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "दूसरी रिपोर्ट में भी मौजूद"
+   }
   },
   {
    "term": "Blind",
    "definition": "In a report comparison, a learning that the comparator report does not contain.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "दूसरी रिपोर्ट में नहीं"
+   }
   },
   {
    "term": "Comparator report",
    "definition": "Another report on the same event, such as an official inquiry, compared with the ProbeMatrix learnings.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "तुलना वाली रिपोर्ट"
+   }
   },
   {
    "term": "Learnings Register",
    "definition": "The table of learnings, one row per learning, with evidence, level, barrier, audiences and recommendations.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "सीख रजिस्टर"
+   }
   },
   {
    "term": "Pack",
    "definition": "A structured JSON output for one audience, checked with check-pack and rendered to HTML and Markdown by the engine.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "पैक"
+   }
   },
   {
    "term": "Workspace",
    "definition": "The folder the engine writes from one export (findings, evidence, clusters), under pmlc-runs/<date>-<site>-<event>/workspace.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "वर्कस्पेस"
+   }
   },
   {
    "term": "Sign-off",
    "definition": "The record that a named role has reviewed a pack or register; until then the output is a draft.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "समीक्षा की मंज़ूरी"
+   }
   },
   {
    "term": "Draft",
    "definition": "An output that no person has yet reviewed and signed off.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "मसौदा"
+   }
   },
   {
    "term": "Gap",
    "definition": "Something the analysis could not see or the export does not say, marked [GAP] rather than guessed.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "कमी"
+   }
   },
   {
    "term": "Recommendation",
    "definition": "A proposed change, with its barrier, control tier, evidence and leading indicator.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "सुझाव"
+   }
   },
   {
    "term": "Competence gap",
    "definition": "A shortfall in knowledge or skill where the way of working is defined, workable and done correctly by others in the role.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "जानकारी या कौशल की कमी"
+   }
   },
   {
    "term": "System problem",
    "definition": "A condition in procedures, design, resources or supervision that training alone cannot fix.",
    "do_not_translate": false,
-   "translations": {}
+   "translations": {
+    "hi": "व्यवस्था की समस्या"
+   }
   }
  ]
 }
