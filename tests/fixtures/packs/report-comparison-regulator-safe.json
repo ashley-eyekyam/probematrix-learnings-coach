@@ -1,4 +1,4 @@
-{"pack": "report-comparison-regulator-safe", "schema": 1, "title": "Report Comparison (regulator-safe): Synthetic pump fire, 2024",
+{"pack": "report-comparison-regulator-safe", "skill": "report-comparison", "schema": 1, "title": "Report Comparison (regulator-safe): Synthetic pump fire, 2024",
  "audience": "The authority that holds the other report", "status": "Learning purposes: not a statutory document",
  "bottom_line": [{"text": "The analyses agree on the return-to-service test; the additional learning concerns the spares specification and the alarm response.",
                   "cites": ["FND-0001", "FND-0003"]}],

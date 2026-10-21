@@ -36,15 +36,13 @@ Draft because: no finding is marked as edited by a person
 | L1 Unsafe acts | 1 | FND-0001 |
 | L3 Supervision | 1 | FND-0002 |
 
-S13 Comparison is left out: no comparator report was supplied.
-
 ## S2 Practice (L1)
 
 **Learning:** Restarting without a test went unchallenged because nothing asked for one. [FND-0001]
 
 The work order shows no test [EVD-0001].
 
-## S3 Preconditions (L2)
+## S3 Conditions (L2)
 
 **Learning:** An unfamiliar seal gave no cue that a test mattered more than usual. [FND-0001; FND-0003]
 
@@ -116,6 +114,10 @@ Make the leak test a hold point you sign [FND-0002].
 | Learning | Format | Cites |
 |---|---|---|
 | Test what you disturb | Learning Card and toolbox talk | FND-0001 |
+
+## Limits of this pack
+
+- S13 Comparison is left out: no comparator report was supplied.
 
 ---
 

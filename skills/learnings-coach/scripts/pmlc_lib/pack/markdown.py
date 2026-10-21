@@ -176,7 +176,24 @@ def _md_item(it, inc_date=None) -> str:
         if g("explanation"):
             out += f"\n\n{it['explanation']}"
         return out + (f"\n\n- Owner: {it['owner']}" if g("owner") else "")
-    raise ValueError(f"unknown kind {k!r}")
+    return _md_fields(it) + c
+
+
+def _md_fields(it) -> str:
+    """A kind this renderer has no layout for: **Label:** value lines, in KINDS field order (P4-5)."""
+    from ..render.fields import item_blocks
+    from ..render.labels import load_labels
+    out = []
+    for b in item_blocks(it, load_labels()):
+        v = b.value
+        if isinstance(v, list):
+            out.append(f"**{b.label}:**\n" + "\n".join(f"- {' | '.join(map(str, x)) if isinstance(x, list) else x}"
+                                                       for x in v))
+        elif isinstance(v, dict):
+            out.append(f"**{b.label}:**\n" + "\n".join(f"- {k}: {x}" for k, x in v.items()))
+        else:
+            out.append(f"**{b.label}:** {v}")
+    return "\n".join(out)
 
 
 def lint_ok_notes(d) -> list:

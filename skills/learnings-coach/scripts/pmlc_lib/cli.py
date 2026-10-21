@@ -62,7 +62,7 @@ from .handling import cmd_sign_off, HANDLING_ENUMS, SHARE_MODES
 from .ingest.xlsx import cmd_ingest
 from .lint import cmd_check_language
 from .orchestrate import cmd_check_all, cmd_dossier_index, cmd_index, cmd_render_all, cmd_setup
-from .pack.html import cmd_pack
+from .pack.command import cmd_pack
 from .pack.items import cmd_causal_item, cmd_register_items, cmd_table_item, cmd_timeline_item, TABLE_KINDS
 from .pack.xlsx import cmd_pack_xlsx, XLSX_KINDS
 from .facts import cmd_facts
@@ -70,6 +70,7 @@ from .pack.schema import cmd_check_pack
 from .plan import cmd_plan
 from .privacy import cmd_scan_names
 from .profile import cmd_profile
+from .render import DEFAULT_FORMATS, FORMATS, parse_formats
 from .register.check import cmd_check_register
 from .register.markdown import cmd_register_md
 from .register.xlsx import cmd_register_xlsx
@@ -309,6 +310,10 @@ def build_parser():
     s.add_argument("--no-md", action="store_true", help="write only the HTML")
     add_embed_arg(s)
     add_share_args(s)
+    s.add_argument("--format", type=parse_formats, metavar="FORMATS", default=list(DEFAULT_FORMATS),
+                   help=f"comma-separated formats to write (default: html,md); one of: {', '.join(FORMATS)}")
+    s.add_argument("--view", choices=("full", "learner"), default="full",
+                   help="learner: <pack>.learner.<ext> without answers, for the document formats")
     s.set_defaults(fn=cmd_pack)
 
     s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)", allow_abbrev=False)

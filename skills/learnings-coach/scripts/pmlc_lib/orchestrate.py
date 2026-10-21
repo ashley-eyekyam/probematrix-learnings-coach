@@ -45,7 +45,8 @@ def _run(argv, capture=True):
 
 
 def _pack_files(out: Path) -> list:
-    """Pack files in outputs/ (Ruling P3-23): JSON objects with a sections list, the register excluded."""
+    """Pack files in outputs/ (Ruling P3-23): JSON objects with a sections list, the register and the normalised
+    packs (`pack --format normalised`, P4-23) excluded."""
     found = []
     for p in sorted(out.glob("*.json")) if out.is_dir() else []:
         if p.name == REGISTER_NAME:
@@ -54,7 +55,7 @@ def _pack_files(out: Path) -> list:
             d = json.loads(p.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             continue
-        if isinstance(d, dict) and isinstance(d.get("sections"), list):
+        if isinstance(d, dict) and isinstance(d.get("sections"), list) and "normalised_version" not in d:
             found.append((p, d))
     return found
 

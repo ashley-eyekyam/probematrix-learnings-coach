@@ -64,7 +64,18 @@ OVERLAPS = {
 NO_PROFILE = {"learnings-register"}        # writes a register, not a pack: its Write table has no profile
 # Variant packs (Task 20 review m-5): a variant has the main pack's sections (rule same-sections-as), so it shares the
 # skill's one Write table; its profile must equal the main profile's sections and bottom line.
-VARIANTS = {"report-comparison": ("report-comparison-client-safe", "report-comparison-regulator-safe")}
+# A variant is a fixture whose `skill` names this skill and whose pack is <skill>-<variant> (Ruling P4-22).
+def _variants() -> dict:
+    out = {}
+    for p in sorted((ROOT / "tests" / "fixtures" / "packs").glob("*.json")):
+        d = json.loads(p.read_text(encoding="utf-8"))
+        sk = d.get("skill") if isinstance(d, dict) else None
+        if isinstance(sk, str) and p.stem.startswith(sk + "-"):
+            out.setdefault(sk, []).append(p.stem)
+    return {k: tuple(v) for k, v in out.items()}
+
+
+VARIANTS = _variants()
 # Task 21: what each register and analysis skill must say after its Phase 3 changes (brief, Task 21 block).
 PHASE3_TEXT = {
     "learnings-register": ("urgency", "recommendation_class", "recipient_role", "regulatory_touchpoint",

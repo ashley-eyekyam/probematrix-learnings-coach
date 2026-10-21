@@ -42,6 +42,7 @@ The shape of a pack is also published as a JSON Schema, [`pack.schema.json`](pac
     wording, the comparator's statutory status, `--embed summary`, legal review first).
 
   Both copies have exactly the sections of `report-comparison` (profile rule `same-sections-as:report-comparison`).
+- **`skill` (optional):** the skill that wrote the pack, a folder in `skills/` with a `skill.json`. With it, `pack` must be that skill's `produces.pack`, or `<produces.pack>-<variant>` (lowercase words joined by hyphens, as `report-comparison-client-safe`), or for `cluster-learning-dossier` `dossier-F<nn>` or `dossier-index`; otherwise `check-pack` reports `pack <p> is not a pack or variant of skill <s>`. Give it on every pack whose name is not its skill's name.
 - **`status`:** must contain `Learning purposes: not a statutory document`.
 - **`bottom_line`:** 1 to 7 takeaways, each citing at least one Finding or Evidence ID.
 - **`scope` (optional):**
@@ -76,6 +77,8 @@ The shape of a pack is also published as a JSON Schema, [`pack.schema.json`](pac
 | `timeline` | events[]*: {date* (YYYY-MM-DD, YYYY-MM or YYYY), time (HH:MM), text*, signal (true/false), knowable_then (true, false or text: what could be known at that moment), received_by, response, cites[]} | precursors, response timelines; events sort by date then time, and same-date events without a time keep your order |
 | `graph` | nodes[]*: {id*, label*}; edges[]*: {from*, to*, label} | causal maps, interfaces; drawn as SVG with a text list of links. `PMLC causal-item <ws> --top 40` prints a ready graph item from `causal_graph.json` (run `PMLC causal` first) |
 | `learning` | lesson* (one sentence), explanation (two to four sentences), owner (who must learn it); **must cite** | a learning: the lesson, why, and its evidence (dossiers, manager and leadership coaches, signal and interface learnings) |
+
+Each kind also lists its fields in display order, each with a role (`title`, `body`, `list`, `badge`, `indicator`, `table`, `events` or `graph`), in `KINDS[kind]["fields"]` of `pack/schema.py`; the labels are the `f.<field>` keys of `references/labels/en.json`. Formats without a layout of their own for a kind use them, and a kind the HTML and Markdown renderers do not know is shown as a labelled list of its fields, where its `body` and `list` fields carry citations.
 
 ## Optional on every pack and item
 
