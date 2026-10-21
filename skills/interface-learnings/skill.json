@@ -20,6 +20,9 @@
     "pack": "interface-learnings",
     "files": []
   },
+  "formats": [
+    "docx"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,

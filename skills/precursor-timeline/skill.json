@@ -18,6 +18,9 @@
     "pack": "precursor-timeline",
     "files": []
   },
+  "formats": [
+    "poster"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,

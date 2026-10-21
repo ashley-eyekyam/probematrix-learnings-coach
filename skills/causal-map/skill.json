@@ -18,6 +18,12 @@
     "pack": "causal-map",
     "files": []
   },
+  "formats": [
+    "svg",
+    "png",
+    "graphml",
+    "pptx"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,

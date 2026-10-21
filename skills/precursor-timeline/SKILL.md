@@ -37,6 +37,8 @@ configuration change not documented.
 
 Write `<run>/outputs/precursor-timeline.json` in the shape in `learnings-coach/references/pack-schema.md`.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/precursor-timeline.json (repository only).
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | The longest-running or most repeated signal, and what was done with it | `bottom_line` | up to 7 |
@@ -78,6 +80,9 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/precursor-timeline.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/precursor-timeline.json                  # -> precursor-timeline.html (vertical timeline) and .md
+PMLC pack <ws> <run>/outputs/precursor-timeline.json --layout poster  # -> precursor-timeline.poster.html, one A3 page
 ```
 
+The poster prints the bottom line, up to six signal learnings and the first timeline across one A3 landscape
+page, for a control room or a canteen wall; add `--base-url <URL>` to print a QR code to the published pack.
 Tell the user how many signals were kept, how far back the earliest goes, and which had no recorded response.

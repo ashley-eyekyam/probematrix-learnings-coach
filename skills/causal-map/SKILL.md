@@ -36,6 +36,8 @@ text of the highest-rated ones.
 
 Write `<run>/outputs/causal-map.json` in the shape in `learnings-coach/references/pack-schema.md`.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/causal-map.json (repository only).
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | The hubs that fed the most downstream factors, and the pathway that matters most; cite the hub findings | `bottom_line` | up to 7 |
@@ -77,6 +79,12 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/causal-map.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/causal-map.json                  # -> causal-map.html (drawn graph) and causal-map.md
+PMLC pack <ws> <run>/outputs/causal-map.json --format svg      # -> causal-map.<graph-id>.svg, the graph as a picture
+PMLC pack <ws> <run>/outputs/causal-map.json --format png      # -> causal-map.<graph-id>.png (needs a Chromium-family browser)
+PMLC pack <ws> <run>/outputs/causal-map.json --format graphml  # -> causal-map.<graph-id>.graphml, for yEd, Gephi or Cytoscape
+PMLC pack <ws> <run>/outputs/causal-map.json --format pptx     # -> causal-map.pptx, with the graph slide drawn as shapes
 ```
 
-Tell the user which hubs carry the most links, and where the chain breaks.
+Offer the svg or png for a report or slide, the graphml for a graph tool, and the pptx (its graph slide is
+editable) for a workshop. Without a browser, `png` writes nothing and says so: offer the svg instead. Tell the
+user which hubs carry the most links, and where the chain breaks.

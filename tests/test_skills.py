@@ -519,3 +519,102 @@ def test_management_review_input_six_rows(skill):
     for row, cites in zip(tab["rows"], tab["row_cites"]):
         assert row[det].strip() if cites else NOT_IN in row[1].lower(), (skill, row)
 
+
+
+# ------------------------------------------------- Task 26: skills group C offer their Phase 4 formats
+# Named with a _c suffix so the group A and B blocks (Tasks 24, 25) can sit beside this one without redefinition.
+
+from pmlc_lib.render import FORMATS as C_FORMATS  # noqa: E402
+from pmlc_lib.render.layouts import LAYOUTS as C_LAYOUTS  # noqa: E402
+
+C_SAMPLE_OUT = "samples/2020-09-24-hazira-gas-release-fire/outputs"
+C_SKILL_FORMATS = {            # skill.json `formats`: what each group C skill offers beyond html and md
+    "learning-clusters": ("docx",),
+    "causal-map": ("svg", "png", "graphml", "pptx"),
+    "precursor-timeline": ("poster",),
+    "interface-learnings": ("docx",),
+    "barrier-learnings": ("bowtie-csv",),
+    "cluster-learning-dossier": ("docx",),
+    "auditor-assurance-pack": ("checklist",),
+    "investigator-coach": (),  # follow-up.csv is written by every pack run (not a format, Task 17)
+    "report-comparison": ("docx",),
+}
+C_DOC_PACK = {"cluster-learning-dossier": "dossier-<F-id>"}       # the pack name the SKILL.md command lines use
+C_WORKED_PACK = {"cluster-learning-dossier": "dossier-F02"}       # the Hazira worked example
+C_PACK_LINE = re.compile(r"^PMLC pack <ws> <run>/outputs/(\S+)\.json(.*)$", re.M)
+
+
+def c_pack_lines(skill: str) -> list:
+    """(pack, flags) for each `PMLC pack` line in Check and hand over, comments dropped."""
+    body = section(skill_md(skill), "Check and hand over")
+    return [(m.group(1), m.group(2).split("#", 1)[0]) for m in C_PACK_LINE.finditer(body)]
+
+
+@pytest.mark.parametrize("skill", sorted(C_SKILL_FORMATS))
+def test_skill_formats_registered_c(skill):
+    m = json.loads(read(SKILLS_DIR / skill / "skill.json"))
+    got = tuple(m.get("formats", ()))
+    assert got == C_SKILL_FORMATS[skill], f"{skill}: skill.json formats {got}"
+    for f in got:
+        assert f in C_FORMATS or f in C_LAYOUTS, f"{skill}: {f!r} is neither a registered format nor a layout"
+        assert f not in ("html", "md"), f"{skill}: html and md are the defaults, not offered formats"
+
+
+@pytest.mark.parametrize("skill", sorted(C_SKILL_FORMATS))
+def test_skill_mentions_its_formats_c(skill):
+    pack = C_DOC_PACK.get(skill, skill)
+    body = section(skill_md(skill), "Check and hand over")
+    assert f"PMLC check-pack <ws> <run>/outputs/{pack}.json --strict" in body, f"{skill}: X28 check-pack line"
+    assert f"PMLC pack <ws> <run>/outputs/{pack}.json" in body, f"{skill}: X28 pack line"
+    lines = c_pack_lines(skill)
+    for f in C_SKILL_FORMATS[skill]:
+        if f in C_LAYOUTS:
+            hit = [p for p, flags in lines if re.search(rf"--layout {re.escape(f)}\b", flags)]
+        else:
+            hit = [p for p, flags in lines
+                   if any(f in m.split(",") for m in re.findall(r"--format (\S+)", flags))]
+        assert hit, f"{skill}: no `PMLC pack` line in Check and hand over offers {f}"
+    for _, flags in lines:        # every flag value on a hand-over line names a real format or layout
+        for m in re.findall(r"--format (\S+)", flags):
+            assert all(x in C_FORMATS for x in m.split(",")), (skill, m)
+        for m in re.findall(r"--layout (\S+)", flags):
+            assert m in C_LAYOUTS, (skill, m)
+
+
+@pytest.mark.parametrize("skill", sorted(C_SKILL_FORMATS))
+def test_skill_links_worked_example_c(skill):
+    rel = f"{C_SAMPLE_OUT}/{C_WORKED_PACK.get(skill, skill)}.json"
+    write = section(skill_md(skill), "Write")
+    assert f"Worked example: {rel} (repository only)" in write, f"{skill}: no worked-example line in Write"
+    assert (ROOT / rel).is_file(), rel
+
+
+def test_group_c_skill_specific_formats():
+    bar = skill_md("barrier-learnings")
+    assert "bowtie-csv" in section(bar, "Check and hand over") and "For a bow-tie, map the" not in bar
+    inv = skill_md("investigator-coach")
+    assert "`RMP-68.81`" in section(inv, "Write") and "follow-up.csv" in section(inv, "Check and hand over")
+    aud = section(skill_md("auditor-assurance-pack"), "Check and hand over")
+    assert "PMLC pack-xlsx <ws> <run>/outputs/auditor-assurance-pack.json --kind test_point" in aud
+    rc = c_pack_lines("report-comparison")
+    for variant in ("report-comparison-client-safe", "report-comparison-regulator-safe"):
+        assert any(p == variant and "docx" in flags for p, flags in rc), f"no docx line for {variant}"
+    cm = c_pack_lines("causal-map")
+    assert any("pptx" in flags for _, flags in cm) and "graph slide" in skill_md("causal-map")
+
+
+def test_dossier_formats_row_names_real_layouts():
+    row = next(line for line in section(skill_md("cluster-learning-dossier"), "Write").splitlines()
+               if line.startswith("| S14 "))
+    named = set(re.findall(r"--layout (\w+)", row)) | set(re.findall(r"--format (\w+)", row))
+    assert {"cards", "toolbox"} <= named, row
+    assert named <= set(C_LAYOUTS) | set(C_FORMATS), row
+    assert "Brief paragraph" not in row
+
+
+@pytest.mark.parametrize("skill, sec", [("auditor-assurance-pack", "evidence-requests"),
+                                        ("investigator-coach", "interview-plan")])
+def test_group_c_counts_are_bounded(skill, sec):
+    """Task 22 (Phase 3) minor 3: open-ended "at least 1" counts become "up to N" (L2-17)."""
+    rows = [r for r in write_table(skill_md(skill)) if r["id"] == sec]
+    assert rows and all(r["max"] < NO_LIMIT for r in rows), rows

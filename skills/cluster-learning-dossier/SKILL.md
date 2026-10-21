@@ -36,6 +36,8 @@ The `--budget-chars` call keeps findings in rating order and says how many it dr
 
 Write the pack `<run>/outputs/dossier-<F-id>.json` in the shape in `learnings-coach/references/pack-schema.md` (`pack` = `dossier-<F-id>`, such as `dossier-F02` or `dossier-F09b`). Set `"scope": {"entities": ["<F-id>"]}`. Give each sub-division its own section, `id` = `s<n>-<name>`. **Omit a sub-division with no grounded learning** and name it in the S1 note.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/dossier-F02.json (repository only).
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | Front sheet: the top five learnings for this entity | `bottom_line` | up to 5 |
@@ -56,7 +58,7 @@ Write the pack `<run>/outputs/dossier-<F-id>.json` in the shape in `learnings-co
 | S11 | `s11-*` | S11 Competence | Columns Tier, Competence | `table` | optional, up to 1 |
 | S12 | `s12-*` | S12 Transferability | Columns Learning, Reach, Reason | `table` | optional, up to 1 |
 | S13 | `s13-*` | S13 Comparison | Only when a comparator report is supplied (`report-comparison`) | `para` | optional, up to 3 |
-| S14 | `s14-*` | S14 Formats | Columns Learning, Format (Card, Brief paragraph, toolbox talk) | `table` | optional, up to 1 |
+| S14 | `s14-*` | S14 Formats | Columns Learning, Format: the skill and engine layout or format that carries it, such as `frontline-learning-cards --layout cards`, `frontline-learning-cards --layout toolbox`, `board-brief --layout paper` or `--format docx` | `table` | optional, up to 1 |
 
 Rules for the content:
 
@@ -87,6 +89,7 @@ Run `learnings-coach/references/skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/dossier-<F-id>.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/dossier-<F-id>.json                  # -> dossier-<F-id>.html (open first) and .md
+PMLC pack <ws> <run>/outputs/dossier-<F-id>.json --format docx    # -> dossier-<F-id>.docx, the function's reference file in Word
 ```
 
 Several dossiers: `PMLC check-all <ws> --strict`, then `PMLC dossier-index <ws>` and `PMLC render-all <ws>`. Also confirm: the front sheet fits two pages and every omitted sub-division is named in S1. Next: `manager-coach` for the function's 90-day agenda.

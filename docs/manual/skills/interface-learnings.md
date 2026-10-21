@@ -28,6 +28,7 @@ pmlc select <ws> --entity <A> <B> --entity-mode all --brief     # the findings b
 pmlc select <ws> --entity <A> --tag emergency --entity-mode all --brief   # A with any emergency-response function
 pmlc check-pack <ws> <run>/outputs/interface-learnings.json --strict
 pmlc pack <ws> <run>/outputs/interface-learnings.json
+pmlc pack <ws> <run>/outputs/interface-learnings.json --format docx   # a Word copy for the joint review
 ```
 
 - [interfaces](../commands/interfaces.md) ranks pairs of functions by **shared findings** (both named on the same finding) and **cross-entity causal mentions** (a finding of one names a factor of the other). `--top` sets how many pairs it prints. It writes `interfaces.json`.
@@ -44,6 +45,9 @@ pmlc pack <ws> <run>/outputs/interface-learnings.json
 - at least one interface on the mitigation side (detection, isolation, emergency command) when the evidence supports one;
 - **Joint-review agenda:** a table for the meeting the two sides hold (interface, roles who meet, agenda item, evidence to bring, decision sought);
 - **Who must meet whom:** a closing list.
+
+With `--format docx`, `interface-learnings.docx` carries the matrix and the joint-review agenda as Word tables both sides can annotate.
+
 
 ## Worked example (Hazira)
 
