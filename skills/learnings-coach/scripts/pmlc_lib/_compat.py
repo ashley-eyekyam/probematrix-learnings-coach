@@ -52,6 +52,7 @@ MODULES = [
     "pmlc_lib.register.render",
     "pmlc_lib.render.layouts",
     "pmlc_lib.render.pptx",
+    "pmlc_lib.render.scorm",
     "pmlc_lib.pack.command",
     "pmlc_lib.strings",
     "pmlc_lib.cli",

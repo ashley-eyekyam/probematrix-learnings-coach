@@ -198,5 +198,19 @@
  "ui.pptx.entries": "{n} प्रविष्टियाँ",
  "ui.pptx.cited_records": "उद्धृत रिकॉर्ड",
  "ui.html.skip": "खंडों पर जाएँ",
- "ui.docx.logo_alt": "संगठन का लोगो"
+ "ui.docx.logo_alt": "संगठन का लोगो",
+ "ui.scorm.quiz": "अपनी सीख जाँचें",
+ "ui.scorm.intro": "प्रश्नों के उत्तर दें, फिर अपने उत्तर जमा करें। उत्तीर्ण होने के लिए अंक वाले प्रश्नों में {pass}% चाहिए।",
+ "ui.scorm.choose_one": "एक चुनें",
+ "ui.scorm.choose_any": "जो भी लागू हों, सभी चुनें",
+ "ui.scorm.your_answer": "आपका उत्तर",
+ "ui.scorm.reflect": "सोच-विचार करें (इसके अंक नहीं हैं)",
+ "ui.scorm.submit": "उत्तर जमा करें",
+ "ui.scorm.no_questions": "इस पैक में अंक वाले प्रश्न नहीं हैं। इसे पढ़ें, फिर इसे पूरा हुआ चिह्नित करें।",
+ "ui.scorm.finish": "पूरा हुआ चिह्नित करें",
+ "ui.scorm.result": "अंक: {raw}% (उत्तीर्ण अंक {pass}%): {status}",
+ "ui.scorm.passed": "उत्तीर्ण",
+ "ui.scorm.failed": "उत्तीर्ण अंक से कम",
+ "ui.scorm.completed": "पूरा हुआ",
+ "ui.scorm.no_lms": "कोई लर्निंग सिस्टम नहीं मिला, इसलिए परिणाम दर्ज नहीं हुआ।"
 }
