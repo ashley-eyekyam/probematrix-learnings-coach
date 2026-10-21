@@ -525,3 +525,13 @@ def test_layouts_module_registered():
     from pmlc_lib import _compat
     assert "pmlc_lib.render.layouts" in _compat.MODULES
     assert LY.LAYOUTS == ("cards", "toolbox", "poster", "checklist", "paper", "field")
+
+
+def test_rtl_layout_css_uses_logical_properties(w, monkeypatch):
+    """An rtl layout page (dir="rtl") mirrors through logical properties, as pack.css does since Task 20."""
+    monkeypatch.setenv("PMLC_LABELS_DIR", str(Path(__file__).parent / "fixtures" / "labels"))
+    doc = page_of(w, dict(fixture("frontline-learning-cards"), lang="ar"), "field")
+    assert '<html lang="ar" dir="rtl">' in doc
+    css = re.search(r"<style>(.*?)</style>", doc, re.S).group(1)
+    assert not re.search(r"border-left|border-right|text-align:(left|right)|margin-(left|right)|padding-(left|right)",
+                         css), css

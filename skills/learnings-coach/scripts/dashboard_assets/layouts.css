@@ -8,7 +8,7 @@ main{padding:16px}
 h1,h2,h3{line-height:1.2;margin:0 0 6pt}
 h2{font-size:15pt} h3{font-size:12pt}
 p{margin:0 0 6pt}
-ul,ol{margin:0 0 6pt;padding-left:18pt}
+ul,ol{margin:0 0 6pt;padding-inline-start:18pt}
 .doc{max-width:210mm;margin:0 auto 16px}
 .doc h1{font-size:18pt}
 .page{background:var(--paper);max-width:210mm;margin:0 auto 16px;padding:12mm;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.2)}
@@ -34,10 +34,10 @@ span.lab{margin:0 4pt 0 0}
 sup.en{font-size:7pt;color:var(--accent)}
 .m{color:var(--mut);font-size:9pt}
 .badge{display:inline-block;border:1px solid var(--line);border-radius:3px;padding:0 4pt;font-size:8.5pt}
-.qr{margin:8pt 0 0;text-align:right}
+.qr{margin:8pt 0 0;text-align:end}
 .qr svg{width:22mm;height:22mm}
 table{border-collapse:collapse;width:100%;margin:4pt 0 8pt;font-size:9pt}
-th,td{border:1px solid var(--line);padding:3pt 4pt;text-align:left;vertical-align:top}
+th,td{border:1px solid var(--line);padding:3pt 4pt;text-align:start;vertical-align:top}
 th{background:#f0f0f0}
 table.record td{height:11mm}
 table.record th{font-size:8pt}
@@ -52,7 +52,7 @@ table.record th{font-size:8pt}
 .np{display:flex;gap:8pt;margin:0 0 8pt;break-inside:avoid}
 .np>.num{min-width:26pt;font-weight:700}
 .np-head .num{font-weight:700}
-.decision{border-left:3px solid var(--accent);padding-left:8pt;margin-bottom:8pt}
+.decision{border-inline-start:3px solid var(--accent);padding-inline-start:8pt;margin-bottom:8pt}
 .cover .pbody{display:flex;flex-direction:column;justify-content:center;min-height:120mm}
 .cover-title{font-size:22pt}
 .handling{color:var(--mut);font-size:9.5pt;margin:8pt 0}
