@@ -102,19 +102,20 @@ def test_indicators_reference_covers_l307():
         assert phrase in text, phrase
 
 
-def test_unverified_marked():
+def test_p4h_unverified_marked_source_line_only():
     rx = re.compile(r"API RP 754|HSG254|IOGP 456|Wiegmann")
     bad = []
     for name in NEW_MD:
         for n, line in enumerate((REF / name).read_text(encoding="utf-8").splitlines(), 1):
-            if rx.search(line) and "(unverified)" not in line and not re.search(r"\bsource:", line, re.I):
+            if rx.search(line) and "(unverified)" not in line and not line.lstrip().startswith("Source:"):
                 bad.append(f"{name}:{n}: {line}")
     assert bad == []
 
 
-def test_new_references_use_no_blame_words():
+def test_p4h_new_references_use_no_blame_words_every_rule():
     rules = _json("lint-terms.json")["rules"]
-    rxs = [re.compile(p, re.I) for p in rules["JC2"]["patterns"]]
+    rxs = [re.compile(p, 0 if spec.get("case") == "sensitive" else re.I)
+           for rid, spec in rules.items() if rid != "JC8" for p in spec["patterns"]]   # JC8 flags numbers, which these references must state
     hits = []
     for name in NEW_MD:
         for n, line in enumerate((REF / name).read_text(encoding="utf-8").splitlines(), 1):

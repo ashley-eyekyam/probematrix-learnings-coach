@@ -1745,3 +1745,29 @@ def test_board_brief_follow_up_check_is_cited(w):
     assert check["kind"] == "check" and check["cites"]
     r = pp.check_pack(p, w, register=json.loads(MINI_REGISTER_FILE.read_text(encoding="utf-8")), strict=True)
     assert r.problems == [] and not [x for x in r.warnings if "no Finding or Evidence ID cited" in x], r.warnings
+
+
+def test_p4h_coverage_warning_tells_top_rated_from_all_relevant(w):
+    """Task 10 minor (M-3): 16 relevant findings, 2 of them top-rated. Citing both top-rated ones is under a quarter of
+    the relevant findings (2 of 16) yet draws no warning; citing 8 lower-rated ones and neither top-rated one is half of
+    them yet does."""
+    import copy
+    w2 = copy.deepcopy(w)
+    base = next(f for f in w2["findings"] if f["id"] == "FND-0001")
+    for n in range(5, 17):
+        w2["findings"].append(dict(copy.deepcopy(base), id=f"FND-{n:04d}", rating=1))
+    for f in w2["findings"]:
+        f["rating"] = 3 if f["id"] in ("FND-0002", "FND-0003") else 1
+    scope = {"levels": [1, 2, 3, 4]}
+    rel = pp.relevant_findings(w2, scope)
+    assert len(rel) == 16
+    tops_only = pack_with(item("para", cites=["FND-0002", "FND-0003"]), scope=scope,
+                          bottom_line=[{"text": "Test before service.", "cites": ["FND-0002"]}])
+    assert pp.coverage(w2, tops_only)["cited"] == 2 and pp.coverage(w2, tops_only)["top_cited"] == 2
+    assert not any(x.startswith("coverage") for x in pp.check_pack(tops_only, w2).warnings)
+    lows = [f"FND-{n:04d}" for n in range(5, 13)]
+    no_top = pack_with(item("para", cites=lows), scope=scope,
+                       bottom_line=[{"text": "Test before service.", "cites": [lows[0]]}])
+    assert pp.coverage(w2, no_top)["cited"] == 8 and pp.coverage(w2, no_top)["top_cited"] == 0
+    assert any("under a quarter of the top-rated relevant findings are cited (0 of 2)" in x
+               for x in pp.check_pack(no_top, w2).warnings)

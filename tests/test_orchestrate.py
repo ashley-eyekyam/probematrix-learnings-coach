@@ -104,7 +104,7 @@ def test_dossier_index_none(setup_ws):
     assert "no dossier" in run_fail("dossier-index", str(ws)).stderr
 
 
-def test_render_all_with_register_and_embed(setup_ws):
+def test_p4h_render_all_with_register_and_embed(setup_ws):
     from test_pmlc import MINI_REG
     ws, _ = setup_ws
     outd = put(ws, "board-brief")
@@ -112,8 +112,7 @@ def test_render_all_with_register_and_embed(setup_ws):
     reg.write_text(json.dumps(MINI_REG), encoding="utf-8")
     run("check-pack", str(ws), str(outd / "board-brief.json"))
     chk = subprocess.run([sys.executable, str(PMLC), "check-register", str(ws), str(reg)], capture_output=True, text=True)
-    if chk.returncode:
-        pytest.skip("synthetic register does not pass check-register: " + chk.stdout[-200:])
+    assert chk.returncode == 0, "synthetic register does not pass check-register: " + chk.stdout[-200:]
     out = run("render-all", str(ws), "--embed", "summary")
     assert "skipped learnings-register" not in out
     assert (outd / "board-brief.html").is_file() and (outd / "learnings-register.xlsx").is_file()
@@ -170,7 +169,7 @@ def test_setup_writes_run_manifest(setup_ws):
     assert rm.get("run") == ws.parent.name
 
 
-def test_render_all_register_skip_uses_manifest_record(setup_ws):
+def test_p4h_render_all_register_skip_uses_manifest_record(setup_ws):
     from test_pmlc import MINI_REG
     ws, _ = setup_ws
     outd = put(ws)
@@ -179,8 +178,7 @@ def test_render_all_register_skip_uses_manifest_record(setup_ws):
     assert "skipped learnings-register.json: run check-all first" in run("render-all", str(ws))
     assert not (outd / "learnings-register.md").exists()
     chk = subprocess.run([sys.executable, str(PMLC), "check-register", str(ws), str(reg)], capture_output=True, text=True)
-    if chk.returncode:
-        pytest.skip("synthetic register does not pass check-register")
+    assert chk.returncode == 0, "synthetic register does not pass check-register: " + chk.stdout[-200:]
     out = run("render-all", str(ws))
     assert "skipped learnings-register" not in out and (outd / "learnings-register.md").is_file()
     d = dict(MINI_REG, title="Edited after the check")
@@ -188,15 +186,14 @@ def test_render_all_register_skip_uses_manifest_record(setup_ws):
     assert "skipped learnings-register.json: run check-all first" in run("render-all", str(ws))
 
 
-def test_render_all_renders_register_and_pack_after_sign_off(setup_ws):
+def test_p4h_render_all_renders_register_and_pack_after_sign_off(setup_ws):
     from test_pmlc import MINI_REG
     ws, _ = setup_ws
     outd = put(ws, "board-brief")
     reg = outd / "learnings-register.json"
     reg.write_text(json.dumps(MINI_REG), encoding="utf-8")
     cp = subprocess.run([sys.executable, str(PMLC), "check-register", str(ws), str(reg)], capture_output=True, text=True)
-    if cp.returncode:
-        pytest.skip("synthetic register does not pass check-register")
+    assert cp.returncode == 0, "synthetic register does not pass check-register: " + cp.stdout[-200:]
     run("check-pack", str(ws), str(outd / "board-brief.json"))
     for f in (reg, outd / "board-brief.json"):   # what sign-off does: it rewrites the file with a handling block
         d = json.loads(f.read_text())

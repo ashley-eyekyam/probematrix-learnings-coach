@@ -176,3 +176,56 @@ def test_audiences_cover_audience_skills():
         m = load(SKILLS_DIR / a["skill"] / "skill.json")
         assert m["audiences"] == [a["id"]]
         assert m["scope"] == a["default_scope"]
+
+
+# --- Phase 4 hygiene (Task 4 minor): pin what the manifests only checked loosely -------------------------------
+
+PINNED_ARTEFACTS = {
+    "workspace": ("workspace/findings.json", "engine:ingest", None),
+    "clusters": ("workspace/clusters.json", "engine:classify", None),
+    "causal_graph": ("workspace/causal_graph.json", "engine:causal", None),
+    "timeline": ("workspace/timeline_candidates.json", "engine:timeline", None),
+    "interfaces": ("workspace/interfaces.json", "engine:interfaces", None),
+    "register": ("outputs/learnings-register.json", "skill:learnings-register", None),
+    "gaps": ("outputs/gaps.json", "engine:pack", None),
+    "comparator": ("workspace/comparator.json", "skill:report-comparison", None),
+    "adoption": ("outputs/adoption.csv", "engine:templates", None),
+    "distribution": ("outputs/distribution.csv", "engine:templates", None),
+    "verification": ("outputs/verification.jsonl", "engine:templates", None),
+    "actions": ("outputs/actions.csv", "engine:export-actions", None),
+    "nine-m-map": ("outputs/nine-m-analysis.json", "skill:nine-m-analysis", "Phase 5"),
+    "evidence-audit": ("outputs/evidence-strength-scorecard.json", "skill:evidence-strength-scorecard", "Phase 5"),
+    "hfacs-profile": ("outputs/latent-conditions-profile.json", "skill:latent-conditions-profile", "Phase 5"),
+    "library": ("$PMLC_LIBRARY", "engine:library", "Phase 7"),
+}
+
+
+def test_p4h_artefact_files_and_producers_pinned():
+    art = load(REFS / "artefacts.json")
+    got = {n: (a["file"], a["producer"], a.get("planned")) for n, a in art.items()}
+    assert got == PINNED_ARTEFACTS
+    assert {n for n, a in art.items() if a["org_filled"]} == {"adoption", "distribution", "verification"}
+
+
+def test_p4h_workflow_modes_planned_phases_and_when_pinned():
+    wf = load(REFS / "workflows.json")
+    modes = {(n, s["skill"]): s["mode"] for n, w in wf.items() for s in w["steps"] if "mode" in s}
+    assert modes == {("first-48-hours", "learnings-register"): "draft",
+                     ("first-48-hours", "safety-alert"): "internal",
+                     ("sister-sites", "safety-alert"): "sister-site",
+                     ("follow-up", "engine:templates"): "verification"}
+    planned = {(n, s["skill"]): s["planned"] for n, w in wf.items() for s in w["steps"] if "planned" in s}
+    assert planned == {
+        ("first-48-hours", "safety-alert"): "Phase 6",
+        ("assurance", "evidence-strength-scorecard"): "Phase 5",
+        ("assurance", "compliance-crosswalk"): "Phase 5",
+        ("investigation-quality", "evidence-strength-scorecard"): "Phase 5",
+        ("investigation-quality", "open-questions-register"): "Phase 5",
+        ("action-design", "nine-m-analysis"): "Phase 5",
+        ("action-design", "recommendation-strength-review"): "Phase 5",
+        ("sister-sites", "safety-alert"): "Phase 6",
+        ("sister-sites", "could-it-happen-here"): "Phase 6",
+        ("training", "safety-moment-deck"): "Phase 6",
+        ("follow-up", "learning-effectiveness-plan"): "Phase 6"}
+    whens = {(n, s["skill"]): s["when"] for n, w in wf.items() for s in w["steps"] if "when" in s}
+    assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied"}

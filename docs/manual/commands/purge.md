@@ -40,6 +40,7 @@ python3 $E purge hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire --keep outp
 
 - **"refused: ... is not a run folder".** Give the run folder, not the workspace or a parent folder.
 - **"refused: ... is a symlink".** Remove the link by hand, then run purge again.
+- **A later purge of the outputs is refused.** After `--keep outputs` the workspace, and with it `workspace/manifest.json`, is gone, so purge no longer recognises the run folder. When the organisation decides to remove the kept outputs, delete the outputs folder by hand; `run-manifest.json` stays as the record.
 - **Nothing happens.** Without `--yes` purge only lists what it would delete.
 
 ## Related
