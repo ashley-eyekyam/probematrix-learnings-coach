@@ -30,6 +30,13 @@ and, for Phase 3 (docs/uat/v2.0-consolidated-uat.md):
   uat-org-chart.csv            an organisation's departments for the uat-approvable export (invented names)
   uat-comparator.json, uat-comparison-map.json  a made-up company report on the pump fire and its mapping to the
                                two learnings of uat-register.json
+and, for Phase 4:
+  uat-brand.json, uat-brand-logo.png  a valid brand: an invented organisation, an accent of 5.8:1 against white and a
+                               1x1 PNG logo
+  uat-brand-bad.json           a brand whose accent has 1.7:1 against white, so pack --brand refuses it
+  uat-print-cards.json         the two Hazira print cards with the card fields, two toolbox talks and three checks
+                               (one a hold point), for the print layouts
+  uat-quiz.json                five Hazira questions: single, multi, truefalse, short and one discussion question
 
 The export shape follows tests/test_pmlc.py (FIND_COLS, ROWS, make_export), duplicated here so this tool
 needs only the standard library and openpyxl. The workbooks are rebuilt from scratch on every run.
@@ -356,6 +363,126 @@ def phase3_files():
             "uat-comparator.json": dump(COMPARATOR), "uat-comparison-map.json": dump(COMPARISON_MAP)}
 
 
+# ----------------------------------------------------------------------------- Phase 4 inputs
+
+BRAND_ACCENT = "#1A7070"                     # 5.8:1 against white: passes WCAG AA
+BRAND = {"organisation": "Example Process Terminal (UAT)", "accent": BRAND_ACCENT, "logo": "uat-brand-logo.png"}
+BRAND_BAD = {"organisation": "Example Process Terminal (UAT)", "accent": "#7FD3CF"}   # 1.7:1: refused
+
+
+def one_pixel_png(hex_colour: str) -> bytes:
+    """A 1x1 RGB PNG of one colour, written with the standard library only."""
+    import struct
+    import zlib
+
+    def chunk(tag: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF)
+    rgb = bytes(int(hex_colour.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(b"\x00" + rgb)) + chunk(b"IEND", b""))
+
+
+def print_cards():
+    """The two Hazira print cards with the Phase 4 card fields, two toolbox talks and three stop-and-ask checks (one a
+    hold point): the input for the cards, toolbox and checklist print layouts."""
+    p = json.loads(PRINT_2_CARD.read_text(encoding="utf-8"))
+    p["pack"] = "uat-print-cards"
+    p["title"] = "UAT print cards: Hazira gas release and fire, 2020"
+    c1, c2 = p["sections"][0]["items"]
+    c1["did_you_know"] = ["Operating pressure is lower than design pressure, so a joint that holds at operating "
+                          "pressure has not been proved [EVD-2894]."]
+    c1["what_you_can_do"] = ["Ask to see the test record at design pressure before you open the line."]
+    c2["did_you_know"] = ["The detectors raised an alarm on a panel; nothing tripped by itself [EVD-8657]."]
+    c2["what_you_can_do"] = ["Learn which alarms on your unit trip equipment and which need you to act."]
+    p["sections"].append({"id": "toolbox-talks", "heading": "Toolbox talks", "items": [
+        {"kind": "toolbox",
+         "opening_question": "Who here has put a meter back in line after a gasket change?",
+         "story": "A metering line went back into service after a gasket change. It was pressurised only to operating "
+                  "pressure, and the meter went back online the next day [EVD-2894].",
+         "warning_signs": ["A seal or gasket that is not the original part",
+                           "No test record at design pressure"],
+         "one_change": "No meter goes back in line until the test at design pressure is on the record.",
+         "crew_question": "Where on our unit is the test record kept, and who can see it?",
+         "cites": ["FND-3AB996FC", "EVD-2894"]},
+        {"kind": "toolbox",
+         "opening_question": "What happens on our unit when a gas detector alarms?",
+         "story": "The gas detectors showed an alarm on an annunciator panel for display only. There was no automatic "
+                  "shutdown and no fire suppression [EVD-8657].",
+         "warning_signs": ["A gas alarm that only shows on a panel", "No automatic action after a gas alarm"],
+         "one_change": "Each crew member can name which alarms trip equipment and which need a person to act.",
+         "crew_question": "Which of our alarms would need one of us to act at once?",
+         "cites": ["FND-01C3DE98", "EVD-8657"]}]})
+    p["sections"].append({"id": "stop-and-ask", "heading": "Stop and ask", "items": [
+        {"kind": "check", "hold_point": True, "when": "Before a high-pressure meter goes back in line",
+         "text": "The test at design pressure is recorded and witnessed.", "cites": ["FND-3AB996FC", "EVD-2894"]},
+        {"kind": "check", "when": "A gasket in your hand is not the original part",
+         "text": "Ask the supervisor for the specification before you fit it.", "cites": ["FND-3AB996FC"]},
+        {"kind": "check", "when": "A gas alarm shows on the panel",
+         "text": "Tell the control room what you see, and act on the alarm without waiting for a trip.",
+         "cites": ["FND-01C3DE98", "EVD-8657"]}]})
+    return p
+
+
+def _opts(*pairs):
+    return [{"text": t, "correct": c} for t, c in pairs]
+
+
+QUIZ = {
+    "pack": "uat-quiz", "schema": 1, "title": "UAT quiz: Hazira gas release and fire, 2020",
+    "audience": "Operators and fitters (T1)", "status": STATUS,
+    "bottom_line": [{"text": "A repaired joint is proved only by a recorded test at design pressure.",
+                     "cites": ["FND-3AB996FC", "EVD-2894"]}],
+    "sections": [{"id": "questions", "heading": "Check your understanding", "items": [
+        {"kind": "question", "type": "single",
+         "question": "A gasket on a high-pressure meter has been replaced. What proves the joint before return to "
+                     "service?",
+         "options": _opts(("A recorded test at design pressure, with a witness", True),
+                          ("Bringing the line up to operating pressure", False),
+                          ("A visual check that the bolts are tight", False)),
+         "why": "Knowing which test proves a repaired joint.",
+         "answer": "A recorded test at design pressure, with a witness; operating pressure does not prove it.",
+         "good_evidence": "The learner names the test pressure and where the record is kept.",
+         "cites": ["FND-3AB996FC", "EVD-2894"]},
+        {"kind": "question", "type": "multi",
+         "question": "Which of these are warning signs before a return to service?",
+         "options": _opts(("A seal or gasket that is not the original part", True),
+                          ("No test record at design pressure", True),
+                          ("A permit signed by the issuer", False)),
+         "why": "Recognising the conditions that should stop a return to service.",
+         "answer": "A part that is not the original, and no test record at design pressure.",
+         "good_evidence": "Both warning signs named without prompting.",
+         "cites": ["FND-904FCA63", "EVD-2894"]},
+        {"kind": "question", "type": "truefalse",
+         "question": "The gas detectors at the terminal shut the plant down automatically.",
+         "options": _opts(("True", False), ("False", True)),
+         "why": "Knowing what the gas alarm did and did not do.",
+         "answer": "False: the detectors showed an alarm on a panel only, with no automatic shutdown.",
+         "good_evidence": "The learner says who must act when an alarm only displays.",
+         "cites": ["FND-01C3DE98", "EVD-8657"]},
+        {"kind": "question", "type": "short",
+         "question": "In two words: at what pressure must a repaired high-pressure joint be tested?",
+         "options": _opts(("design pressure", True), ("the design pressure", True)),
+         "why": "Remembering the test pressure.",
+         "answer": "Design pressure.",
+         "good_evidence": "The learner gives the words without a prompt.",
+         "cites": ["FND-212DC9B7", "EVD-2894"]},
+        {"kind": "question",
+         "question": "On your unit, who can stop a return to service when the test record is missing?",
+         "why": "Knowing who holds the stop in practice.",
+         "answer": "Anyone on the job can ask for the record, and the supervisor holds the return to service until "
+                   "it is there.",
+         "good_evidence": "The learner names a role and the place the record is kept.",
+         "cites": ["FND-15279F97"]}]}]}
+
+
+def phase4_files():
+    """{file name: bytes} for the Phase 4 inputs."""
+    dump = lambda o: (json.dumps(o, indent=1, ensure_ascii=False) + "\n").encode("utf-8")   # noqa: E731
+    return {"uat-brand.json": dump(BRAND), "uat-brand-logo.png": one_pixel_png(BRAND_ACCENT),
+            "uat-brand-bad.json": dump(BRAND_BAD), "uat-print-cards.json": dump(print_cards()),
+            "uat-quiz.json": dump(QUIZ)}
+
+
 def main():
     ap = argparse.ArgumentParser(description="Write the UAT input files.")
     ap.add_argument("--out", type=Path, default=OUT, help="output folder (default: docs/uat/inputs)")
@@ -372,7 +499,7 @@ def main():
     for name, text in TEXT_FILES.items():
         (out / name).write_text(text, encoding="utf-8")
         print(f"wrote {out / name}")
-    for name, data in phase3_files().items():
+    for name, data in {**phase3_files(), **phase4_files()}.items():
         (out / name).write_bytes(data)
         print(f"wrote {out / name}")
 

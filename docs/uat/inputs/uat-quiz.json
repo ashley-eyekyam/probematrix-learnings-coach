@@ -1,0 +1,130 @@
+{
+ "pack": "uat-quiz",
+ "schema": 1,
+ "title": "UAT quiz: Hazira gas release and fire, 2020",
+ "audience": "Operators and fitters (T1)",
+ "status": "Learning purposes: not a statutory document",
+ "bottom_line": [
+  {
+   "text": "A repaired joint is proved only by a recorded test at design pressure.",
+   "cites": [
+    "FND-3AB996FC",
+    "EVD-2894"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "questions",
+   "heading": "Check your understanding",
+   "items": [
+    {
+     "kind": "question",
+     "type": "single",
+     "question": "A gasket on a high-pressure meter has been replaced. What proves the joint before return to service?",
+     "options": [
+      {
+       "text": "A recorded test at design pressure, with a witness",
+       "correct": true
+      },
+      {
+       "text": "Bringing the line up to operating pressure",
+       "correct": false
+      },
+      {
+       "text": "A visual check that the bolts are tight",
+       "correct": false
+      }
+     ],
+     "why": "Knowing which test proves a repaired joint.",
+     "answer": "A recorded test at design pressure, with a witness; operating pressure does not prove it.",
+     "good_evidence": "The learner names the test pressure and where the record is kept.",
+     "cites": [
+      "FND-3AB996FC",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "question",
+     "type": "multi",
+     "question": "Which of these are warning signs before a return to service?",
+     "options": [
+      {
+       "text": "A seal or gasket that is not the original part",
+       "correct": true
+      },
+      {
+       "text": "No test record at design pressure",
+       "correct": true
+      },
+      {
+       "text": "A permit signed by the issuer",
+       "correct": false
+      }
+     ],
+     "why": "Recognising the conditions that should stop a return to service.",
+     "answer": "A part that is not the original, and no test record at design pressure.",
+     "good_evidence": "Both warning signs named without prompting.",
+     "cites": [
+      "FND-904FCA63",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "question",
+     "type": "truefalse",
+     "question": "The gas detectors at the terminal shut the plant down automatically.",
+     "options": [
+      {
+       "text": "True",
+       "correct": false
+      },
+      {
+       "text": "False",
+       "correct": true
+      }
+     ],
+     "why": "Knowing what the gas alarm did and did not do.",
+     "answer": "False: the detectors showed an alarm on a panel only, with no automatic shutdown.",
+     "good_evidence": "The learner says who must act when an alarm only displays.",
+     "cites": [
+      "FND-01C3DE98",
+      "EVD-8657"
+     ]
+    },
+    {
+     "kind": "question",
+     "type": "short",
+     "question": "In two words: at what pressure must a repaired high-pressure joint be tested?",
+     "options": [
+      {
+       "text": "design pressure",
+       "correct": true
+      },
+      {
+       "text": "the design pressure",
+       "correct": true
+      }
+     ],
+     "why": "Remembering the test pressure.",
+     "answer": "Design pressure.",
+     "good_evidence": "The learner gives the words without a prompt.",
+     "cites": [
+      "FND-212DC9B7",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "On your unit, who can stop a return to service when the test record is missing?",
+     "why": "Knowing who holds the stop in practice.",
+     "answer": "Anyone on the job can ask for the record, and the supervisor holds the return to service until it is there.",
+     "good_evidence": "The learner names a role and the place the record is kept.",
+     "cites": [
+      "FND-15279F97"
+     ]
+    }
+   ]
+  }
+ ]
+}
