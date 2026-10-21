@@ -837,7 +837,7 @@
       "Remote operation from the control room",
       "Automatic closure on confirmed gas detection where justified"
      ],
-     "trade_offs": "Remote operation needs capital and a shutdown window; without it, isolation still depends on reaching the valve through the release.",
+     "trade_offs": "Remote operation is likely to need capital and a shutdown window; without it, isolation still depends on reaching the valve through the release.",
      "owner": "Engineering function",
      "learning": "LR-09",
      "cites": [
@@ -1126,7 +1126,7 @@
       ],
       [
        "0:40-1:05",
-       "What had become normal, and what each leader tolerated without seeing it",
+       "What had become normal, and what the team tolerated without seeing it",
        "Culture signals"
       ],
       [

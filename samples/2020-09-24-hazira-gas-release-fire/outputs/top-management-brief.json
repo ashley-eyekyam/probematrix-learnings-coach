@@ -24,7 +24,7 @@
  ],
  "bottom_line": [
   {
-   "text": "Specifications, change control and emergency isolation rules existed only on paper or not at all for legacy equipment; any site of the same vintage can carry the same gaps.",
+   "text": "Specifications, change control and emergency isolation rules existed only on paper or not at all for legacy equipment; any other site with equipment of the same vintage may carry the same gaps.",
    "cites": [
     "FND-23139BF9",
     "FND-F7FE8463",
@@ -33,7 +33,6 @@
     "EVD-2986",
     "EVD-4052"
    ],
-   "learning": "LR-01",
    "evidence_strength": "corroborated"
   },
   {
@@ -93,37 +92,37 @@
       [
        "LR-01 Lost specifications for legacy pressure-boundary parts, with no owner",
        "Likely at similar sites",
-       "Vintage of equipment: any site with original-build meters and flanges whose OEM data is no longer on file"
+       "Vintage of equipment: if other sites run original-build meters whose OEM data is no longer on file, the same gap may exist (the export does not show which sites)"
       ],
       [
        "LR-06 Change-control procedure published but not in use",
        "Enterprise-wide",
-       "Shared standard: the procedure is a corporate document, so its use is a question for every site"
+       "Shared standard: if other sites use the same MOC procedure, whether it is in use is a question for every site (the export covers one site)"
       ],
       [
        "LR-07 Emergency plan without isolation criteria or delegated authority",
        "Enterprise-wide",
-       "Shared standard: every major-hazard site writes its emergency plan to the same regulations"
+       "Shared standard: the plan here is written under the ERDMP regime; if other sites plan under it too, the same gap between scenario and isolation decision may exist"
       ],
       [
        "LR-09 Emergency isolation valves operable only by hand at the valve",
        "Likely at similar sites",
-       "Vintage of equipment: valves installed before remote operation became the expectation"
+       "Vintage of equipment: other sites with local-only emergency isolation valves would share the gap (the export does not show which)"
       ],
       [
        "LR-10 Gas detection that only displays an alarm",
        "Likely at similar sites",
-       "Shared system: detection set up as annunciation without executive action"
+       "Shared system: other sites whose detection only annunciates would share the gap (the export does not show which)"
       ],
       [
        "LR-11 Breakdown-led maintenance of hazardous-area electrical fittings",
        "Enterprise-wide",
-       "Culture: a maintenance philosophy, not a single defect"
+       "Culture: the findings describe a breakdown-led maintenance philosophy, not a single defect; if it is shared across sites, so is the gap"
       ],
       [
        "LR-20 Audits recording compliance without plant data",
        "Enterprise-wide",
-       "Shared standard: the audit method and checklists are set centrally"
+       "Shared standard: if other sites use the same audit method and generic checklists, their audits may also miss plant-specific defects"
       ]
      ],
      "row_cites": [
@@ -204,7 +203,7 @@
     {
      "kind": "para",
      "group": "Spares and specification control",
-     "text": "The original gasket specification for the 1986 meter was not on file and no role owned it, so locally bought O-rings were used as regular practice with no specification or quality check at purchase. The enterprise spares standard did not reach legacy pressure-boundary parts [FND-23139BF9; FND-6B3A6492; EVD-8645].",
+     "text": "The original gasket specification for the 1986 meter was not on file and no role owned it, so locally bought O-rings were used as regular practice with no specification or quality check at purchase. The spares controls in place did not cover this legacy pressure-boundary part [FND-23139BF9; FND-6B3A6492; EVD-8645].",
      "evidence_strength": "direct",
      "learning": "LR-01",
      "supporting_cites": [
@@ -221,7 +220,7 @@
     {
      "kind": "para",
      "group": "Management of change",
-     "text": "The management-of-change procedure was published in August 2016, but no change had gone through it since 2018, including the switch to a different seal. The standard existed; its use was not checked [FND-F7FE8463; EVD-2986].",
+     "text": "The management-of-change procedure was published in August 2016, but no change had gone through it since 2018, including the switch to a different seal. The procedure existed but was not applied [FND-F7FE8463; EVD-2986].",
      "evidence_strength": "direct",
      "learning": "LR-06"
     },
@@ -347,7 +346,7 @@
       "Criteria and delegation first, remote operation by a capital programme",
       "All three together at the highest-risk sites"
      ],
-     "trade_offs": "Criteria and delegation can be issued quickly at low cost; remote operation needs capital and shutdown windows, but it is the only option that removes the need to walk into the release.",
+     "trade_offs": "Criteria and delegation are written changes; remote operation is an engineering change that is likely to need capital and a shutdown window, but of the two it is the one that removes the need to walk into the release.",
      "learning": "LR-09",
      "cites": [
       "FND-5C7B163D",

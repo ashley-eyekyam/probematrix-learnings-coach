@@ -285,7 +285,7 @@
      "kind": "learning",
      "group": "What your system allowed",
      "lesson": "A pressure-boundary seal was replaced with an unspecified local part because no one held the specification.",
-     "explanation": "The 1986 meter's original gasket specification was not on file, so locally bought O-rings were fitted as regular practice, with no specification or quality check at purchase and no recorded decision to switch. Fitters had a job to finish and nothing in the system said stop.",
+     "explanation": "The 1986 meter's original gasket specification was not on file, so locally bought O-rings were fitted as regular practice, with no specification or quality check at purchase and no recorded decision to switch. The job had to be done, and the export shows nothing in the system that said stop.",
      "owner": "Maintenance function",
      "learning": "LR-01",
      "cites": [
@@ -496,7 +496,7 @@
      "kind": "learning",
      "group": "What your system allowed",
      "lesson": "The management-of-change procedure existed on paper but had not been used since 2018.",
-     "explanation": "The procedure was published in August 2016, yet no change went through it after 2018, including the switch from the original gasket to a local O-ring. People did not see a like-for-unlike part as a change, and nothing in the work or stores systems asked.",
+     "explanation": "The procedure was published in August 2016, yet no change went through it after 2018, including the switch from the original gasket to a local O-ring. The export shows no prompt in the work or stores systems that treats a like-for-unlike part as a change.",
      "owner": "Engineering function",
      "learning": "LR-06",
      "cites": [
