@@ -106,6 +106,24 @@ def test_rtl_fixture_locale(monkeypatch):
     assert page.startswith('<html lang="ar" dir="ltr">', len("<!doctype html>"))
 
 
+def test_rtl_pack_css_uses_logical_properties(monkeypatch):
+    """Task 2 review m3: an rtl page mirrors through logical properties, not only through the dir attribute."""
+    monkeypatch.setenv("PMLC_LABELS_DIR", str(TEST_LABELS))
+    pack = dict(fixture("frontline-learning-cards"), lang="ar")
+    page = render_fixture("frontline-learning-cards", "html", pack=pack)[0].data
+    assert page.startswith('<!doctype html><html lang="ar" dir="rtl"><head>')
+    css = re.search(r"<style>(.*?)</style>", page, re.S).group(1)
+    rules = dict(re.findall(r"(?m)^([^{}@\n]+)\{([^{}]*)\}", css))
+    for sel in (".bottom", ".dq", ".indicator-line", ".timeline", ".tablewrap th,.tablewrap td", ".timeline time",
+                ".badge"):
+        body = rules[sel]
+        assert not re.search(r"border-left|border-right|text-align:(left|right)|margin-(left|right)|padding-(left|right)",
+                             body), (sel, body)
+    for sel in (".bottom", ".dq", ".indicator-line", ".timeline"):
+        assert "border-inline-start:" in rules[sel], sel
+    assert "text-align:start" in rules[".tablewrap th,.tablewrap td"]
+    assert "margin-inline-end:8px" in rules[".timeline time"] and "padding-inline-start:16px" in rules[".timeline"]
+
 def test_lang_validated(w):
     base = fixture("frontline-learning-cards")
     assert pp.check_pack(dict(base, lang="hi", dir="ltr"), w).problems == []

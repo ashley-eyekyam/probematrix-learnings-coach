@@ -19,10 +19,18 @@ YES_NO = ("yes", "no")
 VERIFICATION_LEVELS = ("communicated", "understood", "applied", "effective")
 FILES = {"adoption": "adoption.csv", "distribution": "distribution.csv", "verification": "verification.jsonl"}
 REGISTER_FILE = "learnings-register.json"
+YES_NO_SHORT = {"y": "yes", "n": "no"}           # accepted for yes/no columns (M-4)
 
 
 class OrgFileError(Exception):
-    """A file the organisation filled in holds an invalid value; the message names the file and row."""
+    """A file the organisation filled in holds invalid values. The loaders read every row first, then raise one
+    error: problems holds one line per bad row (naming the file and row), the message joins them, and rows holds
+    the good rows, which callers such as the dashboard keep using (M-4)."""
+
+    def __init__(self, problems, rows=None):
+        self.problems = [problems] if isinstance(problems, str) else list(problems)
+        self.rows = list(rows or [])
+        super().__init__("; ".join(self.problems))
 
 
 # ----------------------------------------------------------------------------- locating files
@@ -83,56 +91,76 @@ def _read_csv(run, name: str, columns: list) -> list:
     return rows
 
 
-def _check_enum(row: dict, name: str, col: str, allowed: tuple) -> None:
+def _check_enum(row: dict, name: str, col: str, allowed: tuple):
+    """The problem with row[col], or None; a valid value is lower-cased in place (and y/n become yes/no)."""
     v = row.get(col, "")
     if v == "":
-        return
-    if v.lower() not in allowed:
-        raise OrgFileError(f"{name} row {row['_row']}: {col} '{v}' must be one of {', '.join(allowed)} (or blank)")
-    row[col] = v.lower()
+        return None
+    low = v.lower()
+    if allowed == YES_NO:
+        low = YES_NO_SHORT.get(low, low)
+    if low not in allowed:
+        return f"{name} row {row['_row']}: {col} '{v}' must be one of {', '.join(allowed)} (or blank)"
+    row[col] = low
+    return None
+
+
+def _tpl_checked(rows: list, problem) -> list:
+    """The rows whose check gives no problem; raises one OrgFileError (with the good rows) if any has one."""
+    good, problems = [], []
+    for r in rows:
+        p = problem(r)
+        (problems.append(p) if p else good.append(r))
+    if problems:
+        raise OrgFileError(problems, good)
+    return good
 
 
 def load_adoption(run) -> list:
     rows = _read_csv(run, FILES["adoption"], ADOPTION_COLUMNS)
-    for r in rows:
-        _check_enum(r, "adoption.csv", "response", RESPONSES)
-    return rows
+    return _tpl_checked(rows, lambda r: _check_enum(r, "adoption.csv", "response", RESPONSES))
 
 
 def load_distribution(run) -> list:
     rows = _read_csv(run, FILES["distribution"], DISTRIBUTION_COLUMNS)
-    for r in rows:
-        _check_enum(r, "distribution.csv", "contractors_included", YES_NO)
-    return rows
+    return _tpl_checked(rows, lambda r: _check_enum(r, "distribution.csv", "contractors_included", YES_NO))
+
+
+def _tpl_verification_row(n: int, line: str):
+    """(record, None) for a good line of verification.jsonl, or (None, problem)."""
+    try:
+        d = json.loads(line)
+    except ValueError as e:
+        return None, f"verification.jsonl line {n}: not valid JSON ({e})"
+    if not isinstance(d, dict):
+        return None, f"verification.jsonl line {n}: each line must be a JSON object"
+    if not d.get("lr_id"):
+        return None, f"verification.jsonl line {n}: lr_id is required"
+    lvl = d.get("level")
+    if lvl is not None and str(lvl).strip() != "":
+        if str(lvl).strip().lower() not in VERIFICATION_LEVELS:
+            return None, (f"verification.jsonl line {n}: level '{lvl}' must be one of "
+                          f"{', '.join(VERIFICATION_LEVELS)} (or null)")
+        d["level"] = str(lvl).strip().lower()
+    for k in VERIFICATION_KEYS:
+        d.setdefault(k, None)
+    d["_row"] = n
+    return d, None
 
 
 def load_verification(run) -> list:
     f = _outputs(run) / FILES["verification"]
     if not f.is_file():
         return []
-    rows = []
+    rows, problems = [], []
     with open(f, encoding="utf-8-sig", newline="") as fh:
         for n, line in enumerate(fh, 1):
             if not line.strip():
                 continue
-            try:
-                d = json.loads(line)
-            except ValueError as e:
-                raise OrgFileError(f"verification.jsonl line {n}: not valid JSON ({e})") from None
-            if not isinstance(d, dict):
-                raise OrgFileError(f"verification.jsonl line {n}: each line must be a JSON object")
-            if not d.get("lr_id"):
-                raise OrgFileError(f"verification.jsonl line {n}: lr_id is required")
-            lvl = d.get("level")
-            if lvl is not None and str(lvl).strip() != "":
-                if str(lvl).strip().lower() not in VERIFICATION_LEVELS:
-                    raise OrgFileError(f"verification.jsonl line {n}: level '{lvl}' must be one of "
-                                       f"{', '.join(VERIFICATION_LEVELS)} (or null)")
-                d["level"] = str(lvl).strip().lower()
-            for k in VERIFICATION_KEYS:
-                d.setdefault(k, None)
-            d["_row"] = n
-            rows.append(d)
+            d, p = _tpl_verification_row(n, line)
+            (problems.append(p) if p else rows.append(d))
+    if problems:
+        raise OrgFileError(problems, rows)
     return rows
 
 

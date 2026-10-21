@@ -175,13 +175,15 @@ def cmd_dashboard(a):
         rows = []
         for e in entries:
             tm = e.get("tier_messages") or {}
+            # The message is text in the cell (visually hidden until the toggle shows it), never only a title (L4-18).
             cells = "".join(
-                f'<td style="--o:.55" title="{html.escape(tm[t])}"><span>●</span></td>' if t in tm else '<td class="z">·</td>'
+                f'<td style="--o:.55"><span aria-hidden="true">●</span><span class="vh">{html.escape(tm[t])}</span></td>'
+                if t in tm else '<td class="z"><span aria-hidden="true">·</span><span class="vh">No message</span></td>'
                 for t in tiers_used)
             lid = html.escape(_s(e.get("lr_id")))
             rows.append(f'<tr><th><a class="lr-link" href="#detail/{lid}">{lid} · {html.escape(_s(e.get("title"))[:90])}</a></th>'
                         f"<td>{html.escape(_s(e.get('priority')))}</td><td>{html.escape(norm_entity(e.get('owner_entity')))}</td>{cells}</tr>")
-        matrix = ("<table><thead><tr><th>Learning</th><th>Priority</th><th>Owner</th>"
+        matrix = ('<table id="lr-matrix"><thead><tr><th>Learning</th><th>Priority</th><th>Owner</th>'
                   + "".join(f"<th>{t} {TIER_LABELS[t]}</th>" for t in tiers_used) + "</tr></thead><tbody>"
                   + "".join(rows) + "</tbody></table>")
         per_tier = []

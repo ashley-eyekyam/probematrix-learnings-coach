@@ -43,7 +43,7 @@ This skill uses no `select` filters: the dashboard reads the whole workspace.
 ## What you get
 
 - `organisation-learning-map.html`. With a register it has two tabs:
-  - **Overview:** the learning-by-tier matrix (hover a cell for the message), a plan per level, the control-tier profile of the recommendations, heat maps of findings by entity and tier, the most frequent factors, the learnings × packs matrix and the reach of each pack.
+  - **Overview:** the learning-by-tier matrix (each cell holds its message for screen readers; the **Show the messages in the table** button shows them on screen), a plan per level, the control-tier profile of the recommendations, heat maps of findings by entity and tier, the most frequent factors, the learnings × packs matrix and the reach of each pack.
   - **Detailed register:** every register field, each cited finding and evidence item in full, and lenses for T1 to T5, investigators and auditors.
 - `organisation-learning-plan.html` and `.md`: where the learning sits, what each level must learn (with each learning's `LR-nn`), the top learning owners, the strongest interfaces, the strength of fixes and the **cascade plan**.
 - The cascade plan replaces the old rollout order. It is a table with the columns audience, pack, channel, deliverer role, window (relative weeks), feedback and completion measure. It names roles, never people, and relative weeks, never dates: the organisation sets those.

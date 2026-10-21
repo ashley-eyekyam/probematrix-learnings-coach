@@ -107,6 +107,38 @@ def test_org_files_bad_value_named_by_row(rund):
         load_distribution(rund)
 
 
+def test_org_files_keep_good_rows_and_report_all(rund):
+    """M-4: every row is read first; one OrgFileError names every bad row and carries the good rows."""
+    out = rund.parent / "outputs"
+    (out / "adoption.csv").write_text("lr_id,title,response\nLR-01,a,maybe\nLR-02,b,Accepted\nLR-03,c,perhaps\n"
+                                      "LR-04,d,\n", encoding="utf-8")
+    with pytest.raises(OrgFileError) as ei:
+        load_adoption(rund)
+    e = ei.value
+    assert len(e.problems) == 2
+    assert "adoption.csv row 2: response 'maybe'" in str(e) and "adoption.csv row 4: response 'perhaps'" in str(e)
+    assert [r["lr_id"] for r in e.rows] == ["LR-02", "LR-04"] and e.rows[0]["response"] == "accepted"
+    assert isinstance(e.rows, list)
+    (out / "distribution.csv").write_text("pack,contractors_included\nb,Y\nc,n\nd,perhaps\ne,\nf,sometimes\n",
+                                          encoding="utf-8")
+    with pytest.raises(OrgFileError) as ei:
+        load_distribution(rund)
+    e = ei.value
+    assert len(e.problems) == 2 and "row 4" in str(e) and "row 6" in str(e)
+    assert [(r["pack"], r["contractors_included"]) for r in e.rows] == [("b", "yes"), ("c", "no"), ("e", "")]
+    (out / "distribution.csv").write_text("pack,contractors_included\nb,y\nc,N\n", encoding="utf-8")
+    assert [r["contractors_included"] for r in load_distribution(rund)] == ["yes", "no"]
+    (out / "verification.jsonl").write_text('{"lr_id": "LR-01", "level": "known"}\n{"lr_id": "LR-02", "level": '
+                                            '"Applied"}\nnot json\n[1]\n{"level": null}\n{"lr_id": "LR-03"}\n',
+                                            encoding="utf-8")
+    with pytest.raises(OrgFileError) as ei:
+        load_verification(rund)
+    e = ei.value
+    assert len(e.problems) == 4
+    for n in (1, 3, 4, 5):
+        assert f"verification.jsonl line {n}:" in str(e)
+    assert [(r["lr_id"], r["level"]) for r in e.rows] == [("LR-02", "applied"), ("LR-03", None)]
+
 def test_export_actions_ids_and_blank_owner(rund):
     assert cli("export-actions", str(rund)).returncode == 0
     out = rund.parent / "outputs"
