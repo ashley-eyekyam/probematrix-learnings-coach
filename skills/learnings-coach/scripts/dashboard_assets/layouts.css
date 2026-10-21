@@ -1,4 +1,5 @@
-/* Print layouts (pmlc_lib/render/layouts.py, Rulings P4-7 and P4-8): one <section class="page"> per printed page.
+/* Print layouts (pmlc_lib/render/layouts.py, Rulings P4-7 and P4-8): one page section per printed page;
+   the @page margin boxes (page_css) repeat the status, footer and draft label on every sheet.
    Kept apart from pack.css so the pack page itself stays byte-identical; the SCORM page frame shares it. */
 :root{--ink:#1a1a1a;--mut:#4a4a4a;--line:#9a9a9a;--accent:#0b5c80;--warn:#a33a00;--paper:#fff;--desk:#e6e6e6}
 *{box-sizing:border-box}
@@ -24,6 +25,7 @@ ul,ol{margin:0 0 6pt;padding-left:18pt}
 .pbody{flex:1 1 auto}
 .pf{border-top:1px solid var(--line);margin-top:10pt;padding-top:4pt;font-size:8pt;color:var(--mut)}
 .pf p{margin:0}
+.brandline{margin-top:3pt}
 .lab{font-size:8.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);margin:6pt 0 2pt}
 span.lab{margin:0 4pt 0 0}
 .blk{break-inside:avoid}

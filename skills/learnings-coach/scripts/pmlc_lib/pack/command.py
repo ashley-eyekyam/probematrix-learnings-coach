@@ -13,6 +13,7 @@ from ..render import build_date, DEFAULT_FORMATS, render, RenderContext
 from ..util import _abs, write_json
 from ..workspace import is_standard_ws, outputs_dir, warn_stale
 
+PAPER_IGNORED = "--paper applies to --layout cards only; ignored"
 WRITTEN_AS = {"html": "HTML", "md": "Markdown"}          # the v1 "<what> written to <path>" lines
 
 
@@ -40,6 +41,8 @@ def cmd_pack(a):
                         share=share, view=getattr(a, "view", None) or "full", src=Path(a.pack))
     ctx.layout, ctx.paper = getattr(a, "layout", None), getattr(a, "paper", None) or "A4"     # Task 13 (P4-7)
     ctx.base_url = getattr(a, "base_url", None)
+    if getattr(a, "paper", None) and ctx.layout != "cards":
+        ctx.notes.append(PAPER_IGNORED)
     outs = [(fmt, o) for fmt in pack_formats(a) for o in render(fmt, ctx)]
     if ctx.layout:                                                 # print layouts (P4-7): beside the formats
         from ..render.layouts import render_layout

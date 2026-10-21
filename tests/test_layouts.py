@@ -2,6 +2,7 @@
 delivery record (Rulings P4-7, P4-8, P3-15). Synthetic fixtures, plus the public Hazira 2-card pack for the page
 count. Toolbox items and scenario injects belong to Task 16: they are hand-built here."""
 import hashlib
+import html
 import json
 import os
 import re
@@ -16,7 +17,7 @@ from test_pmlc import PMLC, ws  # noqa: F401  (ws is a module-scoped fixture)
 from test_pack import FIX, GOLDEN_EPOCH, HTML_GOLDEN, RUN, fixture, item, pack_with
 import pmlc  # noqa: E402
 
-from pmlc_lib import DRAFT_LABEL, STATUS_PHRASE, VERSION_STAMP  # noqa: E402
+from pmlc_lib import BRAND, DRAFT_LABEL, STATUS_PHRASE, VERSION_STAMP  # noqa: E402
 from pmlc_lib import render as R  # noqa: E402
 from pmlc_lib.handling import effective_handling  # noqa: E402
 from pmlc_lib.pack import schema as PS  # noqa: E402
@@ -69,6 +70,12 @@ def assert_every_page_marked(doc, draft=True):
     for p in ps:
         assert STATUS_PHRASE in p and FOOTER in p
         assert (DRAFT_LABEL in p) == draft
+    brand = html.escape(BRAND, quote=True)
+    assert doc.count(brand) == 1 and brand in ps[-1]                    # BRAND once, closing the last page (P4-20)
+    css = doc.split("</style>", 1)[0]                                    # every printed sheet, via @page margin boxes
+    foot = re.search(r'@bottom-left\{content:"([^"]*)"', css).group(1)
+    assert STATUS_PHRASE in foot and FOOTER in foot
+    assert (f'@top-right{{content:"{DRAFT_LABEL}"' in css) == draft
 
 
 def cards_pack():
@@ -161,7 +168,7 @@ def test_field_endnotes_and_delivery_record(w):
     assert head == DISTRIBUTION_COLUMNS[2:] == ["channel", "date", "delivered_by_role", "attendees",
                                                 "contractors_included", "questions_raised", "concerns_escalated"]
     rows = re.findall(r"<tr>(.*?)</tr>", record.split("</thead>", 1)[1], re.S)
-    assert len(rows) >= 8 and all(re.fullmatch(r"(<td></td>){7}", r) for r in rows)
+    assert len(rows) == LY.DELIVERY_ROWS and all(re.fullmatch(r"(<td></td>){7}", r) for r in rows)
     assert not re.search(r"\bname\b|signature", record, re.I)
     assert "frontline-learning-cards" in record and p["audience"] in record
     assert_every_page_marked(doc, draft=True)
@@ -428,6 +435,24 @@ def test_paper_layout_with_docx_writes_the_board_paper(std_ws, tmp_path):
     assert (out / "board-brief.paper.docx").is_file() and (out / "board-brief.paper.html").is_file()
 
 
+def test_field_bottom_line_cites_become_endnotes(w):
+    p = pack_with(item("card"), item("para"), bottom_line=[{"text": "Test first [FND-0001].", "cites": ["FND-0002"]}])
+    ps = pages(page_of(w, p, "field"))
+    closing, notes = ps[1], ps[2]
+    assert "Test first<sup" in closing and not PS.ID_RX.search(closing)
+    assert "FND-0002" in notes and "FND-0001" in notes
+    assert "[FND-0002]" in page_of(w, p, "cards")
+
+
+def test_paper_flag_ignored_outside_cards(std_ws, tmp_path):
+    p = str(FIX / "frontline-learning-cards.json")
+    r = _cli("pack", str(std_ws), p, "--out", str(tmp_path / "o"), "--layout", "field", "--paper", "A5")
+    assert r.returncode == 0 and "--paper applies to --layout cards only; ignored" in r.stderr
+    assert "@page{size:A4}" in (tmp_path / "o" / "frontline-learning-cards.field.html").read_text(encoding="utf-8")
+    r = _cli("pack", str(std_ws), p, "--out", str(tmp_path / "c"), "--layout", "cards", "--paper", "A5")
+    assert "--paper applies" not in r.stderr
+
+
 # ----------------------------------------------------------------------------- printing
 
 @pytest.fixture(scope="module")
@@ -442,19 +467,55 @@ def hz(tmp_path_factory):
     return ws_
 
 
+def _print_pdf(page, pdf):
+    r = subprocess.run([R.find_browser(), "--headless", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer",
+                        f"--print-to-pdf={pdf}", page.as_uri()], capture_output=True, text=True, timeout=120)
+    assert pdf.exists(), r.stderr
+
+
+def _pdf_pages(pdf) -> int:
+    if shutil.which("pdfinfo"):
+        info = subprocess.run(["pdfinfo", str(pdf)], capture_output=True, text=True).stdout
+        return int(re.search(r"^Pages:\s+(\d+)", info, re.M).group(1))
+    return len(re.findall(rb"/Type\s*/Page(?![s\w])", pdf.read_bytes()))
+
+
 @pytest.mark.skipif(not R.find_browser(), reason="no Chromium-family browser")
 def test_print_page_count_with_browser(hz, tmp_path):
     two = Path(__file__).resolve().parent / "fixtures" / "hazira" / "print-2-card.json"
     out = tmp_path / "o"
     r = _cli("pack", str(hz), str(two), "--out", str(out), "--layout", "cards", "--no-md")
     assert r.returncode == 0, r.stderr
-    page = out / "frontline-learning-cards.cards.html"
     pdf = tmp_path / "cards.pdf"
-    r = subprocess.run([R.find_browser(), "--headless", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer",
-                        f"--print-to-pdf={pdf}", page.as_uri()], capture_output=True, text=True, timeout=120)
-    assert pdf.exists(), r.stderr
-    n = len(re.findall(rb"/Type\s*/Page(?![s\w])", pdf.read_bytes()))
+    _print_pdf(out / "frontline-learning-cards.cards.html", pdf)
+    n = _pdf_pages(pdf)
     assert 1 <= n <= 3, n
+
+
+@pytest.mark.skipif(not R.find_browser(), reason="no Chromium-family browser")
+@pytest.mark.skipif(not shutil.which("pdftotext"), reason="pdftotext (poppler) not installed: no per-page text")
+@pytest.mark.parametrize("pack,layout", [("board-brief", "paper"), ("print-2-card", "cards")])
+def test_every_printed_sheet_carries_status_footer_and_draft(hz, tmp_path, pack, layout):
+    """Review I2: a page block that runs onto several sheets still prints the status phrase, the short footer and
+    DRAFT on each of them (the @page margin boxes)."""
+    from test_sample import SAMPLE
+    src = (SAMPLE / "outputs" / "board-brief.json" if pack == "board-brief"
+           else Path(__file__).resolve().parent / "fixtures" / "hazira" / "print-2-card.json")
+    out = tmp_path / "o"
+    r = _cli("pack", str(hz), str(src), "--out", str(out), "--layout", layout, "--no-md")
+    assert r.returncode == 0, r.stderr
+    name = json.loads(src.read_text(encoding="utf-8"))["pack"]
+    pdf = tmp_path / f"{layout}.pdf"
+    _print_pdf(out / f"{name}.{layout}.html", pdf)
+    n = _pdf_pages(pdf)
+    assert n >= 1
+    short = "ProbeMatrix by Eyekyam"
+    for i in range(1, n + 1):
+        t = subprocess.run(["pdftotext", "-f", str(i), "-l", str(i), "-layout", str(pdf), "-"],
+                           capture_output=True, text=True).stdout
+        flat = " ".join(t.split())
+        assert STATUS_PHRASE in flat and short in flat and VERSION_STAMP in flat, (i, flat[-300:])
+        assert DRAFT_LABEL in flat, (i, flat[:300])
 
 
 def test_layouts_module_registered():

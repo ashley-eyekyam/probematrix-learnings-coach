@@ -10,9 +10,9 @@ import html
 import re
 from urllib.parse import quote
 
-from .. import DRAFT_LABEL, VERSION_STAMP
+from .. import BRAND, DRAFT_LABEL, VERSION_STAMP
 from ..dashboard.data import DASHBOARD_ASSETS
-from ..handling import is_draft, PAGE_FOOTER_CSS, status_line
+from ..handling import is_draft, status_line
 from ..pack.markdown import _handling_lines, _pack_incident_date, event_when, sorted_events
 from ..pack.schema import ID_RX
 from ..templates import DISTRIBUTION_COLUMNS
@@ -192,8 +192,33 @@ def page(html_body: str, ctx: RenderContext, cls: str = "") -> str:
             f'<footer class="pf"><p>{status} · {_ly_h(LAYOUT_FOOTER)}</p></footer></section>')
 
 
+def _ly_css_str(s) -> str:
+    """A CSS string literal (for @page margin-box content)."""
+    return '"' + str(s).replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ") + '"'
+
+
+def page_css(ctx: RenderContext, size: str) -> str:
+    """The @page rules: the size, then margin boxes that put the status phrase and the short footer at the foot of
+    every printed sheet and, for a draft, DRAFT at its top right, including sheets a long page block runs onto
+    (P4-7). Task 21 reuses it with page()."""
+    foot = f'{status_line(ctx.pack.get("status") or "")} · {LAYOUT_FOOTER}'
+    draft = f'@top-right{{content:{_ly_css_str(DRAFT_LABEL)};font:700 9pt sans-serif;letter-spacing:.12em}}' \
+        if is_draft(ctx.eh) else ""
+    return (f'@page{{size:{size}}}\n@page{{margin:14mm 12mm 16mm;'
+            f'@bottom-left{{content:{_ly_css_str(foot)};font:7pt sans-serif;color:#333}}{draft}}}')
+
+
+def _ly_brand_close(pages: list) -> list:
+    """BRAND once, in the footer of the last page (P4-20)."""
+    if not pages:
+        return pages
+    last, tail = pages[-1].rsplit("</footer></section>", 1)
+    return pages[:-1] + [f'{last}<p class="brandline">{_ly_h(BRAND)}</p></footer></section>{tail}']
+
+
 def _ly_doc(ctx: RenderContext, pages: list, size: str, L: dict) -> str:
     pack = ctx.pack
+    pages = _ly_brand_close(pages)
     lang = pack.get("lang") or "en"
     tdir = pack.get("dir") or text_dir(L)
     open_tag = f'<html lang="{_ly_h(lang)}">' if tdir == "ltr" else f'<html lang="{_ly_h(lang)}" dir="{_ly_h(tdir)}">'
@@ -202,7 +227,7 @@ def _ly_doc(ctx: RenderContext, pages: list, size: str, L: dict) -> str:
     hint = _ly_h(label(L, "ui.layout.print_hint"))
     return (f'<!doctype html>{open_tag}<head><meta charset="utf-8">'
             f'<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>{title}</title>\n<style>\n'
-            f'@page{{size:{size}}}\n{PAGE_FOOTER_CSS}\n{css}</style></head>\n'
+            f'{page_css(ctx, size)}\n{css}</style></head>\n'
             f'<body class="ly-{_ly_h(ctx.layout)} size-{size.split()[0]}"><main>\n'
             f'<header class="doc noprint"><h1>{title}</h1><p>{hint}</p></header>\n'
             + "\n".join(pages) + "\n</main></body></html>\n")
@@ -210,18 +235,18 @@ def _ly_doc(ctx: RenderContext, pages: list, size: str, L: dict) -> str:
 
 # ----------------------------------------------------------------------------- the printed items
 
-def _ly_card_pages(ctx, L, notes=None, kinds=LY_CARD_KINDS):
+def _ly_card_pages(ctx, L, notes=None, kinds=LY_CARD_KINDS, injects=True):
     """(pages, other): a page per card, toolbox and test point and per scenario inject; other counts the rest."""
     pages, other = [], 0
     for s in ctx.pack.get("sections") or []:
         for it in s.get("items") or []:
             k = it.get("kind")
-            injects = it.get("injects") if k == "scenario" and isinstance(it.get("injects"), list) else []
+            inj_list = it.get("injects") if injects and k == "scenario" and isinstance(it.get("injects"), list) else []
             if k in kinds:
                 body = _ly_toolbox_body(it, L, notes) if k == "toolbox" else _ly_blocks(it, L, notes, ctx.view)
                 bodies = [body + _ly_cites(it, L, notes)]
-            elif injects:
-                bodies = [_ly_inject_body(it, inj, L, notes) for inj in injects if isinstance(inj, dict)]
+            elif inj_list:
+                bodies = [_ly_inject_body(it, inj, L, notes) for inj in inj_list if isinstance(inj, dict)]
             else:
                 other += 1
                 continue
@@ -250,14 +275,22 @@ def _ly_inject_body(it, inj, L, notes) -> str:
             f'<p class="big">{_ly_text(inj.get("text"), notes)}</p>{dec}')
 
 
-def _ly_closing(ctx, other, L) -> list:
+def _ly_closing(ctx, other, L, notes=None) -> list:
     if not other:
         return []
-    bottom = "".join(f"<li>{_ly_text(b.get('text'))}</li>" for b in ctx.pack.get("bottom_line") or []
-                     if isinstance(b, dict))
+    bottom = "".join(f"<li>{_ly_text(b.get('text'), notes)}{_ly_bl_cites(b, notes)}</li>"
+                     for b in ctx.pack.get("bottom_line") or [] if isinstance(b, dict))
     qr = _ly_qr(ctx, ctx.base_url) if ctx.base_url else ""
     return [page(f'<h2>{_ly_h(label(L, "ui.bottom_line"))}</h2><ul>{bottom}</ul>'
                  f'<p class="more">{_ly_h(MORE_IN_PACK.format(n=other))}</p>{qr}', ctx, "closing")]
+
+
+def _ly_bl_cites(b, notes) -> str:
+    """A bottom-line entry's own cites: end-note numbers in field, else the IDs in brackets."""
+    cites = [x for x in b.get("cites") or [] if isinstance(x, str)] if isinstance(b.get("cites"), list) else []
+    if not cites:
+        return ""
+    return notes.mark(cites) if notes is not None else f' <span class="src">[{_ly_h("; ".join(cites))}]</span>'
 
 
 def _ly_endnotes(ctx, notes, L) -> list:
@@ -303,13 +336,12 @@ def _ly_cards(ctx, L):
 def _ly_field(ctx, L):
     notes = _LyNotes()
     pages, other = _ly_card_pages(ctx, L, notes)
-    return (pages + _ly_closing(ctx, other, L) + _ly_endnotes(ctx, notes, L)
+    return (pages + _ly_closing(ctx, other, L, notes) + _ly_endnotes(ctx, notes, L)
             + [page(delivery_record_html(ctx), ctx, "record")]), "A4"
 
 
 def _ly_toolbox(ctx, L):
-    pages, _ = _ly_card_pages(ctx, L, kinds=("toolbox",))
-    pages = [p for p in pages if 'class="part"' in p]          # injects are not toolbox talks
+    pages, _ = _ly_card_pages(ctx, L, kinds=("toolbox",), injects=False)
     if not pages:
         return None, "no toolbox items"
     return pages + [page(delivery_record_html(ctx), ctx, "record")], "A4"

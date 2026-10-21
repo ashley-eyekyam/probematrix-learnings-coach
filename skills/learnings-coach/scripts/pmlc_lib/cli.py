@@ -316,7 +316,7 @@ def build_parser():
     s.add_argument("--view", choices=("full", "learner"), default="full",
                    help="learner: <pack>.learner.<ext> without answers, for the document formats")
     s.add_argument("--layout", choices=LAYOUTS, help="also write the print layout <pack>.<layout>.html")
-    s.add_argument("--paper", choices=PAPERS, default="A4", help="page size of --layout cards (default: A4)")
+    s.add_argument("--paper", choices=PAPERS, help="page size of --layout cards (default: A4)")
     s.add_argument("--base-url", type=base_url_arg, metavar="URL",
                    help="where the pack page is published: QR codes in the print layouts link to it")
     s.set_defaults(fn=cmd_pack)

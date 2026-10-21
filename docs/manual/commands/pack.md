@@ -50,7 +50,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `--format` | comma-separated format names | `html,md` | Which files to write; see [Formats](#formats). An unknown name stops the command (exit 2) and lists the formats. `--no-md` still removes `md`. A format with nothing to write in this pack says `<format>: nothing to write (<why>)` and writes nothing |
 | `--view` | `full` or `learner` | `full` | `learner` writes a learner copy of each document format, named `<pack>.learner.<ext>`: answers, good-evidence notes and the correct-option flags are left out, and the line "Learner view: answers are hidden" sits under the status. Data formats ignore it |
 | `--layout` | `cards`, `toolbox`, `poster`, `checklist`, `paper` or `field` | none | Also write a print layout, `<pack>.<layout>.html`, beside the other files; see [Print layouts](#print-layouts). It never changes `<pack>.html` |
-| `--paper` | `A4` or `A5` | `A4` | The page size of `--layout cards`. The other layouts have a fixed size |
+| `--paper` | `A4` or `A5` | `A4` | The page size of `--layout cards`. The other layouts have a fixed size; with any other layout, or none, the command says `--paper applies to --layout cards only; ignored` |
 | `--base-url` | an `http://` or `https://` URL | none | Where the pack page is published. The print layouts put a QR code on each printed item that links to `<URL>#i/<item id>`, and the poster one that links to the URL itself |
 | `-h`, `--help` | none | | Show the flags and stop |
 
