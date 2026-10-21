@@ -1,0 +1,682 @@
+{
+ "source": {
+  "title": "Enquiry committee report on the major fire at the Hazira gas processing plant on 24.09.2020",
+  "issuer_role": "enquiry committee constituted by the national petroleum and natural gas regulator",
+  "statutory_status": "regulator-constituted enquiry under an office order of 30.09.2020; the report does not name the statutory provision",
+  "kind": "official-report"
+ },
+ "items": [
+  {
+   "id": "OBS-01",
+   "type": "observation",
+   "section": "10 A(a), p.26",
+   "text": "The metering-system drawing does not match the field configuration of valves and meters. The original drawings were lost; new drawings made by a vendor were not checked and approved by the operator. Three pressure transmitters shown on the drawing deliver no data, so no pressure data is available in the gas-terminal area to show a pressure rise in the metering lines.",
+   "group": "Facilities",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-02",
+   "type": "observation",
+   "section": "10 A(b), p.26",
+   "text": "Time stamps in the control systems of the different control rooms vary by 2 to 12 minutes, which makes matching the data difficult.",
+   "group": "Facilities",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-03",
+   "type": "observation",
+   "section": "10 A(c), p.26",
+   "text": "An instrument shown on the drawing is not shown or configured in the control system.",
+   "group": "Facilities",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-04",
+   "type": "observation",
+   "section": "10 A(d), p.26",
+   "text": "Motor-operated valves in the gas-terminal station are for local operation only, with no remote operation from the control room during an emergency.",
+   "group": "Facilities",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-05",
+   "type": "observation",
+   "section": "10 A(e), p.26",
+   "text": "Hydrocarbon and H2S detectors are configured to the annunciator panel for display, not to the control system for history.",
+   "group": "Facilities",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-06",
+   "type": "observation",
+   "section": "10 A(f), p.26",
+   "text": "The fire and gas detection system has no provision for automatic plant shutdown or for activating fire suppression.",
+   "group": "Facilities",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-07",
+   "type": "observation",
+   "section": "10 B(a), p.26",
+   "text": "The safety self-audit uses a comprehensive location checklist that is not specific to each plant, so many observations are missed; audit duration is not stated, compliance is recorded on most items, but the data was found incomplete and not in line with the applicable industry standards. Approved manuals and SOPs were not available.",
+   "group": "Safety",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-08",
+   "type": "observation",
+   "section": "10 B(b), p.26",
+   "text": "Internal safety audits in 2018 and 2019 (4 and 3 days, by a three-member committee) gave observations without the filled checklist; the checklist format was not available to check the audit's completeness.",
+   "group": "Safety",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-09",
+   "type": "observation",
+   "section": "10 B(c), p.26",
+   "text": "Of 308 external safety audit recommendations from February 2018, 296 are complied with; due dates for the rest were extended to 30/04/2021 without the approval document the procedure requires.",
+   "group": "Safety",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-10",
+   "type": "observation",
+   "section": "10 B(d), p.26",
+   "text": "Fire drill reports in the maintenance system hold no data on actions taken or recommendations; separate records are kept that do not follow the approved guidelines.",
+   "group": "Safety",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-11",
+   "type": "observation",
+   "section": "10 B(e), pp.26-27",
+   "text": "Of 79 incidents reported in the incident-reporting notifications, classification is not done properly (product leaks and minor incidents classified as near misses), NIL reports are sent to the industry safety directorate, notifications are not closed properly with recommendations, and no review by HSE, operations or the plant head is in place.",
+   "group": "Safety",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-12",
+   "type": "observation",
+   "section": "10 B(f), p.27",
+   "text": "Some original work permits are missing and no record is kept of the missing permits; the job safety plan is not attached in the maintenance system; closure of permits and actions needs review.",
+   "group": "Safety",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-13",
+   "type": "observation",
+   "section": "10 B(g), p.27",
+   "text": "The emergency response and disaster management plan considers heavy product and gas leaks from pipelines and tanks, but does not state the decision on isolating or shutting down the plant or pipelines.",
+   "group": "Safety",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-14",
+   "type": "observation",
+   "section": "10 Fire fighting (a), p.27",
+   "text": "Fire-water storage and pumping capacity in Phase I, and the pumps being commissioned in Phase II, are described.",
+   "group": "Fire fighting",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-15",
+   "type": "observation",
+   "section": "10 Fire fighting (b), p.27",
+   "text": "Electric and diesel fire pumps are run for 30 minutes per week, which does not meet the applicable industry norms.",
+   "group": "Fire fighting",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-16",
+   "type": "observation",
+   "section": "10 Fire fighting (c), p.27",
+   "text": "Capacity tests of the fire pumps are not conducted, and no records explain the deviation.",
+   "group": "Fire fighting",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-17",
+   "type": "observation",
+   "section": "10 Fire fighting (d), p.27",
+   "text": "Of four diesel fire pumps, two are under maintenance, one ran for 30 minutes and the fourth trips after 2 minutes; the reason for tripping is not identified and no actions are recorded.",
+   "group": "Fire fighting",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-18",
+   "type": "observation",
+   "section": "10 Fire fighting (e), p.27",
+   "text": "Diesel consumption for running the diesel pumps is not recorded in the log sheet.",
+   "group": "Fire fighting",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-19",
+   "type": "observation",
+   "section": "10 Fire fighting (f), p.27",
+   "text": "Operation and maintenance of fire pumps, tanks, pipelines, hydrants and monitors is split between several departments, so the functioning of the equipment is not ensured and fire-fighting effectiveness is affected.",
+   "group": "Fire fighting",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-20",
+   "type": "observation",
+   "section": "10 Fire fighting (g), p.27",
+   "text": "Fire stations are manned by the site security force; during shifts the security force reports to the operator's shift in-charge instead of the fire chief.",
+   "group": "Fire fighting",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-21",
+   "type": "observation",
+   "section": "10 Maintenance (a), p.27",
+   "text": "During the December 2019 calibration, a condensate meter's calibration range was changed and later changed back, with no mention in the signed calibration documents; no checklist is followed for such high-pressure, high-risk jobs.",
+   "group": "Maintenance",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-22",
+   "type": "observation",
+   "section": "10 Maintenance (b), p.28",
+   "text": "A malfunction notification was raised on 17/09/2020; on 18/09/2020 a leak was seen from the meter; O-rings bought in the local market were used in place of the original gaskets, without quality control; the meter was put back online after testing at operating pressure only; no SOP existed for calibrating these meters; the notification was not closed after the job.",
+   "group": "Maintenance",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-23",
+   "type": "observation",
+   "section": "10 Maintenance (c), p.28",
+   "text": "The meter was serviced in November 2018, cleaned and its gasket changed in February 2019, and the gasket changed again in September 2019, which leaked within one year; calibration equipment details are not recorded.",
+   "group": "Maintenance",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-24",
+   "type": "observation",
+   "section": "10 Maintenance (d), p.28",
+   "text": "Of 7935 notifications this year, 1060 are pending, 252 older than three months are incomplete and 79 have no action initiated; there is no review or escalation mechanism, and some notifications are closed without data on the actions taken.",
+   "group": "Maintenance",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-25",
+   "type": "observation",
+   "section": "10 Electrical maintenance (a), p.28",
+   "text": "The maintenance system records no reasons for overrun of scheduled preventive maintenance and has no escalation for delayed jobs; job completion reports are very brief.",
+   "group": "Maintenance: electrical",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-26",
+   "type": "observation",
+   "section": "10 Electrical maintenance (b), p.28",
+   "text": "Most of the gas-terminal area is Zone 1, so its electrical equipment and lighting are flameproof, with a half-yearly inspection and maintenance schedule.",
+   "group": "Maintenance: electrical",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-27",
+   "type": "observation",
+   "section": "10 Electrical maintenance (c), p.28",
+   "text": "When a scheduled lighting job is delayed, the next notification shifts by six months; no reasons for the delay were recorded, and job records list only repaired equipment, not the inspection of the rest.",
+   "group": "Maintenance: electrical",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-28",
+   "type": "observation",
+   "section": "10 Electrical maintenance (d), p.29",
+   "text": "The job against the April 2020 notification was not done, with no record of the reason and no escalation.",
+   "group": "Maintenance: electrical",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-29",
+   "type": "observation",
+   "section": "10 Electrical maintenance (e), p.29",
+   "text": "Flameproof fittings carry no unique identification, so it cannot be known whether a given fitting was inspected; missing the damaged light fitting in earlier maintenance cannot be ruled out.",
+   "group": "Maintenance: electrical",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-30",
+   "type": "observation",
+   "section": "10 Electrical maintenance (f), p.29",
+   "text": "The post-incident electrical audit was generic and short; overall, electrical maintenance is skewed towards breakdown maintenance, with little emphasis on systematic preventive maintenance and inspection.",
+   "group": "Maintenance: electrical",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-31",
+   "type": "observation",
+   "section": "10 Corrosion monitoring (a), p.29",
+   "text": "Pipe-wall thickness is to be measured every four years by a contracted agency, which also analyses and compares the results; the operator sets the spot-selection guidelines.",
+   "group": "Maintenance: corrosion",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-32",
+   "type": "observation",
+   "section": "10 Corrosion monitoring (b), p.29",
+   "text": "The last two thickness surveys were in 2011 and 2017, so the four-year schedule is not strictly followed.",
+   "group": "Maintenance: corrosion",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-33",
+   "type": "observation",
+   "section": "10 Corrosion monitoring (c), pp.29-30",
+   "text": "For many pipes, especially in the gas-terminal area, baseline thickness data and the original drawings and pipe schedules are not available, which makes decisions on corrective action difficult.",
+   "group": "Maintenance: corrosion",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-34",
+   "type": "observation",
+   "section": "10 Corrosion monitoring (d), p.30",
+   "text": "The spot-selection procedure does not ensure the same spot is measured each time, so the analysis may not be fully correct.",
+   "group": "Maintenance: corrosion",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-35",
+   "type": "observation",
+   "section": "10 Corrosion monitoring (e), p.30",
+   "text": "The 2017 survey identified several pipes with significant thickness loss needing corrective action, but after three years no corrective plan had been developed.",
+   "group": "Maintenance: corrosion",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-36",
+   "type": "observation",
+   "section": "10 Corrosion monitoring (f), p.30",
+   "text": "Thickness loss with heavy pitting on a segment of the trunk line in July 2019 was corrected by painting, on a line with zero corrosion allowance; whether painting suffices, and how corrective actions are decided, needs review.",
+   "group": "Maintenance: corrosion",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-37",
+   "type": "observation",
+   "section": "10 Corrosion monitoring (overall), p.30",
+   "text": "Spot ultrasonic surveys are in place, but follow-up in decision making, planning and execution is lacking.",
+   "group": "Maintenance: corrosion",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-38",
+   "type": "observation",
+   "section": "10 General (a), p.30",
+   "text": "Important telephone numbers are on a small sheet hanging in the control panel and are difficult to read.",
+   "group": "General",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-39",
+   "type": "observation",
+   "section": "10 General (b), p.30",
+   "text": "In the recently built blast-proof gas-terminal control room the panel layout is not well planned (the annunciator panel is behind the main panel) and the doors are not blast-proof and not properly fixed.",
+   "group": "General",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-40",
+   "type": "observation",
+   "section": "10 General (c), p.30",
+   "text": "Control-room operations are carried out by people inadequately trained for operations and emergencies; new staff get a general four-day programme, qualification is not defined in HR or operations policy, and most staff have attended only one basic course since 2018.",
+   "group": "General",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-41",
+   "type": "observation",
+   "section": "10 General (d), p.30",
+   "text": "Pan-tilt-zoom cameras are provided at a few places and take about 90 seconds to turn around; visibility from them is limited.",
+   "group": "General",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-42",
+   "type": "observation",
+   "section": "10 General (e), pp.30-31",
+   "text": "The management-of-change procedure published in August 2016 was not followed for gas-header changes in 2013 and 2018; the plant reported that no management of change had been carried out since 2018.",
+   "group": "General",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "OBS-43",
+   "type": "observation",
+   "section": "10 General (f), p.31",
+   "text": "Ordinary registers are used as logbooks; activities, alarms and events are not logged properly and handover is not recorded.",
+   "group": "General",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "RC-01",
+   "type": "root_cause",
+   "section": "11, Root cause (i), p.33",
+   "text": "Loss of containment in the condensate metering area from failure of the O-ring of the orifice retaining plate.",
+   "group": "Root cause",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "RC-02",
+   "type": "root_cause",
+   "section": "11, Root cause (ii), p.33",
+   "text": "Use of a non-standard O-ring.",
+   "group": "Root cause",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "RC-03",
+   "type": "root_cause",
+   "section": "11, Root cause (iii), p.33",
+   "text": "Lack of control over material sourcing.",
+   "group": "Root cause",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "RC-04",
+   "type": "root_cause",
+   "section": "11, Root cause (iv), p.33",
+   "text": "Ignition of the gas cloud by an exposed electrical fitting.",
+   "group": "Root cause",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "RC-05",
+   "type": "root_cause",
+   "section": "11, Root cause (v), p.33",
+   "text": "Inadequate preventive maintenance systems.",
+   "group": "Root cause",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "RC-06",
+   "type": "root_cause",
+   "section": "11, Root cause (vi), p.33",
+   "text": "Non-isolation or stoppage of the trunk-line operation.",
+   "group": "Root cause",
+   "hoc_tier": "not applicable"
+  },
+  {
+   "id": "REC-01",
+   "type": "recommendation",
+   "section": "12 A.1 (P&ID), p.34",
+   "text": "Check and approve all vendor-made drawings against the as-built configuration, and preferably digitise them.",
+   "group": "Facilities",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-02",
+   "type": "recommendation",
+   "section": "12 A.1 (DCS), p.34",
+   "text": "Configure all field instruments (pressure transmitters, hydrocarbon and H2S detectors, densitometer) in the control system with alarms, events and history; interlock fire and gas detection to automatic plant shutdown and fire suppression.",
+   "group": "Facilities",
+   "hoc_tier": "engineering"
+  },
+  {
+   "id": "REC-03",
+   "type": "recommendation",
+   "section": "12 A.2, p.34",
+   "text": "Make all motor-operated valves remotely operable from the control room.",
+   "group": "Facilities",
+   "hoc_tier": "engineering"
+  },
+  {
+   "id": "REC-04",
+   "type": "recommendation",
+   "section": "12 B.1, p.34",
+   "text": "Develop plant-specific self-audit checklists; audit at least twice a year for 3 to 4 days with a multidisciplinary team and implement the recommendations; sign and date every checklist page.",
+   "group": "Safety",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-05",
+   "type": "recommendation",
+   "section": "12 B.2, p.34",
+   "text": "Make status reports of external audit recommendations available; take the competent authority's approval for any extension of compliance dates and keep the evidence.",
+   "group": "Safety",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-06",
+   "type": "recommendation",
+   "section": "12 B.3, p.34",
+   "text": "Record all fire drill actions, observations and recommendations in the maintenance system.",
+   "group": "Safety",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-07",
+   "type": "recommendation",
+   "section": "12 B.4, p.34",
+   "text": "Analyse and report all incidents per the operator's corporate policy, categorise near misses and minor incidents correctly, review them quarterly and circulate lessons to all plants.",
+   "group": "Safety",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-08",
+   "type": "recommendation",
+   "section": "12 B.5 (i), p.34",
+   "text": "Carry out all non-routine and hazardous work under a permit to work with proper authorisation; do not treat maintenance notifications as permits.",
+   "group": "Safety",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-09",
+   "type": "recommendation",
+   "section": "12 B.5 (ii), p.34",
+   "text": "File completed permits serially, document any missing permits, introduce sample checks of permits by senior staff, and check the permit system in self-audits.",
+   "group": "Safety",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-10",
+   "type": "recommendation",
+   "section": "12 B.6, p.34",
+   "text": "Consider including heavy product or gas leaks from pipelines and tank rupture as a scenario in the emergency plan, with a documented action plan.",
+   "group": "Safety",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-11",
+   "type": "recommendation",
+   "section": "12 C.1 (i), p.35",
+   "text": "Run fire pumps twice a week as the industry standard requires.",
+   "group": "Fire fighting",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-12",
+   "type": "recommendation",
+   "section": "12 C.1 (ii), p.35",
+   "text": "Capacity-test each fire pump as the industry standard requires.",
+   "group": "Fire fighting",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-13",
+   "type": "recommendation",
+   "section": "12 C.1 (iii), p.35",
+   "text": "Record diesel consumption, start and stop times and maintenance data such as trips and overheating in the logbook.",
+   "group": "Fire fighting",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-14",
+   "type": "recommendation",
+   "section": "12 C.1 (iv), p.35",
+   "text": "Inspect and maintain fire-water pumps periodically and keep the records, as the industry standard requires.",
+   "group": "Fire fighting",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-15",
+   "type": "recommendation",
+   "section": "12 C.1 (v), p.35",
+   "text": "Commission pumps under maintenance and new pumps at the earliest.",
+   "group": "Fire fighting",
+   "hoc_tier": "engineering"
+  },
+  {
+   "id": "REC-16",
+   "type": "recommendation",
+   "section": "12 C.2 (i), p.35",
+   "text": "Consider a dedicated fire group to operate and maintain all fire-fighting equipment, with single-point responsibility.",
+   "group": "Fire fighting",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-17",
+   "type": "recommendation",
+   "section": "12 D.1 (i), p.35",
+   "text": "Record the master calibrator, actions, replacements and any deviation from procedure in the calibration certificate.",
+   "group": "Maintenance",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-18",
+   "type": "recommendation",
+   "section": "12 D.1 (ii), p.35",
+   "text": "Develop an SOP with a checklist for maintenance work on high-pressure gas and liquid metering systems.",
+   "group": "Maintenance",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-19",
+   "type": "recommendation",
+   "section": "12 D.2 (i), p.35",
+   "text": "Develop an escalation method for notifications not attended in time, with quarterly monitoring after classifying notifications as critical, non-critical or urgent.",
+   "group": "Maintenance",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-20",
+   "type": "recommendation",
+   "section": "12 D.2 (ii), p.35",
+   "text": "Introduce sample checks and approval of notification closure by senior officers, to ensure the actions taken are recorded.",
+   "group": "Maintenance",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-21",
+   "type": "recommendation",
+   "section": "12 D.3 (i), p.35",
+   "text": "Use the 2011 and 2017 thickness data as a baseline, measure again in 2020 and 2021, and run a correlation study to find corrosion areas.",
+   "group": "Maintenance",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-22",
+   "type": "recommendation",
+   "section": "12 D.3 (ii), p.35",
+   "text": "Take prompt corrective action where metal loss is beyond acceptable limits.",
+   "group": "Maintenance",
+   "hoc_tier": "engineering"
+  },
+  {
+   "id": "REC-23",
+   "type": "recommendation",
+   "section": "12 D.3 (iii), p.35",
+   "text": "Give the ultrasonic meter and master meter details in the thickness report.",
+   "group": "Maintenance",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-24",
+   "type": "recommendation",
+   "section": "12 D.4, p.36",
+   "text": "Give every flameproof fitting and junction box a unique identification tag; inspect and maintain them plant-wise, and record the details in the maintenance system.",
+   "group": "Maintenance",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-25",
+   "type": "recommendation",
+   "section": "12 E.1, p.36",
+   "text": "Document any decision to source spares locally, when original spares are not available, with authorisation from the appropriate authority, preferably through management of change.",
+   "group": "Provisioning",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-26",
+   "type": "recommendation",
+   "section": "12 E.2, p.36",
+   "text": "Ensure proper specifications and quality-control checks for gaskets and other spares sourced on the open market.",
+   "group": "Provisioning",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-27",
+   "type": "recommendation",
+   "section": "12 E.3, p.36",
+   "text": "Formalise storage and inventory management of rubber items, with documentation.",
+   "group": "Provisioning",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-28",
+   "type": "recommendation",
+   "section": "12 F.1, p.36",
+   "text": "Display important telephone numbers properly in the control room.",
+   "group": "General",
+   "hoc_tier": "administrative"
+  },
+  {
+   "id": "REC-29",
+   "type": "recommendation",
+   "section": "12 F.2, p.36",
+   "text": "Display plant trips and alarms in the relevant control rooms and the master control room.",
+   "group": "General",
+   "hoc_tier": "engineering"
+  },
+  {
+   "id": "REC-30",
+   "type": "recommendation",
+   "section": "12 F.3, p.36",
+   "text": "Fit proper blast-proof doors to the gas-terminal control room, and educate staff to keep them closed.",
+   "group": "General",
+   "hoc_tier": "engineering"
+  },
+  {
+   "id": "REC-31",
+   "type": "recommendation",
+   "section": "12 F.4, p.36",
+   "text": "Lay out the panels in the gas-terminal control room to improve visibility and access.",
+   "group": "General",
+   "hoc_tier": "engineering"
+  },
+  {
+   "id": "REC-32",
+   "type": "recommendation",
+   "section": "12 F.5, p.36",
+   "text": "Train control-room operating staff for at least one month, preferably on simulators, before assigning control-room duties.",
+   "group": "General",
+   "hoc_tier": "training"
+  },
+  {
+   "id": "REC-33",
+   "type": "recommendation",
+   "section": "12 F.6, p.36",
+   "text": "Develop basic and refresher training programmes and provide them to all staff regularly.",
+   "group": "General",
+   "hoc_tier": "training"
+  },
+  {
+   "id": "REC-34",
+   "type": "recommendation",
+   "section": "12 F.7, p.36",
+   "text": "Provide CCTV for each plant, with displays in the plant control rooms and at the master control and security stations.",
+   "group": "General",
+   "hoc_tier": "engineering"
+  },
+  {
+   "id": "REC-35",
+   "type": "recommendation",
+   "section": "12 F.8, p.36",
+   "text": "Develop plant-wise control-room logbooks and an SOP for logging records, events and alarms, including handover details.",
+   "group": "General",
+   "hoc_tier": "administrative"
+  }
+ ]
+}
