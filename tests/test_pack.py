@@ -66,8 +66,8 @@ def problems(p, w):
     return pp.check_pack(p, w).problems
 
 
-def test_fifteen_kinds():
-    assert sorted(pp.KINDS) == sorted(MIN)
+def test_seventeen_kinds():
+    assert len(pp.KINDS) == 17 and sorted(pp.KINDS) == sorted(MIN)
 
 
 @pytest.mark.parametrize("kind", sorted(MIN))
