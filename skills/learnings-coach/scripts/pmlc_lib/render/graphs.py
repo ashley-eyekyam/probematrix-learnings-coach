@@ -1,13 +1,16 @@
 """Graph items as stand-alone files (L4-24, Rulings P4-18, P4-20, owner decision OD4-2): one <pack>.<item-id>.svg per
 graph item with every label whole, a PNG of it through a Chromium-family browser, and a GraphML file for yEd and
-other graph tools. The status phrase and the brand sit in the <desc> of each file."""
+other graph tools. The status phrase and the brand sit in the <desc> of each file, and in a PNG's iTXt Description
+chunk (P4-20)."""
 from __future__ import annotations
 
 import html
 import os
 import re
+import struct
 import subprocess
 import tempfile
+import zlib
 from pathlib import Path
 
 from .. import BRAND
@@ -89,6 +92,17 @@ def _gx_png(browser: str, svg: str) -> tuple:
         return png.read_bytes(), None
 
 
+def _gx_png_desc(png: bytes, text: str) -> bytes:
+    """The PNG with an iTXt "Description" chunk (UTF-8) right after IHDR: the metadata slot of P4-20. A file that
+    does not start with a PNG signature and IHDR is returned as it is."""
+    if png[:8] != b"\x89PNG\r\n\x1a\n" or png[12:16] != b"IHDR":
+        return png
+    end = 8 + 12 + struct.unpack(">I", png[8:12])[0]
+    body = b"Description\0\0\0\0\0" + text.encode("utf-8")      # keyword, no compression, no language
+    chunk = struct.pack(">I", len(body)) + b"iTXt" + body + struct.pack(">I", zlib.crc32(b"iTXt" + body) & 0xFFFFFFFF)
+    return png[:end] + chunk + png[end:]
+
+
 def render_png(ctx) -> list:
     items = _gx_items(ctx)
     if not items:
@@ -105,7 +119,7 @@ def render_png(ctx) -> list:
         if data is None:
             ctx.notes.append(f"png: the browser did not produce an image ({why})")
             continue
-        outs.append(Output(output_name(ctx.pack["pack"], "png", item_id=it["id"]), data,
+        outs.append(Output(output_name(ctx.pack["pack"], "png", item_id=it["id"]), _gx_png_desc(data, _gx_desc(ctx)),
                            _gx_text(svg)))
     return outs
 

@@ -17,6 +17,8 @@ import xml.parsers.expat
 from pathlib import Path
 from xml.sax.saxutils import escape as _st_xml_escape
 
+from . import BRAND
+from .handling import status_line
 from .util import REFS
 
 XLIFF_NS = "urn:oasis:names:tc:xliff:document:1.2"
@@ -197,7 +199,9 @@ def extract(pack, lang, fmt) -> str:
     a = lambda s: _st_xml_escape(s, {'"': "&quot;"})   # noqa: E731
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', f'<xliff version="1.2" xmlns="{XLIFF_NS}">',
              f' <file original="{a(str(pack.get("pack", "")))}.json" source-language="en" target-language="{a(lang)}" '
-             f'datatype="plaintext">', "  <body>"]
+             f'datatype="plaintext">', "  <header>",                 # the status and the brand: a file-level
+             f'   <note from="pmlc">{_st_xml_escape(status_line(pack.get("status") or ""))}</note>',   # note (P4-20)
+             f'   <note from="pmlc">{_st_xml_escape(BRAND)}</note>', "  </header>", "  <body>"]
     for p, src, eng in us:
         note = _st_note(p, eng, lang)
         lines += [f'   <trans-unit id="{a(p)}">', f"    <source>{_st_xml_inline(src)}</source>",

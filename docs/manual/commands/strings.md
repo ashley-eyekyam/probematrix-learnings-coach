@@ -8,6 +8,7 @@ The engine never translates anything itself. A person (or a translation tool the
 
 What the file holds:
 
+- **The status line and the ProbeMatrix footer** sit in two file-level `<note>` elements in the XLIFF `<header>`. They are not units: nothing there is translated.
 - **One unit per piece of text**, named by its place in the pack (for example `sections[1].items[0].what_happened`).
 - **Locked fields are never offered**: the pack name, schema, skill, status line and scope; every `kind`, `id` and cite field; `evidence_strength`, `hoc_tier`, `group`, `learning`, `clauses`, `comparator_refs`, `state`, `type`, `hold_point`, `seconds`, `offset`, `correct`; timeline dates and times; graph node ids. They are copied unchanged.
 - **Citations become placeholders.** An inline `[FND-0002; EVD-007]` (or a bare ID) becomes `{c1}` in CSV, or `<x id="c1" ctype="x-pmlc-cite"/>` in XLIFF. Keep every placeholder exactly once; `apply` puts the IDs back.
