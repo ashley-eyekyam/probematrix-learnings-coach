@@ -29,6 +29,8 @@ pmlc table-item <ws> hoc --register <run>/outputs/learnings-register.json
 pmlc table-item <ws> interfaces --top 3
 pmlc check-pack <ws> <run>/outputs/organisation-learning-plan.json --strict
 pmlc pack <ws> <run>/outputs/organisation-learning-plan.json
+pmlc pack <ws> <run>/outputs/organisation-learning-plan.json --format pptx    # the plan as slides
+pmlc pack <ws> <run>/outputs/organisation-learning-plan.json --format email   # a digest to the deliverer roles
 pmlc templates <ws> distribution                                     # next: the delivery record
 ```
 
@@ -50,6 +52,9 @@ This skill uses no `select` filters: the dashboard reads the whole workspace.
 - The next step: `distribution.csv`, the delivery record the organisation fills in.
 
 Do not edit the HTML by hand. Change the register or the plan JSON and run the command again.
+
+**Formats.** The learning plan also renders as slides (`--format pptx`) for the leadership team and as an email digest (`--format email`) when the cascade starts by mail; see [pack](../commands/pack.md). The dashboard stays HTML.
+
 
 ## Worked example (Hazira)
 

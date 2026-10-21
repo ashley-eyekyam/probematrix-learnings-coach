@@ -37,6 +37,8 @@ pmlc timeline-item <ws> --before incident --top 12      # signals before the eve
 pmlc register-items <ws> --tier T4
 pmlc check-pack <ws> <run>/outputs/site-leadership-coach.json --strict
 pmlc pack <ws> <run>/outputs/site-leadership-coach.json
+pmlc pack <ws> <run>/outputs/site-leadership-coach.json --format pptx   # the workshop deck
+pmlc pack <ws> <run>/outputs/site-leadership-coach.json --format docx   # the debrief as a Word paper
 ```
 
 - [select](../commands/select.md): `--tier T4` keeps site leadership findings; `--level 4` the Organisational Influences level; `--top-rated` the strongest; `--relation norm_setter learner absent challenger` the roles that set or received norms, were absent, or were expected to challenge; `--prefix OIC` the level 4 organisational-climate codes (culture, norms, structure), so the culture section is not thin when the relation filter returns little; `--brief` short entries.
@@ -55,6 +57,9 @@ pmlc pack <ws> <run>/outputs/site-leadership-coach.json
 6. **what leaders will do visibly** in the next 30 days;
 7. optionally, the **management review input**: exactly six rows, each citing its findings or reading "not in this investigation";
 8. a **two-hour workshop agenda**.
+
+**Formats.** For the workshop, `--format pptx` writes `site-leadership-coach.pptx`: one slide per bottom-line point and per decision, the causal map as boxes and arrows you can move, the citations and full text in the speaker notes, and the status line on every slide. `--format docx` gives the same content as a Word paper. See [pack](../commands/pack.md).
+
 
 ## Worked example (Hazira)
 

@@ -35,12 +35,14 @@ PMLC register-items <ws> --tier T3                          # the register's T3 
 
 Write the pack `<run>/outputs/manager-coach.json` in the shape in `learnings-coach/references/pack-schema.md`. Set `"scope": {"tiers": ["T3"]}`. Write one section per function for the **top 5 functions** by T3 findings (`id` = the function, such as `mechanical-maintenance`), largest first, each part as a `group`; the other functions get a row in the summary table only.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/manager-coach.json (repository only)
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | The learnings every manager should take away | `bottom_line` | up to 7 |
 | 1–5 | `*` | What your system allowed (section per function) | Procedures missing or not used, schedules that slid, records that hid information, resources short, roles absent; `owner` = the function that owns the change | `learning` | up to 6 |
-| 1–5 | `*` | Interfaces you share | From `interfaces`: the seams with other functions and what to agree with them | `para` | at least 1 |
-| 1–5 | `*` | Recommendations | change, `hoc_tier`, barrier, indicator; `why_not_stronger` at the administrative or training tier | `recommendation` | at least 1 |
+| 1–5 | `*` | Interfaces you share | From `interfaces`: the seams with other functions and what to agree with them | `para` | up to 3 |
+| 1–5 | `*` | Recommendations | change, `hoc_tier`, barrier, indicator; `why_not_stronger` at the administrative or training tier | `recommendation` | up to 4 |
 | 1–5 | `*` | Leading indicators | Measurable from systems the function already has (CMMS, permits, training records, audit tracker), each with `deterioration` | `indicator` | up to 4 |
 | 1–5 | `*` | 90-day agenda | Columns Days, Action; `row_cites` (below) | `table` | 1 |
 | 6 | `work-management` | Work management: planners and schedulers | What the planning system allowed (job plans without test steps, deferrals, backlog, permit coordination) | `learning` | optional, up to 4 |
@@ -53,6 +55,7 @@ Rules for the content:
 - **90-day agenda.** First 30 days: verify the condition still exists, contain it. 60: the system change drafted with the people who do the work. 90: the indicator in the monthly report. No names or dates unless asked.
 - **Work management.** Planners and schedulers decide what work is planned, with which steps, and what is deferred. Write the section when the work-management selection returns findings; the planning function then gets no separate function section.
 - **Management review input** (ISO 45001 9.3). Write it when the user asks for a management-review input. One `table`, columns Input, What this investigation shows, Indicator, Deterioration trigger, with **exactly six rows** in this order: Incidents and corrective actions; Monitoring results; Audit results; Risks and opportunities; Adequacy of resources; Consultation outcomes. Each row cites its findings in `row_cites`, or reads "not in this investigation" in the second cell with an empty cites list; every row with cites names an indicator and its deterioration trigger.
+- **Calendar reminders.** Only when the user gives the day the agenda starts: set each recommendation's `by_when` to its agenda horizon ("30 days", "60 days" or "90 days") and add `--format ics --start <their date>` (below). Never pick the date yourself; without `--start` the engine writes no calendar.
 - **Indicators.** Give each a baseline to establish and a deterioration trigger, in the terms of `indicators-and-effectiveness.md` §1; thresholds are for the owner to set.
 
 ```json
@@ -79,6 +82,11 @@ Run `learnings-coach/references/skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/manager-coach.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/manager-coach.json                  # -> manager-coach.html (open first) and manager-coach.md
+PMLC pack <ws> <run>/outputs/manager-coach.json --format docx    # the agenda as a Word paper: manager-coach.docx
+PMLC pack <ws> <run>/outputs/manager-coach.json --format csv     # manager-coach.actions.csv, owner columns blank
+PMLC pack <ws> <run>/outputs/manager-coach.json --format ics --start YYYY-MM-DD   # only with the user's start date
 ```
+
+The `.actions.csv` lists every recommendation, decision and indicator with the owner, due-date and status columns blank for the organisation to fill in. Once it exists the engine never replaces it: the command stops with exit 1 and writes nothing, so run `csv` on its own line and never delete a file the organisation may have filled in. The `.ics` holds one all-day reminder per recommendation with a `by_when` horizon, counted from the user's date, with no attendees (`skill-common.md` §8).
 
 Also confirm: at most five function sections, every function with T3 findings in the summary, and the management-review table, if present, has exactly the six rows. Next: `PMLC export-actions <ws>` turns the recommendations and indicators into an action list with owners left blank.

@@ -439,3 +439,73 @@ def test_p4h_eval_98_does_not_echo_the_hub_table():
         return {tuple(w[i:i + 4]) for i in range(len(w) - 3)}
     rows = "\n".join(line for line in hub.splitlines() if line.startswith("| ") and "`" in line)
     assert not grams(e98["prompt"]) & grams(rows)
+
+
+# ------------------------------------------------- Task 24: format evals and the command_contains expectation
+
+def _cmd_eval(tmp_path, exps, eid=7):
+    data = {"skill_name": "probematrix-learnings-coach", "evals": [
+        {"id": eid, "owner": "supervisor-coach", "skill": "supervisor-coach", "kind": "trigger", "prompt": "p",
+         "files": [], "expectations": exps}]}
+    f = tmp_path / "evals-cmd.json"
+    f.write_text(json.dumps(data))
+    return f
+
+
+def test_p4s_command_contains_check(tmp_path):
+    f = _cmd_eval(tmp_path, [{"type": "command_contains"},
+                             {"type": "command_contains", "command": "Pack now", "flags": ["docx"], "contains": "x"},
+                             {"type": "command_contains", "command": "pack", "flags": {"format": 3}}])
+    out = runner("check", "--file", str(f)).stdout
+    for msg in ("eval 7: command_contains needs command", "eval 7: command_contains: command must be a pmlc subcommand",
+                "eval 7: command_contains: flags must map flag names to values",
+                "eval 7: command_contains: contains must be a list of strings"):
+        assert msg in out, (msg, out)
+    ok = _cmd_eval(tmp_path, [{"type": "command_contains", "command": "pack",
+                               "flags": {"format": "docx", "layout": "paper"}, "contains": ["board-brief.json"]}])
+    assert "command_contains" not in runner("check", "--file", str(ok)).stdout
+
+
+def test_p4s_command_contains_grade(tmp_path):
+    rd = _run_folder(tmp_path)
+    exps = [{"type": "pack_exists", "pack": "supervisor-coach"},
+            {"type": "command_contains", "command": "pack", "flags": {"format": "docx", "layout": "checklist"},
+             "contains": ["supervisor-coach.json"]}]
+    f = _cmd_eval(tmp_path, exps)
+    r = runner("grade", str(rd), "--file", str(f))
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "| 7 | supervisor-coach | command_contains pack --format docx --layout checklist supervisor-coach.json | manual |" in r.stdout
+    tr = tmp_path / "transcript.txt"
+    tr.write_text("python3 skills/learnings-coach/scripts/pmlc.py check-pack ws o/supervisor-coach.json --strict\n"
+                  "python3 skills/learnings-coach/scripts/pmlc.py pack ws o/supervisor-coach.json "
+                  "--format=email,docx --layout checklist\n", encoding="utf-8")
+    r = runner("grade", str(rd), "--file", str(f), "--transcript", str(tr))
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "command_contains pack --format docx --layout checklist supervisor-coach.json | pass |" in r.stdout
+    assert "Pass rate: 2/2" in r.stdout
+    tr.write_text("PMLC pack ws o/supervisor-coach.json --format email --layout checklist\n"
+                  "PMLC check-pack ws o/supervisor-coach.json --format docx --layout checklist\n", encoding="utf-8")
+    r = runner("grade", str(rd), "--file", str(f), "--transcript", str(tr))
+    assert r.returncode == 1
+    assert "command_contains pack --format docx --layout checklist supervisor-coach.json | fail: no pmlc pack command with" in r.stdout
+    r = runner("grade", str(rd), "--file", str(f), "--transcript", str(tmp_path / "none.txt"))
+    assert r.returncode != 0 and "none.txt" in r.stderr
+
+
+def test_p4s_format_evals():
+    """Task 24: at least six format evals, each a trigger eval that expects its skill and a pmlc command with the
+    format or layout flag; every flag value is a registered format or layout."""
+    sys.path.insert(0, str(ROOT / "skills" / "learnings-coach" / "scripts"))
+    from pmlc_lib import render
+    from pmlc_lib.render.layouts import LAYOUTS
+    known = set(render.FORMATS) | set(LAYOUTS) | {"scorm"}          # scorm: Task 21, merged in the same wave
+    evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
+    fmt = [e for e in evals if any(x["type"] == "command_contains" for x in e["expectations"])]
+    assert len(fmt) >= 6
+    for e in fmt:
+        assert e["kind"] == "trigger" and e["skill"] == e["owner"], e["id"]
+        assert {"type": "routes_to", "skill": e["skill"]} in e["expectations"], e["id"]
+        for x in e["expectations"]:
+            if x["type"] == "command_contains" and x["command"] == "pack":
+                vals = [v for k, v in x.get("flags", {}).items() if k in ("format", "layout")]
+                assert vals and set(vals) <= known, (e["id"], vals)

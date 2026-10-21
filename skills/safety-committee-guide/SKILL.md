@@ -42,6 +42,8 @@ PMLC select <ws> --prefix OIC --top-rated --brief        # culture fallback: org
 Pack `<run>/outputs/safety-committee-guide.json` (shape: `learnings-coach/references/pack-schema.md`),
 `"scope": {"tiers": ["T1", "T2"]}`.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/safety-committee-guide.json (repository only)
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | What the workforce should know, one line each | `bottom_line` | up to 5 |
@@ -96,7 +98,18 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/safety-committee-guide.json --strict
 PMLC pack <ws> <run>/outputs/safety-committee-guide.json
+PMLC pack <ws> <run>/outputs/safety-committee-guide.json --layout checklist   # the walk-round sheet to print
+PMLC pack <ws> <run>/outputs/safety-committee-guide.json --format pptx        # slides for the meeting
+PMLC pack <ws> <run>/outputs/safety-committee-guide.json --format ics --start YYYY-MM-DD   # only with the user's date
 ```
+
+- **Walk-round checklist.** `safety-committee-guide.checklist.html` prints the section 4 and 7 checks with a box
+  each and a "Checked by (role) / Date / Shift" line per section. Representatives carry it on site; the sheet
+  records roles, never names.
+- **Follow-up calendar.** Only when the user gives the meeting date: `--format ics --start <that date>` turns the
+  30, 60 and 90-day follow-up checks into all-day reminders with no attendees. Never pick the date yourself.
+- **Another language.** For a workforce that reads another language, translate through `strings` and have a
+  fluent speaker check it (`skill-common.md` §8).
 
 - **Distribution record.** Each committee session is recorded in `<run>/outputs/distribution.csv`: if the file
   does not exist, `PMLC templates <ws> distribution` writes it with one row per pack (it never overwrites; add a

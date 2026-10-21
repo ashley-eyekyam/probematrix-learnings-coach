@@ -34,6 +34,8 @@ pmlc register-items <ws> --tier T5               # the register's T5 learnings
 pmlc facts <ws>                                  # headline numbers and priority-1 learnings by tier
 pmlc check-pack <ws> <run>/outputs/top-management-brief.json --strict
 pmlc pack <ws> <run>/outputs/top-management-brief.json
+pmlc pack <ws> <run>/outputs/top-management-brief.json --format docx,pptx   # Word paper and slides
+pmlc pack <ws> <run>/outputs/top-management-brief.json --format email       # a pre-read digest
 ```
 
 - [select](../commands/select.md): `--tier T4 T5` keeps leadership and corporate findings; `--level 4` the Organisational Influences level; `--top-rated` the strongest; `--tag people corporate assurance` and `--tag leadership corporate` select by function tag (HR and training, corporate and board, HSE and audit, plant leadership in the default list), so the brief survives an organisation's own taxonomy; `--brief` short entries.
@@ -52,6 +54,9 @@ pmlc pack <ws> <run>/outputs/top-management-brief.json
 6. **assurance** questions: how the organisation will know the learning is applied at every site.
 
 The tone is neutral and factual, with roles only. Owners are named as functions.
+
+**Formats.** The skill offers a Word paper (`--format docx`) for the executive committee pack, slides (`pptx`) for presenting it, and an email digest (`email`: `.email.html` and `.email.txt`, under 100 KB) as a pre-read; see [pack](../commands/pack.md). Each carries the status line and, until a person approves the brief, DRAFT.
+
 
 ## Worked example (Hazira)
 

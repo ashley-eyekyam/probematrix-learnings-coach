@@ -34,16 +34,18 @@ PMLC facts <ws>                                                       # headline
 
 Four pages at most. Write the pack `<run>/outputs/top-management-brief.json` in the shape in `learnings-coach/references/pack-schema.md`. Set `"scope": {"levels": [4], "min_rating": "top"}`.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/top-management-brief.json (repository only)
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | The three enterprise-level learnings | `bottom_line` | up to 3 |
 | 1 | `summary` | Executive summary | Half a page: what happened in two sentences, the decisions requested; define the four HFACS levels once | `para` | up to 3 |
 | 2 | `transferability` | Transferability | Columns Learning, Transferability (site-specific, likely at similar sites, enterprise-wide), Reason (shared standard, system, culture or vintage of equipment); `row_cites` | `table` | 1 |
-| 3 | `policies` | Policies, standards and legal requirements implicated | One `para` per policy, standard or legal requirement (`group` = its name): what the evidence shows about its implementation; `clauses` where a crosswalk requirement applies | `para` | at least 1 |
+| 3 | `policies` | Policies, standards and legal requirements implicated | One `para` per policy, standard or legal requirement (`group` = its name): what the evidence shows about its implementation; `clauses` where a crosswalk requirement applies | `para` | up to 8 |
 | 4 | `decisions` | Decisions for top management | Each with options and trade-off; `group` opens "For decision:" or "For noting:" | `decision` | up to 6 |
 | 4 | `decisions` | (same section) | The enterprise indicator that would show progress, after its decision in the same `group`, with `deterioration` | `indicator` | up to 6 |
 | 5 | `management-review` | Management review input | The six-row table (below) | `table` | optional, up to 1 |
-| 6 | `assurance` | Assurance | How the organisation will know the learning is applied across sites; `to` = the role asked | `question` | at least 1 |
+| 6 | `assurance` | Assurance | How the organisation will know the learning is applied across sites; `to` = the role asked | `question` | up to 6 |
 
 Rules for the content:
 
@@ -78,6 +80,10 @@ Run `learnings-coach/references/skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/top-management-brief.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/top-management-brief.json                  # -> top-management-brief.html (open first) and .md
+PMLC pack <ws> <run>/outputs/top-management-brief.json --format docx,pptx   # the ExCo paper (.docx) and its slides (.pptx)
+PMLC pack <ws> <run>/outputs/top-management-brief.json --format email       # a digest for the executives' inboxes
 ```
+
+Offer the Word paper when the brief goes into an executive-committee pack, the slides when someone presents it, and the email digest (`.email.html` and `.email.txt`) for a pre-read; each carries the status line and, until a person approves it, DRAFT (`skill-common.md` §8).
 
 Also confirm: every decision is marked "For decision" or "For noting", and the management-review table, if present, has exactly the six rows. Next: `board-brief` for the board's oversight questions, or `auditor-assurance-pack` for cross-site verification.

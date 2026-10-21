@@ -32,6 +32,9 @@ pmlc select <ws> --prefix OIC --top-rated --brief   # culture fallback
 pmlc select <ws> --preset safety-committee-guide    # the four select calls above at once
 pmlc check-pack <ws> <run>/outputs/safety-committee-guide.json --strict
 pmlc pack <ws> <run>/outputs/safety-committee-guide.json
+pmlc pack <ws> <run>/outputs/safety-committee-guide.json --layout checklist   # the walk-round sheet
+pmlc pack <ws> <run>/outputs/safety-committee-guide.json --format pptx        # slides for the meeting
+pmlc pack <ws> <run>/outputs/safety-committee-guide.json --format ics --start YYYY-MM-DD   # only with your meeting date
 pmlc templates <ws> distribution                    # the session record, once per run
 ```
 
@@ -52,6 +55,9 @@ pmlc templates <ws> distribution                    # the session record, once p
 6. a **concerns log**: a table with the columns Concern, Condition seen, Location type, Date raised and Response requested, started from the conditions in the findings, with the date left for the committee;
 7. **follow-up** at 30, 60 and 90 days;
 8. a note on **committee and representative rights**: the guide does not replace any statutory right to consultation or to investigation documents. It names a regime only from the coach's [jurisdictions reference](https://github.com/ashley-eyekyam/probematrix-learnings-coach/blob/main/skills/learnings-coach/references/jurisdictions.md) and draws no legal conclusion.
+
+**Formats.** `--layout checklist` writes `safety-committee-guide.checklist.html`: the look-for and follow-up checks with a box each and a "Checked by (role) / Date / Shift" line per section, to print and carry on site. `--format pptx` gives slides for the meeting. `--format ics --start <meeting date>` turns the 30, 60 and 90-day follow-ups into all-day reminders with no attendees. A Hindi or other-language copy goes through [strings](../commands/strings.md). See [pack](../commands/pack.md).
+
 
 ## Worked example (Hazira)
 

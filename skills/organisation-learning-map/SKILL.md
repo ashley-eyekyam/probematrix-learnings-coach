@@ -42,6 +42,8 @@ Write `<run>/outputs/organisation-learning-plan.json` (the pack is named `organi
 shape in `learnings-coach/references/pack-schema.md`. Keep it to three or four pages; the dashboard carries the
 detail.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/organisation-learning-plan.json (repository only)
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | Which clusters and tiers own the priority-1 learnings, and the first packs to deliver | `bottom_line` | up to 7 |
@@ -81,9 +83,13 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/organisation-learning-plan.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/organisation-learning-plan.json                  # -> organisation-learning-plan.html and .md
+PMLC pack <ws> <run>/outputs/organisation-learning-plan.json --format pptx     # the plan as slides for the leadership team
+PMLC pack <ws> <run>/outputs/organisation-learning-plan.json --format email    # a digest to the deliverer roles
 PMLC templates <ws> distribution                         # next: the delivery record the organisation fills in
 ```
 
-Give the user the dashboard path and the plan path. The next step is `PMLC templates <ws> distribution`: it writes
+Give the user the dashboard path and the plan path. Offer the slides when the plan is presented, and the email
+digest (`.email.html` and `.email.txt`) when the cascade starts by mail; the format for each channel is in
+`skill-common.md` §8. The next step is `PMLC templates <ws> distribution`: it writes
 `<run>/outputs/distribution.csv`, which the organisation fills in as packs are delivered (never you), and which
 the dashboard reads for reach. It refuses to overwrite a file that already holds entries.

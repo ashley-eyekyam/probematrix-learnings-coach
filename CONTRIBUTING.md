@@ -14,10 +14,10 @@ Every skill except the hub (`learnings-coach`) uses the same `##` headings, in t
 
 1. **Before you start**: link `learnings-coach/references/skill-common.md` §1–§2 and list what the skill needs (the same names as `requires` in its `skill.json`).
 2. **Gather**: the `PMLC select` commands and item generators (`causal-item`, `table-item`, `timeline-item`, `register-items`), one comment per command.
-3. **Write**: one section-spec table, `| § | id | Heading | Content rule | Kind | Count |`, one row per section id and kind. An optional `bottom_line` row gives the bottom-line count. The ids, kinds and counts must equal the skill's entry in `references/pack-profiles.json`. Counts read `N`, `up to N` (min 1), `N–M`, `at least N`, or `optional` / `optional, up to N` (min 0); text in parentheses is a note.
+3. **Write**: one section-spec table, `| § | id | Heading | Content rule | Kind | Count |`, one row per section id and kind. An optional `bottom_line` row gives the bottom-line count. The ids, kinds and counts must equal the skill's entry in `references/pack-profiles.json`. Counts read `N`, `up to N` (min 1), `N–M`, `at least N`, or `optional` / `optional, up to N` (min 0); text in parentheses is a note. Prefer `up to N` to an open `at least N`. Add one line `Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/<pack>.json (repository only)`.
 4. **If the evidence is thin**: the skill's own thin case (`skill-common.md` §6 covers the rest).
 5. **Not covered here**: what the skill does not do, and which skill does.
-6. **Check and hand over**: "Run `skill-common.md` §4, then tick §5", plus any skill-specific check.
+6. **Check and hand over**: "Run `skill-common.md` §4, then tick §5", the literal `PMLC check-pack … --strict` and `PMLC pack …` lines, then one `PMLC pack … --format <names>` or `--layout <name>` line for each format the skill offers, plus any skill-specific check. The offered names go in `formats` in its `skill.json` (registered formats and layouts only; `skill-common.md` §8).
 
 Also:
 
