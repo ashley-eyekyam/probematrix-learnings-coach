@@ -583,7 +583,20 @@
     });
   }
 
+  /* L4-18: the learnings matrix keeps each tier message as visually hidden text; this button shows it on screen. */
+  function matrixToggle() {
+    var b = document.querySelector("button.mx-toggle"), t = b && document.getElementById(b.getAttribute("aria-controls"));
+    if (!t) return;
+    b.hidden = false;
+    b.addEventListener("click", function () {
+      var on = b.getAttribute("aria-pressed") !== "true";
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      t.classList.toggle("show-msg", on);
+    });
+  }
+
   function init() {
+    matrixToggle();
     var node = document.getElementById("pmlc-data");
     els.panel = document.getElementById("tab-detail");
     if (!node || !els.panel) return;

@@ -72,6 +72,7 @@ from .plan import cmd_plan
 from .privacy import cmd_scan_names
 from .profile import cmd_profile
 from .render import DEFAULT_FORMATS, FORMATS, parse_formats
+from .render.layouts import base_url_arg, LAYOUTS, PAPERS
 from .register.check import cmd_check_register
 from .register.markdown import cmd_register_md
 from .register.render import cmd_register_render
@@ -339,6 +340,10 @@ def build_parser():
     s.add_argument("--start", type=_cli_iso_date, metavar="YYYY-MM-DD",
                    help="the day the ics follow-ups count from (--format ics); the coach never picks a date itself")
     s.add_argument("--brand", metavar="FILE", help="brand.json: organisation, accent and logo (the footer and status line stay fixed)")
+    s.add_argument("--layout", choices=LAYOUTS, help="also write the print layout <pack>.<layout>.html")
+    s.add_argument("--paper", choices=PAPERS, help="page size of --layout cards (default: A4)")
+    s.add_argument("--base-url", type=base_url_arg, metavar="URL",
+                   help="where the pack page is published: QR codes in the print layouts link to it")
     s.set_defaults(fn=cmd_pack)
 
     s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)", allow_abbrev=False)

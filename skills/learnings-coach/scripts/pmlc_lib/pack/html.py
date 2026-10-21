@@ -461,8 +461,10 @@ main{{max-width:1180px;margin:0 auto;padding:24px 16px 48px}}
 h1{{font-size:24px;margin:0 0 4px}} p.m{{color:var(--mut);margin:0 0 8px}}
 footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var(--line);padding-top:12px}}
 {HANDLING_CSS}
+.skip{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
+.skip:focus{{top:8px;inset-inline-start:8px;width:auto;height:auto;margin:0;overflow:visible;clip:auto;z-index:100;background:var(--card);color:var(--fg);padding:8px 12px;border:2px solid var(--acc);border-radius:6px}}
 {css}{brand_style}
-</style></head><body><main>
+</style></head><body><a class="skip" href="#content">{t("ui.html.skip")}</a><main>
 {ribbon}{brand_id}<h1>{title}</h1>
 <p class="m">{meta}</p>
 <p class="m reading">{reading}</p>
@@ -474,7 +476,7 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 <button type="button" id="expand-all">{t("ui.expand_all")}</button><button type="button" id="collapse-all">{t("ui.collapse_all")}</button>
 <button type="button" id="print">{t("ui.print")}</button>{clear}<span id="showing" aria-live="polite"></span></div>
 <div class="layout"><details class="rail" open><summary>{t("ui.contents")}</summary><ol>{rail}</ol></details>
-<div class="content">{body}</div></div>
+<div class="content" id="content" tabindex="-1">{body}</div></div>
 <footer>{footer_brand}</footer>
 </main>
 <script type="application/json" id="pmlc-pack-data">{payload}</script>

@@ -185,8 +185,9 @@ def _count(v) -> int:
 def org_data(ws, entries) -> dict:
     """The organisation-learning data a dashboard adds (Task 17): lr_pack_matrix (learnings x packs, counted from
     the `learning` field of each pack item in outputs/*.json), reach (per pack, from distribution.csv rows with a
-    date), responses (adoption.csv) and closure (register fields). warnings holds one line per unreadable
-    organisation file; the dashboard shows them and never fails on them."""
+    date), responses (adoption.csv) and closure (register fields). warnings holds one line per bad row of an
+    organisation file; the good rows are still used, and the dashboard shows the warnings and never fails on them.
+    A distribution.csv row with a blank pack is skipped, and its pack name matches a pack's in any case."""
     from ..templates import load_adoption, load_distribution, OrgFileError, pack_files
     out = outputs_dir(ws)
     warnings = []
@@ -203,28 +204,32 @@ def org_data(ws, entries) -> dict:
     rows = [{"lr_id": _s(e.get("lr_id")), "title": _s(e.get("title")),
              "cells": {p: counts[(_s(e.get("lr_id")), p)] for p in packs if (_s(e.get("lr_id")), p) in counts}}
             for e in entries]
+    def read(load):
+        """A loader's rows; on bad rows, the good rows plus one warning per bad row (M-4)."""
+        try:
+            return load(ws)
+        except OrgFileError as e:
+            warnings.extend(e.problems)
+            return e.rows
+    canon = {p.casefold(): p for p in reversed(packs)}    # distribution.csv names a pack in any case
     reach = {}
-    try:
-        for r in load_distribution(ws):
-            if not r.get("date"):
-                continue
-            x = reach.setdefault(r.get("pack", ""), {"deliveries": 0, "attendees": 0, "contractors_included": 0})
-            x["deliveries"] += 1
-            x["attendees"] += _count(r.get("attendees"))
-            x["contractors_included"] += 1 if r.get("contractors_included") == "yes" else 0
-    except OrgFileError as e:
-        warnings.append(str(e))
+    for r in read(load_distribution):
+        name = _s(r.get("pack")).strip()
+        if not (r.get("date") and name):                  # a blank pack cell is no pack
+            continue
+        name = canon.get(name.casefold(), name)
+        x = reach.setdefault(name, {"deliveries": 0, "attendees": 0, "contractors_included": 0})
+        x["deliveries"] += 1
+        x["attendees"] += _count(r.get("attendees"))
+        x["contractors_included"] += 1 if r.get("contractors_included") == "yes" else 0
     responses = {}
-    try:
-        for r in load_adoption(ws):
-            if not (r.get("lr_id") and r.get("response")):
-                continue
-            if not re.fullmatch(r"LR-\d{2,}", r["lr_id"]):
-                warnings.append(f"adoption.csv row {r['_row']}: lr_id is not an LR-nn identifier; the row is ignored")
-                continue
-            responses[r["lr_id"]] = r["response"]
-    except OrgFileError as e:
-        warnings.append(str(e))
+    for r in read(load_adoption):
+        if not (r.get("lr_id") and r.get("response")):
+            continue
+        if not re.fullmatch(r"LR-\d{2,}", r["lr_id"]):
+            warnings.append(f"adoption.csv row {r['_row']}: lr_id is not an LR-nn identifier; the row is ignored")
+            continue
+        responses[r["lr_id"]] = r["response"]
     closure = {}
     for e in entries:
         c = {k: _s(e.get(k)) for k in CLOSURE_KEYS if _s(e.get(k))}

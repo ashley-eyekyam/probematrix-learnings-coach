@@ -25,6 +25,11 @@ jobs:
         if: matrix.node
         with:
           node-version: "20"
+          cache: npm
+          cache-dependency-path: tests/js/package-lock.json
+      - name: Install the test-only npm packages (axe-core, jsdom; Ruling P4-17)
+        if: matrix.node
+        run: npm ci --prefix tests/js
       - name: Remove Node so the JS tests skip
         if: ${{ !matrix.node }}
         run: |
@@ -50,9 +55,10 @@ jobs:
         run: |
           set -o pipefail
           # -v prints one raw SKIPPED line per test (-rs would merge identical skip lines); COLUMNS keeps the reason untruncated
-          COLUMNS=200 python -m pytest tests/test_pack_js.py tests/test_detail_js.py -v | tee js.txt
-          want=$(cat tests/test_pack_js.py tests/test_detail_js.py | grep -c "skipif(not NODE" || true)
-          got=$(grep -c "SKIPPED (node not installed)" js.txt || true)
+          COLUMNS=200 python -m pytest tests/test_pack_js.py tests/test_detail_js.py tests/test_a11y_js.py -v | tee js.txt
+          want=$(cat tests/test_pack_js.py tests/test_detail_js.py tests/test_a11y_js.py | grep -c "skipif(not NODE" || true)
+          # one skipif marker per test function; a parametrized function skips once per case, so count functions
+          got=$(grep "SKIPPED (node not installed)" js.txt | sed -E 's/(\[[^]]*\])? SKIPPED.*//' | sort -u | wc -l)
           echo "node tests: $want, skipped for no node: $got"
           if [ "$got" -ne "$want" ] || [ "$want" -eq 0 ]; then echo "the Node tests did not all skip"; exit 1; fi
       - run: coverage combine

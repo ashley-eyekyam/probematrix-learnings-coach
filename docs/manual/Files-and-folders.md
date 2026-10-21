@@ -106,12 +106,12 @@ The language check (JC7) flags a singleton role in your own wording, and a share
 
 ### Files your organisation fills in
 
-The engine writes these with the identifying columns filled in and every owner, date, response and assessed-by column blank. Your organisation fills them in; the agent never does. [templates](commands/templates.md) refuses to overwrite a file that already exists, because it may hold your entries. The files can be opened and saved in Excel: the engine reads them back with Excel's byte-order mark, extra or reordered columns and blank rows, and reports a bad value by file and row.
+The engine writes these with the identifying columns filled in and every owner, date, response and assessed-by column blank. Your organisation fills them in; the agent never does. [templates](commands/templates.md) refuses to overwrite a file that already exists, because it may hold your entries. The files can be opened and saved in Excel: the engine reads them back with Excel's byte-order mark, extra or reordered columns and blank rows, and reports every bad value by file and row while still reading the good rows.
 
 | File | Written by | Columns (engine-filled ones marked ✱) |
 |---|---|---|
 | `adoption.csv` | `templates adoption` | `lr_id`✱, `title`✱, `response` (accepted, modified or rejected), `reason`, `owning_role`, `target_window`. 25 rows for the Hazira register. |
-| `distribution.csv` | `templates distribution` | `pack`✱, `audience`✱, `channel`, `date`, `delivered_by_role`, `attendees`, `contractors_included` (yes or no), `questions_raised`, `concerns_escalated` |
+| `distribution.csv` | `templates distribution` | `pack`✱, `audience`✱, `channel`, `date`, `delivered_by_role`, `attendees`, `contractors_included` (yes or no; `y` and `n` count too), `questions_raised`, `concerns_escalated` |
 | `verification.jsonl` | `templates verification` | One line per learning: `lr_id`✱, `check_date`, `level` (communicated, understood, applied or effective), `evidence`, `assessed_by_role`. 25 lines for the Hazira register. |
 | `actions.csv`, `actions.json` | [export-actions](commands/export-actions.md) | `id`✱, `lr_id`✱, `change`✱, `hoc_tier`✱, `barrier`✱, `indicator`✱, `owner`, `due`, `status`, `capa_ref`, `effectiveness_check`, `cites`✱, `evidence_strength`✱. 44 actions from the Hazira register. Never overwritten: a second run refuses while either file exists (move them or pass a new `--out-dir`). |
 

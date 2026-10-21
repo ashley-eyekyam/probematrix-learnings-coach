@@ -108,7 +108,7 @@ Dashboard written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs
 
 The overview ends with a **Learnings × packs** table (how often each pack item names a learning, from the item's `learning` field in `outputs/*.json`) and a **Packs and reach** list. Reach comes from the rows of `distribution.csv` that have a `date`: deliveries, attendees, and deliveries that included contractors. With `--register`, the detailed register tab shows each learning's **response** from `adoption.csv` (accepted, modified, rejected) and its closure fields (`capa_ref`, `closure_evidence`, `effectiveness_result`) under "Response and closure". The toolbar has a **Needs legal / compliance review** chip that keeps the learnings with a `regulatory_touchpoint`.
 
-An organisation file with an invalid value (for example a response other than accepted, modified or rejected) does not stop the dashboard: the page shows a warning line naming the file and row, the same line goes to stderr, and that file's data is left out.
+An organisation file with an invalid value (for example a response other than accepted, modified or rejected) does not stop the dashboard: the page shows one warning line for each bad row, naming the file and row, the same lines go to stderr, and only those rows are left out: the good rows of the file are still counted. A `distribution.csv` row with a blank `pack` cell is skipped, and a pack name matches the pack in any case (`Board-Brief` counts for `board-brief`).
 
 ## Common problems
 

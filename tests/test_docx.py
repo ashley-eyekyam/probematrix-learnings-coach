@@ -354,3 +354,23 @@ def test_docx_labels_in_both_locales():
     hi = json.loads((RL.LABELS_DIR / "hi.json").read_text(encoding="utf-8"))
     for k in [k for k in EN if k.startswith("ui.docx.")]:
         assert k in hi and hi[k] and hi[k] != EN[k], k
+
+
+def test_docx_lang_from_pack(w, monkeypatch):
+    """styles.xml names the pack's lang (en-GB without one); an rtl pack's lang is also the complex-script lang."""
+    def lang_of(p):
+        styles = parts(one(R.render("docx", ctx_of(w, p))).data)["word/styles.xml"].decode()
+        return re.search(r"<w:lang [^>]*/>", styles).group(0)
+    assert lang_of(pack_with(item("para"))) == '<w:lang w:val="en-GB"/>'
+    assert lang_of(pack_with(item("para"), lang="hi")) == '<w:lang w:val="hi"/>'
+    monkeypatch.setenv("PMLC_LABELS_DIR", str(LABELS_FIX))
+    assert lang_of(pack_with(item("para"), lang="ar")) == '<w:lang w:val="ar" w:bidi="ar"/>'
+
+
+def test_docx_logo_alt_from_label(w):
+    brand = R.Brand("Fictional Works", "#1a5276", PNG_1X1, "image/png")
+    hi = json.loads((RL.LABELS_DIR / "hi.json").read_text(encoding="utf-8"))
+    for lang, alt in (("en", EN["ui.docx.logo_alt"]), ("hi", hi["ui.docx.logo_alt"])):
+        p = dict(fixture("board-brief"), lang=lang)
+        doc = xml(one(R.render("docx", ctx_of(w, p, brand=brand))).data)
+        assert f'name="Logo" descr="{alt}"' in doc, lang

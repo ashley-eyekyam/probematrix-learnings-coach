@@ -50,6 +50,8 @@ MODULES = [
     "pmlc_lib.render.docx",
     "pmlc_lib.render.script",
     "pmlc_lib.register.render",
+    "pmlc_lib.render.layouts",
+    "pmlc_lib.render.pptx",
     "pmlc_lib.pack.command",
     "pmlc_lib.cli",
 ]

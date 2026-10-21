@@ -171,6 +171,7 @@ def _load() -> None:
         "exports",
         "docx",
         "script",
+        "pptx",
     ):
         importlib.import_module(f"{__name__}.{mod}")
 

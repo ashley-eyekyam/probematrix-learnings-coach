@@ -2430,6 +2430,41 @@ def test_dashboard_bad_org_file_warns_not_crashes(ws, tmp_path):
     assert "adoption.csv row 2" in err
 
 
+def test_dashboard_bad_rows_keep_good_rows_and_warn_each(ws, tmp_path):
+    """M-4 on the dashboard: the good rows still count, and every bad row is shown and printed."""
+    w = _org_ws(ws, tmp_path)
+    (w / "outputs" / "distribution.csv").write_text(
+        "pack,date,attendees,contractors_included\nBoard brief,2026-10-01,4,maybe\nBoard brief,2026-10-02,5,Y\n"
+        "Board brief,2026-10-03,6,often\n")
+    (w / "outputs" / "adoption.csv").write_text("lr_id,title,response\nLR-01,x,Accepted\nLR-02,y,later\n")
+    org = pmlc.org_data(w, MINI_REG["entries"])
+    assert org["reach"] == {"Board brief": {"deliveries": 1, "attendees": 5, "contractors_included": 1}}
+    assert org["responses"] == {"LR-01": "accepted"}
+    assert len(org["warnings"]) == 3
+    t, err = _dash(w, tmp_path)
+    for row in ("distribution.csv row 2", "distribution.csv row 4", "adoption.csv row 3"):
+        assert row in t and row in err
+    assert t.count('role="alert"') == 3 and "1 deliveries · 5 attendees · 1 with contractors" in t
+
+
+def test_dashboard_pack_cell_rules(ws, tmp_path):
+    """Task 17 minors: a blank pack cell gives no row, pack names match case-insensitively, markup is escaped."""
+    w = _org_ws(ws, tmp_path)
+    (w / "outputs" / "distribution.csv").write_text(
+        "pack,date,attendees,contractors_included\n,2026-10-01,7,yes\n  ,2026-10-01,7,yes\n"
+        "BOARD BRIEF,2026-10-02,3,no\nboard brief,2026-10-03,2,yes\n<b>Toolbox</b>,2026-10-04,1,no\n")
+    org = pmlc.org_data(w, MINI_REG["entries"])
+    assert "" not in org["reach"]
+    assert org["reach"]["Board brief"] == {"deliveries": 2, "attendees": 5, "contractors_included": 1}
+    assert set(org["reach"]) == {"Board brief", "<b>Toolbox</b>"}
+    t, _ = _dash(w, tmp_path)
+    assert "<th></th><td>0</td>" not in t and "BOARD BRIEF" not in t
+    assert "<b>Toolbox</b>" not in t and "&lt;b&gt;Toolbox&lt;/b&gt;" in t
+    (w / "outputs" / "distribution.csv").write_text("pack,contractors_included\n<b>x</b>,<i>maybe</i>\n")
+    t, _ = _dash(w, tmp_path)
+    assert "<i>maybe</i>" not in t and "&lt;i&gt;maybe&lt;/i&gt;" in t
+
+
 def test_dashboard_compliance_filter_count(ws, tmp_path):
     w = _org_ws(ws, tmp_path)
     reg = json.loads(json.dumps(MINI_REG))

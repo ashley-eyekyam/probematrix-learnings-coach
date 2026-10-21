@@ -26,7 +26,7 @@ from ..pack.schema import cited_ids, TOP_PRINT_LINE
 from ..register.check import norm_hoc
 from . import LEARNER_BANNER, Output, output_name, READING_TIME, register, translation_lines
 from .fields import item_blocks, reading_minutes
-from .labels import label, load_labels, text_dir
+from .labels import label, load_labels, LOCALE_RX, text_dir
 from .ooxml import app_props, content_types, core_props, rels, xml_text, zip_bytes
 
 # The block kinds write_docx takes. The first seven are the contract's; "note" (a Caption line) and "pagebreak"
@@ -216,8 +216,8 @@ def _dx_image_size(data: bytes, mime: str) -> tuple:
     return 1, 1
 
 
-def _dx_logo(brand) -> tuple:
-    """(paragraph XML, media part name, bytes, extension) for the brand's logo, or None."""
+def _dx_logo(brand, alt: str = "Organisation logo") -> tuple:
+    """(paragraph XML, media part name, bytes, extension) for the brand's logo, or None. alt: its description."""
     if not brand or not getattr(brand, "logo_bytes", None):
         return None
     ext = "jpeg" if "jp" in (brand.logo_mime or "") else "png"
@@ -226,7 +226,7 @@ def _dx_logo(brand) -> tuple:
     cx = max(1, int(cy * (w or 1) / (h or 1)))
     name = f"logo.{ext}"
     drawing = (f'<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="{cx}" cy="{cy}"/>'
-               '<wp:docPr id="1" name="Logo" descr="Organisation logo"/><wp:cNvGraphicFramePr>'
+               f'<wp:docPr id="1" name="Logo" descr="{xml_text(alt)}"/><wp:cNvGraphicFramePr>'
                f'<a:graphicFrameLocks xmlns:a="{DX_A}" noChangeAspect="1"/></wp:cNvGraphicFramePr>'
                f'<a:graphic xmlns:a="{DX_A}"><a:graphicData uri="{DX_PIC}"><pic:pic xmlns:pic="{DX_PIC}">'
                f'<pic:nvPicPr><pic:cNvPr id="0" name="{name}"/><pic:cNvPicPr/></pic:nvPicPr>'
@@ -237,14 +237,24 @@ def _dx_logo(brand) -> tuple:
     return drawing, f"media/{name}", brand.logo_bytes, ext
 
 
-def _dx_styles(accent: str) -> str:
+def _dx_lang(ctx) -> str:
+    """The w:lang element of the document defaults: the pack's lang (en-GB without a valid one); an rtl pack's
+    lang is also its complex-script (w:bidi) language."""
+    lang = (ctx.pack or {}).get("lang")
+    if not (isinstance(lang, str) and LOCALE_RX.fullmatch(lang)):
+        return '<w:lang w:val="en-GB"/>'
+    bidi = f' w:bidi="{xml_text(lang)}"' if _dx_dir(ctx) == "rtl" else ""
+    return f'<w:lang w:val="{xml_text(lang)}"{bidi}/>'
+
+
+def _dx_styles(accent: str, lang_xml: str = '<w:lang w:val="en-GB"/>') -> str:
     def para_style(sid, name, ppr, rpr, based="Normal"):
         base = f'<w:basedOn w:val="{based}"/><w:next w:val="Normal"/>' if based else ""
         return (f'<w:style w:type="paragraph" w:styleId="{sid}"><w:name w:val="{name}"/>{base}<w:qFormat/>'
                 f"<w:pPr>{ppr}</w:pPr><w:rPr>{rpr}</w:rPr></w:style>")
     return (DX_DECL + f'<w:styles {DX_NS}><w:docDefaults><w:rPrDefault><w:rPr>'
             '<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Arial"/>'
-            '<w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="en-GB"/></w:rPr></w:rPrDefault>'
+            '<w:sz w:val="22"/><w:szCs w:val="22"/>' + lang_xml + '</w:rPr></w:rPrDefault>'
             '<w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="264" w:lineRule="auto"/></w:pPr></w:pPrDefault>'
             "</w:docDefaults>"
             + para_style("Normal", "Normal", "", "", based=None).replace("<w:style ", '<w:style w:default="1" ', 1)
@@ -317,7 +327,7 @@ def write_docx(doc_blocks, ctx) -> bytes:
     brand = ctx.brand
     accent = (brand.accent.lstrip("#").upper() if brand and getattr(brand, "accent", None) else DX_ACCENT)
     body = []
-    logo = _dx_logo(brand)
+    logo = _dx_logo(brand, _dx_labels(ctx).get("ui.docx.logo_alt", "Organisation logo"))
     if logo:
         body.append(f"<w:p>{wr.ppr()}{logo[0]}</w:p>")
     for blk in doc_blocks:
@@ -367,7 +377,7 @@ def write_docx(doc_blocks, ctx) -> bytes:
         "docProps/app.xml": app_props(),
         "word/document.xml": doc,
         "word/_rels/document.xml.rels": rels(doc_rels),
-        "word/styles.xml": _dx_styles(accent),
+        "word/styles.xml": _dx_styles(accent, _dx_lang(ctx)),
         "word/settings.xml": settings,
         "word/numbering.xml": _dx_numbering(wr.ordered),
         "word/endnotes.xml": _dx_endnotes(wr),

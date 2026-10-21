@@ -135,16 +135,18 @@ pmlc pack <ws> <run>/outputs/board-brief.json
 ```bash
 pmlc select <ws> --preset frontline-learning-cards     # T1 brief, T1 levels 1 and 2, T1 top-rated
 pmlc check-pack <ws> <run>/outputs/frontline-learning-cards.json --strict
-pmlc pack <ws> <run>/outputs/frontline-learning-cards.json
+pmlc pack <ws> <run>/outputs/frontline-learning-cards.json --layout field
 ```
 
-Then open `frontline-learning-cards.html` and use the page's **Print** button (or the browser's print command).
+Then open `frontline-learning-cards.field.html` and print it from the browser: one A4 page per card, the citations as numbered end-notes, and a delivery record to fill in at the briefing. `--layout cards --paper A5` prints pocket-size cards instead; `--layout checklist` prints the stop-and-ask list with a box per check and a "Checked by (role)" line; `--layout toolbox` prints one page per toolbox talk when the pack has them. With `--base-url <published page>`, each card carries a QR code that opens it in the full pack. The page itself (`frontline-learning-cards.html`) still has its own **Print** button.
 
 **What to check.**
 
 - Each card says what the organisation is changing. Not one ends with "be careful" or "stay vigilant": in a frontline pack the language check treats that as an error.
 - No card singles out "the" operator of a small crew.
 - In print, each card stays on one page and carries the status line. The printed evidence trail lists only the cited records and follows on the same page, and the uncovered findings print as one line, "x of y relevant findings cited", with the pack's own numbers.
+- Every printed page carries the status line, the footer and, until sign-off, DRAFT.
+- The delivery record holds roles only. After the briefing, copy its rows into `distribution.csv`.
 - Consult the people involved before wide release.
 
 ## A learnings register to Excel
