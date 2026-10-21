@@ -196,5 +196,6 @@
  "ui.pptx.continued": "{heading} (जारी)",
  "ui.pptx.entries": "{n} प्रविष्टियाँ",
  "ui.pptx.cited_records": "उद्धृत रिकॉर्ड",
- "ui.html.skip": "खंडों पर जाएँ"
+ "ui.html.skip": "खंडों पर जाएँ",
+ "ui.docx.logo_alt": "संगठन का लोगो"
 }

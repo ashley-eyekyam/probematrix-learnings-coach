@@ -196,5 +196,6 @@
  "ui.pptx.continued": "{heading} (continued)",
  "ui.pptx.entries": "{n} entries",
  "ui.pptx.cited_records": "Cited records",
- "ui.html.skip": "Skip to the sections"
+ "ui.html.skip": "Skip to the sections",
+ "ui.docx.logo_alt": "Organisation logo"
 }
