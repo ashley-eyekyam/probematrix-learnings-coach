@@ -1,6 +1,7 @@
 {
  "pack": "report-comparison",
  "schema": 1,
+ "skill": "report-comparison",
  "title": "Report Comparison: Hazira gas release and fire, 2020",
  "audience": "HSE and investigation leads",
  "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption.",

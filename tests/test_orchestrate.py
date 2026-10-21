@@ -94,7 +94,8 @@ def test_dossier_index_is_valid_pack(setup_ws):
     assert p.is_file() and "dossier-index.json" in out
     d = json.loads(p.read_text())
     assert len(d["sections"]) == 1 and d["sections"][0]["items"][0]["kind"] == "table"
-    run("check-pack", str(ws), str(p))
+    assert d["skill"] == "cluster-learning-dossier"     # P4-22: the index is a pack of the dossier skill
+    run("check-pack", str(ws), str(p), "--strict")
     run("check-all", str(ws))
 
 

@@ -1,6 +1,7 @@
 {
  "pack": "frontline-learning-cards",
  "schema": 1,
+ "skill": "frontline-learning-cards",
  "title": "Frontline Learning Cards: Gas terminal release and fire, 2020",
  "audience": "Frontline crews (T1): maintenance fitters, instrument and electrical technicians, control-room staff and security staff",
  "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress.",
@@ -170,19 +171,26 @@
     {
      "kind": "card",
      "title": "Fit only the seal the specification calls for",
-     "what_happened": "The condensate meter, in service since 1986, was built for a rectangular-slot gasket. Its original specification was not on file, so locally bought round O-rings were fitted as regular practice, with no specification, quality check or recorded approval. The seal fitted on 18 Sep 2020 is the probable source of the release on 24 Sep 2020.",
-     "why_made_sense": "The job had to be done, the usual O-ring was on hand, and nothing in the system said stop: there was no specification, no approved substitute and no owner for either [FND-23139BF9]. Earlier replacements had used the same part, so it felt normal [FND-8CE00707].",
+     "what_happened": "The condensate meter, in service since 1986, was built for a rectangular-slot gasket. Its specification was lost, so locally bought round O-rings were fitted as regular practice, with no specification, quality check or approval. The seal fitted on 18 Sep 2020 is the probable source of the release.",
+     "why_made_sense": "The job had to be done, and nothing in the system said stop: no specification, no approved substitute and no owner for either. Earlier changes had used the same kind of O-ring, so it felt normal.",
      "organisation_changing": "The Learnings Register recommends, for the organisation to decide: re-establish the seal specification, stock only certified parts against it, and have stores refuse to issue a pressure-boundary seal without a specification reference.",
+     "did_you_know": [
+      "No record shows when, or on whose authority, the site moved from the maker's gasket to a locally bought O-ring."
+     ],
+     "what_you_can_do": [
+      "Check the part against the groove and the specification before you fit it.",
+      "If nobody can show a specification, ask your supervisor before fitting."
+     ],
      "warning_signs": [
       "The part does not match the shape of the groove it goes into",
       "Nobody can show you a specification for the seal",
       "\"This is what we normally use\" is the only reason given"
      ],
-     "good_looks_like": "No specification, no fit: the crew stops and asks the supervisor for the specification before fitting any seal on a pressure part.",
+     "good_looks_like": "No specification, no fit: the crew asks the supervisor for the specification before fitting any seal on a pressure part.",
      "discussion": [
-      "Which pressure parts on our unit have no specification we can find?",
-      "Who do we ask when the spare in stores does not match the original?",
-      "What would make it easy to stop this job and ask?"
+      "Which pressure parts here have no specification we can find?",
+      "Who do we ask when a spare differs from the original?",
+      "What would make pausing to ask easy?"
      ],
      "learning": "LR-01",
      "cites": [
@@ -213,8 +221,15 @@
      "kind": "card",
      "title": "Prove the joint before it goes back into service",
      "what_happened": "After the gasket change on 18 Sep 2020, the system was only pressurised to operating pressure and isolated; no hydro test to design pressure was done. The meter went back online the next day and was in use when it failed.",
-     "why_made_sense": "No procedure covered calibration or return to service of these high-pressure meters, so the quickest available check became the normal one [FND-257C1100]. Holding at operating pressure looked like proof that the joint was tight [FND-86CB3683].",
-     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: a return-to-service procedure that sets the test, the test pressure and the witness, and a work-order system that will not release the equipment until a test result is entered.",
+     "why_made_sense": "No procedure covered calibration or return to service of these high-pressure meters, so the quickest available check became the normal one. Holding at operating pressure looked like proof that the joint was tight.",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: a return-to-service procedure that sets the test, the test pressure and the witness, and a work-order system that holds the equipment until a test result is entered.",
+     "did_you_know": [
+      "The meter failed six days after the seal change, five days after it went back on line."
+     ],
+     "what_you_can_do": [
+      "Before you hand back, ask for the written test pressure and the witness.",
+      "Write the test result on the job record; if no test was done, write that."
+     ],
      "warning_signs": [
       "Nobody can tell you the test pressure for the joint you opened",
       "The only test planned is \"put it back on line and watch\"",
@@ -223,8 +238,8 @@
      "good_looks_like": "Every job that opens a pressure boundary ends with a recorded test to the written test pressure, witnessed by a second person, before operations accept the equipment.",
      "discussion": [
       "What test proves a joint we have just made?",
-      "Where do we write the test result, and who signs it?",
-      "What do we do if the test equipment is not available?"
+      "Where is the result written, and who signs?",
+      "What if no test equipment is available?"
      ],
      "learning": "LR-02",
      "cites": [
@@ -253,9 +268,16 @@
     {
      "kind": "card",
      "title": "Ask for the second check on a high-consequence job",
-     "what_happened": "The seal job on 18 Sep 2020 was planned and manned like routine work. No one was assigned to check the seal specification, its quality or the joint after it was made, so the fitter's knowledge was the only barrier.",
-     "why_made_sense": "Nobody had classed pressure-boundary maintenance on hydrocarbon lines as safety-critical, so no inspector, test witness or close-out reviewer was planned for it [FND-615DB819; FND-F8C125D5].",
+     "what_happened": "The seal job on 18 Sep 2020 was planned and manned like routine work. No one was assigned to check the seal specification, its quality or the joint after it was made, so the person doing the job was the only check.",
+     "why_made_sense": "Pressure-boundary maintenance on hydrocarbon lines had not been classed as safety-critical, so no inspector, test witness or close-out reviewer was planned for it.",
      "organisation_changing": "The Learnings Register recommends, for the organisation to decide: a safety-critical maintenance category in work planning that adds inspection, test-witness and close-out steps by itself.",
+     "did_you_know": [
+      "The O-rings were bought with no specification or quality check, so nobody checked the part before it reached the job either."
+     ],
+     "what_you_can_do": [
+      "On a job that could cause a major release, ask who checks the part, the method and the test.",
+      "If nobody is named, ask your supervisor for the check before the job closes."
+     ],
      "warning_signs": [
       "You are the only person who will look at the part, the method and the test",
       "The job card for a pressure part looks the same as for routine work"
@@ -264,7 +286,7 @@
      "discussion": [
       "Which of our jobs could cause a major release if one step goes wrong?",
       "Who is the second pair of eyes on those jobs today?",
-      "How would you ask for a check without it sounding like you doubt yourself?"
+      "How would you ask for a check without seeming unsure?"
      ],
      "learning": "LR-03",
      "cites": [
@@ -286,8 +308,16 @@
      "kind": "card",
      "title": "Say so when you are fixing the same fault again",
      "what_happened": "The same meter had its gasket replaced three times in about 22 months, and a malfunction notification was raised on 17 Sep 2020. Each repair was treated as the first, and none led to a root-cause review.",
-     "why_made_sense": "Nothing in the maintenance system counted repeat failures on one item, and no reliability role was looking for the pattern, so each failure looked routine [FND-82FC718D].",
+     "why_made_sense": "Nothing in the maintenance system counted repeat failures on one item, and no reliability role was looking for the pattern, so each failure looked routine.",
      "organisation_changing": "The Learnings Register recommends, for the organisation to decide: an automatic repeat-failure trigger in the maintenance system that opens a root-cause investigation.",
+     "did_you_know": [
+      "A malfunction notification for this meter was raised on 17 Sep 2020, one week before the release.",
+      "That notification was not closed after the job, so nobody reviewed the repair afterwards."
+     ],
+     "what_you_can_do": [
+      "Write \"repeat failure\" on the job record and say how often you have seen it.",
+      "Ask your supervisor whether the item should be reviewed rather than repaired again."
+     ],
      "warning_signs": [
       "You have done this exact repair on this item before",
       "The fix is the same part that failed last time"
@@ -318,9 +348,17 @@
     {
      "kind": "card",
      "title": "A gas alarm is late news",
-     "what_happened": "The gas detectors only lit the annunciator panel; they did not shut anything down. The first control-room alarm came at about 02:20, after the camera had recorded the leak and security staff had already seen the cloud.",
-     "why_made_sense": "The detection system was designed to inform, not to act, and its signals were not kept in the control system for history, so the alarm looked like any other display alert [FND-C5000A82; FND-5BC96E8A].",
-     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: confirmed-gas logic that starts isolation by itself in the metering and gas terminal areas, and history for every detector signal.",
+     "what_happened": "The gas detectors only lit the alarm panel in the control room; they did not shut anything down. The first control-room alarm came at about 02:20, after the camera had recorded the leak and security staff had already seen the cloud.",
+     "why_made_sense": "The detection system was designed to inform, not to act, and its signals were not stored in the control system's history, so the alarm looked like any other display alert.",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: gas detection that starts isolation by itself when gas is confirmed in the metering and gas terminal areas, and a stored history for every detector signal.",
+     "did_you_know": [
+      "The camera recorded the leak starting at 02:12:50; the first control-room alarm came about seven minutes later.",
+      "The detection system had no way to shut down the plant or start fire protection by itself."
+     ],
+     "what_you_can_do": [
+      "Find out which gas alarms on your unit trip equipment and which only display.",
+      "If you see or hear a release, report it at once; do not wait for the alarm."
+     ],
      "warning_signs": [
       "A gas alarm with no automatic action behind it",
       "A report of vapour or noise arriving before any alarm"
@@ -355,8 +393,15 @@
      "kind": "card",
      "title": "If you cannot reach the source, think isolation from a distance",
      "what_happened": "The control-room engineers went out to find the leak and were driven back by the dense cloud. Senior shift staff reached the gate but could not enter. The first isolation valve was closed by hand at 03:01, about 46 minutes after the first detection.",
-     "why_made_sense": "Normal leak response is to find and fix the leak. The isolation valves could only be worked at the valve, inside the cloud, and the emergency plan gave no isolation criteria or authority, so the crew kept trying to approach and kept calling up the chain [FND-A7137BC4; FND-82761CC5].",
+     "why_made_sense": "Normal leak response is to find and fix the leak. The isolation valves could only be worked at the valve, inside the cloud, and the emergency plan gave no isolation criteria or authority, so the crew kept trying to approach and kept calling up the chain.",
      "organisation_changing": "The Learnings Register recommends, for the organisation to decide: isolation decision aids for each area at the control-room console, remote-operated emergency valves, and written authority to isolate on defined criteria.",
+     "did_you_know": [
+      "The first valve was closed at 03:01, seven minutes before the fire started."
+     ],
+     "what_you_can_do": [
+      "Learn which valves isolate your section and where each one is worked from.",
+      "When the cloud stops you, report \"access denied\" and move to an isolation point you can reach safely."
+     ],
      "warning_signs": [
       "The cloud stops you getting near the source",
       "You are phoning for permission while the cloud grows"
@@ -386,8 +431,15 @@
      "kind": "card",
      "title": "Call the control room that can act, and say what you see",
      "what_happened": "Security staff at a watch tower and at the gate saw the cloud at about 02:15. Their calls went to the security network, the fire station and another control room. The gas terminal control room heard of it at about 02:18 as \"some vapour cloud or steam leakage\".",
-     "why_made_sense": "Security posts had no direct line to the gas terminal control room, and there were no standard words for a hydrocarbon release, so each relay checked the report and described it again [FND-2F736E5F].",
+     "why_made_sense": "Security posts had no direct line to the gas terminal control room, and there were no standard words for a hydrocarbon release, so each relay checked the report and described it again.",
      "organisation_changing": "The Learnings Register recommends, for the organisation to decide: a direct line from perimeter posts and the camera room to each process control room, and a standard release message drilled jointly by security and operations.",
+     "did_you_know": [
+      "Two security posts saw the cloud at 02:15, but neither could call the gas terminal control room directly."
+     ],
+     "what_you_can_do": [
+      "Know which control room covers each area you watch, and keep its number at your post.",
+      "Say \"hydrocarbon release\", where and how big, in your first call."
+     ],
      "warning_signs": [
       "You see vapour or hear a roar and do not know which control room covers that area",
       "Your report is being passed on by someone who did not see it"
@@ -422,8 +474,15 @@
      "kind": "card",
      "title": "A flameproof fitting with a bolt missing is not flameproof",
      "what_happened": "A flameproof lamp at the skid had three bolts missing and its glass case open by a few centimetres. The investigating committee named it as the probable ignition source. Nearby fittings were intact.",
-     "why_made_sense": "Electrical maintenance mainly answered breakdowns, and a lamp that still lit did not look broken, so the missing bolts did not trigger a repair [FND-5E08D0F8; FND-1280E788].",
-     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: replace the old flameproof lamps in zoned areas with certified fittings, and set up an inspection programme for explosion-protected equipment with records for each item.",
+     "why_made_sense": "Electrical maintenance mainly answered breakdowns, with little planned inspection of flameproof fittings, so the missing bolts were not picked up and repaired.",
+     "organisation_changing": "The Learnings Register recommends, for the organisation to decide: replace the old flameproof lamps in hazardous areas with certified fittings, and set up an inspection programme for flameproof equipment with a record for each item.",
+     "did_you_know": [
+      "After the fire, a check of the nine flameproof lamps near the skid reported them all together as heat damage; the lamp with missing bolts was not singled out."
+     ],
+     "what_you_can_do": [
+      "On your rounds, look for missing bolts, open covers and loose glands on flameproof fittings.",
+      "Report any you find at once, even if the fitting still works."
+     ],
      "warning_signs": [
       "A missing bolt, an open cover or a loose gland on a fitting in a hazardous area",
       "A fitting that still works, so nobody reports it"
@@ -466,7 +525,7 @@
     {
      "kind": "para",
      "group": "Returning equipment to service",
-     "text": "Opening question: when did you last fit a part that was not quite the original? The story: a meter in service since 1986 kept leaking at its gasket. Its specification was lost, so the crew fitted the O-ring they always used. After the last change the system was only brought up to operating pressure, and the meter went back online the next day. Six days later the seal failed and the release found an ignition source. Two warning signs: a part that does not match the groove, and a job closed with no test record. One thing to do differently tomorrow: no specification, no fit; no test record, no hand-back. Question to the crew: which job on our unit would we struggle to test properly today?",
+     "text": "A five-minute talk for maintenance crews, before any job that opens a pressure part. Run the talk below in its five steps, then use the scenario after it to practise saying \"not yet\".",
      "learning": "LR-01",
      "cites": [
       "FND-7FA02383",
@@ -503,9 +562,32 @@
      ]
     },
     {
+     "kind": "toolbox",
+     "id": "talk-return-to-service",
+     "group": "Returning equipment to service",
+     "opening_question": "When did you last fit a part that was not quite the original?",
+     "story": "A condensate meter in service since 1986 kept leaking at its seal. Its specification had been lost, so the crew fitted the round O-ring they always used. After the last change, on 18 Sep 2020, the system was only brought up to operating pressure; no test to design pressure was done. The meter went back on line the next day. On 24 Sep that seal was the probable source of a release that later caught fire.",
+     "warning_signs": [
+      "The part does not match the original, and nobody can show a specification",
+      "No test pressure or witness is written down for the joint you opened"
+     ],
+     "one_change": "No specification, no fit; no recorded test, no hand-back. If either is missing, stop and ask the supervisor.",
+     "crew_question": "Which job on our unit would we find hardest to stop, and what would help us stop it?",
+     "duration": "5 minutes",
+     "learning": "LR-02",
+     "cites": [
+      "FND-7FA02383",
+      "FND-B356F15B",
+      "FND-8C0BB623",
+      "EVD-2894",
+      "EVD-8645",
+      "EVD-0185"
+     ]
+    },
+    {
      "kind": "para",
      "group": "Responding to a release",
-     "text": "Opening question: if you saw a white cloud near the metering skid tonight, who would you call first? The story: security staff saw the cloud first and called their own network. The control room heard of it as \"some vapour cloud or steam leakage\". The engineers went out to find the leak and could not get near it. The valves that would stop it could only be worked by hand, inside the cloud. Two warning signs: a report passed on by someone who did not see it, and being unable to reach the source. One thing to do differently tomorrow: report a release in plain words to the control room that can act, and say \"access denied\" as soon as you cannot get near. Question to the crew: which isolation points could we reach if the metering area filled with vapour?",
+     "text": "A five-minute talk for control-room, field and security crews on the night shift. Run the talk below in its five steps, then use the scenario after it to practise the first call and the switch to isolation.",
      "learning": "LR-08",
      "cites": [
       "FND-01ADF0AA",
@@ -540,6 +622,33 @@
       "FND-C75F81B9",
       "EVD-1460",
       "EVD-9612"
+     ]
+    },
+    {
+     "kind": "toolbox",
+     "id": "talk-release",
+     "group": "Responding to a release",
+     "opening_question": "If you saw a white cloud near the metering skid tonight, who would you call first?",
+     "story": "At 02:15 two security posts heard a roar and saw a cloud near the gas terminal. Their calls went to the security network first, and the gas terminal control room heard of \"some vapour cloud or steam leakage\" at about 02:20, when its alarm panel also lit. The engineers went out and could not get near the source. The isolation valves could be worked only by hand, at the valve. The first was closed at 03:01, and the fire started at 03:08.",
+     "warning_signs": [
+      "You see vapour or hear a roar, and no alarm has sounded yet",
+      "The cloud stops you getting near the source"
+     ],
+     "one_change": "Call the control room for that area first and say \"hydrocarbon release\", where and how big; if the cloud stops you, report \"access denied\" and move to an isolation point you can reach safely.",
+     "crew_question": "Which valves isolate our section, and where is each one worked from?",
+     "duration": "5 minutes",
+     "learning": "LR-08",
+     "cites": [
+      "FND-01ADF0AA",
+      "FND-37BC45CF",
+      "FND-2F736E5F",
+      "FND-F887999D",
+      "FND-5AB5DFA3",
+      "EVD-1460",
+      "EVD-8871",
+      "EVD-6234",
+      "EVD-9612",
+      "EVD-4286"
      ]
     }
    ]
@@ -658,7 +767,7 @@
  "exclusions": [
   {
    "id": "FND-44219027",
-   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; left out here for the same reason."
+   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; the vote is recorded in the register's source note, not in this export. Left out here for the same reason."
   }
  ],
  "limits": [

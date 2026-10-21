@@ -1,6 +1,7 @@
 {
  "pack": "auditor-assurance-pack",
  "schema": 1,
+ "skill": "auditor-assurance-pack",
  "title": "Auditor Assurance Pack: Hazira gas release and fire, 2020",
  "audience": "Internal audit, HSE audit teams, certification and regulatory inspectors, insurers",
  "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption.",

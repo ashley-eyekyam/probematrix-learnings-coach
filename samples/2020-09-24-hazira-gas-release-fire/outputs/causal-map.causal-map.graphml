@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<desc>Learning purposes: not a statutory document; draft: the investigation status is in progress · Learnings drafted by an AI agent from AI-assisted findings · Generated with ProbeMatrix Learnings Coach v2.0.0a5 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com</desc>
+<key id="label" for="node" attr.name="label" attr.type="string"/>
+<key id="elabel" for="edge" attr.name="label" attr.type="string"/>
+<graph id="causal-map" edgedefault="directed">
+<node id="OIR 1.6"><data key="label">L4 OIR 1.6 Failure in Maintenance/ Spares/ Support Programme</data></node>
+<node id="SVF 3.4"><data key="label">L3 SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk</data></node>
+<node id="SVV 4.1"><data key="label">L3 SVV 4.1 Failure to Enforce Existing Rules (Supervisory act of Omission)</data></node>
+<node id="SVI 1.1"><data key="label">L3 SVI 1.1 Leadership/Supervisory Oversight Inadequate</data></node>
+<node id="ASBE 1.2"><data key="label">L1 ASBE 1.2 Checklist Not Followed/Not Followed Correctly</data></node>
+<node id="SVI 1.4"><data key="label">L3 SVI 1.4 Failed to Provide Appropriate Policy/ Guidance</data></node>
+<node id="PTE 2.7"><data key="label">L2 PTE 2.7 Technical Guidance is Unclear/Unavailable or Incorrect</data></node>
+<node id="OIC 2.1"><data key="label">L4 OIC 2.1 Organizational Culture Allows for Unsafe Task/Mission</data></node>
+<node id="AV 1.1"><data key="label">L1 AV 1.1 Violation - Routine/Widespread</data></node>
+<node id="OIC 2.7"><data key="label">L4 OIC 2.7 Inconsistent Risk Management Practices</data></node>
+<node id="AJDE 2.11"><data key="label">L1 AJDE 2.11 Misapplied or unaware of existing Policy/Procedure</data></node>
+<node id="SVI 1.6"><data key="label">L3 SVI 1.6 Lack of Supervisory Response to Critical Information</data></node>
+<node id="SVV 4.5"><data key="label">L3 SVV 4.5 No Action/ Mitigation Measures for Identified Risk</data></node>
+<node id="OIR 1.1"><data key="label">L4 OIR 1.1 Command and Control Resources are Deficient</data></node>
+<node id="PTE 2.11"><data key="label">L2 PTE 2.11 Equipment Not configured Correctly</data></node>
+<node id="PTE 2.6"><data key="label">L2 PTE 2.6 System Automation or System Redundancy</data></node>
+<node id="OIR 1.5"><data key="label">L4 OIR 1.5 Failure in Timely Acquisition/ Procurement/ Upgrade</data></node>
+<node id="OIR 1.8"><data key="label">L4 OIR 1.8 Failure to Provide Adequate Operational Information Resources/ Support</data></node>
+<node id="PTE 2.12"><data key="label">L2 PTE 2.12 Maintenance Not Conducted/Not Conducted Correctly</data></node>
+<node id="AJDE 2.5"><data key="label">L1 AJDE 2.5 Ignored a Caution/Warning</data></node>
+<node id="AJDE 2.7"><data key="label">L1 AJDE 2.7 Delayed a Necessary Action</data></node>
+<node id="OIC 2.4"><data key="label">L4 OIC 2.4 Unit Mission/ Aircraft/ Vehicle/ Equipment Change or Unit Deactivation</data></node>
+<node id="AJDE 2.10"><data key="label">L1 AJDE 2.10 Knowledge/Experience inadequate to Make Decision</data></node>
+<node id="OIP 3.6"><data key="label">L4 OIP 3.6 Inadequate Program Oversight/ Program Management</data></node>
+<node id="OIP 3.7"><data key="label">L4 OIP 3.7 Purchasing or Providing Poorly Designed or Unsuitable Equipment (Acquisition Policies)</data></node>
+<node id="PTF 1.4"><data key="label">L2 PTF 1.4 Over Reliance on Individual/ System or Equipment</data></node>
+<node id="SVF 3.2"><data key="label">L3 SVF 3.2 Operations Management</data></node>
+<edge id="e0" source="OIR 1.6" target="SVF 3.4"><data key="elabel">7 mentions</data></edge>
+<edge id="e1" source="OIR 1.6" target="SVV 4.1"><data key="elabel">6 mentions</data></edge>
+<edge id="e2" source="SVI 1.1" target="ASBE 1.2"><data key="elabel">6 mentions</data></edge>
+<edge id="e3" source="SVI 1.4" target="ASBE 1.2"><data key="elabel">6 mentions</data></edge>
+<edge id="e4" source="SVI 1.4" target="PTE 2.7"><data key="elabel">6 mentions</data></edge>
+<edge id="e5" source="OIC 2.1" target="AV 1.1"><data key="elabel">5 mentions</data></edge>
+<edge id="e6" source="OIC 2.7" target="AJDE 2.11"><data key="elabel">5 mentions</data></edge>
+<edge id="e7" source="OIC 2.7" target="ASBE 1.2"><data key="elabel">5 mentions</data></edge>
+<edge id="e8" source="OIC 2.7" target="SVI 1.6"><data key="elabel">5 mentions</data></edge>
+<edge id="e9" source="OIR 1.6" target="SVI 1.6"><data key="elabel">5 mentions</data></edge>
+<edge id="e10" source="OIR 1.6" target="SVV 4.5"><data key="elabel">5 mentions</data></edge>
+<edge id="e11" source="SVI 1.4" target="AJDE 2.11"><data key="elabel">5 mentions</data></edge>
+<edge id="e12" source="SVV 4.1" target="ASBE 1.2"><data key="elabel">5 mentions</data></edge>
+<edge id="e13" source="OIC 2.1" target="ASBE 1.2"><data key="elabel">4 mentions</data></edge>
+<edge id="e14" source="OIC 2.1" target="SVI 1.4"><data key="elabel">4 mentions</data></edge>
+<edge id="e15" source="OIC 2.7" target="AV 1.1"><data key="elabel">4 mentions</data></edge>
+<edge id="e16" source="OIC 2.7" target="SVI 1.4"><data key="elabel">4 mentions</data></edge>
+<edge id="e17" source="OIR 1.1" target="PTE 2.11"><data key="elabel">4 mentions</data></edge>
+<edge id="e18" source="OIR 1.1" target="PTE 2.6"><data key="elabel">4 mentions</data></edge>
+<edge id="e19" source="OIR 1.5" target="PTE 2.11"><data key="elabel">4 mentions</data></edge>
+<edge id="e20" source="OIR 1.6" target="SVI 1.4"><data key="elabel">4 mentions</data></edge>
+<edge id="e21" source="OIR 1.8" target="ASBE 1.2"><data key="elabel">4 mentions</data></edge>
+<edge id="e22" source="PTE 2.12" target="AV 1.1"><data key="elabel">4 mentions</data></edge>
+<edge id="e23" source="PTE 2.7" target="ASBE 1.2"><data key="elabel">4 mentions</data></edge>
+<edge id="e24" source="SVF 3.4" target="AJDE 2.11"><data key="elabel">4 mentions</data></edge>
+<edge id="e25" source="SVI 1.1" target="AV 1.1"><data key="elabel">4 mentions</data></edge>
+<edge id="e26" source="SVI 1.4" target="AV 1.1"><data key="elabel">4 mentions</data></edge>
+<edge id="e27" source="OIC 2.1" target="AJDE 2.5"><data key="elabel">3 mentions</data></edge>
+<edge id="e28" source="OIC 2.1" target="AJDE 2.7"><data key="elabel">3 mentions</data></edge>
+<edge id="e29" source="OIC 2.1" target="PTE 2.7"><data key="elabel">3 mentions</data></edge>
+<edge id="e30" source="OIC 2.4" target="AV 1.1"><data key="elabel">3 mentions</data></edge>
+<edge id="e31" source="OIC 2.7" target="AJDE 2.10"><data key="elabel">3 mentions</data></edge>
+<edge id="e32" source="OIC 2.7" target="AJDE 2.5"><data key="elabel">3 mentions</data></edge>
+<edge id="e33" source="OIC 2.7" target="SVF 3.4"><data key="elabel">3 mentions</data></edge>
+<edge id="e34" source="OIP 3.6" target="ASBE 1.2"><data key="elabel">3 mentions</data></edge>
+<edge id="e35" source="OIP 3.7" target="PTF 1.4"><data key="elabel">3 mentions</data></edge>
+<edge id="e36" source="OIR 1.6" target="ASBE 1.2"><data key="elabel">3 mentions</data></edge>
+<edge id="e37" source="OIR 1.6" target="PTE 2.12"><data key="elabel">3 mentions</data></edge>
+<edge id="e38" source="OIR 1.6" target="PTE 2.7"><data key="elabel">3 mentions</data></edge>
+<edge id="e39" source="OIR 1.6" target="SVF 3.2"><data key="elabel">3 mentions</data></edge>
+</graph>
+</graphml>

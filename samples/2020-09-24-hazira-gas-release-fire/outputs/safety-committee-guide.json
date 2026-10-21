@@ -1,6 +1,7 @@
 {
  "pack": "safety-committee-guide",
  "schema": 1,
+ "skill": "safety-committee-guide",
  "title": "Safety Committee Guide: Hazira gas terminal release and fire, 2020",
  "audience": "Workforce representatives and the joint safety committee",
  "status": "Learning purposes: not a statutory document. Draft learnings from a ProbeMatrix investigation export; validate them before adoption.",
@@ -19,7 +20,7 @@
  "exclusions": [
   {
    "id": "FND-44219027",
-   "reason": "A reviewer voted to downgrade this finding; the Learnings Register leaves it out too."
+   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; the vote is recorded in the register's source note, not in this export. Left out here for the same reason."
   }
  ],
  "bottom_line": [

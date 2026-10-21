@@ -1,14 +1,40 @@
 """The check-samples command."""
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
 from .workspace import valid_run_slug
 
 
+# Its Markdown is learnings-register.md and its HTML is the dashboard, organisation-learning-map.html (Task 27).
+RENDER_EXEMPT = ("learnings-register.json",)
+
+
+def _sample_render_problems(d) -> list:
+    """OD4-4: every pack JSON (an object with a `pack` field) in outputs/ sits beside its .html and .md."""
+    out = d / "outputs"
+    problems = []
+    for p in sorted(out.glob("*.json")) if out.is_dir() else []:
+        if p.name in RENDER_EXEMPT:
+            continue
+        try:
+            doc = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            problems.append(f"{d.name}: outputs/{p.name} is not readable JSON")
+            continue
+        if not (isinstance(doc, dict) and "pack" in doc):
+            continue
+        for ext in ("html", "md"):
+            if not (out / f"{p.stem}.{ext}").is_file():
+                problems.append(f"{d.name}: outputs/{p.name} has no {p.stem}.{ext}")
+    return problems
+
+
 def sample_folder_problems(samples) -> list:
-    """Contribution rule: samples/<YYYY-MM-DD>-<site>-<event>/ with README.md and <slug>_probematrix-findings.xlsx."""
+    """Contribution rule: samples/<YYYY-MM-DD>-<site>-<event>/ with README.md and <slug>_probematrix-findings.xlsx,
+    and every pack JSON in its outputs/ rendered beside it as .html and .md."""
     problems = []
     for d in sorted(p for p in Path(samples).iterdir() if p.is_dir()):
         if not valid_run_slug(d.name):
@@ -19,6 +45,7 @@ def sample_folder_problems(samples) -> list:
             problems.append(f"{d.name}: missing README.md")
         if not (d / f"{d.name}_probematrix-findings.xlsx").is_file():
             problems.append(f"{d.name}: missing {d.name}_probematrix-findings.xlsx")
+        problems += _sample_render_problems(d)
     return problems
 
 

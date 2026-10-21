@@ -1,6 +1,7 @@
 {
  "pack": "dossier-F02",
  "schema": 1,
+ "skill": "cluster-learning-dossier",
  "title": "Cluster Learning Dossier F02 Mechanical Maintenance: Hazira gas terminal release and fire, 2020",
  "audience": "Mechanical Maintenance (F02), all tiers",
  "status": "Learning purposes: not a statutory document; draft: the investigation status is in progress",
@@ -1502,28 +1503,28 @@
      "kind": "table",
      "columns": [
       "Learning",
-      "Format"
+      "Format (skill and engine flag)"
      ],
      "rows": [
       [
        "LR-01 Seal specification",
-       "Brief, Card, toolbox talk"
+       "frontline-learning-cards --layout cards; frontline-learning-cards --layout toolbox; board-brief --layout paper --format docx"
       ],
       [
        "LR-02 Test after maintenance",
-       "Card, toolbox talk, Brief"
+       "frontline-learning-cards --layout cards; frontline-learning-cards --layout toolbox; supervisor-coach --layout checklist"
       ],
       [
        "LR-03 Independent verification",
-       "Card, Brief"
+       "frontline-learning-cards --layout cards; manager-coach --format docx"
       ],
       [
        "LR-05 Repeat failures",
-       "Brief, Card"
+       "frontline-learning-cards --layout cards; training-designer --format gift; board-brief --layout paper"
       ],
       [
        "LR-04 Notification close-out",
-       "Card"
+       "supervisor-coach --layout checklist; training-designer --format gift"
       ]
      ],
      "row_cites": [

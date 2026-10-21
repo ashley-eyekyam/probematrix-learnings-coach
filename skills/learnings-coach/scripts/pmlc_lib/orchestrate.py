@@ -344,7 +344,7 @@ def cmd_dossier_index(a):
     flat = list(dict.fromkeys(x for c in cites for x in c))[:3]
     inc = w.get("incident", {}).get("fields", {}).get("Incident Title", "")
     pack = {
-        "pack": "dossier-index", "schema": 1,
+        "pack": "dossier-index", "schema": 1, "skill": "cluster-learning-dossier",
         "title": "Cluster learning dossiers" + (f": {inc}" if inc else ""),
         "audience": "Investigation team and site leadership", "status": STATUS_PHRASE,
         "bottom_line": [{"text": f"This run has {len(rows)} cluster learning dossier(s), one per part of the organisation.",

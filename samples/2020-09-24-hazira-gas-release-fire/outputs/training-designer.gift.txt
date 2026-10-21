@@ -1,0 +1,74 @@
+// Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress. · Learnings drafted by an AI agent from AI-assisted findings
+// DRAFT
+// Review: draft · Classification: internal · Version 1.0
+// Draft because: the investigation status is in progress; no finding is marked as edited by a person
+// Generated with ProbeMatrix Learnings Coach v2.0.0a5 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+
+::assessment-1:: The seal in stores does not match the shape of the groove, and nobody can find the specification. What do you do? {
+~Fit it\: it is what the crew normally uses
+=Stop and ask the supervisor for the specification or an approved substitute
+~Fit it and record it as a temporary repair
+~Fit it and test at operating pressure
+####Recognising a non-specified pressure part and stopping.
+}
+
+::assessment-2:: Why does pressurising a repaired joint to operating pressure not prove it? {####Understanding the purpose of a test to design pressure.}
+
+::assessment-3:: What three things must be on the record before pressure-boundary equipment returns to service? {
+~%33.33333%The part's specification reference
+~%33.33333%A recorded test to the written test pressure
+~%33.33333%The witness's signature
+~%-100%The crew's shift roster
+~%-100%A note that the joint held at operating pressure
+####Knowing the return-to-service hold points.
+}
+
+::assessment-4:: You are about to replace the same gasket on the same meter for the third time. What should happen besides the repair? {####Recognising a repeat failure as a reliability warning.}
+
+::assessment-5:: During calibration you change a range setting and later change it back. What goes on the record? {####Keeping a complete calibration record.}
+
+::assessment-6:: On this site, what did a gas alarm on the annunciator panel do by itself? {
+~It shut down the plant
+~It started fire suppression
+=It only displayed the alarm; every protective action depended on people
+~It closed the isolation valves
+####Knowing what the alarm does and does not do.
+}
+
+::assessment-7:: You go out to find a leak and the cloud stops you approaching. What is your next step? {
+~Keep looking for another way to the source
+=Stop approaching, tell the control room "access denied" and ask for isolation from points that can be reached safely
+~Wait at the edge of the cloud for the shift in-charge
+~Go back to the control room and watch the alarm panel
+####Switching from locating to isolating.
+}
+
+::assessment-8:: You are on a security post and see a white cloud near a process area. Whom do you call first, and what do you say? {####Reporting a release so the control room can act.}
+
+::assessment-9:: True or false\: a flameproof lamp that still lights is still flameproof, even with three bolts missing from its cover. {F####Recognising a defect in explosion-protected equipment.}
+
+::assessment-10:: Level of cause\: "Locally bought O-rings were fitted as regular practice because the original specification had been lost and no one owned re-establishing it." At which level does the main fix sit, and why? {
+~Level 1, unsafe acts
+~Level 2, preconditions
+~Level 3, supervision
+=Level 4, organisational influences
+####Placing a cause at its level (L1 to L4).
+}
+
+::assessment-11:: Level of cause\: "The maintenance notification was not closed or reviewed after the job." Which level is this, and what kind of fix does it need? {
+~Level 1, unsafe acts
+~Level 2, preconditions
+=Level 3, supervision
+~Level 4, organisational influences
+####Placing a cause at its level (L1 to L4).
+}
+
+::assessment-12:: Level of cause\: "The vapour cloud stopped people approaching the isolation valves." Which level is this? {
+~Level 1, unsafe acts
+=Level 2, preconditions
+~Level 3, supervision
+~Level 4, organisational influences
+####Placing a cause at its level (L1 to L4).
+}
+
+::assessment-13:: Why is more training alone not enough to close the control-room competence gap seen here? {####Understanding what training cannot fix.}
