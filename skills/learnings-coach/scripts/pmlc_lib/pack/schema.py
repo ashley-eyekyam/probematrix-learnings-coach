@@ -149,7 +149,7 @@ STRENGTHS = ("direct", "corroborated", "inferred")
 BARRIER_STATES = ("absent", "degraded", "defeated", "worked partly", "worked")
 TIME_RX = re.compile(r"(?:[01]\d|2[0-3]):[0-5]\d")          # used with fullmatch: "14:05", never "14:05\n"
 GENERIC_FIELDS = ("kind", "id", "cites", "supporting_cites", "evidence_strength", "group", "lint_ok", "learning", "clauses",
-                  "comparator_refs")
+                  "comparator_refs", "source_text", "back_translation")
 
 
 def inline_fields(kind) -> list:
@@ -660,7 +660,7 @@ def _check_skill(pack, bad):
     except KeyError:
         bad("skill", f"unknown skill {sk}")
         return
-    if _text(pack.get("pack")) and not pack_fits_skill(pack["pack"], sk):
+    if _text(pack.get("pack")) and not pack_fits_skill(_ps_base_name(pack), sk):
         bad("skill", f"pack {pack['pack']} is not a pack or variant of skill {sk}")
 
 
@@ -676,9 +676,94 @@ def _check_lang_dir(pack, bad):
         bad("dir", "must be ltr or rtl")
 
 
-def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register=None) -> Result:
+def _ps_base_name(pack) -> str:
+    """The name the pack-name and skill rules apply to: for a translation named <translation_of>-<lang> (P4-13),
+    translation_of; else the pack's own name."""
+    name, src, lang = pack.get("pack"), pack.get("translation_of"), pack.get("lang")
+    if isinstance(src, str) and isinstance(lang, str) and name == f"{src}-{lang.lower()}":
+        return src
+    return name
+
+
+def _ps_without_source(secs):
+    """sections less each item's source_text and back_translation: their English IDs are not shown as text."""
+    if not isinstance(secs, list):
+        return secs
+    return [dict(s, items=[{k: v for k, v in it.items() if k not in ("source_text", "back_translation")}
+                           if isinstance(it, dict) else it for it in s["items"]])
+            if isinstance(s, dict) and isinstance(s.get("items"), list) else s for s in secs]
+
+
+def _ps_shape(pack) -> dict:
+    """{path: value} of what a translation must keep (P4-14): the section ids, each section's item ids and kinds,
+    and the IDs each item and bottom-line entry cites (in cites lists or inline)."""
+    bl = pack.get("bottom_line") if isinstance(pack.get("bottom_line"), list) else []
+    out = {"bottom_line": len(bl)}
+    for i, e in enumerate(bl):
+        out[f"bottom_line[{i}]"] = sorted(x for _, x in _walk_ids(e, ""))
+    secs = [s for s in pack.get("sections") or [] if isinstance(s, dict)] if isinstance(pack.get("sections"), list) else []
+    out["sections"] = [s.get("id") for s in secs]
+    for si, s in enumerate(_ps_without_source(secs)):
+        items = [it for it in s.get("items") if isinstance(it, dict)] if isinstance(s.get("items"), list) else []
+        out[f"sections[{si}].items"] = [[it.get("id") or f"{s.get('id')}-{n}", it.get("kind")]
+                                        for n, it in enumerate(items, 1)]
+        for ii, it in enumerate(items):
+            out[f"sections[{si}].items[{ii}]"] = sorted(x for _, x in _walk_ids(it, ""))
+    return out
+
+
+def _ps_check_translation(pack, source, bad, soft):
+    """A pack with translation_of (P4-13, P4-14): a valid source name and a lang; source_text and back_translation
+    well formed; a safety-critical item without a back_translation (soft); and, when the source pack is given, the
+    same cites, ids, kinds and section ids (always a problem)."""
+    if "translation_of" not in pack:
+        return
+    src = pack["translation_of"]
+    if not (isinstance(src, str) and PACK_NAME_RX.fullmatch(src)):
+        bad("translation_of", "must be a pack name")
+        return
+    if "lang" not in pack:
+        bad("lang", "required in a translation (translation_of)")
+    from ..strings import safety_critical
+    for si, s in enumerate(pack.get("sections") if isinstance(pack.get("sections"), list) else []):
+        items = s.get("items") if isinstance(s, dict) and isinstance(s.get("items"), list) else []
+        for ii, it in enumerate(items):
+            if not isinstance(it, dict):
+                continue
+            ip = f"sections[{si}].items[{ii}]"
+            st = it.get("source_text")
+            if st is not None and not (isinstance(st, dict) and all(isinstance(v, str) for v in st.values())):
+                bad(f"{ip}.source_text", "must be an object of field -> English text")
+            if "back_translation" in it and not _text(it["back_translation"]):
+                bad(f"{ip}.back_translation", "must be non-empty text")
+            if safety_critical(it) and not _text(it.get("back_translation")):
+                iid = it.get("id") or (f"{s['id']}-{ii + 1}" if isinstance(s.get("id"), str) else ip)
+                soft(ip, f"item {iid} is safety-critical: add back_translation")
+    if isinstance(source, dict):
+        want, got = _ps_shape(source), _ps_shape(pack)
+        for k in want:
+            if want[k] != got.get(k):
+                bad(k, f"differs from the source pack {src}: {want[k]} -> {got.get(k)}")
+
+
+def _ps_source_pack(a, pack):
+    """For a translation: the source pack <translation_of>.json beside the translated file, else in the run's
+    outputs; None when there is none (then only the translation itself is checked)."""
+    src = pack.get("translation_of") if isinstance(pack, dict) else None
+    if not (isinstance(src, str) and PACK_NAME_RX.fullmatch(src)):
+        return None
+    for d in (Path(a.pack).resolve().parent, outputs_dir(a.ws)):
+        f = d / f"{src}.json"
+        if f.is_file():
+            got, err = load_pack(f)
+            return got if not err and isinstance(got, dict) else None
+    return None
+
+
+def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register=None, source=None) -> Result:
     """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings). register: a
-    loaded Learnings Register, against which learning ids are checked (P3-12). strict (Ruling P3-5): pack-profile
+    loaded Learnings Register, against which learning ids are checked (P3-12). source: for a translation (P4-14), the
+    loaded pack it translates, whose cites, ids, kinds and section ids it must keep. strict (Ruling P3-5): pack-profile
     violations, padding, scope drift, an unknown learning id and an unknown clause are problems, not warnings."""
     P, W = [], []
     known_lr = register_ids(register) if register is not None else None
@@ -704,10 +789,11 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
             bad(k, f"must be a non-empty {'list' if typ is list else 'string'}")
     if pack.get("schema") != SCHEMA_VERSION or isinstance(pack.get("schema"), bool):
         bad("schema", f"must be {SCHEMA_VERSION}")
-    if _text(pack.get("pack")) and not PACK_NAME_RX.fullmatch(pack["pack"]):
+    if _text(pack.get("pack")) and not PACK_NAME_RX.fullmatch(_ps_base_name(pack)):
         bad("pack", "must be lowercase words joined by hyphens (or dossier-F<nn>)")
     _check_skill(pack, bad)
     _check_lang_dir(pack, bad)
+    _ps_check_translation(pack, source, bad, soft)
     inc = pack.get("incident")
     if inc is not None:
         if not isinstance(inc, dict):
@@ -796,7 +882,7 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
         if x not in (F if x.startswith("FND-") else E):
             bad(path, f"{x} is not in this workspace")
     for path, x in _walk_ids({"data_quality": pack.get("data_quality"), "bottom_line": pack.get("bottom_line"),
-                              "sections": pack.get("sections")}, ""):
+                              "sections": _ps_without_source(pack.get("sections"))}, ""):
         if (path, x) not in cit:
             warn(path, f"{x} is shown as plain text, not a citation; put it in cites")
     downs = downgraded_findings(w)
@@ -905,7 +991,8 @@ def _checked(a, record_ok=True):
     register, rerr = (None, None) if err else load_register(a)
     err = err or rerr
     res = Result([err], [], {}) if err else check_pack(pack, w, **lint.cli_options(a),
-                                                        strict=bool(getattr(a, "strict", False)), register=register)
+                                                        strict=bool(getattr(a, "strict", False)), register=register,
+                                                        source=_ps_source_pack(a, pack))
     if not err:
         res.warnings.extend(unsigned_warning(pack, w, a.pack, a.ws))
     if not err and (record_ok or res.problems):

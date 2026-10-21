@@ -76,7 +76,8 @@ def test_glossary_min_terms():
     for t in terms:
         assert set(t) == {"term", "definition", "do_not_translate", "translations"}, t
         assert t["term"].strip() and t["definition"].strip(), t
-        assert isinstance(t["do_not_translate"], bool) and t["translations"] == {}, t
+        assert isinstance(t["do_not_translate"], bool), t
+        assert set(t["translations"]) == (set() if t["do_not_translate"] else {"hi"}), t   # OD4-1: Hindi
     folded = [t["term"].casefold() for t in terms]
     assert len(folded) == len(set(folded))
     missing = [w for w in L309_TERMS if w.casefold() not in folded]

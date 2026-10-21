@@ -40,6 +40,7 @@ Subcommands
   pack-xlsx       a pack's test points or questions as an Excel sheet
   export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
   plan            resolve a workflow preset, audiences or skills into an ordered plan (<ws>/plan.json)
+  strings         extract a pack's text for translation (XLIFF or CSV), or apply a translation as <pack>-<lang>.json
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -81,6 +82,7 @@ from .select import cmd_select, COUNT_BY, SELECT_FIELDS
 from .util import HERE
 from .retention import cmd_purge, cmd_run_manifest, CLASSIFICATIONS, JURISDICTIONS
 from .workspace import cmd_run_path, cmd_status
+from .strings import cmd_strings, STRINGS_FORMATS
 
 
 # ----------------------------------------------------------------------------- main
@@ -457,6 +459,21 @@ def build_parser():
                         "tags, singleton roles, times and full dates are masked; written as <name>.<mode>.xlsx and never "
                         "over the internal copy")
     s.set_defaults(fn=cmd_pack_xlsx)
+
+    s = sp.add_parser("strings", help="extract a pack's text for translation, or apply a translation as <pack>-<lang>.json",
+                      allow_abbrev=False)
+    s.add_argument("action", choices=["extract", "apply"])
+    s.add_argument("ws")
+    s.add_argument("pack")
+    s.add_argument("file", nargs="?", help="apply: the translated strings file (.xlf or .csv)")
+    s.add_argument("--to", choices=list(STRINGS_FORMATS),
+                   help="extract: xliff (default) or csv; apply: read the file as this format (default: by its extension)")
+    s.add_argument("--lang", help="the translation's language tag (extract default hi; required for apply)")
+    s.add_argument("--allow-partial", dest="allow_partial", action="store_true",
+                   help="apply: keep the English of untranslated units instead of refusing")
+    s.add_argument("--out", help="extract: default <run>/outputs/<pack>.strings.xlf or .csv; apply: default "
+                                 "<run>/outputs/<pack>-<lang>.json (never overwritten)")
+    s.set_defaults(fn=cmd_strings)
 
     for name in JSON_COMMANDS:   # P3-24: --json on every analysis and check command (dest as_json: check-language has a positional "json")
         sp.choices[name].add_argument("--json", dest="as_json", action="store_true",

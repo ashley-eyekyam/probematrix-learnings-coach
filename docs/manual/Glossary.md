@@ -2,7 +2,7 @@
 
 The words this manual uses, in plain language, in alphabetical order. Where a word is also a file, a flag or a field, the term is given in that form too.
 
-The skills keep their own word list in `skills/learnings-coach/references/glossary.json`: 70 terms, each with a definition, a `do_not_translate` mark for names, codes and acronyms, and an empty `translations` slot for the languages a later release adds. Packs use those terms; this page explains them, and more, for readers of the manual.
+The skills keep their own word list in `skills/learnings-coach/references/glossary.json`: 70 terms, each with a definition, a `do_not_translate` mark for names, codes and acronyms, and a `translations` slot: every other term has a Hindi translation (`hi`), AI-drafted and to be checked by a fluent speaker. `strings extract` shows these in each unit's note. Packs use those terms; this page explains them, and more, for readers of the manual.
 
 ## A to C
 

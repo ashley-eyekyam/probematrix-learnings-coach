@@ -372,6 +372,8 @@ def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, shar
                                       inc.get("date") or fields.get("Date"), *trace) if x)
     title = _h(pack["title"])
     status = _h(status_line(pack["status"]))
+    from ..render import translation_lines                     # late: render imports this module's renderer
+    translation = "".join(f'<p class="status translation">{_h(x)}</p>\n' for x in translation_lines(pack))
     ribbon = RIBBON_HTML + "\n" if is_draft(eh) else ""
     handling = "".join(f'<p class="handling">{_h(x)}</p>' for x in _handling_lines(eh, share, markdown=False))
     css = (DASHBOARD_ASSETS / "pack.css").read_text(encoding="utf-8")
@@ -394,7 +396,7 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 {ribbon}<h1>{title}</h1>
 <p class="m">{meta}</p>
 <p class="status">{status}</p>
-{handling}
+{translation}{handling}
 {dq_html}
 <section class="bottom"><h2>{t("ui.bottom_line")}</h2><ul>{bottom}</ul></section>
 <div class="toolbar" role="search"><input id="q" type="search" placeholder="{t("ui.search")}" aria-label="{t("ui.search")}">

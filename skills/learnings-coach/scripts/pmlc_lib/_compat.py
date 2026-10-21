@@ -42,6 +42,7 @@ MODULES = [
     "pmlc_lib.render.ooxml",
     "pmlc_lib.render.normalise",
     "pmlc_lib.pack.command",
+    "pmlc_lib.strings",
     "pmlc_lib.cli",
 ]
 PACK_MODULES = ["pmlc_lib.pack.profiles", "pmlc_lib.pack.schema", "pmlc_lib.pack.graph_layout", "pmlc_lib.pack.items",

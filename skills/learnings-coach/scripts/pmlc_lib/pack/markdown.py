@@ -276,7 +276,9 @@ def render_pack_md(pack, w, eh=None, share=None, labels=None) -> str:
     eh = eh or effective_handling(pack, w)
     cov = coverage(w, pack)
     out = [f"# {pack['title']}"] + ([f"**{DRAFT_LABEL}**"] if is_draft(eh) else [])
-    out += _handling_lines(eh, share) + [f"*{status_line(pack['status'])}*", f"**{t('f.audience')}:** {pack['audience']}"]
+    from ..render import translation_lines                     # late: render imports this module's renderer
+    out += _handling_lines(eh, share) + [f"*{status_line(pack['status'])}*"] + [f"*{x}*" for x in translation_lines(pack)]
+    out += [f"**{t('f.audience')}:** {pack['audience']}"]
     fields, inc = w.get("incident", {}).get("fields", {}), pack.get("incident") or {}
     shown = [str(x) for x in (inc.get("title") or fields.get("Incident Title"), inc.get("date") or fields.get("Date")) if x]
     if shown:

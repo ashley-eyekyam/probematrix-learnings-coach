@@ -64,3 +64,5 @@ Then follow the audience skill (e.g. `skills/board-brief/SKILL.md`) and write it
 - The branch reaches `main` through one pull request ("Closes #1"), merged with a merge commit (not squash or rebase).
 
 Files the organisation fills in: `python3 $E templates $WS (adoption|distribution|verification)` writes a blank `adoption.csv`, `distribution.csv` or `verification.jsonl` (never overwrites). `python3 $E export-actions $WS [--profile generic|enablon|intelex|cority|sap-ehs] [--names FILE]` writes `actions.csv` and `actions.json` with the owner, due, status, CAPA and effectiveness columns left blank.
+
+Translation: `python3 $E strings extract $WS <pack.json> [--to xliff|csv] [--lang hi]` writes the text for a translator (never overwrites); `python3 $E strings apply $WS <pack.json> <strings-file> --lang hi` writes `<pack>-hi.json` (`translation_of`, `lang`), which `check-pack` compares with the source pack. Never write the translation yourself as if a person had checked it: every translated page says it needs a fluent speaker's check.
