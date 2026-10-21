@@ -81,3 +81,26 @@ def test_thin_workspace_honest_pack_passes_strict(tmp_path):
     p.write_text(json.dumps(pack), encoding="utf-8")
     out = run("check-pack", str(ws), str(p), "--strict")
     assert "OK" in out
+
+
+def test_p4h_empty_evidence_sheet_reported_as_empty(tmp_path):
+    """Task 15 minor: a workbook that has an Evidence Links sheet with no rows says it is empty, not missing."""
+    import openpyxl
+    x = make_thin_export(tmp_path)
+    wb = openpyxl.load_workbook(x)
+    wb.create_sheet("Evidence Links").append(["Evidence ID", "Evidence Type", "Evidence Description", "Finding Code",
+                                              "Relevance", "Specific Reference"])
+    wb.save(x)
+    ws = tmp_path / "ws"
+    run("ingest", str(x), "--legacy-out", str(ws))
+    out = run("profile", str(ws))
+    assert "- Evidence Links sheet is empty: learnings rest on findings only" in out
+    assert "No Evidence Links sheet" not in out
+
+
+def test_p4h_bare_year_is_not_dated_text():
+    """Task 15 minor: '1998' alone gives no timeline order; a month and year does."""
+    from pmlc_lib.profile import _has_dated_text
+    assert not _has_dated_text({"incident": {"narrative": "The plant was built in 1998."}, "findings": []})
+    assert _has_dated_text({"incident": {"narrative": "It happened in March 2024."}, "findings": []})
+    assert _has_dated_text({"incident": {"narrative": "On 12 March 2024 a hose failed."}, "findings": []})
