@@ -111,14 +111,16 @@ def _ly_value(v, notes=None) -> str:
 
 def _ly_blocks(it, L, notes=None, view="full", skip=()) -> str:
     """An item as labelled blocks in its kind's field order (P4-5): the title as a heading, the rest labelled."""
-    out = []
+    out, table_done = [], False
     for b in item_blocks(it, L, view=view):
         if b.field in skip:
             continue
         if b.role == "title":
             out.append(f"<h2>{_ly_text(b.value, notes)}</h2>")
         elif b.role == "table" and isinstance(b.value, list):
-            out.append(_ly_table(it, L, notes))
+            if not table_done:                  # columns and rows are both table-role blocks: one table for the two
+                out.append(_ly_table(it, L, notes))
+                table_done = True
         elif b.role == "graph":
             continue
         elif b.field in ("edges", "nodes"):

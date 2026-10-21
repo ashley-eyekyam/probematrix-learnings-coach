@@ -535,3 +535,20 @@ def test_rtl_layout_css_uses_logical_properties(w, monkeypatch):
     css = re.search(r"<style>(.*?)</style>", doc, re.S).group(1)
     assert not re.search(r"border-left|border-right|text-align:(left|right)|margin-(left|right)|padding-(left|right)",
                          css), css
+
+
+# ----------------------------------------------------------------------------- integration W3 (INT-C)
+
+def test_cards_page_draws_a_table_item_once(w):
+    """INT-C: `_ly_blocks` met the table role twice (the `columns` block and the `rows` block) and drew the table
+    each time. The card-page builder that the cards and field layouts share must draw a table item exactly once."""
+    tbl = item("table", columns=["Barrier", "State"], rows=[["Gas detector", "Bypassed"]])
+    p = pack_with(item("card", title="Only card"), tbl)
+    _, ctx = lay(w, p, "cards")
+    L = load_labels(ctx.pack.get("lang") or "en")
+    pgs, other = LY._ly_card_pages(ctx, L, kinds=("card", "table"))
+    assert other == 0 and len(pgs) == 2
+    t = pgs[1]
+    assert t.count("<table") == 1 and t.count("Gas detector") == 1 and t.count(">Barrier<") == 1
+    doc = page_of(w, p, "cards")                      # the cards layout itself: the card page, then the closing count
+    assert doc.count("<table") == 0 and R.MORE_IN_PACK.format(n=1) in pages(doc)[-1]
