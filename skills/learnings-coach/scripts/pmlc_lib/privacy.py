@@ -408,9 +408,14 @@ def share_doc(obj, ctx, owners=None):
             out = {k: copy.deepcopy(x) if k in ID_KEYS else walk(owner(x) if k == "owner" else x, k)
                    for k, x in v.items() if _norm(k) not in SHARE_DROP_KEYS}
             if key in ROLE_KEYED:
-                masked = {}
+                masked, keys = {}, {k: share_text(k, ctx) for k in out}
+                # INT-7: several different keys that each mask to a bare "[name]" stay apart as [name-1], [name-2]...
+                bare = [k for k, mk in keys.items() if mk == NAME_MASK]
+                if len(bare) > 1:
+                    for n, k in enumerate(bare, 1):
+                        keys[k] = f"{NAME_MASK[:-1]}-{n}]"
                 for k, x in out.items():
-                    mk = share_text(k, ctx)
+                    mk = keys[k]
                     masked[mk] = _merge_role(masked[mk], x) if mk in masked else x
                 return masked
             return out
