@@ -42,9 +42,28 @@
   /* A finding's text is the investigation's AI-drafted wording: true unless the export marks it edited by a person. */
   function unedited(f) { return ["yes", "y", "true", "1"].indexOf(String(f.user_edited || "").trim().toLowerCase()) === -1; }
 
+  /* The page's words: built-in English, overridden by data.labels (references/labels/<lang>.json, Ruling P4-15),
+     which the page carries only when its pack's lang is not en. {x} placeholders take fmt.x. */
+  var LABELS = {
+    "ui.js.stub_note": "Only the label and rating are embedded in this page.",
+    "ui.js.not_in_export": "Not in this export.",
+    "ui.js.finding": "Finding", "ui.js.rating": "Rating", "ui.js.detail": "Detail", "ui.js.level": "Level",
+    "ui.js.factor": "Factor", "ui.js.roles": "Roles involved", "ui.js.clusters": "Learning clusters",
+    "ui.js.description": "Description", "ui.js.ai_justification": "AI justification (ProbeMatrix)",
+    "ui.js.causal": "Causal explanation", "ui.js.votes": "Reviewer votes", "ui.js.evidence": "Evidence",
+    "ui.js.type": "Type", "ui.js.linked_to": "Linked to {code}", "ui.js.matching": "{n} matching items",
+    "ui.learning_chip": "Learning {id}"
+  };
+  function T(labels, key, fmt) {
+    var own = labels && typeof labels === "object" && Object.prototype.hasOwnProperty.call(labels, key);
+    var s = String(own ? labels[key] : LABELS[key]);
+    return s.replace(/\{([a-z_]+)\}/g, function (m, k) {
+      return fmt && Object.prototype.hasOwnProperty.call(fmt, k) ? String(fmt[k]) : m;
+    });
+  }
+
   /* --embed cited and summary: an uncovered or excluded finding travels as {id, label, rating} only. */
   var STUB_KEYS = ["id", "label", "rating"];
-  var STUB_NOTE = "Only the label and rating are embedded in this page.";
   function isStub(f) {
     var keys = f && typeof f === "object" ? Object.keys(f) : [];
     return keys.length === STUB_KEYS.length && keys.every(function (k) { return STUB_KEYS.indexOf(k) !== -1; });
@@ -54,32 +73,33 @@
 
   /* [label, value] rows describing one finding or evidence record, or null if it is not in the data. */
   function recordRows(id, data) {
-    var f = data && data.findings && data.findings[id];
+    var f = data && data.findings && data.findings[id], L = data && data.labels;
     if (f && isStub(f)) {
-      return nonEmpty([["Finding", f.label || ""],
-        ["Rating", f.rating === null || f.rating === undefined ? "" : String(f.rating)], ["Detail", STUB_NOTE]]);
+      return nonEmpty([[T(L, "ui.js.finding"), f.label || ""],
+        [T(L, "ui.js.rating"), f.rating === null || f.rating === undefined ? "" : String(f.rating)],
+        [T(L, "ui.js.detail"), T(L, "ui.js.stub_note")]]);
     }
     if (f) {
       var c = f.clusters || {};
       return nonEmpty([
-        ["Finding", f.label || f.name || ""],
-        ["Level", f.level ? "L" + f.level + " " + (f.level_name || "") + (f.subcategory ? " · " + f.subcategory : "") : ""],
-        ["Factor", ((f.code || "") + " " + (f.name || "")).trim()],
-        ["Rating", f.rating === null || f.rating === undefined ? "" : String(f.rating)],
-        ["Roles involved", (f.roles || []).join("; ")],
-        ["Learning clusters", [(c.F || []).join(", "), (c.T || []).join(", "), (c.R || []).join(", ")]
+        [T(L, "ui.js.finding"), f.label || f.name || ""],
+        [T(L, "ui.js.level"), f.level ? "L" + f.level + " " + (f.level_name || "") + (f.subcategory ? " · " + f.subcategory : "") : ""],
+        [T(L, "ui.js.factor"), ((f.code || "") + " " + (f.name || "")).trim()],
+        [T(L, "ui.js.rating"), f.rating === null || f.rating === undefined ? "" : String(f.rating)],
+        [T(L, "ui.js.roles"), (f.roles || []).join("; ")],
+        [T(L, "ui.js.clusters"), [(c.F || []).join(", "), (c.T || []).join(", "), (c.R || []).join(", ")]
           .filter(Boolean).join(" · ")],
-        ["Description", f.short || ""],
-        [(data.brand && data.brand.ai_justification_label) || "AI justification (ProbeMatrix)", f.justification || ""],
-        ["Causal explanation", f.causal || ""],
-        ["Reviewer votes", (f.votes || []).map(function (v) { return v.vote + (v.reason ? ": " + v.reason : ""); }).join("; ")],
-        ["Evidence", (f.evidence || []).join(", ")]]);
+        [T(L, "ui.js.description"), f.short || ""],
+        [(data.brand && data.brand.ai_justification_label) || T(L, "ui.js.ai_justification"), f.justification || ""],
+        [T(L, "ui.js.causal"), f.causal || ""],
+        [T(L, "ui.js.votes"), (f.votes || []).map(function (v) { return v.vote + (v.reason ? ": " + v.reason : ""); }).join("; ")],
+        [T(L, "ui.js.evidence"), (f.evidence || []).join(", ")]]);
     }
     var e = data && data.evidence && data.evidence[id];
     if (!e) return null;
-    var rows = [["Evidence", e.description || ""], ["Type", e.type || ""]];
+    var rows = [[T(L, "ui.js.evidence"), e.description || ""], [T(L, "ui.js.type"), e.type || ""]];
     (e.links || []).forEach(function (l) {
-      rows.push(["Linked to " + l.code, [l.relevance, l.reference].filter(Boolean).join(": ")]);
+      rows.push([T(L, "ui.js.linked_to", {code: l.code}), [l.relevance, l.reference].filter(Boolean).join(": ")]);
     });
     return nonEmpty(rows);
   }
@@ -109,7 +129,7 @@
       return;
     }
     var v = recordView(btn.getAttribute("data-id"), D), box = el("div", "rec");
-    if (!v) box.appendChild(el("p", "m", "Not in this export."));
+    if (!v) box.appendChild(el("p", "m", T(D && D.labels, "ui.js.not_in_export")));
     else {
       if (v.banner) box.appendChild(el("p", "export-banner", v.banner));
       if (v.chip) box.appendChild(el("span", "chip-ai", v.chip));
@@ -123,7 +143,9 @@
 
   /* A learning chip names a Learnings Register entry (LR-nn); clicking it searches the pack for that id. */
   var LR_RX = /^LR-\d{2,}$/;
-  function learningLabel(id) { return typeof id === "string" && LR_RX.test(id) ? "Learning " + id : null; }
+  function learningLabel(id, labels) {
+    return typeof id === "string" && LR_RX.test(id) ? T(labels, "ui.learning_chip", {id: id}) : null;
+  }
   function learningQuery(id) { return typeof id === "string" && LR_RX.test(id) ? id : ""; }
 
   function searchLearning(btn) {
@@ -146,7 +168,7 @@
       if (any && active) s.open = true;
     });
     var n = document.getElementById("showing");
-    if (n) n.textContent = active ? shown + " matching items" : "";
+    if (n) n.textContent = active ? T(D && D.labels, "ui.js.matching", {n: shown}) : "";
   }
 
   function setAll(open) {

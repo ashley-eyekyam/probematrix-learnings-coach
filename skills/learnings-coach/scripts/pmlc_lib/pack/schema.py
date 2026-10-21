@@ -664,6 +664,18 @@ def _check_skill(pack, bad):
         bad("skill", f"pack {pack['pack']} is not a pack or variant of skill {sk}")
 
 
+LANG_RX = re.compile(r"^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$")       # BCP 47, as references/labels/<locale>.json
+
+
+def _check_lang_dir(pack, bad):
+    """Optional top-level `lang` (a BCP 47 tag such as en, hi or pt-BR; default en) and `dir` (ltr or rtl; default
+    the labels' _dir), L1-08 and Ruling P4-15."""
+    if "lang" in pack and not (isinstance(pack["lang"], str) and LANG_RX.fullmatch(pack["lang"])):
+        bad("lang", "must be a language tag such as en, hi or pt-BR")
+    if "dir" in pack and pack["dir"] not in ("ltr", "rtl"):
+        bad("dir", "must be ltr or rtl")
+
+
 def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register=None) -> Result:
     """Every problem that would make the pack wrong or unrenderable (problems), plus advice (warnings). register: a
     loaded Learnings Register, against which learning ids are checked (P3-12). strict (Ruling P3-5): pack-profile
@@ -695,6 +707,7 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
     if _text(pack.get("pack")) and not PACK_NAME_RX.fullmatch(pack["pack"]):
         bad("pack", "must be lowercase words joined by hyphens (or dossier-F<nn>)")
     _check_skill(pack, bad)
+    _check_lang_dir(pack, bad)
     inc = pack.get("incident")
     if inc is not None:
         if not isinstance(inc, dict):
