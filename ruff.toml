@@ -1,6 +1,6 @@
 target-version = "py39"
 line-length = 120
-exclude = [".venv", "pmlc-runs"]
+exclude = [".venv", "pmlc-runs", "skills/learnings-coach/scripts/pmlc_lib/vendor"]
 
 [lint]
 select = ["E", "F", "W"]
