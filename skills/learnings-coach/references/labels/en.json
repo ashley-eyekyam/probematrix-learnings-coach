@@ -142,5 +142,8 @@
  "ui.js.evidence": "Evidence",
  "ui.js.type": "Type",
  "ui.js.linked_to": "Linked to {code}",
- "ui.js.matching": "{n} matching items"
+ "ui.js.matching": "{n} matching items",
+ "ui.pptx.continued": "{heading} (continued)",
+ "ui.pptx.entries": "{n} entries",
+ "ui.pptx.cited_records": "Cited records"
 }

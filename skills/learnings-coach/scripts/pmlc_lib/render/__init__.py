@@ -155,6 +155,7 @@ def _load() -> None:
     """Import every format module; each registers itself, so FORMATS is complete once this package is imported."""
     for mod in (
         "normalise",
+        "pptx",
     ):
         importlib.import_module(f"{__name__}.{mod}")
 
