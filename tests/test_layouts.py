@@ -418,6 +418,16 @@ def test_base_url_reaches_the_context(std_ws, tmp_path, monkeypatch):
     assert f'aria-label="QR code: {BASE}#i/' in t
 
 
+@pytest.mark.skipif("docx" not in R.FORMATS, reason="the docx format (Task 10) is not registered in this base")
+def test_paper_layout_with_docx_writes_the_board_paper(std_ws, tmp_path):
+    """ctx.layout reaches the formats: --layout paper with docx also writes <pack>.paper.docx (P4-7, Task 10)."""
+    out = tmp_path / "o"
+    r = _cli("pack", str(std_ws), str(FIX / "board-brief.json"), "--out", str(out), "--layout", "paper",
+             "--format", "docx")
+    assert r.returncode == 0, r.stderr
+    assert (out / "board-brief.paper.docx").is_file() and (out / "board-brief.paper.html").is_file()
+
+
 # ----------------------------------------------------------------------------- printing
 
 @pytest.fixture(scope="module")
