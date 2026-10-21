@@ -1,0 +1,1184 @@
+{
+ "pack": "site-leadership-coach",
+ "schema": 1,
+ "title": "Site Leadership Coach: Hazira gas terminal release and fire, 2020",
+ "audience": "T4 plant and asset leadership: the site leadership team",
+ "status": "Learning purposes: not a statutory document. Draft learnings from a ProbeMatrix investigation export; validate them before adoption.",
+ "scope": {
+  "tiers": [
+   "T4"
+  ]
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the export's Investigation Status is in_progress and no finding is marked as edited by a person, so this pack stays a draft until the investigation is completed and reviewed.",
+   "cites": []
+  },
+  {
+   "text": "One source date conflicts: the gasket-history record quotes a change on 18/09/2019, while its own note and the narrative place the most recent change on 18-Sep-2020. The timeline keeps the 2020 date and leaves the 2019 entry out.",
+   "cites": [
+    "EVD-1494"
+   ]
+  }
+ ],
+ "exclusions": [
+  {
+   "id": "FND-44219027",
+   "reason": "A reviewer voted to downgrade this finding; the Learnings Register leaves it out too."
+  }
+ ],
+ "bottom_line": [
+  {
+   "text": "The emergency plan gave the night shift no isolation criteria and no standing authority below the plant manager, so the decision to isolate travelled up a chain of phone calls while the cloud grew.",
+   "cites": [
+    "FND-82761CC5",
+    "FND-314D34C5",
+    "EVD-4052",
+    "EVD-3932"
+   ],
+   "learning": "LR-07",
+   "evidence_strength": "corroborated"
+  },
+  {
+   "text": "Isolation and detection were set up so that someone had to reach the release: valves closed only by hand at the valve, and detection that only displayed an alarm.",
+   "cites": [
+    "FND-044D1DEC",
+    "FND-6155A1C2",
+    "EVD-3932",
+    "EVD-8657"
+   ],
+   "learning": "LR-09",
+   "evidence_strength": "corroborated"
+  },
+  {
+   "text": "Workarounds became normal because nothing on site stopped them: a substitute seal used as regular practice, return to service at operating pressure only, and electrical fittings repaired only on breakdown.",
+   "cites": [
+    "FND-B440C1BF",
+    "FND-5919B328",
+    "FND-1280E788",
+    "EVD-8645",
+    "EVD-2894",
+    "EVD-6916"
+   ],
+   "learning": "LR-01",
+   "evidence_strength": "corroborated"
+  },
+  {
+   "text": "Warnings were on record for years (repeat seal changes, pipe-wall loss, an unused change procedure), and none reached a leadership decision that changed the plant.",
+   "cites": [
+    "FND-8083ECAC",
+    "FND-1A251687",
+    "FND-0F19C9FC",
+    "EVD-1494",
+    "EVD-5527",
+    "EVD-2986"
+   ],
+   "learning": "LR-05",
+   "evidence_strength": "direct"
+  }
+ ],
+ "sections": [
+  {
+   "id": "set-up",
+   "heading": "How the site set this up",
+   "items": [
+    {
+     "kind": "graph",
+     "id": "causal-map",
+     "nodes": [
+      {
+       "id": "OIR 1.6",
+       "label": "L4 OIR 1.6 Failure in Maintenance/ Spares/ Support Programme"
+      },
+      {
+       "id": "SVF 3.4",
+       "label": "L3 SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+      },
+      {
+       "id": "SVV 4.1",
+       "label": "L3 SVV 4.1 Failure to Enforce Existing Rules (Supervisory act of Omission)"
+      },
+      {
+       "id": "SVI 1.1",
+       "label": "L3 SVI 1.1 Leadership/Supervisory Oversight Inadequate"
+      },
+      {
+       "id": "ASBE 1.2",
+       "label": "L1 ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+      },
+      {
+       "id": "SVI 1.4",
+       "label": "L3 SVI 1.4 Failed to Provide Appropriate Policy/ Guidance"
+      },
+      {
+       "id": "PTE 2.7",
+       "label": "L2 PTE 2.7 Technical Guidance is Unclear/Unavailable or Incorrect"
+      },
+      {
+       "id": "OIC 2.1",
+       "label": "L4 OIC 2.1 Organizational Culture Allows for Unsafe Task/Mission"
+      },
+      {
+       "id": "AV 1.1",
+       "label": "L1 AV 1.1 Violation - Routine/Widespread"
+      },
+      {
+       "id": "OIC 2.7",
+       "label": "L4 OIC 2.7 Inconsistent Risk Management Practices"
+      },
+      {
+       "id": "AJDE 2.11",
+       "label": "L1 AJDE 2.11 Misapplied or unaware of existing Policy/Procedure"
+      },
+      {
+       "id": "SVI 1.6",
+       "label": "L3 SVI 1.6 Lack of Supervisory Response to Critical Information"
+      },
+      {
+       "id": "SVV 4.5",
+       "label": "L3 SVV 4.5 No Action/ Mitigation Measures for Identified Risk"
+      },
+      {
+       "id": "OIR 1.1",
+       "label": "L4 OIR 1.1 Command and Control Resources are Deficient"
+      },
+      {
+       "id": "PTE 2.11",
+       "label": "L2 PTE 2.11 Equipment Not configured Correctly"
+      },
+      {
+       "id": "PTE 2.6",
+       "label": "L2 PTE 2.6 System Automation or System Redundancy"
+      },
+      {
+       "id": "OIR 1.5",
+       "label": "L4 OIR 1.5 Failure in Timely Acquisition/ Procurement/ Upgrade"
+      }
+     ],
+     "edges": [
+      {
+       "from": "OIR 1.6",
+       "to": "SVF 3.4",
+       "label": "7 mentions"
+      },
+      {
+       "from": "OIR 1.6",
+       "to": "SVV 4.1",
+       "label": "6 mentions"
+      },
+      {
+       "from": "SVI 1.1",
+       "to": "ASBE 1.2",
+       "label": "6 mentions"
+      },
+      {
+       "from": "SVI 1.4",
+       "to": "ASBE 1.2",
+       "label": "6 mentions"
+      },
+      {
+       "from": "SVI 1.4",
+       "to": "PTE 2.7",
+       "label": "6 mentions"
+      },
+      {
+       "from": "OIC 2.1",
+       "to": "AV 1.1",
+       "label": "5 mentions"
+      },
+      {
+       "from": "OIC 2.7",
+       "to": "AJDE 2.11",
+       "label": "5 mentions"
+      },
+      {
+       "from": "OIC 2.7",
+       "to": "ASBE 1.2",
+       "label": "5 mentions"
+      },
+      {
+       "from": "OIC 2.7",
+       "to": "SVI 1.6",
+       "label": "5 mentions"
+      },
+      {
+       "from": "OIR 1.6",
+       "to": "SVI 1.6",
+       "label": "5 mentions"
+      },
+      {
+       "from": "OIR 1.6",
+       "to": "SVV 4.5",
+       "label": "5 mentions"
+      },
+      {
+       "from": "SVI 1.4",
+       "to": "AJDE 2.11",
+       "label": "5 mentions"
+      },
+      {
+       "from": "SVV 4.1",
+       "to": "ASBE 1.2",
+       "label": "5 mentions"
+      },
+      {
+       "from": "OIC 2.1",
+       "to": "ASBE 1.2",
+       "label": "4 mentions"
+      },
+      {
+       "from": "OIC 2.1",
+       "to": "SVI 1.4",
+       "label": "4 mentions"
+      },
+      {
+       "from": "OIC 2.7",
+       "to": "AV 1.1",
+       "label": "4 mentions"
+      },
+      {
+       "from": "OIC 2.7",
+       "to": "SVI 1.4",
+       "label": "4 mentions"
+      },
+      {
+       "from": "OIR 1.1",
+       "to": "PTE 2.11",
+       "label": "4 mentions"
+      },
+      {
+       "from": "OIR 1.1",
+       "to": "PTE 2.6",
+       "label": "4 mentions"
+      },
+      {
+       "from": "OIR 1.5",
+       "to": "PTE 2.11",
+       "label": "4 mentions"
+      }
+     ],
+     "cites": [
+      "FND-02310148",
+      "FND-031A3738",
+      "FND-044D1DEC",
+      "FND-0B651843",
+      "FND-0D4C2C13",
+      "FND-0FFC03BB",
+      "FND-119E6CF7",
+      "FND-137BC719",
+      "FND-14D093BD",
+      "FND-14E2A4B5",
+      "FND-1A251687",
+      "FND-1DF986F8",
+      "FND-257C1100",
+      "FND-2B215AA5",
+      "FND-304A499A",
+      "FND-30EC643B",
+      "FND-35279095",
+      "FND-3746C7B6",
+      "FND-3A34BAD3",
+      "FND-3AB996FC",
+      "FND-3FEE59DF",
+      "FND-403FD778",
+      "FND-4458E0C0",
+      "FND-4DAC9500",
+      "FND-4F687CC5",
+      "FND-50C7319E",
+      "FND-535125C1",
+      "FND-53C9BDB5",
+      "FND-5BA62765",
+      "FND-5E08D0F8",
+      "FND-5EA23B17",
+      "FND-6155A1C2",
+      "FND-62EF1667",
+      "FND-678E51A3",
+      "FND-6ECCE231",
+      "FND-72A7D26C",
+      "FND-730D0DCA",
+      "FND-76A6DEC1",
+      "FND-78ED8552",
+      "FND-7E1F2B3F",
+      "FND-7F829BEB",
+      "FND-82FC718D",
+      "FND-83AD4621",
+      "FND-856F80CE",
+      "FND-89D53630",
+      "FND-934DCBE1",
+      "FND-9E1AB5BA",
+      "FND-9F27F129",
+      "FND-A3DCEBD8",
+      "FND-ABF11182",
+      "FND-ADC25F29",
+      "FND-B86F67F0",
+      "FND-B93AE333",
+      "FND-B955FBD6",
+      "FND-C4B133AA",
+      "FND-C4E06264",
+      "FND-C5000A82",
+      "FND-C9C77FB7",
+      "FND-D1709E71",
+      "FND-D58142C9",
+      "FND-D9A35E88",
+      "FND-DF1144C3",
+      "FND-E885ED4C",
+      "FND-EB48C68C",
+      "FND-EBB66554",
+      "FND-F7FE8463",
+      "FND-FA73D914",
+      "FND-FD98468B"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "HFACS factor names in the generated causal map, kept as the taxonomy words them"
+      },
+      {
+       "rule": "JC5",
+       "reason": "HFACS factor names in the generated causal map, kept as the taxonomy words them"
+      }
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "Maintenance and spares programme",
+     "text": "The maintenance and spares programme, one of the two largest hubs in the causal links, did not supply a specification for the 1986 meter's gasket or a reliability review of repeat failures. Supervision therefore could not act on the risk it saw, rules on the job were not enforced, and checklists were not followed at return to service. The pathway ends on a seal that was not to specification and was never tested to design pressure [FND-1A251687; FND-B440C1BF; FND-5919B328; EVD-8645; EVD-2894].",
+     "learning": "LR-01",
+     "evidence_strength": "corroborated",
+     "supporting_cites": [
+      "FND-DE30BD8B",
+      "FND-F0D015E1"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "Culture and risk practice",
+     "text": "A culture that allowed unsafe work and applied risk management unevenly leads to gaps in the guidance supervisors gave and to routine deviations at the job. The findings read this as norms, not choices by one person: the substitute O-ring was 'regular practice', and the change procedure was not used after 2018. The pathway ends on changes to the plant that nobody reviewed [FND-8083ECAC; FND-B440C1BF; EVD-2986; EVD-8645].",
+     "learning": "LR-06",
+     "evidence_strength": "direct",
+     "supporting_cites": [
+      "FND-ADF96860",
+      "FND-07080447",
+      "FND-6ECCE231",
+      "FND-9F8CA896",
+      "FND-922A04DB"
+     ]
+    },
+    {
+     "kind": "para",
+     "group": "Command and control resources",
+     "text": "Command and control resources and the timing of upgrades lead to equipment that was not set up for an emergency and to automation that was not provided. The isolation valves had no remote operation and the fire and gas system had no executive action. The pathway ends on an isolation that depended on people reaching the valve through the cloud [FND-044D1DEC; FND-6155A1C2; FND-9B406A83; EVD-3932].",
+     "learning": "LR-09",
+     "evidence_strength": "corroborated",
+     "supporting_cites": [
+      "FND-4C645CB5",
+      "FND-31405D96",
+      "FND-A19F3D9C",
+      "FND-594A80E9",
+      "FND-BDD73BA2",
+      "FND-FD0EF0F5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "signals",
+   "heading": "Signals that reached leadership",
+   "items": [
+    {
+     "kind": "timeline",
+     "id": "timeline-candidates",
+     "events": [
+      {
+       "date": "2011",
+       "text": "chedule for thickness measurement is every four years... As per the records, the last two thickness measurement exercise was carried out in 2011 and 2017 which suggests that the schedule of four years is not being adhered to strictly\" (p.29",
+       "received_by": "Mechanical Maintenance (F02, T1)",
+       "cites": [
+        "EVD-8307",
+        "FND-10FEDDD8",
+        "FND-5ABEE30B",
+        "FND-6FA2CEDE",
+        "FND-75CEBE09",
+        "FND-A3DCEBD8",
+        "FND-B8E1F804",
+        "FND-C4842890",
+        "FND-E87DC506",
+        "FND-F9D69EC8",
+        "FND-FCCB9505"
+       ],
+       "signal": true,
+       "response": "The next thickness measurement was made in 2017, six years later, against a four-year schedule."
+      },
+      {
+       "date": "2016-08",
+       "text": "gs for OEM rectangular-slot gaskets on meter 310FT01. [EVD-2986] documents that 'Management of Change (MOC) philosophy/SOP was published in August 2016. However, the procedure indicated in the document is not implemented while carrying out ",
+       "received_by": "Engineering, Design, Documents & MOC (F07, T3)",
+       "cites": [
+        "EVD-2986",
+        "FND-07080447",
+        "FND-3FEE59DF",
+        "FND-6ECCE231",
+        "FND-7838175A",
+        "FND-922A04DB",
+        "FND-9F8CA896",
+        "FND-ADF96860",
+        "FND-CDE8E62D",
+        "FND-EB48C68C",
+        "FND-EEC2407A",
+        "FND-F7FE8463"
+       ],
+       "signal": false,
+       "response": "The procedure was published; later changes were made without it."
+      },
+      {
+       "date": "2018",
+       "text": "cument is not implemented while carrying out change of Low-Pressure Gas to Kribhico from Medium Pressure Gas headers in LPG Plant in 2013 & 2018. It is informed no more MOCs are implemented in the plant since 2018.' The MOC SOP existed sinc",
+       "received_by": "Engineering, Design, Documents & MOC (F07, T3)",
+       "cites": [
+        "EVD-2986",
+        "FND-07080447",
+        "FND-3FEE59DF",
+        "FND-6ECCE231",
+        "FND-7838175A",
+        "FND-922A04DB",
+        "FND-9F8CA896",
+        "FND-ADF96860",
+        "FND-CDE8E62D",
+        "FND-EB48C68C",
+        "FND-EEC2407A",
+        "FND-F7FE8463"
+       ],
+       "signal": true,
+       "response": "No management-of-change record was raised in the plant after 2018."
+      },
+      {
+       "date": "2018-11",
+       "text": "nted recurrence of sealing failures. [EVD-1494] records that \"Cleaning/servicing/calibration of meters 1 & 2 was carried out on 12th & 13th Nov 2018. Afterwards, meter no.1 was cleaned on 25/02/2019 & gasket was changed. Again on 18/09/2019",
+       "received_by": "Mechanical Maintenance (F02, T2)",
+       "cites": [
+        "EVD-1494",
+        "FND-065439DE",
+        "FND-110F964C",
+        "FND-1A251687",
+        "FND-350C35AD",
+        "FND-3A34BAD3",
+        "FND-4EDE038A",
+        "FND-54180594",
+        "FND-55F68376",
+        "FND-69067A1C",
+        "FND-71D631C1",
+        "FND-82FC718D",
+        "FND-8B4A5414",
+        "FND-A3D7D53F",
+        "FND-AC8FBB26",
+        "FND-B86F67F0",
+        "FND-CEE3D4D7",
+        "FND-D14B8424",
+        "FND-E0AE86A6",
+        "FND-F0D015E1",
+        "FND-FEC84761"
+       ],
+       "signal": true,
+       "response": "The gasket was changed again with a locally bought O-ring; no root-cause review is recorded."
+      },
+      {
+       "date": "2019-02-25",
+       "text": "records that \"Cleaning/servicing/calibration of meters 1 & 2 was carried out on 12th & 13th Nov 2018. Afterwards, meter no.1 was cleaned on 25/02/2019 & gasket was changed. Again on 18/09/2019, gasket was changed which leaked within one yea",
+       "received_by": "Mechanical Maintenance (F02, T2)",
+       "cites": [
+        "EVD-1494",
+        "FND-065439DE",
+        "FND-110F964C",
+        "FND-1A251687",
+        "FND-350C35AD",
+        "FND-3A34BAD3",
+        "FND-4EDE038A",
+        "FND-54180594",
+        "FND-55F68376",
+        "FND-69067A1C",
+        "FND-71D631C1",
+        "FND-82FC718D",
+        "FND-8B4A5414",
+        "FND-A3D7D53F",
+        "FND-AC8FBB26",
+        "FND-B86F67F0",
+        "FND-CEE3D4D7",
+        "FND-D14B8424",
+        "FND-E0AE86A6",
+        "FND-F0D015E1",
+        "FND-FEC84761"
+       ],
+       "signal": true,
+       "response": "The gasket was changed again with the same kind of part; no escalation is recorded."
+      },
+      {
+       "date": "2019-07",
+       "text": "thickness of 1.03mm along with heavy pitting and painting peeling off was observed in one of the segments of 36 pipeline in gas terminal in July 2019. The corrective action of painting was completed in Dec. 2019. However, as per the availab",
+       "received_by": "Mechanical Maintenance (F02, T2)",
+       "cites": [
+        "EVD-2397",
+        "FND-159C9FD7",
+        "FND-20034564",
+        "FND-4722A2B8",
+        "FND-4DAC9500",
+        "FND-6E13192C",
+        "FND-7D59D47D",
+        "FND-8EFDE3D9",
+        "FND-999326F0",
+        "FND-ABDADA0C",
+        "FND-B2B200D4",
+        "FND-B412FF47",
+        "FND-B5D6A73E",
+        "FND-C90FA7A2",
+        "FND-E5C4209D",
+        "FND-FA73D914"
+       ],
+       "signal": true,
+       "response": "Painting was chosen as the corrective action."
+      },
+      {
+       "date": "2019-12",
+       "text": "evealed '1.03mm thickness reduction along with heavy pitting and painting peeling off... The corrective action of painting was completed in Dec. 2019. However, as per the available data, the design thickness of the pipeline is 23.83mm with ",
+       "received_by": "Mechanical Maintenance (F02, T2)",
+       "cites": [
+        "EVD-2397",
+        "FND-159C9FD7",
+        "FND-20034564",
+        "FND-4722A2B8",
+        "FND-4DAC9500",
+        "FND-5EC15274",
+        "FND-6E13192C",
+        "FND-8EFDE3D9",
+        "FND-999326F0",
+        "FND-ABDADA0C",
+        "FND-B2B200D4",
+        "FND-B412FF47",
+        "FND-B5D6A73E",
+        "FND-C90FA7A2",
+        "FND-E5C4209D",
+        "FND-FA73D914"
+       ],
+       "signal": true,
+       "response": "Painting was completed and accepted; no strength assessment is recorded."
+      },
+      {
+       "date": "2019-12-18",
+       "text": "without documentation violated fundamental calibration management principles. [EVD-2506] documents: 'During calibration from 17/12/2019 to 18/12/2019, calibration was changed from 16000 mmwc to 2540 mmwc for 310FT01 without any mention of t",
+       "received_by": "Mechanical Maintenance (F02, T1)",
+       "cites": [
+        "EVD-2506",
+        "FND-0B651843",
+        "FND-0BA85877",
+        "FND-13E2037D",
+        "FND-403FD778",
+        "FND-6381588B",
+        "FND-693FEDD2",
+        "FND-7C8ADD7C",
+        "FND-7F829BEB",
+        "FND-85748D86",
+        "FND-89A8965A",
+        "FND-89D53630",
+        "FND-8D744668",
+        "FND-98F7C845",
+        "FND-A534A1C3",
+        "FND-B0BA0566",
+        "FND-C2B4989C",
+        "FND-E94D563C",
+        "FND-FD98468B"
+       ],
+       "signal": true,
+       "response": "The setting change was not entered in the signed calibration documents."
+      },
+      {
+       "date": "2020-09-17",
+       "text": "ble individual, resulting in open notifications and missing post-job reviews. [EVD-0591] states: 'Notification no. 3800419840 was raised on 17/09/2020 for malfunction of meter no.1… Notification was not closed after completion of the job' (",
+       "received_by": "Operations & Control Room (F01, T1)",
+       "cites": [
+        "EVD-0591",
+        "FND-267F1E09",
+        "FND-2B53492C",
+        "FND-30C43927",
+        "FND-55F68376",
+        "FND-62EF1667",
+        "FND-678E51A3",
+        "FND-6D3446CD",
+        "FND-8071945B",
+        "FND-96DB7E93",
+        "FND-977FABA2",
+        "FND-AE60859C",
+        "FND-C59DCD29",
+        "FND-FA807C69"
+       ],
+       "signal": true,
+       "response": "The notification was not closed or reviewed after the job."
+      },
+      {
+       "date": "2020-09-18",
+       "text": "testing of pressure boundaries after maintenance. [EVD-2894] documents: 'After calibration of the meter 310FE01, the gasket was replaced on 18.09.2020. No hydro test was done after replacement of the gasket. The system was only pressurised ",
+       "received_by": "Operations & Control Room (F01, T3)",
+       "cites": [
+        "EVD-2894",
+        "FND-137BC719",
+        "FND-1662466D",
+        "FND-257C1100",
+        "FND-3AB996FC",
+        "FND-491EDE74",
+        "FND-4944554C",
+        "FND-50C7319E",
+        "FND-5919B328",
+        "FND-611A8BFC",
+        "FND-615DB819",
+        "FND-7C5ED5B3",
+        "FND-7FA02383",
+        "FND-8ACDE078",
+        "FND-904FCA63",
+        "FND-A3D7D53F",
+        "FND-C4E06264",
+        "FND-FDFA6FF5"
+       ],
+       "signal": true,
+       "response": "The meter was pressurised to operating pressure only and taken back online the next day."
+      }
+     ],
+     "cites": [
+      "EVD-0591",
+      "EVD-1494",
+      "EVD-2397",
+      "EVD-2506",
+      "EVD-2894",
+      "EVD-2986",
+      "EVD-8307",
+      "FND-065439DE",
+      "FND-07080447",
+      "FND-0B651843",
+      "FND-0BA85877",
+      "FND-10FEDDD8",
+      "FND-110F964C",
+      "FND-137BC719",
+      "FND-13E2037D",
+      "FND-159C9FD7",
+      "FND-1662466D",
+      "FND-1A251687",
+      "FND-20034564",
+      "FND-257C1100",
+      "FND-267F1E09",
+      "FND-2B53492C",
+      "FND-30C43927",
+      "FND-350C35AD",
+      "FND-3A34BAD3",
+      "FND-3AB996FC",
+      "FND-3FEE59DF",
+      "FND-403FD778",
+      "FND-4722A2B8",
+      "FND-491EDE74",
+      "FND-4944554C",
+      "FND-4DAC9500",
+      "FND-4EDE038A",
+      "FND-50C7319E",
+      "FND-54180594",
+      "FND-55F68376",
+      "FND-5919B328",
+      "FND-5ABEE30B",
+      "FND-5EC15274",
+      "FND-611A8BFC",
+      "FND-615DB819",
+      "FND-62EF1667",
+      "FND-6381588B",
+      "FND-678E51A3",
+      "FND-69067A1C",
+      "FND-693FEDD2",
+      "FND-6D3446CD",
+      "FND-6E13192C",
+      "FND-6ECCE231",
+      "FND-6FA2CEDE",
+      "FND-71D631C1",
+      "FND-75CEBE09",
+      "FND-7838175A",
+      "FND-7C5ED5B3",
+      "FND-7C8ADD7C",
+      "FND-7D59D47D",
+      "FND-7F829BEB",
+      "FND-7FA02383",
+      "FND-8071945B",
+      "FND-82FC718D",
+      "FND-85748D86",
+      "FND-89A8965A",
+      "FND-89D53630",
+      "FND-8ACDE078",
+      "FND-8B4A5414",
+      "FND-8D744668",
+      "FND-8EFDE3D9",
+      "FND-904FCA63",
+      "FND-922A04DB",
+      "FND-96DB7E93",
+      "FND-977FABA2",
+      "FND-98F7C845",
+      "FND-999326F0",
+      "FND-9F8CA896",
+      "FND-A3D7D53F",
+      "FND-A3DCEBD8",
+      "FND-A534A1C3",
+      "FND-ABDADA0C",
+      "FND-AC8FBB26",
+      "FND-ADF96860",
+      "FND-AE60859C",
+      "FND-B0BA0566",
+      "FND-B2B200D4",
+      "FND-B412FF47",
+      "FND-B5D6A73E",
+      "FND-B86F67F0",
+      "FND-B8E1F804",
+      "FND-C2B4989C",
+      "FND-C4842890",
+      "FND-C4E06264",
+      "FND-C59DCD29",
+      "FND-C90FA7A2",
+      "FND-CDE8E62D",
+      "FND-CEE3D4D7",
+      "FND-D14B8424",
+      "FND-E0AE86A6",
+      "FND-E5C4209D",
+      "FND-E87DC506",
+      "FND-E94D563C",
+      "FND-EB48C68C",
+      "FND-EEC2407A",
+      "FND-F0D015E1",
+      "FND-F7FE8463",
+      "FND-F9D69EC8",
+      "FND-FA73D914",
+      "FND-FA807C69",
+      "FND-FCCB9505",
+      "FND-FD98468B",
+      "FND-FDFA6FF5",
+      "FND-FEC84761"
+     ],
+     "lint_ok": {
+      "rule": "JC1",
+      "reason": "the capitalised pair is the name of a gas header pressure class in the quoted management-of-change record, not a person"
+     }
+    }
+   ]
+  },
+  {
+   "id": "culture",
+   "heading": "Culture signals",
+   "items": [
+    {
+     "kind": "para",
+     "group": "What had become normal",
+     "text": "Fitting a locally bought O-ring to a rectangular-slot flange was described as regular practice, repeated across three replacements in about 22 months, with no specification, quality check or recorded decision. Accepting a repaired pressure boundary after an operating-pressure soak had also become the modelled return-to-service practice [FND-B440C1BF; FND-A443D288; FND-71EE9734; EVD-8645; EVD-1494].",
+     "learning": "LR-01",
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "para",
+     "group": "What was tolerated",
+     "text": "Breakdown repair was the accepted approach for flameproof fittings in the Zone 1 area, and twelve external-audit recommendations ran on extended dates with no record of the approval the procedure required. Both were visible in site records [FND-1280E788; FND-856F80CE; EVD-6916; EVD-6852].",
+     "learning": "LR-11",
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "para",
+     "group": "Where challenge was absent",
+     "text": "The emergency structure ran as a serial chain: perimeter security, CCTV room, gas terminal control room, shift in-charge, overall shift in-charge, then plant leadership. No role below the plant manager held standing authority to close the isolation valve, so each step reported up rather than acted [FND-82761CC5; FND-A206DFD6; FND-4245FBF2; EVD-3932; EVD-6414].",
+     "learning": "LR-07",
+     "evidence_strength": "corroborated"
+    }
+   ]
+  },
+  {
+   "id": "decisions",
+   "heading": "Decisions for the leadership team",
+   "items": [
+    {
+     "kind": "decision",
+     "group": "Isolation authority",
+     "decision": "Give shift crews standing written authority to isolate and shut down on criteria written into the emergency plan",
+     "options": [
+      "Shift in-charge isolates on defined criteria and reports afterwards",
+      "Control-room operator isolates on a confirmed release, shift in-charge confirms"
+     ],
+     "trade_offs": "Delegation removes the escalation delay but means accepting some isolations that later prove unnecessary, with lost production; the leadership team has to back crews who isolate in good faith.",
+     "owner": "Operations function",
+     "learning": "LR-07",
+     "cites": [
+      "FND-82761CC5",
+      "FND-314D34C5",
+      "FND-AE629313",
+      "EVD-4052"
+     ],
+     "supporting_cites": [
+      "FND-81E3EEA0",
+      "FND-500E0B2D",
+      "FND-8DAFDADC",
+      "FND-7505B1AF",
+      "FND-2EC435D0",
+      "FND-BB4CC662"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "Isolation authority",
+     "name": "Time to isolation in drills",
+     "measure": "Time from a confirmed release to first isolation in each emergency drill",
+     "deterioration": "A drill in which isolation waits for a call above the shift in-charge",
+     "owner": "Operations function",
+     "learning": "LR-07",
+     "cites": [
+      "FND-81E3EEA0",
+      "FND-500E0B2D",
+      "EVD-6414"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "Remote isolation",
+     "decision": "Needs corporate decision: fund remote operation of the emergency isolation valves for inventories that can form a large vapour cloud",
+     "options": [
+      "Remote operation from the control room",
+      "Automatic closure on confirmed gas detection where justified"
+     ],
+     "trade_offs": "Remote operation is likely to need capital and a shutdown window; without it, isolation still depends on reaching the valve through the release.",
+     "owner": "Engineering function",
+     "learning": "LR-09",
+     "cites": [
+      "FND-044D1DEC",
+      "FND-4C645CB5",
+      "FND-31405D96",
+      "EVD-3932"
+     ],
+     "supporting_cites": [
+      "FND-A19F3D9C",
+      "FND-9B406A83",
+      "FND-594A80E9",
+      "FND-BDD73BA2",
+      "FND-FD0EF0F5"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "Remote isolation",
+     "name": "Remotely operable isolation",
+     "measure": "Share of emergency isolation valves on large inventories that can be closed from the control room",
+     "deterioration": "No change over two quarters once funding is decided",
+     "owner": "Engineering function",
+     "learning": "LR-09",
+     "cites": [
+      "FND-9B406A83",
+      "FND-044D1DEC",
+      "EVD-3932"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "Fire and gas executive action",
+     "decision": "Needs corporate decision: approve fire and gas voting logic with automatic executive action for major-release areas",
+     "options": [
+      "Automatic shutdown and protection on confirmed detection",
+      "Alarm with a timed operator action, backed by automatic action"
+     ],
+     "trade_offs": "Automatic action brings spurious-trip risk and engineering cost; display-only detection left the response to a manual chain.",
+     "owner": "Engineering function",
+     "learning": "LR-10",
+     "cites": [
+      "FND-6155A1C2",
+      "FND-4D7CF773",
+      "EVD-8657"
+     ],
+     "supporting_cites": [
+      "FND-15B4E60F"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "Fire and gas executive action",
+     "name": "Detection with executive action",
+     "measure": "Share of major-release areas whose fire and gas detection triggers a defined executive action, proven in the last function test",
+     "deterioration": "Any major-release area still display-only with no recorded decision",
+     "owner": "Engineering function",
+     "learning": "LR-10",
+     "cites": [
+      "FND-15B4E60F",
+      "EVD-8657"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "Pressure-part specifications",
+     "decision": "Give one function ownership of pressure-part specifications and of approving any substitute part",
+     "options": [
+      "Engineering function owns specifications; stores issue only against them",
+      "Maintenance function owns them with engineering approval of substitutes"
+     ],
+     "trade_offs": "One owner in engineering separates the person fitting the part from the person approving it, at the cost of an extra step for urgent repairs.",
+     "owner": "Engineering function",
+     "learning": "LR-01",
+     "cites": [
+      "FND-B440C1BF",
+      "FND-DE30BD8B",
+      "EVD-8645"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "Pressure-part specifications",
+     "name": "Parts issued against a specification",
+     "measure": "Share of pressure-boundary seals issued from stores with a specification reference",
+     "deterioration": "Any seal issued without one",
+     "owner": "Engineering function",
+     "learning": "LR-01",
+     "cites": [
+      "FND-B440C1BF",
+      "EVD-8645"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "Return to service",
+     "decision": "Treat return to service after pressure-boundary work as a hold point that operations accepts in writing against a test record",
+     "options": [
+      "Hold point with a design-pressure test record",
+      "Hold point with an engineering-approved alternative test"
+     ],
+     "trade_offs": "A hold point adds time before restart; without it the meter went back online after an operating-pressure soak only.",
+     "owner": "Operations function",
+     "learning": "LR-02",
+     "cites": [
+      "FND-5919B328",
+      "EVD-2894",
+      "EVD-0185"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "Return to service",
+     "name": "Restarts with a test record",
+     "measure": "Share of pressure-boundary jobs returned to service with a signed test record",
+     "deterioration": "Any restart without one",
+     "owner": "Operations function",
+     "learning": "LR-02",
+     "cites": [
+      "FND-5919B328",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "Hazardous-area lighting",
+     "decision": "Fund replacement of old HPMV fittings in zoned areas with certified fittings, and move their maintenance from breakdown to planned inspection",
+     "options": [
+      "Replace all fittings in the zoned areas in one programme",
+      "Inspect all now and replace on condition"
+     ],
+     "trade_offs": "Full replacement costs more at once; inspect-and-replace leaves old fittings in service longer but finds the worst first.",
+     "owner": "Maintenance function",
+     "learning": "LR-11",
+     "cites": [
+      "FND-1280E788",
+      "EVD-6916",
+      "EVD-0496"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "Hazardous-area lighting",
+     "name": "Hazardous-area fittings inspected",
+     "measure": "Share of zoned-area light fittings with a recorded inspection in the planned interval",
+     "deterioration": "Any fitting found with missing fasteners or an open enclosure",
+     "owner": "Maintenance function",
+     "learning": "LR-11",
+     "cites": [
+      "FND-1280E788",
+      "EVD-6916"
+     ]
+    },
+    {
+     "kind": "decision",
+     "group": "Audit recommendations",
+     "decision": "Allow no extension of a safety recommendation without the documented approval the procedure requires, and review overdue items monthly",
+     "options": [
+      "Monthly review by the leadership team",
+      "Quarterly review with escalation of any unapproved extension"
+     ],
+     "trade_offs": "A monthly review takes leadership time; the evidence shows extensions ran without the required approval.",
+     "owner": "HSE and process safety function",
+     "learning": "LR-21",
+     "cites": [
+      "FND-850B270C",
+      "FND-5A742738",
+      "EVD-6852"
+     ]
+    },
+    {
+     "kind": "indicator",
+     "group": "Audit recommendations",
+     "name": "Extensions with recorded approval",
+     "measure": "Share of extended safety recommendations with the approval on file",
+     "deterioration": "Any extension without it",
+     "owner": "HSE and process safety function",
+     "learning": "LR-21",
+     "cites": [
+      "FND-850B270C",
+      "EVD-6852"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "visible",
+   "heading": "What leaders will do visibly",
+   "items": [
+    {
+     "kind": "check",
+     "text": "Walk the metering area and the zoned lighting with the maintenance and electrical supervisors; ask to see the specification for one pressure seal and the inspection record for one flameproof fitting.",
+     "when": "next 30 days",
+     "cites": [
+      "FND-B440C1BF",
+      "FND-1280E788",
+      "EVD-8645",
+      "EVD-6916"
+     ],
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "the skill sets this relative horizon for visible actions; it is not a fact about the incident"
+     },
+     "learning": "LR-11"
+    },
+    {
+     "kind": "check",
+     "text": "In every operations review, ask how many management-of-change records were raised this month and which field changes they cover.",
+     "when": "next 30 days",
+     "cites": [
+      "FND-8083ECAC",
+      "EVD-2986"
+     ],
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "the skill sets this relative horizon for visible actions; it is not a fact about the incident"
+     },
+     "learning": "LR-06"
+    },
+    {
+     "kind": "check",
+     "text": "Stop accepting a return to service after pressure-boundary work without a signed test record.",
+     "when": "next 30 days",
+     "cites": [
+      "FND-5919B328",
+      "EVD-2894"
+     ],
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "the skill sets this relative horizon for visible actions; it is not a fact about the incident"
+     },
+     "learning": "LR-02"
+    },
+    {
+     "kind": "check",
+     "text": "Stop accepting an extended safety recommendation without the approval the procedure requires.",
+     "when": "next 30 days",
+     "cites": [
+      "FND-850B270C",
+      "EVD-6852"
+     ],
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "the skill sets this relative horizon for visible actions; it is not a fact about the incident"
+     },
+     "learning": "LR-21"
+    },
+    {
+     "kind": "check",
+     "text": "Tell each shift, in person, that an isolation made in good faith on the plan's criteria will be backed, and attend the next emergency drill.",
+     "when": "next 30 days",
+     "cites": [
+      "FND-82761CC5",
+      "FND-314D34C5",
+      "EVD-4052"
+     ],
+     "lint_ok": {
+      "rule": "JC8",
+      "reason": "the skill sets this relative horizon for visible actions; it is not a fact about the incident"
+     },
+     "learning": "LR-07"
+    }
+   ]
+  },
+  {
+   "id": "workshop",
+   "heading": "Leadership workshop agenda (two hours)",
+   "items": [
+    {
+     "kind": "table",
+     "columns": [
+      "Time",
+      "Activity",
+      "Built on"
+     ],
+     "rows": [
+      [
+       "0:00-0:15",
+       "Purpose and ground rules: learning, not blame; roles, not names",
+       "Status line and culture signals"
+      ],
+      [
+       "0:15-0:40",
+       "Walk the causal map: which hubs sit with this team",
+       "How the site set this up"
+      ],
+      [
+       "0:40-1:05",
+       "What had become normal, and what the team tolerated without seeing it",
+       "Culture signals"
+      ],
+      [
+       "1:05-1:45",
+       "Take the decisions: options, trade-offs and the owning function; mark what needs corporate decision",
+       "Decisions for the leadership team"
+      ],
+      [
+       "1:45-2:00",
+       "Agree the visible actions for the next 30 days and the indicators to review",
+       "Decisions and visible actions"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-B440C1BF"
+      ],
+      [
+       "FND-1A251687",
+       "FND-6155A1C2"
+      ],
+      [
+       "FND-A443D288",
+       "FND-1280E788"
+      ],
+      [
+       "FND-82761CC5",
+       "FND-044D1DEC"
+      ],
+      [
+       "FND-5919B328",
+       "FND-850B270C"
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "gaps": [
+  {
+   "text": "[GAP] The export does not show whether the repeat seal failures, the 2017 thickness findings or the unused change procedure were ever reported to the site leadership team.",
+   "evidence_needed": "Site leadership meeting minutes and management-review records for 2018 to 2020.",
+   "cites": [
+    "FND-1A251687",
+    "FND-0F19C9FC",
+    "FND-8083ECAC"
+   ]
+  }
+ ],
+ "limits": [
+  "A management-review input table is not included; add it when the debrief feeds a management review.",
+  "The analysis is a desk review of the published enquiry report; it had no site access or interviews.",
+  "Site authority limits are not in the export; decisions marked 'Needs corporate decision' assume capital above them."
+ ]
+}
