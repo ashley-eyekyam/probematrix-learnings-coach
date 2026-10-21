@@ -142,5 +142,21 @@
  "ui.js.evidence": "Evidence",
  "ui.js.type": "Type",
  "ui.js.linked_to": "Linked to {code}",
- "ui.js.matching": "{n} matching items"
+ "ui.js.matching": "{n} matching items",
+ "ui.layout.print_hint": "Print this page from the browser (Ctrl+P or Cmd+P). Each block below prints as one page.",
+ "ui.layout.inject": "Inject at {offset}",
+ "ui.layout.inject_decision": "Decision to make",
+ "ui.layout.toolbox_opening": "Open with a question",
+ "ui.layout.toolbox_story": "What happened",
+ "ui.layout.toolbox_signs": "Warning signs",
+ "ui.layout.toolbox_change": "One change",
+ "ui.layout.toolbox_ask": "Ask the crew",
+ "ui.layout.endnotes": "Notes",
+ "ui.layout.delivery_record": "Delivery record",
+ "ui.layout.delivery_for": "Pack: {pack} · Audience: {audience}",
+ "ui.layout.delivery_note": "Write roles, never personal names. Copy each row into distribution.csv afterwards.",
+ "ui.layout.more_events": "{n} more events are in the full pack",
+ "ui.layout.decisions_requested": "Decisions requested",
+ "ui.layout.annex_a": "Annex A: Questions",
+ "ui.layout.annex_b": "Annex B: Tables and indicators"
 }

@@ -71,6 +71,7 @@ from .plan import cmd_plan
 from .privacy import cmd_scan_names
 from .profile import cmd_profile
 from .render import DEFAULT_FORMATS, FORMATS, parse_formats
+from .render.layouts import base_url_arg, LAYOUTS, PAPERS
 from .register.check import cmd_check_register
 from .register.markdown import cmd_register_md
 from .register.xlsx import cmd_register_xlsx
@@ -314,6 +315,10 @@ def build_parser():
                    help=f"comma-separated formats to write (default: html,md); one of: {', '.join(FORMATS)}")
     s.add_argument("--view", choices=("full", "learner"), default="full",
                    help="learner: <pack>.learner.<ext> without answers, for the document formats")
+    s.add_argument("--layout", choices=LAYOUTS, help="also write the print layout <pack>.<layout>.html")
+    s.add_argument("--paper", choices=PAPERS, default="A4", help="page size of --layout cards (default: A4)")
+    s.add_argument("--base-url", type=base_url_arg, metavar="URL",
+                   help="where the pack page is published: QR codes in the print layouts link to it")
     s.set_defaults(fn=cmd_pack)
 
     s = sp.add_parser("causal-item", help="top causal links as a pack graph item (JSON on stdout)", allow_abbrev=False)

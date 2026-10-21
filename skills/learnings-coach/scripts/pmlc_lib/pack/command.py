@@ -38,7 +38,12 @@ def cmd_pack(a):
     rw, rpack = (shared_copy(w, share, w), shared_copy(pack, share, w)) if share else (w, pack)
     ctx = RenderContext(w=rw, pack=with_item_ids(rpack), run=run, generated=build_date(), embed=embed, eh=eh,
                         share=share, view=getattr(a, "view", None) or "full", src=Path(a.pack))
+    ctx.layout, ctx.paper = getattr(a, "layout", None), getattr(a, "paper", None) or "A4"     # Task 13 (P4-7)
+    ctx.base_url = getattr(a, "base_url", None)
     outs = [(fmt, o) for fmt in pack_formats(a) for o in render(fmt, ctx)]
+    if ctx.layout:                                                 # print layouts (P4-7): beside the formats
+        from ..render.layouts import render_layout
+        outs += [(f"{ctx.layout} layout", o) for o in render_layout(ctx)]
     name_guard([o.guard_text or "" for _, o in outs], a)
     for note in ctx.notes:
         print(note, file=sys.stderr)
