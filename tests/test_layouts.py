@@ -91,10 +91,13 @@ def test_cards_one_page_per_card(w):
     assert [o.name for o in outs] == ["frontline-learning-cards.cards.html"]
     doc = outs[0].data
     ps = pages(doc)
-    assert len(ps) == len(cards) + 1                                  # one per card, then the closing count
+    talks = [it for s in p["sections"] for it in s["items"] if it["kind"] == "toolbox"]   # Task 16's toolbox talk
+    assert len(ps) == len(cards) + len(talks) + 1                     # one per card and talk, then the closing count
     for c, pg in zip(cards, ps):
         assert c["title"] in pg
-    others = sum(len(s["items"]) for s in p["sections"]) - len(cards)
+    for tb, pg in zip(talks, ps[len(cards):]):
+        assert tb["opening_question"] in pg
+    others = sum(len(s["items"]) for s in p["sections"]) - len(cards) - len(talks)
     assert R.MORE_IN_PACK.format(n=others) in ps[-1]
     assert_every_page_marked(doc, draft=True)
     assert "@page{size:A4}" in doc and outs[0].guard_text == doc
@@ -186,7 +189,7 @@ def test_field_inline_brackets_become_endnote_numbers(w):
 # ----------------------------------------------------------------------------- toolbox
 
 def test_toolbox_needs_toolbox_items(w):
-    outs, ctx = lay(w, "frontline-learning-cards", "toolbox")
+    outs, ctx = lay(w, "board-brief", "toolbox")              # frontline-learning-cards has a toolbox talk (Task 16)
     assert outs == [] and ctx.notes == [R.NOTHING_TO_WRITE.format(fmt="toolbox", why="no toolbox items")]
     tb2 = dict(TOOLBOX, id="tb-2", opening_question="Second talk opener?")
     doc = page_of(w, pack_with(item("para"), TOOLBOX, tb2), "toolbox")
@@ -349,10 +352,10 @@ def test_layout_flags(std_ws, tmp_path):
     for bad in (["--layout", "slides"], ["--paper", "A3"], ["--base-url", "ftp://x.example"]):
         r = _cli("pack", str(std_ws), p, "--out", str(tmp_path / "x"), *bad)
         assert r.returncode == 2, (bad, r.stderr)
-    r = _cli("pack", str(std_ws), p, "--out", str(tmp_path / "o"), "--layout", "toolbox")
+    bb = str(FIX / "board-brief.json")                       # frontline-learning-cards has a toolbox talk (Task 16)
+    r = _cli("pack", str(std_ws), bb, "--out", str(tmp_path / "o"), "--layout", "toolbox")
     assert r.returncode == 0 and "toolbox: nothing to write (no toolbox items)" in r.stderr
-    assert sorted(x.name for x in (tmp_path / "o").iterdir()) == ["frontline-learning-cards.html",
-                                                                   "frontline-learning-cards.md"]
+    assert sorted(x.name for x in (tmp_path / "o").iterdir()) == ["board-brief.html", "board-brief.md"]
     r = _cli("pack", str(std_ws), p, "--out", str(tmp_path / "a5"), "--layout", "cards", "--paper", "A5",
              "--view", "learner")
     assert r.returncode == 0, r.stderr
