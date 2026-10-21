@@ -55,15 +55,17 @@ pmlc strings apply ws pack file --lang LANG [--to {xliff,csv}] [--allow-partial]
 
 `action` is `extract` or `apply`.
 
-The CSV has the columns `id`, `source`, `target` and `note`, and starts with a byte-order mark so Excel opens it as UTF-8. Fill in `target` only. Saving it again from Excel is fine: a byte-order mark, Windows line ends, extra or reordered columns and blank rows are all accepted. A cell that starts with `=`, `+`, `-` or `@` is written with a leading `'` so Excel does not run it as a formula; `apply` removes it again.
+The CSV has the columns `id`, `source`, `target` and `note`, and starts with a byte-order mark so Excel opens it as UTF-8. Fill in `target` only. In Excel, save it with **Save As > CSV UTF-8**; a plain "CSV (Comma delimited)" file is in a legacy code page, loses the Devanagari and is refused. Saved as CSV UTF-8, a byte-order mark, Windows line ends, extra or reordered columns and blank rows are all accepted. A cell that starts with `=`, `+`, `-` or `@` is written with a leading `'` so Excel does not run it as a formula; `apply` removes it again.
 
 `apply` refuses (exit 1, nothing written) when:
 
 - a placeholder is missing or added: `<unit>: placeholders differ from the source ({c1} missing or added); keep every {cN} exactly once`;
 - a unit is untranslated, unless `--allow-partial` is given;
 - the English pack has changed since the strings were extracted, or the file names a unit the pack does not have (extract again);
-- an XLIFF file is for another language than `--lang`;
+- the file is for another language than `--lang` (the XLIFF `target-language`, or the CSV note's `target-language:`);
 - the file contains a DOCTYPE or an entity declaration: `strings file must not contain a DOCTYPE or entity declarations`.
+- the file is not UTF-8 text (for example UTF-16, or a legacy Excel CSV): `strings file must be UTF-8 text`;
+- a target adds a Finding or Evidence ID of its own: citations travel only as the `{cN}` placeholders.
 
 `check-pack` on a translated pack also:
 

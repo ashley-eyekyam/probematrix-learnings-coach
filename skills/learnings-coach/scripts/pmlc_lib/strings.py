@@ -13,6 +13,7 @@ import json
 import re
 import sys
 import xml.etree.ElementTree as ET
+import xml.parsers.expat
 from pathlib import Path
 from xml.sax.saxutils import escape as _st_xml_escape
 
@@ -23,6 +24,8 @@ STRINGS_FORMATS = ("xliff", "csv")
 CSV_COLUMNS = ["id", "source", "target", "note"]
 BACK_TRANSLATION = "#back_translation"
 DOCTYPE_REFUSAL = "strings file must not contain a DOCTYPE or entity declarations"
+NOT_UTF8 = ("strings file must be UTF-8 text (in Excel, save as \"CSV UTF-8\"; in a translation tool, export UTF-8 "
+            "XLIFF)")
 # Never offered for translation, wherever they sit (P4-13), plus what apply itself writes and the sign-off block.
 LOCKED_FIELDS = frozenset({
     "schema", "pack", "skill", "status", "scope", "kind", "id", "cites", "supporting_cites", "row_cites",
@@ -190,7 +193,7 @@ def extract(pack, lang, fmt) -> str:
         for p, src, eng in us:
             note = "; ".join(x for x in (f"target-language: {lang}", _st_note(p, eng, lang)) if x)
             w.writerow([p, _st_cell(src), "", _st_cell(note)])
-        return "﻿" + buf.getvalue()
+        return "\ufeff" + buf.getvalue()
     a = lambda s: _st_xml_escape(s, {'"': "&quot;"})   # noqa: E731
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', f'<xliff version="1.2" xmlns="{XLIFF_NS}">',
              f' <file original="{a(str(pack.get("pack", "")))}.json" source-language="en" target-language="{a(lang)}" '
@@ -220,11 +223,48 @@ def _st_xml_text(el) -> str:
     return "".join(parts)
 
 
-def _st_read_xliff(text: str, lang: str) -> dict:
+def _st_decode(data: bytes) -> str:
+    """A strings file's bytes as text: strict UTF-8 with an optional byte-order mark, never UTF-16 or a legacy code
+    page (a UTF-16 file without a BOM is ASCII plus NULs, so NULs are refused too)."""
+    try:
+        text = data.decode("utf-8-sig")
+    except UnicodeDecodeError as e:
+        raise StringsError(NOT_UTF8) from e
+    return _st_text(text)
+
+
+def _st_text(text: str) -> str:
+    text = text.lstrip("\ufeff")
+    if "\x00" in text or "\ufffd" in text:
+        raise StringsError(NOT_UTF8)
+    return text
+
+
+def _st_no_doctype(text: str) -> str:
+    """text, refused when it declares a DOCTYPE or an entity: first by a plain search, then by expat itself (which
+    stops at the first declaration, before any entity is expanded). The XML declaration is dropped, because the text
+    is already decoded and a stale encoding="UTF-16" must not steer the parser."""
     if re.search(r"<!\s*(DOCTYPE|ENTITY)", text, re.I):
         raise StringsError(DOCTYPE_REFUSAL)
+    text = re.sub(r"\A\s*<\?xml[^>]*\?>", "", text)
+
+    def refuse(*_):
+        raise StringsError(DOCTYPE_REFUSAL)
+    scan = xml.parsers.expat.ParserCreate("UTF-8")
+    scan.StartDoctypeDeclHandler = refuse
+    scan.EntityDeclHandler = refuse
+    scan.UnparsedEntityDeclHandler = refuse
     try:
-        root = ET.fromstring(text.lstrip("﻿").encode("utf-8"))
+        scan.Parse(text.encode("utf-8"), True)
+    except xml.parsers.expat.ExpatError as e:
+        raise StringsError(f"strings file is not a valid XLIFF document ({e})") from e
+    return text
+
+
+def _st_read_xliff(text: str, lang: str) -> dict:
+    text = _st_no_doctype(_st_text(text))
+    try:
+        root = ET.fromstring(text)                  # the same checked str, never the file's raw bytes
     except ET.ParseError as e:
         raise StringsError(f"strings file is not a valid XLIFF document ({e})") from e
     for f in root.iter():
@@ -245,17 +285,20 @@ def _st_read_xliff(text: str, lang: str) -> dict:
     return got
 
 
-def _st_read_csv(text: str) -> dict:
-    rows = csv.reader(io.StringIO(text.lstrip("﻿"), newline=""))
+def _st_read_csv(text: str, lang: str) -> dict:
+    rows = csv.reader(io.StringIO(_st_text(text), newline=""))
     head = [h.strip().lower() for h in next(rows, [])]
     if "id" not in head or "target" not in head:
         raise StringsError("a strings CSV needs the columns id and target (and source, note)")
-    ix = {h: head.index(h) for h in ("id", "source", "target") if h in head}
+    ix = {h: head.index(h) for h in ("id", "source", "target", "note") if h in head}
     got = {}
     for r in rows:
         cell = {h: (_st_uncell(r[i]) if i < len(r) else "") for h, i in ix.items()}
         if not cell["id"].strip():
             continue                                            # Excel's blank rows
+        m = re.match(r"target-language: ([^;\s]+)", cell.get("note") or "")
+        if m and m.group(1) != lang:
+            raise StringsError(f"the strings file is for {m.group(1)}, not {lang}")
         got[cell["id"].strip()] = (cell.get("source"), cell["target"])
     return got
 
@@ -266,7 +309,9 @@ def _st_same(a: str, b: str) -> bool:
 
 def apply(pack, text, lang, fmt, allow_partial=False) -> dict:
     """The translated variant of pack from a filled strings file (StringsError when it cannot be applied)."""
-    got = _st_read_xliff(text, lang) if fmt == "xliff" else _st_read_csv(text)
+    if isinstance(text, bytes):
+        text = _st_decode(text)
+    got = _st_read_xliff(text, lang) if fmt == "xliff" else _st_read_csv(text, lang)
     us = _st_units(pack)
     known = {u[0] for u in us}
     extra = [k for k in got if k not in known]
@@ -291,6 +336,9 @@ def apply(pack, text, lang, fmt, allow_partial=False) -> dict:
             miss = [x for x in want if x not in have] or [x for x in have if x not in want]
             raise StringsError(f"{path}: placeholders differ from the source ({', '.join('{' + x + '}' for x in miss)} "
                                f"missing or added); keep every {{cN}} exactly once")
+        if _ST_CITE_RX.search(tgt):
+            raise StringsError(f"{path}: the translation adds a Finding or Evidence ID; citations travel only as the "
+                               f"{{cN}} placeholders")
         value = _ST_PH_RX.sub(lambda m: mapping[m.group(1)], tgt)
         if toks is None:
             backs[item] = value
@@ -322,6 +370,16 @@ def _st_refuse_existing(target: Path, what: str) -> None:
         sys.exit(f"{target} already exists and may hold {what}; move it or pass a new --out")
 
 
+def _st_write_new(target: Path, data: bytes, what: str) -> None:
+    """Write data to a file that must not exist yet (exclusive create, so a file that appears meanwhile is kept)."""
+    target.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with open(target, "xb") as fh:
+            fh.write(data)
+    except FileExistsError:
+        _st_refuse_existing(target, what)
+
+
 def _st_load_pack(path) -> dict:
     p = Path(path)
     if not p.is_file():
@@ -349,8 +407,7 @@ def cmd_strings(a):
         target = Path(a.out) if a.out else out_dir / f"{pack['pack']}.strings.{'xlf' if fmt == 'xliff' else 'csv'}"
         _st_refuse_existing(target, "your translator's work")
         text = extract(pack, lang, fmt)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(text.encode("utf-8"))
+        _st_write_new(target, text.encode("utf-8"), "your translator's work")
         n = len(units(pack))
         print(f"strings written to {target} ({n} units, {fmt}, en -> {lang}); translate the targets, then run "
               f"strings apply")
@@ -365,13 +422,13 @@ def cmd_strings(a):
         sys.exit(f"strings file {sf} not found")
     target = Path(a.out) if a.out else out_dir / f"{pack['pack']}-{a.lang.lower()}.json"
     _st_refuse_existing(target, "a reviewed translation")
-    raw = sf.read_bytes().decode("utf-8-sig", errors="replace")
-    fmt = a.to or ("csv" if sf.suffix.lower() == ".csv" or not raw.lstrip().startswith("<") else "xliff")
     try:
+        raw = _st_decode(sf.read_bytes())           # read once; everything below sees only this checked text
+        fmt = a.to or ("csv" if sf.suffix.lower() == ".csv" or not raw.lstrip().startswith("<") else "xliff")
         result = apply(pack, raw, a.lang, fmt, allow_partial=a.allow_partial)
     except StringsError as e:
         print(str(e), file=sys.stderr)
         sys.exit(f"strings file {sf} not applied; nothing written")
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(result, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    _st_write_new(target, (json.dumps(result, indent=1, ensure_ascii=False) + "\n").encode("utf-8"),
+                  "a reviewed translation")
     print(f"translation written to {target}; check it with check-pack, and have a fluent speaker review it before use")

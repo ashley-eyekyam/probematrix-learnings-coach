@@ -33,7 +33,7 @@ def w(ws):  # noqa: F811
 
 def fill_csv(text, edit=None):
     """Every target set to its source (edit(row) may change a row)."""
-    rows = list(csv.DictReader(io.StringIO(text.lstrip("﻿"))))
+    rows = list(csv.DictReader(io.StringIO(text.lstrip("\ufeff"))))
     for r in rows:
         r["target"] = r["source"]
         if edit:
@@ -98,13 +98,13 @@ def test_extract_units_and_locked_fields():
     assert 'target-language="hi"' in x and 'source-language="en"' in x
     assert '<x id="c1" ctype="x-pmlc-cite"/>' in x and "[FND-0002]" not in x
     c = S.extract(pack, "hi", "csv")
-    assert c.startswith("﻿id,source,target,note\r\n") and "{c1}" in c and "target-language: hi" in c
+    assert c.startswith("\ufeffid,source,target,note\r\n") and "{c1}" in c and "target-language: hi" in c
 
 
 def test_extract_glossary_notes():
     pack = fixture(SRC)
     pack["sections"][0]["items"].append({"kind": "para", "text": "Each HFACS barrier is a learning [FND-0001]."})
-    rows = {r["id"]: r for r in csv.DictReader(io.StringIO(S.extract(pack, "hi", "csv").lstrip("﻿")))}
+    rows = {r["id"]: r for r in csv.DictReader(io.StringIO(S.extract(pack, "hi", "csv").lstrip("\ufeff")))}
     note = rows["sections[0].items[2].text"]["note"]
     assert "HFACS (keep as written)" in note and "Barrier = सुरक्षा बचाव" in note and "Learning = सीख" in note
     x = S.extract(pack, "hi", "xliff")
@@ -341,7 +341,7 @@ def test_csv_excel_habits():
     wr.writeheader()
     for r in rows:
         wr.writerow({"Comments": "checked", **r})
-    excel = "﻿" + buf.getvalue().replace("\n", "\r\n").replace("\r\r\n", "\r\n")
+    excel = "\ufeff" + buf.getvalue().replace("\n", "\r\n").replace("\r\r\n", "\r\n")
     out = S.apply(pack, excel, "hi", "csv")
     assert strip_translation(out) == pack
     # a formula-led cell is neutralised on the way out and restored on the way in
@@ -351,7 +351,7 @@ def test_csv_excel_habits():
     assert "'=no formula here" in c
     assert S.apply(p2, fill_csv(c), "hi", "csv")["sections"][0]["items"][1]["rows"][0][3] == "=no formula here"
     with pytest.raises(S.StringsError, match="needs the columns id and target"):
-        S.apply(pack, "﻿key,value\r\na,b\r\n", "hi", "csv")
+        S.apply(pack, "\ufeffkey,value\r\na,b\r\n", "hi", "csv")
 
 
 def test_translation_note_rendered(w):
@@ -381,3 +381,68 @@ def test_glossary_hi_complete():
             hi = t["translations"].get("hi")
             assert isinstance(hi, str) and hi.strip(), t["term"]
             assert re.search(r"[ऀ-ॿ]", hi), t["term"]       # Devanagari, not English left in place
+
+
+UTF8_MSG = "strings file must be UTF-8 text"
+
+
+def _evil_xliff(good, decl_encoding):
+    """good (a filled XLIFF string, no declaration) with a DOCTYPE declaring an internal entity used in a target."""
+    body = re.sub(r"(<ns0:target[^>]*>)", r"\1&x;", good, count=1)
+    return (f'<?xml version="1.0" encoding="{decl_encoding}"?>\n<!DOCTYPE xliff [<!ENTITY x "INJECTED">]>\n' + body)
+
+
+@pytest.mark.parametrize("enc,decl", [("utf-16-le", "UTF-16"), ("utf-16", "UTF-16"), ("utf-16-be", "UTF-16"),
+                                      ("utf-8", "UTF-8")])
+def test_strings_file_encoding_and_entities_refused(ws, tmp_path, enc, decl):  # noqa: F811
+    d, out, src = _ws_copy(ws, tmp_path)
+    data = _evil_xliff(fill_xliff(S.extract(fixture(SRC), "hi", "xliff")), decl).encode(enc)
+    for to in ([], ["--to", "xliff"]):
+        xf = tmp_path / "evil.xlf"
+        xf.write_bytes(data)
+        r = run_fail("strings", "apply", str(d), str(src), str(xf), "--lang", "hi", "--allow-partial", *to)
+        assert r.returncode == 1, (enc, to)
+        assert (UTF8_MSG if enc != "utf-8" else DOCTYPE_MSG) in r.stderr, (enc, r.stderr)
+        assert not (out / f"{SRC}-hi.json").exists() and "INJECTED" not in r.stdout
+    with pytest.raises(S.StringsError):
+        S.apply(fixture(SRC), data.decode("latin-1"), "hi", "xliff", allow_partial=True)
+
+
+def test_strings_file_not_utf8_refused(ws, tmp_path):  # noqa: F811
+    d, out, src = _ws_copy(ws, tmp_path)
+    cf = tmp_path / "ansi.csv"
+    cf.write_bytes(fill_csv(S.extract(fixture(SRC), "hi", "csv")).replace("Stop and ask", "Stop é").encode("cp1252", errors="replace"))
+    r = run_fail("strings", "apply", str(d), str(src), str(cf), "--lang", "hi")
+    assert r.returncode == 1 and UTF8_MSG in r.stderr and "CSV UTF-8" in r.stderr
+    assert not (out / f"{SRC}-hi.json").exists()
+    with pytest.raises(S.StringsError, match=UTF8_MSG):
+        S.apply(fixture(SRC), "id,target\x00\r\n", "hi", "csv")
+
+
+def test_apply_refuses_added_id_and_csv_language_mismatch():
+    pack = fixture(SRC)
+
+    def add_id(r):
+        if r["id"] == "title":
+            r["target"] += " FND-0002"
+    with pytest.raises(S.StringsError, match="title: the translation adds a Finding or Evidence ID"):
+        S.apply(pack, fill_csv(S.extract(pack, "hi", "csv"), add_id), "hi", "csv")
+    with pytest.raises(S.StringsError, match="the strings file is for de, not hi"):
+        S.apply(pack, fill_csv(S.extract(pack, "de", "csv")), "hi", "csv")
+
+
+def test_never_overwrite_is_exclusive(tmp_path):
+    t = tmp_path / "x.json"
+    S._st_write_new(t, b"one", "a reviewed translation")
+    with pytest.raises(SystemExit, match="already exists and may hold a reviewed translation"):
+        S._st_write_new(t, b"two", "a reviewed translation")
+    assert t.read_bytes() == b"one"
+
+
+def test_shape_compares_data_quality_ids():
+    from pmlc_lib.pack import schema as PS
+    src = {"bottom_line": [], "sections": [], "data_quality": [{"text": "Dates are wrong [FND-0001]."}]}
+    got = copy.deepcopy(src)
+    got["data_quality"][0]["text"] = "तारीख़ें ग़लत हैं [FND-0002]।"
+    assert PS._ps_shape(src)["data_quality"] == [["FND-0001"]]
+    assert PS._ps_shape(src) != PS._ps_shape(got)

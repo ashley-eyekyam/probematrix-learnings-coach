@@ -699,6 +699,8 @@ def _ps_shape(pack) -> dict:
     and the IDs each item and bottom-line entry cites (in cites lists or inline)."""
     bl = pack.get("bottom_line") if isinstance(pack.get("bottom_line"), list) else []
     out = {"bottom_line": len(bl)}
+    dq = pack.get("data_quality") if isinstance(pack.get("data_quality"), list) else []
+    out["data_quality"] = [sorted(x for _, x in _walk_ids(e, "")) for e in dq]
     for i, e in enumerate(bl):
         out[f"bottom_line[{i}]"] = sorted(x for _, x in _walk_ids(e, ""))
     secs = [s for s in pack.get("sections") or [] if isinstance(s, dict)] if isinstance(pack.get("sections"), list) else []
