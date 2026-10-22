@@ -6,6 +6,7 @@ import collections
 import copy
 import math
 import re
+import unicodedata
 
 from ..pack import schema as rf_schema          # rf_schema.KINDS: actions.py has its own KINDS (M-2)
 from ..pack.schema import CITE_FIELDS, GENERIC_FIELDS, ID_RX
@@ -17,8 +18,27 @@ WORDS_PER_MINUTE = 200
 # Not words a reader reads: ids, citations, kinds and enum values (P4-19).
 RF_SKIP_KEYS = {"kind", "id", "date", "time", "signal", "hold_point", "hoc_tier", "state", "type",
                 "evidence_strength", "correct", "seconds", "offset", "learning", "clauses", "comparator_refs", "group",
-                "lint_ok", "lang", "dir", "channel", *CITE_FIELDS}
-RF_WORD_RX = re.compile(r"\w+(?:[-'’]\w+)*")
+                "lint_ok", "lang", "dir", "channel", *CITE_FIELDS,
+                "source_text", "back_translation"}       # a translation's English, for its reviewer (FR-4)
+
+
+def _rf_mark_class() -> str:
+    """The combining marks of the Basic Multilingual Plane as a regex class body: \\w leaves out vowel signs such as
+    Devanagari matras, which would split one Hindi word into several (FR-4)."""
+    out, start, prev = [], None, None
+    for c in range(0x300, 0x10000):
+        if unicodedata.category(chr(c)).startswith("M"):
+            if start is None:
+                start = c
+            prev = c
+        elif start is not None:
+            out.append(f"\\u{start:04x}-\\u{prev:04x}")
+            start = None
+    return "".join(out)
+
+
+RF_WORD_CHARS = r"[\w" + _rf_mark_class() + "]"
+RF_WORD_RX = re.compile(rf"{RF_WORD_CHARS}+(?:[-'’]{RF_WORD_CHARS}+)*")
 
 
 def _rf_role(v) -> str:

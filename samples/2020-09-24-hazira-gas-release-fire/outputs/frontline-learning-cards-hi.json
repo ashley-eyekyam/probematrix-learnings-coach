@@ -380,7 +380,7 @@
      ],
      "warning_signs": [
       "ऐसा गैस अलार्म जिसके पीछे कोई अपने-आप होने वाली कार्रवाई नहीं है",
-      "किसी अलार्म से पहले ही भाप या आवाज़ की सूचना आ जाना"
+      "किसी अलार्म से पहले ही वाष्प (गैस) या आवाज़ की सूचना आ जाना"
      ],
      "good_looks_like": "टीमें गैस अलार्म को तब तक पक्का रिसाव मानती हैं जब तक उल्टा साबित न हो, और जानती हैं कि कौन-से अलार्म उपकरण ट्रिप करते हैं और कौन-से किसी व्यक्ति का इंतज़ार करते हैं।",
      "discussion": [
@@ -425,7 +425,7 @@
       "बादल आपको स्रोत के पास नहीं जाने देता",
       "बादल बढ़ रहा है और आप फ़ोन पर अनुमति माँग रहे हैं"
      ],
-     "good_looks_like": "पहुँच बंद होते ही टीम कंट्रोल रूम को \"पहुँच नहीं है\" बताती है और उन आइसोलेशन पॉइंट पर चली जाती है जहाँ वह सुरक्षित पहुँच सकती है।",
+     "good_looks_like": "पहुँच बंद होते ही टीम कंट्रोल रूम को \"पहुँच नहीं है\" (access denied) बताती है और उन आइसोलेशन पॉइंट पर चली जाती है जहाँ वह सुरक्षित पहुँच सकती है।",
      "discussion": [
       "कौन-से वाल्व हमारे सेक्शन को अलग करते हैं, और वे कहाँ से चलाए जाते हैं?",
       "अगर आप उनके पास न पहुँच सकें, तो क्या करेंगे?",
@@ -449,7 +449,7 @@
     {
      "kind": "card",
      "title": "उस कंट्रोल रूम को फ़ोन करें जो कार्रवाई कर सके, और जो दिख रहा है वह बताएँ",
-     "what_happened": "एक वॉच टावर और गेट पर तैनात सुरक्षा स्टाफ ने लगभग 02:15 पर बादल देखा। उनके फ़ोन सुरक्षा नेटवर्क, फ़ायर स्टेशन और एक दूसरे कंट्रोल रूम को गए। गैस टर्मिनल कंट्रोल रूम को इसकी खबर लगभग 02:18 पर \"कुछ भाप का बादल या स्टीम रिसाव\" के रूप में मिली।",
+     "what_happened": "एक वॉच टावर और गेट पर तैनात सुरक्षा स्टाफ ने लगभग 02:15 पर बादल देखा। उनके फ़ोन सुरक्षा नेटवर्क, फ़ायर स्टेशन और एक दूसरे कंट्रोल रूम को गए। गैस टर्मिनल कंट्रोल रूम को इसकी खबर 02:18 से 02:20 के बीच \"कुछ वाष्प का बादल या भाप (स्टीम) का रिसाव\" के रूप में मिली।",
      "why_made_sense": "सुरक्षा चौकियों से गैस टर्मिनल कंट्रोल रूम तक कोई सीधी लाइन नहीं थी, और हाइड्रोकार्बन रिसाव के लिए कोई तय शब्द नहीं थे, इसलिए हर कड़ी ने सूचना को परखा और फिर अपने शब्दों में आगे बताया।",
      "organisation_changing": "सीख रजिस्टर का सुझाव, संगठन के फ़ैसले के लिए: बाहरी सुरक्षा चौकियों और कैमरा रूम से हर प्रोसेस कंट्रोल रूम तक सीधी लाइन, और रिसाव का एक तय संदेश जिसका अभ्यास सुरक्षा और ऑपरेशंस मिलकर करें।",
      "did_you_know": [
@@ -460,7 +460,7 @@
       "पहले ही फ़ोन में कहें \"हाइड्रोकार्बन रिसाव\", कहाँ है और कितना बड़ा है।"
      ],
      "warning_signs": [
-      "आपको भाप दिखती है या गड़गड़ाहट सुनाई देती है, और आप नहीं जानते कि वह क्षेत्र किस कंट्रोल रूम के ज़िम्मे है",
+      "आपको वाष्प (गैस) दिखती है या तेज़ आवाज़ सुनाई देती है, और आप नहीं जानते कि वह क्षेत्र किस कंट्रोल रूम के ज़िम्मे है",
       "आपकी सूचना कोई ऐसा व्यक्ति आगे बढ़ा रहा है जिसने खुद नहीं देखा"
      ],
      "good_looks_like": "पहला फ़ोन उस क्षेत्र के कंट्रोल रूम को जाता है और उसमें कहा जाता है \"हाइड्रोकार्बन रिसाव\", कहाँ, और कितना बड़ा।",
@@ -593,7 +593,7 @@
      "one_change": "स्पेसिफिकेशन नहीं, तो फिटिंग नहीं; रिकॉर्ड किया टेस्ट नहीं, तो सौंपना नहीं। इनमें से कुछ भी न हो, तो काम रोकें और सुपरवाइज़र से पूछें।",
      "crew_question": "हमारी यूनिट का कौन-सा काम रोकना हमें सबसे मुश्किल लगेगा, और उसे रोकने में क्या मदद करेगा?",
      "duration": "5 मिनट",
-     "learning": "LR-02",
+     "learning": "LR-01",
      "cites": [
       "FND-7FA02383",
       "FND-B356F15B",
@@ -640,7 +640,7 @@
      "kind": "scenario",
      "group": "Responding to a release",
      "learning": "LR-08",
-     "situation": "रात में आपको गड़गड़ाहट सुनाई देती है और कंट्रोल रूम के पास सड़क पर भाप बहती दिखती है। गैस अलार्म अभी तक नहीं बजा है। आप मीटरिंग क्षेत्र की ओर चलने की कोशिश करते हैं और गंध तेज़ है।",
+     "situation": "रात में आपको तेज़ आवाज़ सुनाई देती है और कंट्रोल रूम के पास सड़क के आर-पार वाष्प (गैस) बहती दिखती है। गैस अलार्म अभी तक नहीं बजा है। आप मीटरिंग क्षेत्र की ओर चलने की कोशिश करते हैं और गंध तेज़ है।",
      "prompts": [
       "आप किसे फ़ोन करते हैं, और ठीक-ठीक क्या कहते हैं?",
       "आप स्रोत तक पहुँचने की कोशिश कब बंद करते हैं?",
@@ -653,24 +653,24 @@
       "EVD-9612"
      ],
      "source_text": {
-      "situation": "At night you hear a roar and see vapour drifting across the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong.",
+      "situation": "At night you hear a loud noise and see vapour drifting across the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong.",
       "prompts[0]": "Who do you call, and what exactly do you say?",
       "prompts[1]": "When do you stop trying to reach the source?",
       "prompts[2]": "What do you need to know to isolate from a safe place?"
      },
-     "back_translation": "At night you hear a rumbling and see steam drifting on the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong.\nWhom do you phone, and what exactly do you say?\nWhen do you stop trying to reach the source?\nWhat do you need to know to isolate from a safe place?"
+     "back_translation": "At night you hear a loud noise and see vapour (gas) drifting across the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong.\nWhom do you phone, and what exactly do you say?\nWhen do you stop trying to reach the source?\nWhat do you need to know to isolate from a safe place?"
     },
     {
      "kind": "toolbox",
      "id": "talk-release",
      "group": "Responding to a release",
      "opening_question": "अगर आज रात आपको मीटरिंग स्किड के पास सफ़ेद बादल दिखे, तो आप सबसे पहले किसे फ़ोन करेंगे?",
-     "story": "02:15 पर दो सुरक्षा चौकियों ने गड़गड़ाहट सुनी और गैस टर्मिनल के पास बादल देखा। उनके फ़ोन पहले सुरक्षा नेटवर्क को गए, और गैस टर्मिनल कंट्रोल रूम को लगभग 02:20 पर \"कुछ भाप का बादल या स्टीम रिसाव\" की खबर मिली, उसी समय उसका अलार्म पैनल भी जला। इंजीनियर बाहर गए और स्रोत के पास नहीं पहुँच सके। आइसोलेशन वाल्व सिर्फ़ हाथ से, वाल्व पर जाकर, चलाए जा सकते थे। पहला वाल्व 03:01 पर बंद हुआ, और आग 03:08 पर लगी।",
+     "story": "02:15 पर दो सुरक्षा चौकियों ने तेज़ आवाज़ सुनी और गैस टर्मिनल के पास बादल देखा। उनके फ़ोन पहले सुरक्षा नेटवर्क को गए, और गैस टर्मिनल कंट्रोल रूम को 02:18 से 02:20 के बीच \"कुछ वाष्प का बादल या भाप (स्टीम) का रिसाव\" की खबर मिली, लगभग उसी समय जब उसका अलार्म पैनल जला। इंजीनियर बाहर गए और स्रोत के पास नहीं पहुँच सके। आइसोलेशन वाल्व सिर्फ़ हाथ से, वाल्व पर जाकर, चलाए जा सकते थे। पहला वाल्व 03:01 पर बंद हुआ, और आग 03:08 पर लगी।",
      "warning_signs": [
-      "आपको भाप दिखती है या गड़गड़ाहट सुनाई देती है, और अभी तक कोई अलार्म नहीं बजा",
+      "आपको वाष्प (गैस) दिखती है या तेज़ आवाज़ सुनाई देती है, और अभी तक कोई अलार्म नहीं बजा",
       "बादल आपको स्रोत के पास नहीं जाने देता"
      ],
-     "one_change": "सबसे पहले उस क्षेत्र के कंट्रोल रूम को फ़ोन करें और कहें \"हाइड्रोकार्बन रिसाव\", कहाँ और कितना बड़ा; अगर बादल आपको रोक दे, तो \"पहुँच नहीं है\" की सूचना दें और ऐसे आइसोलेशन पॉइंट पर जाएँ जहाँ आप सुरक्षित पहुँच सकें।",
+     "one_change": "सबसे पहले उस क्षेत्र के कंट्रोल रूम को फ़ोन करें और कहें \"हाइड्रोकार्बन रिसाव\", कहाँ और कितना बड़ा; अगर बादल आपको रोक दे, तो \"पहुँच नहीं है\" (access denied) की सूचना दें और ऐसे आइसोलेशन पॉइंट पर जाएँ जहाँ आप सुरक्षित पहुँच सकें।",
      "crew_question": "कौन-से वाल्व हमारे सेक्शन को अलग करते हैं, और हर एक कहाँ से चलाया जाता है?",
      "duration": "5 मिनट",
      "learning": "LR-08",
@@ -799,7 +799,7 @@
     {
      "kind": "check",
      "when": "रिसाव आपको स्रोत तक जाने से रोक रहा है",
-     "text": "आगे बढ़ना रोकें। कंट्रोल रूम को \"पहुँच नहीं है\" बताएँ और पूछें कि किन आइसोलेशन पॉइंट तक सुरक्षित पहुँचा जा सकता है।",
+     "text": "आगे बढ़ना रोकें। कंट्रोल रूम को \"पहुँच नहीं है\" (access denied) बताएँ और पूछें कि किन आइसोलेशन पॉइंट तक सुरक्षित पहुँचा जा सकता है।",
      "learning": "LR-09",
      "cites": [
       "FND-BDD73BA2",
@@ -810,7 +810,7 @@
       "when": "A release blocks your way to the source",
       "text": "Stop approaching. Tell the control room \"access denied\" and ask which isolation points can be reached safely."
      },
-     "back_translation": "The leak is stopping you from going to the source\nStop going forward. Tell the control room \"no access\" and ask which isolation points can be reached safely."
+     "back_translation": "The leak is stopping you from going to the source\nStop going forward. Tell the control room \"no access\" (access denied) and ask which isolation points can be reached safely."
     }
    ]
   }

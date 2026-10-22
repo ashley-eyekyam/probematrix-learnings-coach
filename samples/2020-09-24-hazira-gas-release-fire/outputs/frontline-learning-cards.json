@@ -430,7 +430,7 @@
     {
      "kind": "card",
      "title": "Call the control room that can act, and say what you see",
-     "what_happened": "Security staff at a watch tower and at the gate saw the cloud at about 02:15. Their calls went to the security network, the fire station and another control room. The gas terminal control room heard of it at about 02:18 as \"some vapour cloud or steam leakage\".",
+     "what_happened": "Security staff at a watch tower and at the gate saw the cloud at about 02:15. Their calls went to the security network, the fire station and another control room. The gas terminal control room heard of it between 02:18 and 02:20 as \"some vapour cloud or steam leakage\".",
      "why_made_sense": "Security posts had no direct line to the gas terminal control room, and there were no standard words for a hydrocarbon release, so each relay checked the report and described it again.",
      "organisation_changing": "The Learnings Register recommends, for the organisation to decide: a direct line from perimeter posts and the camera room to each process control room, and a standard release message drilled jointly by security and operations.",
      "did_you_know": [
@@ -441,7 +441,7 @@
       "Say \"hydrocarbon release\", where and how big, in your first call."
      ],
      "warning_signs": [
-      "You see vapour or hear a roar and do not know which control room covers that area",
+      "You see vapour or hear a loud noise and do not know which control room covers that area",
       "Your report is being passed on by someone who did not see it"
      ],
      "good_looks_like": "The first call goes to the control room for that area and says \"hydrocarbon release\", where, and how big.",
@@ -574,7 +574,7 @@
      "one_change": "No specification, no fit; no recorded test, no hand-back. If either is missing, stop and ask the supervisor.",
      "crew_question": "Which job on our unit would we find hardest to stop, and what would help us stop it?",
      "duration": "5 minutes",
-     "learning": "LR-02",
+     "learning": "LR-01",
      "cites": [
       "FND-7FA02383",
       "FND-B356F15B",
@@ -611,7 +611,7 @@
      "kind": "scenario",
      "group": "Responding to a release",
      "learning": "LR-08",
-     "situation": "At night you hear a roar and see vapour drifting across the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong.",
+     "situation": "At night you hear a loud noise and see vapour drifting across the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong.",
      "prompts": [
       "Who do you call, and what exactly do you say?",
       "When do you stop trying to reach the source?",
@@ -629,9 +629,9 @@
      "id": "talk-release",
      "group": "Responding to a release",
      "opening_question": "If you saw a white cloud near the metering skid tonight, who would you call first?",
-     "story": "At 02:15 two security posts heard a roar and saw a cloud near the gas terminal. Their calls went to the security network first, and the gas terminal control room heard of \"some vapour cloud or steam leakage\" at about 02:20, when its alarm panel also lit. The engineers went out and could not get near the source. The isolation valves could be worked only by hand, at the valve. The first was closed at 03:01, and the fire started at 03:08.",
+     "story": "At 02:15 two security posts heard a loud noise and saw a cloud near the gas terminal. Their calls went to the security network first, and the gas terminal control room heard of \"some vapour cloud or steam leakage\" between 02:18 and 02:20, at about the time its alarm panel lit. The engineers went out and could not get near the source. The isolation valves could be worked only by hand, at the valve. The first was closed at 03:01, and the fire started at 03:08.",
      "warning_signs": [
-      "You see vapour or hear a roar, and no alarm has sounded yet",
+      "You see vapour or hear a loud noise, and no alarm has sounded yet",
       "The cloud stops you getting near the source"
      ],
      "one_change": "Call the control room for that area first and say \"hydrocarbon release\", where and how big; if the cloud stops you, report \"access denied\" and move to an isolation point you can reach safely.",

@@ -22,7 +22,7 @@ A ProbeMatrix findings export and its Learnings Coach outputs for the hydrocarbo
 
 ## Outputs
 
-Every file in `outputs/` was drafted by an AI agent with the Learnings Coach from the export above, and none has been reviewed or signed off by a person. Each pack is committed as its JSON (the source), its HTML page (open this first) and its Markdown, written by `pmlc pack`; one pack per skill, plus the two variants of `report-comparison` and the Hindi variant of `frontline-learning-cards`. One file of each other document format is committed as a showcase. The Learnings Register holds 25 learnings and 44 recommendations covering 435 of 436 findings.
+Every file in `outputs/` was drafted by an AI agent with the Learnings Coach from the export above, and none has been reviewed or signed off by a person. Each pack is committed as its JSON (the source), its HTML page (open this first) and its Markdown, written by `pmlc pack`; one pack for each audience and analysis skill, the dossier index `dossier-index` beside `dossier-F02`, the two variants of `report-comparison` and the Hindi variant of `frontline-learning-cards`; the Learnings Register is its own JSON, Markdown and workbook. One file of each other document format is committed as a showcase. The Learnings Register holds 25 learnings and 44 recommendations covering 435 of 436 findings.
 
 | File(s) | Skill | Format | Status |
 |---|---|---|---|
@@ -65,7 +65,7 @@ Every file in `outputs/` was drafted by an AI agent with the Learnings Coach fro
 
 The files were rendered with `SOURCE_DATE_EPOCH` set, so they carry a fixed generated date, and `tests/test_hazira_samples.py` (repository only) re-renders each one and compares it with the committed file. To re-render one, build the workspace as below with `--overlay india-process-site`, copy `comparator/*.json` into the workspace and `outputs/*.json` into the run's `outputs/`, then run `python3 skills/learnings-coach/scripts/pmlc.py pack <workspace> <run>/outputs/<pack>.json` with the flags in the Format column.
 
-The Hindi pack `frontline-learning-cards-hi` was made through `pmlc strings extract` and `strings apply --lang hi`, with English back-translations of its safety-critical items; it is an AI translation and a fluent speaker checks it before use (each page says so).
+The Hindi pack `frontline-learning-cards-hi` was made through `pmlc strings extract` and `strings apply --lang hi`, with English back-translations of its safety-critical items; it is an AI translation and a fluent speaker checks it before use (each page says so). The toolbox-talk group names ("Returning equipment to service", "Responding to a release") stay in English on the Hindi page, because `group` is a locked field that `strings` does not offer for translation.
 
 ## How it was prepared
 

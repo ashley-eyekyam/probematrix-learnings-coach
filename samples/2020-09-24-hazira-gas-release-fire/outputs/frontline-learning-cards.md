@@ -217,14 +217,14 @@ These cards are read by the crews whose work appears in the findings. Talk them 
 
 ### Call the control room that can act, and say what you see [FND-5AB5DFA3; FND-C75F81B9; FND-2F736E5F; EVD-4286; EVD-1460; EVD-6234; EVD-8871]
 
-**What happened:** Security staff at a watch tower and at the gate saw the cloud at about 02:15. Their calls went to the security network, the fire station and another control room. The gas terminal control room heard of it at about 02:18 as "some vapour cloud or steam leakage".
+**What happened:** Security staff at a watch tower and at the gate saw the cloud at about 02:15. Their calls went to the security network, the fire station and another control room. The gas terminal control room heard of it between 02:18 and 02:20 as "some vapour cloud or steam leakage".
 
 **Why it made sense at the time:** Security posts had no direct line to the gas terminal control room, and there were no standard words for a hydrocarbon release, so each relay checked the report and described it again.
 
 **What the organisation is changing:** The Learnings Register recommends, for the organisation to decide: a direct line from perimeter posts and the camera room to each process control room, and a standard release message drilled jointly by security and operations.
 
 **Warning signs:**
-- You see vapour or hear a roar and do not know which control room covers that area
+- You see vapour or hear a loud noise and do not know which control room covers that area
 - Your report is being passed on by someone who did not see it
 
 **What good looks like:** The first call goes to the control room for that area and says "hydrocarbon release", where, and how big.
@@ -297,13 +297,13 @@ A five-minute talk for maintenance crews, before any job that opens a pressure p
 4. **One thing to do differently tomorrow:** No specification, no fit; no recorded test, no hand-back. If either is missing, stop and ask the supervisor.
 5. **Question to the crew:** Which job on our unit would we find hardest to stop, and what would help us stop it?
 
-*(learning: LR-02)*
+*(learning: LR-01)*
 
 ### Responding to a release
 
 A five-minute talk for control-room, field and security crews on the night shift. Run the talk below in its five steps, then use the scenario after it to practise the first call and the switch to isolation. [FND-01ADF0AA; FND-37BC45CF; EVD-1460; EVD-8871; EVD-9612] *(+8 supporting; learning: LR-08)*
 
-**Scenario:** At night you hear a roar and see vapour drifting across the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong. [FND-F887999D; FND-C75F81B9; EVD-1460; EVD-9612]
+**Scenario:** At night you hear a loud noise and see vapour drifting across the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong. [FND-F887999D; FND-C75F81B9; EVD-1460; EVD-9612]
 
 1. Who do you call, and what exactly do you say?
 2. When do you stop trying to reach the source?
@@ -316,9 +316,9 @@ A five-minute talk for control-room, field and security crews on the night shift
 *Duration: 5 minutes*
 
 1. **Opening question:** If you saw a white cloud near the metering skid tonight, who would you call first?
-2. **The story (90 seconds):** At 02:15 two security posts heard a roar and saw a cloud near the gas terminal. Their calls went to the security network first, and the gas terminal control room heard of "some vapour cloud or steam leakage" at about 02:20, when its alarm panel also lit. The engineers went out and could not get near the source. The isolation valves could be worked only by hand, at the valve. The first was closed at 03:01, and the fire started at 03:08.
+2. **The story (90 seconds):** At 02:15 two security posts heard a loud noise and saw a cloud near the gas terminal. Their calls went to the security network first, and the gas terminal control room heard of "some vapour cloud or steam leakage" between 02:18 and 02:20, at about the time its alarm panel lit. The engineers went out and could not get near the source. The isolation valves could be worked only by hand, at the valve. The first was closed at 03:01, and the fire started at 03:08.
 3. **Warning signs:**
-   - You see vapour or hear a roar, and no alarm has sounded yet
+   - You see vapour or hear a loud noise, and no alarm has sounded yet
    - The cloud stops you getting near the source
 4. **One thing to do differently tomorrow:** Call the control room for that area first and say "hydrocarbon release", where and how big; if the cloud stops you, report "access denied" and move to an isolation point you can reach safely.
 5. **Question to the crew:** Which valves isolate our section, and where is each one worked from?

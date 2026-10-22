@@ -569,7 +569,7 @@ def test_sample_pack_json_has_html_and_md(tmp_path):
     (good / "README.md").write_text("x")
     (good / f"{good.name}_probematrix-findings.xlsx").write_bytes(b"x")
     (out / "board-brief.json").write_text(json.dumps({"pack": "board-brief", "sections": []}))
-    (out / "learnings-register.json").write_text(json.dumps({"learnings": []}))
+    (out / "learnings-register.json").write_text(json.dumps({"pack": "learnings-register", "entries": []}))
     (out / "notes.json").write_text("[1, 2]")                        # not a pack: no rule
     probs = pmlc.sample_folder_problems(tmp_path)
     assert probs == [f"{good.name}: outputs/board-brief.json has no board-brief.html",
