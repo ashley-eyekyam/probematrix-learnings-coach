@@ -106,7 +106,7 @@ Run `skill-common.md` §4, then tick §5:
 PMLC check-pack <ws> <run>/outputs/frontline-learning-cards.json --strict
 PMLC pack <ws> <run>/outputs/frontline-learning-cards.json
 PMLC pack <ws> <run>/outputs/frontline-learning-cards.json --layout cards --paper A5    # pocket cards
-PMLC pack <ws> <run>/outputs/frontline-learning-cards.json --layout field --base-url https://intranet.example.org/learning/frontline-learning-cards.html
+PMLC pack <ws> <run>/outputs/frontline-learning-cards.json --layout field --base-url https://intranet.example.org/learning/frontline-learning-cards.html   # the user's address
 PMLC pack <ws> <run>/outputs/frontline-learning-cards.json --layout toolbox            # one sheet per talk
 ```
 
@@ -119,7 +119,8 @@ PMLC pack <ws> <run>/outputs/frontline-learning-cards.json --layout toolbox     
   `PMLC templates <ws> distribution` writes it with one row per pack (it never overwrites an existing file; add
   a row for this pack instead). The organisation fills in the channel, date, deliverer role, attendees,
   `contractors_included`, questions raised and concerns escalated; never fill those yourself.
-- **Translation** (only when asked; IDs, cites and kinds never change):
+
+**Translation** (only when asked; IDs, cites and kinds never change):
 
 ```bash
 PMLC strings extract <ws> <run>/outputs/frontline-learning-cards.json --lang hi
@@ -128,12 +129,14 @@ PMLC check-pack <ws> <run>/outputs/frontline-learning-cards-hi.json --strict
 PMLC pack <ws> <run>/outputs/frontline-learning-cards-hi.json --layout cards
 ```
 
-  - `strings extract` writes `frontline-learning-cards.strings.xlf` (`--to csv` for Excel); use the crew's
-    language tag. Translate the targets, keeping every `{cN}` placeholder exactly once.
-  - **Back-translation.** Each safety-critical item (a hold point, or text saying stop, halt or "do not start")
-    has a `#back_translation` unit: write the translation back into English there, so a reviewer can compare.
-  - `strings apply` writes `frontline-learning-cards-hi.json` with `source_text` and `back_translation` on
-    those items; `check-pack --strict` refuses it while one is missing. Neither command overwrites a file.
-  - **A fluent speaker's check.** Every translated page says it was translated with AI assistance. A fluent
-    speaker of the crew's language checks it against the English before use; the person signs it off.
+- `strings extract` writes `frontline-learning-cards.strings.xlf` (`--to csv` for Excel); use the crew's
+  language tag. Translate the targets, keeping every `{cN}` placeholder exactly once.
+- **Back-translation.** Each safety-critical item (a hold point, or text saying stop, halt, or do not start,
+  proceed, restart or enter) has a `#back_translation` unit: write the translation back into English there.
+- `strings apply` writes `frontline-learning-cards-hi.json` with `source_text` and `back_translation` on
+  those items; `check-pack --strict` refuses it while one is missing. Neither command overwrites a file.
+- **A fluent speaker's check (mandatory).** The translated pack stays DRAFT and must not be issued until a fluent
+  speaker of the target language, not the AI, has checked the whole translation and compared every
+  safety-critical item's back-translation with its English source. A passing `check-pack --strict` is not that
+  check. That person signs it off; never run `sign-off` yourself.
 - Next step: `supervisor-coach` for the crew briefing plan, if it has not been written.

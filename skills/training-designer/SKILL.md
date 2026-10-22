@@ -57,10 +57,11 @@ scope as above.
   invent an id, an interval or a pass mark.
 - **Needs map.** Mark which needs are real competence gaps and which are system problems that training cannot
   fix (send those to `manager-coach`). Supervisor and manager rows come from the level 3 and 4 selections.
-- **Typed questions.** A scored question has `"type"`: `single` or `truefalse` (exactly one correct option),
-  `multi` (at least one) or `short` (`options` are the accepted answers, all correct), and `"options"`, a list
-  of `{"text", "correct"}`. Wrong options come from what made sense at the time in the findings, never from
-  blame. A question without `type` is a discussion question: the quiz files carry it as an essay, unscored.
+- **Typed questions.** A scored question has `"type"`: `single` (exactly one correct option), `truefalse` (two
+  options, one correct), `multi` (at least one) or `short` (`options` are the accepted answers, all correct), and
+  `"options"`, a list of `{"text", "correct"}`. Wrong options come from what made sense at the time in the
+  findings, never from blame. A question without `type` is a discussion question: the quiz files carry it as an
+  essay, unscored.
 - **The `script` kind.** Each segment's narration says one thing a listener can act on; keep the cites on the
   segment that makes the claim. The status line is not spoken, so the shooting script in the page carries it.
 

@@ -89,7 +89,8 @@ PMLC pack <ws> <run>/outputs/supply-chain-contractor-learnings.json --format ema
 - Before a copy leaves the organisation, also run `PMLC check-pack <ws> <run>/outputs/supply-chain-contractor-learnings.json --share external`
   and fix every error; sharing follows `skill-common.md` §7. After a person's sign-off for external sharing,
   the same `pack` line with `--share external --embed summary` writes the `.external.` page and email, masked.
-- **Translation** for a contractor workforce that reads another language (IDs and cites never change):
+
+**Translation** for a contractor workforce that reads another language (IDs and cites never change):
 
 ```bash
 PMLC strings extract <ws> <run>/outputs/supply-chain-contractor-learnings.json --to csv --lang hi
@@ -97,7 +98,10 @@ PMLC strings apply <ws> <run>/outputs/supply-chain-contractor-learnings.json <ru
 PMLC check-pack <ws> <run>/outputs/supply-chain-contractor-learnings-hi.json --strict
 ```
 
-  Use the workforce's language tag. Translate the `target` column, keep every `{cN}` once, and write the
-  back-translation for each safety-critical unit. A fluent speaker checks the result before use, and the
-  translation is signed off on its own: an English sign-off does not cover it. Then share it as above.
+Use the workforce's language tag. Translate the `target` column, keep every `{cN}` once, and write the
+back-translation for each safety-critical unit. The translated pack stays DRAFT and must not be issued until a
+fluent speaker of the target language, not the AI, has checked the whole translation and compared every
+safety-critical item's back-translation with its English source. The translation is signed off on its own (an
+English sign-off does not cover it); then share it as above.
+
 - Next step: `frontline-learning-cards` with the contractor-workforce option, for the contractor crews.

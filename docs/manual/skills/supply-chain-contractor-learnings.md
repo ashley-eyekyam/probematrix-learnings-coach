@@ -38,7 +38,7 @@ pmlc strings extract <ws> <run>/outputs/supply-chain-contractor-learnings.json -
 - [select](../commands/select.md): `--tag supply contractor` every function with either tag; `--text` a regular expression over the finding text (supply words); `--brief` short entries.
 - [check-pack](../commands/check-pack.md) with `--strict` checks the pack against its profile; with `--share external` it applies the external language rules. [pack](../commands/pack.md) renders the pack.
 - [pack](../commands/pack.md) `--format email` writes a self-contained digest (`.email.html`, and `.email.txt` for plain-text mail) for the contract owner to send to a vendor or contractor. After a person's sign-off for external sharing, `--share external --embed summary` writes the masked `.external.` copies of the page and the email.
-- [strings](../commands/strings.md) carries the briefing into the contractor workforce's language; a fluent speaker checks it, and the translation is signed off on its own.
+- [strings](../commands/strings.md) carries the briefing into the contractor workforce's language. The translated pack stays DRAFT and must not be issued until a fluent speaker of the target language, not the AI, has checked the whole translation and compared every safety-critical item's back-translation with its English source. The translation is signed off on its own.
 - When the pack will leave the organisation, run [check-language](../commands/check-language.md) with `--share external` and `--orgs FILE`: company names become errors (JC9).
 
 ## What you get

@@ -712,20 +712,25 @@ B_SKILL_FORMATS = {            # skill.json `formats`: what each group B skill o
     "supply-chain-contractor-learnings": ["email"],
     "engineering-integrity-learnings": ["docx", "csv"],
 }
+# Review I-1: a person, never the AI, checks a translation and its back-translations before it is issued.
+B_FLUENT_CHECK = ("must not be issued until a fluent speaker of the target language, not the AI, has checked the "
+                  "whole translation and compared every safety-critical item's back-translation with its English "
+                  "source")
 # What each group B skill must say about its Phase 4 formats and fields (Task 25 brief).
 B_SKILL_TEXT = {
     "frontline-learning-cards": ("--base-url", "did_you_know", "what_you_can_do", "opening_question",
                                  "crew_question", "PMLC strings extract", "PMLC strings apply", "back_translation",
-                                 "fluent speaker", "frontline-learning-cards-hi.json"),
+                                 "fluent speaker", "frontline-learning-cards-hi.json", B_FLUENT_CHECK),
     "supervisor-coach": ("distribution.csv", "hold_point"),
     "emergency-response-learnings": ("injects", "offset", "drill brief"),
     "training-designer": ('"type"', '"options"', "--view learner", "`script`", "segments"),
     "supply-chain-contractor-learnings": ("PMLC strings extract", "PMLC strings apply", "fluent speaker",
-                                          "--share external"),
+                                          "--share external", B_FLUENT_CHECK),
     "engineering-integrity-learnings": ("actions.csv", "never overwrit"),
 }
 # Task 16 m4: the manual pages name the optional toolbox and script items.
-B_MANUAL_TEXT = {"frontline-learning-cards": ("toolbox",), "training-designer": ("script", "srt", "scorm")}
+B_MANUAL_TEXT = {"frontline-learning-cards": ("toolbox", B_FLUENT_CHECK), "training-designer": ("script", "srt", "scorm"),
+                 "supply-chain-contractor-learnings": (B_FLUENT_CHECK,)}
 
 
 def test_group_b_skills_declare_formats():
@@ -740,7 +745,8 @@ def test_group_b_x28_lines_and_specifics(skill):
     pack = _p4s_manifest(skill)["produces"]["pack"]
     for x in (f"PMLC check-pack <ws> <run>/outputs/{pack}.json --strict", f"PMLC pack <ws> <run>/outputs/{pack}.json\n"):
         assert x in hand, f"{skill}: the X28 line {x.strip()!r} must stay"
-    missing = [x for x in B_SKILL_TEXT[skill] if x not in t]
+    flat = " ".join(t.split())                       # the rule may wrap across lines
+    missing = [x for x in B_SKILL_TEXT[skill] if x not in flat]
     assert missing == [], f"{skill}: missing {missing}"
 
 

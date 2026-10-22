@@ -105,7 +105,7 @@ PMLC pack <ws> <run>/outputs/emergency-response-learnings.json --format pptx    
 ```
 
 - **Inject cards.** `emergency-response-learnings.cards.html` prints each inject on its own page, in order, for
-  the facilitator to hand out at its offset.
+  the facilitator to hand out at its offset. With no `injects`, the layout holds only the closing summary.
 - **Drill brief.** `emergency-response-learnings.pptx` is a slide deck for the pre-drill briefing and the
   debrief: the response learnings, one slide per section, and the citations in the speaker notes.
 
