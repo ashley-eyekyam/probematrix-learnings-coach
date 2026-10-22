@@ -307,10 +307,10 @@ DATA_SLOTS = {   # P4-20: where each data format keeps the status and the brand
 }
 
 
-def _first_output(env, fmt):
+def _first_output(env, fmt, request):
     """The outputs of fmt for the first fixture that gives it something to write (all-kinds first)."""
-    if fmt == "png" and not R.find_browser():
-        pytest.skip("no Chromium-family browser: png writes nothing (OD4-2)")
+    if fmt == "png":
+        request.getfixturevalue("needs_png")
     for n in ["all-kinds"] + FIXTURES:
         outs = R.render(fmt, _ctx(env, n, "draft", start=START))
         if outs:
@@ -319,9 +319,9 @@ def _first_output(env, fmt):
 
 
 @pytest.mark.parametrize("fmt", DATA_FORMATS)
-def test_data_formats_conform(env, fmt):
+def test_data_formats_conform(env, fmt, request):
     """P4-20: each data format's native slot carries STATUS_PHRASE and BRAND; an exempt one carries neither."""
-    outs = _first_output(env, fmt)
+    outs = _first_output(env, fmt, request)
     for o in outs:
         if fmt in EXEMPT:
             text = o.data.decode("utf-8") if isinstance(o.data, bytes) else o.data
@@ -471,7 +471,7 @@ SHARE_TARGETS = list(R.FORMATS) + [f"layout:{x}" for x in LAYOUTS]
 
 
 @pytest.mark.parametrize("target", SHARE_TARGETS)
-def test_every_format_shared_copy_masked(shared, tmp_path, target):
+def test_every_format_shared_copy_masked(shared, tmp_path, target, request):
     """Review Focus 1: `pack --share external --names` writes only .external. files, from the masked pack: no
     invented name in any Output's guard_text, nor in any byte of any file or zip part."""
     from pmlc_lib.handling import share_ctx, shared_copy
@@ -479,8 +479,8 @@ def test_every_format_shared_copy_masked(shared, tmp_path, target):
     assert all(n in json.dumps(shared["doc"], ensure_ascii=False) for n in NAMES)
     lay = target.split(":", 1)[1] if target.startswith("layout:") else None
     fmt = "html" if lay else target
-    if fmt == "png" and not R.find_browser():
-        pytest.skip("no Chromium-family browser: png writes nothing (OD4-2)")
+    if fmt == "png":
+        request.getfixturevalue("needs_png")
     flags = ["--format", fmt, "--start", START.isoformat()] + (["--layout", lay] if lay else [])
     out = tmp_path / "out"
     r = _cli("pack", shared["ws"], shared["pack"], "--share", "external", "--names", shared["names"],
