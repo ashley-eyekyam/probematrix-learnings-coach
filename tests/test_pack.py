@@ -1843,3 +1843,22 @@ def test_p4h_coverage_warning_tells_top_rated_from_all_relevant(w):
     assert pp.coverage(w2, no_top)["cited"] == 8 and pp.coverage(w2, no_top)["top_cited"] == 0
     assert any("under a quarter of the top-rated relevant findings are cited (0 of 2)" in x
                for x in pp.check_pack(no_top, w2).warnings)
+
+
+def test_interview_plan_holds_six_roles_and_the_validation_question(w):
+    """Final review m2 (T26 m2): the investigator-coach plan is up to six roles of five questions, plus the one
+    question for validating the account; a full plan (31) passes --strict, one more does not."""
+    roles = ["Stores officer", "Shift supervisor", "Maintenance planner", "Control room operator", "Area manager",
+             "Contract crew lead"]
+    pool = [["FND-0002"], ["FND-0003"], ["FND-0002", "EVD-0002"], ["FND-0003", "EVD-0003"], ["FND-0001", "FND-0002"]]
+    qs = [{"kind": "question", "question": f"What did the {r.lower()} see at step {i + 1}?", "why": f"Reason {i} for {r}.",
+           "to": r, "group": r, "cites": pool[i]} for r in roles for i in range(5)]
+    qs.append({"kind": "question", "question": "Does this account match what you remember, before it is published?",
+               "why": "Validation with the people involved.", "to": "Shift supervisor", "group": "Validation",
+               "cites": ["FND-0002"]})
+    p = fixture("investigator-coach")
+    sec = next(s for s in p["sections"] if s["id"] == "interview-plan")
+    sec["items"] = qs
+    assert not [m for m in _strict(p, w) if m.startswith("section interview-plan")], _strict(p, w)
+    sec["items"] = qs + [dict(qs[0], question="One question too many?")]
+    assert "section interview-plan: 32 question items, expected 1-31" in _strict(p, w)
