@@ -1,0 +1,132 @@
+"""Hazira golden samples (L4-28, P4-27, OD4-4): the committed packs carry the Phase 4 fields, the Hindi variant
+passes check-pack --strict, and every committed rendering (HTML, MD and the format showcases) is what the engine
+writes from the committed JSON today. Re-render with SOURCE_DATE_EPOCH at the committed generated date; the HTML is
+compared after the P4-27 date normalisation, the MD and the other text files byte for byte, the zips by part
+contents."""
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import zipfile
+from datetime import datetime, timezone
+
+import pytest
+
+from test_pmlc import PMLC, ROOT, run
+
+pytest.importorskip("openpyxl")
+SAMPLE = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire"
+EXPORT = SAMPLE / "2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+OUTPUTS = SAMPLE / "outputs"
+REGISTER = OUTPUTS / "learnings-register.json"
+# OD4-4: one showcase of each other document format: (pack, pmlc pack flags, files it contributes)
+SHOWCASES = [
+    ("board-brief", ["--format", "docx", "--layout", "paper"], ["board-brief.docx", "board-brief.paper.docx"]),
+    ("board-brief", ["--format", "email"], ["board-brief.email.html", "board-brief.email.txt"]),
+    ("site-leadership-coach", ["--format", "pptx"], ["site-leadership-coach.pptx"]),
+    ("frontline-learning-cards", ["--layout", "cards"], ["frontline-learning-cards.cards.html"]),
+    ("training-designer", ["--format", "gift"], ["training-designer.gift.txt"]),
+    ("causal-map", ["--format", "svg,graphml"], ["causal-map.causal-map.svg", "causal-map.causal-map.graphml"]),
+]
+REGISTER_FILES = {"learnings-register.json", "learnings-register.md", "learnings-register.xlsx",
+                  "organisation-learning-map.html"}
+DATE_RX = re.compile(r"generated \d{4}-\d{2}-\d{2}")
+
+
+def _packs():
+    out = []
+    for p in sorted(OUTPUTS.glob("*.json")):
+        d = json.loads(p.read_text(encoding="utf-8"))
+        if isinstance(d, dict) and "pack" in d:
+            out.append(p.stem)
+    return out
+
+
+PACKS = _packs()
+
+
+def _epoch() -> str:
+    """SOURCE_DATE_EPOCH for the date the committed samples were generated on (P4-6)."""
+    m = re.search(r"generated (\d{4}-\d{2}-\d{2})", (OUTPUTS / "board-brief.html").read_text(encoding="utf-8"))
+    day = datetime.strptime(m.group(1), "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    return str(int(day.timestamp()))
+
+
+@pytest.fixture(scope="module")
+def hz(tmp_path_factory):
+    root = tmp_path_factory.mktemp("hazira-render")
+    run("setup", str(EXPORT), "--slug", "hazira-gas-release-fire", "--date", "2020-09-24", "--root", str(root),
+        "--overlay", "india-process-site")
+    ws = root / "pmlc-runs" / "2020-09-24-hazira-gas-release-fire" / "workspace"
+    for name in ("comparator.json", "comparison-map.json"):
+        shutil.copy(SAMPLE / "comparator" / name, ws / name)
+    for p in OUTPUTS.glob("*.json"):                     # the register, and the source of the Hindi variant
+        shutil.copy(p, ws.parent / "outputs" / p.name)
+    return ws
+
+
+def _pack(ws, name, out, *flags):
+    env = dict(os.environ, SOURCE_DATE_EPOCH=_epoch())
+    r = subprocess.run([sys.executable, str(PMLC), "pack", str(ws), str(ws.parent / "outputs" / f"{name}.json"),
+                        "--out", str(out), *flags], capture_output=True, text=True, env=env)
+    assert r.returncode == 0, r.stdout + r.stderr
+
+
+def _parts(path) -> dict:
+    with zipfile.ZipFile(path) as z:
+        return {n: z.read(n) for n in z.namelist()}
+
+
+def _same(new, old):
+    if old.suffix in (".docx", ".pptx", ".zip"):
+        assert _parts(new) == _parts(old), old.name
+    elif old.suffix == ".html":
+        norm = [DATE_RX.sub("generated <date>", p.read_text(encoding="utf-8")) for p in (new, old)]
+        assert norm[0] == norm[1], f"{old.name} differs from a fresh render"
+    else:
+        assert new.read_bytes() == old.read_bytes(), f"{old.name} differs from a fresh render"
+
+
+def test_hazira_samples_hold_exactly_the_od4_4_files():
+    want = set(REGISTER_FILES) | {f for _, _, files in SHOWCASES for f in files}
+    want |= {f"{p}.{ext}" for p in PACKS for ext in ("json", "html", "md")}
+    assert {p.name for p in OUTPUTS.iterdir()} == want
+    assert len(PACKS) == 25 and "frontline-learning-cards-hi" in PACKS
+
+
+def test_hazira_samples_carry_phase_4_fields():
+    packs = {p: json.loads((OUTPUTS / f"{p}.json").read_text(encoding="utf-8")) for p in PACKS}
+    assert all(d.get("skill") for d in packs.values())
+    assert all("handling" not in d for d in packs.values())       # drafts: the model never signs off (D7)
+    items = {p: [it for s in d["sections"] for it in s["items"]] for p, d in packs.items()}
+    fl = items["frontline-learning-cards"]
+    assert sum(it["kind"] == "toolbox" for it in fl) == 2
+    assert all(it.get("did_you_know") and it.get("what_you_can_do") for it in fl if it["kind"] == "card")
+    assert all(it.get("injects") for it in items["emergency-response-learnings"] if it["kind"] == "scenario")
+    assert sum(bool(it.get("type")) for it in items["training-designer"] if it["kind"] == "question") >= 6
+    hi = packs["frontline-learning-cards-hi"]
+    assert (hi["lang"], hi["translation_of"], hi["skill"]) == ("hi", "frontline-learning-cards",
+                                                                "frontline-learning-cards")
+
+
+def test_hazira_hindi_variant_passes_strict(hz):
+    out = run("check-pack", str(hz), str(hz.parent / "outputs" / "frontline-learning-cards-hi.json"), "--strict",
+              "--register", str(REGISTER))
+    assert "OK:" in out, out
+    html = (OUTPUTS / "frontline-learning-cards-hi.html").read_text(encoding="utf-8")
+    assert "Translated with AI assistance: have a fluent speaker check it before use" in html
+
+
+def test_hazira_samples_render_identically(hz, tmp_path):
+    for name in PACKS:
+        out = tmp_path / name
+        _pack(hz, name, out)
+        for ext in ("html", "md"):
+            _same(out / f"{name}.{ext}", OUTPUTS / f"{name}.{ext}")
+    for n, (name, flags, files) in enumerate(SHOWCASES):
+        out = tmp_path / f"showcase-{n}"
+        _pack(hz, name, out, *flags)
+        for f in files:
+            _same(out / f, OUTPUTS / f)

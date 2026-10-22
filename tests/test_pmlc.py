@@ -560,6 +560,25 @@ def test_sample_folders(tmp_path):
     assert r.returncode == 1 and "Hazira_2020" in r.stdout
 
 
+def test_sample_pack_json_has_html_and_md(tmp_path):
+    """OD4-4: every pack JSON in a sample's outputs/ is committed with its .html and .md. The register is exempt by
+    name: its Markdown is learnings-register.md and its HTML is the dashboard, organisation-learning-map.html."""
+    good = tmp_path / "2020-09-24-hazira-gas-release-fire"
+    out = good / "outputs"
+    out.mkdir(parents=True)
+    (good / "README.md").write_text("x")
+    (good / f"{good.name}_probematrix-findings.xlsx").write_bytes(b"x")
+    (out / "board-brief.json").write_text(json.dumps({"pack": "board-brief", "sections": []}))
+    (out / "learnings-register.json").write_text(json.dumps({"pack": "learnings-register", "entries": []}))
+    (out / "notes.json").write_text("[1, 2]")                        # not a pack: no rule
+    probs = pmlc.sample_folder_problems(tmp_path)
+    assert probs == [f"{good.name}: outputs/board-brief.json has no board-brief.html",
+                     f"{good.name}: outputs/board-brief.json has no board-brief.md"]
+    (out / "board-brief.html").write_text("x")
+    (out / "board-brief.md").write_text("x")
+    assert pmlc.sample_folder_problems(tmp_path) == []
+
+
 def test_make_public_sample_slug(tmp_path):
     x = make_export(tmp_path)
     names = tmp_path / "names.txt"

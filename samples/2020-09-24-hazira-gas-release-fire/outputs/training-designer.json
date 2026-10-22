@@ -1,6 +1,7 @@
 {
  "pack": "training-designer",
  "schema": 1,
+ "skill": "training-designer",
  "title": "Training Designer: Gas terminal release and fire, 2020",
  "audience": "Training managers, instructors and competence assessors",
  "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress.",
@@ -526,6 +527,25 @@
     {
      "kind": "question",
      "question": "The seal in stores does not match the shape of the groove, and nobody can find the specification. What do you do?",
+     "type": "single",
+     "options": [
+      {
+       "text": "Fit it: it is what the crew normally uses",
+       "correct": false
+      },
+      {
+       "text": "Stop and ask the supervisor for the specification or an approved substitute",
+       "correct": true
+      },
+      {
+       "text": "Fit it and record it as a temporary repair",
+       "correct": false
+      },
+      {
+       "text": "Fit it and test at operating pressure",
+       "correct": false
+      }
+     ],
      "why": "Recognising a non-specified pressure part and stopping.",
      "answer": "Stop and ask the supervisor for the specification or an approved substitute; do not fit the part on the strength of \"what we normally use\".",
      "good_evidence": "The learner names who they would ask and where the specification should be recorded.",
@@ -550,6 +570,29 @@
     {
      "kind": "question",
      "question": "What three things must be on the record before pressure-boundary equipment returns to service?",
+     "type": "multi",
+     "options": [
+      {
+       "text": "The part's specification reference",
+       "correct": true
+      },
+      {
+       "text": "A recorded test to the written test pressure",
+       "correct": true
+      },
+      {
+       "text": "The witness's signature",
+       "correct": true
+      },
+      {
+       "text": "The crew's shift roster",
+       "correct": false
+      },
+      {
+       "text": "A note that the joint held at operating pressure",
+       "correct": false
+      }
+     ],
      "why": "Knowing the return-to-service hold points.",
      "answer": "The part's specification reference, a recorded test to the written test pressure, and the witness's signature.",
      "good_evidence": "All three named without prompting.",
@@ -586,6 +629,25 @@
     {
      "kind": "question",
      "question": "On this site, what did a gas alarm on the annunciator panel do by itself?",
+     "type": "single",
+     "options": [
+      {
+       "text": "It shut down the plant",
+       "correct": false
+      },
+      {
+       "text": "It started fire suppression",
+       "correct": false
+      },
+      {
+       "text": "It only displayed the alarm; every protective action depended on people",
+       "correct": true
+      },
+      {
+       "text": "It closed the isolation valves",
+       "correct": false
+      }
+     ],
      "why": "Knowing what the alarm does and does not do.",
      "answer": "It only displayed the alarm; it did not shut down the plant or start fire suppression, so every protective action depended on people.",
      "good_evidence": "The learner can say which alarms on their unit trip equipment and which do not.",
@@ -598,6 +660,25 @@
     {
      "kind": "question",
      "question": "You go out to find a leak and the cloud stops you approaching. What is your next step?",
+     "type": "single",
+     "options": [
+      {
+       "text": "Keep looking for another way to the source",
+       "correct": false
+      },
+      {
+       "text": "Stop approaching, tell the control room \"access denied\" and ask for isolation from points that can be reached safely",
+       "correct": true
+      },
+      {
+       "text": "Wait at the edge of the cloud for the shift in-charge",
+       "correct": false
+      },
+      {
+       "text": "Go back to the control room and watch the alarm panel",
+       "correct": false
+      }
+     ],
      "why": "Switching from locating to isolating.",
      "answer": "Stop approaching, tell the control room \"access denied\", and ask for isolation from the points that can be reached safely.",
      "good_evidence": "The learner names the isolation points for their area and where they are worked from.",
@@ -621,7 +702,18 @@
     },
     {
      "kind": "question",
-     "question": "A flameproof lamp still lights, but three bolts are missing from its cover. Is it still flameproof?",
+     "question": "True or false: a flameproof lamp that still lights is still flameproof, even with three bolts missing from its cover.",
+     "type": "truefalse",
+     "options": [
+      {
+       "text": "True",
+       "correct": false
+      },
+      {
+       "text": "False",
+       "correct": true
+      }
+     ],
      "why": "Recognising a defect in explosion-protected equipment.",
      "answer": "No. A flameproof fitting with missing bolts or an open cover is not flameproof; report it and have it made safe the same shift.",
      "good_evidence": "The learner lists what to check on a flameproof fitting on rounds.",
@@ -634,6 +726,25 @@
     {
      "kind": "question",
      "question": "Level of cause: \"Locally bought O-rings were fitted as regular practice because the original specification had been lost and no one owned re-establishing it.\" At which level does the main fix sit, and why?",
+     "type": "single",
+     "options": [
+      {
+       "text": "Level 1, unsafe acts",
+       "correct": false
+      },
+      {
+       "text": "Level 2, preconditions",
+       "correct": false
+      },
+      {
+       "text": "Level 3, supervision",
+       "correct": false
+      },
+      {
+       "text": "Level 4, organisational influences",
+       "correct": true
+      }
+     ],
      "why": "Placing a cause at its level (L1 to L4).",
      "answer": "Level 4, organisational: the missing specification and owner are resource and policy conditions. The fix is an owner and a specification, not an instruction to the fitter.",
      "good_evidence": "The learner separates the act (L1) from the organisational condition (L4).",
@@ -646,6 +757,25 @@
     {
      "kind": "question",
      "question": "Level of cause: \"The maintenance notification was not closed or reviewed after the job.\" Which level is this, and what kind of fix does it need?",
+     "type": "single",
+     "options": [
+      {
+       "text": "Level 1, unsafe acts",
+       "correct": false
+      },
+      {
+       "text": "Level 2, preconditions",
+       "correct": false
+      },
+      {
+       "text": "Level 3, supervision",
+       "correct": true
+      },
+      {
+       "text": "Level 4, organisational influences",
+       "correct": false
+      }
+     ],
      "why": "Placing a cause at its level (L1 to L4).",
      "answer": "Level 3, supervision: a check and correction that did not happen. The fix is a change to checks and oversight, such as a close-out review, not a reminder to the crew.",
      "good_evidence": "The learner names a supervision-level fix.",
@@ -658,6 +788,25 @@
     {
      "kind": "question",
      "question": "Level of cause: \"The vapour cloud stopped people approaching the isolation valves.\" Which level is this?",
+     "type": "single",
+     "options": [
+      {
+       "text": "Level 1, unsafe acts",
+       "correct": false
+      },
+      {
+       "text": "Level 2, preconditions",
+       "correct": true
+      },
+      {
+       "text": "Level 3, supervision",
+       "correct": false
+      },
+      {
+       "text": "Level 4, organisational influences",
+       "correct": false
+      }
+     ],
      "why": "Placing a cause at its level (L1 to L4).",
      "answer": "Level 2, preconditions: the physical and technological environment at the time. It explains why the act of isolating was delayed, and points to a design change (remote operation).",
      "good_evidence": "The learner links the precondition to an engineering fix.",
@@ -744,7 +893,7 @@
  "exclusions": [
   {
    "id": "FND-44219027",
-   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; left out here for the same reason."
+   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; the vote is recorded in the register's source note, not in this export. Left out here for the same reason."
   }
  ],
  "limits": [

@@ -203,6 +203,15 @@ def test_pack_words_and_reading_minutes():
     assert RF.reading_minutes(big) == 3
 
 
+def test_pack_words_translation():
+    """A translated pack counts its reader's words only (FR-4): the English source_text and back_translation a
+    reviewer compares are not read on the page, and a Devanagari word is one word, vowel signs included."""
+    hi = item("check", text="काम रोकें और सुपरवाइज़र से पूछें।", source_text={"text": "Stop and ask the supervisor."},
+              back_translation="Stop the work and ask the supervisor.")
+    assert RF.pack_words(pack_with(hi)) == 3 + 6        # the bottom line, then the six Hindi words
+    assert RF.pack_words(pack_with(item("para", text="naïve café"))) == 3 + 2
+
+
 def test_skill_field_and_variants(w):
     def probs(**top):
         return pmlc_pack.check_pack(dict(fixture("report-comparison-client-safe"), **top), w).problems

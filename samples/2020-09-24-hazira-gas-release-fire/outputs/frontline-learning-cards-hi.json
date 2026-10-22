@@ -1,0 +1,828 @@
+{
+ "pack": "frontline-learning-cards-hi",
+ "schema": 1,
+ "skill": "frontline-learning-cards",
+ "translation_of": "frontline-learning-cards",
+ "lang": "hi",
+ "title": "फ्रंटलाइन सीख कार्ड: गैस टर्मिनल पर रिसाव और आग, 2020",
+ "audience": "फ्रंटलाइन टीमें (T1): रखरखाव फिटर, इंस्ट्रूमेंट और इलेक्ट्रिकल तकनीशियन, कंट्रोल रूम स्टाफ और सुरक्षा स्टाफ",
+ "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress.",
+ "incident": {
+  "title": "हज़ीरा गैस टर्मिनल पर कंडेनसेट रिसाव और आग",
+  "date": "2020-09-24"
+ },
+ "data_quality": [
+  {
+   "text": "बिना समीक्षा वाले विश्लेषण से बनी मसौदा सीख: एक्सपोर्ट में इन्वेस्टिगेशन की स्थिति \"जारी\" है और किसी भी निष्कर्ष पर व्यक्ति द्वारा संपादन का निशान नहीं है। अपनाने से पहले हर बिंदु की पुष्टि करें।",
+   "cites": []
+  }
+ ],
+ "scope": {
+  "tiers": [
+   "T1"
+  ]
+ },
+ "bottom_line": [
+  {
+   "text": "स्पेसिफिकेशन नहीं, तो फिटिंग नहीं: जो सील मूल सील से मेल नहीं खाती, वह बदलाव है, स्पेयर नहीं।",
+   "learning": "LR-01",
+   "cites": [
+    "FND-8C0BB623",
+    "EVD-8645"
+   ]
+  },
+  {
+   "text": "आपने जो जोड़ खोला, वह तब तक सही साबित नहीं है जब तक वह लिखे हुए टेस्ट प्रेशर पर रिकॉर्ड किया गया टेस्ट पास न कर ले।",
+   "learning": "LR-02",
+   "cites": [
+    "FND-212DC9B7",
+    "EVD-2894"
+   ]
+  },
+  {
+   "text": "जब वही खराबी दोबारा आए, तो जॉब रिकॉर्ड पर लिखें; बार-बार की खराबी एक चेतावनी है, रोज़ का काम नहीं।",
+   "learning": "LR-05",
+   "cites": [
+    "FND-69067A1C",
+    "EVD-1494"
+   ]
+  },
+  {
+   "text": "इस साइट पर गैस अलार्म सिर्फ़ सूचना देता है, और यह लोगों के बादल देख लेने के बाद भी बज सकता है: रिसाव की सूचना तुरंत उस कंट्रोल रूम को दें जो कार्रवाई कर सकता है।",
+   "learning": "LR-10",
+   "cites": [
+    "FND-A245072B",
+    "FND-5AB5DFA3",
+    "EVD-8657",
+    "EVD-4286"
+   ]
+  },
+  {
+   "text": "अगर रिसाव की वजह से आप स्रोत तक नहीं पहुँच पा रहे, तो आगे बढ़ना रोकें और जहाँ से हो सके वहाँ से आइसोलेशन (लाइन को वाल्व से अलग करना) करें।",
+   "learning": "LR-08",
+   "cites": [
+    "FND-F887999D",
+    "EVD-9612"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "delivery",
+   "heading": "इन कार्डों का उपयोग",
+   "items": [
+    {
+     "kind": "para",
+     "text": "ये कार्ड वे टीमें पढ़ेंगी जिनका काम निष्कर्षों में आया है। बड़े पैमाने पर बाँटने से पहले इनसे जुड़े लोगों के साथ इन पर बात करें, और छोटी टीम में किसी पद पर रहे व्यक्ति को अलग से निशाना न बनाएँ: पद की नहीं, काम की बात करें। हर कार्ड इस बात पर खत्म होता है कि संगठन से क्या बदलने को कहा जा रहा है, \"और सावधान रहें\" की अपील पर कभी नहीं। टीम का सुपरवाइज़र हर कार्ड शिफ्ट ब्रीफिंग में देता है, साथ में सुपरवाइज़र पैक का एक कोचिंग परिदृश्य चलाता है। कार्डों पर लिखे बदलाव सीख रजिस्टर के सुझाव हैं; संगठन ने अभी उन पर फ़ैसला नहीं किया है, इसलिए उन्हें प्रस्ताव के रूप में रखें।",
+     "cites": [
+      "FND-8C0BB623",
+      "FND-A245072B"
+     ]
+    },
+    {
+     "kind": "table",
+     "columns": [
+      "कार्ड",
+      "कौन देगा",
+      "किसके साथ चलाएँ",
+      "कॉन्ट्रैक्टर टीमों को ब्रीफ करना"
+     ],
+     "rows": [
+      [
+       "सिर्फ़ वही सील लगाएँ जो स्पेसिफिकेशन में लिखी है",
+       "रखरखाव सुपरवाइज़र",
+       "supervisor-coach coaching-1",
+       "निष्कर्षों में शामिल नहीं"
+      ],
+      [
+       "सर्विस में लौटाने से पहले जोड़ को टेस्ट से साबित करें",
+       "रखरखाव सुपरवाइज़र",
+       "supervisor-coach coaching-1",
+       "निष्कर्षों में शामिल नहीं"
+      ],
+      [
+       "बड़े नतीजे वाले काम पर दूसरे व्यक्ति से पुष्टि माँगें",
+       "रखरखाव सुपरवाइज़र",
+       "supervisor-coach coaching-1",
+       "निष्कर्षों में शामिल नहीं"
+      ],
+      [
+       "वही खराबी दोबारा ठीक कर रहे हों, तो बताएँ",
+       "रखरखाव सुपरवाइज़र",
+       "supervisor-coach coaching-2",
+       "निष्कर्षों में शामिल नहीं"
+      ],
+      [
+       "गैस अलार्म देर से आई खबर है",
+       "शिफ्ट सुपरवाइज़र (कंट्रोल रूम)",
+       "supervisor-coach coaching-3",
+       "निष्कर्षों में शामिल नहीं"
+      ],
+      [
+       "स्रोत तक न पहुँच सकें, तो दूर से आइसोलेशन सोचें",
+       "शिफ्ट सुपरवाइज़र (कंट्रोल रूम)",
+       "supervisor-coach coaching-3",
+       "निष्कर्षों में शामिल नहीं"
+      ],
+      [
+       "उस कंट्रोल रूम को फ़ोन करें जो कार्रवाई कर सके, और जो दिख रहा है वह बताएँ",
+       "सुरक्षा सुपरवाइज़र, शिफ्ट सुपरवाइज़र (कंट्रोल रूम) के साथ",
+       "supervisor-coach coaching-3",
+       "निष्कर्षों में शामिल नहीं"
+      ],
+      [
+       "जिस फ्लेमप्रूफ फिटिंग का एक बोल्ट गायब हो, वह फ्लेमप्रूफ नहीं है",
+       "इलेक्ट्रिकल रखरखाव सुपरवाइज़र",
+       "supervisor-coach के कोचिंग परिदृश्य",
+       "निष्कर्षों में शामिल नहीं"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-8C0BB623"
+      ],
+      [
+       "FND-212DC9B7"
+      ],
+      [
+       "FND-28F8790B"
+      ],
+      [
+       "FND-69067A1C"
+      ],
+      [
+       "FND-A245072B"
+      ],
+      [
+       "FND-F887999D"
+      ],
+      [
+       "FND-5AB5DFA3"
+      ],
+      [
+       "FND-784A23E4"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cards",
+   "heading": "सीख कार्ड",
+   "items": [
+    {
+     "kind": "card",
+     "title": "सिर्फ़ वही सील लगाएँ जो स्पेसिफिकेशन में लिखी है",
+     "what_happened": "कंडेनसेट मीटर 1986 से सर्विस में था और आयताकार खाँचे वाले गैस्केट के लिए बना था। उसका स्पेसिफिकेशन खो गया था, इसलिए नियमित तौर पर बाज़ार से खरीदी गोल ओ-रिंग लगाई जाती थीं, बिना स्पेसिफिकेशन, बिना क्वालिटी चेक और बिना मंज़ूरी के। 18 सितंबर 2020 को लगाई गई सील ही रिसाव का संभावित स्रोत है।",
+     "why_made_sense": "काम करना ज़रूरी था, और सिस्टम में कुछ भी \"रुको\" नहीं कहता था: न स्पेसिफिकेशन था, न मंज़ूर विकल्प, और न ही इनमें से किसी का कोई ज़िम्मेदार। पिछली बार भी इसी तरह की ओ-रिंग लगी थी, इसलिए यह सामान्य लगा।",
+     "organisation_changing": "सीख रजिस्टर का सुझाव, संगठन के फ़ैसले के लिए: सील का स्पेसिफिकेशन फिर से तय करें, सिर्फ़ उसी के अनुसार प्रमाणित पुर्ज़े स्टॉक करें, और स्टोर्स प्रेशर वाले हिस्से की कोई भी सील स्पेसिफिकेशन नंबर के बिना जारी न करें।",
+     "did_you_know": [
+      "कोई रिकॉर्ड नहीं बताता कि साइट ने कब, और किसकी मंज़ूरी से, बनाने वाली कंपनी के गैस्केट की जगह बाज़ार की ओ-रिंग लगाना शुरू किया।"
+     ],
+     "what_you_can_do": [
+      "लगाने से पहले पुर्ज़े को खाँचे और स्पेसिफिकेशन से मिलाकर देखें।",
+      "अगर कोई स्पेसिफिकेशन नहीं दिखा पाता, तो लगाने से पहले अपने सुपरवाइज़र से पूछें।"
+     ],
+     "warning_signs": [
+      "पुर्ज़ा उस खाँचे के आकार से मेल नहीं खाता जिसमें वह लगना है",
+      "कोई भी आपको सील का स्पेसिफिकेशन नहीं दिखा पाता",
+      "बस यही कारण दिया जाता है कि \"हम आमतौर पर यही लगाते हैं\""
+     ],
+     "good_looks_like": "स्पेसिफिकेशन नहीं, तो फिटिंग नहीं: प्रेशर वाले हिस्से पर कोई भी सील लगाने से पहले टीम सुपरवाइज़र से स्पेसिफिकेशन माँगती है।",
+     "discussion": [
+      "यहाँ प्रेशर वाले किन पुर्ज़ों का स्पेसिफिकेशन हमें नहीं मिलता?",
+      "जब स्पेयर मूल पुर्ज़े से अलग हो, तो हम किससे पूछते हैं?",
+      "रुककर पूछना आसान कैसे बनेगा?"
+     ],
+     "learning": "LR-01",
+     "cites": [
+      "FND-8C0BB623",
+      "FND-7A32AC87",
+      "FND-23139BF9",
+      "FND-8CE00707",
+      "EVD-8645",
+      "EVD-0064",
+      "EVD-1494"
+     ],
+     "supporting_cites": [
+      "FND-89962239",
+      "FND-B356F15B",
+      "FND-91B45FF9",
+      "FND-DA67926D",
+      "FND-54180594",
+      "FND-82673283",
+      "FND-45363DCA",
+      "FND-A443D288",
+      "FND-CEE4B00B",
+      "FND-3746C7B6",
+      "FND-852B7EC7",
+      "FND-DEAA7F90"
+     ],
+     "source_text": {
+      "title": "Fit only the seal the specification calls for",
+      "what_happened": "The condensate meter, in service since 1986, was built for a rectangular-slot gasket. Its specification was lost, so locally bought round O-rings were fitted as regular practice, with no specification, quality check or approval. The seal fitted on 18 Sep 2020 is the probable source of the release.",
+      "why_made_sense": "The job had to be done, and nothing in the system said stop: no specification, no approved substitute and no owner for either. Earlier changes had used the same kind of O-ring, so it felt normal.",
+      "organisation_changing": "The Learnings Register recommends, for the organisation to decide: re-establish the seal specification, stock only certified parts against it, and have stores refuse to issue a pressure-boundary seal without a specification reference.",
+      "did_you_know[0]": "No record shows when, or on whose authority, the site moved from the maker's gasket to a locally bought O-ring.",
+      "what_you_can_do[0]": "Check the part against the groove and the specification before you fit it.",
+      "what_you_can_do[1]": "If nobody can show a specification, ask your supervisor before fitting.",
+      "warning_signs[0]": "The part does not match the shape of the groove it goes into",
+      "warning_signs[1]": "Nobody can show you a specification for the seal",
+      "warning_signs[2]": "\"This is what we normally use\" is the only reason given",
+      "good_looks_like": "No specification, no fit: the crew asks the supervisor for the specification before fitting any seal on a pressure part.",
+      "discussion[0]": "Which pressure parts here have no specification we can find?",
+      "discussion[1]": "Who do we ask when a spare differs from the original?",
+      "discussion[2]": "What would make pausing to ask easy?"
+     },
+     "back_translation": "Fit only the seal that is written in the specification\nThe condensate meter had been in service since 1986 and was made for a rectangular-groove gasket. Its specification had been lost, so round O-rings bought from the market were fitted as a regular practice, without a specification, without a quality check and without approval. The seal fitted on 18 September 2020 is the probable source of the leak.\nThe work had to be done, and nothing in the system said \"stop\": there was no specification, no approved alternative, and no one responsible for either. Last time too the same kind of O-ring had been fitted, so it seemed normal.\nThe Learnings Register's suggestion, for the organisation to decide: set the seal specification again, stock only certified parts according to it, and stores should not issue any seal for a pressure part without the specification number.\nNo record says when, and with whose approval, the site began fitting market O-rings in place of the manufacturer's gasket.\nBefore fitting, compare the part with the groove and the specification.\nIf nobody can show a specification, ask your supervisor before fitting.\nThe part does not match the shape of the groove it is to go into\nNobody can show you the seal's specification\nThe only reason given is \"we usually fit this\"\nNo specification, then no fitting: before fitting any seal on a pressure part, the team asks the supervisor for the specification.\nWhich pressure parts here do we not find a specification for?\nWhen a spare differs from the original part, whom do we ask?\nHow will stopping to ask become easy?"
+    },
+    {
+     "kind": "card",
+     "title": "सर्विस में लौटाने से पहले जोड़ को टेस्ट से साबित करें",
+     "what_happened": "18 सितंबर 2020 को गैस्केट बदलने के बाद सिस्टम को सिर्फ़ ऑपरेटिंग प्रेशर तक दबाव देकर अलग कर दिया गया; डिज़ाइन प्रेशर पर हाइड्रो टेस्ट नहीं हुआ। मीटर अगले दिन फिर चालू हुआ और खराब होने के समय चल रहा था।",
+     "why_made_sense": "इन हाई-प्रेशर मीटरों के कैलिब्रेशन या सर्विस में वापसी के लिए कोई प्रक्रिया नहीं थी, इसलिए सबसे जल्दी होने वाली परख ही सामान्य बन गई। ऑपरेटिंग प्रेशर पर टिके रहना इस बात का सबूत लगा कि जोड़ कसा हुआ है।",
+     "organisation_changing": "सीख रजिस्टर का सुझाव, संगठन के फ़ैसले के लिए: सर्विस में वापसी की एक प्रक्रिया जो टेस्ट, टेस्ट प्रेशर और गवाह तय करे, और एक वर्क-ऑर्डर सिस्टम जो टेस्ट का नतीजा दर्ज होने तक उपकरण को रोके रखे।",
+     "did_you_know": [
+      "मीटर सील बदलने के छह दिन बाद, और फिर चालू होने के पाँच दिन बाद, खराब हुआ।"
+     ],
+     "what_you_can_do": [
+      "उपकरण सौंपने से पहले लिखा हुआ टेस्ट प्रेशर और गवाह का नाम माँगें।",
+      "टेस्ट का नतीजा जॉब रिकॉर्ड पर लिखें; अगर टेस्ट नहीं हुआ, तो यही लिखें।"
+     ],
+     "warning_signs": [
+      "आपने जो जोड़ खोला, उसका टेस्ट प्रेशर कोई नहीं बता पाता",
+      "बस यही टेस्ट तय है कि \"लाइन में वापस लगाओ और देखते रहो\"",
+      "टेस्ट का गवाह बनने के लिए किसी का नाम तय नहीं है"
+     ],
+     "good_looks_like": "प्रेशर वाला हिस्सा खोलने वाला हर काम लिखे हुए टेस्ट प्रेशर पर रिकॉर्ड किए गए टेस्ट से खत्म होता है, जिसका गवाह दूसरा व्यक्ति होता है, और उसके बाद ही ऑपरेशंस उपकरण स्वीकार करते हैं।",
+     "discussion": [
+      "अभी-अभी बनाए गए जोड़ को कौन-सा टेस्ट साबित करता है?",
+      "नतीजा कहाँ लिखा जाता है, और उस पर हस्ताक्षर कौन करता है?",
+      "अगर टेस्ट का उपकरण उपलब्ध न हो, तो क्या करें?"
+     ],
+     "learning": "LR-02",
+     "cites": [
+      "FND-212DC9B7",
+      "FND-7C5ED5B3",
+      "FND-257C1100",
+      "FND-86CB3683",
+      "EVD-2894",
+      "EVD-0185"
+     ],
+     "supporting_cites": [
+      "FND-FD617187",
+      "FND-15279F97",
+      "FND-7FA02383",
+      "FND-4944554C",
+      "FND-FDFA6FF5",
+      "FND-1662466D",
+      "FND-9174A5B0",
+      "FND-611A8BFC",
+      "FND-C4E06264",
+      "FND-3AB996FC",
+      "FND-491EDE74",
+      "FND-50C7319E"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "बड़े नतीजे वाले काम पर दूसरे व्यक्ति से पुष्टि माँगें",
+     "what_happened": "18 सितंबर 2020 का सील वाला काम रोज़ के काम की तरह योजना बनाकर और लोग लगाकर किया गया। सील का स्पेसिफिकेशन, उसकी गुणवत्ता या बनने के बाद जोड़ को परखने के लिए कोई तय नहीं था, इसलिए काम करने वाला व्यक्ति ही अकेली परख था।",
+     "why_made_sense": "हाइड्रोकार्बन लाइनों पर प्रेशर वाले हिस्सों के रखरखाव को सुरक्षा के लिए अहम (सेफ्टी-क्रिटिकल) नहीं माना गया था, इसलिए इसके लिए न निरीक्षक, न टेस्ट का गवाह, न काम बंद करते समय समीक्षा करने वाला रखा गया।",
+     "organisation_changing": "सीख रजिस्टर का सुझाव, संगठन के फ़ैसले के लिए: वर्क प्लानिंग में सेफ्टी-क्रिटिकल रखरखाव की एक श्रेणी, जो अपने-आप निरीक्षण, टेस्ट गवाह और काम बंद करने की समीक्षा के कदम जोड़ दे।",
+     "did_you_know": [
+      "ओ-रिंग बिना स्पेसिफिकेशन और बिना क्वालिटी चेक के खरीदी गई थीं, इसलिए काम तक पहुँचने से पहले भी किसी ने पुर्ज़े को नहीं परखा।"
+     ],
+     "what_you_can_do": [
+      "जिस काम से बड़ा रिसाव हो सकता है, उस पर पूछें कि पुर्ज़े, तरीके और टेस्ट को कौन परखेगा।",
+      "अगर किसी का नाम तय नहीं है, तो काम बंद होने से पहले अपने सुपरवाइज़र से यह पुष्टि माँगें।"
+     ],
+     "warning_signs": [
+      "पुर्ज़े, तरीके और टेस्ट को देखने वाले अकेले आप ही हैं",
+      "प्रेशर वाले पुर्ज़े का जॉब कार्ड रोज़ के काम जैसा ही दिखता है"
+     ],
+     "good_looks_like": "जिस काम से बड़ा रिसाव हो सकता है, उस पर दूसरा व्यक्ति पुर्ज़े, तरीके और टेस्ट को परखता है, और कोई न आए तो टीम खुद यह पुष्टि माँगती है।",
+     "discussion": [
+      "हमारे कौन-से काम एक कदम गलत होने पर बड़ा रिसाव कर सकते हैं?",
+      "आज उन कामों पर दूसरी नज़र किसकी है?",
+      "आप बिना असमंजस दिखाए दूसरे व्यक्ति से पुष्टि कैसे माँगेंगे?"
+     ],
+     "learning": "LR-03",
+     "cites": [
+      "FND-28F8790B",
+      "FND-615DB819",
+      "FND-F8C125D5",
+      "EVD-8645",
+      "EVD-2894"
+     ],
+     "supporting_cites": [
+      "FND-2FAB8D51",
+      "FND-A6312B6B",
+      "FND-59A2F497",
+      "FND-7DF14ADB",
+      "FND-31459031"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "वही खराबी दोबारा ठीक कर रहे हों, तो बताएँ",
+     "what_happened": "उसी मीटर का गैस्केट लगभग 22 महीनों में तीन बार बदला गया, और 17 सितंबर 2020 को खराबी की एक नोटिफिकेशन दर्ज हुई। हर मरम्मत को पहली मरम्मत की तरह लिया गया, और किसी के बाद भी मूल कारण की समीक्षा नहीं हुई।",
+     "why_made_sense": "रखरखाव सिस्टम में एक ही उपकरण की बार-बार की खराबी गिनने का कोई तरीका नहीं था, और कोई विश्वसनीयता (रिलायबिलिटी) भूमिका इस पैटर्न को नहीं देख रही थी, इसलिए हर खराबी सामान्य लगी।",
+     "organisation_changing": "सीख रजिस्टर का सुझाव, संगठन के फ़ैसले के लिए: रखरखाव सिस्टम में बार-बार की खराबी पर अपने-आप चलने वाला ट्रिगर, जो मूल कारण की पड़ताल शुरू करे।",
+     "did_you_know": [
+      "इस मीटर की खराबी की नोटिफिकेशन 17 सितंबर 2020 को दर्ज हुई थी, रिसाव से एक हफ़्ता पहले।",
+      "काम के बाद वह नोटिफिकेशन बंद नहीं की गई, इसलिए बाद में किसी ने मरम्मत की समीक्षा नहीं की।"
+     ],
+     "what_you_can_do": [
+      "जॉब रिकॉर्ड पर \"बार-बार की खराबी\" लिखें और बताएँ कि आपने यह कितनी बार देखी है।",
+      "अपने सुपरवाइज़र से पूछें कि क्या दोबारा मरम्मत के बजाय उपकरण की समीक्षा होनी चाहिए।"
+     ],
+     "warning_signs": [
+      "आप इस उपकरण पर ठीक यही मरम्मत पहले भी कर चुके हैं",
+      "मरम्मत में वही पुर्ज़ा लग रहा है जो पिछली बार खराब हुआ था"
+     ],
+     "good_looks_like": "टीम जॉब रिकॉर्ड पर \"बार-बार की खराबी\" लिखती है, और उस नोट से वैसी ही एक और मरम्मत के बजाय मूल कारण की समीक्षा शुरू होती है।",
+     "discussion": [
+      "हमारी यूनिट के किन उपकरणों को हम बार-बार ठीक करते रहते हैं?",
+      "जॉब रिकॉर्ड में बार-बार की खराबी कहाँ नज़र आएगी?",
+      "दोबारा मरम्मत करें या बदलें, यह कौन तय करता है?"
+     ],
+     "learning": "LR-05",
+     "cites": [
+      "FND-69067A1C",
+      "FND-82FC718D",
+      "EVD-1494",
+      "EVD-0591"
+     ],
+     "supporting_cites": [
+      "FND-71D631C1",
+      "FND-D14B8424",
+      "FND-FEC84761",
+      "FND-3A34BAD3",
+      "FND-E0AE86A6",
+      "FND-55F68376",
+      "FND-F0D015E1"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "गैस अलार्म देर से आई खबर है",
+     "what_happened": "गैस डिटेक्टर सिर्फ़ कंट्रोल रूम के अलार्म पैनल पर बत्ती जलाते थे; वे कुछ भी बंद नहीं करते थे। कंट्रोल रूम का पहला अलार्म लगभग 02:20 पर आया, जब कैमरा रिसाव रिकॉर्ड कर चुका था और सुरक्षा स्टाफ बादल देख चुका था।",
+     "why_made_sense": "डिटेक्शन सिस्टम सूचना देने के लिए बना था, कार्रवाई के लिए नहीं, और इसके सिग्नल कंट्रोल सिस्टम के इतिहास में दर्ज नहीं होते थे, इसलिए अलार्म किसी भी दूसरे डिस्प्ले अलर्ट जैसा लगा।",
+     "organisation_changing": "सीख रजिस्टर का सुझाव, संगठन के फ़ैसले के लिए: ऐसा गैस डिटेक्शन जो मीटरिंग और गैस टर्मिनल क्षेत्रों में गैस की पुष्टि होते ही अपने-आप आइसोलेशन शुरू करे, और हर डिटेक्टर सिग्नल का दर्ज इतिहास।",
+     "did_you_know": [
+      "कैमरे ने रिसाव की शुरुआत 02:12:50 पर रिकॉर्ड की; कंट्रोल रूम का पहला अलार्म लगभग सात मिनट बाद आया।",
+      "डिटेक्शन सिस्टम अपने-आप प्लांट बंद नहीं कर सकता था और न ही आग से बचाव शुरू कर सकता था।"
+     ],
+     "what_you_can_do": [
+      "पता करें कि आपकी यूनिट के कौन-से गैस अलार्म उपकरण ट्रिप करते हैं और कौन-से सिर्फ़ दिखाते हैं।",
+      "अगर आप रिसाव देखें या सुनें, तो तुरंत सूचना दें; अलार्म का इंतज़ार न करें।"
+     ],
+     "warning_signs": [
+      "ऐसा गैस अलार्म जिसके पीछे कोई अपने-आप होने वाली कार्रवाई नहीं है",
+      "किसी अलार्म से पहले ही वाष्प (गैस) या आवाज़ की सूचना आ जाना"
+     ],
+     "good_looks_like": "टीमें गैस अलार्म को तब तक पक्का रिसाव मानती हैं जब तक उल्टा साबित न हो, और जानती हैं कि कौन-से अलार्म उपकरण ट्रिप करते हैं और कौन-से किसी व्यक्ति का इंतज़ार करते हैं।",
+     "discussion": [
+      "हमारी यूनिट के कौन-से गैस अलार्म अपने-आप उपकरण ट्रिप करते हैं?",
+      "अलार्म बजने पर आप सबसे पहले क्या करते हैं?",
+      "आप किसे बताते हैं, और किन शब्दों में?"
+     ],
+     "learning": "LR-10",
+     "cites": [
+      "FND-A245072B",
+      "FND-C5000A82",
+      "FND-5BC96E8A",
+      "EVD-8657",
+      "EVD-1284"
+     ],
+     "supporting_cites": [
+      "FND-94C28ACE",
+      "FND-9399FA02",
+      "FND-D45021AD",
+      "FND-01C3DE98",
+      "FND-6155A1C2",
+      "FND-5897D1E4",
+      "FND-A31F75EF",
+      "FND-5134D887",
+      "FND-789D5D60"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "स्रोत तक न पहुँच सकें, तो दूर से आइसोलेशन सोचें",
+     "what_happened": "कंट्रोल रूम के इंजीनियर रिसाव ढूँढने बाहर गए और घने बादल की वजह से लौटना पड़ा। शिफ्ट के वरिष्ठ लोग गेट तक पहुँचे पर अंदर नहीं जा सके। पहला आइसोलेशन वाल्व 03:01 पर हाथ से बंद किया गया, पहली बार रिसाव दिखने के लगभग 46 मिनट बाद।",
+     "why_made_sense": "रिसाव पर सामान्य तरीका है उसे ढूँढना और ठीक करना। आइसोलेशन वाल्व सिर्फ़ वाल्व पर जाकर, बादल के अंदर, चलाए जा सकते थे, और आपातकालीन योजना में आइसोलेशन के न मापदंड थे न अधिकार, इसलिए टीम पास जाने की कोशिश करती रही और ऊपर फ़ोन करती रही।",
+     "organisation_changing": "सीख रजिस्टर का सुझाव, संगठन के फ़ैसले के लिए: कंट्रोल रूम कंसोल पर हर क्षेत्र के लिए आइसोलेशन फ़ैसले की सहायक जानकारी, दूर से चलने वाले आपातकालीन वाल्व, और तय मापदंडों पर आइसोलेशन का लिखित अधिकार।",
+     "did_you_know": [
+      "पहला वाल्व 03:01 पर बंद हुआ, आग लगने से सात मिनट पहले।"
+     ],
+     "what_you_can_do": [
+      "जानें कि कौन-से वाल्व आपके सेक्शन को अलग करते हैं और हर एक कहाँ से चलाया जाता है।",
+      "जब बादल आपको रोक दे, तो \"पहुँच नहीं है\" (access denied) की सूचना दें और ऐसे आइसोलेशन पॉइंट पर जाएँ जहाँ आप सुरक्षित पहुँच सकें।"
+     ],
+     "warning_signs": [
+      "बादल आपको स्रोत के पास नहीं जाने देता",
+      "बादल बढ़ रहा है और आप फ़ोन पर अनुमति माँग रहे हैं"
+     ],
+     "good_looks_like": "पहुँच बंद होते ही टीम कंट्रोल रूम को \"पहुँच नहीं है\" (access denied) बताती है और उन आइसोलेशन पॉइंट पर चली जाती है जहाँ वह सुरक्षित पहुँच सकती है।",
+     "discussion": [
+      "कौन-से वाल्व हमारे सेक्शन को अलग करते हैं, और वे कहाँ से चलाए जाते हैं?",
+      "अगर आप उनके पास न पहुँच सकें, तो क्या करेंगे?",
+      "आपको कौन बताता है कि आप आइसोलेट कर सकते हैं?"
+     ],
+     "learning": "LR-08",
+     "cites": [
+      "FND-F887999D",
+      "FND-A7137BC4",
+      "FND-82761CC5",
+      "EVD-9612",
+      "EVD-1460",
+      "EVD-3932"
+     ],
+     "supporting_cites": [
+      "FND-AEA16F83",
+      "FND-744032B6",
+      "FND-13708453"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "उस कंट्रोल रूम को फ़ोन करें जो कार्रवाई कर सके, और जो दिख रहा है वह बताएँ",
+     "what_happened": "एक वॉच टावर और गेट पर तैनात सुरक्षा स्टाफ ने लगभग 02:15 पर बादल देखा। उनके फ़ोन सुरक्षा नेटवर्क, फ़ायर स्टेशन और एक दूसरे कंट्रोल रूम को गए। गैस टर्मिनल कंट्रोल रूम को इसकी खबर 02:18 से 02:20 के बीच \"कुछ वाष्प का बादल या भाप (स्टीम) का रिसाव\" के रूप में मिली।",
+     "why_made_sense": "सुरक्षा चौकियों से गैस टर्मिनल कंट्रोल रूम तक कोई सीधी लाइन नहीं थी, और हाइड्रोकार्बन रिसाव के लिए कोई तय शब्द नहीं थे, इसलिए हर कड़ी ने सूचना को परखा और फिर अपने शब्दों में आगे बताया।",
+     "organisation_changing": "सीख रजिस्टर का सुझाव, संगठन के फ़ैसले के लिए: बाहरी सुरक्षा चौकियों और कैमरा रूम से हर प्रोसेस कंट्रोल रूम तक सीधी लाइन, और रिसाव का एक तय संदेश जिसका अभ्यास सुरक्षा और ऑपरेशंस मिलकर करें।",
+     "did_you_know": [
+      "दो सुरक्षा चौकियों ने 02:15 पर बादल देखा, पर दोनों में से कोई भी गैस टर्मिनल कंट्रोल रूम को सीधे फ़ोन नहीं कर सकता था।"
+     ],
+     "what_you_can_do": [
+      "जानें कि जिन क्षेत्रों पर आप नज़र रखते हैं, उनमें से हर एक किस कंट्रोल रूम के ज़िम्मे है, और उसका नंबर अपनी चौकी पर रखें।",
+      "पहले ही फ़ोन में कहें \"हाइड्रोकार्बन रिसाव\", कहाँ है और कितना बड़ा है।"
+     ],
+     "warning_signs": [
+      "आपको वाष्प (गैस) दिखती है या तेज़ आवाज़ सुनाई देती है, और आप नहीं जानते कि वह क्षेत्र किस कंट्रोल रूम के ज़िम्मे है",
+      "आपकी सूचना कोई ऐसा व्यक्ति आगे बढ़ा रहा है जिसने खुद नहीं देखा"
+     ],
+     "good_looks_like": "पहला फ़ोन उस क्षेत्र के कंट्रोल रूम को जाता है और उसमें कहा जाता है \"हाइड्रोकार्बन रिसाव\", कहाँ, और कितना बड़ा।",
+     "discussion": [
+      "जिन क्षेत्रों पर आप नज़र रखते हैं, उनमें से हर एक किस कंट्रोल रूम के ज़िम्मे है?",
+      "रिसाव की सूचना देने के लिए आप कौन-से शब्द इस्तेमाल करेंगे?",
+      "आज आपको उस कंट्रोल रूम को सीधे फ़ोन करने से क्या रोकता है?"
+     ],
+     "learning": "LR-13",
+     "cites": [
+      "FND-5AB5DFA3",
+      "FND-C75F81B9",
+      "FND-2F736E5F",
+      "EVD-4286",
+      "EVD-1460",
+      "EVD-6234",
+      "EVD-8871"
+     ],
+     "supporting_cites": [
+      "FND-BC00FF3A",
+      "FND-57281AC5",
+      "FND-37BC45CF",
+      "FND-95F9205E",
+      "FND-439E0DF7",
+      "FND-A9C42ABE",
+      "FND-0A64F629"
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "जिस फ्लेमप्रूफ फिटिंग का एक बोल्ट गायब हो, वह फ्लेमप्रूफ नहीं है",
+     "what_happened": "स्किड पर एक फ्लेमप्रूफ लैंप के तीन बोल्ट गायब थे और उसका काँच का कवर कुछ सेंटीमीटर खुला था। जाँच समिति ने इसे आग लगने का संभावित स्रोत बताया। पास की फिटिंग ठीक हालत में थीं।",
+     "why_made_sense": "इलेक्ट्रिकल रखरखाव ज़्यादातर खराबी आने पर ही होता था, फ्लेमप्रूफ फिटिंग का योजनाबद्ध निरीक्षण बहुत कम था, इसलिए गायब बोल्ट का पता नहीं चला और उन्हें ठीक नहीं किया गया।",
+     "organisation_changing": "सीख रजिस्टर का सुझाव, संगठन के फ़ैसले के लिए: खतरनाक क्षेत्रों में पुराने फ्लेमप्रूफ लैंपों की जगह प्रमाणित फिटिंग लगाएँ, और फ्लेमप्रूफ उपकरणों के निरीक्षण का कार्यक्रम बनाएँ जिसमें हर उपकरण का रिकॉर्ड हो।",
+     "did_you_know": [
+      "आग के बाद स्किड के पास के नौ फ्लेमप्रूफ लैंपों के निरीक्षण की रिपोर्ट ने सबको एक साथ गर्मी से हुआ नुकसान बताया; गायब बोल्ट वाले लैंप को अलग से नहीं दर्शाया गया।"
+     ],
+     "what_you_can_do": [
+      "अपने राउंड पर फ्लेमप्रूफ फिटिंग में गायब बोल्ट, खुले कवर और ढीले ग्लैंड देखें।",
+      "जो भी मिले, तुरंत सूचना दें, चाहे फिटिंग अब भी काम कर रही हो।"
+     ],
+     "warning_signs": [
+      "खतरनाक क्षेत्र की किसी फिटिंग में गायब बोल्ट, खुला कवर या ढीला ग्लैंड",
+      "फिटिंग अब भी काम कर रही है, इसलिए कोई उसकी सूचना नहीं देता"
+     ],
+     "good_looks_like": "जो भी खराब फ्लेमप्रूफ फिटिंग देखे, वह उसकी सूचना देता है, और उसी शिफ्ट में उसे सुरक्षित किया जाता है।",
+     "discussion": [
+      "हमारे राउंड में फ्लेमप्रूफ फिटिंग कहाँ-कहाँ हैं?",
+      "खराब फिटिंग मिलने पर हम किसे बताते हैं, और उसे कितनी जल्दी सुरक्षित किया जाता है?",
+      "जो फिटिंग अब भी काम कर रही है, उसकी सूचना देने से हमें क्या रोकता है?"
+     ],
+     "learning": "LR-11",
+     "cites": [
+      "FND-784A23E4",
+      "FND-5E08D0F8",
+      "FND-1280E788",
+      "EVD-6916",
+      "EVD-0496"
+     ],
+     "supporting_cites": [
+      "FND-74A80D24",
+      "FND-C7F16268",
+      "FND-1D61DC3A",
+      "FND-ADC25F29",
+      "FND-675D99DD",
+      "FND-ABF11182",
+      "FND-CCE6F868",
+      "FND-76BE46EF",
+      "FND-198069BD",
+      "FND-02C51A67",
+      "FND-B1D1AAC1",
+      "FND-30EC643B"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "toolbox-talks",
+   "heading": "टूलबॉक्स टॉक",
+   "items": [
+    {
+     "kind": "para",
+     "group": "Returning equipment to service",
+     "text": "रखरखाव टीमों के लिए पाँच मिनट की टॉक, प्रेशर वाला हिस्सा खोलने वाले किसी भी काम से पहले। नीचे दी गई टॉक उसके पाँच चरणों में चलाएँ, फिर उसके बाद के परिदृश्य से \"अभी नहीं\" कहने का अभ्यास करें।",
+     "learning": "LR-01",
+     "cites": [
+      "FND-7FA02383",
+      "FND-B356F15B",
+      "EVD-2894",
+      "EVD-8645"
+     ],
+     "supporting_cites": [
+      "FND-8C0BB623",
+      "FND-7A32AC87",
+      "FND-89962239",
+      "FND-91B45FF9",
+      "FND-DA67926D",
+      "FND-54180594",
+      "FND-82673283",
+      "FND-45363DCA"
+     ]
+    },
+    {
+     "kind": "scenario",
+     "group": "Returning equipment to service",
+     "learning": "LR-02",
+     "situation": "शिफ्ट के आखिर में आप एक हाई-प्रेशर मीटर की सील बदलने का काम पूरा करते हैं। मूल सील स्टोर्स में नहीं है, इसलिए आपने वही लगाई जो टीम हमेशा लगाती है। ऑपरेशंस को सुबह तक मीटर वापस चाहिए।",
+     "prompts": [
+      "मीटर वापस सौंपने से पहले आप क्या परखते हैं?",
+      "अगर कोई टेस्ट प्रेशर लिखा न हो, तो आप किसे फ़ोन करते हैं?",
+      "आपके लिए \"अभी नहीं\" कहना किस चीज़ से आसान होगा?"
+     ],
+     "cites": [
+      "FND-7FA02383",
+      "FND-89962239",
+      "EVD-2894",
+      "EVD-8645"
+     ]
+    },
+    {
+     "kind": "toolbox",
+     "id": "talk-return-to-service",
+     "group": "Returning equipment to service",
+     "opening_question": "आपने पिछली बार कब ऐसा पुर्ज़ा लगाया था जो पूरी तरह मूल जैसा नहीं था?",
+     "story": "1986 से सर्विस में चल रहे एक कंडेनसेट मीटर की सील बार-बार लीक होती थी। उसका स्पेसिफिकेशन खो गया था, इसलिए टीम ने वही गोल ओ-रिंग लगाई जो वह हमेशा लगाती थी। 18 सितंबर 2020 को आखिरी बार बदलने के बाद सिस्टम को सिर्फ़ ऑपरेटिंग प्रेशर तक लाया गया; डिज़ाइन प्रेशर पर कोई टेस्ट नहीं हुआ। मीटर अगले दिन फिर चालू हो गया। 24 सितंबर को वही सील एक रिसाव का संभावित स्रोत बनी, जिसमें बाद में आग लग गई।",
+     "warning_signs": [
+      "पुर्ज़ा मूल से मेल नहीं खाता, और कोई स्पेसिफिकेशन नहीं दिखा पाता",
+      "आपने जो जोड़ खोला, उसके लिए कोई टेस्ट प्रेशर या गवाह लिखा नहीं है"
+     ],
+     "one_change": "स्पेसिफिकेशन नहीं, तो फिटिंग नहीं; रिकॉर्ड किया टेस्ट नहीं, तो सौंपना नहीं। इनमें से कुछ भी न हो, तो काम रोकें और सुपरवाइज़र से पूछें।",
+     "crew_question": "हमारी यूनिट का कौन-सा काम रोकना हमें सबसे मुश्किल लगेगा, और उसे रोकने में क्या मदद करेगा?",
+     "duration": "5 मिनट",
+     "learning": "LR-01",
+     "cites": [
+      "FND-7FA02383",
+      "FND-B356F15B",
+      "FND-8C0BB623",
+      "EVD-2894",
+      "EVD-8645",
+      "EVD-0185"
+     ],
+     "source_text": {
+      "opening_question": "When did you last fit a part that was not quite the original?",
+      "story": "A condensate meter in service since 1986 kept leaking at its seal. Its specification had been lost, so the crew fitted the round O-ring they always used. After the last change, on 18 Sep 2020, the system was only brought up to operating pressure; no test to design pressure was done. The meter went back on line the next day. On 24 Sep that seal was the probable source of a release that later caught fire.",
+      "warning_signs[0]": "The part does not match the original, and nobody can show a specification",
+      "warning_signs[1]": "No test pressure or witness is written down for the joint you opened",
+      "one_change": "No specification, no fit; no recorded test, no hand-back. If either is missing, stop and ask the supervisor.",
+      "crew_question": "Which job on our unit would we find hardest to stop, and what would help us stop it?",
+      "duration": "5 minutes"
+     },
+     "back_translation": "When did you last fit a part that was not fully like the original?\nThe seal of a condensate meter running in service since 1986 leaked again and again. Its specification had been lost, so the team fitted the same round O-ring it always fitted. After the last change on 18 September 2020 the system was brought only up to operating pressure; no test was done at design pressure. The meter was started again the next day. On 24 September that same seal became the probable source of a leak, which later caught fire.\nThe part does not match the original, and nobody can show a specification\nFor the joint you opened, no test pressure or witness is written\nNo specification, then no fitting; no recorded test, then no handing over. If any of these is missing, stop the work and ask the supervisor.\nWhich job on our unit would we find hardest to stop, and what would help in stopping it?\n5 minutes"
+    },
+    {
+     "kind": "para",
+     "group": "Responding to a release",
+     "text": "रात की शिफ्ट की कंट्रोल रूम, फ़ील्ड और सुरक्षा टीमों के लिए पाँच मिनट की टॉक। नीचे दी गई टॉक उसके पाँच चरणों में चलाएँ, फिर उसके बाद के परिदृश्य से पहले फ़ोन और आइसोलेशन की ओर मुड़ने का अभ्यास करें।",
+     "learning": "LR-08",
+     "cites": [
+      "FND-01ADF0AA",
+      "FND-37BC45CF",
+      "EVD-1460",
+      "EVD-8871",
+      "EVD-9612"
+     ],
+     "supporting_cites": [
+      "FND-AEA16F83",
+      "FND-F887999D",
+      "FND-744032B6",
+      "FND-13708453",
+      "FND-BC00FF3A",
+      "FND-5AB5DFA3",
+      "FND-C75F81B9",
+      "FND-57281AC5"
+     ]
+    },
+    {
+     "kind": "scenario",
+     "group": "Responding to a release",
+     "learning": "LR-08",
+     "situation": "रात में आपको तेज़ आवाज़ सुनाई देती है और कंट्रोल रूम के पास सड़क के आर-पार वाष्प (गैस) बहती दिखती है। गैस अलार्म अभी तक नहीं बजा है। आप मीटरिंग क्षेत्र की ओर चलने की कोशिश करते हैं और गंध तेज़ है।",
+     "prompts": [
+      "आप किसे फ़ोन करते हैं, और ठीक-ठीक क्या कहते हैं?",
+      "आप स्रोत तक पहुँचने की कोशिश कब बंद करते हैं?",
+      "सुरक्षित जगह से आइसोलेट करने के लिए आपको क्या जानना ज़रूरी है?"
+     ],
+     "cites": [
+      "FND-F887999D",
+      "FND-C75F81B9",
+      "EVD-1460",
+      "EVD-9612"
+     ],
+     "source_text": {
+      "situation": "At night you hear a loud noise and see vapour drifting across the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong.",
+      "prompts[0]": "Who do you call, and what exactly do you say?",
+      "prompts[1]": "When do you stop trying to reach the source?",
+      "prompts[2]": "What do you need to know to isolate from a safe place?"
+     },
+     "back_translation": "At night you hear a loud noise and see vapour (gas) drifting across the road near the control room. The gas alarm has not sounded yet. You try to walk towards the metering area and the smell is strong.\nWhom do you phone, and what exactly do you say?\nWhen do you stop trying to reach the source?\nWhat do you need to know to isolate from a safe place?"
+    },
+    {
+     "kind": "toolbox",
+     "id": "talk-release",
+     "group": "Responding to a release",
+     "opening_question": "अगर आज रात आपको मीटरिंग स्किड के पास सफ़ेद बादल दिखे, तो आप सबसे पहले किसे फ़ोन करेंगे?",
+     "story": "02:15 पर दो सुरक्षा चौकियों ने तेज़ आवाज़ सुनी और गैस टर्मिनल के पास बादल देखा। उनके फ़ोन पहले सुरक्षा नेटवर्क को गए, और गैस टर्मिनल कंट्रोल रूम को 02:18 से 02:20 के बीच \"कुछ वाष्प का बादल या भाप (स्टीम) का रिसाव\" की खबर मिली, लगभग उसी समय जब उसका अलार्म पैनल जला। इंजीनियर बाहर गए और स्रोत के पास नहीं पहुँच सके। आइसोलेशन वाल्व सिर्फ़ हाथ से, वाल्व पर जाकर, चलाए जा सकते थे। पहला वाल्व 03:01 पर बंद हुआ, और आग 03:08 पर लगी।",
+     "warning_signs": [
+      "आपको वाष्प (गैस) दिखती है या तेज़ आवाज़ सुनाई देती है, और अभी तक कोई अलार्म नहीं बजा",
+      "बादल आपको स्रोत के पास नहीं जाने देता"
+     ],
+     "one_change": "सबसे पहले उस क्षेत्र के कंट्रोल रूम को फ़ोन करें और कहें \"हाइड्रोकार्बन रिसाव\", कहाँ और कितना बड़ा; अगर बादल आपको रोक दे, तो \"पहुँच नहीं है\" (access denied) की सूचना दें और ऐसे आइसोलेशन पॉइंट पर जाएँ जहाँ आप सुरक्षित पहुँच सकें।",
+     "crew_question": "कौन-से वाल्व हमारे सेक्शन को अलग करते हैं, और हर एक कहाँ से चलाया जाता है?",
+     "duration": "5 मिनट",
+     "learning": "LR-08",
+     "cites": [
+      "FND-01ADF0AA",
+      "FND-37BC45CF",
+      "FND-2F736E5F",
+      "FND-F887999D",
+      "FND-5AB5DFA3",
+      "EVD-1460",
+      "EVD-8871",
+      "EVD-6234",
+      "EVD-9612",
+      "EVD-4286"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "stop-and-ask",
+   "heading": "रुकें और पूछें",
+   "items": [
+    {
+     "kind": "check",
+     "when": "आपके हाथ की सील या गैस्केट मूल से मेल नहीं खाती, या कोई स्पेसिफिकेशन नहीं दिखा पाता",
+     "text": "काम रोकें और सुपरवाइज़र से स्पेसिफिकेशन माँगें। तब तक काम रुका रहेगा जब तक स्पेसिफिकेशन न मिले या कोई मंज़ूर विकल्प दर्ज न हो।",
+     "learning": "LR-01",
+     "cites": [
+      "FND-89962239",
+      "FND-B356F15B",
+      "EVD-8645"
+     ],
+     "source_text": {
+      "when": "The seal or gasket in your hand does not match the original, or nobody can show a specification",
+      "text": "Stop and ask the supervisor for the specification. Expect the job to wait until one is found or an approved substitute is recorded."
+     },
+     "back_translation": "The seal or gasket in your hand does not match the original, or nobody can show a specification\nStop the work and ask the supervisor for the specification. The work will stay stopped until the specification is found or an approved alternative is recorded."
+    },
+    {
+     "kind": "check",
+     "when": "प्रेशर वाले हिस्से का काम पूरा हो गया है और कोई टेस्ट प्रेशर या गवाह तय नहीं है",
+     "text": "उपकरण वापस न सौंपें। सुपरवाइज़र से लिखा हुआ टेस्ट और गवाह माँगें; उपकरण टेस्ट रिकॉर्ड होने तक नहीं सौंपा जाएगा।",
+     "learning": "LR-02",
+     "cites": [
+      "FND-15279F97",
+      "FND-FDFA6FF5",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "मेंटेनेंस नोटिफिकेशन पर कोई खतरनाक काम शुरू होने वाला है, पर कोई परमिट या जॉब सेफ्टी प्लान नहीं है",
+     "text": "नोटिफिकेशन परमिट नहीं है। हाइड्रोकार्बन उपकरण पर काम से पहले रुकें और परमिट जारी करने वाले से परमिट और जॉब सेफ्टी प्लान माँगें।",
+     "learning": "LR-22",
+     "cites": [
+      "FND-AA571C63",
+      "EVD-5105"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "आप उसी उपकरण पर वह मरम्मत दोहरा रहे हैं जो आप पहले कर चुके हैं",
+     "text": "जॉब रिकॉर्ड पर \"बार-बार की खराबी\" लिखें और सुपरवाइज़र को बताएँ, ताकि बिना देखे दोबारा मरम्मत के बजाय इसकी समीक्षा हो।",
+     "learning": "LR-05",
+     "cites": [
+      "FND-69067A1C",
+      "EVD-1494"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "काम के दौरान कैलिब्रेशन की कोई सेटिंग बदली गई है, चाहे आपने उसे वापस पहले जैसा कर दिया हो",
+     "text": "रिकॉर्ड पर हस्ताक्षर होने से पहले हर बदलाव, पहले और बाद के मान (as-found और as-left) के साथ, दर्ज करें। अगर चेकलिस्ट नहीं दी गई है, तो माँगें।",
+     "learning": "LR-16",
+     "cites": [
+      "FND-85748D86",
+      "FND-13E2037D",
+      "EVD-2506"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "ड्रॉइंग फ़ील्ड में दिख रहे वाल्वों और मीटरों से मेल नहीं खाती",
+     "text": "रुकें और इसकी सूचना दें, इससे पहले कि कोई उस ड्रॉइंग से आइसोलेशन की योजना बनाए।",
+     "learning": "LR-19",
+     "cites": [
+      "FND-733F5A1A",
+      "EVD-0933"
+     ],
+     "source_text": {
+      "when": "The drawing does not match the valves and meters you see in the field",
+      "text": "Stop and report it before anyone plans an isolation from that drawing."
+     },
+     "back_translation": "The drawing does not match the valves and meters seen in the field\nStop and report it, before anyone plans an isolation from that drawing."
+    },
+    {
+     "kind": "check",
+     "when": "आपकी स्क्रीन पर कोई प्रेशर ट्रांसमीटर कोई मान नहीं दिखाता या सपाट लाइन दिखाता है",
+     "text": "इसे परेशानी नहीं, खराबी (डिफ़ेक्ट) के रूप में दर्ज कराएँ; इसके बिना कंट्रोल रूम पहले से मिलने वाली चेतावनी खो देता है।",
+     "learning": "LR-15",
+     "cites": [
+      "FND-2B5C46B9",
+      "EVD-6470"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "खतरनाक क्षेत्र की किसी फ्लेमप्रूफ फिटिंग में बोल्ट गायब है, कवर खुला है या ग्लैंड ढीला है",
+     "text": "इसकी सूचना दें और उसी शिफ्ट में इसे सुरक्षित करवाने को कहें।",
+     "learning": "LR-11",
+     "cites": [
+      "FND-C7F16268",
+      "EVD-6916"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "कोई फ़ायर-वॉटर पंप टेस्ट में या चलते समय ट्रिप हो जाता है",
+     "text": "जो हुआ उसे दर्ज करें और उसी शिफ्ट में खराबी दर्ज कराएँ, ताकि पंप की ज़रूरत पड़ने से पहले कारण पता चल जाए।",
+     "learning": "LR-23",
+     "cites": [
+      "FND-A4B843EB",
+      "EVD-2432"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "रिसाव आपको स्रोत तक जाने से रोक रहा है",
+     "text": "आगे बढ़ना रोकें। कंट्रोल रूम को \"पहुँच नहीं है\" (access denied) बताएँ और पूछें कि किन आइसोलेशन पॉइंट तक सुरक्षित पहुँचा जा सकता है।",
+     "learning": "LR-09",
+     "cites": [
+      "FND-BDD73BA2",
+      "FND-01ADF0AA",
+      "EVD-9612"
+     ],
+     "source_text": {
+      "when": "A release blocks your way to the source",
+      "text": "Stop approaching. Tell the control room \"access denied\" and ask which isolation points can be reached safely."
+     },
+     "back_translation": "The leak is stopping you from going to the source\nStop going forward. Tell the control room \"no access\" (access denied) and ask which isolation points can be reached safely."
+    }
+   ]
+  }
+ ],
+ "exclusions": [
+  {
+   "id": "FND-44219027",
+   "reason": "रिव्यू करने वाले के डाउनग्रेड वोट के बाद यह सीख रजिस्टर से बाहर रखा गया; वोट रजिस्टर के स्रोत नोट में दर्ज है, इस एक्सपोर्ट में नहीं। इसी कारण यहाँ भी बाहर रखा गया।"
+  }
+ ],
+ "limits": [
+  "इन कार्डों के पीछे की संगठन की स्थितियाँ (खोए हुए स्पेसिफिकेशन, सर्विस में वापसी की प्रक्रिया का न होना, दूर से आइसोलेशन का न होना, आपातकालीन योजना में आइसोलेशन के मापदंड का न होना) supervisor-coach और manager-coach के लिए हैं; यहाँ इन्हें सिर्फ़ इसलिए बताया गया है ताकि टीमें इस जाल को पहचान सकें।",
+  "कॉन्ट्रैक्टर चयन में इस घटना में कोई कॉन्ट्रैक्टर टीम नहीं मिलती, इसलिए उनके लिए कोई कार्ड नहीं लिखा गया।"
+ ]
+}

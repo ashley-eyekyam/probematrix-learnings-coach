@@ -1,6 +1,7 @@
 {
  "pack": "investigator-coach",
  "schema": 1,
+ "skill": "investigator-coach",
  "title": "Investigator Coach (working papers): Hazira gas release and fire, 2020",
  "audience": "Investigators, HSE advisers and process-safety engineers",
  "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption.",

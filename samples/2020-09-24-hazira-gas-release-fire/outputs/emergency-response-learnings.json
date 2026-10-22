@@ -1,6 +1,7 @@
 {
  "pack": "emergency-response-learnings",
  "schema": 1,
+ "skill": "emergency-response-learnings",
  "title": "Emergency Response Learnings: Gas terminal release and fire, 2020",
  "audience": "Emergency response: fire and fire-water teams, emergency planners, shift and site controllers, security and camera-room staff",
  "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress.",
@@ -565,14 +566,32 @@
    "items": [
     {
      "kind": "scenario",
-     "learning": "LR-07",
-     "situation": "Night shift, no senior staff on site. Inject 1: a security post reports a roar and a white cloud near the metering skid. Inject 2: the gas alarm sounds on the panel. Inject 3: the engineers who go out report that the cloud stops them reaching the source. Inject 4: the shift in-charge is still on the way from quarters.",
+     "situation": "Night shift, with no senior staff on site. The exercise starts with a report from a perimeter security post.",
      "prompts": [
-      "Decision point: who decides to isolate, and on what criterion?",
-      "Decision point: which valves isolate the section, and which can be reached safely?",
       "Measure: time from the first report to the isolation decision, and to the first valve closed, against a time standard the site sets from its consequence study.",
       "Debrief: record each observation and one action in the drill record."
      ],
+     "injects": [
+      {
+       "offset": "+00:00",
+       "text": "A security post reports a roar and a white cloud near the metering skid."
+      },
+      {
+       "offset": "+00:05",
+       "text": "The gas alarm sounds on the control-room alarm panel.",
+       "decision": "Who decides to isolate, and on what criterion?"
+      },
+      {
+       "offset": "+00:10",
+       "text": "The engineers who went out report that the cloud stops them reaching the source.",
+       "decision": "Which valves isolate the section, and which can be reached safely?"
+      },
+      {
+       "offset": "+00:20",
+       "text": "The shift in-charge is still on the way from quarters."
+      }
+     ],
+     "learning": "LR-07",
      "cites": [
       "FND-AE629313",
       "FND-8DAFDADC",
@@ -583,13 +602,27 @@
     },
     {
      "kind": "scenario",
-     "learning": "LR-13",
-     "situation": "A joint security and operations drill. Inject 1: a watch-tower post sees vapour in an area covered by a process control room. Inject 2: the camera room can see the cloud on screen. Inject 3: the process control room has had no alarm.",
+     "situation": "A joint security and operations drill, started from a perimeter watch tower.",
      "prompts": [
-      "Decision point: whom does the post call first?",
-      "Decision point: what words carry the size and place of the release?",
       "Measure: time from first sighting to the process control room receiving a release message in the standard words."
      ],
+     "injects": [
+      {
+       "offset": "+00:00",
+       "text": "A watch-tower post sees vapour in an area covered by a process control room.",
+       "decision": "Whom does the post call first?"
+      },
+      {
+       "offset": "+00:02",
+       "text": "The camera room can see the cloud on screen.",
+       "decision": "What words carry the size and place of the release?"
+      },
+      {
+       "offset": "+00:03",
+       "text": "The process control room has had no alarm."
+      }
+     ],
+     "learning": "LR-13",
      "cites": [
       "FND-5AB5DFA3",
       "FND-37BC45CF",
@@ -599,13 +632,23 @@
     },
     {
      "kind": "scenario",
-     "learning": "LR-23",
-     "situation": "A fire-cooling exercise. Inject 1: electrical supply to the fire-water pumps is lost. Inject 2: one diesel pump is under maintenance and another trips shortly after starting.",
+     "situation": "A fire-cooling exercise on the fire-water system.",
      "prompts": [
-      "Decision point: how is cooling kept up, and who decides?",
       "Measure: time to establish cooling water from the diesel pumps alone.",
       "Debrief: record the trip cause, or record that it is not known, and the action."
      ],
+     "injects": [
+      {
+       "offset": "+00:00",
+       "text": "Electrical supply to the fire-water pumps is lost."
+      },
+      {
+       "offset": "+00:05",
+       "text": "One diesel pump is under maintenance, and another trips shortly after starting.",
+       "decision": "How is cooling kept up, and who decides?"
+      }
+     ],
+     "learning": "LR-23",
      "cites": [
       "FND-B6BB0738",
       "FND-694B2DA0",
@@ -730,7 +773,7 @@
  "exclusions": [
   {
    "id": "FND-44219027",
-   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; left out here for the same reason."
+   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; the vote is recorded in the register's source note, not in this export. Left out here for the same reason."
   }
  ],
  "limits": [

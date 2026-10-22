@@ -1,6 +1,7 @@
 {
  "pack": "engineering-integrity-learnings",
  "schema": 1,
+ "skill": "engineering-integrity-learnings",
  "title": "Engineering and Integrity Learnings: Gas terminal release and fire, 2020",
  "audience": "Engineering, asset integrity, instrumentation, electrical and management-of-change functions, and the technical authority",
  "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress.",

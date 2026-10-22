@@ -1,6 +1,7 @@
 {
  "pack": "report-comparison-regulator-safe",
  "schema": 1,
+ "skill": "report-comparison",
  "title": "Report Comparison (regulator-safe): Hazira gas release and fire, 2020",
  "audience": "A regulator or other authority",
  "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption.",

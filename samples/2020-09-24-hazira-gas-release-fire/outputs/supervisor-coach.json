@@ -1,6 +1,7 @@
 {
  "pack": "supervisor-coach",
  "schema": 1,
+ "skill": "supervisor-coach",
  "title": "Supervisor Coach: Gas terminal release and fire, 2020",
  "audience": "First-line supervision (T2): maintenance, instrument and operations supervisors and shift in-charges",
  "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress.",
@@ -621,7 +622,7 @@
       "FND-7505B1AF",
       "FND-A443D288"
      ],
-     "text": "Stop work and the right to warn. Some regimes give workers and supervisors a right to stop work or to warn of imminent danger. For this run's jurisdiction (India), the coach's jurisdiction notes list the OSH Code 2020 and the Factories Act 1948, and name Factories Act s.41H (content unverified); the site should confirm which apply and how a refusal is supported. The findings show a steep authority gradient and a substitute practice that supervision tolerated, so a refusal will need visible backing from management. This note states no legal conclusion."
+     "text": "Stop work and the right to warn. Some regimes give workers and supervisors a right to stop work or to warn of imminent danger. For this run's jurisdiction (India), the coach's jurisdiction notes list the OSH Code 2020 and the Factories Act 1948, and name Factories Act s.41H (content unverified); the site should confirm which apply and how a refusal is supported. The findings show a steep authority gradient and a substitute practice that had become normal, so a refusal will need visible backing from management. This note states no legal conclusion."
     }
    ]
   },
@@ -914,7 +915,7 @@
  "exclusions": [
   {
    "id": "FND-44219027",
-   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; left out here for the same reason."
+   "reason": "Left out of the Learnings Register after a reviewer downgrade vote; the vote is recorded in the register's source note, not in this export. Left out here for the same reason."
   }
  ],
  "limits": [
