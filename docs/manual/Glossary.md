@@ -18,6 +18,10 @@ The label "AI-drafted, not human-edited" shown on a finding that no person edite
 
 A skill written for one group of readers, such as [supervisor-coach](skills/supervisor-coach.md) or [board-brief](skills/board-brief.md). Compare *analysis skill*: one that analyses the whole investigation, such as [causal-map](skills/causal-map.md). See [Skills](Skills.md).
 
+### Back-translation
+
+A translation of the translated text back into English by a second person or tool, to show that a safety-critical sentence still says the same thing. `strings extract` adds a back-translation unit for every hold point and every item that says stop, halt or do not start, proceed, restart or enter; a translated pack without one gets a warning from `check-pack` (a problem under `--strict`). See [strings](commands/strings.md).
+
 ### Barrier
 
 A control that should stand between a hazard and harm: a design feature, a test, a procedure, an alarm, an isolation valve, an emergency plan. **Prevention** barriers act before control is lost; **mitigation** barriers act after. See [barrier-learnings](skills/barrier-learnings.md).
@@ -89,6 +93,10 @@ The rule that nothing may be reviewed or approved until the investigation status
 ### Gate
 
 The check a step must pass before a [plan](commands/plan.md) moves on: `check-pack --strict` for a pack, `check-register --strict` for the register, and an approved review as well for a pack meant for outside the organisation.
+
+### GIFT
+
+Moodle's plain-text format for quiz questions. `pack --format gift` writes the pack's questions as `<pack>.gift.txt`, with the answer key, for a Moodle question-bank import. See [Workflows and recipes](Workflows-and-recipes.md#a-quiz-into-moodle-and-scorm-into-an-lms).
 
 ### Handling
 
@@ -204,6 +212,10 @@ A warning before the event that someone could have seen at the time: an inspecti
 
 ## Q to S
 
+### QTI
+
+IMS Question and Test Interoperability, a standard file format for quiz questions that most learning management systems import. `pack --format qti` writes version 2.1 as `<pack>.qti.zip`.
+
 ### Quasi-identifier
 
 A detail that can point to one person without naming them: a post with one holder, a gate or shift number. A date in a role string is masked in shared copies, but on its own it does not make the role a singleton. See *singleton role* and [the full rule](Files-and-folders.md#singleton-roles).
@@ -239,6 +251,10 @@ The folder for one investigation, `pmlc-runs/<date>-<site>-<event>/`, holding `w
 ### Scope
 
 The part of a pack that says which findings it should cover, using the same filters as `select` (tiers, levels, entities, tags, a minimum rating). Coverage is measured against it.
+
+### SCORM
+
+Sharable Content Object Reference Model: a standard package a learning management system (LMS) can run as a course and record a score from. `pack --format scorm` writes a SCORM 1.2 package, `<pack>.scorm.zip`, holding the learner view and a quiz graded in the browser. The answer keys travel inside the package, so use the score to show who took the learning, never to judge a person.
 
 ### Share mode (`--share`)
 
@@ -313,3 +329,7 @@ A named sequence of skills for a common job, such as `leadership` or `full-casca
 ### Workspace
 
 The folder of working files for one investigation (`<run>/workspace/`), made by `ingest` and filled by the other commands. Everything in it can be rebuilt from the export, except your role overrides.
+
+### XLIFF
+
+XML Localisation Interchange File Format, the file translators' tools (computer-assisted translation, or CAT, tools) open. `strings extract` writes a pack's text as XLIFF 1.2, `<pack>.strings.xlf`, with each citation as a placeholder the translator must keep; `strings apply` reads it back. See [strings](commands/strings.md).

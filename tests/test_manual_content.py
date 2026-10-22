@@ -156,7 +156,8 @@ def test_glossary_terms():
 def _sources() -> str:
     """The engine's source, with adjacent string literals split over lines joined back together."""
     src = "\n".join(read(p) for p in [*SCRIPTS.glob("pmlc*.py"), *SCRIPTS.glob("pmlc_lib/**/*.py"), ROOT / "skills" / "learnings-coach" / "references" /
-                                       "lint-terms.json"])
+                                       "lint-terms.json",
+                                       ROOT / "tests" / "test_a11y_js.py"])   # Task 28: the contributors' npm ci hint
     return re.sub(r"[\"']\s*\n\s*[rf]?[\"']", "", src)
 
 

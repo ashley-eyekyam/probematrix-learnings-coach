@@ -71,7 +71,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `png` | data | `<pack>.<item-id>.png` | The same drawing as a picture, made by a Chromium-family browser: `$PMLC_BROWSER`, else `chromium`, `chromium-browser`, `google-chrome`, `google-chrome-stable`, `microsoft-edge` or `msedge` on the PATH. With none, the command says `png: no Chromium-family browser found; open the .svg in a browser and export it, or set PMLC_BROWSER`, writes no PNG and still exits 0. If the browser fails, it says `png: the browser did not produce an image (<reason>)`. The PNG's `Description` metadata holds the status line and the ProbeMatrix footer |
 | `graphml` | data | `<pack>.<item-id>.graphml` | The graph for yEd and other graph tools: one node for each node (with a `label`), one edge for each link, and a `<desc>` with the status and credit. One file for each graph item |
 | `bowtie-csv` | data | `<pack>.bowtie.csv` | One row for each barrier item, for a bow-tie tool or a spreadsheet. Columns: `side,barrier,barrier_id,state,type,hoc_tier,failure_mode,fix,owner_role,indicator,cites`. `side` is `threat` for a group that starts with "prevent", `consequence` for "mitigat" or "recover", and blank otherwise. `owner_role` is the pack's role text and `cites` are joined with `;`. It is an import file, so it carries no status line |
-| `ics` | data | `<pack>.ics` | One all-day event for each check (`when`), decision (`by_when`) or recommendation (`by_when`) whose time is `<n> days`, `Day <n>` or `<n> weeks`, counted from `--start`. The summary is the item text cut to 70 characters; the description has the cites and the status phrase. No attendee and no organiser are written, and no date is ever invented. In a shared copy the event UID leaves out the run slug (`<pack>-<item-id>@pmlc` instead of `<run>-<pack>-<item-id>@pmlc`)
+| `ics` | data | `<pack>.ics` | One all-day event for each check (`when`), decision (`by_when`) or recommendation (`by_when`) whose time is `<n> days`, `Day <n>` or `<n> weeks`, counted from `--start`. The summary is the item text cut to 70 characters; the description has the cites and the status phrase. No attendee and no organiser are written, and no date is ever invented. In a shared copy the event UID leaves out the run slug (`<pack>-<item-id>@pmlc` instead of `<run>-<pack>-<item-id>@pmlc`) |
 | `gift` | data | `<pack>.gift.txt` | The questions as GIFT (UTF-8), for a Moodle import. `//` comment lines carry the status, the DRAFT label, the handling line and the ProbeMatrix line. One question each: `single` as one `=` and the rest `~`, `multi` weighted so the correct options add up to 100, `truefalse` as `T` or `F`, `short` as the accepted answers, a question without a type as an essay. The `why` is the feedback. The characters `~ = # { } :` and the backslash are escaped. It keeps the answer key whatever `--view` says |
 | `qti` | data | `<pack>.qti.zip` | The same questions as an IMS QTI 2.1 package: `imsmanifest.xml` and one `assessmentItem` file per question (`choiceInteraction`, `textEntryInteraction`, or an ungraded `extendedTextInteraction` for a question without a type). It keeps the answer key |
 | `quiz-csv` | data | `<pack>.quiz.csv` | One row per question: `id,type,question,option_1,...,option_6,correct,why,cites`. `correct` holds the 1-based option numbers joined by `;`. A question without a type has the type `discussion` and no options. Cells that start with `=`, `+`, `-` or `@` get a leading `'` so a spreadsheet never runs them. Options beyond the sixth are left out, and the command says so |
@@ -219,6 +219,22 @@ field layout written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outp
 ```
 
 Open `frontline-learning-cards.field.html` and print it. The A5 cards for a pocket book: `--layout cards --paper A5`.
+
+The board brief in your organisation's colours, as a page, a Word copy and an email digest. `brand/brand.json` holds `{"organisation": "Example Gas Ltd", "accent": "#0b5394"}` (an invented name); the page and the Word file show the name in the accent colour. The email digest stays plain, with no logo, so it stays small:
+
+```bash
+python3 $E pack $WS $OUT/board-brief.json --format html,docx,email --brand brand/brand.json
+```
+
+```text
+…
+HTML written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.html
+docx written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.docx
+email written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.email.html
+email written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/board-brief.email.txt
+```
+
+A light accent such as `#ffcc00` is refused, and nothing is written: `accent #ffcc00 has contrast 1.5:1 against white; WCAG AA needs 4.5:1`. A key other than `organisation`, `accent` and `logo` is refused with `brand.json may set organisation, accent and logo only; the footer and status line are fixed`.
 
 A smaller page for an internal working group, without quotes or evidence descriptions. On this pack the page drops from about 205 KB (`cited`) to about 168 KB; with `--embed full` it is about 1.2 MB:
 

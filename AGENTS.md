@@ -27,6 +27,9 @@ python3 $E plan $WS --next                     # the next step to do, with its c
 python3 $E select $WS --preset board-brief     # a step's gather calls, as the plan prints them
 python3 $E check-pack $WS <run>/outputs/board-brief.json --strict   # a pack step's gate (runs the language check too)
 python3 $E pack $WS <run>/outputs/board-brief.json  # -> board-brief.html + .md (DRAFT until signed off)
+python3 $E pack $WS <run>/outputs/board-brief.json --format docx,email --layout paper   # also Word, an email digest and the board paper (formats: pack -h)
+python3 $E strings extract $WS <run>/outputs/frontline-learning-cards.json --lang hi   # -> <pack>.strings.xlf for a translator
+python3 $E strings apply $WS <run>/outputs/frontline-learning-cards.json <run>/outputs/frontline-learning-cards.strings.xlf --lang hi   # -> frontline-learning-cards-hi.json; a fluent speaker checks it
 python3 $E check-all $WS --strict              # every pack and the register in outputs/
 python3 $E render-all $WS                      # render every pack that passed its check, and the register
 python3 $E index $WS                           # -> <run>/outputs/index.html, the front page: give the user this path first
@@ -35,7 +38,7 @@ python3 $E sign-off $WS <run>/outputs/board-brief.json --role "<reviewer's role>
 python3 $E purge <run> --keep outputs --yes   # delete the workspace after retention; run-manifest.json stays (no --yes: lists only)
 ```
 
-The individual commands stay: `setup` is `ingest`, `profile --out`, `classify`, `causal`, `timeline` and `interfaces` run in one go. The nine workflow presets are in `skills/learnings-coach/references/workflows.json`; `plan --audiences board,supervisors` or `--skills causal-map,interface-learnings` plans without a preset. A step marked "planned for v2.0, Phase N" is skipped. `dossier-index` writes the pack that lists the `dossier-F*.json` packs. `templates $WS adoption|distribution|verification` and `export-actions $WS --register <register.json>` write the files the organisation fills in, with owner, due-date and response columns blank; never fill them in.
+`pack --format` takes a comma-separated list (default `html,md`): `docx`, `pptx`, `email`, `scorm`, `gift`, `qti`, `quiz-csv`, `csv`, `svg`, `png`, `graphml`, `bowtie-csv`, `ics` (needs `--start`), `srt`, `narration` and `normalised`; `--layout cards|field|toolbox|checklist|poster|paper` adds a print page, `--view learner` a copy without answers, `--brand brand.json` the organisation's name, colour and logo. Offer the formats the skill's `skill.json` lists; never pass `--start` with a date the user did not give. A translation from `strings apply` is AI-assisted until a fluent speaker checks it; never overwrite `<pack>.strings.*`, `<pack>-<lang>.json` or `<pack>.actions.csv` (the engine refuses). The individual commands stay: `setup` is `ingest`, `profile --out`, `classify`, `causal`, `timeline` and `interfaces` run in one go. The nine workflow presets are in `skills/learnings-coach/references/workflows.json`; `plan --audiences board,supervisors` or `--skills causal-map,interface-learnings` plans without a preset. A step marked "planned for v2.0, Phase N" is skipped. `dossier-index` writes the pack that lists the `dossier-F*.json` packs. `templates $WS adoption|distribution|verification` and `export-actions $WS --register <register.json>` write the files the organisation fills in, with owner, due-date and response columns blank; never fill them in.
 
 The user manual, `docs/manual/Home.md` (repository only; also on the project wiki), documents every skill, command and flag with Hazira examples, including sharing a masked copy outside the organisation (`--share external|public`).
 

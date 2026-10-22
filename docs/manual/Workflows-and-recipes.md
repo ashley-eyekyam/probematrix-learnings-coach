@@ -122,6 +122,55 @@ pmlc pack <ws> <run>/outputs/board-brief.json
 - The page carries the DRAFT ribbon until it is signed off. On Hazira it always will (see [Review and sharing](Review-and-sharing.md)).
 - Skill page: [board-brief](skills/board-brief.md).
 
+## A board paper in Word
+
+**Goal.** The board brief as a formal paper the company secretary can file: a cover page, the decisions requested, numbered paragraphs and annexes, in Word.
+
+**Prompt.**
+
+> Our company secretary files everything for the board in Word. Set the brief out as a formal paper with a cover page and the directors' questions in an annex.
+
+**Engine commands.**
+
+```bash
+pmlc check-pack <ws> <run>/outputs/board-brief.json --strict
+pmlc pack <ws> <run>/outputs/board-brief.json --layout paper --format docx
+```
+
+On the Hazira sample this writes `board-brief.docx` (the brief as a Word document), `board-brief.paper.docx` (the board paper) and `board-brief.paper.html` (the same paper to print from the browser), beside the usual page and Markdown.
+
+**What to check.**
+
+- The cover carries the status line, the handling line and, until sign-off, DRAFT. The footer of every page carries the status phrase and the page number.
+- "Decisions requested" lists the decision items, then the bottom line. The directors' questions are in Annex A and the tables and indicators in Annex B.
+- Each paragraph's citations are an endnote at the back, listing each finding with its label, level and rating. The paper itself shows no IDs in the text.
+- The file has no author: add the secretary's own cover sheet if the board's template needs one.
+
+## Slides for a leadership workshop
+
+**Goal.** An editable slide deck for a debrief with the site's leadership team.
+
+**Prompt.**
+
+> I'm running a two-hour debrief with the plant manager and heads of department. Give me slides I can present and edit.
+
+**Engine commands.**
+
+```bash
+pmlc select <ws> --preset site-leadership-coach
+pmlc check-pack <ws> <run>/outputs/site-leadership-coach.json --strict
+pmlc pack <ws> <run>/outputs/site-leadership-coach.json --format pptx
+```
+
+On the Hazira sample, `site-leadership-coach.pptx` has 21 slides: a title slide, one per bottom-line entry, one per decision, then the other sections at up to six items a slide, and a closing slide with the coverage lines.
+
+**What to check.**
+
+- Every slide carries the status phrase and the ProbeMatrix credit in its footer, and DRAFT until sign-off. Keep them when you edit.
+- The slides show no Finding or Evidence IDs; the speaker notes hold each slide's full text and citations. Read the notes before presenting, so you can answer "how do we know?".
+- Graph slides are drawn as boxes and arrows you can move. The labels are whole, so a long label may need a wider box.
+- To edit the content for good, edit the pack JSON and run `pack` again; edits in PowerPoint are lost on the next run.
+
 ## A frontline toolbox talk, and printing it
 
 **Goal.** Learning Cards and five-minute toolbox talks for a crew, printed for a shift briefing.
@@ -138,6 +187,12 @@ pmlc check-pack <ws> <run>/outputs/frontline-learning-cards.json --strict
 pmlc pack <ws> <run>/outputs/frontline-learning-cards.json --layout field
 ```
 
+For field cards with QR codes, give the address where the pack page is published. On the Hazira sample:
+
+```bash
+pmlc pack <ws> <run>/outputs/frontline-learning-cards.json --layout field --base-url https://intranet.example.org/learning/frontline-learning-cards.html
+```
+
 Then open `frontline-learning-cards.field.html` and print it from the browser: one A4 page per card, the citations as numbered end-notes, and a delivery record to fill in at the briefing. `--layout cards --paper A5` prints pocket-size cards instead; `--layout checklist` prints the stop-and-ask list with a box per check and a "Checked by (role)" line; `--layout toolbox` prints one page per toolbox talk when the pack has them. With `--base-url <published page>`, each card carries a QR code that opens it in the full pack. The page itself (`frontline-learning-cards.html`) still has its own **Print** button.
 
 **What to check.**
@@ -149,7 +204,58 @@ Then open `frontline-learning-cards.field.html` and print it from the browser: o
 - The delivery record holds roles only. After the briefing, copy its rows into `distribution.csv`.
 - Consult the people involved before wide release.
 
-## A course for the learning management system (LMS)
+## Toolbox sheets for the start of shift
+
+**Goal.** One printed A4 sheet per toolbox talk, for a supervisor to read out in five minutes at the start of shift.
+
+**Prompt.**
+
+> Our shift supervisors want each toolbox talk as one printable sheet to read out at the start of shift.
+
+**Engine commands.**
+
+```bash
+pmlc check-pack <ws> <run>/outputs/frontline-learning-cards.json --strict
+pmlc pack <ws> <run>/outputs/frontline-learning-cards.json --layout toolbox
+```
+
+Open `frontline-learning-cards.toolbox.html` and print it. Each Hazira toolbox talk prints on its own page in the order the supervisor reads it: the opening question, the story, the two warning signs, the one change and the question to the crew. The last page is the delivery record. A pack without toolbox talks prints nothing and says `toolbox: nothing to write (no toolbox items)`.
+
+**What to check.**
+
+- Each talk has exactly two warning signs; `check-pack` warns otherwise.
+- The one change is something the organisation is doing or asking for, not "be careful".
+- The delivery record names roles, never people. After the briefing, copy its rows into `distribution.csv` (see [templates](commands/templates.md)).
+
+## Frontline cards in Hindi
+
+**Goal.** The frontline cards in Hindi for crews who read it more easily than English, checked by a fluent speaker before use.
+
+**Prompt.**
+
+> Most of our operators and contract crews read Hindi more easily than English. Can we have the frontline cards in Hindi? Someone on site can check the translation.
+
+**Engine commands.**
+
+```bash
+pmlc strings extract <ws> <run>/outputs/frontline-learning-cards.json --lang hi
+# the translator fills in the targets of frontline-learning-cards.strings.xlf
+pmlc strings apply <ws> <run>/outputs/frontline-learning-cards.json <run>/outputs/frontline-learning-cards.strings.xlf --lang hi
+pmlc check-pack <ws> <run>/outputs/frontline-learning-cards-hi.json --strict
+pmlc pack <ws> <run>/outputs/frontline-learning-cards-hi.json --layout cards
+```
+
+On the Hazira frontline pack, `strings extract` writes 171 units to translate: one per text field, plus a back-translation unit for each safety-critical item. Each unit's note gives the glossary's Hindi term where one applies. The translated pack, `frontline-learning-cards-hi.json`, renders like any other, with Hindi headings. The Hazira sample keeps one, drafted with AI assistance.
+
+**What to check.**
+
+- **A fluent speaker checks every card before use.** The page says so under the status: "Translated with AI assistance: have a fluent speaker check it before use". The status phrase and the ProbeMatrix line stay in English on purpose.
+- Every safety-critical item (a hold point, or text that says stop, halt or do not start, proceed, restart or enter) has a back-translation. Read it against the English: if the meaning has moved, fix the Hindi, not the back-translation. `check-pack --strict` refuses a safety-critical item without one.
+- Technical words keep their site meaning: a word for "vapour" must not become "steam". Check the terms the crews actually use.
+- The citations, IDs and kinds are the source pack's; `check-pack` refuses a translation that changed them.
+- Neither the strings file nor the translated pack is ever overwritten. To start again, move the old file.
+
+## A quiz into Moodle, and SCORM into an LMS
 
 **Goal.** The training pack as a course in the organisation's LMS, with a short quiz that records a score.
 
@@ -165,7 +271,7 @@ pmlc check-pack <ws> <run>/outputs/training-designer.json --strict
 pmlc pack <ws> <run>/outputs/training-designer.json --format scorm,gift,qti
 ```
 
-Upload `training-designer.scorm.zip` to the LMS as a SCORM 1.2 package. The course shows the learner view of the pack, then the quiz; when the learner submits, it reports a score from 0 to 100 and `passed` (80% of the scored questions or more) or `failed`. A pack without typed questions reports `completed` once the learner marks it as complete. `training-designer.gift.txt` (Moodle) and `training-designer.qti.zip` (QTI 2.1) carry the same questions for a question bank.
+Upload `training-designer.scorm.zip` to the LMS as a SCORM 1.2 package. The course shows the learner view of the pack, then the quiz; when the learner submits, it reports a score from 0 to 100 and `passed` (80% of the scored questions or more) or `failed`. A pack without typed questions reports `completed` once the learner marks it as complete. `training-designer.gift.txt` (Moodle) and `training-designer.qti.zip` (QTI 2.1) carry the same questions for a question bank. On the Hazira sample the three files are written side by side: `training-designer.scorm.zip`, `training-designer.gift.txt` and `training-designer.qti.zip`. To check the Moodle import, use Moodle's question bank: Import, format GIFT, and upload `training-designer.gift.txt`.
 
 **What to check.**
 
@@ -174,6 +280,104 @@ Upload `training-designer.scorm.zip` to the LMS as a SCORM 1.2 package. The cour
 - The course page carries the status line, the ProbeMatrix line and, until sign-off, DRAFT. Upload a draft only to a test area of the LMS.
 - Try the package in the LMS's preview, or in a free SCORM test service, before you assign it.
 - Data formats keep the answer key whatever `--view` says; SCORM always shows the learner view.
+
+## The causal map for a slide
+
+**Goal.** The causal graph as a picture for a slide in a safety review, and as a file a graph tool can open.
+
+**Prompt.**
+
+> I need to show how the factors connected. Give me the cause chart as an image I can drop into a slide.
+
+**Engine commands.**
+
+```bash
+pmlc causal-item <ws>
+pmlc check-pack <ws> <run>/outputs/causal-map.json --strict
+pmlc pack <ws> <run>/outputs/causal-map.json --format svg,png,graphml
+```
+
+The Hazira causal map has one graph item, `causal-map`, so this writes `causal-map.causal-map.svg`, `causal-map.causal-map.png` (about 200 KB) and `causal-map.causal-map.graphml`. `--format pptx` puts the same graph on a slide as boxes and arrows you can edit.
+
+**What to check.**
+
+- The PNG needs a Chromium-family browser on the computer. Without one the command says `png: no Chromium-family browser found; open the .svg in a browser and export it, or set PMLC_BROWSER` and writes the rest; use the SVG, which most slide programs accept.
+- Every label is whole in these files; only the pack page shortens labels to 28 characters.
+- The picture carries no status line you can see (the SVG and GraphML hold it in their description). Put "Learning purposes: not a statutory document" and DRAFT on the slide yourself until the pack is signed off.
+
+## A bow-tie hand-over
+
+**Goal.** The barriers in a form the bow-tie team can load, with the side of the bow-tie each sits on.
+
+**Prompt.**
+
+> Export the barriers so our bow-tie facilitator can load them into the bow-tie software.
+
+**Engine commands.**
+
+```bash
+pmlc check-pack <ws> <run>/outputs/barrier-learnings.json --strict
+pmlc pack <ws> <run>/outputs/barrier-learnings.json --format bowtie-csv
+```
+
+On the Hazira sample, `barrier-learnings.bowtie.csv` has 12 barriers: 6 on the threat side (in the "prevent" groups) and 6 on the consequence side (in the "mitigate" and "recover" groups). The columns are `side,barrier,barrier_id,state,type,hoc_tier,failure_mode,fix,owner_role,indicator,cites`.
+
+**What to check.**
+
+- `side` is blank for a barrier in a group whose name does not start with "prevent", "mitigat" or "recover". Fill it in the bow-tie tool, or rename the group in the pack.
+- `owner_role` is a role, never a person. `barrier_id` is empty until you add your own barrier numbers to the pack.
+- The file is generic: map its columns to your tool's import. It carries no status line, so keep it with the signed-off pack.
+
+## Follow-up dates in the calendar
+
+**Goal.** Calendar reminders for the 30, 60 and 90-day follow-ups, counted from a date you choose.
+
+**Prompt.**
+
+> Our joint safety committee first meets on 2 November 2026. Give me calendar reminders for the follow-ups counted from that meeting.
+
+**Engine commands.**
+
+```bash
+pmlc check-pack <ws> <run>/outputs/safety-committee-guide.json --strict
+pmlc pack <ws> <run>/outputs/safety-committee-guide.json --format ics --start 2026-11-02
+```
+
+On the Hazira sample, five of the guide's checks say "30 days", "60 days" or "90 days", so `safety-committee-guide.ics` holds five all-day events: two on 2 December 2026, two on 1 January 2027 and one on 31 January 2027. Import the file into the committee's calendar.
+
+**What to check.**
+
+- The dates come only from `--start`. Without it the command writes nothing: `ics: needs --start YYYY-MM-DD; nothing written (the coach never sets dates by itself)`.
+- The events have no attendee and no organiser. Invite people in your own calendar.
+- A pack whose times are not written as `<n> days`, `Day <n>` or `<n> weeks` has nothing to write; on Hazira the manager coach pack is one.
+
+## Your organisation's brand
+
+**Goal.** Your organisation's name, colour and logo on the pages, the print layouts and the Word and PowerPoint files.
+
+**Prompt.**
+
+> Put our company name and colours on the briefs. The logo is in brand/logo.png.
+
+**Engine commands.**
+
+```bash
+pmlc pack <ws> <run>/outputs/board-brief.json --format html,docx,email --brand brand/brand.json
+```
+
+`brand/brand.json` holds only these three keys:
+
+```json
+{"organisation": "Example Gas Ltd", "accent": "#0b5394", "logo": "logo.png"}
+```
+
+On the Hazira board brief the page and the Word file show the logo and the name; the email digest carries no logo, so it stays small.
+
+**What to check.**
+
+- The accent must reach a contrast of 4.5:1 against white, so text in it stays readable. A light colour such as `#ffcc00` is refused: `accent #ffcc00 has contrast 1.5:1 against white; WCAG AA needs 4.5:1`.
+- The logo is a PNG or JPEG next to `brand.json`, at most 200 KB.
+- The brand cannot change the footer or the status line. Any other key is refused: `brand.json may set organisation, accent and logo only; the footer and status line are fixed`.
 
 ## A learnings register to Excel
 

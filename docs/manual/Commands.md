@@ -78,7 +78,7 @@ pmlc 2.0.0a4
 
 | Command | What it does |
 |---|---|
-| [pack](commands/pack.md) | Turns a learning pack JSON into HTML and Markdown |
+| [pack](commands/pack.md) | Turns a learning pack JSON into HTML and Markdown, and on request into Word, slides, an email digest, print layouts, quiz files, graph files and more (see [Output formats](#output-formats)) |
 | [dashboard](commands/dashboard.md) | Writes the self-contained organisation learning map (HTML) |
 | [pack-xlsx](commands/pack-xlsx.md) | Writes a pack's test points or questions to an Excel sheet |
 | [register-xlsx](commands/register-xlsx.md) | Writes a Learnings Register JSON to a formatted Excel workbook |
@@ -114,6 +114,42 @@ pmlc 2.0.0a4
 | Command | What it does |
 |---|---|
 | [check-samples](commands/check-samples.md) | Checks that published sample folders follow the contribution layout |
+
+## Output formats
+
+[pack](commands/pack.md) writes `<pack>.html` and `<pack>.md` unless you ask for more. `--format` takes a comma-separated list of the formats below (no spaces: `--format html,docx,email`). A **document** format is for people to read: it carries the status phrase, the ProbeMatrix credit and, until sign-off, DRAFT. A **data** format is for another program to import: it carries the status in its own comment or metadata slot, or not at all where that would break the import. The full description of each, with what it holds, is in [pack](commands/pack.md#formats).
+
+| Format | Kind | File | What it is for |
+|---|---|---|---|
+| `html` | document | `<pack>.html` | The offline page (default) |
+| `md` | document | `<pack>.md` | The same content as Markdown (default) |
+| `docx` | document | `<pack>.docx` | A Word document; with `--layout paper`, also the board paper `<pack>.paper.docx` |
+| `pptx` | document | `<pack>.pptx` | A 16:9 slide deck you can edit, with the citations in the speaker notes |
+| `email` | document | `<pack>.email.html`, `<pack>.email.txt` | An email-safe digest under 100 KB, to paste into a message |
+| `scorm` | document | `<pack>.scorm.zip` | A SCORM 1.2 course for a learning management system (LMS), with a quiz graded in the browser |
+| `normalised` | data | `<pack>.normalised.json` | The pack with every id filled in and the cited records, for other tools |
+| `svg` | data | `<pack>.<item-id>.svg` | Each graph item as a picture with every label whole |
+| `png` | data | `<pack>.<item-id>.png` | The same picture as a PNG, drawn by a local Chromium-family browser |
+| `graphml` | data | `<pack>.<item-id>.graphml` | Each graph item for yEd and other graph tools |
+| `bowtie-csv` | data | `<pack>.bowtie.csv` | The barriers, one row each, for a bow-tie tool |
+| `ics` | data | `<pack>.ics` | Calendar reminders for the follow-ups, counted from `--start` |
+| `gift` | data | `<pack>.gift.txt` | The questions for a Moodle import |
+| `qti` | data | `<pack>.qti.zip` | The questions as an IMS QTI 2.1 package for other LMSs |
+| `quiz-csv` | data | `<pack>.quiz.csv` | The questions as a spreadsheet, answer key included |
+| `csv` | data | `<pack>.actions.csv` | The actions for an action-tracking system, owner and due date blank |
+| `srt` | data | `<pack>.<item-id>.srt` | Subtitles from a video script |
+| `narration` | data | `<pack>.<item-id>.narration.txt` | A script's narration only, for a voice-over or a PA reader |
+
+Other `pack` flags that shape the output:
+
+- `--layout` writes one print page beside the other files, `<pack>.<layout>.html`: `cards` (one card a page), `field` (cards with end-notes and a delivery record), `toolbox` (one toolbox talk a page), `checklist` (tick boxes and a "Checked by (role)" line), `poster` (one A3 page) or `paper` (a board paper).
+- `--paper` sets `A4` or `A5` for the `cards` layout.
+- `--base-url` is where the pack page is published; the print layouts then carry QR codes that open each item there.
+- `--view` set to `learner` writes a learner copy of each document format, `<pack>.learner.<ext>`, without answers.
+- `--brand` reads a `brand.json` with your organisation's name, accent colour and logo.
+- `--start` is the day the `ics` reminders count from. The coach never picks a date by itself.
+
+To translate a pack, use [strings](commands/strings.md); [register-render](commands/register-render.md) writes the register in Word and as an email digest.
 
 ## Typing flags
 

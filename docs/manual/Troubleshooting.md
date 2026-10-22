@@ -421,3 +421,43 @@ The plan is complete: every step is done or planned for a later phase.
 **Why.** `templates` never overwrites `adoption.csv`, `distribution.csv` or `verification.jsonl`, because your organisation may have filled them in. It exits 1 and writes nothing.
 
 **What to do.** If the file holds entries, keep it: the dashboard and later reviews read it back. To start a fresh copy, move the old file away first, or write the new one elsewhere with `--out`.
+
+## No PNG because there is no browser
+
+```text
+png: no Chromium-family browser found; open the .svg in a browser and export it, or set PMLC_BROWSER
+```
+
+**Why.** `pack --format png` draws the graph with a Chromium-family browser on this computer (Chromium, Google Chrome or Microsoft Edge), and it found none. The engine has no picture library of its own. It wrote no PNG, the other formats were still written, and the command ended with code 0. If the browser was found but failed, the message is `png: the browser did not produce an image (<reason>)` instead.
+
+**What to do.** Use `--format svg`: the SVG is the same drawing, opens in any browser and goes into most slide programs as it is. To get a PNG, install Chromium or Chrome, or set `PMLC_BROWSER` to the browser's full path. If `PMLC_BROWSER` names something that cannot run, the engine says `warning: PMLC_BROWSER=<value> is not an executable; looking for a browser on PATH` and tries the usual names.
+
+## The accessibility tests fail with "npm ci"
+
+```text
+run: npm ci --prefix tests/js
+```
+
+**Why.** This is for contributors running the repository's tests, not for users of the coach. The accessibility checks (`tests/test_a11y_js.py`) run axe-core in Node.js against the pack page, every print layout, the email, `index.html`, the dashboard and the SCORM page. Node.js is installed but the test packages (axe-core and jsdom, pinned in `tests/js/package.json`) are not. The tests fail on purpose rather than skip, so a CI run cannot pass without checking accessibility. Without Node.js at all, they skip.
+
+**What to do.** From the repository folder run `npm ci --prefix tests/js` once, then run the tests again. `npm ci` installs exactly the versions in `tests/js/package-lock.json`.
+
+## Word says the document needs repair
+
+```text
+<format> written to <path>
+```
+
+**Why.** The engine wrote the `.docx` or `.pptx`, but Word or PowerPoint reports "found unreadable content" or offers to repair it. The engine checks every package it writes (each part parses, every part has a content type, every link has a target, no two tables touch), so this usually means the file was changed after it was written: opened and saved by another program, cut short in an email or a download, or synced while it was still being written.
+
+**What to do.** Write the file again with `pack --format docx` (or `pptx`) and open the new copy directly from the outputs folder. If the fresh file still asks for repair, open it in LibreOffice to read it, and report the pack and the message (no incident data needed: the synthetic test export reproduces most problems) to the maintainers. Do not accept the repair and send that copy on: the repaired file can lose the footer with the status line.
+
+## The email digest leaves items out
+
+```text
+<n> more items are in the full pack
+```
+
+**Why.** `--format email` keeps `<pack>.email.html` under 100 KB so that it passes mail servers and pastes into a message without being cut. It adds each section's items in order until the next one would pass that size, then ends the section with this line. The bottom line, the cited IDs, the coverage line and the status are always kept. The full pack page is much larger (on Hazira the board brief page is about 470 KB), so attach or link that, not paste it.
+
+**What to do.** Nothing, if the digest is a summary: send it with a link to the full page (`pack --base-url` adds the link). If a section must go in full, write a smaller pack for the email, or send the Word copy (`--format docx`) as an attachment.

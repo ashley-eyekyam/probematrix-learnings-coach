@@ -285,3 +285,110 @@ def test_section_and_synopsis_checks(monkeypatch):
 def test_slug_rules():
     assert _slug("Common problems") == "common-problems"
     assert _slug("`--share`: who may read it?") == "--share-who-may-read-it"
+
+
+# ------------------------------------------------- Task 28 (D18): the Phase 4 formats, layouts and files are documented
+
+def _formats():
+    from pmlc_lib import render
+    from pmlc_lib.render.layouts import LAYOUTS
+    return render.FORMATS, LAYOUTS
+
+
+# The file each format writes, as Files-and-folders.md names it. A format missing here fails the test below, so a
+# new format cannot ship without its row on that page.
+P4M_FORMAT_FILES = {
+    "html": "<skill>.html", "md": "<skill>.md", "normalised": "<pack>.normalised.json", "docx": "<pack>.docx",
+    "pptx": "<pack>.pptx", "email": "<pack>.email.html", "gift": "<pack>.gift.txt", "qti": "<pack>.qti.zip",
+    "quiz-csv": "<pack>.quiz.csv", "svg": "<pack>.<item-id>.svg", "png": "<pack>.<item-id>.png",
+    "graphml": "<pack>.<item-id>.graphml", "bowtie-csv": "<pack>.bowtie.csv", "ics": "<pack>.ics",
+    "srt": "<pack>.<item-id>.srt", "narration": "<pack>.<item-id>.narration.txt", "csv": "<pack>.actions.csv",
+    "scorm": "<pack>.scorm.zip"}
+P4M_OTHER_FILES = ("<pack>.email.txt", "<pack>.paper.docx", "<pack>.<layout>.html", "<pack>.learner.<ext>",
+                   "<pack>.strings.xlf", "<pack>.strings.csv", "<pack>-<lang>.json", "follow-up.csv", "brand.json",
+                   "learnings-register.docx", "learnings-register.email.html", "learnings-register.email.txt")
+
+
+def _table_rows(text: str) -> dict:
+    """{first-cell name: second cell} for the table rows whose first cell is a code span."""
+    return {m.group(1): m.group(2).strip() for m in re.finditer(r"^\| `([a-z][a-z0-9-]*)` \| ([^|]*)\|", text, re.M)}
+
+
+def test_pack_formats_table_lists_every_format_and_layout():
+    formats, layouts = _formats()
+    page = _page("pack")
+    rows = _table_rows(page.split("### Formats", 1)[1].split("### Print layouts", 1)[0])
+    problems = [f"{n}: kind {rows.get(n)!r}, expected {f.kind}" for n, f in formats.items() if rows.get(n) != f.kind]
+    lrows = _table_rows(page.split("### Print layouts", 1)[1])
+    problems += [f"layout {n}" for n in layouts if n not in lrows]
+    assert not problems, "pack.md Formats / Print layouts tables: " + "; ".join(problems)
+
+
+def test_commands_page_has_the_formats_table():
+    formats, layouts = _formats()
+    index = (MANUAL / "Commands.md").read_text(encoding="utf-8")
+    assert "## Output formats" in index
+    rows = _table_rows(index.split("## Output formats", 1)[1])
+    problems = [f"{n}: kind {rows.get(n)!r}" for n, f in formats.items() if rows.get(n) != f.kind]
+    section = index.split("## Output formats", 1)[1].split("\n## ", 1)[0]
+    problems += [f"layout {n}" for n in layouts if f"`{n}`" not in section]
+    problems += [f for f in ("--format", "--layout", "--view", "--brand", "--base-url", "--start", "--paper")
+                 if f"`{f}`" not in section]
+    assert not problems, "Commands.md Output formats: " + "; ".join(problems)
+
+
+def test_files_and_folders_lists_every_output_file():
+    formats, _ = _formats()
+    assert set(P4M_FORMAT_FILES) == set(formats), "update P4M_FORMAT_FILES for: " + ", ".join(
+        sorted(set(formats) ^ set(P4M_FORMAT_FILES)))
+    text = (MANUAL / "Files-and-folders.md").read_text(encoding="utf-8")
+    missing = [f for f in [*P4M_FORMAT_FILES.values(), *P4M_OTHER_FILES] if f"`{f}`" not in text]
+    assert not missing, f"not in Files-and-folders.md: {missing}"
+
+
+P4M_RECIPES = {   # recipe -> the engine command text its section must show
+    "board paper in Word": "--layout paper --format docx", "workshop slides": "--format pptx",
+    "toolbox sheets": "--layout toolbox", "field cards with QR codes": "--base-url",
+    "Hindi cards": "strings apply", "quiz into Moodle": "gift,qti", "SCORM into an LMS": "--format scorm",
+    "causal map for a slide": "--format svg", "bow-tie hand-over": "--format bowtie-csv",
+    "follow-up dates": "--start", "organisation brand": "--brand"}
+
+
+def test_recipes_cover_the_phase_4_outputs():
+    text = (MANUAL / "Workflows-and-recipes.md").read_text(encoding="utf-8")
+    bodies = re.split(r"^## ", text, flags=re.M)[1:]
+    missing = [r for r, needle in P4M_RECIPES.items() if not any(needle in b and "Hazira" in b for b in bodies)]
+    assert not missing, f"no recipe (with a Hazira example) shows: {missing}"
+    assert "fluent speaker" in text
+
+
+def test_glossary_has_the_phase_4_terms():
+    text = (MANUAL / "Glossary.md").read_text(encoding="utf-8")
+    terms = [h.lower() for h in re.findall(r"^### (.+?)\s*$", _prose(text), re.M)]
+    missing = [t for t in ("gift", "qti", "scorm", "xliff", "back-translation")
+               if not any(h == t or h.startswith(t + " ") for h in terms)]
+    assert not missing, f"no Glossary.md term for: {missing}"
+
+
+def test_troubleshooting_has_the_phase_4_problems():
+    text = (MANUAL / "Troubleshooting.md").read_text(encoding="utf-8")
+    missing = [n for n in ("no Chromium-family browser found", "npm ci --prefix tests/js", "repair",
+                           "more items are in the full pack") if n not in text]
+    assert not missing, f"not in Troubleshooting.md: {missing}"
+
+
+def test_skill_pages_name_their_formats():
+    import json
+    problems = []
+    for mf in sorted((ROOT / "skills").glob("*/skill.json")):
+        offered = json.loads(mf.read_text(encoding="utf-8")).get("formats", [])
+        page = (MANUAL / "skills" / f"{mf.parent.name}.md").read_text(encoding="utf-8")
+        named = {v for vals in re.findall(r"--(?:format|layout)[ =]([\w,.-]+)", page) for v in vals.split(",")}
+        problems += [f"{mf.parent.name}: {f}" for f in offered if f not in named]
+    assert not problems, "skill pages that do not show a --format or --layout line for: " + "; ".join(problems)
+
+
+def test_agents_typical_run_shows_formats_and_strings():
+    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    run = agents.split("## Typical run", 1)[1].split("```", 2)[1]
+    assert "--format" in run and "strings extract" in run and "strings apply" in run
