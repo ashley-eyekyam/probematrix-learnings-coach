@@ -161,6 +161,15 @@
       "items": {
         "type": "string"
       }
+    },
+    "formats": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "description": "Optional. The extra formats (pack --format, or register-render --format for the register) and print layouts (pack --layout) the skill offers by default, beyond html and md; at least one name, each is named by a PMLC line in the skill's Check and hand over. Every name must be registered in pmlc_lib.render.FORMATS or render.layouts.LAYOUTS (tests/test_skills.py)."
     }
   }
 }

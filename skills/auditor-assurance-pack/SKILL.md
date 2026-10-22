@@ -33,6 +33,8 @@ PMLC table-item <ws> hoc --register <run>/outputs/learnings-register.json   # co
 
 Write the pack `<run>/outputs/auditor-assurance-pack.json` in the shape in `learnings-coach/references/pack-schema.md`. Set `"scope": {"levels": [3, 4], "min_rating": "top"}`.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/auditor-assurance-pack.json (repository only).
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | What an auditor should test first | `bottom_line` | up to 7 |
@@ -40,7 +42,7 @@ Write the pack `<run>/outputs/auditor-assurance-pack.json` in the shape in `lear
 | 2 | `test-points` | Audit test points | requirement, sample, conformity_evidence, red_flags; **must cite**. `group` = the framework clause or element; `clause` and `clauses` (below) | `test_point` | up to 20 (at least one per management-system element the evidence touches) |
 | 3 | `cross-site` | Cross-site verification protocol | Columns Condition, Records to pull, Interview, Walk-path stop; `row_cites`. Tests whether the top five conditions exist at other sites | `table` | 1 |
 | 4 | `critical-controls` | Critical-control verification | Columns Critical control, Barrier register id, Performance requirement, Verification activity, Verifier role; `row_cites` (below) | `table` | optional, up to 1 |
-| 5 | `evidence-requests` | Evidence request list | Documents and records to request, `group` = the function | `check` | at least 1 |
+| 5 | `evidence-requests` | Evidence request list | Documents and records to request, `group` = the function | `check` | up to 20 |
 | 6 | `reporting` | Reporting | The grading scale (below) | `para` | up to 2 |
 | 6 | `reporting` | (same section) | Results template: columns Test point, Clause, Grade, Response to finding, Notes; one row per test point, Grade, Response and Notes left blank | `table` | 1 |
 
@@ -77,7 +79,10 @@ Run `learnings-coach/references/skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/auditor-assurance-pack.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/auditor-assurance-pack.json                  # -> auditor-assurance-pack.html (open first) and .md
+PMLC pack <ws> <run>/outputs/auditor-assurance-pack.json --layout checklist   # -> auditor-assurance-pack.checklist.html
 PMLC pack-xlsx <ws> <run>/outputs/auditor-assurance-pack.json --kind test_point   # the test points as an Excel sheet
 ```
 
-Tell the user, with the hand-over: an audit of other sites against this event's conditions creates new findings that must each be answered, and they may be discoverable. Agree the cross-site audit's scope and its handling with the organisation's legal and compliance advisers before it starts. Next: `PMLC templates <ws> verification` records whether each learning was applied.
+The checklist layout prints the test points and evidence requests by section, each with a box to tick and a
+"Checked by (role)" line, for the audit team on site; the Excel sheet is for an audit-management tool. Tell the
+user, with the hand-over: an audit of other sites against this event's conditions creates new findings that must each be answered, and they may be discoverable. Agree the cross-site audit's scope and its handling with the organisation's legal and compliance advisers before it starts. Next: `PMLC templates <ws> verification` records whether each learning was applied.

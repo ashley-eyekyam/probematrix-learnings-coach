@@ -27,6 +27,7 @@ pmlc select <ws> --preset barrier-learnings     # the same call, as the skill's 
 pmlc table-item <ws> hoc --pack <run>/outputs/barrier-learnings.json   # control-tier counts of the fixes
 pmlc check-pack <ws> <run>/outputs/barrier-learnings.json --strict
 pmlc pack <ws> <run>/outputs/barrier-learnings.json
+pmlc pack <ws> <run>/outputs/barrier-learnings.json --format bowtie-csv   # the barriers for a bow-tie tool
 ```
 
 - [select](../commands/select.md): `--top-rated` keeps the findings at the workspace's top rating, and `--brief` keeps entries short.
@@ -44,7 +45,7 @@ Barrier names, types, states and control tiers come from one shared vocabulary, 
 - **Critical controls to verify first:** a ranked list for the owners, with ICMM critical-control and Seveso III clauses where the evidence touches them.
 - **Barriers not in the organisation's register:** only when a barrier register was supplied.
 
-The `barrier` items can be handed to a bow-tie tool.
+With `--format bowtie-csv`, `barrier-learnings.bowtie.csv` gives one row per `barrier` item, with `side` set to threat (Prevention) or consequence (Mitigation) and the `barrier_id`, for a bow-tie tool or a spreadsheet. It is an import file, so it carries no status line.
 
 ## Worked example (Hazira)
 

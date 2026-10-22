@@ -31,6 +31,9 @@ Format = collections.namedtuple("Format", "name fn kind help")         # kind: "
 FORMATS = {}                       # name -> Format, in registration order
 DEFAULT_FORMATS = ("html", "md")
 FORMAT_KINDS = ("document", "data")
+# Document formats that build their own learner view, because they also need the answer key: SCORM grades in the
+# browser (P4-9, P4-11). render() hands them the full pack whatever --view says.
+OWN_LEARNER_VIEW = {"scorm"}
 BROWSERS = ("chromium", "chromium-browser", "google-chrome", "google-chrome-stable", "microsoft-edge", "msedge")
 
 
@@ -68,7 +71,7 @@ def render(name: str, ctx: RenderContext) -> list:
     """The Outputs of format `name`: [] (with a ctx.notes entry) when the format has nothing to write. The learner
     view (P4-9) is applied here, for document formats only; data formats keep the answer keys."""
     fmt = FORMATS[name]
-    if ctx.view == "learner" and fmt.kind == "document":
+    if ctx.view == "learner" and fmt.kind == "document" and name not in OWN_LEARNER_VIEW:
         from .fields import learner_view
         ctx = dataclasses.replace(ctx, pack=learner_view(ctx.pack))          # the same notes list
     return list(fmt.fn(ctx) or [])
@@ -172,6 +175,7 @@ def _load() -> None:
         "docx",
         "script",
         "pptx",
+        "scorm",
     ):
         importlib.import_module(f"{__name__}.{mod}")
 

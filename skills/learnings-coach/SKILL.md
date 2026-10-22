@@ -75,6 +75,16 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 - **Named audiences** use `plan --audiences` with ids from `references/audiences.md` (for example `board,supervisors`).
 - **Broad request** ("what should we learn from this?"): the default comes from `PMLC facts <ws>`. With a register, rank the tiers by their priority-1 learnings in `p1_by_tier`; with none yet, rank by the `tiers` counts (leave out T9). Suggest `full-cascade` when three or more tiers carry the most, or else the audiences of the top two tiers, for example: "Most priority-1 learnings sit with supervisors and function managers. Start with the `full-cascade` preset?"
 - **first-48-hours** is the quick route when the user needs something within two days; the full register and the cascade follow later.
+- **Formats.** When the user names a file type or a channel, plan the skill with its flag (`references/skill-common.md` §8):
+  - a Word board paper → `board-brief` with `--format docx --layout paper`; any brief as a Word file → `--format docx`;
+  - slides for a workshop or a briefing → the audience skill with `--format pptx` (the site workshop: `site-leadership-coach`);
+  - toolbox-talk sheets → `frontline-learning-cards` with `--layout toolbox`; one card per printed page → `--layout cards`;
+  - a printed checklist → `supervisor-coach`, `safety-committee-guide` or `auditor-assurance-pack` with `--layout checklist`;
+  - an email digest → the pack with `--format email`; the register in Word or email → `learnings-register` with `register-render`;
+  - a quiz for the learning system → `training-designer` with `--format gift` (Moodle), `qti` or `scorm`;
+  - the causal map as a picture → `causal-map` with `--format svg` or `png`;
+  - another language → the pack through `strings extract`, a translator, then `strings apply`, and a fluent speaker checks it;
+  - calendar reminders → `--format ics --start <the user's date>`; never pick the date yourself.
 - **Direct invocation.** A sub-skill called directly with only an `.xlsx` runs Step 1 silently and goes on (`skill-common.md` §2). A request that names one skill here becomes a one-step `plan --skills`.
 
 ## Step 3: plan and confirm
@@ -104,7 +114,7 @@ PMLC check-all <ws> --strict
 PMLC index <ws>                           # -> <run>/outputs/index.html
 ```
 
-- Report the HTML paths first: `index.html`, then each pack's `.html`; then the `.md`, `.json` and `.xlsx` files. Every output is a draft until a person reviews it; say so.
+- Report the HTML paths first: `index.html`, then each pack's `.html`; then the `.md`, `.json` and `.xlsx` files and any other format written (`.docx`, `.pptx`, `.email.html`, print layouts). Every output is a draft until a person reviews it; say so.
 - Then point to what the organisation does next (the coach never does these for them):
   - **Review** with the people involved and the function owners. Sign-off records it, and is never run by you: give the user the `PMLC sign-off <ws> <file> --role "<their role>"` line to run once they have reviewed the file.
   - **Classify for distribution** at sign-off (`--classification`, `--distribution`).

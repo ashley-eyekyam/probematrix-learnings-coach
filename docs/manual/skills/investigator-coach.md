@@ -40,7 +40,7 @@ pmlc pack <ws> <run>/outputs/investigator-coach.json
 
 ## What you get
 
-`investigator-coach.html`, `.md` and `follow-up.json`:
+`investigator-coach.html`, `.md`, `follow-up.json` and `follow-up.csv` (the same rows in the export's column order, for a spreadsheet):
 
 1. an **evidence audit**: evidence by type, kinds of evidence that are absent, conflicts between sources, and findings that rest on one source;
 2. the **investigation process against requirements**: whether the investigation began promptly, the team's make-up (including a contract employee where contractor work was involved), the minimum report fields, the system for resolving recommendations and the review with affected personnel, each with its PSM or ISO 45001 requirement id, and "[GAP]" where the export does not show it;

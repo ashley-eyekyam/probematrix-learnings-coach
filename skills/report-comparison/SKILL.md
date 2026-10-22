@@ -55,6 +55,8 @@ report (`company-report`), or the organisation's **own action plan** (`own-actio
 
 Write `<run>/outputs/report-comparison.json` in the shape in `learnings-coach/references/pack-schema.md`.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/report-comparison.json (repository only).
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | What each analysis covers, what the second look adds, and where the other report is stronger | `bottom_line` | up to 5 |
@@ -104,6 +106,8 @@ PMLC pack <ws> <run>/outputs/report-comparison.json                  # -> report
 PMLC compare <ws> --client-safe <run>/outputs/report-comparison-regulator-safe.json --main <run>/outputs/report-comparison.json
 PMLC check-pack <ws> <run>/outputs/report-comparison-regulator-safe.json --strict --share external
 PMLC pack <ws> <run>/outputs/report-comparison-regulator-safe.json --embed summary
+PMLC pack <ws> <run>/outputs/report-comparison-regulator-safe.json --embed summary --format docx   # the regulator copy in Word
+PMLC pack <ws> <run>/outputs/report-comparison-client-safe.json --format docx   # the client copy in Word
 ```
 
 Run the variant lines only for the copies the user asked for (the same lines serve the client-safe copy). Check

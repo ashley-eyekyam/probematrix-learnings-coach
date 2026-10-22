@@ -5,7 +5,7 @@
       {"id": "test-points", "kinds": ["test_point"], "min": 1, "max": 20},
       {"id": "cross-site", "kinds": ["table"], "min": 1, "max": 1},
       {"id": "critical-controls", "kinds": ["table"], "min": 0, "max": 1},
-      {"id": "evidence-requests", "kinds": ["check"], "min": 1, "max": 99},
+      {"id": "evidence-requests", "kinds": ["check"], "min": 1, "max": 20},
       {"id": "reporting", "kinds": ["para"], "min": 1, "max": 2},
       {"id": "reporting", "kinds": ["table"], "min": 1, "max": 1}
     ],
@@ -147,7 +147,7 @@
       {"id": "evidence-audit", "kinds": ["para"], "min": 1, "max": 4},
       {"id": "process", "kinds": ["check"], "min": 1, "max": 6},
       {"id": "follow-up-per-finding", "kinds": ["table"], "min": 1, "max": 1},
-      {"id": "interview-plan", "kinds": ["question"], "min": 1, "max": 99},
+      {"id": "interview-plan", "kinds": ["question"], "min": 1, "max": 30},
       {"id": "method", "kinds": ["para"], "min": 1, "max": 5},
       {"id": "training", "kinds": ["scenario"], "min": 1, "max": 3}
     ],
@@ -175,8 +175,8 @@
   "manager-coach": {
     "sections": [
       {"id": "*", "kinds": ["learning"], "min": 1, "max": 6},
-      {"id": "*", "kinds": ["para"], "min": 1, "max": 99},
-      {"id": "*", "kinds": ["recommendation"], "min": 1, "max": 99},
+      {"id": "*", "kinds": ["para"], "min": 1, "max": 3},
+      {"id": "*", "kinds": ["recommendation"], "min": 1, "max": 4},
       {"id": "*", "kinds": ["indicator"], "min": 1, "max": 4},
       {"id": "*", "kinds": ["table"], "min": 1, "max": 1},
       {"id": "work-management", "kinds": ["learning"], "min": 0, "max": 4},
@@ -289,7 +289,7 @@
       {"id": "culture", "kinds": ["para"], "min": 1, "max": 4},
       {"id": "decisions", "kinds": ["decision"], "min": 1, "max": 10},
       {"id": "decisions", "kinds": ["indicator"], "min": 1, "max": 10},
-      {"id": "visible", "kinds": ["check"], "min": 1, "max": 99},
+      {"id": "visible", "kinds": ["check"], "min": 1, "max": 6},
       {"id": "management-review", "kinds": ["table"], "min": 0, "max": 1},
       {"id": "workshop", "kinds": ["table"], "min": 1, "max": 1}
     ],
@@ -331,11 +331,11 @@
     "sections": [
       {"id": "summary", "kinds": ["para"], "min": 1, "max": 3},
       {"id": "transferability", "kinds": ["table"], "min": 1, "max": 1},
-      {"id": "policies", "kinds": ["para"], "min": 1, "max": 99},
+      {"id": "policies", "kinds": ["para"], "min": 1, "max": 8},
       {"id": "decisions", "kinds": ["decision"], "min": 1, "max": 6},
       {"id": "decisions", "kinds": ["indicator"], "min": 1, "max": 6},
       {"id": "management-review", "kinds": ["table"], "min": 0, "max": 1},
-      {"id": "assurance", "kinds": ["question"], "min": 1, "max": 99}
+      {"id": "assurance", "kinds": ["question"], "min": 1, "max": 6}
     ],
     "required_scope": ["levels", "min_rating"],
     "bottom_line": {"min": 1, "max": 3},

@@ -36,6 +36,9 @@ pmlc interfaces <ws> --top 15
 pmlc register-items <ws> --tier T3
 pmlc check-pack <ws> <run>/outputs/manager-coach.json --strict
 pmlc pack <ws> <run>/outputs/manager-coach.json
+pmlc pack <ws> <run>/outputs/manager-coach.json --format docx   # the agenda as a Word paper
+pmlc pack <ws> <run>/outputs/manager-coach.json --format csv    # manager-coach.actions.csv, owner columns blank
+pmlc pack <ws> <run>/outputs/manager-coach.json --format ics --start YYYY-MM-DD   # only with your start date
 pmlc export-actions <ws>                               # the recommendations and indicators as an action list
 ```
 
@@ -49,12 +52,14 @@ pmlc export-actions <ws>                               # the recommendations and
 `manager-coach.html` and `.md`. One section for each of the top five functions, each with:
 
 - **What your system allowed**: up to six system learnings;
-- **Interfaces you share**: the seams with other functions and what to agree with them;
-- **Recommendations**, each with its control tier and indicator;
+- **Interfaces you share**: up to three paragraphs on the seams with other functions and what to agree with them;
+- up to four **recommendations**, each with its control tier and indicator;
 - up to four **leading indicators**, each with a deterioration trigger;
 - a **90-day agenda**: verify and contain in the first 30 days, draft the system change with the people who do the work by 60, report the indicator by 90.
 
 Then a **work-management** section for planners and schedulers when the evidence supports it, an optional **management review input** (exactly six rows, each citing its findings or reading "not in this investigation"), and a **summary** table with a row for every function, the top five first.
+
+**Formats.** `--format docx` writes the agenda as a Word paper. `--format csv` writes `manager-coach.actions.csv`, the recommendations, decisions and indicators with the owner, due-date and status columns blank; once it exists it is never replaced (the command stops with exit 1). `--format ics --start <date>` writes calendar reminders for the 30, 60 and 90-day horizons, counted from the date you give; the skill sets each recommendation's `by_when` to its horizon only when you give that date, and never picks one itself. See [pack](../commands/pack.md).
 
 ## Worked example (Hazira)
 

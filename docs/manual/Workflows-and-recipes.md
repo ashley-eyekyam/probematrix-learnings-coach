@@ -149,6 +149,32 @@ Then open `frontline-learning-cards.field.html` and print it from the browser: o
 - The delivery record holds roles only. After the briefing, copy its rows into `distribution.csv`.
 - Consult the people involved before wide release.
 
+## A course for the learning management system (LMS)
+
+**Goal.** The training pack as a course in the organisation's LMS, with a short quiz that records a score.
+
+**Prompt.**
+
+> Turn the training pack into a SCORM course for our LMS, with the questions as a quiz, and give me the Moodle questions too.
+
+**Engine commands.**
+
+```bash
+pmlc select <ws> --preset training-designer
+pmlc check-pack <ws> <run>/outputs/training-designer.json --strict
+pmlc pack <ws> <run>/outputs/training-designer.json --format scorm,gift,qti
+```
+
+Upload `training-designer.scorm.zip` to the LMS as a SCORM 1.2 package. The course shows the learner view of the pack, then the quiz; when the learner submits, it reports a score from 0 to 100 and `passed` (80% of the scored questions or more) or `failed`. A pack without typed questions reports `completed` once the learner marks it as complete. `training-designer.gift.txt` (Moodle) and `training-designer.qti.zip` (QTI 2.1) carry the same questions for a question bank.
+
+**What to check.**
+
+- The questions have a `type` (`single`, `multi`, `truefalse` or `short`) and `options`. A question without a type shows as "Reflect (not scored)" and does not count.
+- **The answer keys travel inside the package.** The quiz is graded in the browser, as in any client-graded SCORM course, so the keys sit in `index.html` as data and a learner who opens the page source can read them. Use the score to show who has taken the learning, not as a test that decides anything about a person.
+- The course page carries the status line, the ProbeMatrix line and, until sign-off, DRAFT. Upload a draft only to a test area of the LMS.
+- Try the package in the LMS's preview, or in a free SCORM test service, before you assign it.
+- Data formats keep the answer key whatever `--view` says; SCORM always shows the learner view.
+
 ## A learnings register to Excel
 
 **Goal.** A formal lessons-learned register, one row per learning, with recommendations, as an Excel workbook.

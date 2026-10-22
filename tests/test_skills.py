@@ -42,7 +42,7 @@ HUB_HEADINGS = ("Where things are", "Step 1: set up", "Step 2: work out the inte
                 "Step 4: run the plan", "Step 5: finish", "Review and sharing")   # P3-18, in this order
 COMMON_HEADINGS = ("1. Engine and paths", "2. Before you start: preconditions and direct invocation",
                    "3. Pack conventions", "4. The check and pack loop", "5. Hand-over checklist",
-                   "6. If the evidence is thin", "7. Sharing outside the organisation")
+                   "6. If the evidence is thin", "7. Sharing outside the organisation", "8. Formats")
 
 # L2-04 tie-breaks: (skill, sibling) means the skill's description says "Not for ..." and names the sibling.
 OVERLAPS = {
@@ -515,103 +515,240 @@ def test_management_review_input_six_rows(skill):
     sec = next(s for s in pack["sections"] if s["id"] == "management-review")
     tab = next(it for it in sec["items"] if it["kind"] == "table")
     assert [r[0] for r in tab["rows"]] == MR_ROWS
-    det = tab["columns"].index("Deterioration trigger")
+    det, ind = tab["columns"].index("Deterioration trigger"), tab["columns"].index("Indicator")
     for row, cites in zip(tab["rows"], tab["row_cites"]):
-        assert row[det].strip() if cites else NOT_IN in row[1].lower(), (skill, row)
+        assert row[det].strip() and row[ind].strip() if cites else NOT_IN in row[1].lower(), (skill, row)
 
 
 
-# ------------------------------------------------------------- Task 25: group B skills offer their Phase 4 formats
-# Tasks 24-26 each append this trio for their own group; the `_group_b` suffix keeps the three blocks from
-# shadowing one another when the branches merge.
-from pmlc_lib.render import FORMATS  # noqa: E402
-from pmlc_lib.render.layouts import LAYOUTS  # noqa: E402
+# --------------------------- Tasks 24-26: skills offer their Phase 4 formats (`formats` in skill.json; L2-08)
+# A skill that lists `formats` in its skill.json offers each one in "Check and hand over" with a runnable `PMLC` line
+# (`--format <names>` or `--layout <name>`; `register-render --format` for the register), and its Write section
+# links the Hazira worked example. Tasks 24, 25 and 26 add `formats` group by group; these tests pick each skill up
+# as soon as its skill.json has the key.
 
-GROUP_B_FORMATS = {
-    "frontline-learning-cards": ["cards", "field", "toolbox"],
-    "supervisor-coach": ["checklist"],
-    "emergency-response-learnings": ["cards", "pptx"],
-    "training-designer": ["docx", "gift", "qti", "quiz-csv", "srt", "narration"],
-    "supply-chain-contractor-learnings": ["email"],
-    "engineering-integrity-learnings": ["docx", "csv"],
-}
-GROUP_B = sorted(GROUP_B_FORMATS)
-HAZIRA_OUT = "samples/2020-09-24-hazira-gas-release-fire/outputs"
-# What each group B skill must say about its Phase 4 formats and fields (Task 25 brief).
-GROUP_B_TEXT = {
-    "frontline-learning-cards": ("--layout cards", "--layout field", "--layout toolbox", "--base-url",
-                                 "did_you_know", "what_you_can_do", "opening_question", "crew_question",
-                                 "PMLC strings extract", "PMLC strings apply", "back_translation",
-                                 "fluent speaker", "frontline-learning-cards-hi.json"),
-    "supervisor-coach": ("--layout checklist", "distribution.csv", "hold_point"),
-    "emergency-response-learnings": ("injects", "offset", "--layout cards", "--format pptx", "drill brief"),
-    "training-designer": ('"type"', '"options"', "--view learner", "gift", "qti", "quiz-csv", "scorm",
-                          "`script`", "segments", "--format srt,narration"),
-    "supply-chain-contractor-learnings": ("--format email", "PMLC strings extract", "PMLC strings apply",
-                                          "fluent speaker", "--share external"),
-    "engineering-integrity-learnings": ("--format docx", "--format csv", "actions.csv", "never overwrit"),
-}
-# Task 16 m4: the manual pages name the optional toolbox and script items.
-GROUP_B_MANUAL_TEXT = {"frontline-learning-cards": ("toolbox",), "training-designer": ("script", "srt")}
+from pmlc_lib import render as _p4s_render  # noqa: E402
+from pmlc_lib.render.layouts import LAYOUTS as _P4S_LAYOUTS  # noqa: E402
+
+P4S_SAMPLE_OUT = "samples/2020-09-24-hazira-gas-release-fire/outputs/"
+P4S_WORKED = re.compile(r"^Worked example: `?" + re.escape(P4S_SAMPLE_OUT)
+                        + r"([A-Za-z0-9-]+\.json)`? \(repository only\)\.?$", re.M)
+P4S_GROUP_A = ("board-brief", "top-management-brief", "site-leadership-coach", "manager-coach",
+               "safety-committee-guide", "organisation-learning-map", "learnings-register")
 
 
-def _manifest(skill: str) -> dict:
+def _p4s_manifest(skill: str) -> dict:
     return json.loads(read(SKILLS_DIR / skill / "skill.json"))
 
 
-def _fenced_pmlc(text: str) -> list:
-    out, fenced = [], False
-    for line in text.splitlines():
-        if line.lstrip().startswith("```"):
-            fenced = not fenced
-        elif fenced and line.lstrip().startswith("PMLC "):
-            out.append(line.split("  #")[0].strip())
+P4S_OFFERS = [s for s in ALL_SKILLS if "formats" in _p4s_manifest(s)]
+
+
+def _p4s_offered(text: str) -> set:
+    """Format and layout names offered by the `PMLC …` lines of a SKILL.md's "Check and hand over" section."""
+    out = set()
+    for line in section(text, "Check and hand over").splitlines():
+        cmd = line.split("#", 1)[0]
+        if not cmd.strip().startswith("PMLC "):
+            continue
+        for m in re.finditer(r"--format[ =]([A-Za-z0-9,-]+)", cmd):
+            out |= set(m.group(1).split(","))
+        out |= set(re.findall(r"--layout[ =]([a-z]+)", cmd))
     return out
 
 
-def _offers(line: str, fmt: str) -> bool:
-    if fmt in LAYOUTS and re.search(rf"--layout {re.escape(fmt)}\b", line):
-        return True
-    m = re.search(r"--format (\S+)", line)
-    return bool(m) and fmt in m.group(1).split(",")
+def test_group_a_skills_declare_formats():
+    """Task 24: every group A skill names the formats it offers by default."""
+    assert [s for s in P4S_GROUP_A if s not in P4S_OFFERS] == []
 
 
-@pytest.mark.parametrize("skill", GROUP_B)
-def test_skill_formats_registered_group_b(skill):
-    fm = _manifest(skill).get("formats")
-    assert fm == GROUP_B_FORMATS[skill], f"{skill}: skill.json formats {fm}"
-    unknown = [f for f in fm if f not in FORMATS and f not in LAYOUTS]
-    assert unknown == [], f"{skill}: not a registered format or layout: {unknown}"
+@pytest.mark.parametrize("skill", P4S_OFFERS)
+def test_skill_formats_registered(skill):
+    fmts = _p4s_manifest(skill)["formats"]
+    assert isinstance(fmts, list) and fmts and len(set(fmts)) == len(fmts), f"{skill}: formats {fmts}"
+    known = set(_p4s_render.FORMATS) | set(_P4S_LAYOUTS)
+    assert [f for f in fmts if f not in known] == [], f"{skill}: not a registered format or layout"
+    assert not {"html", "md"} & set(fmts), f"{skill}: html and md are every pack's defaults; list only extras"
 
 
-@pytest.mark.parametrize("skill", GROUP_B)
-def test_skill_mentions_its_formats_group_b(skill):
+@pytest.mark.parametrize("skill", P4S_OFFERS)
+def test_skill_mentions_its_formats(skill):
     t = skill_md(skill)
+    hand = section(t, "Check and hand over")
+    offered = _p4s_offered(t)
+    fmts = _p4s_manifest(skill)["formats"]
+    assert [f for f in fmts if f not in offered] == [], f"{skill}: formats without a PMLC line in Check and hand over"
+    assert [f for f in offered if f not in fmts] == [], f"{skill}: a PMLC line offers a format skill.json lacks"
+    assert "--strict" in hand and re.search(r"^PMLC (pack|register-md) ", hand, re.M), f"{skill}: X28 lines kept"
     assert len(t.splitlines()) <= 150, f"{skill}: {len(t.splitlines())} lines"
-    pack = _manifest(skill)["produces"]["pack"]
-    lines = _fenced_pmlc(section(t, "Check and hand over"))
-    x28 = [f"PMLC check-pack <ws> <run>/outputs/{pack}.json --strict", f"PMLC pack <ws> <run>/outputs/{pack}.json"]
-    assert all(x in lines for x in x28), f"{skill}: the X28 lines must stay"
-    packs = [ln for ln in lines if ln.startswith(f"PMLC pack <ws> <run>/outputs/{pack}.json ")]
-    for f in _manifest(skill)["formats"]:
-        assert any(_offers(ln, f) for ln in packs), f"{skill}: no `PMLC pack` line offers {f}"
-    missing = [x for x in GROUP_B_TEXT[skill] if x not in t]
-    assert missing == [], f"{skill}: missing {missing}"
 
 
-@pytest.mark.parametrize("skill", GROUP_B)
-def test_skill_links_worked_example_group_b(skill):
-    pack = _manifest(skill)["produces"]["pack"]
-    rel = f"{HAZIRA_OUT}/{pack}.json"
-    assert f"Worked example: {rel} (repository only)" in section(skill_md(skill), "Write"), skill
+@pytest.mark.parametrize("skill", P4S_OFFERS)
+def test_skill_links_worked_example(skill):
+    write = section(skill_md(skill), "Write")
+    found = P4S_WORKED.findall(write)
+    assert len(found) == 1, f"{skill}: Write needs one 'Worked example: {P4S_SAMPLE_OUT}<pack>.json (repository only)'"
+    pack = _p4s_manifest(skill)["produces"]["pack"] or ""
+    stem = found[0][: -len(".json")]
+    assert stem == pack or stem.startswith(pack.split("<", 1)[0]), f"{skill}: worked example {stem} is not its pack"
+    assert (ROOT / P4S_SAMPLE_OUT / found[0]).is_file(), f"{skill}: {found[0]} is not in the Hazira samples"
+
+
+def test_p4s_offered_parser():
+    t = ("## Check and hand over\n\n```bash\nPMLC pack <ws> x.json --format docx,pptx --layout paper   # a\n"
+         "PMLC pack <ws> x.json --format=email\n# PMLC pack <ws> x.json --format gift\n"
+         "PMLC register-render <ws> r.json --format docx,email\n```\n")
+    assert _p4s_offered(t) == {"docx", "pptx", "paper", "email"}
+
+
+def test_skill_common_formats_section():
+    """Task 24: skill-common.md §8 says which format suits which channel, that shared copies cover every format, and
+    that translation goes through `strings`; output-style.md describes the engine's formats."""
+    t = read(REFS / "skill-common.md")
+    assert headings(t)[-1] == "8. Formats"
+    s8 = section(t, "8. Formats")
+    for x in ("--format", "--layout", "docx", "pptx", "email", "paper", "checklist", "toolbox", "cards", "ics",
+              "--start", "gift", "svg", "register-render", "--share external", "strings extract", "strings apply",
+              "fluent speaker", "back_translation", "--view learner", "nothing to write"):
+        assert x in s8, x
+    assert "strings" in section(t, "3. Pack conventions") and "§8" in section(t, "3. Pack conventions")
+    style = read(REFS / "output-style.md")
+    default, converted = section(style, "Default format"), section(style, "Converted files")
+    assert "--format" in default and "register-render" in default and "skill-common.md" in default
+    assert "only when the user asks, using whatever document tools" not in default
+    assert "creator" in converted and "docx" in converted and "pptx" in converted
+
+
+# ------------------------------------------------- Task 26: skills group C offer their Phase 4 formats
+# The generic format tests are the Task 24 block above; these are the group C specifics.
+
+from pmlc_lib.render import FORMATS as C_FORMATS  # noqa: E402
+from pmlc_lib.render.layouts import LAYOUTS as C_LAYOUTS  # noqa: E402
+
+C_SAMPLE_OUT = "samples/2020-09-24-hazira-gas-release-fire/outputs"
+C_SKILL_FORMATS = {            # skill.json `formats`: what each group C skill offers beyond html and md
+    "learning-clusters": ("docx",),
+    "causal-map": ("svg", "png", "graphml", "pptx"),
+    "precursor-timeline": ("poster",),
+    "interface-learnings": ("docx",),
+    "barrier-learnings": ("bowtie-csv",),
+    "cluster-learning-dossier": ("docx",),
+    "auditor-assurance-pack": ("checklist",),
+    "investigator-coach": (),  # follow-up.csv is written by every pack run (not a format, Task 17)
+    "report-comparison": ("docx",),
+}
+C_DOC_PACK = {"cluster-learning-dossier": "dossier-<F-id>"}       # the pack name the SKILL.md command lines use
+C_PACK_LINE = re.compile(r"^PMLC pack <ws> <run>/outputs/(\S+)\.json(.*)$", re.M)
+
+
+def c_pack_lines(skill: str) -> list:
+    """(pack, flags) for each `PMLC pack` line in Check and hand over, comments dropped."""
+    body = section(skill_md(skill), "Check and hand over")
+    return [(m.group(1), m.group(2).split("#", 1)[0]) for m in C_PACK_LINE.finditer(body)]
+
+
+def test_group_c_skills_declare_formats():
+    """Task 26: each group C skill offers exactly these formats; registration, the PMLC lines and the worked example
+    are checked for every skill with `formats` by the Task 24 tests above."""
+    got = {s: tuple(json.loads(read(SKILLS_DIR / s / "skill.json")).get("formats", ())) for s in C_SKILL_FORMATS}
+    assert got == C_SKILL_FORMATS
+    assert [s for s in C_SKILL_FORMATS if C_SKILL_FORMATS[s] and s not in P4S_OFFERS] == []
+
+
+@pytest.mark.parametrize("skill", sorted(C_SKILL_FORMATS))
+def test_group_c_x28_lines_name_the_pack(skill):
+    pack = C_DOC_PACK.get(skill, skill)
+    body = section(skill_md(skill), "Check and hand over")
+    assert f"PMLC check-pack <ws> <run>/outputs/{pack}.json --strict" in body, f"{skill}: X28 check-pack line"
+    assert f"PMLC pack <ws> <run>/outputs/{pack}.json" in body, f"{skill}: X28 pack line"
+
+
+def test_investigator_coach_links_worked_example():
+    """investigator-coach offers no format, so the Task 24 worked-example test does not reach it."""
+    rel = f"{C_SAMPLE_OUT}/investigator-coach.json"
+    assert f"Worked example: {rel} (repository only)" in section(skill_md("investigator-coach"), "Write")
     assert (ROOT / rel).is_file(), rel
 
 
-@pytest.mark.parametrize("skill", GROUP_B)
-def test_manual_skill_page_names_formats_group_b(skill):
+def test_group_c_skill_specific_formats():
+    bar = skill_md("barrier-learnings")
+    assert "bowtie-csv" in section(bar, "Check and hand over") and "For a bow-tie, map the" not in bar
+    inv = skill_md("investigator-coach")
+    assert "`RMP-68.81`" in section(inv, "Write") and "follow-up.csv" in section(inv, "Check and hand over")
+    aud = section(skill_md("auditor-assurance-pack"), "Check and hand over")
+    assert "PMLC pack-xlsx <ws> <run>/outputs/auditor-assurance-pack.json --kind test_point" in aud
+    rc = c_pack_lines("report-comparison")
+    for variant in ("report-comparison-client-safe", "report-comparison-regulator-safe"):
+        assert any(p == variant and "docx" in flags for p, flags in rc), f"no docx line for {variant}"
+    cm = c_pack_lines("causal-map")
+    assert any("pptx" in flags for _, flags in cm) and "graph slide" in skill_md("causal-map")
+
+
+def test_dossier_formats_row_names_real_layouts():
+    row = next(line for line in section(skill_md("cluster-learning-dossier"), "Write").splitlines()
+               if line.startswith("| S14 "))
+    named = set(re.findall(r"--layout (\w+)", row)) | set(re.findall(r"--format (\w+)", row))
+    assert {"cards", "toolbox"} <= named, row
+    assert named <= set(C_LAYOUTS) | set(C_FORMATS), row
+    assert "Brief paragraph" not in row
+
+
+@pytest.mark.parametrize("skill, sec", [("auditor-assurance-pack", "evidence-requests"),
+                                        ("investigator-coach", "interview-plan")])
+def test_group_c_counts_are_bounded(skill, sec):
+    """Task 22 (Phase 3) minor 3: open-ended "at least 1" counts become "up to N" (L2-17)."""
+    rows = [r for r in write_table(skill_md(skill)) if r["id"] == sec]
+    assert rows and all(r["max"] < NO_LIMIT for r in rows), rows
+
+
+# ------------------------------------------------- Task 25: skills group B offer their Phase 4 formats
+# The generic format tests are the Task 24 block above; these are the group B specifics.
+
+B_SKILL_FORMATS = {            # skill.json `formats`: what each group B skill offers beyond html and md
+    "frontline-learning-cards": ["cards", "field", "toolbox"],
+    "supervisor-coach": ["checklist"],
+    "emergency-response-learnings": ["cards", "pptx"],
+    "training-designer": ["docx", "gift", "qti", "quiz-csv", "scorm", "srt", "narration"],
+    "supply-chain-contractor-learnings": ["email"],
+    "engineering-integrity-learnings": ["docx", "csv"],
+}
+# What each group B skill must say about its Phase 4 formats and fields (Task 25 brief).
+B_SKILL_TEXT = {
+    "frontline-learning-cards": ("--base-url", "did_you_know", "what_you_can_do", "opening_question",
+                                 "crew_question", "PMLC strings extract", "PMLC strings apply", "back_translation",
+                                 "fluent speaker", "frontline-learning-cards-hi.json"),
+    "supervisor-coach": ("distribution.csv", "hold_point"),
+    "emergency-response-learnings": ("injects", "offset", "drill brief"),
+    "training-designer": ('"type"', '"options"', "--view learner", "`script`", "segments"),
+    "supply-chain-contractor-learnings": ("PMLC strings extract", "PMLC strings apply", "fluent speaker",
+                                          "--share external"),
+    "engineering-integrity-learnings": ("actions.csv", "never overwrit"),
+}
+# Task 16 m4: the manual pages name the optional toolbox and script items.
+B_MANUAL_TEXT = {"frontline-learning-cards": ("toolbox",), "training-designer": ("script", "srt", "scorm")}
+
+
+def test_group_b_skills_declare_formats():
+    got = {s: _p4s_manifest(s).get("formats") for s in B_SKILL_FORMATS}
+    assert got == B_SKILL_FORMATS
+
+
+@pytest.mark.parametrize("skill", sorted(B_SKILL_FORMATS))
+def test_group_b_x28_lines_and_specifics(skill):
+    t = skill_md(skill)
+    hand = section(t, "Check and hand over")
+    pack = _p4s_manifest(skill)["produces"]["pack"]
+    for x in (f"PMLC check-pack <ws> <run>/outputs/{pack}.json --strict", f"PMLC pack <ws> <run>/outputs/{pack}.json\n"):
+        assert x in hand, f"{skill}: the X28 line {x.strip()!r} must stay"
+    missing = [x for x in B_SKILL_TEXT[skill] if x not in t]
+    assert missing == [], f"{skill}: missing {missing}"
+
+
+@pytest.mark.parametrize("skill", sorted(B_SKILL_FORMATS))
+def test_group_b_manual_page_names_formats(skill):
     page = read(ROOT / "docs" / "manual" / "skills" / f"{skill}.md")
-    for f in _manifest(skill)["formats"]:
-        flag = "--layout" if f in LAYOUTS else "--format"
+    for f in B_SKILL_FORMATS[skill]:
+        flag = "--layout" if f in _P4S_LAYOUTS else "--format"
         assert re.search(rf"{flag} (\S+,)?{re.escape(f)}\b", page), f"{skill}: manual page lacks {flag} {f}"
-    missing = [x for x in GROUP_B_MANUAL_TEXT.get(skill, ()) if x not in page]
+    missing = [x for x in B_MANUAL_TEXT.get(skill, ()) if x not in page]
     assert missing == [], f"{skill}: manual page lacks {missing}"

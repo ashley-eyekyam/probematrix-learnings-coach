@@ -34,6 +34,8 @@ emergency command) when the evidence supports one: the second `select` line find
 
 Write `<run>/outputs/interface-learnings.json` in the shape in `learnings-coach/references/pack-schema.md`.
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/interface-learnings.json (repository only).
+
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | The seams that carried the most risk, and which side of the event each sits on | `bottom_line` | up to 7 |
@@ -75,6 +77,8 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/interface-learnings.json --strict   # fix every problem it lists
 PMLC pack <ws> <run>/outputs/interface-learnings.json                  # -> interface-learnings.html and .md
+PMLC pack <ws> <run>/outputs/interface-learnings.json --format docx    # -> interface-learnings.docx, for the joint review
 ```
 
-Tell the user which seams matter most, and hand them the joint-review agenda as the next step.
+Tell the user which seams matter most, and hand them the joint-review agenda as the next step: the docx carries
+it as a Word table both sides can annotate.

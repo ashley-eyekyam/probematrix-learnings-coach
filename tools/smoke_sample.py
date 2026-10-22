@@ -4,12 +4,15 @@
 Exits non-zero naming the failing assertion. Needs requirements-dev.txt (openpyxl, and pytest for the synthetic
 export that tests/test_pmlc.py builds, used by the fixture --strict check).
 Checks: ingest cross-check, finding and evidence counts, check-register (also --strict) and check-language on
-the sample register, facts --json, plan --workflow for every preset, and every fixture pack under --strict.
+the sample register, facts --json, plan --workflow for every preset, every fixture pack under --strict, and the
+Phase 4 exit-gate format loop: every Hazira golden pack (every pack JSON in outputs/) passes check-pack --strict and renders in
+html,md,docx,pptx,email,csv (each docx and pptx a sound package).
 """
 import json
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -21,6 +24,8 @@ EXPORT = os.path.join(SAMPLE, "2020-09-24-hazira-gas-release-fire_probematrix-fi
 REGISTER = os.path.join(SAMPLE, "outputs", "learnings-register.json")
 WORKFLOWS = os.path.join(ROOT, "skills", "learnings-coach", "references", "workflows.json")
 RUN_NAME = "2020-09-24-hazira-gas-release-fire"
+GATE_FORMATS = "html,md,docx,pptx,email,csv"
+GATE_FILES = ("html", "md", "docx", "pptx", "email.html", "email.txt")
 
 EXPECT_FINDINGS = 436
 EXPECT_EVIDENCE = 46
@@ -82,6 +87,8 @@ def main():
             fail("check-language did not report 0 errors on the sample register:\n" + out)
 
         print("smoke: %d fixture packs pass check-pack --strict" % strict_fixtures(tmp))
+        print("smoke: %d Hazira golden packs pass check-pack --strict and render in %s"
+              % (format_loop(tmp), GATE_FORMATS))
 
     print("smoke OK: %d findings, %d evidence, register 0 problems, language 0 errors"
           % (EXPECT_FINDINGS, EXPECT_EVIDENCE))
@@ -100,6 +107,44 @@ def strict_fixtures(tmp):
     names = sorted(f for f in os.listdir(fix) if f.endswith(".json") and f not in ("all-kinds.json", "bad-l3-01.json", "html-golden.json"))
     for f in names:
         pmlc("check-pack", os.path.join(d, "ws"), os.path.join(fix, f), "--strict")
+    return len(names)
+
+
+def format_loop(tmp):
+    """The Phase 4 exit gate (Task 23): every Hazira golden pack (each JSON in outputs/ with sections, so not the
+    register) passes check-pack --strict against a freshly set-up Hazira workspace, then renders in every exit-gate
+    format. The samples stay drafts: nothing here signs them off."""
+    sys.path.insert(0, os.path.join(ROOT, "tests"))
+    from ooxml_check import check_package  # noqa: E402  (stdlib-only structural check, Ruling P4-28)
+    root = os.path.join(tmp, "hazira-gate")
+    pmlc("setup", EXPORT, "--slug", "hazira-gas-release-fire", "--date", "2020-09-24", "--root", root,
+         "--overlay", "india-process-site")
+    run_dir = os.path.join(root, "pmlc-runs", RUN_NAME)
+    ws = os.path.join(run_dir, "workspace")
+    shutil.copy(REGISTER, os.path.join(run_dir, "outputs", "learnings-register.json"))
+    outputs = os.path.join(SAMPLE, "outputs")
+    names = []
+    for f in sorted(os.listdir(outputs)):
+        if f.endswith(".json"):
+            with open(os.path.join(outputs, f), encoding="utf-8") as fh:
+                doc = json.load(fh)
+            if isinstance(doc, dict) and "sections" in doc:
+                names.append(f[:-5])
+    if not names:
+        fail("no Hazira golden pack in " + outputs)
+    out = os.path.join(tmp, "hazira-gate-out")
+    for name in names:
+        path = os.path.join(outputs, name + ".json")
+        pmlc("check-pack", ws, path, "--strict", "--register", REGISTER)
+        pmlc("pack", ws, path, "--format", GATE_FORMATS, "--out", out)
+        for ext in GATE_FILES:
+            f = os.path.join(out, "%s.%s" % (name, ext))
+            if not os.path.isfile(f):
+                fail("pack --format %s wrote no %s" % (GATE_FORMATS, f))
+            if ext in ("docx", "pptx"):
+                problems = check_package(f)
+                if problems:
+                    fail("%s is not a sound package: %s" % (f, "; ".join(problems)))
     return len(names)
 
 

@@ -98,16 +98,17 @@ PMLC check-pack <ws> <run>/outputs/training-designer.json --strict
 PMLC pack <ws> <run>/outputs/training-designer.json
 PMLC pack-xlsx <ws> <run>/outputs/training-designer.json --kind question   # the assessment as a spreadsheet
 PMLC pack <ws> <run>/outputs/training-designer.json --format gift,qti,quiz-csv        # quiz files for an LMS
-PMLC pack <ws> <run>/outputs/training-designer.json --format html,docx --view learner  # the learner's copy
+PMLC pack <ws> <run>/outputs/training-designer.json --format docx --view learner      # the learner's handout
+PMLC pack <ws> <run>/outputs/training-designer.json --format scorm                    # a SCORM 1.2 package
 PMLC pack <ws> <run>/outputs/training-designer.json --format srt,narration            # subtitles, voice-over
 ```
 
 - **Quiz files.** `gift` (`training-designer.gift.txt`, for Moodle), `qti` (`.qti.zip`, QTI 2.1) and
-  `quiz-csv` (`.quiz.csv`) carry the answer keys, so keep them with the trainers. When the engine lists `scorm`
-  under `pack -h`, `--format scorm` also builds `training-designer.scorm.zip`, a SCORM 1.2 package that scores
-  the typed questions (pass mark 80%) and shows only the learner view.
-- **Learner view.** `--view learner` writes `training-designer.learner.html` and `.docx` with the answers, good
-  evidence and correct-option flags left out: the copy to hand to trainees.
+  `quiz-csv` (`.quiz.csv`) carry the answer keys, so keep them with the trainers. `scorm` builds `training-designer.scorm.zip`, a
+  SCORM 1.2 package that shows the learner view and scores the typed questions (pass mark 80%);
+  its answer keys sit in the page, so use it for learning, not for an assessment that matters.
+- **Learner view.** `--view learner` writes `training-designer.learner.docx` (and, with the default formats,
+  `.learner.html`) with the answers, good evidence and correct-option flags left out: the copy for trainees.
 - `srt` and `narration` write one subtitle file and one voice-over text per `script` item.
 - `pack-xlsx` writes `<run>/outputs/training-designer-questions.xlsx` (question, what it tests, answer key, good
   evidence, cites) for a learning-management system or a quiz tool.

@@ -2,13 +2,15 @@
 """Check and grade the ProbeMatrix Learnings Coach eval set (evals/evals.json).
 
   run_evals.py check [--file F]                     structure, paths, kinds and per-skill counts (CI runs this)
-  run_evals.py grade <run-dir> [--ids 3,7] [--file F]
+  run_evals.py grade <run-dir> [--ids 3,7] [--file F] [--transcript T]
                                                     machine checks against <run-dir>/outputs and <run-dir>/workspace
   run_evals.py routes <answers.json> [--file F]     score the router evals against recorded routing answers
 
 Standard library only (Python 3.9+). `grade` calls the engine for check-pack / check-register and reuses
 pmlc_pack.coverage for coverage_min. `routes_to` needs a human (or a transcript) and is reported as `manual`;
-`routes` scores the router evals (kind "router") from a file of the targets an agent picked.
+`routes` scores the router evals (kind "router") from a file of the targets an agent picked. `command_contains` (the
+format evals) is graded against a transcript of the commands the agent ran (`--transcript`, one command per line), and
+is `manual` without one.
 """
 from __future__ import annotations
 
@@ -43,7 +45,10 @@ EXPECT = {                                   # expectation type -> its required 
     "pack_absent": ("pack",),
     "card_fields": ("pack", "fields"),
     "section_exists": ("pack", "section"),
+    "command_contains": ("command",),
 }
+CMD_NAME = re.compile(r"^[a-z][a-z0-9-]*$")
+ENGINE_TOKENS = ("PMLC", "pmlc", "$E", "${E}")
 ABS_PATH = re.compile(r"(?:^|[\s\"'(])(?:/(?:home|Users|tmp|var|mnt|opt|etc|root|srv)/|~/|[A-Za-z]:[\\/])")
 MIN_EVALS, MIN_NO_TRIGGER, MIN_COLLISION = 3, 1, 1
 MIN_ROUTER, MIN_ROUTER_COLLISION, ROUTING_FLOOR = 30, 8, 0.9     # spec section 2.5
@@ -161,9 +166,25 @@ def _check_eval(e, seen, bad):
         if t == "card_fields" and not (isinstance(x.get("fields"), list) and x["fields"]
                                        and all(isinstance(f, str) for f in x["fields"])):
             bad(f"{tag}: card_fields needs a non-empty list of field names")
+        if t == "command_contains":
+            _check_command(x, tag, bad)
         if t == "coverage_min" and not (isinstance(x.get("ratio"), (int, float)) and 0 <= x.get("ratio", -1) <= 1):
             bad(f"{tag}: coverage_min ratio must be between 0 and 1")
     return None
+
+
+def _check_command(x, tag, bad):
+    """command_contains: {"command": <pmlc subcommand>, "flags": {<flag>: <value>} (optional),
+    "contains": [<text>] (optional)}."""
+    if "command" in x and not (isinstance(x["command"], str) and CMD_NAME.match(x["command"])):
+        bad(f"{tag}: command_contains: command must be a pmlc subcommand, such as pack")
+    flags = x.get("flags", {})
+    if not (isinstance(flags, dict) and all(isinstance(k, str) and CMD_NAME.match(k) and isinstance(v, str)
+                                            for k, v in flags.items())):
+        bad(f"{tag}: command_contains: flags must map flag names to values, such as {{\"format\": \"docx\"}}")
+    contains = x.get("contains", [])
+    if not (isinstance(contains, list) and all(isinstance(c, str) for c in contains)):
+        bad(f"{tag}: command_contains: contains must be a list of strings")
 
 
 def _check_files(e, tag, bad) -> list:
@@ -294,11 +315,50 @@ def _cards(pack) -> list:
     return out
 
 
-def grade_one(x, ws, out) -> tuple:
+def _cmd_flags(tokens) -> dict:
+    """{flag: [values]} from `--flag value` and `--flag=value` tokens."""
+    out = {}
+    for i, tok in enumerate(tokens):
+        if not tok.startswith("--"):
+            continue
+        name, eq, val = tok[2:].partition("=")
+        if not eq:
+            val = tokens[i + 1] if i + 1 < len(tokens) and not tokens[i + 1].startswith("--") else ""
+        out.setdefault(name, []).append(val)
+    return out
+
+
+def _cmd_matches(line: str, x) -> bool:
+    """True when line runs `<engine> <command>` with every flag value and every contains text. The engine is a token
+    ending in pmlc.py, or PMLC, pmlc, $E or ${E} (the AGENTS.md form `python3 $E pack …`). A `#` comment is ignored."""
+    line = line.split(" #", 1)[0]
+    tokens = line.split()
+    at = next((i for i, tok in enumerate(tokens) if tok in ENGINE_TOKENS or tok.endswith("pmlc.py")), None)
+    if at is None or at + 1 >= len(tokens) or tokens[at + 1] != x["command"]:
+        return False
+    flags = _cmd_flags(tokens[at + 2:])
+    for k, v in (x.get("flags") or {}).items():
+        if not any(v in val.split(",") for val in flags.get(k, [])):
+            return False
+    return all(c in line for c in x.get("contains") or [])
+
+
+def _cmd_label(x) -> str:
+    return " ".join([x["command"]] + [f"--{k} {v}" for k, v in (x.get("flags") or {}).items()]
+                    + list(x.get("contains") or []))
+
+
+def grade_one(x, ws, out, transcript=None) -> tuple:
     """(result, detail) for one expectation; result is pass, fail or manual."""
     t = x["type"]
     if t == "routes_to":
         return "manual", ""
+    if t == "command_contains":
+        if transcript is None:
+            return "manual", ""
+        if any(_cmd_matches(line, x) for line in transcript):
+            return "pass", ""
+        return "fail", f"no pmlc {x['command']} command with {_cmd_label(x)}"
     path = out / f"{x['pack']}.json"
     if t == "pack_absent":
         return ("fail", f"{path.name} exists") if path.exists() else ("pass", "")
@@ -351,12 +411,20 @@ def _label(x) -> str:
         return f"coverage_min {x['pack']} >= {x['ratio']}"
     if t == "section_exists":
         return f"section_exists {x['pack']} {x['section']}"
+    if t == "command_contains":
+        return f"command_contains {_cmd_label(x)}"
     return f"{t} {x['pack']}"
 
 
-def grade(run_dir, path, ids=None) -> int:
+def grade(run_dir, path, ids=None, transcript=None) -> int:
     _COV.clear()
     run_dir = Path(run_dir)
+    lines = None
+    if transcript is not None:
+        try:
+            lines = Path(transcript).read_text(encoding="utf-8").splitlines()
+        except OSError as e:
+            sys.exit(f"Cannot read the transcript {transcript}: {e}")
     ws, out = run_dir / "workspace", run_dir / "outputs"
     if not (ws / "findings.json").exists():
         sys.exit(f"No workspace with findings.json under {run_dir}. Pass a run folder (<run>/workspace, <run>/outputs).")
@@ -368,13 +436,14 @@ def grade(run_dir, path, ids=None) -> int:
             sys.exit(f"No eval with id {', '.join(map(str, missing))} in {path}.")
     else:
         chosen = [e for e in evals
-                  if any("pack" in x and (out / f"{x['pack']}.json").exists() for x in e.get("expectations", []))]
+                  if any("pack" in x and (out / f"{x['pack']}.json").exists() for x in e.get("expectations", []))
+                  or (lines is not None and any(x.get("type") == "command_contains" for x in e.get("expectations", [])))]
     print("| id | skill | expectation | pass/fail |")
     print("|---|---|---|---|")
     passed = total = 0
     for e in chosen:
         for x in e.get("expectations", []):
-            res, detail = grade_one(x, ws, out)
+            res, detail = grade_one(x, ws, out, lines)
             if res != "manual":
                 total += 1
                 passed += res == "pass"
@@ -397,6 +466,7 @@ def main(argv=None) -> int:
     g.add_argument("run_dir")
     g.add_argument("--ids", help="comma-separated eval ids (default: evals whose packs exist in the run)")
     g.add_argument("--file", default=str(DEFAULT))
+    g.add_argument("--transcript", help="the commands the agent ran, one per line, for command_contains")
     r = sub.add_parser("routes", help="score the router evals against recorded routing answers")
     r.add_argument("answers", help='JSON {"<eval id>": "<preset or skill the agent picked>"}')
     r.add_argument("--file", default=str(DEFAULT))
@@ -411,7 +481,7 @@ def main(argv=None) -> int:
             ids = [int(i) for i in a.ids.split(",") if i.strip()]
         except ValueError:
             sys.exit("--ids takes comma-separated integers, for example --ids 3,7.")
-    return grade(a.run_dir, a.file, ids)
+    return grade(a.run_dir, a.file, ids, a.transcript)
 
 
 if __name__ == "__main__":

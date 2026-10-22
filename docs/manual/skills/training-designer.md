@@ -34,7 +34,8 @@ pmlc check-pack <ws> <run>/outputs/training-designer.json --strict
 pmlc pack <ws> <run>/outputs/training-designer.json
 pmlc pack-xlsx <ws> <run>/outputs/training-designer.json --kind question
 pmlc pack <ws> <run>/outputs/training-designer.json --format gift,qti,quiz-csv        # quiz files for an LMS
-pmlc pack <ws> <run>/outputs/training-designer.json --format html,docx --view learner  # the learner's copy
+pmlc pack <ws> <run>/outputs/training-designer.json --format docx --view learner      # the learner's handout
+pmlc pack <ws> <run>/outputs/training-designer.json --format scorm                    # a SCORM 1.2 package
 pmlc pack <ws> <run>/outputs/training-designer.json --format srt,narration            # subtitles and voice-over
 pmlc templates <ws> distribution                        # the training record, once per run
 ```
@@ -42,8 +43,8 @@ pmlc templates <ws> distribution                        # the training record, o
 - [select](../commands/select.md): `--text` a regular expression over the finding text (words about training and competence); `--level 1 2` the Unsafe Acts and Preconditions levels; `--tag people` the HR, training and competence function; `--tier T2 T3` the supervision and management tiers; `--level 3 4` the Supervision and Organisational levels; `--top-rated` the strongest; `--budget-chars` caps the output size; `--brief` short entries.
 - [check-pack](../commands/check-pack.md) with `--strict` checks the pack against its profile, including an answer key and a cited finding on every assessment question; [pack](../commands/pack.md) renders it.
 - [pack-xlsx](../commands/pack-xlsx.md) with `--kind question` writes `training-designer-questions.xlsx`: one row per assessment question, with what it tests, the answer key, good evidence and cites.
-- [pack](../commands/pack.md) `--format gift,qti,quiz-csv` writes the assessment for a learning-management system: `training-designer.gift.txt` (Moodle GIFT), `.qti.zip` (QTI 2.1) and `.quiz.csv`. They carry the answer keys. Once the engine lists `scorm` in `pack -h`, `--format scorm` also builds a SCORM 1.2 package from the learner view, scored on the typed questions with a pass mark of 80%.
-- [pack](../commands/pack.md) `--view learner` writes `training-designer.learner.html` and `.learner.docx` with the answers, good evidence and correct-option flags left out, for trainees.
+- [pack](../commands/pack.md) `--format gift,qti,quiz-csv` writes the assessment for a learning-management system: `training-designer.gift.txt` (Moodle GIFT), `.qti.zip` (QTI 2.1) and `.quiz.csv`. They carry the answer keys. `--format scorm` builds `training-designer.scorm.zip`, a SCORM 1.2 package from the learner view, scored on the typed questions with a pass mark of 80%.
+- [pack](../commands/pack.md) `--view learner` writes `training-designer.learner.docx` (and `.learner.html` with the default formats) with the answers, good evidence and correct-option flags left out, for trainees.
 - [pack](../commands/pack.md) `--format srt,narration` writes, for each `script` item, subtitles (`training-designer.<item-id>.srt`) and the narration alone (`.narration.txt`), for a video, radio or PA message.
 - [templates](../commands/templates.md) `distribution` writes `distribution.csv`, where each session is recorded. It never overwrites an existing file.
 

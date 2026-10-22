@@ -32,5 +32,10 @@
   "embed_default": "cited",
   "interactive": false,
   "since": "0.1.0",
-  "questions": []
+  "questions": [],
+  "formats": [
+    "docx",
+    "pptx",
+    "email"
+  ]
 }

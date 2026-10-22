@@ -68,7 +68,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `md` | document | `<pack>.md` | The same content as Markdown (default) |
 | `normalised` | data | `<pack>.normalised.json` | The pack for other tools: every item id filled in, the status line, the brand, the effective status, the word count and reading time, the coverage counts and the cited findings (label, level, rating) and evidence (type). A shared copy carries no run slug |
 | `svg` | data | `<pack>.<item-id>.svg` | One stand-alone SVG for each graph item, with every label whole (the page clips them at 28 characters). The status phrase and the ProbeMatrix credit sit in its `<desc>` |
-| `png` | data | `<pack>.<item-id>.png` | The same drawing as a picture, made by a Chromium-family browser: `$PMLC_BROWSER`, else `chromium`, `chromium-browser`, `google-chrome`, `google-chrome-stable`, `microsoft-edge` or `msedge` on the PATH. With none, the command says `png: no Chromium-family browser found; open the .svg in a browser and export it, or set PMLC_BROWSER`, writes no PNG and still exits 0. If the browser fails, it says `png: the browser did not produce an image (<reason>)` |
+| `png` | data | `<pack>.<item-id>.png` | The same drawing as a picture, made by a Chromium-family browser: `$PMLC_BROWSER`, else `chromium`, `chromium-browser`, `google-chrome`, `google-chrome-stable`, `microsoft-edge` or `msedge` on the PATH. With none, the command says `png: no Chromium-family browser found; open the .svg in a browser and export it, or set PMLC_BROWSER`, writes no PNG and still exits 0. If the browser fails, it says `png: the browser did not produce an image (<reason>)`. The PNG's `Description` metadata holds the status line and the ProbeMatrix footer |
 | `graphml` | data | `<pack>.<item-id>.graphml` | The graph for yEd and other graph tools: one node for each node (with a `label`), one edge for each link, and a `<desc>` with the status and credit. One file for each graph item |
 | `bowtie-csv` | data | `<pack>.bowtie.csv` | One row for each barrier item, for a bow-tie tool or a spreadsheet. Columns: `side,barrier,barrier_id,state,type,hoc_tier,failure_mode,fix,owner_role,indicator,cites`. `side` is `threat` for a group that starts with "prevent", `consequence` for "mitigat" or "recover", and blank otherwise. `owner_role` is the pack's role text and `cites` are joined with `;`. It is an import file, so it carries no status line |
 | `ics` | data | `<pack>.ics` | One all-day event for each check (`when`), decision (`by_when`) or recommendation (`by_when`) whose time is `<n> days`, `Day <n>` or `<n> weeks`, counted from `--start`. The summary is the item text cut to 70 characters; the description has the cites and the status phrase. No attendee and no organiser are written, and no date is ever invented. In a shared copy the event UID leaves out the run slug (`<pack>-<item-id>@pmlc` instead of `<run>-<pack>-<item-id>@pmlc`)
@@ -81,6 +81,7 @@ pmlc pack ws pack [--out OUT] [--no-md] [--embed {cited,summary,full}]
 | `srt` | data | `<pack>.<item-id>.srt` | Subtitles from each `script` item: one cue per segment, timed cumulatively from 00:00:00,000, the narration wrapped at 42 characters and 2 lines a cue (a longer narration splits into cues that share the segment's time). No status line: it would show on screen. Prints "nothing to write" when the pack has no script item |
 | `narration` | data | `<pack>.<item-id>.narration.txt` | Each `script` item's narration only, one paragraph per segment, for a voice-over or a PA reader. No status line and no citations: the text is spoken. The shooting script in the html and md carries the status |
 | `pptx` | document | `<pack>.pptx` | A 16:9 slide deck for a briefing. In order: a title slide (title, audience, incident, status, DRAFT label, handling), one slide per bottom-line entry, one slide per decision, module and question, one slide per other section with up to six item summaries (further items go on slides titled "(continued)"), one slide per graph drawn as boxes and arrows you can edit, with every label in full, and a closing slide with the coverage lines. Every slide carries the status phrase and the ProbeMatrix credit in its footer, and DRAFT while the pack is a draft. The slides show no Finding or Evidence IDs: each slide's speaker notes hold the items' full text, their citations and the cited findings (label, level, rating). With `--view learner`, `<pack>.learner.pptx` leaves the answers out of slides and notes alike |
+| `scorm` | document | `<pack>.scorm.zip` | A SCORM 1.2 package for a learning management system (LMS): `imsmanifest.xml`, `index.html` and `scorm.js`. The page is the learner view of the pack (the line "Learner view: answers are hidden" sits under the status, whatever `--view` says), then a quiz: each typed question is scored, and a question without a type is a "Reflect (not scored)" box. The browser grades the quiz and reports `cmi.core.score.raw` (0 to 100) and `cmi.core.lesson_status`: `passed` at 80% of the scored questions or more, `failed` below it, and `completed` when the pack has no scored questions. The answer keys travel inside `index.html` as data, as in any quiz graded in the browser, so a learner who reads the page source can find them: use it for learning, not for a test that matters. The page and the manifest carry the status phrase, the ProbeMatrix line and, until the pack is approved, DRAFT |
 
 A typed question has a `type` (`single`, `multi`, `truefalse` or `short`) and `options`, a list of `{"text": ..., "correct": true or false}`. `check-pack` stops a `single` or `truefalse` question without exactly one correct option, a `multi` with none, a `truefalse` without exactly two options, and a `short` whose accepted answers are not all marked correct. With the learner view the correct-option flags are left out, and a `short` question's options (its answers) are left out altogether. A pack with no questions has nothing to write for these three formats.
 
@@ -191,6 +192,17 @@ python3 $E pack $WS $OUT/training-designer.json --view learner
 …
 HTML written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/training-designer.learner.html
 Markdown written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/training-designer.learner.md
+```
+
+A SCORM package of a training pack, to upload to the LMS as a course:
+
+```bash
+python3 $E pack $WS $OUT/training-designer.json --format scorm
+```
+
+```text
+…
+scorm written to hazira/pmlc-runs/2020-09-24-hazira-gas-release-fire/outputs/training-designer.scorm.zip
 ```
 
 Field cards for a crew briefing, with a QR code on each card that opens it in the published pack:

@@ -2018,7 +2018,7 @@
    "id": 74,
    "owner": "learnings-coach",
    "kind": "router",
-   "prompt": "We want everyone from the operators to the board to learn from this investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): a pack for each level in a sensible order, and a record of who received what.",
+   "prompt": "We want everyone from the operators to the board to take something away from what happened (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): a pack for each level in a sensible order, and a log showing which people got which pack.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -2222,7 +2222,7 @@
    "id": 87,
    "owner": "learnings-coach",
    "kind": "router",
-   "prompt": "What decisions does the site leadership team need to take after Hazira? Here is the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Only the site level, not the board.",
+   "prompt": "What decisions do the plant manager and the heads of department need to take after Hazira? Here is the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Only the site level, not the board.",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
    ],
@@ -2649,6 +2649,339 @@
     {
      "type": "routes_to",
      "skill": "supervisor-coach"
+    }
+   ]
+  },
+  {
+   "id": 110,
+   "owner": "board-brief",
+   "skill": "board-brief",
+   "kind": "trigger",
+   "prompt": "Our company secretary files everything for the board in Word. From the ProbeMatrix export of the Hazira fire (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), our directors want the brief as something they can open in Word, set out like a formal paper with a cover page and the directors' questions at the back.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "board-brief"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "board-brief"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "format": "docx",
+      "layout": "paper"
+     },
+     "contains": [
+      "board-brief.json"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "board-brief"
+    }
+   ]
+  },
+  {
+   "id": 111,
+   "owner": "site-leadership-coach",
+   "skill": "site-leadership-coach",
+   "kind": "trigger",
+   "prompt": "I'm running a two-hour debrief with the plant manager and heads of department next week. Using this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), give me slides for the site leadership workshop that I can present and edit.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "site-leadership-coach"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "site-leadership-coach"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "format": "pptx"
+     },
+     "contains": [
+      "site-leadership-coach.json"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "site-leadership-coach"
+    }
+   ]
+  },
+  {
+   "id": 112,
+   "owner": "frontline-learning-cards",
+   "skill": "frontline-learning-cards",
+   "kind": "trigger",
+   "prompt": "Our shift supervisors want the toolbox talk from this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) as one printable sheet each, five minutes, to read out at the start of shift.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "layout": "toolbox"
+     },
+     "contains": [
+      "frontline-learning-cards.json"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "frontline-learning-cards"
+    }
+   ]
+  },
+  {
+   "id": 113,
+   "owner": "frontline-learning-cards",
+   "skill": "frontline-learning-cards",
+   "kind": "trigger",
+   "prompt": "Most of our operators and contract crews read Hindi more easily than English. Can we have the frontline cards in Hindi from this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx)? Someone on site can check the translation.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "frontline-learning-cards"
+    },
+    {
+     "type": "command_contains",
+     "command": "strings",
+     "contains": [
+      "extract",
+      "frontline-learning-cards.json"
+     ]
+    },
+    {
+     "type": "command_contains",
+     "command": "strings",
+     "flags": {
+      "lang": "hi"
+     },
+     "contains": [
+      "apply"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "frontline-learning-cards"
+    }
+   ]
+  },
+  {
+   "id": 114,
+   "owner": "training-designer",
+   "skill": "training-designer",
+   "kind": "trigger",
+   "prompt": "Our learning team runs Moodle. From the ProbeMatrix export of the Hazira fire (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), build the course and give me a Moodle quiz from the training that I can import, with the answers marked.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "training-designer"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "training-designer"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "format": "gift"
+     },
+     "contains": [
+      "training-designer.json"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "training-designer"
+    }
+   ]
+  },
+  {
+   "id": 115,
+   "owner": "causal-map",
+   "skill": "causal-map",
+   "kind": "trigger",
+   "prompt": "I need to show how the factors connected in this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). I need the cause chart as an image to drop into slides for our quarterly safety review.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "causal-map"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "causal-map"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "format": "png"
+     },
+     "contains": [
+      "causal-map.json"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "causal-map"
+    }
+   ]
+  },
+  {
+   "id": 116,
+   "owner": "safety-committee-guide",
+   "skill": "safety-committee-guide",
+   "kind": "trigger",
+   "prompt": "Our joint safety committee meets on 2 November 2026. From this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), prepare the committee guide, a walk-round checklist the reps can print and tick on site, and calendar reminders for the 30, 60 and 90-day follow-ups counted from that meeting.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-committee-guide"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-committee-guide"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "layout": "checklist"
+     },
+     "contains": [
+      "safety-committee-guide.json"
+     ]
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "format": "ics",
+      "start": "2026-11-02"
+     }
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-committee-guide"
+    }
+   ]
+  },
+  {
+   "id": 117,
+   "owner": "learnings-register",
+   "skill": "learnings-register",
+   "kind": "trigger",
+   "prompt": "Our managers don't open spreadsheets. Build the learnings register from this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and also give me a Word copy and a version I can paste into an email to the management team.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "learnings-register"
+    },
+    {
+     "type": "check_register_ok",
+     "pack": "learnings-register"
+    },
+    {
+     "type": "command_contains",
+     "command": "register-render",
+     "contains": [
+      "learnings-register.json"
+     ],
+     "flags": {
+      "format": "docx"
+     }
+    },
+    {
+     "type": "command_contains",
+     "command": "register-render",
+     "contains": [
+      "learnings-register.json"
+     ],
+     "flags": {
+      "format": "email"
+     }
+    },
+    {
+     "type": "routes_to",
+     "skill": "learnings-register"
+    }
+   ]
+  },
+  {
+   "id": 118,
+   "owner": "top-management-brief",
+   "skill": "top-management-brief",
+   "kind": "trigger",
+   "prompt": "The executive committee wants a pre-read in their inboxes before Monday. From this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), write the executive brief and send me an email-ready digest of it.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "top-management-brief"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "top-management-brief"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "format": "email"
+     },
+     "contains": [
+      "top-management-brief.json"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "top-management-brief"
     }
    ]
   }

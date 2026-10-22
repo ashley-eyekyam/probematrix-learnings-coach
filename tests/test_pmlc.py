@@ -1639,6 +1639,7 @@ def _skill_argv(line: str) -> list[str]:
     flags = "|".join(re.escape(f) for f in sorted(_NUMERIC_FLAGS))
     line = re.sub(rf"({flags})(\s+)<[^>]*>", r"\1\g<2>1", line)
     line = re.sub(r"(--format\s+)<[^>]*>", r"\1md", line)
+    line = re.sub(r"(--start\s+)(?:<[^>]*>|YYYY-MM-DD)", r"\g<1>2020-09-24", line)  # the user's date (ics)
     return pmlc.split_command(re.sub(r"<[^>]*>", "X", line))[1:]  # shlex; a "#" inside a word or quotes is kept
 
 
@@ -1677,6 +1678,8 @@ def test_skill_commands_parse(capsys):
 def test_skill_argv_placeholders():
     assert _skill_argv("PMLC select <ws> --level <n> --format <f>  # c") == ["select", "X", "--level", "1", "--format", "md"]
     assert _skill_argv('PMLC select <ws> --text "a # b" --brief  # c') == ["select", "X", "--text", "a # b", "--brief"]
+    assert _skill_argv("PMLC pack <ws> p.json --format ics --start YYYY-MM-DD") == \
+        ["pack", "X", "p.json", "--format", "ics", "--start", "2020-09-24"]
 
 
 @pytest.mark.parametrize("line,args", [

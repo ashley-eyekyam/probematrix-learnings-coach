@@ -29,6 +29,7 @@ pmlc facts <ws>                               # counts and shares to quote exact
 pmlc check-register <ws> <run>/outputs/learnings-register.json --strict
 pmlc register-md <ws> <run>/outputs/learnings-register.json
 pmlc register-xlsx <run>/outputs/learnings-register.json
+pmlc register-render <ws> <run>/outputs/learnings-register.json --format docx,email   # Word and email
 pmlc dashboard <ws> --register <run>/outputs/learnings-register.json [--date <corrected date>] [--title "<plain title>"]
 ```
 
@@ -49,6 +50,8 @@ The optional spine fields, each used only when it applies: `urgency` (alert, not
 - `organisation-learning-map.html` with the **Detailed register** tab.
 
 Each learning has an ID such as `LR-01` (see [LR-ID](../Glossary.md#lr-id)). Audience packs that express a register learning carry the same ID.
+
+**Formats.** [register-render](../commands/register-render.md) writes `learnings-register.docx` (every learning, its IDs as endnotes) and `learnings-register.email.html` with `.email.txt` (the summary and as many learnings as fit in 100 KB, saying how many are left out), for readers who use Word or email rather than Excel.
 
 ## Worked example (Hazira)
 

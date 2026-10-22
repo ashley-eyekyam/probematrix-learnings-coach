@@ -73,8 +73,8 @@ for the rest. Read [`learning-principles.md`](learning-principles.md) before wri
 - **Status line and footer.** Set the required top-level `status` field to contain
   `Learning purposes: not a statutory document` (`check-pack` refuses a pack without it). `pack` adds the
   ProbeMatrix footer from `output-style.md`. Do not remove either from any copy.
-- **Translation.** If the user asks for another language, translate the text fields only. Keep every ID, kind,
-  field name and controlled value unchanged, then run §4 again.
+- **Translation.** If the user asks for another language, translate through `strings` (§8), never by editing the
+  JSON: it keeps every ID, kind, field name and controlled value unchanged. Then run §4 on the translated pack.
 
 ## 4. The check and pack loop
 
@@ -145,3 +145,49 @@ A copy for a regulator, client, contractor, insurer, sister company or the publi
 What the engine masks in a shared copy: listed names (`--names` or `PMLC_NAMES`) and honorific forms become `[name]`; listed organisations (`--orgs` or `PMLC_ORGS`) and company-suffix names become `[organisation]`; equipment tags become `[equipment tag]`; singleton roles become their generalised label; a site-leadership or board `owner` becomes its function; clock times are removed and full dates become the month and year; the run slug and generated date are left out. Masking is a safety net, not the review: read the shared copy before it leaves.
 
 In every mode, `pack` and `dashboard` refuse to write a page in which a listed name appears. Fix the pack text, or redact the workspace with `ingest --redact`.
+
+## 8. Formats
+
+`pack` writes the HTML page and the Markdown by default. From the same checked JSON, `--format <names>`
+(comma-separated) writes other files and `--layout <name>` adds a print page; the HTML stays the copy to open first.
+A skill's `skill.json` lists the extras it offers (`formats`), and its "Check and hand over" gives the line for
+each. Run them after `check-pack --strict` passes, and offer the one that fits how the audience will receive it:
+
+| Channel | Flag | File in `<run>/outputs/` |
+|---|---|---|
+| Screen, intranet, shared drive | (default) | `<pack>.html`, `<pack>.md` |
+| A paper to file or table (briefs, dossier, comparison) | `--format docx`; a board paper adds `--layout paper` | `<pack>.docx`; `<pack>.paper.docx` and `.paper.html` |
+| A meeting, workshop or briefing | `--format pptx` | `<pack>.pptx` (citations in the speaker notes) |
+| Inboxes, a pre-read | `--format email` | `<pack>.email.html` and `.email.txt`, under 100 KB |
+| Printed and handed out | `--layout cards` (A4, or A5 with `--paper A5`), `field`, `toolbox`, `checklist`, `poster` (A3) | `<pack>.<layout>.html`, printed from the browser |
+| An action tracker | `--format csv` | `<pack>.actions.csv`, owner and due columns blank |
+| A learning system | `--format gift`, `qti` or `quiz-csv`; `--view learner` hides the answers | `<pack>.gift.txt`, `.qti.zip`, `.quiz.csv` |
+| A slide picture or a graph tool | `--format svg`, `png` or `graphml` | one file per graph item |
+| A bow-tie tool | `--format bowtie-csv` | `<pack>.bowtie.csv` |
+| Calendars | `--format ics --start YYYY-MM-DD` (the user's date only) | `<pack>.ics` |
+| Video, radio, PA | `--format srt` or `narration` | from each `script` item |
+| Another tool reading the pack | `--format normalised` | `<pack>.normalised.json` |
+| The register in Word or email | `PMLC register-render <ws> <run>/outputs/learnings-register.json --format docx,email` | `learnings-register.docx`, `.email.html`, `.email.txt` |
+
+- **Nothing to write.** A format the pack gives nothing to (no questions for `gift`, no dated checks for `ics`) says
+  `<format>: nothing to write (<why>)` and exits 0. Tell the user; never add items just to fill a format.
+- **Fixed copy.** Every document format carries the status line, the ProbeMatrix credit and, until a person approves
+  the pack, DRAFT. Do not strip them in Word, PowerPoint or a mail client. No format adds an owner, a name or a date
+  the pack does not hold; `ics` counts only from the user's `--start`.
+- **Never overwritten.** `<pack>.actions.csv`, the strings files and a `<pack>-<lang>.json` may hold the
+  organisation's or a translator's work: the command stops with exit 1 rather than replace one. Move it aside only
+  if the user says so.
+- **Shared copies apply to every format.** `--share external` (or `public`) with any `--format` or `--layout` builds
+  each file from the masked pack under the same §7 conditions, and names it `<file>.external.<ext>` beside the
+  internal one. Read every shared file before it leaves, not only the HTML.
+- **Translation goes through `strings`,** never through hand edits of the JSON:
+
+      PMLC strings extract <ws> <run>/outputs/<pack>.json --lang hi             # -> <pack>.strings.xlf (--to csv for Excel)
+      PMLC strings apply <ws> <run>/outputs/<pack>.json <translated file> --lang hi   # -> <pack>-hi.json
+
+  IDs, kinds and cites are locked, and citations travel as placeholders. A safety-critical item (a hold point, or a
+  stop or do-not-start instruction) needs its `back_translation`, which `check-pack --strict` requires. Then run §4
+  on `<pack>-hi.json` with any format. A fluent speaker checks the translation before use (each page says so), and
+  the translation needs its own sign-off.
+- **Brand.** `--brand brand.json` sets the organisation name, accent colour and logo; the footer and status line
+  stay fixed.
