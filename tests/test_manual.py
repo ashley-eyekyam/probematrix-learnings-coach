@@ -347,7 +347,7 @@ def test_files_and_folders_lists_every_output_file():
 
 
 P4M_RECIPES = {   # recipe -> the engine command text its section must show
-    "board paper in Word": "--layout paper --format docx", "workshop slides": "--format pptx",
+    "board paper in Word": "--format html,md,docx --layout paper", "workshop slides": "--format pptx",
     "toolbox sheets": "--layout toolbox", "field cards with QR codes": "--base-url",
     "Hindi cards": "strings apply", "quiz into Moodle": "gift,qti", "SCORM into an LMS": "--format scorm",
     "causal map for a slide": "--format svg", "bow-tie hand-over": "--format bowtie-csv",
