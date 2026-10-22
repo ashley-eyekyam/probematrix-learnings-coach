@@ -49,7 +49,7 @@ Pack `<run>/outputs/emergency-response-learnings.json` (shape: `learnings-coach/
 | 2 | `by-phase` | Learnings by response phase | `group` = the phase: detection and alarm; communication and escalation; authority and decision to isolate; plan coverage; fire-water and fire-protection readiness; command structure; recovery; external responders and neighbours | `learning` | up to 15 |
 | 3 | `plan-review` | Plan review input | A change request to the plan owner: columns Plan section, Change, Evidence; one row per gap (scenarios, decision criteria, delegated authority, remote isolation, communications), with `row_cites` | `table` | 1 |
 | 3 | `plan-review` | Plan review input | The regulated-plan notification note (below) | `para` | 1 |
-| 4 | `drills` | Drill scenarios | Drills from this event: injects in `situation`, the decision points and the time standard to measure in `prompts` | `scenario` | up to 3 |
+| 4 | `drills` | Drill scenarios | Drills from this event: the starting position in `situation`, the timed `injects` (below), the time standard to measure and facilitator notes in `prompts` | `scenario` | up to 3 |
 | 5 | `readiness` | Readiness indicators | e.g. detection-to-isolation time in drills, fire-pump availability, plan scenarios with tested isolation steps | `indicator` | up to 6 |
 
 - **Phases.** Up to three learnings per phase, and only the phases the evidence supports. Write the
@@ -63,11 +63,18 @@ Pack `<run>/outputs/emergency-response-learnings.json` (shape: `learnings-coach/
   `learnings-coach/references/jurisdictions.md` for the run's jurisdiction (e.g. the ERDMP regulations for an
   Indian gas installation), marking an *(unverified)* item as such. State no legal conclusion.
 - Events on the same day without a citable time keep your order.
+- **Injects.** Each drill's `injects` is the timed sequence a facilitator releases: `offset` is the time after
+  the exercise starts (`+HH:MM`), `text` what the players are told, and `decision` the decision point it forces,
+  taken from a decision the findings show. Offsets are exercise time, never the event's clock times.
 
 ```json
 {"kind": "timeline", "events": [{"date": "YYYY-MM-DD", "time": "14:05", "text": "…", "received_by": "Control room operators",
  "cites": ["FND-…"]}]}
+{"kind": "scenario", "situation": "…", "prompts": ["…"], "injects": [{"offset": "+00:00", "text": "…"},
+ {"offset": "+00:10", "text": "…", "decision": "…"}], "cites": ["FND-…"]}
 ```
+
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/emergency-response-learnings.json (repository only)
 
 ## If the evidence is thin
 
@@ -93,7 +100,14 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/emergency-response-learnings.json --strict
 PMLC pack <ws> <run>/outputs/emergency-response-learnings.json
+PMLC pack <ws> <run>/outputs/emergency-response-learnings.json --layout cards   # one inject card per page
+PMLC pack <ws> <run>/outputs/emergency-response-learnings.json --format pptx    # the drill brief
 ```
+
+- **Inject cards.** `emergency-response-learnings.cards.html` prints each inject on its own page, in order, for
+  the facilitator to hand out at its offset.
+- **Drill brief.** `emergency-response-learnings.pptx` is a slide deck for the pre-drill briefing and the
+  debrief: the response learnings, one slide per section, and the citations in the speaker notes.
 
 - Check that no timeline `time` comes from a narrative-only entry.
 - Next step: send the plan-review table to the plan owner's review.

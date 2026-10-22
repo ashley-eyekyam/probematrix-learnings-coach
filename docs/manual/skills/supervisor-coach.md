@@ -31,12 +31,14 @@ pmlc select <ws> --preset supervisor-coach        # all three calls at once
 pmlc register-items <ws> --tier T2                # the register's T2 learnings, as ready items
 pmlc check-pack <ws> <run>/outputs/supervisor-coach.json --strict
 pmlc pack <ws> <run>/outputs/supervisor-coach.json
+pmlc pack <ws> <run>/outputs/supervisor-coach.json --layout checklist   # the printable checklist
 pmlc templates <ws> distribution                  # the delivery record, once per run
 ```
 
 - [select](../commands/select.md): `--tier T2` keeps supervision-tier findings; `--level 3` the Supervision level; `--top-rated` the strongest; `--relation approver` the findings where a role approved or accepted something; `--brief` short entries. The preset runs the three calls in turn; add `--budget-chars` to cap the size.
 - [register-items](../commands/register-items.md) prints the register's learnings for a tier.
 - [check-pack](../commands/check-pack.md) with `--strict` checks the pack against its profile; [pack](../commands/pack.md) renders it. The page prints the checks as a checklist.
+- [pack](../commands/pack.md) `--layout checklist` writes `supervisor-coach.checklist.html`: every check grouped by section with a tick box, hold points marked "Hold point", and a "Checked by (role), Date, Shift" line at the end of each section. It is the shift's working copy; who was briefed goes in `distribution.csv`.
 - [templates](../commands/templates.md) `distribution` writes `distribution.csv`, where each crew briefing is recorded. It never overwrites an existing file.
 
 ## What you get

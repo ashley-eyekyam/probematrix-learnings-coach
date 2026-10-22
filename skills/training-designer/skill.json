@@ -24,6 +24,14 @@
     "pack": "training-designer",
     "files": []
   },
+  "formats": [
+    "docx",
+    "gift",
+    "qti",
+    "quiz-csv",
+    "srt",
+    "narration"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,

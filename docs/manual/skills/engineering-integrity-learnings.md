@@ -30,11 +30,14 @@ pmlc select <ws> --preset engineering-integrity-learnings   # the three calls ab
 pmlc timeline <ws> --before incident
 pmlc check-pack <ws> <run>/outputs/engineering-integrity-learnings.json --strict
 pmlc pack <ws> <run>/outputs/engineering-integrity-learnings.json
+pmlc pack <ws> <run>/outputs/engineering-integrity-learnings.json --format docx   # for the technical review
+pmlc pack <ws> <run>/outputs/engineering-integrity-learnings.json --format csv    # the actions CSV
 ```
 
 - [select](../commands/select.md): `--tag engineering` every function tagged engineering; `--level 3 4` the Supervision and Organisational levels; `--top-rated` the strongest; `--text` a regular expression over the finding text (technical words); `--brief` short entries.
 - [timeline](../commands/timeline.md) with `--before incident` gives dated technical history, such as inspection dates.
 - [check-pack](../commands/check-pack.md) with `--strict` checks the pack against its profile, including one learning, one barrier and one recommendation per theme; [pack](../commands/pack.md) renders it.
+- [pack](../commands/pack.md) `--format docx` writes `engineering-integrity-learnings.docx` for a technical review or MOC committee to mark up; `--format csv` writes `engineering-integrity-learnings.actions.csv`, every recommendation, decision and indicator for the MOC or CAPA system, with the owner, due, status, CAPA and effectiveness columns blank. It never overwrites an existing actions file, which may already hold the organisation's entries.
 
 ## What you get
 

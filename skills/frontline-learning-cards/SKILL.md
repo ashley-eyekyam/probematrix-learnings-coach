@@ -56,10 +56,10 @@ Pack `<run>/outputs/frontline-learning-cards.json` (shape: `learnings-coach/refe
 | — | bottom_line | — | The learnings a crew should take away, one line each | `bottom_line` | up to 5 |
 | 1 | `delivery` | Using these cards | Facilitator note (below), then who delivers what | `para` | 1 |
 | 1 | `delivery` | Using these cards | Columns Card, Delivered by, Pair with (supervisor-coach scenario), Contractor crews to brief (whether the card also goes to contractor crews: a plan, not the record); one row per card, `row_cites` = the card's cites | `table` | 1 |
-| 2 | `cards` | Learning Cards | title, what_happened, `why_made_sense`, `organisation_changing` (both required here), warning_signs, good_looks_like, three `discussion` questions; under 250 words; primary cite L1 or L2 | `card` | up to 8 |
+| 2 | `cards` | Learning Cards | title, what_happened, `why_made_sense`, `organisation_changing` (both required here), warning_signs, good_looks_like, three `discussion` questions; optional `did_you_know` (a surprising fact from the evidence) and `what_you_can_do` (actions in the reader's own control); under 250 words; primary cite L1 or L2 | `card` | up to 8 |
 | 3 | `toolbox-talks` | Toolbox talks | One `para` per five-minute talk, `group` = the task ("returning equipment to service") | `para` | up to 3 |
 | 3 | `toolbox-talks` | Toolbox talks | One discussion `scenario` per talk, same `group` | `scenario` | up to 3 |
-| 3 | `toolbox-talks` | Toolbox talks | The talk itself as one `toolbox` item: opening question, story, two warning signs, one change, crew question | `toolbox` | optional, up to 3 |
+| 3 | `toolbox-talks` | Toolbox talks | The talk itself as one `toolbox` item: `opening_question`, `story` (90 seconds), `warning_signs` (exactly two), `one_change`, `crew_question`, optional `duration`; same `group` | `toolbox` | optional, up to 3 |
 | 4 | `stop-and-ask` | Stop and ask | Situations from this event where anyone should pause the job and ask, with the support to expect; `when` = the situation | `check` | up to 10 |
 
 - **Deliverer.** Each card names who delivers it, usually the crew's supervisor (a role, never a person), in the
@@ -74,8 +74,12 @@ Pack `<run>/outputs/frontline-learning-cards.json` (shape: `learnings-coach/refe
 ```json
 {"kind": "card", "title": "Test what you disturb", "what_happened": "…", "why_made_sense": "…",
  "organisation_changing": "…", "warning_signs": ["…"], "good_looks_like": "…", "discussion": ["…", "…", "…"],
- "learning": "LR-01", "cites": ["FND-…"]}
+ "did_you_know": ["…"], "what_you_can_do": ["…"], "learning": "LR-01", "cites": ["FND-…"]}
+{"kind": "toolbox", "group": "Returning equipment to service", "opening_question": "…", "story": "…",
+ "warning_signs": ["…", "…"], "one_change": "…", "crew_question": "…", "duration": "5 min", "cites": ["FND-…"]}
 ```
+
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/frontline-learning-cards.json (repository only)
 
 ## If the evidence is thin
 
@@ -101,12 +105,35 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/frontline-learning-cards.json --strict
 PMLC pack <ws> <run>/outputs/frontline-learning-cards.json
+PMLC pack <ws> <run>/outputs/frontline-learning-cards.json --layout cards --paper A5    # pocket cards
+PMLC pack <ws> <run>/outputs/frontline-learning-cards.json --layout field --base-url https://intranet.example.org/learning/frontline-learning-cards.html
+PMLC pack <ws> <run>/outputs/frontline-learning-cards.json --layout toolbox            # one sheet per talk
 ```
 
+- **Print layouts.** `cards` prints one page per card, toolbox talk and scenario inject (A4, or A5 for a pocket
+  book); `field` adds the citations as end-notes and a printable delivery record; `toolbox` prints one A4 sheet
+  per `toolbox` item, and says "nothing to write" when the pack has none. With `--base-url` (where the page is
+  published) each printed card carries a QR code to its item; use the user's address, never invent one.
 - Check that each card's first cite is a level 1 or 2 finding.
 - **Delivery record.** Record each briefing in `<run>/outputs/distribution.csv`: if the file does not exist,
   `PMLC templates <ws> distribution` writes it with one row per pack (it never overwrites an existing file; add
   a row for this pack instead). The organisation fills in the channel, date, deliverer role, attendees,
   `contractors_included`, questions raised and concerns escalated; never fill those yourself.
-- If translation is requested, follow `skill-common.md` §3 (text fields only; IDs unchanged).
+- **Translation** (only when asked; IDs, cites and kinds never change):
+
+```bash
+PMLC strings extract <ws> <run>/outputs/frontline-learning-cards.json --lang hi
+PMLC strings apply <ws> <run>/outputs/frontline-learning-cards.json <run>/outputs/frontline-learning-cards.strings.xlf --lang hi
+PMLC check-pack <ws> <run>/outputs/frontline-learning-cards-hi.json --strict
+PMLC pack <ws> <run>/outputs/frontline-learning-cards-hi.json --layout cards
+```
+
+  - `strings extract` writes `frontline-learning-cards.strings.xlf` (`--to csv` for Excel); use the crew's
+    language tag. Translate the targets, keeping every `{cN}` placeholder exactly once.
+  - **Back-translation.** Each safety-critical item (a hold point, or text saying stop, halt or "do not start")
+    has a `#back_translation` unit: write the translation back into English there, so a reviewer can compare.
+  - `strings apply` writes `frontline-learning-cards-hi.json` with `source_text` and `back_translation` on
+    those items; `check-pack --strict` refuses it while one is missing. Neither command overwrites a file.
+  - **A fluent speaker's check.** Every translated page says it was translated with AI assistance. A fluent
+    speaker of the crew's language checks it against the English before use; the person signs it off.
 - Next step: `supervisor-coach` for the crew briefing plan, if it has not been written.
