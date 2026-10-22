@@ -371,7 +371,7 @@ pmlc pack <ws> <run>/outputs/board-brief.json --format html,docx,email --brand b
 {"organisation": "Example Gas Ltd", "accent": "#0b5394", "logo": "logo.png"}
 ```
 
-On the Hazira board brief the page and the Word file show the logo and the name; the email digest carries no logo, so it stays small.
+On the Hazira board brief the page and the Word file show the logo and the name; the email digest shows the name under the title but carries no logo, so it stays small. In a `--share external` or `public` copy the name is masked like the pack text, and a public copy has no logo.
 
 **What to check.**
 

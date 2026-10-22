@@ -165,6 +165,8 @@ def _em_head_lines(ctx, pack, L, eh) -> tuple:
     mins = reading_minutes(pack)
     rt = label(L, "ui.reading_time", n=mins) if "ui.reading_time" in L else READING_TIME.format(n=mins)
     rows = [(pack["title"], "title")]
+    if ctx.brand is not None and ctx.brand.organisation:     # P4-16: the name, never the logo; masked when shared
+        rows.append((ctx.brand.organisation, "meta"))
     if is_draft(eh):
         rows.append((DRAFT_LABEL, "draft"))
     rows += [(x, "handling") for x in _em_handling(eh, ctx.share, markdown=False)]

@@ -549,7 +549,7 @@ def test_every_format_shared_copy_masks_the_brand(shared, tmp_path, target):
              "--brand", _brand_file(tmp_path), *flags)
     assert r.returncode == 0, r.stdout + r.stderr
     _no_org_in(out, ORGS)
-    if target in ("html", "docx", "pptx", "scorm") or kind == "layout":
+    if target in ("html", "docx", "pptx", "scorm", "email") or kind == "layout":
         # the brand is still shown, masked, where the internal copy shows the name
         inner = tmp_path / "inner"
         r = _cli("pack", shared["ws"], shared["pack"], "--out", inner, "--start", START.isoformat(),
