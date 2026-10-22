@@ -117,7 +117,7 @@ pmlc 2.0.0a4
 
 ## Output formats
 
-[pack](commands/pack.md) writes `<pack>.html` and `<pack>.md` unless you ask for more. `--format` takes a comma-separated list of the formats below (no spaces: `--format html,docx,email`). A **document** format is for people to read: it carries the status phrase, the ProbeMatrix credit and, until sign-off, DRAFT. A **data** format is for another program to import: it carries the status in its own comment or metadata slot, or not at all where that would break the import. The full description of each, with what it holds, is in [pack](commands/pack.md#formats).
+[pack](commands/pack.md) writes `<pack>.html` and `<pack>.md` unless you ask for more. `--format` takes a comma-separated list of the formats below (no spaces: `--format html,docx,email`). `--format` replaces the default; list `html,md` too to keep them. A **document** format is for people to read: it carries the status phrase, the ProbeMatrix credit and, until sign-off, DRAFT. A **data** format is for another program to import: it carries the status in its own comment or metadata slot, or not at all where that would break the import. The full description of each, with what it holds, is in [pack](commands/pack.md#formats).
 
 | Format | Kind | File | What it is for |
 |---|---|---|---|

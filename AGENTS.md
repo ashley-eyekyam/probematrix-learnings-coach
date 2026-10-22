@@ -27,7 +27,7 @@ python3 $E plan $WS --next                     # the next step to do, with its c
 python3 $E select $WS --preset board-brief     # a step's gather calls, as the plan prints them
 python3 $E check-pack $WS <run>/outputs/board-brief.json --strict   # a pack step's gate (runs the language check too)
 python3 $E pack $WS <run>/outputs/board-brief.json  # -> board-brief.html + .md (DRAFT until signed off)
-python3 $E pack $WS <run>/outputs/board-brief.json --format docx,email --layout paper   # also Word, an email digest and the board paper (formats: pack -h)
+python3 $E pack $WS <run>/outputs/board-brief.json --format html,md,docx,email --layout paper   # the page and Markdown, plus Word, an email digest and the board paper (--format replaces the default; formats: pack -h)
 python3 $E strings extract $WS <run>/outputs/frontline-learning-cards.json --lang hi   # -> <pack>.strings.xlf for a translator
 python3 $E strings apply $WS <run>/outputs/frontline-learning-cards.json <run>/outputs/frontline-learning-cards.strings.xlf --lang hi   # -> frontline-learning-cards-hi.json; a fluent speaker checks it
 python3 $E check-all $WS --strict              # every pack and the register in outputs/
