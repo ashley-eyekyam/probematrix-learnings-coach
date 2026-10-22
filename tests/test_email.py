@@ -136,6 +136,27 @@ def test_email_shared_copy(w):
     assert outs[0].guard_text == outs[1].data
 
 
+def test_email_shows_the_brand_name_without_a_logo(w):
+    """I2 (P4-16): with --brand the digest names the organisation right under the title, in the html and the txt,
+    and never carries the logo; a shared copy shows the masked name."""
+    from pmlc_lib.render.brand import shared_brand
+    brand = R.Brand("Quorvel Process Ltd", "#1A7070", b"\x89PNG\r\n\x1a\nlogo", "image/png")
+    page, txt = both(w, "board-brief", brand=brand)
+    assert "Quorvel Process Ltd" in plain(page) and "Quorvel Process Ltd" in txt
+    assert "<img" not in page and "base64" not in page
+    title = fixture("board-brief")["title"]
+    lines = [x for x in txt.splitlines() if x.strip()]
+    assert lines[lines.index(next(x for x in lines if title in x)) + 1].strip() == "Quorvel Process Ltd"
+    page, txt = both(w, "board-brief")                                       # no brand: no name line
+    assert "Quorvel" not in page and "Quorvel" not in txt
+    pack = fixture("board-brief")
+    share = share_ctx(argparse.Namespace(names=None, orgs=None), w, "external")   # "... Ltd": a company-suffix name
+    ctx = ctx_for(shared_copy(w, share, w), shared_copy(pack, share, w), share=share, eh=effective_handling(pack, w),
+                  brand=shared_brand(brand, share))
+    for o in R.render("email", ctx):
+        assert "Quorvel" not in o.data and "[organisation]" in o.data and "<img" not in o.data
+
+
 def test_email_learner_view_hides_answers(w):
     q = item("question", answer="SECRET-ANSWER", good_evidence="SECRET-EVIDENCE")
     page, txt = both(w, pack_with(q), view="learner")

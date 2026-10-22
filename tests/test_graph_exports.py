@@ -112,8 +112,7 @@ def test_png_no_browser_through_the_command(tmp_path):
     assert "test-pack.g1.svg" in names and "test-pack.g1.graphml" in names and not any(n.endswith(".png") for n in names)
 
 
-@pytest.mark.skipif(R.find_browser() is None, reason="no Chromium-family browser")
-def test_png_with_browser(w):
+def test_png_with_browser(w, needs_png):
     outs = render_fixture("x", "png", w=w, pack=graph_pack())
     assert [o.name for o in outs] == ["test-pack.g1.png"]
     png = outs[0].data
@@ -135,6 +134,57 @@ def test_png_failure_is_a_note_not_an_error(w, monkeypatch, tmp_path):
                           eh=effective_handling(pack, w), notes=notes)
     assert R.render("png", ctx) == []
     assert len(notes) == 1 and notes[0].startswith("png: the browser did not produce an image (")
+
+
+def _fake_browser(tmp_path, body: str) -> Path:
+    """A stand-in browser that logs each call's arguments, one line per call, then runs body (sh)."""
+    fake = tmp_path / "fakebrowser"
+    fake.write_text('#!/bin/sh\necho "$*" >> "$0.log"\n' + body)
+    fake.chmod(0o755)
+    return fake
+
+
+SANDBOX_REFUSES = """for a in "$@"; do case "$a" in --no-sandbox) ok=1;; --screenshot=*) out="${a#--screenshot=}";; esac; done
+if [ -z "$ok" ]; then echo "noise line" >&2; echo "FATAL: the SUID sandbox helper is not configured correctly" >&2
+  exit 134; fi
+printf '\\211PNG\\r\\n\\032\\n' > "$out"
+"""
+
+
+def _png_ctx(w, notes):
+    from pmlc_lib.handling import effective_handling
+    pack = pmlc.with_item_ids(graph_pack())
+    return R.RenderContext(w=w, pack=pack, run="r", generated="2020-09-24", embed="cited",
+                           eh=effective_handling(pack, w), notes=notes)
+
+
+def test_png_retries_without_the_sandbox(w, monkeypatch, tmp_path):
+    """C1: where the browser's sandbox cannot start (AppArmor's user-namespace rule on Ubuntu 24.04), the engine
+    retries once with --no-sandbox, whoever the user is: the page is a temp file it wrote itself."""
+    fake = _fake_browser(tmp_path, SANDBOX_REFUSES)
+    monkeypatch.setenv("PMLC_BROWSER", str(fake))
+    notes = []
+    outs = R.render("png", _png_ctx(w, notes))
+    assert [o.name for o in outs] == ["test-pack.g1.png"] and notes == []
+    calls = Path(str(fake) + ".log").read_text().splitlines()
+    assert len(calls) == 2 and "--no-sandbox" not in calls[0] and "--no-sandbox" in calls[1]
+
+
+def test_png_failure_note_keeps_the_browser_reason(w, monkeypatch, tmp_path):
+    """C1: the note names the exit code and the last line of the browser's stderr, for both attempts."""
+    fake = _fake_browser(tmp_path, 'echo "first line" >&2\necho "no usable display: try again" >&2\nexit 3\n')
+    monkeypatch.setenv("PMLC_BROWSER", str(fake))
+    notes = []
+    assert R.render("png", _png_ctx(w, notes)) == []
+    assert len(notes) == 1, notes
+    assert notes[0].startswith("png: the browser did not produce an image (exit 3: no usable display: try again")
+    assert "--no-sandbox" in notes[0] and "first line" not in notes[0]
+    assert len(Path(str(fake) + ".log").read_text().splitlines()) == 2
+
+
+def test_png_probe_reason_is_a_string_or_none(png_probe):
+    """The session probe the png tests skip on: None (png works) or the recorded reason."""
+    assert png_probe is None or (isinstance(png_probe, str) and png_probe)
 
 
 def test_bowtie_csv(w):

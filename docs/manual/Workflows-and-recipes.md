@@ -134,10 +134,10 @@ pmlc pack <ws> <run>/outputs/board-brief.json
 
 ```bash
 pmlc check-pack <ws> <run>/outputs/board-brief.json --strict
-pmlc pack <ws> <run>/outputs/board-brief.json --layout paper --format docx
+pmlc pack <ws> <run>/outputs/board-brief.json --format html,md,docx --layout paper
 ```
 
-On the Hazira sample this writes `board-brief.docx` (the brief as a Word document), `board-brief.paper.docx` (the board paper) and `board-brief.paper.html` (the same paper to print from the browser), beside the usual page and Markdown.
+On the Hazira sample this writes `board-brief.docx` (the brief as a Word document), `board-brief.paper.docx` (the board paper) and `board-brief.paper.html` (the same paper to print from the browser), beside the usual page and Markdown. `--format` replaces the default `html,md`, which is why the command lists them; with `--format docx` alone, only the three Word and paper files are written.
 
 **What to check.**
 
@@ -245,7 +245,7 @@ pmlc check-pack <ws> <run>/outputs/frontline-learning-cards-hi.json --strict
 pmlc pack <ws> <run>/outputs/frontline-learning-cards-hi.json --layout cards
 ```
 
-On the Hazira frontline pack, `strings extract` writes 171 units to translate: one per text field, plus a back-translation unit for each safety-critical item. Each unit's note gives the glossary's Hindi term where one applies. The translated pack, `frontline-learning-cards-hi.json`, renders like any other, with Hindi headings. The Hazira sample keeps one, drafted with AI assistance.
+On the Hazira frontline pack, `strings extract` writes 211 units to translate: one per text field, plus a back-translation unit for each safety-critical item. Each unit's note gives the glossary's Hindi term where one applies. The translated pack, `frontline-learning-cards-hi.json`, renders like any other, with Hindi headings. The Hazira sample keeps one, drafted with AI assistance.
 
 **What to check.**
 
@@ -371,7 +371,7 @@ pmlc pack <ws> <run>/outputs/board-brief.json --format html,docx,email --brand b
 {"organisation": "Example Gas Ltd", "accent": "#0b5394", "logo": "logo.png"}
 ```
 
-On the Hazira board brief the page and the Word file show the logo and the name; the email digest carries no logo, so it stays small.
+On the Hazira board brief the page and the Word file show the logo and the name; the email digest shows the name under the title but carries no logo, so it stays small. In a `--share external` or `public` copy the name is masked like the pack text, and a public copy has no logo.
 
 **What to check.**
 

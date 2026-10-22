@@ -1126,6 +1126,24 @@ def test_summary_mode_builds_the_embedded_records_once(monkeypatch, tmp_path, sh
     assert len(calls) == 1
 
 
+def test_share_dashboard_masks_the_brand(tmp_path, shws):
+    """I1: dashboard --brand: the organisation name is masked in a shared dashboard; a public one has no logo."""
+    import base64
+    ws, orgs = shws
+    logo = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==")
+    (tmp_path / "logo.png").write_bytes(logo)
+    bf = write_doc(tmp_path, {"organisation": "Bharat Seals", "logo": "logo.png"}, "brand.json")
+    outs = ws.parent / "outputs"
+    for cls in ("external", "public"):
+        rp = write_doc(tmp_path, copy.deepcopy(MINI_REG), f"reg-{cls}.json")
+        sign(ws, rp, "--classification", cls, "--legal-review", "cleared")
+        r = _cli("dashboard", str(ws), "--register", str(rp), "--share", cls, "--orgs", str(orgs), "--brand", str(bf))
+        assert r.returncode == 0, r.stderr
+        t = (outs / f"organisation-learning-map.{cls}.html").read_text(encoding="utf-8")
+        assert "Bharat Seals" not in t and "brand-id" in t and "[organisation]" in t
+        assert ('<img class="brand-logo"' in t) == (cls == "external")
+
+
 def test_share_dashboard_masks_org_file_text(tmp_path, shws):
     """INT-7: a bad enum cell echoed in an org-file warning, and a pack name in distribution.csv, are masked."""
     ws, orgs = shws

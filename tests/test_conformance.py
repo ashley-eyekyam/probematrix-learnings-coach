@@ -5,6 +5,7 @@ person reads them: each docx footer (DRAFT in the header), every pptx slide, eve
 every printed page of a layout. Data formats carry the status and the brand in their native comment or metadata slot;
 the exempt ones are P4-20's, each with its reason. Every fixture (and its alpha.4 copy) renders in every registered
 format, so a format added later (SCORM, Task 21) is covered once it registers itself."""
+import base64
 import contextlib
 import copy
 import dataclasses
@@ -307,10 +308,10 @@ DATA_SLOTS = {   # P4-20: where each data format keeps the status and the brand
 }
 
 
-def _first_output(env, fmt):
+def _first_output(env, fmt, request):
     """The outputs of fmt for the first fixture that gives it something to write (all-kinds first)."""
-    if fmt == "png" and not R.find_browser():
-        pytest.skip("no Chromium-family browser: png writes nothing (OD4-2)")
+    if fmt == "png":
+        request.getfixturevalue("needs_png")
     for n in ["all-kinds"] + FIXTURES:
         outs = R.render(fmt, _ctx(env, n, "draft", start=START))
         if outs:
@@ -319,9 +320,9 @@ def _first_output(env, fmt):
 
 
 @pytest.mark.parametrize("fmt", DATA_FORMATS)
-def test_data_formats_conform(env, fmt):
+def test_data_formats_conform(env, fmt, request):
     """P4-20: each data format's native slot carries STATUS_PHRASE and BRAND; an exempt one carries neither."""
-    outs = _first_output(env, fmt)
+    outs = _first_output(env, fmt, request)
     for o in outs:
         if fmt in EXEMPT:
             text = o.data.decode("utf-8") if isinstance(o.data, bytes) else o.data
@@ -471,7 +472,7 @@ SHARE_TARGETS = list(R.FORMATS) + [f"layout:{x}" for x in LAYOUTS]
 
 
 @pytest.mark.parametrize("target", SHARE_TARGETS)
-def test_every_format_shared_copy_masked(shared, tmp_path, target):
+def test_every_format_shared_copy_masked(shared, tmp_path, target, request):
     """Review Focus 1: `pack --share external --names` writes only .external. files, from the masked pack: no
     invented name in any Output's guard_text, nor in any byte of any file or zip part."""
     from pmlc_lib.handling import share_ctx, shared_copy
@@ -479,8 +480,8 @@ def test_every_format_shared_copy_masked(shared, tmp_path, target):
     assert all(n in json.dumps(shared["doc"], ensure_ascii=False) for n in NAMES)
     lay = target.split(":", 1)[1] if target.startswith("layout:") else None
     fmt = "html" if lay else target
-    if fmt == "png" and not R.find_browser():
-        pytest.skip("no Chromium-family browser: png writes nothing (OD4-2)")
+    if fmt == "png":
+        request.getfixturevalue("needs_png")
     flags = ["--format", fmt, "--start", START.isoformat()] + (["--layout", lay] if lay else [])
     out = tmp_path / "out"
     r = _cli("pack", shared["ws"], shared["pack"], "--share", "external", "--names", shared["names"],
@@ -508,6 +509,77 @@ def test_every_format_shared_copy_masked(shared, tmp_path, target):
         f"{target}: the unmasked output holds no name, so the masking is not tested"
     for o in outs:
         assert not rx.search(o.guard_text) and not rx.search(html.unescape(o.guard_text)), o.name
+
+
+BRAND_TARGETS = DOC_FORMATS + [f"layout:{x}" for x in LAYOUTS] + ["paper:docx"]
+LOGO = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==")
+
+
+def _brand_file(d, org="Bharat Seals"):
+    """brand.json naming an organisation that the orgs file lists, with a logo (final review I1)."""
+    (d / "logo.png").write_bytes(LOGO)
+    b = d / "brand.json"
+    b.write_text(json.dumps({"organisation": org, "accent": "#1A7070", "logo": "logo.png"}), encoding="utf-8")
+    return b
+
+
+def _no_org_in(out, orgs):
+    rx = re.compile("|".join(re.escape(o) for o in orgs), re.I)
+    got = sorted(x.name for x in out.iterdir())
+    assert got
+    for f in got:
+        assert ".external." in f or ".public." in f, f
+        for part, data in _zip_or_bytes((out / f).read_bytes()).items():
+            text = data.decode("utf-8", "replace")
+            assert not rx.search(text) and not rx.search(html.unescape(re.sub(r"<[^>]+>", "", text))), (f, part)
+    return got
+
+
+@pytest.mark.parametrize("target", BRAND_TARGETS)
+def test_every_format_shared_copy_masks_the_brand(shared, tmp_path, target):
+    """I1: with --brand, the organisation name goes through the same masking as the pack in every document format,
+    the layouts and the board paper, so an organisation that --orgs lists never reaches a shared copy."""
+    from test_privacy import ORGS
+    kind, _, name = target.partition(":")
+    flags = (["--format", "html", "--layout", name] if kind == "layout" else
+             ["--format", "docx", "--layout", "paper"] if kind == "paper" else ["--format", target])
+    out = tmp_path / "out"
+    r = _cli("pack", shared["ws"], shared["pack"], "--share", "external", "--names", shared["names"],
+             "--orgs", shared["orgs"], "--out", out, "--start", START.isoformat(),
+             "--brand", _brand_file(tmp_path), *flags)
+    assert r.returncode == 0, r.stdout + r.stderr
+    _no_org_in(out, ORGS)
+    if target in ("html", "docx", "pptx", "scorm", "email") or kind == "layout":
+        # the brand is still shown, masked, where the internal copy shows the name
+        inner = tmp_path / "inner"
+        r = _cli("pack", shared["ws"], shared["pack"], "--out", inner, "--start", START.isoformat(),
+                 "--brand", _brand_file(tmp_path), *flags)
+        assert r.returncode == 0, r.stdout + r.stderr
+        texts = [d.decode("utf-8", "replace") for f in inner.iterdir() for d in _zip_or_bytes(f.read_bytes()).values()]
+        if any("Bharat Seals" in t for t in texts):
+            shared_texts = [d.decode("utf-8", "replace") for f in out.iterdir()
+                            for d in _zip_or_bytes(f.read_bytes()).values()]
+            assert any("[organisation]" in t for t in shared_texts), target
+
+
+def test_public_copy_drops_the_brand_logo(shared, tmp_path):
+    """I1: a logo identifies the organisation, so a --share public copy carries none (html, docx, pptx, layouts)."""
+    from test_privacy import ORGS
+    p = tmp_path / "all-kinds.json"
+    shutil.copy(shared["pack"], p)
+    r = _cli("sign-off", shared["ws"], p, "--status", "approved", "--role", "HSE manager", "--date", "2026-10-19",
+             "--classification", "public", "--legal-review", "cleared")
+    assert r.returncode == 0, r.stdout + r.stderr
+    logo64 = base64.b64encode(LOGO).decode("ascii")
+    for flags in (["--format", "html,docx,pptx"], ["--format", "html", "--layout", "poster"]):
+        out = tmp_path / ("out" + str(len(flags)))
+        r = _cli("pack", shared["ws"], p, "--share", "public", "--names", shared["names"], "--orgs", shared["orgs"],
+                 "--embed", "summary", "--out", out, "--brand", _brand_file(tmp_path), *flags)
+        assert r.returncode == 0, r.stdout + r.stderr
+        for f in _no_org_in(out, ORGS):
+            parts = _zip_or_bytes((out / f).read_bytes())
+            assert not any(n.startswith(("word/media/", "ppt/media/")) for n in parts), f
+            assert not any(logo64 in d.decode("utf-8", "replace") or LOGO in d for d in parts.values()), f
 
 
 # ----------------------------------------------------------------------------- the exit gate's formats

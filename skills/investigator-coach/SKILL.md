@@ -44,7 +44,7 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/investigator-
 | 1 | `evidence-audit` | (same section) | Absent kinds of evidence; conflicts between sources (dates, times, identifiers) and whether they were resolved; findings that rest on a single source | `para` | up to 4 |
 | 2 | `process` | Investigation process against requirements | One `check` per requirement (below), with `clauses`; [GAP] where the export does not show it | `check` | up to 6 |
 | 3 | `follow-up-per-finding` | Follow-up per high-rated finding | The follow-up table: `"id": "follow-up"`, one row per condition (`investigator-coach/references/follow-up.md`) | `table` | 1 |
-| 4 | `interview-plan` | Interview plan | Roles the evidence never heard from, ordered by how much they could change the analysis, five questions each; `to` = the role, `group` = the role | `question` | up to 30 (six roles) |
+| 4 | `interview-plan` | Interview plan | Roles the evidence never heard from, ordered by how much they could change the analysis, five questions each; `to` = the role, `group` = the role | `question` | up to 31 (six roles of five, plus the validation question below) |
 | 5 | `method` | Method lessons | Where the analysis reached L3–L4 and how; findings coded too low (an organisational condition recorded as an individual act); single-source findings | `para` | up to 5 |
 | 6 | `training` | Training use | Exercises from this case for investigator training (such as "move this L1 finding to the level where it belongs") | `scenario` | up to 3 |
 

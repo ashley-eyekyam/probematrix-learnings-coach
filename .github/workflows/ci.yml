@@ -49,7 +49,7 @@ jobs:
       - name: Tests with coverage
         env:
           COVERAGE_PROCESS_START: ${{ github.workspace }}/.coveragerc
-        run: coverage run -m pytest tests -q
+        run: coverage run -m pytest tests -q -rs   # -rs prints each skip's reason (png says why it cannot render)
       - name: Check the JS tests skipped without Node
         if: ${{ !matrix.node }}
         run: |

@@ -25,6 +25,7 @@ _GX_CSS = ("svg{color:#4a5568}.node rect{fill:#fff;stroke:#1f3a5f;stroke-width:1
            ".edge.skip{stroke-dasharray:2 3}")
 _GX_SIZE_RX = re.compile(r'viewBox="0 0 (\d+) (\d+)"')
 GX_PNG_TIMEOUT = 60
+GX_REASON_MAX = 200
 
 
 def _gx_items(ctx) -> list:
@@ -69,8 +70,33 @@ def render_svg(ctx) -> list:
     return outs
 
 
+def _gx_stderr_tail(err) -> str:
+    """The last non-blank line of a browser's stderr, shortened: the part that usually says why it failed."""
+    lines = [x.strip() for x in (err or b"").decode("utf-8", "replace").splitlines() if x.strip()]
+    tail = lines[-1] if lines else ""
+    return tail if len(tail) <= GX_REASON_MAX else tail[:GX_REASON_MAX - 1] + "…"
+
+
+def _gx_shot(cmd: list, png: Path) -> str:
+    """Run one screenshot command; None when it wrote the PNG, else the reason (exit code and stderr tail)."""
+    try:
+        r = subprocess.run(cmd, capture_output=True, timeout=GX_PNG_TIMEOUT, stdin=subprocess.DEVNULL)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return type(e).__name__ if not isinstance(e, OSError) else str(e)
+    tail = _gx_stderr_tail(r.stderr)
+    if r.returncode != 0:
+        return f"exit {r.returncode}" + (f": {tail}" if tail else "")
+    if not png.is_file() or png.stat().st_size == 0:
+        return "no file written" + (f": {tail}" if tail else "")
+    return None
+
+
 def _gx_png(browser: str, svg: str) -> tuple:
-    """(png bytes, None) or (None, reason): the browser's screenshot of the SVG on a blank page."""
+    """(png bytes, None) or (None, reason): the browser's screenshot of the SVG on a blank page.
+
+    When the first attempt writes no image, it retries once with --no-sandbox, whoever the user is: Chrome's sandbox
+    cannot start where user namespaces are restricted (AppArmor on Ubuntu 24.04, some containers), and the page is a
+    temp file the engine wrote itself, with no network content (final review C1)."""
     w, h = _gx_size(svg)
     page = ('<!doctype html><meta charset="utf-8"><body style="margin:0">'
             + svg.split("?>", 1)[1].strip() + "</body>")
@@ -81,14 +107,13 @@ def _gx_png(browser: str, svg: str) -> tuple:
                f"--window-size={w},{h}", src.as_uri()]
         if hasattr(os, "geteuid") and os.geteuid() == 0:                  # Chromium refuses to run as root otherwise
             cmd.insert(2, "--no-sandbox")
-        try:
-            r = subprocess.run(cmd, capture_output=True, timeout=GX_PNG_TIMEOUT, stdin=subprocess.DEVNULL)
-        except (OSError, subprocess.TimeoutExpired) as e:
-            return None, type(e).__name__ if not isinstance(e, OSError) else str(e)
-        if r.returncode != 0:
-            return None, f"exit {r.returncode}"
-        if not png.is_file() or png.stat().st_size == 0:
-            return None, "no file written"
+        why = _gx_shot(cmd, png)
+        if why and "--no-sandbox" not in cmd:
+            cmd.insert(2, "--no-sandbox")
+            retry = _gx_shot(cmd, png)
+            why = f"{why}; with --no-sandbox: {retry}" if retry else None
+        if why:
+            return None, why
         return png.read_bytes(), None
 
 

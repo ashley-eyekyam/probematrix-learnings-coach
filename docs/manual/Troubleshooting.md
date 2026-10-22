@@ -428,7 +428,7 @@ The plan is complete: every step is done or planned for a later phase.
 png: no Chromium-family browser found; open the .svg in a browser and export it, or set PMLC_BROWSER
 ```
 
-**Why.** `pack --format png` draws the graph with a Chromium-family browser on this computer (Chromium, Google Chrome or Microsoft Edge), and it found none. The engine has no picture library of its own. It wrote no PNG, the other formats were still written, and the command ended with code 0. If the browser was found but failed, the message is `png: the browser did not produce an image (<reason>)` instead.
+**Why.** `pack --format png` draws the graph with a Chromium-family browser on this computer (Chromium, Google Chrome or Microsoft Edge), and it found none. The engine has no picture library of its own. It wrote no PNG, the other formats were still written, and the command ended with code 0. If the browser was found but failed, even after one retry with its sandbox switched off, the message is `png: the browser did not produce an image (<reason>)` instead; the reason holds the browser's exit code and the last line it printed.
 
 **What to do.** Use `--format svg`: the SVG is the same drawing, opens in any browser and goes into most slide programs as it is. To get a PNG, install Chromium or Chrome, or set `PMLC_BROWSER` to the browser's full path. If `PMLC_BROWSER` names something that cannot run, the engine says `warning: PMLC_BROWSER=<value> is not an executable; looking for a browser on PATH` and tries the usual names.
 

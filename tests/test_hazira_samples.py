@@ -130,3 +130,26 @@ def test_hazira_samples_render_identically(hz, tmp_path):
         _pack(hz, name, out, *flags)
         for f in files:
             _same(out / f, OUTPUTS / f)
+
+
+MANUAL = ROOT / "docs" / "manual"
+
+
+def test_manual_hazira_counts_match_the_engine(hz, tmp_path):
+    """Final review I3: the Hazira numbers the manual quotes for Phase 4 outputs are what the engine writes from the
+    committed golden packs today (strings units, pptx slides, bow-tie barriers)."""
+    out = run("strings", "extract", str(hz), str(hz.parent / "outputs" / "frontline-learning-cards.json"), "--lang",
+              "hi", "--out", str(tmp_path / "fl.strings.xlf"))
+    units = int(re.search(r"\((\d+) units, xliff, en -> hi\)", out).group(1))
+    recipes = (MANUAL / "Workflows-and-recipes.md").read_text(encoding="utf-8")
+    assert f"({units} units, xliff, en -> hi)" in (MANUAL / "commands" / "strings.md").read_text(encoding="utf-8")
+    assert f"`strings extract` writes {units} units to translate" in recipes
+    _pack(hz, "site-leadership-coach", tmp_path / "p", "--format", "pptx")
+    slides = [n for n in _parts(tmp_path / "p" / "site-leadership-coach.pptx")
+              if re.fullmatch(r"ppt/slides/slide\d+\.xml", n)]
+    assert f"`site-leadership-coach.pptx` has {len(slides)} slides" in recipes
+    _pack(hz, "barrier-learnings", tmp_path / "b", "--format", "bowtie-csv")
+    rows = (tmp_path / "b" / "barrier-learnings.bowtie.csv").read_text(encoding="utf-8").splitlines()[1:]
+    sides = [r.split(",", 1)[0] for r in rows]
+    assert (f"has {len(rows)} barriers: {sides.count('threat')} on the threat side" in recipes
+            and f"{sides.count('consequence')} on the consequence side" in recipes)

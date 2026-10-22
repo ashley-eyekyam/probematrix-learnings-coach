@@ -138,7 +138,7 @@ python3 tools/smoke_sample.py
 ```text
 smoke: plan --workflow exits 0 for all 9 presets
 smoke: 23 fixture packs pass check-pack --strict
-smoke: 24 Hazira golden packs pass check-pack --strict and render in html,md,docx,pptx,email,csv
+smoke: 25 Hazira golden packs pass check-pack --strict and render in html,md,docx,pptx,email,csv
 smoke OK: 436 findings, 46 evidence, register 0 problems, language 0 errors
 ```
 

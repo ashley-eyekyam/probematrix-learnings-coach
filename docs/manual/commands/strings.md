@@ -80,7 +80,7 @@ python3 $E strings extract $WS $WS/../outputs/frontline-learning-cards.json --la
 ```
 
 ```text
-strings written to .../outputs/frontline-learning-cards.strings.xlf (171 units, xliff, en -> hi); translate the targets, then run strings apply
+strings written to .../outputs/frontline-learning-cards.strings.xlf (211 units, xliff, en -> hi); translate the targets, then run strings apply
 ```
 
 ```bash
