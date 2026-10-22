@@ -1,0 +1,153 @@
+{
+ "pack": "uat-print-cards",
+ "schema": 1,
+ "title": "UAT print cards: Hazira gas release and fire, 2020",
+ "audience": "Frontline crews (T1)",
+ "status": "Learning purposes: not a statutory document",
+ "bottom_line": [
+  {
+   "text": "A metering line went back into service after a gasket change without a test at design pressure.",
+   "cites": [
+    "FND-3AB996FC",
+    "EVD-2894"
+   ]
+  },
+  {
+   "text": "The gas detectors showed an alarm on a panel but did not shut the plant down.",
+   "cites": [
+    "FND-01C3DE98",
+    "EVD-8657"
+   ]
+  }
+ ],
+ "scope": {
+  "tiers": [
+   "T1"
+  ]
+ },
+ "sections": [
+  {
+   "id": "cards",
+   "heading": "Learning Cards",
+   "items": [
+    {
+     "kind": "card",
+     "title": "Test at design pressure before return to service",
+     "what_happened": "After the gasket on the meter was replaced, the system was only pressurised to operating pressure and the meter went back online the next day [EVD-2894] [EVD-0185].",
+     "why_made_sense": "There was no written procedure for calibrating these meters and taking them back into service, so a check at operating pressure looked like enough [EVD-2894].",
+     "organisation_changing": "The committee pointed to a written return-to-service procedure that includes a test at design pressure before a high-pressure meter is put back in line [EVD-2894].",
+     "warning_signs": [
+      "A seal or gasket that is not the original part",
+      "A return to service with no test record at design pressure"
+     ],
+     "good_looks_like": "No high-pressure meter goes back in line until the test at design pressure is recorded.",
+     "discussion": [
+      "Where is the test record for a meter you put back in line?",
+      "Who can stop a return to service when the test is missing?"
+     ],
+     "cites": [
+      "FND-3AB996FC",
+      "EVD-2894"
+     ],
+     "did_you_know": [
+      "Operating pressure is lower than design pressure, so a joint that holds at operating pressure has not been proved [EVD-2894]."
+     ],
+     "what_you_can_do": [
+      "Ask to see the test record at design pressure before you open the line."
+     ]
+    },
+    {
+     "kind": "card",
+     "title": "Know what the gas alarm does",
+     "what_happened": "Hydrocarbon detectors were wired to an annunciator panel for display only, with no automatic shutdown or fire suppression [EVD-8657].",
+     "why_made_sense": "An alarm on the panel looked like a working safeguard, and nothing on the panel said that it would not trip the plant [EVD-8657].",
+     "organisation_changing": "The committee recommended interlocking the detection system to automatic plant shutdown and fire suppression [EVD-3452].",
+     "warning_signs": [
+      "A gas alarm that only shows on a panel",
+      "No automatic action after a gas alarm"
+     ],
+     "good_looks_like": "Crews know which alarms trip equipment and which need a person to act at once.",
+     "cites": [
+      "FND-01C3DE98",
+      "EVD-8657"
+     ],
+     "did_you_know": [
+      "The detectors raised an alarm on a panel; nothing tripped by itself [EVD-8657]."
+     ],
+     "what_you_can_do": [
+      "Learn which alarms on your unit trip equipment and which need you to act."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "toolbox-talks",
+   "heading": "Toolbox talks",
+   "items": [
+    {
+     "kind": "toolbox",
+     "opening_question": "Who here has put a meter back in line after a gasket change?",
+     "story": "A metering line went back into service after a gasket change. It was pressurised only to operating pressure, and the meter went back online the next day [EVD-2894].",
+     "warning_signs": [
+      "A seal or gasket that is not the original part",
+      "No test record at design pressure"
+     ],
+     "one_change": "No meter goes back in line until the test at design pressure is on the record.",
+     "crew_question": "Where on our unit is the test record kept, and who can see it?",
+     "cites": [
+      "FND-3AB996FC",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "toolbox",
+     "opening_question": "What happens on our unit when a gas detector alarms?",
+     "story": "The gas detectors showed an alarm on an annunciator panel for display only. There was no automatic shutdown and no fire suppression [EVD-8657].",
+     "warning_signs": [
+      "A gas alarm that only shows on a panel",
+      "No automatic action after a gas alarm"
+     ],
+     "one_change": "Each crew member can name which alarms trip equipment and which need a person to act.",
+     "crew_question": "Which of our alarms would need one of us to act at once?",
+     "cites": [
+      "FND-01C3DE98",
+      "EVD-8657"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "stop-and-ask",
+   "heading": "Stop and ask",
+   "items": [
+    {
+     "kind": "check",
+     "hold_point": true,
+     "when": "Before a high-pressure meter goes back in line",
+     "text": "The test at design pressure is recorded and witnessed.",
+     "cites": [
+      "FND-3AB996FC",
+      "EVD-2894"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "A gasket in your hand is not the original part",
+     "text": "Ask the supervisor for the specification before you fit it.",
+     "cites": [
+      "FND-3AB996FC"
+     ]
+    },
+    {
+     "kind": "check",
+     "when": "A gas alarm shows on the panel",
+     "text": "Tell the control room what you see, and act on the alarm without waiting for a trip.",
+     "cites": [
+      "FND-01C3DE98",
+      "EVD-8657"
+     ]
+    }
+   ]
+  }
+ ]
+}

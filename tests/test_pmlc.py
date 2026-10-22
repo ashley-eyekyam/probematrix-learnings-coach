@@ -1734,6 +1734,7 @@ def test_make_uat_inputs(tmp_path, where):
         assert json.loads((d / n).read_text(encoding="utf-8"))["schema"] == 1
     _check_phase2_uat_inputs(d, tmp_path)
     _check_phase3_uat_inputs(d, tmp_path)
+    _check_phase4_uat_inputs(d, tmp_path)
 
 
 def _check_phase2_uat_inputs(d, tmp_path):
@@ -1819,6 +1820,28 @@ def _check_phase3_uat_inputs(d, tmp_path):
     both = next(i for i in items if i.get("columns") == ["Direction", "Yes", "Partial", "None"])
     assert both["rows"] == [["Learnings against comparator items", 2, 0, 0],
                             ["Comparator items against learnings", 3, 2, 2]], both
+
+
+def _check_phase4_uat_inputs(d, tmp_path):
+    """Phase 4 inputs: a valid brand (accent and a 1x1 PNG logo), a low-contrast brand, and the print-cards and quiz
+    packs, which pass check-pack --strict on the Hazira workspace that _check_phase3_uat_inputs built."""
+    from pmlc_lib.render.brand import load_brand
+    b = load_brand(d / "uat-brand.json")
+    assert b.organisation and b.accent and b.logo_mime == "image/png"
+    assert b.logo_bytes.startswith(b"\x89PNG\r\n\x1a\n") and b.logo_bytes[16:24] == (1).to_bytes(4, "big") * 2
+    with pytest.raises(SystemExit, match=r"has contrast 1\.\d:1 against white; WCAG AA needs 4\.5:1"):
+        load_brand(d / "uat-brand-bad.json")
+    hw = tmp_path / "hz" / "pmlc-runs" / "2020-09-24-hazira-gas-release-fire" / "workspace"
+    for name in ("uat-print-cards.json", "uat-quiz.json"):
+        out = run("check-pack", str(hw), str(d / name), "--strict")
+        assert "OK:" in out and " JC" not in out, out
+    cards = json.loads((d / "uat-print-cards.json").read_text(encoding="utf-8"))
+    kinds = [i["kind"] for s in cards["sections"] for i in s["items"]]
+    assert kinds.count("card") == 2 and kinds.count("toolbox") == 2 and kinds.count("check") == 3
+    assert sum(1 for s in cards["sections"] for i in s["items"] if i.get("hold_point")) == 1
+    quiz = json.loads((d / "uat-quiz.json").read_text(encoding="utf-8"))
+    types = [i.get("type") for s in quiz["sections"] for i in s["items"] if i["kind"] == "question"]
+    assert types == ["single", "multi", "truefalse", "short", None]
 
 
 def test_dashboard_with_no_ratings(tmp_path):
