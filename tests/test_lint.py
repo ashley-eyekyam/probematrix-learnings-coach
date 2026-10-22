@@ -390,3 +390,22 @@ def test_jc1_month_names_that_are_first_names_are_errors(w, text):
                                   "The review on 24 September was late."])
 def test_jc1_month_with_a_day_or_a_year_is_exempt(w, text):
     assert rules(pl.lint(para_pack(text), w, kind="pack"), "error") == [], pl.format_hits(pl.lint(para_pack(text), w, kind="pack"))
+
+
+def test_jc8_skips_structured_time_fields(w):
+    """Final review m1 (FR-1): a toolbox or module `duration` ("5 min", as the SKILL.md examples write it), a script
+    segment's `seconds` and an inject's `offset` are delivery settings, not claims about the incident, so JC8 does not
+    check them. The same number in running text is still checked."""
+    tb = item("toolbox", opening_question="What would you check first?", story="A seal was changed and restarted.",
+              warning_signs=["A weep at the flange", "A hiss at the meter"], one_change="Test before restart.",
+              crew_question="Who signs the test?", duration="5 min", cites=["FND-0001"])
+    mod = item("module", title="Return to service", objective="Test before restart", audience="Fitters",
+               duration="45 min", cites=["FND-0001"])
+    scr = item("script", title="Restart", segments=[{"visual": "Pump", "narration": "Test first.", "seconds": "90 seconds"}],
+               cites=["FND-0001"])
+    sc = item("scenario", situation="A weep at the flange.", prompts=["Who stops the restart?"],
+              injects=[{"offset": "+00:10", "text": "The weep grows."}, {"offset": "15 min", "text": "Gas alarm."}],
+              cites=["FND-0001"])
+    assert [h for h in pl.lint(pack_with(tb, mod, scr, sc), w, kind="pack") if h.rule == "JC8"] == []
+    para = item("para", text="The talk takes 5 min.", cites=["FND-0001"])
+    assert rules(pl.lint(pack_with(para), w, kind="pack")) == ["JC8"]

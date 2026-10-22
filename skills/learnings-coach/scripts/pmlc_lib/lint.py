@@ -21,8 +21,10 @@ SKIP_KEYS = {"kind", "id", "cites", "supporting_cites", "row_cites", "row_suppor
              "finding_ids", "evidence_ids", "hfacs_level", "performance_mode", "handling", "scope", "lint_ok",
              "owner_entity", "entities"}
 RETRAIN_ONLY = {"training", "administrative"}
-# Targets and measures are the coach's proposals, not claims about the incident, so JC8 does not check them.
-JC8_SKIP_FIELDS = {"leading_indicator", "indicator", "measure", "deterioration"}
+# Targets and measures are the coach's proposals, not claims about the incident, so JC8 does not check them; nor
+# the structured time settings of a delivery: a toolbox or module duration ("5 min"), a script segment's seconds and
+# a scenario inject's offset (final review m1).
+JC8_SKIP_FIELDS = {"leading_indicator", "indicator", "measure", "deterioration", "duration", "seconds", "offset"}
 CAP_PAIR_RX = re.compile(r"(?<![\w'’-])(?=([A-Z][a-z]+(?:['’-][A-Za-z]+)*) ([A-Z][a-z]+(?:['’-][A-Za-z]+)*)(?![\w'’-]))")
 WORD_RX = re.compile(r"[A-Za-z]+")
 EXTERNAL = ("external", "public")
