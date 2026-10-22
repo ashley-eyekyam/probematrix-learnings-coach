@@ -24,6 +24,10 @@
     "pack": "engineering-integrity-learnings",
     "files": []
   },
+  "formats": [
+    "docx",
+    "csv"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,

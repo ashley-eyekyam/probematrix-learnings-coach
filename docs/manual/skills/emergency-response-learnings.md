@@ -33,11 +33,14 @@ pmlc select <ws> --preset emergency-response-learnings   # the four calls above 
 pmlc timeline <ws> --on incident                          # writes timeline_event_day.json
 pmlc check-pack <ws> <run>/outputs/emergency-response-learnings.json --strict
 pmlc pack <ws> <run>/outputs/emergency-response-learnings.json
+pmlc pack <ws> <run>/outputs/emergency-response-learnings.json --layout cards   # one inject card per page
+pmlc pack <ws> <run>/outputs/emergency-response-learnings.json --format pptx    # the drill brief
 ```
 
 - [select](../commands/select.md): `--tag emergency` every function tagged emergency; `--top-rated` the strongest; `--text` a regular expression over the finding text (words about detection, alarm, isolation and response, or, with `--tag emergency`, about mutual aid, neighbours and the community); `--brief` short entries.
 - [timeline](../commands/timeline.md) with `--on incident` writes every clock time on the incident day, with its sources, to build the sequence from. A time flagged `narrative: true` with no sources appears only in the incident narrative: it cannot be cited, so the agent uses it only to order the steps.
 - [check-pack](../commands/check-pack.md) with `--strict` checks the pack against its profile; [pack](../commands/pack.md) renders it.
+- [pack](../commands/pack.md) `--layout cards` prints each drill inject on its own page, in order, for the facilitator to hand out; `--format pptx` writes `emergency-response-learnings.pptx`, a deck for the pre-drill briefing and the debrief, with the citations in the speaker notes.
 
 ## What you get
 
@@ -46,7 +49,7 @@ pmlc pack <ws> <run>/outputs/emergency-response-learnings.json
 1. a **response timeline**: detection, alarm, first call, decision, isolation, escalation and control, with the time between steps and what drove it;
 2. **learnings by response phase**, where the evidence supports them, including an "external responders and neighbours" group (mutual aid, the public fire service, neighbouring sites, the community) only when the findings show it;
 3. **plan review input** as a change request to the plan owner: a table of plan section, change and evidence (scenarios, decision criteria, delegated authority, remote isolation, communications), and a note that a change to a regulated plan may need review by, or notice to, an authority. The note names a regime only from the coach's [jurisdictions reference](https://github.com/ashley-eyekyam/probematrix-learnings-coach/blob/main/skills/learnings-coach/references/jurisdictions.md) and draws no legal conclusion;
-4. up to three **drill scenarios** with injects, decision points and the time standard to measure;
+4. up to three **drill scenarios**: the starting position, the time standard to measure, and timed **injects**, each with its offset from the start of the exercise (`+00:10`), what the players are told and, where it applies, the decision point it forces;
 5. **readiness indicators**, such as detection-to-isolation time in drills.
 
 ## Worked example (Hazira)

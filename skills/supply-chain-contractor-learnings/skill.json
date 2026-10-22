@@ -25,6 +25,9 @@
     "pack": "supply-chain-contractor-learnings",
     "files": []
   },
+  "formats": [
+    "email"
+  ],
   "share_default": "external",
   "embed_default": "cited",
   "interactive": false,

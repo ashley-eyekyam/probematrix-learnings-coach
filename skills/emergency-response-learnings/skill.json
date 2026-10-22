@@ -23,6 +23,10 @@
     "pack": "emergency-response-learnings",
     "files": []
   },
+  "formats": [
+    "cards",
+    "pptx"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,

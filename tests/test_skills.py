@@ -699,3 +699,62 @@ def test_group_c_counts_are_bounded(skill, sec):
     """Task 22 (Phase 3) minor 3: open-ended "at least 1" counts become "up to N" (L2-17)."""
     rows = [r for r in write_table(skill_md(skill)) if r["id"] == sec]
     assert rows and all(r["max"] < NO_LIMIT for r in rows), rows
+
+
+# ------------------------------------------------- Task 25: skills group B offer their Phase 4 formats
+# The generic format tests are the Task 24 block above; these are the group B specifics.
+
+B_SKILL_FORMATS = {            # skill.json `formats`: what each group B skill offers beyond html and md
+    "frontline-learning-cards": ["cards", "field", "toolbox"],
+    "supervisor-coach": ["checklist"],
+    "emergency-response-learnings": ["cards", "pptx"],
+    "training-designer": ["docx", "gift", "qti", "quiz-csv", "scorm", "srt", "narration"],
+    "supply-chain-contractor-learnings": ["email"],
+    "engineering-integrity-learnings": ["docx", "csv"],
+}
+# Review I-1: a person, never the AI, checks a translation and its back-translations before it is issued.
+B_FLUENT_CHECK = ("must not be issued until a fluent speaker of the target language, not the AI, has checked the "
+                  "whole translation and compared every safety-critical item's back-translation with its English "
+                  "source")
+# What each group B skill must say about its Phase 4 formats and fields (Task 25 brief).
+B_SKILL_TEXT = {
+    "frontline-learning-cards": ("--base-url", "did_you_know", "what_you_can_do", "opening_question",
+                                 "crew_question", "PMLC strings extract", "PMLC strings apply", "back_translation",
+                                 "fluent speaker", "frontline-learning-cards-hi.json", B_FLUENT_CHECK),
+    "supervisor-coach": ("distribution.csv", "hold_point"),
+    "emergency-response-learnings": ("injects", "offset", "drill brief"),
+    "training-designer": ('"type"', '"options"', "--view learner", "`script`", "segments"),
+    "supply-chain-contractor-learnings": ("PMLC strings extract", "PMLC strings apply", "fluent speaker",
+                                          "--share external", B_FLUENT_CHECK),
+    "engineering-integrity-learnings": ("actions.csv", "never overwrit"),
+}
+# Task 16 m4: the manual pages name the optional toolbox and script items.
+B_MANUAL_TEXT = {"frontline-learning-cards": ("toolbox", B_FLUENT_CHECK), "training-designer": ("script", "srt", "scorm"),
+                 "supply-chain-contractor-learnings": (B_FLUENT_CHECK,)}
+
+
+def test_group_b_skills_declare_formats():
+    got = {s: _p4s_manifest(s).get("formats") for s in B_SKILL_FORMATS}
+    assert got == B_SKILL_FORMATS
+
+
+@pytest.mark.parametrize("skill", sorted(B_SKILL_FORMATS))
+def test_group_b_x28_lines_and_specifics(skill):
+    t = skill_md(skill)
+    hand = section(t, "Check and hand over")
+    pack = _p4s_manifest(skill)["produces"]["pack"]
+    for x in (f"PMLC check-pack <ws> <run>/outputs/{pack}.json --strict", f"PMLC pack <ws> <run>/outputs/{pack}.json\n"):
+        assert x in hand, f"{skill}: the X28 line {x.strip()!r} must stay"
+    flat = " ".join(t.split())                       # the rule may wrap across lines
+    missing = [x for x in B_SKILL_TEXT[skill] if x not in flat]
+    assert missing == [], f"{skill}: missing {missing}"
+
+
+@pytest.mark.parametrize("skill", sorted(B_SKILL_FORMATS))
+def test_group_b_manual_page_names_formats(skill):
+    page = read(ROOT / "docs" / "manual" / "skills" / f"{skill}.md")
+    for f in B_SKILL_FORMATS[skill]:
+        flag = "--layout" if f in _P4S_LAYOUTS else "--format"
+        assert re.search(rf"{flag} (\S+,)?{re.escape(f)}\b", page), f"{skill}: manual page lacks {flag} {f}"
+    missing = [x for x in B_MANUAL_TEXT.get(skill, ()) if x not in page]
+    assert missing == [], f"{skill}: manual page lacks {missing}"

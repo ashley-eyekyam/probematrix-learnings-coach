@@ -47,9 +47,9 @@ scope as above.
 | 1 | `needs-map` | Training-needs map | Columns Role group, Competence, Need ("Competence gap" or "System problem: send to manager-coach"), with `row_cites` | `table` | 1 |
 | 2 | `modules` | Modules | title, observable objective, audience, duration, content, assessment; content holds the case material (roles only), the activities, and the competence-standard and refresher lines (below) | `module` | up to 6 |
 | 3 | `scenarios` | Scenario exercises | Decision-point scenarios from the event, with facilitator notes in `prompts` | `scenario` | up to 3 |
-| 4 | `assessment` | Assessment | `why` = what it tests, `answer` = the answer key, `good_evidence`, `cites` = the finding it tests; include questions on the level of a cause (L1–L4) | `question` | up to 15 |
+| 4 | `assessment` | Assessment | `why` = what it tests, `answer` = the answer key, `good_evidence`, `cites` = the finding it tests; `type` and `options` for a scored question (below); include questions on the level of a cause (L1–L4) | `question` | up to 15 |
 | 5 | `cascade` | Cascade plan | Columns Who, Trains whom, Materials, Transfer measure at 90 days | `table` | 1 |
-| 6 | `scripts` | Video and radio scripts | A short film, radio or PA message: `segments` of visual, narration and seconds (`--format srt,narration`) | `script` | optional, up to 3 |
+| 6 | `scripts` | Video and radio scripts | A short film, radio or PA message: `title`, `segments` (each `visual`, `narration`, `seconds` 1–600, optional `on_screen` and `cites`), optional `purpose` and `channel` (`video`, `radio`, `pa` or `screen`) (`--format srt,narration`) | `script` | optional, up to 3 |
 
 - **Competence standard and refresher.** Each module's `content` ends with two lines: "Competence standard:
   <the organisation's competence-standard id>" and "Refresher interval: <interval>". Use an id or interval only
@@ -57,12 +57,23 @@ scope as above.
   invent an id, an interval or a pass mark.
 - **Needs map.** Mark which needs are real competence gaps and which are system problems that training cannot
   fix (send those to `manager-coach`). Supervisor and manager rows come from the level 3 and 4 selections.
+- **Typed questions.** A scored question has `"type"`: `single` (exactly one correct option), `truefalse` (two
+  options, one correct), `multi` (at least one) or `short` (`options` are the accepted answers, all correct), and
+  `"options"`, a list of `{"text", "correct"}`. Wrong options come from what made sense at the time in the
+  findings, never from blame. A question without `type` is a discussion question: the quiz files carry it as an
+  essay, unscored.
+- **The `script` kind.** Each segment's narration says one thing a listener can act on; keep the cites on the
+  segment that makes the claim. The status line is not spoken, so the shooting script in the page carries it.
 
 ```json
 {"kind": "module", "title": "Return to service", "objective": "…", "audience": "Fitters", "duration": "45 min",
  "content": ["…", "Competence standard: to be set by the competence system owner", "Refresher interval: …"],
  "assessment": ["…"], "learning": "LR-01", "cites": ["FND-…"]}
+{"kind": "question", "question": "…", "why": "…", "answer": "…", "type": "single",
+ "options": [{"text": "…", "correct": false}, {"text": "…", "correct": true}], "cites": ["FND-…"]}
 ```
+
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/training-designer.json (repository only)
 
 ## If the evidence is thin
 
@@ -76,7 +87,7 @@ scope as above.
 
 - Short crew cards and toolbox talks: `frontline-learning-cards`.
 - Staffing, rostering, selection and competence-framework changes: `manager-coach` (system problems).
-- Slides, documents or e-learning packages: build them from this pack with the host's document tools.
+- A full e-learning course: build it in the learning-management system from the files below.
 - The training record: `distribution.csv` (below), not a table in this pack.
 
 ## Check and hand over
@@ -87,8 +98,19 @@ Run `skill-common.md` §4, then tick §5:
 PMLC check-pack <ws> <run>/outputs/training-designer.json --strict
 PMLC pack <ws> <run>/outputs/training-designer.json
 PMLC pack-xlsx <ws> <run>/outputs/training-designer.json --kind question   # the assessment as a spreadsheet
+PMLC pack <ws> <run>/outputs/training-designer.json --format gift,qti,quiz-csv        # quiz files for an LMS
+PMLC pack <ws> <run>/outputs/training-designer.json --format docx --view learner      # the learner's handout
+PMLC pack <ws> <run>/outputs/training-designer.json --format scorm                    # a SCORM 1.2 package
+PMLC pack <ws> <run>/outputs/training-designer.json --format srt,narration            # subtitles, voice-over
 ```
 
+- **Quiz files.** `gift` (`training-designer.gift.txt`, for Moodle), `qti` (`.qti.zip`, QTI 2.1) and
+  `quiz-csv` (`.quiz.csv`) carry the answer keys, so keep them with the trainers. `scorm` builds `training-designer.scorm.zip`, a
+  SCORM 1.2 package that shows the learner view and scores the typed questions (pass mark 80%);
+  its answer keys sit in the page, so use it for learning, not for an assessment that matters.
+- **Learner view.** `--view learner` writes `training-designer.learner.docx` (and, with the default formats,
+  `.learner.html`) with the answers, good evidence and correct-option flags left out: the copy for trainees.
+- `srt` and `narration` write one subtitle file and one voice-over text per `script` item.
 - `pack-xlsx` writes `<run>/outputs/training-designer-questions.xlsx` (question, what it tests, answer key, good
   evidence, cites) for a learning-management system or a quiz tool.
 - **Training record.** Each session is recorded in `<run>/outputs/distribution.csv`: if the file does not

@@ -73,6 +73,8 @@ Oversee, Plan, Correct, Make the safe way the easy way. The page prints the chec
  "when": "before return to service", "cites": ["FND-…"]}
 ```
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/supervisor-coach.json (repository only)
+
 ## If the evidence is thin
 
 - **Few L3 findings:** write fewer checks; each must cite. Do not turn a level 1 act into a supervisor rule.
@@ -95,8 +97,13 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/supervisor-coach.json --strict
 PMLC pack <ws> <run>/outputs/supervisor-coach.json
+PMLC pack <ws> <run>/outputs/supervisor-coach.json --layout checklist      # the printable checklist
 ```
 
+- **Checklist layout.** `supervisor-coach.checklist.html` prints every `check`, grouped by section, each with a
+  tick box; a `hold_point: true` check is marked "Hold point", and each section ends with a "Checked by (role),
+  Date, Shift" line for the supervisor to fill in by hand. It is a working copy for the shift, not the record of
+  who was briefed: that is `distribution.csv` (below).
 - **Distribution record.** Each crew briefing is recorded in `<run>/outputs/distribution.csv`: if the file does
   not exist, `PMLC templates <ws> distribution` writes it with one row per pack (it never overwrites; add a row
   for this pack instead). The organisation fills in the delivery columns; never fill them yourself.

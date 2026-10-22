@@ -58,6 +58,8 @@ Pack `<run>/outputs/supply-chain-contractor-learnings.json` (shape: `learnings-c
  "response": "No technical approval recorded", "cites": ["FND-…"]}]}
 ```
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/supply-chain-contractor-learnings.json (repository only)
+
 ## If the evidence is thin
 
 - **Few supply-chain findings:** say so in a `limits` line and keep the pack short: one decision point and one
@@ -78,8 +80,28 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/supply-chain-contractor-learnings.json --strict
 PMLC pack <ws> <run>/outputs/supply-chain-contractor-learnings.json
+PMLC pack <ws> <run>/outputs/supply-chain-contractor-learnings.json --format email   # .email.html and .email.txt
 ```
 
+- **Email.** `supply-chain-contractor-learnings.email.html` (and a plain `.email.txt`) is a self-contained digest
+  for the contract owner to paste into a message to a vendor or contractor; anything that does not fit is
+  counted under its section, so attach or link the full page.
 - Before a copy leaves the organisation, also run `PMLC check-pack <ws> <run>/outputs/supply-chain-contractor-learnings.json --share external`
-  and fix every error; sharing follows `skill-common.md` §7.
+  and fix every error; sharing follows `skill-common.md` §7. After a person's sign-off for external sharing,
+  the same `pack` line with `--share external --embed summary` writes the `.external.` page and email, masked.
+
+**Translation** for a contractor workforce that reads another language (IDs and cites never change):
+
+```bash
+PMLC strings extract <ws> <run>/outputs/supply-chain-contractor-learnings.json --to csv --lang hi
+PMLC strings apply <ws> <run>/outputs/supply-chain-contractor-learnings.json <run>/outputs/supply-chain-contractor-learnings.strings.csv --lang hi
+PMLC check-pack <ws> <run>/outputs/supply-chain-contractor-learnings-hi.json --strict
+```
+
+Use the workforce's language tag. Translate the `target` column, keep every `{cN}` once, and write the
+back-translation for each safety-critical unit. The translated pack stays DRAFT and must not be issued until a
+fluent speaker of the target language, not the AI, has checked the whole translation and compared every
+safety-critical item's back-translation with its English source. The translation is signed off on its own (an
+English sign-off does not cover it); then share it as above.
+
 - Next step: `frontline-learning-cards` with the contractor-workforce option, for the contractor crews.

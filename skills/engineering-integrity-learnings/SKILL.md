@@ -63,6 +63,8 @@ Pack `<run>/outputs/engineering-integrity-learnings.json` (shape: `learnings-coa
  "hoc_tier": "administrative", "why_not_stronger": "…", "indicator": "…", "cites": ["FND-…"]}
 ```
 
+Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/engineering-integrity-learnings.json (repository only)
+
 ## If the evidence is thin
 
 - **Few engineering findings:** write only the themes the evidence supports; one theme is a valid pack.
@@ -85,7 +87,15 @@ Run `skill-common.md` §4, then tick §5:
 ```bash
 PMLC check-pack <ws> <run>/outputs/engineering-integrity-learnings.json --strict
 PMLC pack <ws> <run>/outputs/engineering-integrity-learnings.json
+PMLC pack <ws> <run>/outputs/engineering-integrity-learnings.json --format docx   # for the technical review
+PMLC pack <ws> <run>/outputs/engineering-integrity-learnings.json --format csv    # the actions CSV
 ```
 
+- **Word.** `engineering-integrity-learnings.docx` is the document a technical review or MOC committee can
+  mark up: real tables, and each item's citations as one endnote.
+- **Actions CSV.** `engineering-integrity-learnings.actions.csv` lists every recommendation, decision and
+  indicator, with its route in `change`, for the MOC or CAPA system. The owner, due, status, CAPA reference and
+  effectiveness columns stay blank for the organisation; never fill them. It never overwrites an existing file
+  (exit 1): the organisation may already have filled it in, so move it or pass a new `--out`.
 - Check that every recommendation names its route and that no engineering value lacks a cited record.
 - Next step: `barrier-learnings`, if its pack does not exist yet.

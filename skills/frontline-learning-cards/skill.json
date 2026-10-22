@@ -23,6 +23,11 @@
     "pack": "frontline-learning-cards",
     "files": []
   },
+  "formats": [
+    "cards",
+    "field",
+    "toolbox"
+  ],
   "share_default": "internal",
   "embed_default": "cited",
   "interactive": false,
