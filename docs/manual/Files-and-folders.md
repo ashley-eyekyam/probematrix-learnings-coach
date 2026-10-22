@@ -95,6 +95,7 @@ The language check (JC7) flags a singleton role in your own wording, and a share
 | `gaps.json` | `pack` | What the evidence could not show, collected from every pack that has `gaps`, for the investigator: `{"gaps": [{"pack", "text", "cites", "evidence_needed"}]}`. Each `pack` run replaces that pack's entries and keeps the others. |
 | `<pack>-test-points.xlsx`, `<pack>-questions.xlsx` | [pack-xlsx](commands/pack-xlsx.md) | A pack's test points or questions as one Excel sheet. |
 | `follow-up.json` | `pack` on the investigator-coach pack | One entry per finding: evidence to collect, key questions, suggested interviews and a causal hypothesis, ready to paste back into ProbeMatrix. |
+| `follow-up.csv` | `pack` on the investigator-coach pack | The same follow-up table as a spreadsheet, in the export's own columns (`Finding ID,Evidence to Collect,Key Questions,Suggested Interviews,Causal Hypothesis`). A shared copy writes neither file. |
 | `report-comparison-client-safe.json`, `report-comparison-regulator-safe.json` and their pages | report-comparison | Neutral versions for the authors of the other report and for a regulator. |
 | `learnings-register.json` | learnings-register | The register: the source of truth. |
 | `learnings-register.xlsx` | `register-xlsx` | The workbook: Learnings Register, Recommendations, Learning Plan, Summary and About. |
@@ -103,6 +104,40 @@ The language check (JC7) flags a singleton role in your own wording, and a share
 | `<pack>.external.html`, `<pack>.public.html` (and `.md`) | `pack --share external` or `--share public` | Masked copies of a pack for sharing outside the organisation. The internal copy is kept. |
 | `organisation-learning-map.external.html`, `.public.html` | `dashboard --share external` or `--share public` | A masked copy of the learning map. It needs `--register` with a register approved for that audience. |
 | `learnings-register.external.xlsx`, `.public.xlsx` | `register-xlsx --share external` or `--share public` | A masked copy of the workbook, with a "Sharing" row on its About sheet. |
+
+### Other formats
+
+`pack --format` writes these beside `<skill>.html` and `<skill>.md`, only when asked (see "Output formats" in [Commands](Commands.md)). A **document** file is for people and carries the status phrase, the ProbeMatrix credit and, until sign-off, DRAFT; a **data** file is for another program.
+
+| File | Format or flag | What it is |
+|---|---|---|
+| `<pack>.docx` | `--format docx` | A Word document on A4, with the citations as endnotes |
+| `<pack>.paper.docx` | `--format docx --layout paper` | The board paper in Word: cover, decisions requested, numbered paragraphs, annexes |
+| `<pack>.pptx` | `--format pptx` | A 16:9 slide deck, with the citations and full text in the speaker notes |
+| `<pack>.email.html`, `<pack>.email.txt` | `--format email` | An email-safe digest (inline styles, no images, under 100 KB) and its plain-text twin |
+| `<pack>.<layout>.html` | `--layout cards`, `field`, `toolbox`, `checklist`, `poster` or `paper` | A page made for printing from the browser |
+| `<pack>.learner.<ext>` | `--view learner` | A learner copy of each document format, without answers |
+| `<pack>.scorm.zip` | `--format scorm` | A SCORM 1.2 course for an LMS: `imsmanifest.xml`, `index.html` and `scorm.js` |
+| `<pack>.gift.txt` | `--format gift` | The questions for a Moodle import, answer key included |
+| `<pack>.qti.zip` | `--format qti` | The questions as an IMS QTI 2.1 package |
+| `<pack>.quiz.csv` | `--format quiz-csv` | The questions as a spreadsheet, one row each |
+| `<pack>.<item-id>.svg`, `<pack>.<item-id>.png`, `<pack>.<item-id>.graphml` | `--format svg`, `png`, `graphml` | One file per graph item: a picture with every label whole, the same as a PNG, and the graph for yEd. On Hazira: `causal-map.causal-map.svg` |
+| `<pack>.bowtie.csv` | `--format bowtie-csv` | One row per barrier, for a bow-tie tool |
+| `<pack>.ics` | `--format ics --start YYYY-MM-DD` | All-day calendar reminders for the follow-ups; no attendee, no organiser |
+| `<pack>.<item-id>.srt`, `<pack>.<item-id>.narration.txt` | `--format srt`, `narration` | Subtitles and the narration only, from each video or radio script |
+| `<pack>.normalised.json` | `--format normalised` | The pack for other tools, with every id filled in, the coverage counts and the cited records |
+| `<pack>.actions.csv` | `--format csv` | The pack's actions for an action-tracking system; see the table below |
+| `learnings-register.docx`, `learnings-register.email.html`, `learnings-register.email.txt` | [register-render](commands/register-render.md) | The register in Word and as an email digest |
+
+A shared copy puts its mode before the last extension (`<pack>.external.docx`, `<pack>.email.external.html`), and a learner copy puts `learner` there (`<pack>.paper.learner.html`).
+
+### Translations and the brand file
+
+| File | Written by | What it is |
+|---|---|---|
+| `<pack>.strings.xlf`, `<pack>.strings.csv` | [strings extract](commands/strings.md) | The pack's text for a translator, as XLIFF 1.2 (the default) or CSV. Citations show as placeholders that must stay in place. Never overwritten, because it holds the translator's work. |
+| `<pack>-<lang>.json` | [strings apply](commands/strings.md) | The translated pack, for example `frontline-learning-cards-hi.json`. It names its source in `translation_of`, carries "Translated with AI assistance: have a fluent speaker check it before use" under the status, and is rendered with `pack` like any pack. Never overwritten, because it may hold a reviewed translation. |
+| `brand.json` | you | Your organisation's look for `pack --brand`: `organisation`, `accent` (a `#RRGGBB` colour with a contrast of at least 4.5:1 against white) and `logo` (a PNG or JPEG beside the file, at most 200 KB). Nothing else is accepted. |
 
 ### Files your organisation fills in
 
@@ -114,6 +149,7 @@ The engine writes these with the identifying columns filled in and every owner, 
 | `distribution.csv` | `templates distribution` | `pack`✱, `audience`✱, `channel`, `date`, `delivered_by_role`, `attendees`, `contractors_included` (yes or no; `y` and `n` count too), `questions_raised`, `concerns_escalated` |
 | `verification.jsonl` | `templates verification` | One line per learning: `lr_id`✱, `check_date`, `level` (communicated, understood, applied or effective), `evidence`, `assessed_by_role`. 25 lines for the Hazira register. |
 | `actions.csv`, `actions.json` | [export-actions](commands/export-actions.md) | `id`✱, `lr_id`✱, `change`✱, `hoc_tier`✱, `barrier`✱, `indicator`✱, `owner`, `due`, `status`, `capa_ref`, `effectiveness_check`, `cites`✱, `evidence_strength`✱. 44 actions from the Hazira register. Never overwritten: a second run refuses while either file exists (move them or pass a new `--out-dir`). |
+| `<pack>.actions.csv` | `pack --format csv` | The same columns as `actions.csv`, for one pack's recommendation, decision and indicator items. Never overwritten. |
 
 The dashboard reads `adoption.csv` and `distribution.csv` back for its reach and response columns.
 

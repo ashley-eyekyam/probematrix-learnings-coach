@@ -136,8 +136,13 @@ python3 tools/smoke_sample.py
 ```
 
 ```text
-smoke OK: 436 findings, 46 evidence, register 0 problems
+smoke: plan --workflow exits 0 for all 9 presets
+smoke: 23 fixture packs pass check-pack --strict
+smoke: 24 Hazira golden packs pass check-pack --strict and render in html,md,docx,pptx,email,csv
+smoke OK: 436 findings, 46 evidence, register 0 problems, language 0 errors
 ```
+
+Every `.docx` and `.pptx` the loop writes is also checked as a package (each part parses, every part has a content type and every link a target), so a file Word would offer to repair stops the smoke run. The golden packs stay drafts: the smoke run never signs anything off.
 
 ## `tools/sync-wiki.py`
 
@@ -245,7 +250,7 @@ python3 evals/run_evals.py check
 ```
 
 ```text
-118 evals over 23 skills: 35 trigger, 23 no-trigger, 26 collision, 34 router
+134 evals over 23 skills: 51 trigger, 23 no-trigger, 26 collision, 34 router
 OK
 ```
 

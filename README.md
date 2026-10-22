@@ -37,7 +37,17 @@ Audit test points · Investigator follow-up · Training modules · ER drills · 
 
 ## What's new in v2.0 so far
 
-v2.0 is in testing (current build: 2.0.0-alpha.5, Phase 3: the shared spine and the planner). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+
+**Phase 4 (2.0.0-alpha.6):**
+
+- **The learning arrives in the form people already use.** Besides the web page, any pack can now be a Word document, a slide deck you can edit, or an email-ready summary that fits in a message. The board brief can be set out as a formal board paper, with a cover page, the decisions requested and annexes.
+- **Pages made to be printed.** Pocket cards, one-page toolbox talks for the start of shift, field cards with a QR code that opens the full page on a phone, tick-box checklists with a "checked by" line, a wall poster and a printable record of who was briefed.
+- **Training that plugs into your learning system.** The training pack becomes a course your learning management system can run and score, and its quiz questions load straight into Moodle and other systems. A learner copy leaves the answers out.
+- **Other languages.** A pack can be sent to a translator and brought back as a new page, with the first translations in Hindi. Every translated page says it must be checked by a fluent speaker, and anything that says "stop" or "do not start" carries a back-translation to check against.
+- **Files other tools can open.** The causal map as a picture for a slide, or as a file for graph software; the barriers for bow-tie software; the actions for your action-tracking system; follow-up reminders for your calendar, counted only from a date you give.
+- **Your organisation's look.** Your name, colour and logo on the pages, papers and slides. The status line and the "not a statutory document" footer stay as they are.
+- **Easier to read, for everyone.** Each page says how long it takes to read, works with screen readers and the keyboard, and reads right to left where a language needs it. The Hazira sample now shows each of these outputs.
 
 **Phase 3 (2.0.0-alpha.5):**
 
@@ -123,7 +133,8 @@ All hosts need Python 3.9+ with `openpyxl` (see below).
 | Python | 3.9 or newer (tested on 3.14) | runs the engine `skills/learnings-coach/scripts/pmlc.py` | yes |
 | openpyxl | 3.1 or newer (`requirements.txt`) | reads the ProbeMatrix export and writes the register workbook | yes |
 | pytest | 8 or newer (`requirements-dev.txt`) | runs the test suite | contributors |
-| Node.js | 18 or newer | runs the JavaScript tests of the dashboard's Detailed register tab (skipped if absent) | contributors, optional |
+| Node.js | 18 or newer | runs the JavaScript tests: the dashboard's Detailed register tab, the SCORM quiz and the accessibility checks (skipped if absent; with Node, run `npm ci --prefix tests/js` once) | contributors, optional |
+| A Chromium-family browser (Chromium, Chrome or Edge) | any current | draws `pack --format png` pictures; without one the SVG is offered instead | optional |
 | git, and the GitHub CLI `gh` | any recent | cloning, pull requests | contributors |
 | A web browser | any current | opens `organisation-learning-map.html` (works offline) | yes |
 
@@ -187,3 +198,5 @@ MIT. See [`LICENSE`](LICENSE). Sample exports are derived from public-record rep
 ## Third-party code
 
 The QR code encoder in `skills/learnings-coach/scripts/pmlc_lib/vendor/qrcodegen.py` is Project Nayuki's QR Code generator library (MIT, tag v1.8.0), vendored unmodified; its licence is in `LICENSE-qrcodegen` beside it.
+
+The accessibility tests use axe-core 4.10.2 (MPL-2.0) and jsdom 25.0.1 (MIT), pinned in `tests/js/package.json` and installed by `npm ci --prefix tests/js`. They are test-only: neither ships with the skills or runs when you analyse an investigation.

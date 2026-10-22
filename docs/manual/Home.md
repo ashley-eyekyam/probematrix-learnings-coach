@@ -15,6 +15,8 @@ You do not need to type commands to use the coach. In Claude Code, Codex or anot
 
 When the request is broad ("what should we learn from this?"), the agent asks what the learnings are for, one question at a time, then proposes a **plan**: one of nine workflow presets, such as `leadership` or `full-cascade`, as a numbered list of steps. Nothing runs until you say OK, and each step must pass its check before the next starts. See [Let the coach plan the work](Workflows-and-recipes.md#let-the-coach-plan-the-work) and [Pick a workflow preset](Workflows-and-recipes.md#pick-a-workflow-preset).
 
+Every pack is a web page and a Markdown file by default. Ask for it in the form your readers use and the agent adds the right option: a Word document or board paper, slides, an email digest, printed cards, toolbox sheets, checklists or a poster, a course and quiz for your learning system, another language, a picture of the causal map, or calendar reminders. See "Output formats" in [Commands](Commands.md) and the recipes, from [A board paper in Word](Workflows-and-recipes.md#a-board-paper-in-word) on.
+
 ## How the manual is organised
 
 | Page | What it covers |
@@ -23,11 +25,11 @@ When the request is broad ("what should we learn from this?"), the agent asks wh
 | [Workflows and recipes](Workflows-and-recipes.md) | Common jobs from start to finish |
 | [Skills](Skills.md) | The 23 skills: which audience each serves and what it produces |
 | [Commands](Commands.md) | Every engine command, flag by flag, with real examples |
-| [Files and folders](Files-and-folders.md) | The run folder, the workspace, the outputs, the files your organisation fills in and the shared contracts |
+| [Files and folders](Files-and-folders.md) | The run folder, the workspace, the outputs and every other format, translations, the files your organisation fills in and the shared contracts |
 | [Review and sharing](Review-and-sharing.md) | Draft status, sign-off by a reviewer, sharing outside the organisation |
 | [Language checks](Language-checks.md) | The just-culture and grounding checks (JC1 to JC12) |
 | [Troubleshooting](Troubleshooting.md) | Messages you may see and what to do |
-| [Glossary](Glossary.md) | HFACS levels, clusters, tiers, relations and other terms |
+| [Glossary](Glossary.md) | HFACS levels, clusters, tiers, relations, the quiz and translation formats (GIFT, QTI, SCORM, XLIFF) and other terms |
 | [Developer tools](Developer-tools.md) | Repository tools, the eval runner and environment variables |
 
 ## The worked example
