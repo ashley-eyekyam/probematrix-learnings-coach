@@ -79,6 +79,19 @@ def load_brand(path) -> Brand:
     return Brand(org.strip() if org else None, accent, data, mime)
 
 
+def shared_brand(brand, share):
+    """The brand as a --share external|public copy shows it (final review I1): the organisation name goes through the
+    same masking as the pack text, so a name the orgs list holds becomes [organisation]; a public copy also drops the
+    logo, which identifies the organisation by itself. No share, or no brand: the brand unchanged."""
+    if brand is None or share is None:
+        return brand
+    from ..privacy import share_text
+    org = share_text(brand.organisation, share) if brand.organisation else brand.organisation
+    if getattr(share, "mode", None) == "public":
+        return brand._replace(organisation=org, logo_bytes=None, logo_mime=None)
+    return brand._replace(organisation=org)
+
+
 def brand_css(brand) -> str:
     """The accent override (light theme; the dark theme's own rule is more specific) and the logo rule; "" for no brand."""
     if brand is None:

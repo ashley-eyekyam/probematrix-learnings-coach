@@ -10,7 +10,7 @@ from ..handling import effective_handling, name_guard, share_ctx, share_gate, sh
 from ..pack.html import follow_up, update_gaps
 from ..pack.schema import _checked as _pack_checked, embedded_ids, record_check, with_item_ids
 from ..render import build_date, DEFAULT_FORMATS, render, RenderContext
-from ..render.brand import load_brand
+from ..render.brand import load_brand, shared_brand
 from ..render.exports import follow_up_csv, KEEP_FORMATS, refuse_existing
 from ..util import _abs, write_json
 from ..workspace import is_standard_ws, outputs_dir, warn_stale
@@ -40,7 +40,7 @@ def cmd_pack(a):
     share = share_ctx(a, w, mode) if mode != "internal" else None
     rw, rpack = (shared_copy(w, share, w), shared_copy(pack, share, w)) if share else (w, pack)
     ctx = RenderContext(w=rw, pack=with_item_ids(rpack), run=run, generated=build_date(), embed=embed, eh=eh,
-                        share=share, brand=load_brand(a.brand) if getattr(a, "brand", None) else None,
+                        share=share, brand=shared_brand(load_brand(a.brand), share) if getattr(a, "brand", None) else None,
                         view=getattr(a, "view", None) or "full", src=Path(a.pack),
                         start=getattr(a, "start", None))
     ctx.layout, ctx.paper = getattr(a, "layout", None), getattr(a, "paper", None) or "A4"     # Task 13 (P4-7)

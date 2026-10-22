@@ -15,7 +15,7 @@ from ..handling import (
     effective_handling, HANDLING_CSS, handling_lines, is_draft, name_guard, public_records, RIBBON_HTML, share_ctx,
     refuse_internal_overwrite, share_gate, shared_copy, SHARED_LINE, shared_name, SHARED_SOURCE, status_line
 )
-from ..render.brand import brand_css, brand_header, load_brand
+from ..render.brand import brand_css, brand_header, load_brand, shared_brand
 from ..register.check import HOC_TIERS, norm_entity, norm_hoc
 from ..register.xlsx import refuse_pack_as_register
 from ..util import _int, _s
@@ -101,6 +101,7 @@ def cmd_dashboard(a):
     mode = share_gate(hdoc0, w, a, src=a.register, ws=ws)   # a dashboard without a signed register stays inside
     eh = effective_handling(hdoc0, w, src=a.register, ws=ws)
     share = share_ctx(a, w, mode) if mode != "internal" else None
+    brand = shared_brand(brand, share)                                   # I1: the shared copy masks the brand too
     if share:
         w, reg0 = shared_copy(w, share, w), shared_copy(reg0, share, w)
         if isinstance(reg0, dict) and reg0.get("source"):
