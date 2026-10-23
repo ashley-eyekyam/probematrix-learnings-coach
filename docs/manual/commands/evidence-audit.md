@@ -37,7 +37,7 @@ python3 $E evidence-audit $WS
 python3 $E evidence-audit $WS --table-item levels
 ```
 
-On Hazira this gives 284 direct and 152 corroborated findings, none inferred; 205 single-source findings, 195 whose evidence is all documents, and 11 level-3 findings with a witness statement. EVD-8645 supports 67 findings, the largest concentration.
+On Hazira this gives 284 direct and 152 corroborated findings, none inferred; 203 single-source findings, 195 whose evidence is all documents, and 11 level-3 findings with a witness statement. EVD-8645 supports 67 findings, the largest concentration.
 
 ## Common problems
 

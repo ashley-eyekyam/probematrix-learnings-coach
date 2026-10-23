@@ -72,7 +72,7 @@ def audit(w: dict) -> dict:
         lv = levels.get(str(f.get("level")))
         if lv is not None:
             lv["findings"] += 1
-        if len(ids) == 1:
+        if len(f.get("evidence") or []) == 1:  # raw column rule: the plan and spec calibration value (203)
             single.append(f["id"])
             if lv is not None:
                 lv["single_source"] += 1
