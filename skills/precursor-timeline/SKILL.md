@@ -20,6 +20,8 @@ test in §1a, and `learnings-coach/references/indicators-and-effectiveness.md` f
 PMLC timeline <ws> --before incident                     # every dated mention before the event, with snippets
 PMLC timeline-item <ws> --before incident --top 12       # the same candidates as a ready timeline item
 PMLC timeline <ws> --on incident                         # clock times on the day -> timeline_event_day.json
+PMLC missed-opportunities <ws>                           # -> missed_opportunities.json: the three sets, counted
+PMLC missed-opportunities <ws> --timeline-item --top 12  # the dated missed opportunities as a ready timeline item
 ```
 
 The engine finds dates; you decide which are signals. Many candidates are duplicates or context dates (a
@@ -43,11 +45,21 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/precursor-tim
 |---|---|---|---|---|---|
 | — | bottom_line | — | The longest-running or most repeated signal, and what was done with it | `bottom_line` | up to 7 |
 | 1 | `signals` | Signals before the event | One timeline. Each event: `date` (as precise as the source allows), `text` (the signal in one line), `signal: true`, `received_by` (entity and tier), `response` ("None recorded" is an answer), `knowable_then` (what the receiver could know at that moment; leave out hindsight-only signals), `cites` | `timeline` | 1 |
-| 2 | `event-day` | The event sequence | A second timeline, from `timeline_event_day.json` and the narrative: what happened on the day, in order | `timeline` | 1 |
-| 3 | `signal-learnings` | Signal learnings | Patterns in how signals were handled (no escalation path, closure without verification, schedules that slide when a job runs late, repeated repairs treated as normal); `owner` = the entity and tier that must change how it handles signals | `learning` | up to 6 |
-| 3 | `signal-learnings` | Signal learnings | One leading indicator after each learning: what the owner will count, from which record | `indicator` | up to 6 |
+| 2 | `missed` | Missed opportunities | One timeline from `missed-opportunities --timeline-item` (below): each event a dated chance to learn, citing a finding that names a recommendation or a failure to correct, with `knowable_then` and `response` | `timeline` | optional, up to 1 |
+| 3 | `event-day` | The event sequence | A second timeline, from `timeline_event_day.json` and the narrative: what happened on the day, in order; `knowable_then` on each event | `timeline` | 1 |
+| 4 | `signal-learnings` | Signal learnings | Patterns in how signals were handled (no escalation path, closure without verification, schedules that slide when a job runs late, repeated repairs treated as normal); `owner` = the entity and tier that must change how it handles signals | `learning` | up to 6 |
+| 4 | `signal-learnings` | Signal learnings | One leading indicator after each learning: what the owner will count, from which record | `indicator` | up to 6 |
 
 Carry `learning: "LR-nn"` on a signal learning that expresses a register learning (`skill-common.md` §3).
+Every event of every timeline carries `knowable_then` (profile rule `knowable-then`): text, or `true`/`false`.
+
+**Missed opportunities** (`missed`). Start from the `--timeline-item` output: keep its `date`s and choose the events
+whose `cites` hold a finding from `prior_recommendation` or `failure_to_correct` in `missed_opportunities.json`;
+narrow `cites` to those findings plus their evidence. Rewrite `text` as the chance to learn, add `response` (what
+was done with it) and replace `knowable_then: true` with what was on record then. A finding in the
+`prior_recommendation` set may quote the investigation's own later recommendation: place the event for what was on
+record at its date, and never present a later recommendation as one that existed then. Leave the section out when
+the item is empty.
 
 ```json
 {"date": "2022-03", "text": "Seals bought locally without a specification", "signal": true,
@@ -70,8 +82,9 @@ Follow `skill-common.md` §6, and:
 
 - How the factors connect as a causal chain: `causal-map`.
 - Which barriers were degraded on the day: `barrier-learnings`.
-- Earlier recommendations that were never acted on, across incidents: a later v2.0 skill
-  (`failure-to-learn-review`); here, list them as signals only.
+- Why earlier recommendations and failures to correct did not lead to change, step by step through the learning
+  cycle: `failure-to-learn-review`. The same `missed-opportunities` engine feeds both; here they are placed on the
+  timeline as the `missed` events that were knowable then.
 
 ## Check and hand over
 
@@ -85,4 +98,5 @@ PMLC pack <ws> <run>/outputs/precursor-timeline.json --layout poster  # -> precu
 
 The poster prints the bottom line, up to six signal learnings and the first timeline across one A3 landscape
 page, for a control room or a canteen wall; add `--base-url <URL>` to print a QR code to the published pack.
-Tell the user how many signals were kept, how far back the earliest goes, and which had no recorded response.
+Tell the user how many signals and missed opportunities were kept, how far back the earliest goes, and which had
+no recorded response.

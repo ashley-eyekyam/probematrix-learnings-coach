@@ -1,0 +1,37 @@
+{
+ "evals": [
+  {
+   "id": 2001,
+   "owner": "precursor-timeline",
+   "skill": "precursor-timeline",
+   "kind": "trigger",
+   "prompt": "From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), put the earlier audit recommendations and repeat repairs that could have warned us on the precursor timeline, with what each one's receiver could know at the time.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "precursor-timeline"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "precursor-timeline"
+    },
+    {
+     "type": "section_exists",
+     "pack": "precursor-timeline",
+     "section": "missed"
+    },
+    {
+     "type": "language_clean",
+     "pack": "precursor-timeline"
+    },
+    {
+     "type": "routes_to",
+     "skill": "precursor-timeline"
+    }
+   ]
+  }
+ ]
+}

@@ -5,8 +5,11 @@
   {"id": "signals", "heading": "Signals before the event", "items": [
    {"kind": "timeline", "events": [{"date": "2022-03", "text": "Seals bought locally without a specification", "signal": true,
      "knowable_then": "The purchase record was visible to Stores at the time, but no check asked for a specification.", "received_by": "Materials Management (F06, T1)", "response": "None recorded", "cites": ["FND-0003", "EVD-0003"]}]}]},
+  {"id": "missed", "heading": "Missed opportunities", "items": [
+   {"kind": "timeline", "events": [{"date": "2023", "text": "The procedure index still had no return-to-service checklist", "signal": true,
+     "knowable_then": "The index was open to the maintenance supervisor and the procedure owner.", "received_by": "Mechanical Maintenance (F02, T3)", "response": "None recorded", "cites": ["FND-0002", "EVD-0002"]}]}]},
   {"id": "event-day", "heading": "The event sequence", "items": [
-   {"kind": "timeline", "events": [{"date": "2024-03-12", "text": "Seal changed; pump restarted without a leak test", "cites": ["FND-0001", "EVD-0001"]}]}]},
+   {"kind": "timeline", "events": [{"date": "2024-03-12", "text": "Seal changed; pump restarted without a leak test", "knowable_then": true, "cites": ["FND-0001", "EVD-0001"]}]}]},
   {"id": "signal-learnings", "heading": "Signal learnings", "items": [
    {"kind": "learning", "lesson": "A buying practice is a signal when nobody owns the risk it carries.",
     "explanation": "The reliability engineer role that would review it was absent [FND-0003].", "owner": "Plant & Asset Leadership (F13, T4)",

@@ -25,9 +25,17 @@ Draft because: no finding is marked as edited by a person
   - Response: None recorded
   - Knowable then: The purchase record was visible to Stores at the time, but no check asked for a specification.
 
+## Missed opportunities
+
+- c. 2023 (about 1 year before): The procedure index still had no return-to-service checklist *(weak signal)* [FND-0002; EVD-0002]
+  - Received by: Mechanical Maintenance (F02, T3)
+  - Response: None recorded
+  - Knowable then: The index was open to the maintenance supervisor and the procedure owner.
+
 ## The event sequence
 
 - 2024-03-12: Seal changed; pump restarted without a leak test [FND-0001; EVD-0001]
+  - Knowable then: yes
 
 ## Signal learnings
 
@@ -42,8 +50,8 @@ The reliability engineer role that would review it was absent [FND-0003].
 
 ---
 
-This pack cites 1 of 2 relevant findings.
+This pack cites 2 of 2 relevant findings.
 
-1 of 2 top-rated relevant findings cited.
+2 of 2 top-rated relevant findings cited.
 
 > Generated with ProbeMatrix Learnings Coach v2.0.0a6 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
