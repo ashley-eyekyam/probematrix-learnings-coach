@@ -16,6 +16,12 @@ when only an .xlsx was given: it runs `classify` too). Needs: `workspace`. Read
 `learnings-coach/references/learning-principles.md` and `learnings-coach/references/ontology.md` §3 (the
 taxonomy: entities with their `tags`, tiers, relations).
 
+**A process-industry site** (refinery, chemicals, gas terminal, storage): add `--industry process` to `setup` or
+`classify`. It loads the industry reference pack in `learnings-coach/references/industry/process/` (role words for
+permits, isolation, alarms, relief systems, turnarounds and change, with `barriers.md`, `indicators.md` and
+`glossary.json`) before any site overlay. It is method reference, not evidence: it changes where findings are
+placed, never what they say.
+
 ## Gather
 
 ```bash
@@ -53,9 +59,11 @@ tell the user that tier and entity packs will miss those findings.
 ```bash
 PMLC classify <ws> --org-chart <departments.csv>         # rows without an entity become F20, F21, …
 PMLC classify <ws> --overlay india-process-site          # site or country role words (references/overlays/)
+PMLC classify <ws> --industry process                    # process-industry role words, applied before any overlay
 ```
 
-Both are remembered by later `classify` runs (`--no-org-chart`, `--no-overlay` forget them). For a full custom
+All three are remembered by later `classify` runs (`--no-org-chart` forgets the chart, `--no-overlay` the overlay
+and the industry pack). For a full custom
 taxonomy, copy `learnings-coach/references/taxonomy.json` and pass `--taxonomy <file>`; keep IDs stable once
 outputs are shared, and give new entities `tags` (`emergency`, `supply`, `contractor` …) so the audience
 skills, which select by tag, still find them.
@@ -75,7 +83,7 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/learning-clus
 | 4 | `top-clusters` | Top clusters | One `para` per cluster, `group` = the cluster: what it owns and its highest-rated finding | `para` | up to 5 |
 | 5 | `leftovers` | Unresolved items | Role string, Decision, Reason; write "(a personal name)", never the name | `table` | 1 |
 | 6 | `statutory` | Statutory posts named | From `clusters.json` `statutory_roles`: Role, Statutory post, Regime, Findings; a prompt to check the duty, not a conclusion | `table` | optional, up to 1 |
-| 7 | `taxonomy` | Taxonomy adaptation | Only if you used an org chart, overlay or custom taxonomy: what changed and why | `para` | optional |
+| 7 | `taxonomy` | Taxonomy adaptation | Only if you used an org chart, overlay, industry pack or custom taxonomy: what changed and why; with `--industry`, note the reference banner `classify` printed, "Industry reference: process (method reference, not evidence)" | `para` | optional |
 
 ## If the evidence is thin
 

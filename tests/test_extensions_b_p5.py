@@ -146,3 +146,16 @@ def test_investigator_coach_reads_the_evidence_audit():
     golden = load(SAMPLE_OUT / "investigator-coach.json")
     first = golden["sections"][0]
     assert first["id"] == "evidence-audit" and first["items"][0]["id"] == "evidence-scorecard-table"
+
+
+# ----------------------------------------------------------------------------- learning-clusters: industry pack (P5-16)
+
+def test_learning_clusters_shows_the_industry_pack():
+    from pmlc_lib.util import INDUSTRY_BANNER
+    text = read(SKILLS / "learning-clusters" / "SKILL.md")
+    before = section(text, "Before you start")
+    assert "--industry process" in before and "learnings-coach/references/industry/process/" in before, before
+    assert "PMLC classify <ws> --industry process" in section(text, "Gather")
+    banner = INDUSTRY_BANNER.format("process")
+    taxonomy = [x for x in section(text, "Write").splitlines() if "`taxonomy`" in x or "**Taxonomy" in x]
+    assert any(banner in x for x in taxonomy), taxonomy
