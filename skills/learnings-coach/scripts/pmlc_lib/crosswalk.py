@@ -84,7 +84,7 @@ def crosswalk(w, register, framework, system_csv=None, adoption=None, distributi
     return {"framework": "system" if system_csv else framework, "title": title, "rows": out}
 
 
-def table_item(cw) -> dict:
+def crosswalk_table_item(cw) -> dict:
     rows = [[f"{r['id']} {r['title']}", r["status"], ", ".join(r["evidence_here"]) or "none",
              r["organisation_must_show"]] for r in cw["rows"]]
     cites = [r["cites"] for r in cw["rows"]]
@@ -118,7 +118,7 @@ def cmd_crosswalk(a):
     cw = crosswalk(load_ws(ws), data if isinstance(data, dict) else {"entries": data}, a.framework, a.system_csv,
                    adoption, distribution)
     if a.table_item:
-        print(json.dumps(table_item(cw), indent=1, ensure_ascii=False))
+        print(json.dumps(crosswalk_table_item(cw), indent=1, ensure_ascii=False))
     elif a.json:
         print(json.dumps(cw, indent=1, ensure_ascii=False))
     else:
