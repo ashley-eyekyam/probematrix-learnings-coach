@@ -62,6 +62,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | engineers, integrity, MOC owners | `engineering-integrity-learnings` | it is the barrier view (`barrier-learnings`) |
 | procurement, stores, contractors | `supply-chain-contractor-learnings` | it is a function manager's change (`manager-coach`) |
 | enterprise risk, risk register, bow-tie | `risk-register-update` | it is the barrier view (`barrier-learnings`) |
+| HR, staffing, qualification, rostering | `people-workforce-learnings` | it is course content (`training-designer`) |
 | safety committee, workforce reps | `safety-committee-guide` | it is a frontline card (`frontline-learning-cards`) |
 | all learnings for one department | `cluster-learning-dossier` | it is a manager's change list (`manager-coach`) |
 | grouping by function, tier and role; placing roles | `learning-clusters` | it is the whole-organisation map (`organisation-learning-map`) |

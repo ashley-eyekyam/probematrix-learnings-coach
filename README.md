@@ -104,6 +104,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide 
 | `engineering-integrity-learnings` | engineering, integrity, MOC, I&C | technical learnings and decisions |
 | `supply-chain-contractor-learnings` | procurement, stores, vendors, contractors | sourcing and contractor learnings |
 | `risk-register-update` | ERM leads, risk owners, insurers' risk engineers | proposed risk-register and bow-tie changes, risk-changes CSV |
+| `people-workforce-learnings` | HR, workforce planning, rostering, competence frameworks | people-system learnings, competence-framework changes |
 | `safety-committee-guide` | safety committees, workforce reps | discussion guide and questions |
 
 All skills share one engine, `skills/learnings-coach/scripts/pmlc.py`, which does the counting, filtering, causal extraction and file writing deterministically, so the model spends its effort on judgement.

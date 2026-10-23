@@ -219,6 +219,21 @@
     "word_limits": {},
     "coverage_floor": 0.25
   },
+  "people-workforce-learnings": {
+    "sections": [
+      {"id": "banner", "kinds": ["para"], "min": 1, "max": 1},
+      {"id": "system", "kinds": ["learning"], "min": 1, "max": 8},
+      {"id": "competence-framework", "kinds": ["table"], "min": 1, "max": 1},
+      {"id": "rostering", "kinds": ["learning"], "min": 0, "max": 4},
+      {"id": "handoff", "kinds": ["para"], "min": 1, "max": 1}
+    ],
+    "rules": ["banner:people"],
+    "lint_errors": ["JC2"],
+    "required_scope": ["tiers"],
+    "bottom_line": {"min": 1, "max": 5},
+    "word_limits": {},
+    "coverage_floor": 0.25
+  },
   "precursor-timeline": {
     "sections": [
       {"id": "signals", "kinds": ["timeline"], "min": 1, "max": 1},

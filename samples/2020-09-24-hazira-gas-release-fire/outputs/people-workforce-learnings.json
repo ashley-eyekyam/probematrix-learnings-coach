@@ -1,0 +1,110 @@
+{
+ "pack": "people-workforce-learnings",
+ "schema": 1,
+ "skill": "people-workforce-learnings",
+ "title": "People & Workforce Learnings: Hazira gas terminal release and fire, 2020",
+ "audience": "HR and workforce planning: HR business partners, workforce planners, rostering owners and competence-framework owners",
+ "status": "Learning purposes: not a statutory document. Draft learnings from a ProbeMatrix investigation export; validate them before adoption.",
+ "scope": {"tiers": ["T3", "T4"], "levels": [2, 3, 4], "tags": ["people"], "entities": ["F12"]},
+ "data_quality": [
+  {"text": "Draft learnings from an unreviewed analysis: the export's Investigation Status is in_progress and no finding is marked as edited by a person, so this pack stays a draft until the investigation is completed and reviewed.", "cites": []}
+ ],
+ "bottom_line": [
+  {"text": "No qualification was defined for the control-room role, so people held emergency duty after a four-day general course.", "cites": ["FND-6CBACB54", "FND-7885BCF5", "EVD-5634"], "learning": "LR-12"},
+  {"text": "Rostering had no rule that each shift include a person with practised emergency-isolation competence.", "cites": ["FND-0AEE9898", "FND-8EC441F3", "EVD-5634", "EVD-1460"], "learning": "LR-12"},
+  {"text": "A pressure-boundary repair was manned like routine work: no inspector, no test witness and no close-out reviewer.", "cites": ["FND-615DB819", "FND-7DF14ADB", "EVD-2894", "EVD-0591"], "learning": "LR-03"},
+  {"text": "The authority to isolate in an emergency sat with senior roles, not with the role that saw the alarm first.", "cites": ["FND-7505B1AF", "EVD-4052"], "learning": "LR-07"},
+  {"text": "Drill records held no observations, so they could not show whether emergency competence was improving.", "cites": ["FND-332DC593", "EVD-2130"], "learning": "LR-24"}
+ ],
+ "sections": [
+  {"id": "banner", "heading": "About this pack", "items": [
+   {"kind": "para", "text": "Learnings about systems, not individuals' records."}
+  ]},
+  {"id": "system", "heading": "People-system learnings", "items": [
+   {"kind": "learning", "id": "qualification-undefined", "group": "Qualification and authorisation",
+    "lesson": "A safety-critical role needs a defined qualification before anyone is assigned to it.",
+    "explanation": "The enquiry records that the qualification of control-room staff was not defined in HR or operations policy, that new and transferred staff received a four-day general course, and that most staff had attended one basic course since 2018 [EVD-5634]. With no qualification to meet, there was nothing to check before a person took emergency duty. The committee's own benchmark was at least one month of training, preferably on simulators, before control-room duties [EVD-5634].",
+    "owner": "HR and operations policy owners", "learning": "LR-12", "evidence_strength": "direct",
+    "cites": ["FND-6CBACB54", "FND-7885BCF5", "FND-FA1C9404", "FND-057E89A7", "EVD-5634"],
+    "supporting_cites": ["FND-78ED8552"]},
+   {"kind": "learning", "id": "selection-placement", "group": "Selection and placement",
+    "lesson": "Recruitment and transfer into the control room had no role-specific standard, so placement rested on availability.",
+    "explanation": "The same four-day general programme served new recruits and transferred staff alike, and the policy set no qualification for the post [EVD-5634]. The findings read this as a selection-and-placement gap, not only a training gap: the night-shift posts were filled from the same broadly trained population [EVD-1460]. The programme risk of staffing a major-hazard control room this way was not assessed.",
+    "owner": "HR business partner for operations", "learning": "LR-12", "evidence_strength": "corroborated",
+    "cites": ["FND-954553FD", "FND-337CB67F", "FND-47E58DF8", "EVD-5634", "EVD-1460"]},
+   {"kind": "learning", "id": "standard-unowned", "group": "Oversight of people standards",
+    "lesson": "A known competence gap stays open when no one owns the standard and checks it before rostering.",
+    "explanation": "The training posture for control-room staff was known and accepted: the findings place the gap with operations management and the policy that allowed it [EVD-5634]. No rule tied assignment to emergency duty to a passed assessment, so the gap was carried from 2018 to the night of the release.",
+    "owner": "Competence-framework owner", "learning": "LR-12", "evidence_strength": "direct",
+    "cites": ["FND-42043FE6", "FND-14D093BD", "FND-02B682F3", "FND-268CA069", "EVD-5634"],
+    "supporting_cites": ["FND-E44E0EDA", "FND-F6B552F6"]},
+   {"kind": "learning", "id": "authority-to-isolate", "group": "Qualification and authorisation",
+    "lesson": "Role descriptions must say who may isolate in an emergency, or the decision climbs the hierarchy while the release grows.",
+    "explanation": "The disaster management plan gave no isolation criteria, so the authority to order isolation effectively sat with the most senior shift roles [EVD-4052]. The control-room engineers telephoned the shift in-charges instead of isolating [EVD-1460], and the first isolating valve was closed after the senior officers arrived [EVD-7340].",
+    "owner": "Workforce planning with operations leadership", "learning": "LR-07", "evidence_strength": "corroborated",
+    "cites": ["FND-7505B1AF", "FND-36179046", "EVD-4052", "EVD-1460", "EVD-7340"]},
+   {"kind": "learning", "id": "task-authorisation", "group": "Qualification and authorisation",
+    "lesson": "Authorising a crew for safety-critical maintenance needs a task-level competence standard, not only a job title.",
+    "explanation": "Crews were authorised for pressure-boundary work on the meter without the OEM specification or a test to design pressure [EVD-8645] [EVD-2894], and a calibration crew for the same meter worked without a checklist and left a range change out of the signed record [EVD-2506]. No record shows who authorised the switch to locally bought seals [EVD-8645].",
+    "owner": "Maintenance competence-framework owner", "evidence_strength": "direct",
+    "cites": ["FND-A3D7D53F", "FND-A534A1C3", "FND-2CEE8915", "EVD-8645", "EVD-2894", "EVD-2506"]},
+   {"kind": "learning", "id": "drill-evidence", "group": "Oversight of people standards",
+    "lesson": "Drill records that hold only dates cannot serve as evidence that emergency competence is being kept up.",
+    "explanation": "Fire drill reports in SAP held no actions or observations, and a separate dataset was kept outside the approved guidelines [EVD-2130]. A competence framework that relies on drills for refresher evidence needs the drill record to capture timings, observations and actions.",
+    "owner": "Competence-framework owner with HSE", "learning": "LR-24", "evidence_strength": "direct",
+    "cites": ["FND-332DC593", "FND-BFABC63C", "FND-A532B8F8", "EVD-2130"],
+    "supporting_cites": ["FND-BC32F8F7", "FND-7F27ED51"]}
+  ]},
+  {"id": "competence-framework", "heading": "Competence framework: what to define", "items": [
+   {"kind": "table", "columns": ["Role", "What the export shows", "What the framework should define"],
+    "rows": [
+     ["Control-room operator", "Four-day general course; qualification not defined in policy; most staff on one basic course since 2018; no simulator practice", "A qualification with simulator emergency scenarios, a pass standard, assessment before rostering and a refresher interval"],
+     ["Shift in-charge (emergency command)", "No isolation criteria in the plan; isolation waited for senior officers", "Emergency-command competence, including the delegated authority and criteria to isolate"],
+     ["Maintenance fitter on pressure-boundary work", "Work done without the OEM specification and without a test to design pressure", "Task authorisation for pressure-boundary work, including the specification check and the pressure test"],
+     ["Instrument calibration technician", "Range changed and reversed with no checklist and no entry in the signed record", "Calibration competence that includes as-found and as-left recording and second-person verification"],
+     ["Independent checker or test witness", "No such role was assigned to the gasket replacement", "Who may act as the independent checker on safety-critical work, and the competence that role needs"],
+     ["Electrical inspector (hazardous-area equipment)", "Post-incident audit report was one generic page that grouped all nine lamps", "Inspection competence for hazardous-area equipment, including recording each item's condition"]
+    ],
+    "row_cites": [
+     ["FND-6CBACB54"],
+     ["FND-36179046", "FND-7505B1AF"],
+     ["FND-A3D7D53F"],
+     ["FND-A534A1C3"],
+     ["FND-F8C125D5"],
+     ["FND-B1D1AAC1"]
+    ]}
+  ]},
+  {"id": "rostering", "heading": "Rostering, manning and workload", "items": [
+   {"kind": "learning", "id": "shift-composition", "group": "Crew and team composition",
+    "lesson": "A roster needs a rule that every shift includes at least one person qualified for the emergency the post may face.",
+    "explanation": "The night-shift control room was held by two engineers drawn from the same four-day-trained population, so neither could compensate for the other [EVD-5634] [EVD-1460]. Both went out to find the leak and were driven back by the cloud [EVD-9220].",
+    "owner": "Rostering owner for operations", "learning": "LR-12", "evidence_strength": "corroborated",
+    "cites": ["FND-0AEE9898", "FND-8EC441F3", "FND-E4596837", "EVD-5634", "EVD-1460", "EVD-9220"],
+    "supporting_cites": ["FND-D2343F46", "FND-E3D07562"]},
+   {"kind": "learning", "id": "safety-critical-manning", "group": "Crew and team composition",
+    "lesson": "Safety-critical maintenance needs to be manned with an independent checker, a test witness and a close-out reviewer, not only the person doing the work.",
+    "explanation": "The 18 September 2020 gasket replacement was resourced with no quality check of the part [EVD-8645], no one to perform or witness a design-pressure test [EVD-2894], and no one to close the notification [EVD-0591]. The only control left was the executing crew's own knowledge.",
+    "owner": "Workforce planner for maintenance", "learning": "LR-03", "evidence_strength": "corroborated",
+    "cites": ["FND-615DB819", "FND-7DF14ADB", "FND-F8C125D5", "EVD-8645", "EVD-2894", "EVD-0591"]},
+   {"kind": "learning", "id": "calibration-team", "group": "Crew and team composition",
+    "lesson": "Critical calibration work needs a second person in the team to verify and record every setting change.",
+    "explanation": "During the December 2019 calibration of the meter, the range was changed from 16000 to 2540 mmwc and back with no mention in the signed records and no checklist [EVD-2506]. No independent verifier was part of the team.",
+    "owner": "Workforce planner for instrumentation", "learning": "LR-16", "evidence_strength": "direct",
+    "cites": ["FND-7C8ADD7C", "EVD-2506"]}
+  ]},
+  {"id": "handoff", "heading": "Hand-off to training design", "items": [
+   {"kind": "para", "text": "For `training-designer`: the training needs this pack found are simulator or tabletop scenarios in which access to the source is denied and the crew must isolate from a distance [EVD-5634] [EVD-1460]; the specification check and the test to design pressure for pressure-boundary work [EVD-8645] [EVD-2894]; as-found and as-left recording in calibration [EVD-2506]; and recording observations and actions after each drill [EVD-2130]. This pack sets the standard and the staffing rule; the course content belongs there.",
+    "cites": ["FND-E3D07562", "FND-337CB67F", "FND-057E89A7", "FND-A3D7D53F", "FND-A534A1C3", "FND-BFABC63C", "EVD-5634", "EVD-1460", "EVD-8645", "EVD-2894", "EVD-2506", "EVD-2130"]}
+  ]}
+ ],
+ "exclusions": [
+  {"id": "FND-42BEF461", "reason": "Matched the people codes on the word 'authorised' only; it describes the seal substitution practice, which supply-chain-contractor-learnings and engineering-integrity-learnings carry (LR-01)."},
+  {"id": "FND-5919B328", "reason": "Matched the people codes on the word 'authorised' only; it describes the return to service without a hydrostatic test, which engineering-integrity-learnings carries (LR-02)."},
+  {"id": "FND-ABDADA0C", "reason": "Matched the people codes on the word 'authorised' only; it describes the painting-only corrosion remedy, which engineering-integrity-learnings carries (LR-17)."}
+ ],
+ "limits": [
+  "The export holds no evidence on working hours, fatigue or overtime; this pack does not infer fatigue.",
+  "F12 is one entity for HR, training and competence in this taxonomy (no F12a/F12b split), so training findings and people-system findings share it; course content is left to training-designer.",
+  "The analysis is a desk review of the published enquiry report; it had no access to HR records, rosters or interviews, and it does not review any individual."
+ ]
+}

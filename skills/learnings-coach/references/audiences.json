@@ -309,5 +309,37 @@
     },
     "reading_level": "executive",
     "skill": "risk-register-update"
+  },
+  {
+    "id": "hr-workforce",
+    "label": "HR and workforce planning",
+    "typical_people": "HR business partners, workforce planners, rostering and fatigue owners, competence-framework owners",
+    "controls": "selection and staffing standards, role qualifications, crew composition, rosters and workload",
+    "needs": "system learnings on selection, qualification and manning, and the competence framework to change",
+    "tier": "T3",
+    "levels": [
+      2,
+      3,
+      4
+    ],
+    "default_scope": {
+      "tiers": [
+        "T3",
+        "T4"
+      ],
+      "levels": [
+        2,
+        3,
+        4
+      ],
+      "tags": [
+        "people"
+      ],
+      "entities": [
+        "F12"
+      ]
+    },
+    "reading_level": "plain",
+    "skill": "people-workforce-learnings"
   }
 ]

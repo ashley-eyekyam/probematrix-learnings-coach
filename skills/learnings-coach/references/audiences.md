@@ -18,5 +18,6 @@ Who learns from an investigation, what they control, and which skill serves them
 | Contractors and supply chain | procurement, stores, vendors, OEMs, contractors | specifications, sourcing, contractor work | sourcing, specification and contractor learnings | `supply-chain-contractor-learnings` |
 | Workforce representatives | safety committee members, union safety reps | consultation, raising concerns | discussion guide, questions to raise | `safety-committee-guide` |
 | Enterprise risk management | ERM leads, risk owners, insurers' risk engineers | the risk register, bow-ties, control ratings, risk acceptance and key risk indicators | proposed risk-register and bow-tie changes with the evidence behind each, for the risk owner to assess | `risk-register-update` |
+| HR and workforce planning | HR business partners, workforce planners, rostering and fatigue owners, competence-framework owners | selection and staffing standards, role qualifications, crew composition, rosters and workload | system learnings on selection, qualification and manning, and the competence framework to change | `people-workforce-learnings` |
 
 Registers by audience: frontline short and concrete; supervisors checklists; managers systems and indicators; leadership decisions and trade-offs; board questions and assurance; auditors test criteria.
