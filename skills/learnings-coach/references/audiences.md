@@ -17,5 +17,6 @@ Who learns from an investigation, what they control, and which skill serves them
 | Engineering and integrity | design, MOC, document control, integrity, reliability | technical standards, change, inspection | design, MOC and integrity learnings | `engineering-integrity-learnings` |
 | Contractors and supply chain | procurement, stores, vendors, OEMs, contractors | specifications, sourcing, contractor work | sourcing, specification and contractor learnings | `supply-chain-contractor-learnings` |
 | Workforce representatives | safety committee members, union safety reps | consultation, raising concerns | discussion guide, questions to raise | `safety-committee-guide` |
+| HR and workforce planning | HR business partners, workforce planners, rostering and fatigue owners, competence-framework owners | selection and staffing standards, role qualifications, crew composition, rosters and workload | system learnings on selection, qualification and manning, and the competence framework to change | `people-workforce-learnings` |
 
 Registers by audience: frontline short and concrete; supervisors checklists; managers systems and indicators; leadership decisions and trade-offs; board questions and assurance; auditors test criteria.

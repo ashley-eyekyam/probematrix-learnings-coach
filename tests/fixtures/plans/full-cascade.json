@@ -152,6 +152,25 @@
   },
   {
    "n": 9,
+   "skill": "people-workforce-learnings",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "people-workforce-learnings",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset people-workforce-learnings:people-codes",
+    "PMLC select <ws> --preset people-workforce-learnings:hr-entity",
+    "PMLC check-pack <ws> <run>/outputs/people-workforce-learnings.json --strict",
+    "PMLC pack <ws> <run>/outputs/people-workforce-learnings.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 10,
    "skill": "site-leadership-coach",
    "status": "todo",
    "planned_for": null,
@@ -172,7 +191,7 @@
    ]
   },
   {
-   "n": 10,
+   "n": 11,
    "skill": "top-management-brief",
    "status": "todo",
    "planned_for": null,
@@ -193,7 +212,7 @@
    ]
   },
   {
-   "n": 11,
+   "n": 12,
    "skill": "board-brief",
    "status": "todo",
    "planned_for": null,
@@ -214,7 +233,7 @@
    ]
   },
   {
-   "n": 12,
+   "n": 13,
    "skill": "engine:templates",
    "status": "todo",
    "planned_for": null,
