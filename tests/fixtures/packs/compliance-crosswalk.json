@@ -1,0 +1,33 @@
+{"pack": "compliance-crosswalk", "schema": 1, "skill": "compliance-crosswalk",
+ "title": "Compliance crosswalk: Synthetic pump fire, 2024",
+ "audience": "HSE leads, management-system owners and auditors", "status": "Learning purposes: not a statutory document",
+ "scope": {"levels": [1, 2, 3, 4], "min_rating": "top"},
+ "bottom_line": [{"text": "The register gives partial evidence for two of the three ISO 45001 clauses shown; the organisation must still show its own records for management review.",
+                  "cites": ["FND-0001", "FND-0002"]}],
+ "sections": [
+  {"id": "banner", "heading": "About this crosswalk", "items": [
+   {"kind": "para", "text": "Aid to assurance, not a compliance opinion."}]},
+  {"id": "crosswalk-iso45001", "heading": "ISO 45001:2018, clause by clause", "items": [
+   {"kind": "table", "id": "crosswalk-iso45001-table", "columns": ["Requirement", "Status", "Evidence here", "Organisation must show"],
+    "rows": [["ISO45001-8.1 Operational planning and control (unverified)", "partly", "LR-01",
+              "Records showing how the organisation meets this requirement; the learnings here are not that record."],
+             ["ISO45001-9.3 Management review: inputs include incidents, nonconformities, corrective actions, continual improvement, monitoring and audit results",
+              "needs organisation evidence", "none",
+              "Records showing how the organisation meets this requirement; the learnings here are not that record."],
+             ["ISO45001-10.2 Incident, nonconformity and corrective action: determine causes, act, review effectiveness, retain and communicate documented information",
+              "partly", "LR-02",
+              "Records showing how the organisation meets this requirement; the learnings here are not that record."]],
+    "row_cites": [["FND-0001", "FND-0004"], [], ["FND-0002"]],
+    "cites": ["FND-0001", "FND-0002", "FND-0004"],
+    "lint_ok": [{"rule": "JC1", "reason": "Requirement and element names are headings from the standard, not people."},
+                {"rule": "JC8", "reason": "Hour limits in a requirement title come from the standard."},
+                {"rule": "JC10", "reason": "Requirement ids such as ISO45001-10.2 are clause numbers, not equipment."}]}]},
+  {"id": "by-element", "heading": "What the learnings show, requirement by requirement", "items": [
+   {"kind": "learning", "lesson": "The pump went back into service without a leak test, because no return-to-service step required one.",
+    "explanation": "ISO 45001 clause 8.1 (operational planning and control): the learning shows no return-to-service test for pressure-boundary work. The organisation must still show its own return-to-service procedure and records.",
+    "clauses": ["ISO45001-8.1"], "learning": "LR-01", "cites": ["FND-0001", "EVD-0001"]},
+   {"kind": "learning", "lesson": "The missing restart checklist was never raised as a corrective action after earlier seal leaks.",
+    "explanation": "ISO 45001 clause 10.2 (incident, nonconformity and corrective action): the learning shows earlier leaks fixed without a corrective action. The organisation must still show how it records and reviews corrective actions.",
+    "clauses": ["ISO45001-10.2"], "learning": "LR-02", "cites": ["FND-0002", "EVD-0002"]}]},
+  {"id": "unverified", "heading": "Requirements not checked against the primary text", "items": [
+   {"kind": "para", "text": "One of the three rows carries \"(unverified)\": its id and title were not checked against the primary text of the standard. Confirm it against the current edition before using the crosswalk in an audit."}]}]}

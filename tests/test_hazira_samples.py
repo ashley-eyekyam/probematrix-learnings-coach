@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 import pytest
 
 from test_pmlc import PMLC, ROOT, run
-from pmlc_lib.samples import RENDER_PENDING  # noqa: E402  (Phase 5 packs Task 24 renders)
+from pmlc_lib.samples import RENDER_PENDING
 
 pytest.importorskip("openpyxl")
 SAMPLE = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire"
@@ -46,6 +46,9 @@ def _packs():
 
 
 PACKS = _packs()
+# Phase 5: golden JSONs waiting for Task 24 to render them and list them in the README (pmlc_lib.samples)
+PENDING = sorted(n[: -len(".json")] for n in RENDER_PENDING)
+RENDERED = [p for p in PACKS if p not in PENDING]
 README_PACK_ROW = re.compile(r"^\| `outputs/([a-z0-9-]+|dossier-F\d+)\.json`[^|]*\|[^|]*\|[^|]*\bpack JSON\b", re.M)
 
 
@@ -98,9 +101,9 @@ def _same(new, old):
 
 def test_hazira_samples_hold_exactly_the_od4_4_files():
     want = set(REGISTER_FILES) | {f for _, _, files in SHOWCASES for f in files}
-    want |= {f"{p}.{ext}" for p in PACKS for ext in ("json", "html", "md")} | set(RENDER_PENDING)
+    want |= {f"{p}.{ext}" for p in RENDERED for ext in ("json", "html", "md")} | {f"{p}.json" for p in PENDING}
     assert {p.name for p in OUTPUTS.iterdir()} == want
-    assert sorted(PACKS) == readme_packs() and len(PACKS) >= 25 and "frontline-learning-cards-hi" in PACKS
+    assert sorted(RENDERED) == readme_packs() and len(RENDERED) >= 25 and "frontline-learning-cards-hi" in PACKS
 
 
 def test_hazira_samples_carry_phase_4_fields():
@@ -127,7 +130,7 @@ def test_hazira_hindi_variant_passes_strict(hz):
 
 
 def test_hazira_samples_render_identically(hz, tmp_path):
-    for name in PACKS:
+    for name in RENDERED:
         out = tmp_path / name
         _pack(hz, name, out)
         for ext in ("html", "md"):
