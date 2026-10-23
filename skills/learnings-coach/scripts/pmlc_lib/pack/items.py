@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import collections
+import datetime as _dt
 import json
 import re
 import sys
@@ -349,18 +350,50 @@ def event_day_times(text) -> set:
     return {f"{int(m.group(1)):02d}:{m.group(2)}" for m in EVENT_DAY_RX.finditer(str(text or ""))}
 
 
+_MONTHS = ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
+_MONTH_RX = r"(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)"
+_DAY_MONTH_RX = re.compile(r"\b(?:(\d{1,2})(?:st|nd|rd|th)?\s+" + _MONTH_RX + r"|" + _MONTH_RX + r"\s+(\d{1,2})(?:st|nd|rd|th)?)\b",
+                           re.I)
+
+
+def _named_day(text, pos, day):
+    """The YYYY-MM-DD of the day-and-month named nearest before `pos` in `text` (e.g. '23 Sep 20:00'), with the year
+    from the incident `day` (one year earlier when the month is more than six months after the incident's); None when
+    the unit names no day before the time or the day is not a real date."""
+    last = None
+    for m in _DAY_MONTH_RX.finditer(text):
+        if m.start() >= pos:
+            break
+        last = m
+    if not last:
+        return None
+    d = int(last.group(1) or last.group(4))
+    mon = _MONTHS.index((last.group(2) or last.group(3))[:3].lower()) + 1
+    year, inc_mon = int(day[:4]), int(day[5:7])
+    if mon - inc_mon > 6:
+        year -= 1
+    try:
+        return _dt.date(year, mon, d).isoformat()
+    except ValueError:
+        return None
+
+
 def event_day_events(narrative, findings, day) -> list:
-    """One event per distinct narrative hh:mm, in clock order: the first sentence that holds the time, whole
-    (sentence start to sentence end), cited to the findings whose text holds the same time (P5-10)."""
+    """One event per distinct narrative hh:mm: the first sentence that holds the time, whole (sentence start to
+    sentence end), cited to the findings whose text holds the same time (P5-10). The event is dated with the incident
+    day, unless its sentence names another day and month before the time ('23 Sep 20:00'): then that day, with the
+    incident's year. Events run in (date, time) order."""
     first = {}
     for source, shown in _event_day_units(narrative):
-        for hhmm in sorted(event_day_times(source)):
-            first.setdefault(hhmm, " ".join(shown.split()))
+        for m in sorted(EVENT_DAY_RX.finditer(source), key=lambda m: m.start()):
+            hhmm = f"{int(m.group(1)):02d}:{m.group(2)}"
+            if hhmm not in first:
+                first[hhmm] = (_named_day(source, m.start(), day) or day, " ".join(shown.split()))
     held = {f["id"]: event_day_times(" ".join(str(f.get(k) or "") for k in ("label", "short", "justification", "causal")))
             for f in findings}
-    return [{"date": day, "time": hhmm, "text": first[hhmm],
+    return [{"date": first[hhmm][0], "time": hhmm, "text": first[hhmm][1],
              "cites": sorted(fid for fid, times in held.items() if hhmm in times), "knowable_then": True}
-            for hhmm in sorted(first)]
+            for hhmm in sorted(first, key=lambda t: (first[t][0], t))]
 
 
 def event_day_item(ws) -> dict:

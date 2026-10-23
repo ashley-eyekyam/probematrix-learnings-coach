@@ -518,6 +518,8 @@ def build_parser():
     s.add_argument("--json", action="store_true", help="print missed_opportunities.json on stdout")
     s.add_argument("--timeline-item", dest="timeline_item", action="store_true",
                    help="print the dated missed opportunities as a ready timeline item (knowable_then: true)")
+    s.add_argument("--top", type=int, default=None, metavar="N",
+                   help="with --timeline-item: keep the N dated entries that cite the most findings (default: all)")
     s.set_defaults(fn=cmd_missed_opportunities)
 
     for name in JSON_COMMANDS:   # P3-24: --json on every analysis and check command (dest as_json: check-language has a positional "json")

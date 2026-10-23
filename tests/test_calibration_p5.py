@@ -51,7 +51,9 @@ def test_hazira_event_day_52_stamps_26_times(hazira_ws):
     assert (len(stamps), len(set(stamps))) == (52, 26)
     it = json.loads(run("timeline-item", str(hazira_ws), "--event-day"))
     times = [e["time"] for e in it["events"]]
-    assert len(times) == 26 and times == sorted(set(stamps))
-    assert all(e["date"] == "2020-09-24" and e["knowable_then"] is True for e in it["events"])
+    assert len(times) == 26 and sorted(times) == sorted(set(stamps))
+    assert [(e["date"], e["time"]) for e in it["events"]][:2] == [("2020-09-23", "20:00"), ("2020-09-24", "02:11")]
+    assert all(e["date"] == "2020-09-24" for e in it["events"][1:])
+    assert all(e["knowable_then"] is True for e in it["events"])
     run("timeline", str(hazira_ws), "--on", "incident")
     assert len(json.loads((hazira_ws / "timeline_event_day.json").read_text(encoding="utf-8"))) == 29

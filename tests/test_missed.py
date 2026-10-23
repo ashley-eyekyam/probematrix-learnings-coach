@@ -135,6 +135,9 @@ def test_missed_cli_writes_artefact_and_timeline_item(tmp_path):
     assert all(e["knowable_then"] is True and e["cites"] for e in it["events"])
     assert [e["date"] for e in it["events"]] == sorted(e["date"] for e in it["events"])
     assert it["cites"] == sorted({c for e in it["events"] for c in e["cites"]})
+    one = json.loads(run("missed-opportunities", str(ws), "--timeline-item", "--top", "1"))["events"]
+    assert len(one) == 1 and one[0] in it["events"]
+    assert len(one[0]["cites"]) == max(len(e["cites"]) for e in it["events"])
     pack = {"pack": "test-pack", "schema": 1, "title": "Test pack: synthetic pump fire", "audience": "Testers",
             "status": "Learning purposes: not a statutory document", "incident": {"date": "2024-03-20"},
             "bottom_line": [{"text": "Test before service.", "cites": ["FND-0002"]}],
@@ -228,6 +231,16 @@ def test_event_day_table_rows_are_one_unit():
                  "| 23 Mar 20:00 | Night shift takes over. | Roster |\n## Notes\n- Walk-down at 08.30 hrs began.")
     seq = items.event_day_events(narrative, [{"id": "FND-0001", "short": "Seen at 02:15 hrs."}], "2024-03-24")
     assert [(e["time"], e["text"], e["cites"]) for e in seq] == [
+        ("20:00", "23 Mar 20:00 | Night shift takes over. | Roster", []),
         ("02:15", "Guard sees a cloud. Calls the gate. | Witness", ["FND-0001"]),
-        ("08:30", "Walk-down at 08.30 hrs began.", []),
-        ("20:00", "23 Mar 20:00 | Night shift takes over. | Roster", [])]
+        ("08:30", "Walk-down at 08.30 hrs began.", [])]
+    assert [e["date"] for e in seq] == ["2024-03-23", "2024-03-24", "2024-03-24"]
+
+
+def test_event_day_named_day_dates_the_event():
+    narrative = ("On 31 Dec at 23:50 the purge began. On 1st January 00:10 the alarm sounded. "
+                 "At 00:40 a crew arrived; 31 Feb is not a date at 00:50. The 02:00 log names 5 Jan after it.")
+    seq = items.event_day_events(narrative, [], "2021-01-01")
+    assert [(e["date"], e["time"]) for e in seq] == [
+        ("2020-12-31", "23:50"), ("2021-01-01", "00:10"), ("2021-01-01", "00:40"), ("2021-01-01", "00:50"),
+        ("2021-01-01", "02:00")]

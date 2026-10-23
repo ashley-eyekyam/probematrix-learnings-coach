@@ -6,7 +6,7 @@ Turns the dated candidates that [timeline](timeline.md) found into one **timelin
 
 The candidates are not curated: you decide which are signals, and you add the response and what was knowable then.
 
-With `--event-day` it builds the incident day instead, from the incident narrative: one event per distinct clock time (`hh:mm` or `hh.mm`, so `09.05` and `9:05` are the same time), in clock order. Each event is dated the incident date, shows the whole sentence that first holds the time (a table row counts as one sentence, without its time-only cells), cites the findings whose text holds the same time, and carries `knowable_then: true`. A long candidate snippet is cut at the last space before 240 characters and ends with `…`, so no word is cut in half.
+With `--event-day` it builds the incident day instead, from the incident narrative: one event per distinct clock time (`hh:mm` or `hh.mm`, so `09.05` and `9:05` are the same time), in date and clock order. Each event is dated the incident date, unless its sentence names another day and month before the time ("23 Sep 20:00"): then it is dated that day, in the incident's year (the year before when that month is more than six months after the incident's). Each event shows the whole sentence that first holds the time (a table row counts as one sentence, without its time-only cells), cites the findings whose text holds the same time, and carries `knowable_then: true`. A long candidate snippet is cut at the last space before 240 characters and ends with `…`, so no word is cut in half.
 
 It prints to the screen only; it writes no file.
 
@@ -44,7 +44,7 @@ python3 $E timeline-item $WS --before incident --top 8
 python3 $E timeline-item $WS --event-day
 ```
 
-On Hazira `--event-day` gives 26 events, from 02:11 to 20:00 (the 20:00 event is the night shift taking over on the evening before; clock order puts it last).
+On Hazira `--event-day` gives 26 events. The first is dated 2020-09-23 at 20:00 (the night shift taking over on the evening before, which the narrative dates "23 Sep 20:00"); the other 25 run on 2020-09-24 from 02:11 to 11:30.
 
 ## Common problems
 

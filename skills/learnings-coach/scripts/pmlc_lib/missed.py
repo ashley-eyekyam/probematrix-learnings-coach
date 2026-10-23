@@ -79,10 +79,16 @@ def missed(w, candidates=None, drift=None) -> dict:
             "drift": drifted, "notes": notes}
 
 
-def missed_timeline_item(m) -> dict:
-    """The dated missed opportunities as a ready timeline item: every event knowable then (P5-8)."""
+def missed_timeline_item(m, top=None) -> dict:
+    """The dated missed opportunities as a ready timeline item: every event knowable then (P5-8). `top` keeps the N
+    dated entries that cite the most findings (ties: earlier first); None or 0 keeps them all. Events run in date
+    order."""
+    dated = list(m["dated"])
+    if top:
+        ranked = sorted(range(len(dated)), key=lambda i: (-len(dated[i]["findings"]), dated[i]["date"], i))
+        dated = [dated[i] for i in sorted(ranked[:max(top, 1)])]
     events = [{"date": d["date"], "text": trim_words(d["snippet"]), "cites": list(d["findings"]), "knowable_then": True}
-              for d in m["dated"]]
+              for d in dated]
     return {"kind": "timeline", "id": "missed-opportunities", "events": events,
             "cites": sorted({x for e in events for x in e["cites"]})}
 
@@ -97,7 +103,7 @@ def cmd_missed_opportunities(a):
     record_derived(ws, ARTEFACT, {n: file_sha256(ws / n) for n in ("findings.json", "incident.json",
                                                                      "timeline_candidates.json") if (ws / n).exists()})
     if a.timeline_item:
-        it = missed_timeline_item(m)
+        it = missed_timeline_item(m, getattr(a, "top", None))
         if not it["events"]:
             print("No dated missed opportunities before the incident: the timeline item is empty.", file=sys.stderr)
         print(json.dumps(it, indent=1, ensure_ascii=False))
