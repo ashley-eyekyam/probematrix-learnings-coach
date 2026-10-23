@@ -19,7 +19,9 @@ pmlc select ws [--entity [ENTITY ...]] [--tag TAG [TAG ...]] [--tier [TIER ...]]
                [--relation [RELATION ...]] [--level [LEVEL ...]] [--min-rating MIN_RATING] [--top-rated]
                [--entity-mode {any,all}] [--exclude-downgraded]
                [--subcategory SUBCATEGORY [SUBCATEGORY ...]] [--prefix PREFIX [PREFIX ...]]
-               [--code [CODE ...]] [--text TEXT] [--in-evidence] [--max MAX] [--brief] [--budget-chars BUDGET_CHARS]
+               [--code [CODE ...]] [--text TEXT] [--in-evidence] [--max MAX]
+               [--m {M1,M2,M3,M4,M5,M6,M7,M8,M9} [{M1,M2,M3,M4,M5,M6,M7,M8,M9} ...]] [--m-secondary]
+               [--brief] [--budget-chars BUDGET_CHARS]
                [--fields FIELDS] [--group-by {level,subcategory,code,entity}]
                [--count-by {entity,tier,relation,level,subcategory,code}] [--format {md,json}]
                [--out OUT] [--preset SKILL[:NAME]]
@@ -62,6 +64,8 @@ pmlc select ws [--entity [ENTITY ...]] [--tag TAG [TAG ...]] [--tier [TIER ...]]
 | Flag | Value | Default | What it does |
 |---|---|---|---|
 | `--max` | number | no limit | Keep at most this many findings, highest rated first |
+| `--m` | one or more of `M1`, `M2`, `M3`, `M4`, `M5`, `M6`, `M7`, `M8` or `M9` | none | The 9M lens: keep findings whose primary M in `<ws>/nine_m_seed.json` is one of these. Run [nine-m-seed](nine-m-seed.md) first; without the seed the command stops with "run nine-m-seed first" (exit code 2) |
+| `--m-secondary` | none | off | With `--m`: also keep findings that carry the M as a secondary M |
 | `--brief` | none | off | Leave out the justification, causal text and evidence quotes |
 | `--budget-chars` | number | no limit | Keep findings in rating order while the output stays within this many characters, and list what was dropped. The header and footer are always printed |
 | `--fields` | comma list | all | Only these fields: `label`, `short`, `justification`, `causal`, `roles`, `clusters`, `evidence`, `code`, `name`, `level`, `subcategory`, `rating`. The ID is always kept |

@@ -49,6 +49,10 @@ Subcommands
   strings         extract a pack's text for translation (XLIFF or CSV), or apply a translation as <pack>-<lang>.json
   nine-m-seed     score every finding against the nine Ms (9M) and print the M profile (<ws>/nine_m_seed.json)
   missed-opportunities  earlier recommendations, Failure-to-Correct findings and dated precursors before the incident
+  nine-m-suggest  the suggestions for one 9M question, recorded in <ws>/nine_m_session.json with --record
+  nine-m-answer   record the answer to a 9M question (a suggestion's number, or free text)
+  nine-m-replay   a scripted 9M session that takes the recommended suggestion at every question (--accept-recommended)
+  nine-m-actions-template  a blank actions sheet from a nine-m-analysis pack (Owner, Due date and Status left blank)
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -98,7 +102,9 @@ from .util import HERE, industry_arg
 from .retention import cmd_purge, cmd_run_manifest, CLASSIFICATIONS, JURISDICTIONS
 from .workspace import cmd_run_path, cmd_status
 from .strings import cmd_strings, STRINGS_FORMATS
-from .ninem import cmd_nine_m_seed
+from .ninem import cmd_nine_m_seed, NINE_M_CODES
+from .ninem_session import (cmd_nine_m_actions_template, cmd_nine_m_answer, cmd_nine_m_replay, cmd_nine_m_suggest,
+                            NINE_M_GLOBAL_STEPS, NINE_M_STEPS)
 from .missed import cmd_missed_opportunities
 
 
@@ -214,6 +220,10 @@ def build_parser():
     s.add_argument("--in-evidence", action="store_true", dest="in_evidence",
                    help="also search --text in the findings' linked evidence: Specific Reference and description")
     s.add_argument("--max", type=int)
+    s.add_argument("--m", nargs="+", choices=NINE_M_CODES, help="9M lens: findings whose primary M (nine_m_seed.json) is "
+                                                                "one of these, e.g. M3 (run nine-m-seed first)")
+    s.add_argument("--m-secondary", dest="m_secondary", action="store_true",
+                   help="with --m: also findings that carry the M as a secondary M")
     s.add_argument("--brief", action="store_true", help="omit justification, causal text and evidence quotes")
     s.add_argument("--budget-chars", type=_non_negative_int, help="keep findings in rating order while the output stays within "
                                                     "N characters, and say how many were dropped; the header and "
@@ -581,6 +591,49 @@ def build_parser():
     s.add_argument("--map", help="a 9M map in the nine-m-map.json format (default: references/nine-m-map.json)")
     s.add_argument("--out", help="default: <ws>/nine_m_seed.json")
     s.set_defaults(fn=cmd_nine_m_seed)
+
+    s = sp.add_parser("nine-m-suggest", help="the suggestions for one 9M question (recorded with --record)",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--m", choices=NINE_M_CODES, help="the M the question is about (required for the per-M steps)")
+    s.add_argument("--step", required=True, choices=list(NINE_M_STEPS + NINE_M_GLOBAL_STEPS),
+                   help="per M: relevance, subcategory, condition, driver, barrier, change; global: scope, cross-m, gaps")
+    s.add_argument("--subcategory", help="a subcategory id of the M, e.g. M8.02, to steer the later steps")
+    s.add_argument("--top", type=int, default=4, help="how many suggestions before None / unknown (2-4, default 4)")
+    s.add_argument("--record", action="store_true", help="append the question to <ws>/nine_m_session.json")
+    s.add_argument("--json", action="store_true", help="print the suggestions as JSON")
+    s.set_defaults(fn=cmd_nine_m_suggest)
+
+    s = sp.add_parser("nine-m-answer", help="record the answer to a 9M question", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--q", required=True, help="the question id, e.g. Q03")
+    g = s.add_mutually_exclusive_group(required=True)
+    g.add_argument("--choice", type=int, help="the number of the suggestion chosen (1 is the recommended one)")
+    g.add_argument("--text", help="the user's own answer, stored verbatim")
+    s.set_defaults(fn=cmd_nine_m_answer)
+
+    s = sp.add_parser("nine-m-replay", help="a scripted 9M session taking the recommended suggestion at every question",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--accept-recommended", dest="accept_recommended", action="store_true",
+                   help="take suggestion 1 at every question (required: the session is marked as a replay)")
+    s.add_argument("--ms", help="comma-separated Ms to work through, e.g. M1,M3 (default: the recommended scope)")
+    s.set_defaults(fn=cmd_nine_m_replay)
+
+    s = sp.add_parser("nine-m-actions-template", help="a blank actions sheet from a nine-m-analysis pack",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("pack")
+    s.add_argument("--format", choices=["xlsx", "csv"], default="xlsx")
+    s.add_argument("--out", help="default: <run>/outputs/<pack>.actions-template.xlsx or .csv (.<mode>. when shared); "
+                                 "never overwritten")
+    _lint_flags(s)
+    for act in s._actions:
+        if "--share" in act.option_strings:
+            act.help = ("internal (default), or a masked copy for outside the organisation: external or public. Needs "
+                        "an approved sign-off with that classification and legal_review cleared; written as "
+                        "<name>.<mode>.<ext> and never over the internal copy")
+    s.set_defaults(fn=cmd_nine_m_actions_template)
 
     s = sp.add_parser("missed-opportunities", help="earlier recommendations, Failure-to-Correct findings and dated "
                       "precursors before the incident (writes <ws>/missed_opportunities.json)", allow_abbrev=False)

@@ -42,7 +42,7 @@ def _evidence_text(f, E):
 
 SELECT_DEFAULTS = dict(entity=None, tag=None, tier=None, relation=None, level=None, code=None, text=None,
                        subcategory=None, prefix=None, min_rating=None, top_rated=False, entity_mode="any",
-                       exclude_downgraded=False, max=None, in_evidence=False)
+                       exclude_downgraded=False, max=None, in_evidence=False, m=None, m_secondary=False)
 
 
 def select_args(**kw) -> types.SimpleNamespace:
@@ -66,6 +66,8 @@ def _filter(w, a):
     subs = {x.lower() for x in a.subcategory or []}
     top = top_rating(w) if a.top_rated else None
     dropped = downgraded_findings(w) if a.exclude_downgraded else set()
+    ms = set(getattr(a, "m", None) or [])
+    seed9 = (w.get("nine_m_seed") or {}).get("findings", {}) if ms else {}
     out = []
     for f in F:
         c = cl.get(f["id"], {"F": [], "T": [], "R": []})
@@ -93,6 +95,11 @@ def _filter(w, a):
             continue
         if f["id"] in dropped:
             continue
+        if ms:
+            s9 = seed9.get(f["id"]) or {}
+            if s9.get("m_primary") not in ms and not (getattr(a, "m_secondary", False)
+                                                      and ms & set(s9.get("m_secondary") or [])):
+                continue
         if a.text:
             blob = [f["short"], f["justification"], f["causal"], f["label"]]
             if a.in_evidence:
@@ -173,7 +180,8 @@ def _fit_count(n, fits):
 
 
 SELECT_FILTER_FLAGS = ("--entity", "--tier", "--relation", "--level", "--min-rating", "--top-rated", "--code",
-                       "--text", "--tag", "--subcategory", "--prefix", "--entity-mode", "--exclude-downgraded", "--max", "--in-evidence")
+                       "--text", "--tag", "--subcategory", "--prefix", "--entity-mode", "--exclude-downgraded", "--max", "--in-evidence",
+                       "--m", "--m-secondary")
 PRESET_FILE = REFS / "select-presets.json"
 SELECT_LINE = re.compile(r"PMLC select <ws>((?: [^`\n]*)?)")
 
@@ -281,7 +289,13 @@ def cmd_select(a):
         return _select_presets(a)
     if getattr(a, "in_evidence", False) and not a.text:
         sys.exit("--in-evidence extends --text; give --text too.")
+    if getattr(a, "m_secondary", False) and not getattr(a, "m", None):
+        print("--m-secondary extends --m; give --m too.", file=sys.stderr)
+        sys.exit(2)
     w = load_ws(a.ws)
+    if getattr(a, "m", None) and "nine_m_seed" not in w:
+        print(f"select --m reads {Path(a.ws) / 'nine_m_seed.json'}: run nine-m-seed first", file=sys.stderr)
+        sys.exit(2)
     grouping = a.group_by or a.count_by
     if (a.entity or a.tag or a.tier or a.relation or grouping in ("entity", "tier", "relation")) \
             and "clusters" not in w:
@@ -325,7 +339,9 @@ def cmd_select(a):
                 els = [f"# Selected findings ({k})\n",
                        f"Filters: entity={a.entity} tag={a.tag} tier={a.tier} relation={a.relation} level={a.level} "
                        f"min_rating={a.min_rating} top_rated={a.top_rated} entity_mode={a.entity_mode} "
-                       f"code={a.code} prefix={a.prefix} subcategory={a.subcategory} text={a.text}\n"]
+                       f"code={a.code} prefix={a.prefix} subcategory={a.subcategory} text={a.text}"
+                       + (f" m={a.m}" + (" (with secondary)" if a.m_secondary else "") if getattr(a, "m", None) else "")
+                       + "\n"]
                 if a.group_by:
                     groups = {}
                     for (f, c), b in zip(sel[:k], blocks[:k]):

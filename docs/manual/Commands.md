@@ -69,6 +69,9 @@ pmlc 2.0.0a4
 | [timeline](commands/timeline.md) | Finds dated precursor candidates and the clock times of the event day |
 | [interfaces](commands/interfaces.md) | Finds where two parts of the organisation share findings or causal links |
 | [nine-m-seed](commands/nine-m-seed.md) | Scores every finding against the nine Ms (9M) and prints the M profile |
+| [nine-m-suggest](commands/nine-m-suggest.md) | Prints the suggestions for one 9M question and records the question in the session |
+| [nine-m-answer](commands/nine-m-answer.md) | Records the answer to a 9M question (a suggestion's number, or the user's own words) |
+| [nine-m-replay](commands/nine-m-replay.md) | Writes a scripted 9M session that takes the recommended suggestion at every question |
 
 ### 3. Check what was written
 
@@ -108,6 +111,7 @@ pmlc 2.0.0a4
 |---|---|
 | [templates](commands/templates.md) | Writes a blank adoption.csv, distribution.csv or verification.jsonl for your organisation to fill in |
 | [export-actions](commands/export-actions.md) | Writes actions.csv and actions.json (owner, due date and status left blank) for your action-tracking system |
+| [nine-m-actions-template](commands/nine-m-actions-template.md) | Writes a blank actions sheet from a nine-m-analysis pack (owner, due date and status left blank) |
 
 ### 4a. Compare with another report
 
@@ -174,7 +178,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,hfacs-profile,pack-xlsx,strings,nine-m-seed,missed-opportunities} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,hfacs-profile,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

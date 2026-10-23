@@ -12,7 +12,13 @@ kinds.
 Named rules (P5-6): no-owner-due makes a non-empty owner or by_when on any item a problem even without --strict
 (D7: the organisation sets owners and due dates); banner:<key> needs a para whose text equals BANNERS[key] exactly;
 knowable-then needs knowable_then on every event of every timeline item. A profile's lint_errors (P5-5) lists the
-JC rules that check-pack and check-language report as errors for that pack."""
+JC rules that check-pack and check-language report as errors for that pack.
+
+The 9M rules (Task 12, spec §7.3): nine-m-overview needs the nine-m-overview table with 9 rows, M1 to M9 in order,
+and each M either as a section m<n> with a cited learning or as a row of the not-relevant table with a reason;
+nine-m-cites flags a cite in a section m<n> that the workspace's nine_m_seed.json does not link to that M; m1-balance
+flags M1 holding the most recommendations while another M has more level 3-4 findings in the seed (M1 is not the
+people M). banner:nine-m-demo applies only when the workspace's nine_m_session.json is a replay (OD5-1)."""
 from __future__ import annotations
 
 import fnmatch
@@ -24,7 +30,8 @@ from ..util import REFS
 PROFILES_FILE = REFS / "pack-profiles.json"
 DOSSIER_RX = re.compile(r"^dossier-F\d+[a-z]?$")
 RULES = ("triplets", "assessment-answer", "follow-up-per-top", "same-sections-as:", "no-owner-due", "banner:",
-         "knowable-then")
+         "knowable-then", "nine-m-overview", "nine-m-cites", "m1-balance")
+NINE_M_CODES = tuple(f"M{i}" for i in range(1, 10))     # as pmlc_lib.ninem (not imported: it reads the workspace)
 # Fixed copy (Phase 5, verbatim): a pack meets banner:<key> only with a para whose text equals the value exactly
 BANNERS = {
     "crosswalk": "Aid to assurance, not a compliance opinion.",
@@ -212,6 +219,95 @@ def _check_knowable_then(pack, out):
                     out.append(f"{_item_name(s, n, it)}: events[{i}] needs knowable_then (was it knowable then?)")
 
 
+def _nm_sections(pack) -> dict:
+    """{M3: section} for the pack sections with ids m1..m9."""
+    out = {}
+    for s in pack.get("sections") or []:
+        hit = re.fullmatch(r"m([1-9])", s.get("id") or "") if isinstance(s, dict) and isinstance(s.get("id"), str) else None
+        if hit:
+            out[f"M{hit.group(1)}"] = s
+    return out
+
+
+def _nm_items(s):
+    return [it for it in (s.get("items") if isinstance(s.get("items"), list) else []) if isinstance(it, dict)]
+
+
+def _nm_cell(v) -> str:
+    return v.strip() if isinstance(v, str) else "" if v is None else str(v).strip()
+
+
+def _check_nine_m_overview(pack, out):
+    tables = [it for s, _, it in _items(pack) if it.get("kind") == "table"
+              and (s.get("id") == "nine-m-overview" or it.get("id") == "nine-m-overview")]
+    if not tables:
+        out.append("nine-m-overview: no table in a section nine-m-overview (one row per M, M1 to M9 in order)")
+    else:
+        rows = tables[0].get("rows") if isinstance(tables[0].get("rows"), list) else []
+        if len(rows) != len(NINE_M_CODES):
+            out.append(f"nine-m-overview: {len(rows)} rows, expected 9 (M1 to M9 in order)")
+        for i, (r, m) in enumerate(zip(rows, NINE_M_CODES), 1):
+            first = _nm_cell(r[0]) if isinstance(r, list) and r else ""
+            code = re.match(r"M[1-9]\b", first)
+            if not code or code.group(0) != m:
+                out.append(f"nine-m-overview: row {i} is {first or '(blank)'}, expected {m}")
+    secs = _nm_sections(pack)
+    reasons: dict = {}
+    for s in pack.get("sections") or []:
+        if isinstance(s, dict) and s.get("id") == "not-relevant":
+            for it in _nm_items(s):
+                for r in it.get("rows") if it.get("kind") == "table" and isinstance(it.get("rows"), list) else []:
+                    code = re.match(r"M[1-9]\b", _nm_cell(r[0])) if isinstance(r, list) and r else None
+                    if code:
+                        reasons[code.group(0)] = reasons.get(code.group(0)) or any(_nm_cell(c) for c in r[1:])
+    for n, m in enumerate(NINE_M_CODES, 1):
+        sec = secs.get(m)
+        learned = sec is not None and any(it.get("kind") == "learning" and isinstance(it.get("cites"), list)
+                                          and it["cites"] for it in _nm_items(sec))
+        if sec is not None and m in reasons:
+            out.append(f"{m}: both a section m{n} and a not-relevant row; an M is one or the other")
+        elif learned or reasons.get(m):
+            continue
+        elif m in reasons:
+            out.append(f"{m}: the not-relevant row needs a reason")
+        else:
+            out.append(f"{m}: needs a section m{n} with a cited learning, or a not-relevant row with a reason")
+
+
+def _check_nine_m_cites(pack, w, out):
+    seed = (w or {}).get("nine_m_seed")
+    if not isinstance(seed, dict):
+        out.append("nine-m-cites: the workspace has no nine_m_seed.json; run nine-m-seed <ws>")
+        return
+    S = seed.get("findings") or {}
+    for m, s in _nm_sections(pack).items():
+        for n, it in enumerate(_nm_items(s), 1):
+            off = [x for x in it.get("cites") or [] if isinstance(x, str) and x.startswith("FND-")
+                   and not ((S.get(x) or {}).get("scores") or {}).get(m)]
+            if off:
+                out.append(f"nine-m-cites: {_item_name(s, n, it)} cites {', '.join(off)}, which the seed does not link "
+                           f"to {m}; check the M, or say why in the item")
+
+
+def _check_m1_balance(pack, w, out):
+    recs = {m: sum(1 for it in _nm_items(s) if it.get("kind") == "recommendation")
+            for m, s in _nm_sections(pack).items()}
+    n1 = recs.get("M1", 0)
+    seed = (w or {}).get("nine_m_seed")
+    if not n1 or any(recs.get(m, 0) >= n1 for m in NINE_M_CODES[1:]) or not isinstance(seed, dict):
+        return
+    prof = seed.get("profile") or {}
+
+    def deep(m):
+        lv = (prof.get(m) or {}).get("by_level") or {}
+        return int(lv.get("3") or 0) + int(lv.get("4") or 0)
+    ahead = [m for m in NINE_M_CODES[1:] if deep(m) > deep("M1")]
+    if ahead:
+        top = max(ahead, key=lambda m: (deep(m), -NINE_M_CODES.index(m)))
+        out.append(f"m1-balance: M1 holds the most recommendations ({n1}) while {top} has more level 3-4 findings in "
+                   f"the seed ({deep(top)} against {deep('M1')}); M1 is not the people M: check the system drivers")
+
+
 def _filled(v) -> bool:
     return bool(v.strip()) if isinstance(v, str) else v not in (None, False, [], {})
 
@@ -224,9 +320,10 @@ def hard(pack, profile) -> list:
             if _filled(it.get("owner")) or _filled(it.get("by_when"))]
 
 
-def check(pack, profile, top=None, profiles=None) -> list:
+def check(pack, profile, top=None, profiles=None, w=None) -> list:
     """Profile violation messages for one pack. top: the top-rated relevant finding IDs (check_pack passes
-    top_rated_of(w, relevant findings net of exclusions)); the follow-up-per-top rule is skipped without it."""
+    top_rated_of(w, relevant findings net of exclusions)); the follow-up-per-top rule is skipped without it. w: the
+    workspace, for the 9M rules (its nine_m_seed and nine_m_session_mode)."""
     if not isinstance(pack, dict) or not isinstance(profile, dict):
         return []
     out: list = []
@@ -255,10 +352,19 @@ def check(pack, profile, top=None, profiles=None) -> list:
             _check_same_sections(pack, r.split(":", 1)[1], load() if profiles is None else profiles, out)
         elif r == "no-owner-due":
             continue                                # a problem even without --strict: hard()
+        elif r == "banner:nine-m-demo":              # only a replayed session needs the demo banner (OD5-1)
+            if (w or {}).get("nine_m_session_mode") == "replay":
+                _check_banner(pack, "nine-m-demo", out)
         elif isinstance(r, str) and r.startswith("banner:"):
             _check_banner(pack, r.split(":", 1)[1], out)
         elif r == "knowable-then":
             _check_knowable_then(pack, out)
+        elif r == "nine-m-overview":
+            _check_nine_m_overview(pack, out)
+        elif r == "nine-m-cites":
+            _check_nine_m_cites(pack, w, out)
+        elif r == "m1-balance":
+            _check_m1_balance(pack, w, out)
         else:
             out.append(f"rules: unknown profile rule {r!r}")
     return out

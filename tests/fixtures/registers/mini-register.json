@@ -63,8 +63,8 @@
       "recommendation_class": "recommendation",
       "recipient_role": "control room supervisor",
       "regulatory_touchpoint": "process safety management regime",
-      "nine_m": "M4",
-      "nine_m_subcategory": "Machine: alarm design",
+      "nine_m": "M7",
+      "nine_m_subcategory": "M7.04",
       "why_not_stronger": "",
       "verification": {
         "method": "sample alarm tests",

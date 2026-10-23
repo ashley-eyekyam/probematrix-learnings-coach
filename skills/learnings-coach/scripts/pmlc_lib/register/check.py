@@ -131,11 +131,35 @@ def _is_role(text: str, words: set) -> bool:
     return any(x.lower() in words or x.lower().rstrip("s") in words for x in lint.WORD_RX.findall(text))
 
 
-def _check_new_fields(e: dict, lid: str, problems: list) -> None:
+NINE_M_SUB_RX = re.compile(r"^M[1-9]\.\d{2}$")
+
+
+def _nine_m_sub_ids() -> set:
+    from ..ninem import load_nine_m          # the 97 subcategory ids of references/nine-m.json
+    return {s["id"] for c in load_nine_m()["chapters"] for s in c["subcategories"]}
+
+
+def _check_nine_m_subcategory(e: dict, lid: str, problems: list, warnings: list) -> None:
+    """Task 12: a nine_m_subcategory written as an id (M3.06) must be one of the nine-m.json ids and belong to the
+    entry's nine_m; free text (registers written before Phase 5) is kept, with a warning."""
+    for v in _vals(e.get("nine_m_subcategory")):
+        if not NINE_M_SUB_RX.match(v.upper()):
+            warnings.append(f"{lid}: nine_m_subcategory {v!r} is not a subcategory id; use one such as M3.06 from "
+                            f"references/nine-m.json")
+        elif v.upper() not in _nine_m_sub_ids():
+            problems.append(f"{lid}: nine_m_subcategory {v!r} is not a subcategory id of references/nine-m.json")
+        else:
+            m = _s(e.get("nine_m")).upper()
+            if m and m != v.upper().split(".")[0]:
+                problems.append(f"{lid}: nine_m_subcategory {v} belongs to {v.upper().split('.')[0]}, but nine_m is {m}")
+
+
+def _check_new_fields(e: dict, lid: str, problems: list, warnings: list | None = None) -> None:
     for field, allowed in (("urgency", URGENCY), ("recommendation_class", REC_CLASSES), ("nine_m", NINE_M)):
         for v in _vals(e.get(field)):
             if v.lower() not in [a.lower() for a in allowed]:
                 problems.append(f"{lid}: {field} {v!r} is not one of {', '.join(allowed)}")
+    _check_nine_m_subcategory(e, lid, problems, warnings if warnings is not None else [])
     if "verification" in e and not isinstance(e["verification"], dict):
         problems.append(f"{lid}: verification should be an object with the method and the indicator")
     for i, r in enumerate(e.get("recommendations") or [], 1):
@@ -222,7 +246,7 @@ def check_register(reg, w=None, strict=False, lint_opts=None) -> CheckResult:
                                                                  " (give why_not_stronger, or add a stronger fix)"))
         if _s(e.get("regulatory_touchpoint")):
             regulatory += 1
-        _check_new_fields(e, lid, problems)
+        _check_new_fields(e, lid, problems, warnings)
         if has_ws and w.get("evidence_audit") and _s(e.get("evidence_strength")):
             want = learning_strength([x for x in fids if x in F], w)
             if _s(e.get("evidence_strength")).lower() != want:

@@ -4,6 +4,8 @@
 
 Writes the **organisation learning map**: one self-contained HTML page (it works offline and can be emailed) that shows the whole investigation by part of the organisation, tier and HFACS level, the interfaces between teams and the causal links. With a Learnings Register it adds the learnings, a plan by tier and the strength of the proposed controls, with a detailed register tab.
 
+When any register learning has a `nine_m` value, the register part gains a **9M strip**: nine cells, M1 to M9, each counting the learnings placed under that M and linking to them.
+
 The page is built from the workspace; it adds nothing that is not in the export or the register. It shows a **DRAFT** ribbon and a handling line until the register it shows is approved, and always while the investigation is unfinished.
 
 `--embed` sets how much of the investigation's records the detailed register tab embeds, and `--share external` or `--share public` writes a masked copy for outside the organisation. A dashboard can be shared outside only with a register that is signed off for it: without `--register` there is nothing to approve, so the copy is refused.

@@ -61,6 +61,7 @@ MODULES = [
     "pmlc_lib.open_questions",
     "pmlc_lib.rec_review",
     "pmlc_lib.ninem",
+    "pmlc_lib.ninem_session",
     "pmlc_lib.missed",
     "pmlc_lib.cli",
 ]
