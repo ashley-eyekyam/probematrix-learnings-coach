@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import collections
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -259,6 +260,18 @@ def cmd_register_items(a):
 
 # ----------------------------------------------------------------------------- timeline candidates -> timeline item
 
+def trim_words(text, limit=240) -> str:
+    """text with whitespace collapsed, cut at the last whitespace before `limit` characters with an ellipsis when it
+    is longer (P5-11): the result is at most `limit` characters and never ends inside a word."""
+    s = " ".join(str(text).split())
+    if len(s) <= limit:
+        return s
+    head = s[:limit]
+    i = head.rfind(" ")
+    head = head[:i] if i > 0 else head[:limit - 1]
+    return head.rstrip().rstrip("…") + "…"
+
+
 def timeline_item(ws, before, top=12) -> dict:
     w = load_ws(ws)
     src = Path(ws) / "timeline_candidates.json"
@@ -283,7 +296,7 @@ def timeline_item(ws, before, top=12) -> dict:
         ev = {"date": d if c["precision"] == "day" else d[:7] if c["precision"] == "month" else d[:4]}
         if c.get("time"):
             ev["time"] = c["time"]
-        ev["text"] = " ".join(c["snippet"].split())[:240]
+        ev["text"] = trim_words(c["snippet"])
         if cl:
             for sid in sorted(c["sources"]):
                 m = cl["findings"].get(sid)
@@ -299,7 +312,80 @@ def timeline_item(ws, before, top=12) -> dict:
             "cites": sorted({x for e in events for x in e["cites"]})}
 
 
+# ----------------------------------------------------------------------------- narrative -> event-day timeline item
+
+# hh:mm or hh.mm (P5-10, the calibration rule), but not the start of a dotted date such as 4.09.2020
+EVENT_DAY_RX = re.compile(r"\b([01]?\d|2[0-3])[:.]([0-5]\d)\b(?![./-]\d)")
+_SENTENCE_END_RX = re.compile(r"[.!?][\"'”’)\]]*(?=\s|$)")
+_TIME_CELL_RX = re.compile(r"~?\s*\d{1,2}[:.]\d\d(?::\d\d)?\s*(?:hours?|hrs?|h)?\.?")
+
+
+def _event_day_units(narrative):
+    """(text the times are read from, text the event shows) for each sentence of the narrative. Markdown emphasis,
+    list and heading marks are dropped. A table row is one unit: its cells joined with ' | ', without the cells that
+    hold only a time (the event's own time shows it); table separator rows are skipped."""
+    for line in str(narrative or "").splitlines():
+        line = line.replace("**", "").replace("__", "").strip()
+        if line.startswith("|"):
+            cells = [c.strip() for c in line.strip("|").split("|")]
+            cells = [c for c in cells if c]
+            if not cells or all(re.fullmatch(r":?-+:?", c) for c in cells):
+                continue
+            words = [c for c in cells if not _TIME_CELL_RX.fullmatch(c)] or cells
+            yield " ".join(cells), " | ".join(words)
+            continue
+        line = re.sub(r"^(?:#+|[-*+]|>)\s+", "", line)
+        start = 0
+        for m in _SENTENCE_END_RX.finditer(line):
+            unit = line[start:m.end()].strip()
+            if unit:
+                yield unit, unit
+            start = m.end()
+        if line[start:].strip():
+            yield line[start:].strip(), line[start:].strip()
+
+
+def event_day_times(text) -> set:
+    return {f"{int(m.group(1)):02d}:{m.group(2)}" for m in EVENT_DAY_RX.finditer(str(text or ""))}
+
+
+def event_day_events(narrative, findings, day) -> list:
+    """One event per distinct narrative hh:mm, in clock order: the first sentence that holds the time, whole
+    (sentence start to sentence end), cited to the findings whose text holds the same time (P5-10)."""
+    first = {}
+    for source, shown in _event_day_units(narrative):
+        for hhmm in sorted(event_day_times(source)):
+            first.setdefault(hhmm, " ".join(shown.split()))
+    held = {f["id"]: event_day_times(" ".join(str(f.get(k) or "") for k in ("label", "short", "justification", "causal")))
+            for f in findings}
+    return [{"date": day, "time": hhmm, "text": first[hhmm],
+             "cites": sorted(fid for fid, times in held.items() if hhmm in times), "knowable_then": True}
+            for hhmm in sorted(first)]
+
+
+def event_day_item(ws) -> dict:
+    """The event-day timeline item from the incident narrative. No times: an empty item and a note on stderr."""
+    w = load_ws(ws)
+    narrative = w.get("incident", {}).get("narrative", "")
+    item = {"kind": "timeline", "id": "event-day", "events": [], "cites": []}
+    if not event_day_times(narrative):
+        print("No hh:mm times in the incident narrative: the event-day item is empty; tell the sequence in para "
+              "items instead.", file=sys.stderr)
+        return item
+    day = incident_date(w)
+    if not day:
+        sys.exit("No incident date in this workspace; pass --date to ingest.")
+    item["events"] = event_day_events(narrative, w["findings"], day)
+    item["cites"] = sorted({x for e in item["events"] for x in e["cites"]})
+    return item
+
+
 def cmd_timeline_item(a):
+    if getattr(a, "event_day", False):
+        print(json.dumps(event_day_item(_abs(a.ws)), indent=1, ensure_ascii=False))
+        return
+    if not a.before:
+        sys.exit("timeline-item needs --before YYYY-MM-DD|incident, or --event-day for the incident-day sequence")
     it = timeline_item(_abs(a.ws), a.before, a.top)
     if not it["events"]:
         sys.exit("No dated candidates before that date; tell the story in para items instead")

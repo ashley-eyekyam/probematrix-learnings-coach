@@ -59,7 +59,8 @@ pmlc 2.0.0a4
 | [causal-item](commands/causal-item.md) | Prints the top causal links as a ready graph item for a pack |
 | [table-item](commands/table-item.md) | Prints a ready table item (clusters, tiers, hubs, hoc, adoption and more) for a pack |
 | [register-items](commands/register-items.md) | Prints one tier's register learnings as learning items for a pack |
-| [timeline-item](commands/timeline-item.md) | Prints the dated candidates as a timeline item for a pack |
+| [timeline-item](commands/timeline-item.md) | Prints the dated candidates, or the incident-day sequence, as a timeline item for a pack |
+| [missed-opportunities](commands/missed-opportunities.md) | Finds earlier recommendations, Failure-to-Correct findings and the dated precursors that cite them |
 | [facts](commands/facts.md) | Prints the headline numbers of a workspace |
 | [timeline](commands/timeline.md) | Finds dated precursor candidates and the clock times of the event day |
 | [interfaces](commands/interfaces.md) | Finds where two parts of the organisation share findings or causal links |
@@ -161,7 +162,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,table-item,register-items,timeline-item,facts,pack-xlsx,strings} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,table-item,register-items,timeline-item,facts,pack-xlsx,strings,missed-opportunities} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

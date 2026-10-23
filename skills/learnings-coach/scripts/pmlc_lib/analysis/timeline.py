@@ -65,6 +65,46 @@ def _clock_times(text, start=0, end=None):
     return out
 
 
+def _tl_cut_start(text, a, s, slack):
+    """Move a snippet start that falls inside a word to the nearest whitespace before it (at most `slack` characters
+    further out), else inward to the first whitespace before the match start s."""
+    if a <= 0 or text[a - 1].isspace() or text[a].isspace():
+        return max(a, 0)
+    lo = max(0, a - slack)
+    j = max((k for k in range(lo, a) if text[k].isspace()), default=None)
+    if j is not None:
+        return j + 1
+    if lo == 0:
+        return 0
+    j = next((k for k in range(a, s) if text[k].isspace()), None)
+    return j + 1 if j is not None else s
+
+
+def _tl_cut_end(text, b, e, slack):
+    """Move a snippet end that falls inside a word to the nearest whitespace after it (at most `slack` characters
+    further out), else inward to the last whitespace after the match end e."""
+    n = len(text)
+    if b >= n or text[b].isspace() or text[b - 1].isspace():
+        return min(b, n)
+    hi = min(n, b + slack)
+    j = next((k for k in range(b, hi) if text[k].isspace()), None)
+    if j is not None:
+        return j
+    if hi == n:
+        return n
+    j = max((k for k in range(e, b) if text[k].isspace()), default=None)
+    return j if j is not None else e
+
+
+def word_snippet(text, s, e, reach=140, slack=40) -> str:
+    """text around the match [s, e): `reach` characters each side, widened to whole words (P5-11, T5 M1). A side
+    that was cut gets an ellipsis; newlines and runs of spaces become one space."""
+    a = _tl_cut_start(text, s - reach, s, slack)
+    b = _tl_cut_end(text, e + reach, e, slack)
+    core = " ".join(text[a:b].split())
+    return ("…" if a > 0 else "") + core + ("…" if b < len(text) else "")
+
+
 NARRATIVE_SOURCE = "narrative"
 
 
@@ -90,7 +130,7 @@ def _event_day_sequence(w, day, sources):
                 ev["narrative"] = True
             elif sid not in ev["sources"]:
                 ev["sources"].append(sid)
-            snip = re.sub(r"\s+", " ", text[max(0, s - 100): e + 100]).strip()
+            snip = word_snippet(text, s, e, reach=100)
             if len(ev["snippets"]) < 3 and snip not in ev["snippets"]:
                 ev["snippets"].append(snip)
     return sorted(found.values(), key=lambda x: x["time"])
@@ -140,7 +180,7 @@ def cmd_timeline(a):
             precision = ["day", "day", "month", "year"][prec]
             if PRECISION_RANK[precision] > min_rank:
                 continue
-            snippet = text[max(0, s - 140): e + 140].replace("\n", " ").strip()
+            snippet = word_snippet(text, s, e)
             key = (d.isoformat(), prec, re.sub(r"\W+", " ", text[max(0, s - 40): e + 40]).lower()[:60])
             ev = events.setdefault(key, {"date": d.isoformat(), "precision": precision,
                                          "snippet": snippet, "sources": []})

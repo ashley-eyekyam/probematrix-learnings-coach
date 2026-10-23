@@ -42,6 +42,7 @@ Subcommands
   export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
   plan            resolve a workflow preset, audiences or skills into an ordered plan (<ws>/plan.json)
   strings         extract a pack's text for translation (XLIFF or CSV), or apply a translation as <pack>-<lang>.json
+  missed-opportunities  earlier recommendations, Failure-to-Correct findings and dated precursors before the incident
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -86,6 +87,7 @@ from .util import HERE
 from .retention import cmd_purge, cmd_run_manifest, CLASSIFICATIONS, JURISDICTIONS
 from .workspace import cmd_run_path, cmd_status
 from .strings import cmd_strings, STRINGS_FORMATS
+from .missed import cmd_missed_opportunities
 
 
 # ----------------------------------------------------------------------------- main
@@ -468,8 +470,11 @@ def build_parser():
 
     s = sp.add_parser("timeline-item", help="timeline candidates as a pack timeline item (JSON on stdout)", allow_abbrev=False)
     s.add_argument("ws")
-    s.add_argument("--before", required=True, help="ISO date, or the word incident")
+    s.add_argument("--before", help="ISO date, or the word incident (required unless --event-day)")
     s.add_argument("--top", type=int, default=12, help="events to keep (default 12)")
+    s.add_argument("--event-day", dest="event_day", action="store_true",
+                   help="the incident day instead: one event per distinct hh:mm in the incident narrative, in clock "
+                        "order, each the whole sentence, cited to the findings that hold the same time")
     s.set_defaults(fn=cmd_timeline_item)
 
     s = sp.add_parser("facts", help="the headline numbers of a workspace", allow_abbrev=False)
@@ -506,6 +511,14 @@ def build_parser():
     s.add_argument("--out", help="extract: default <run>/outputs/<pack>.strings.xlf or .csv; apply: default "
                                  "<run>/outputs/<pack>-<lang>.json (never overwritten)")
     s.set_defaults(fn=cmd_strings)
+
+    s = sp.add_parser("missed-opportunities", help="earlier recommendations, Failure-to-Correct findings and dated "
+                      "precursors before the incident (writes <ws>/missed_opportunities.json)", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--json", action="store_true", help="print missed_opportunities.json on stdout")
+    s.add_argument("--timeline-item", dest="timeline_item", action="store_true",
+                   help="print the dated missed opportunities as a ready timeline item (knowable_then: true)")
+    s.set_defaults(fn=cmd_missed_opportunities)
 
     for name in JSON_COMMANDS:   # P3-24: --json on every analysis and check command (dest as_json: check-language has a positional "json")
         sp.choices[name].add_argument("--json", dest="as_json", action="store_true",
