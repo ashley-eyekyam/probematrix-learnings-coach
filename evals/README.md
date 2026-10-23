@@ -4,6 +4,14 @@
 Hazira sample (`samples/2020-09-24-hazira-gas-release-fire/`). Every skill owns at least three evals: at least one
 `trigger`, one `no-trigger` and one `collision`. Router evals do not count towards that floor.
 
+## Fragments
+
+A skill added in v2.0 Phase 5 keeps its evals in `evals/skills/<skill>.json`, shaped `{"evals": [...]}`, so tasks that
+add skills in parallel never edit the same file. `run_evals.py` loads `evals.json`, then every fragment in name order
+(`--file F` reads the fragments in `skills/` next to F). Ids are unique across all the files, and the floors (three
+evals per skill, the router set) apply to the union. A fragment that is not a JSON object with an `evals` list is a
+problem.
+
 ## Eval shape
 
 | Field | Meaning |

@@ -13,6 +13,15 @@ RUNNER = ROOT / "evals" / "run_evals.py"
 EVALS = ROOT / "evals" / "evals.json"
 FIX = Path(__file__).resolve().parent / "fixtures" / "packs"
 SKILLS = sorted(p.name for p in (ROOT / "skills").iterdir() if (p / "SKILL.md").exists())
+SKILL_COUNT = len(list((ROOT / "skills").glob("*/skill.json")))      # P5-1: derived from the folders
+
+
+def all_evals() -> list:
+    """evals.json plus every evals/skills/<skill>.json fragment, in name order (P5-2): the floors apply to the union."""
+    out = list(json.loads(EVALS.read_text(encoding="utf-8"))["evals"])
+    for f in sorted((ROOT / "evals" / "skills").glob("*.json")):
+        out.extend(json.loads(f.read_text(encoding="utf-8"))["evals"])
+    return out
 
 
 def runner(*args):
@@ -22,15 +31,15 @@ def runner(*args):
 def test_evals_structure():
     r = runner("check")
     assert r.returncode == 0, r.stdout + r.stderr
-    assert "23 skills" in r.stdout
+    assert f"{SKILL_COUNT} skills" in r.stdout
 
 
 def test_every_skill_has_three():
     data = json.loads(EVALS.read_text(encoding="utf-8"))
     assert data["skill_name"] == "probematrix-learnings-coach"
     assert (ROOT / data["sample"]).exists()
-    evals = [e for e in data["evals"] if e["kind"] != "router"]      # router evals: test_router_evals_min_30
-    assert len(SKILLS) == 23 and len(evals) >= 69
+    evals = [e for e in all_evals() if e["kind"] != "router"]      # router evals: test_router_evals_min_30
+    assert len(SKILLS) == SKILL_COUNT and len(evals) >= 3 * SKILL_COUNT
     by = Counter(e["owner"] for e in evals)
     kinds = Counter((e["owner"], e["kind"]) for e in evals)
     for s in SKILLS:
@@ -290,7 +299,7 @@ def _router_file(tmp_path, n, value="board-brief", sibling=None, extra=None):
 
 
 def test_router_evals_min_30(tmp_path):
-    evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
+    evals = all_evals()
     router = _router(evals)
     assert len(router) >= 30, len(router)
     for e in router:
@@ -305,7 +314,7 @@ def test_router_evals_min_30(tmp_path):
 
 
 def test_routes_to_targets_exist(tmp_path):
-    router = _router(json.loads(EVALS.read_text(encoding="utf-8"))["evals"])
+    router = _router(all_evals())
     targets = [_target(e) for e in router]
     assert all(t in PRESETS or t in SUB_SKILLS for t in targets), set(targets) - set(PRESETS) - set(SUB_SKILLS)
     assert set(PRESETS) <= set(targets), set(PRESETS) - set(targets)            # all 9 presets
@@ -335,7 +344,7 @@ def test_routes_to_targets_exist(tmp_path):
 
 
 def test_each_skill_three_evals_with_no_trigger_and_collision(tmp_path):
-    evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
+    evals = all_evals()
     for s in SKILLS:
         own = [e for e in evals if e["owner"] == s and e["kind"] != "router"]
         assert len(own) >= 3, s
@@ -352,7 +361,7 @@ def test_each_skill_three_evals_with_no_trigger_and_collision(tmp_path):
 
 
 def test_routes_scores_against_the_floor(tmp_path):
-    router = _router(json.loads(EVALS.read_text(encoding="utf-8"))["evals"])
+    router = _router(all_evals())
     answers = {str(e["id"]): _target(e) for e in router}
     f = tmp_path / "answers.json"
     f.write_text(json.dumps(answers))
@@ -404,7 +413,7 @@ def test_router_prompts_do_not_echo_the_hub_table():
         return re.findall(r"[a-z0-9]+", s.lower())
 
     grams = {tuple(words(c)[i:i + 3]) for c in cells for i in range(len(words(c)) - 2)}
-    evals = {e["id"]: e for e in json.loads((ROOT / "evals" / "evals.json").read_text(encoding="utf-8"))["evals"]}
+    evals = {e["id"]: e for e in all_evals()}
     for n in (101, 102, 103, 104):
         w = words(evals[n]["prompt"])
         echo = [" ".join(w[i:i + 3]) for i in range(len(w) - 2) if tuple(w[i:i + 3]) in grams]
@@ -439,7 +448,7 @@ def test_p4h_eval_98_does_not_echo_the_hub_table():
         w = re.findall(r"[a-z]+", t.lower())
         return {tuple(w[i:i + 4]) for i in range(len(w) - 3)}
     hub_grams = grams(hub)
-    evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
+    evals = all_evals()
     scanned = [e for e in evals if e["kind"] == "router"
                or any(x["type"] == "command_contains" for x in e["expectations"])]
     assert any(e["id"] == 98 for e in scanned) and len(scanned) >= 40
@@ -512,7 +521,7 @@ def test_p4s_format_evals():
     from pmlc_lib import render
     from pmlc_lib.render.layouts import LAYOUTS
     known = set(render.FORMATS) | set(LAYOUTS) | {"scorm"}          # scorm: Task 21, merged in the same wave
-    evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
+    evals = all_evals()
     fmt = [e for e in evals if any(x["type"] == "command_contains" for x in e["expectations"])]
     assert len(fmt) >= 6
     for e in fmt:

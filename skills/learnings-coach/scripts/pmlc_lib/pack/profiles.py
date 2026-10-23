@@ -7,7 +7,12 @@ id it matches. The id is exact, or a glob ("*", "s2-*", "t[1-5]") for sections t
 tier; a section takes the exact entries when there are any, otherwise the glob entries. Several entries may share an
 id (one per kind with its own count). An entry with min 1 or more makes its section required; min 0 makes it
 optional. A max of 99 means the skill states no count. The kinds a section may hold are the union of its entries'
-kinds."""
+kinds.
+
+Named rules (P5-6): no-owner-due makes a non-empty owner or by_when on any item a problem even without --strict
+(D7: the organisation sets owners and due dates); banner:<key> needs a para whose text equals BANNERS[key] exactly;
+knowable-then needs knowable_then on every event of every timeline item. A profile's lint_errors (P5-5) lists the
+JC rules that check-pack and check-language report as errors for that pack."""
 from __future__ import annotations
 
 import fnmatch
@@ -18,7 +23,20 @@ from ..util import REFS
 
 PROFILES_FILE = REFS / "pack-profiles.json"
 DOSSIER_RX = re.compile(r"^dossier-F\d+[a-z]?$")
-RULES = ("triplets", "assessment-answer", "follow-up-per-top", "same-sections-as:")
+RULES = ("triplets", "assessment-answer", "follow-up-per-top", "same-sections-as:", "no-owner-due", "banner:",
+         "knowable-then")
+# Fixed copy (Phase 5, verbatim): a pack meets banner:<key> only with a para whose text equals the value exactly
+BANNERS = {
+    "crosswalk": "Aid to assurance, not a compliance opinion.",
+    "people": "Learnings about systems, not individuals' records.",
+    "risk": "Proposals for the risk owner to assess: no loss estimates and no rating decisions.",
+    "evidence": "This scorecard shows where more evidence would strengthen confidence. It does not grade the "
+                "investigation team.",
+    "profile-limits": "For one incident these counts describe this investigation only. They are not rates, trends or "
+                      "a benchmark.",
+    "nine-m-demo": "Answers chosen for demonstration, not by the organisation.",
+}
+NO_OWNER_DUE = "owner and due dates are set by the organisation, not in this pack"
 DEFAULT_COVERAGE_FLOOR = 0.25
 NO_LIMIT = 99                     # a max of 99 means the SKILL.md states no count
 _ID_SPLIT = re.compile(r"[\s,;]+")
@@ -178,6 +196,34 @@ def _check_max_words(pack, profile, out):
             out.append(f"pack has {n} words; the {pack.get('pack')} profile allows {lim}")
 
 
+def _check_banner(pack, key, out):
+    want = BANNERS.get(key)
+    if want is None:
+        out.append(f"rules: banner:{key} names no banner (known: {', '.join(sorted(BANNERS))})")
+    elif not any(it.get("kind") == "para" and it.get("text") == want for _, _, it in _items(pack)):
+        out.append(f'banner {key}: needs a para whose text is exactly "{want}"')
+
+
+def _check_knowable_then(pack, out):
+    for s, n, it in _items(pack):
+        if it.get("kind") == "timeline" and isinstance(it.get("events"), list):
+            for i, e in enumerate(it["events"]):
+                if isinstance(e, dict) and "knowable_then" not in e:
+                    out.append(f"{_item_name(s, n, it)}: events[{i}] needs knowable_then (was it knowable then?)")
+
+
+def _filled(v) -> bool:
+    return bool(v.strip()) if isinstance(v, str) else v not in (None, False, [], {})
+
+
+def hard(pack, profile) -> list:
+    """Profile violations that are problems even without --strict: no-owner-due (D7)."""
+    if not isinstance(pack, dict) or not isinstance(profile, dict) or "no-owner-due" not in (profile.get("rules") or []):
+        return []
+    return [f"{_item_name(s, n, it)}: {NO_OWNER_DUE}" for s, n, it in _items(pack)
+            if _filled(it.get("owner")) or _filled(it.get("by_when"))]
+
+
 def check(pack, profile, top=None, profiles=None) -> list:
     """Profile violation messages for one pack. top: the top-rated relevant finding IDs (check_pack passes
     top_rated_of(w, relevant findings net of exclusions)); the follow-up-per-top rule is skipped without it."""
@@ -207,6 +253,12 @@ def check(pack, profile, top=None, profiles=None) -> list:
             _check_follow_up_per_top(pack, top, out)
         elif isinstance(r, str) and r.startswith("same-sections-as:"):
             _check_same_sections(pack, r.split(":", 1)[1], load() if profiles is None else profiles, out)
+        elif r == "no-owner-due":
+            continue                                # a problem even without --strict: hard()
+        elif isinstance(r, str) and r.startswith("banner:"):
+            _check_banner(pack, r.split(":", 1)[1], out)
+        elif r == "knowable-then":
+            _check_knowable_then(pack, out)
         else:
             out.append(f"rules: unknown profile rule {r!r}")
     return out

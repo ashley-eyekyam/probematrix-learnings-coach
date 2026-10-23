@@ -45,6 +45,12 @@ def _packs():
 
 
 PACKS = _packs()
+README_PACK_ROW = re.compile(r"^\| `outputs/([a-z0-9-]+|dossier-F\d+)\.json`[^|]*\|[^|]*\|[^|]*\bpack JSON\b", re.M)
+
+
+def readme_packs() -> list:
+    """The pack JSONs the sample README lists (P5-1: the sample count is the README's, not a constant)."""
+    return sorted(README_PACK_ROW.findall((SAMPLE / "README.md").read_text(encoding="utf-8")))
 
 
 def _epoch() -> str:
@@ -93,7 +99,7 @@ def test_hazira_samples_hold_exactly_the_od4_4_files():
     want = set(REGISTER_FILES) | {f for _, _, files in SHOWCASES for f in files}
     want |= {f"{p}.{ext}" for p in PACKS for ext in ("json", "html", "md")}
     assert {p.name for p in OUTPUTS.iterdir()} == want
-    assert len(PACKS) == 25 and "frontline-learning-cards-hi" in PACKS
+    assert sorted(PACKS) == readme_packs() and len(PACKS) >= 25 and "frontline-learning-cards-hi" in PACKS
 
 
 def test_hazira_samples_carry_phase_4_fields():
