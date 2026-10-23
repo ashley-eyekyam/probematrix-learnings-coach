@@ -8,7 +8,7 @@ import re
 import sys
 from pathlib import Path
 
-from .templates import load_adoption, load_distribution, load_register_entries, OrgFileError
+from .templates import load_adoption, load_distribution, OrgFileError
 from .util import _abs, REFS
 from .workspace import load_ws, outputs_dir
 
