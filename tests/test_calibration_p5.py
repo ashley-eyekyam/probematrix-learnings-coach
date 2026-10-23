@@ -1,6 +1,8 @@
 """Phase 5 Hazira calibration (P3-20 still in force): the numbers the Phase 5 engine commands give on the public
 Hazira sample, each with its rule (plan, Global Constraints table). Task 1 creates the file and the workspace
 fixture; each engine task appends its own numbers. A number that moves needs a ruling."""
+import json
+
 import pytest
 
 from test_pmlc import ROOT, run
@@ -26,10 +28,17 @@ def test_hazira_436_findings_46_evidence(hazira_ws):
     assert len(w["evidence"]) == 46
 
 
+def test_profile_counts(hazira_ws):
+    """SVI 1.4 recurs 21 times; OIC 2.1 has 36 links out in causal_graph.json (Task 3)."""
+    run("hfacs-profile", str(hazira_ws))
+    prof = json.loads((hazira_ws / "hfacs_profile.json").read_text(encoding="utf-8"))
+    assert {r["code"]: r["n"] for r in prof["recurrence"]}["SVI 1.4"] == 21
+    assert {r["code"]: r["out"] for r in prof["feeds"]}["OIC 2.1"] == 36
+
+
 # ----------------------------------------------------------------------------- Task 7: missed opportunities, event day
 
 def test_hazira_missed_opportunity_sets(hazira_ws):
-    import json
     import re
     w = pmlc.load_ws(hazira_ws)
     prior = [f["id"] for f in w["findings"] if re.search(r"\brecommend", f["justification"], re.I)]
@@ -43,7 +52,6 @@ def test_hazira_missed_opportunity_sets(hazira_ws):
 
 
 def test_hazira_event_day_52_stamps_26_times(hazira_ws):
-    import json
     import re
     narrative = pmlc.load_ws(hazira_ws)["incident"]["narrative"]
     stamps = [f"{int(m.group(1)):02d}:{m.group(2)}"

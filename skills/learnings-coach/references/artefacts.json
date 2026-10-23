@@ -72,10 +72,9 @@
     "planned": "Phase 5"
   },
   "hfacs-profile": {
-    "file": "outputs/latent-conditions-profile.json",
-    "producer": "skill:latent-conditions-profile",
-    "org_filled": false,
-    "planned": "Phase 5"
+    "file": "workspace/hfacs_profile.json",
+    "producer": "engine:hfacs-profile",
+    "org_filled": false
   },
   "missed-opportunities": {
     "file": "workspace/missed_opportunities.json",
