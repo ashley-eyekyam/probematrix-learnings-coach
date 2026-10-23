@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SKILLS_DIR = ROOT / "skills"
 REFS = SKILLS_DIR / "learnings-coach" / "references"
 SKILLS = sorted(p.name for p in SKILLS_DIR.iterdir() if (p / "SKILL.md").exists())
+SKILL_COUNT = len(list(SKILLS_DIR.glob("*/skill.json")))     # P5-1: the count is the skill folders, not a constant
 KEYWORDS = {"type", "enum", "required", "properties", "additionalProperties", "items", "pattern", "const", "minItems"}
 ALLOWED = KEYWORDS | {"$schema", "$id", "title", "description"}
 KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisation-learning-map": "dissemination"}
@@ -56,7 +57,7 @@ def test_engine_loads_every_manifest():
 
 def test_every_skill_has_manifest():
     schema = load(REFS / "skill.schema.json")
-    assert len(SKILLS) == 23
+    assert len(SKILLS) == SKILL_COUNT
     for s in SKILLS:
         m = load(SKILLS_DIR / s / "skill.json")
         assert m["name"] == s

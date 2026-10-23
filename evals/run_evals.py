@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Check and grade the ProbeMatrix Learnings Coach eval set (evals/evals.json).
+"""Check and grade the ProbeMatrix Learnings Coach eval set (evals/evals.json plus the per-skill fragments
+evals/skills/<skill>.json, P5-2).
 
   run_evals.py check [--file F]                     structure, paths, kinds and per-skill counts (CI runs this)
   run_evals.py grade <run-dir> [--ids 3,7] [--file F] [--transcript T]
@@ -59,6 +60,26 @@ def load(path) -> dict:
         return json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, ValueError) as e:
         sys.exit(f"Cannot read {path}: {e}")
+
+
+def load_evals(path) -> tuple:
+    """(data, problems): the eval file, with the evals of every fragment <its folder>/skills/<skill>.json
+    ({"evals": [...]}, P5-2) appended in name order. Ids are unique across all files; the floors apply to the union."""
+    data = load(path)
+    problems = []
+    if not isinstance(data, dict):
+        return data, problems
+    evals = data.get("evals")
+    evals = list(evals) if isinstance(evals, list) else []
+    for f in sorted((Path(path).parent / "skills").glob("*.json")):
+        frag = load(f)
+        if not isinstance(frag, dict) or not isinstance(frag.get("evals"), list):
+            problems.append(f"{f.name}: a fragment must be a JSON object {{\"evals\": [...]}}")
+            continue
+        evals.extend(frag["evals"])
+    if evals or isinstance(data.get("evals"), list):
+        data = dict(data, evals=evals)
+    return data, problems
 
 
 # ----------------------------------------------------------------------------- check
@@ -201,8 +222,7 @@ def _check_files(e, tag, bad) -> list:
 
 
 def check(path) -> int:
-    data = load(path)
-    problems = []
+    data, problems = load_evals(path)
     bad = problems.append
     if data.get("skill_name") != "probematrix-learnings-coach":
         bad("skill_name: must be probematrix-learnings-coach")
@@ -266,7 +286,7 @@ def routes(answers_path, path) -> int:
     answers = load(answers_path)
     if not isinstance(answers, dict):
         sys.exit(f"{answers_path}: must be a JSON object {{\"<eval id>\": \"<preset or skill>\"}}")
-    router = [e for e in load(path).get("evals", []) if isinstance(e, dict) and e.get("kind") == "router"]
+    router = [e for e in load_evals(path)[0].get("evals", []) if isinstance(e, dict) and e.get("kind") == "router"]
     if not router:
         sys.exit(f"No router evals in {path}.")
     print("| id | expected | picked | pass/fail |")
@@ -428,7 +448,7 @@ def grade(run_dir, path, ids=None, transcript=None) -> int:
     ws, out = run_dir / "workspace", run_dir / "outputs"
     if not (ws / "findings.json").exists():
         sys.exit(f"No workspace with findings.json under {run_dir}. Pass a run folder (<run>/workspace, <run>/outputs).")
-    evals = load(path).get("evals", [])
+    evals = load_evals(path)[0].get("evals", [])
     if ids:
         chosen = [e for e in evals if e.get("id") in ids]
         missing = sorted(set(ids) - {e.get("id") for e in chosen})

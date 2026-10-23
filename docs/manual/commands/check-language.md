@@ -19,7 +19,7 @@ Reads a learning pack or a Learnings Register and checks its **wording** against
 | JC11 | The phrase "Learning purposes: not a statutory document" is missing | error for a pack, warning for a register |
 | JC12 | An appeal such as "be more careful" or "stay vigilant" | warning (error for a pack only for frontline readers) |
 
-Errors make the command exit with code 1. [check-pack](check-pack.md) and [check-register](check-register.md) run the same checks as part of their own; check-language runs only these.
+For a pack whose skill profile lists `lint_errors` in `pack-profiles.json` (for example `["JC5"]`), those rules are errors whatever the table says. Errors make the command exit with code 1. [check-pack](check-pack.md) and [check-register](check-register.md) run the same checks as part of their own; check-language runs only these.
 
 A hit can be accepted, when the wording is right, by adding to that item `"lint_ok": {"rule": "JCn", "reason": "..."}`. The reason must not be empty. `lint_ok` belongs on an item, a bottom-line entry or a register entry; on a section or at the top of the file it is an error, and it accepts nothing. [Language checks](../Language-checks.md) explains every rule with examples.
 

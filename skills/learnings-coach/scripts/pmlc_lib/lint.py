@@ -307,9 +307,10 @@ def _misplaced_lint_ok(doc, kind) -> list:
     return out + [f"$.sections[{i}].lint_ok" for i, s in enumerate(secs) if isinstance(s, dict) and "lint_ok" in s]
 
 
-def lint(doc, w, *, kind: str, share: str | None = None, names=(), orgs=()) -> list:
+def lint(doc, w, *, kind: str, share: str | None = None, names=(), orgs=(), profile=None) -> list:
     """Every JC1-JC12 hit in a pack (kind "pack") or a Learnings Register (kind "register"), as Hit tuples.
-    share is internal, external or public; None reads handling.classification (P2-2)."""
+    share is internal, external or public; None reads handling.classification (P2-2). profile: the pack's profile,
+    whose lint_errors (P5-5) are reported as errors whatever the rule's base severity; lint_ok still quiets them."""
     c = _Ctx(w, kind, share_mode(doc, share), names, orgs)
     t1 = kind == "pack" and _t1(doc)
     units = _units(doc, kind)
@@ -345,7 +346,9 @@ def lint(doc, w, *, kind: str, share: str | None = None, names=(), orgs=()) -> l
     status = doc.get("status") if isinstance(doc, dict) else None
     if not (isinstance(status, str) and STATUS_PHRASE in status):
         c.hit("JC11", "$.status", "", severity="error" if kind == "pack" else "warning")
-    return c.hits
+    up = set(profile.get("lint_errors") or []) if isinstance(profile, dict) and \
+        isinstance(profile.get("lint_errors"), list) else set()
+    return [h._replace(severity="error") if h.rule in up else h for h in c.hits]
 
 
 def format_hits(hits) -> str:
@@ -381,7 +384,12 @@ def cmd_check_language(a):
         sys.exit(f"(file): cannot read {a.json} as UTF-8 JSON ({e.__class__.__name__})")
     except json.JSONDecodeError as e:
         sys.exit(f"(json): invalid JSON at line {e.lineno} column {e.colno}: {e.msg}")
-    hits = lint(doc, w, kind=doc_kind(doc), **cli_options(a))
+    kind = doc_kind(doc)
+    prof = None
+    if kind == "pack" and isinstance(doc, dict):
+        from .pack import profiles          # imported late: pack.schema imports this module
+        prof = profiles.profile_for(doc.get("pack"))
+    hits = lint(doc, w, kind=kind, **cli_options(a), profile=prof)
     from .util import json_extra
     json_extra(hits=[{"severity": h.severity, "rule": h.rule, "path": h.path, "match": h.match, "hint": h.hint}
                      for h in hits])

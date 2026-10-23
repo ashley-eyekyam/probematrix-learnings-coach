@@ -1038,10 +1038,12 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
     strict_msgs += [f"items: {x}" for x in profiles.padding(pack)]
     strict_msgs += [f"scope: {x}" for x in profiles.scope_drift(pack, profiles.load_audiences())]
     (P if strict else W).extend(strict_msgs)
+    P += profiles.hard(pack, prof) if prof else []                 # no-owner-due: a problem without --strict (D7)
     hp, hw = check_handling(pack)
     P += hp
     W += hw
-    for h in lint.lint(pack, w, kind="pack", share=share, names=names, orgs=orgs):   # JC11 owns the status check
+    for h in lint.lint(pack, w, kind="pack", share=share, names=names, orgs=orgs,   # JC11 owns the status check
+                       profile=prof):
         if h.rule != "JC11" or _text(pack.get("status")):
             (P if h.severity == "error" else W).append(lint.as_problem(h))
     return Result(P, W, {"sections": len(secs), "items": n_items, "cited": len(ids)})

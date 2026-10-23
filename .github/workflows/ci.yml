@@ -40,6 +40,12 @@ jobs:
             hash -r
           done
           if command -v node; then echo "node is still on PATH"; exit 1; fi
+      - name: Install Chrome for the png tests (N1/X20; this leg runs them with PMLC_REQUIRE_PNG=1)
+        id: chrome
+        if: ${{ matrix.python == '3.x' && matrix.node }}
+        uses: browser-actions/setup-chrome@v1
+        with:
+          install-dependencies: true
       - run: pip install -r requirements-dev.txt
       - run: ruff check .
       - name: Enable subprocess coverage
@@ -49,6 +55,9 @@ jobs:
       - name: Tests with coverage
         env:
           COVERAGE_PROCESS_START: ${{ github.workspace }}/.coveragerc
+          # the Chrome leg: a png test that cannot render fails instead of skipping (tests/conftest.py png_gate)
+          PMLC_REQUIRE_PNG: ${{ (matrix.python == '3.x' && matrix.node) && '1' || '' }}
+          PMLC_BROWSER: ${{ steps.chrome.outputs.chrome-path }}
         run: coverage run -m pytest tests -q -rs   # -rs prints each skip's reason (png says why it cannot render)
       - name: Check the JS tests skipped without Node
         if: ${{ !matrix.node }}

@@ -238,7 +238,9 @@ def fixture_skills() -> dict:
 # skill -> its fixture, where the pack is not named after the skill and is not a <skill>-<variant> pack
 PACK_OF = {s: n for n, s in fixture_skills().items() if n != s and not n.startswith(s + "-")}
 DOC_NAME = {"cluster-learning-dossier": "dossier-<F-id>"}          # how SKILL.md writes the pack file name
-DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3}                                     # tasks 15 and 24 add waves 2 and 3
+WAVE4 = []                        # Phase 5: each new-skill task (13-19, 22, 23) adds its skill here
+DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3, "wave 4": WAVE4}
+ALL_WAVES = WAVE1 + WAVE2 + WAVE3 + WAVE4
 VERSION = pmlc.__version__
 
 
@@ -383,7 +385,7 @@ def test_fixture_html_matches_golden(name):
 @pytest.mark.parametrize("name", pack_fixtures())
 def test_fixture_belongs_to_a_skill(name):
     assert fixture(name)["pack"] == name
-    assert skill_of(name) in WAVE1 + WAVE2 + WAVE3, f"{name}: add its skill to a wave list, or a `skill` field to the fixture"
+    assert skill_of(name) in ALL_WAVES, f"{name}: add its skill to a wave list, or a `skill` field to the fixture"
 
 
 def _pack_data(t):
@@ -476,7 +478,7 @@ def test_pack_on_minimal_workspace(ws, tmp_path):  # noqa: F811
     assert (lone / "outputs" / "test-pack.html").exists()   # default folder for a legacy workspace
 
 
-@pytest.mark.parametrize("skill", [s for s in WAVE1 + WAVE2 + WAVE3 if PACK_OF.get(s, s) in pack_fixtures()])
+@pytest.mark.parametrize("skill", [s for s in ALL_WAVES if PACK_OF.get(s, s) in pack_fixtures()])
 def test_skill_documents_its_pack(skill):
     t = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
     name = DOC_NAME.get(skill, PACK_OF.get(skill, skill))
@@ -886,7 +888,7 @@ def test_causal_item_cli(ws, tmp_path):  # noqa: F811                           
 
 def test_every_skill_but_the_router_and_register_has_a_pack():
     skills = {p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md")} - {"learnings-coach", "learnings-register"}
-    assert skills == set(WAVE1 + WAVE2 + WAVE3)
+    assert skills == set(ALL_WAVES)
     assert [s for s in skills if PACK_OF.get(s, s) not in pack_fixtures()] == []
 
 
@@ -1390,11 +1392,13 @@ def test_every_profile_names_a_fixture():
 def test_profiles_have_the_contract_shape():
     for name, prof in profiles.load().items():
         assert set(prof) <= {"sections", "required_scope", "bottom_line", "word_limits", "coverage_floor", "rules",
-                           "max_words"}, name
+                           "max_words", "lint_errors"}, name
+        assert all(re.fullmatch(r"JC([1-9]|1[0-2])", x) for x in prof.get("lint_errors", [])), name
         for e in prof["sections"]:
             assert set(e) == {"id", "kinds", "min", "max"} and 0 <= e["min"] <= e["max"], (name, e)
             assert all(k in pp.KINDS for k in e["kinds"]), (name, e)
-        assert all(r in ("triplets", "assessment-answer", "follow-up-per-top") or r.startswith("same-sections-as:")
+        assert all(r in profiles.RULES and not r.endswith(":") or r.startswith("same-sections-as:")
+                   or r.startswith("banner:") and r.split(":", 1)[1] in profiles.BANNERS
                    for r in prof.get("rules", [])), name
     assert profiles.profile_for("dossier-F09b") is profiles.load()["dossier-F02"]
     assert profiles.profile_for("test-pack") is None and profiles.profile_for(None) is None

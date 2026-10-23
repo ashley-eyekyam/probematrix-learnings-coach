@@ -17,6 +17,7 @@ REPO_BLOB = "https://github.com/ashley-eyekyam/probematrix-learnings-coach/blob/
 GUIDES = ["Getting-started.md", "Workflows-and-recipes.md", "Skills.md", "Files-and-folders.md",
           "Review-and-sharing.md", "Language-checks.md", "Troubleshooting.md", "Glossary.md"]
 SKILLS = sorted(p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md"))
+SKILL_COUNT = len(list((ROOT / "skills").glob("*/skill.json")))      # P5-1: derived from the folders
 SKILL_HEADINGS = ["What it is for", "How to start it", "What it needs", "Engine commands and flags", "What you get",
                   "Worked example (Hazira)", "Related skills"]
 # Pages Task 13 writes (they exist once both tasks are merged).
@@ -95,7 +96,7 @@ def test_guide_page_exists(page):
 
 
 def test_every_skill_has_a_page():
-    assert len(SKILLS) == 23
+    assert len(SKILLS) == SKILL_COUNT
     missing = [s for s in SKILLS if not (MANUAL / "skills" / f"{s}.md").is_file()]
     assert not missing, missing
     extra = sorted(p.stem for p in (MANUAL / "skills").glob("*.md") if p.stem not in SKILLS)
