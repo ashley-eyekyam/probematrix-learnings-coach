@@ -56,4 +56,22 @@ def follow_up_csv(pack) -> str:
                                            for fid, fields in fu.items()))
 
 
+OQ_FOLLOW_UP_FILE = "open-questions-follow-up.csv"      # not follow-up.csv: that name belongs to investigator-coach
+
+
+def open_questions_csv(pack) -> str:
+    """The open-questions-register pack's question items that cite a finding, as CSV in the export's follow-up
+    columns: one row per cited finding, the question under Key Questions and its good_evidence under Evidence to
+    Collect; Suggested Interviews and Causal Hypothesis stay blank. Items without cites (column questions) have no
+    Finding ID and are left out. Returns "" when no row qualifies, so the caller writes nothing."""
+    rows = []
+    for s in pack["sections"]:
+        for it in s["items"]:
+            if it.get("kind") == "question":
+                for fid in it.get("cites") or []:
+                    rows.append([fid, actions._csv_cell(it.get("good_evidence", "")),
+                                 actions._csv_cell(it.get("question", "")), "", ""])
+    return _ex_csv_text(FOLLOW_UP_HEADER, rows) if rows else ""
+
+
 register("csv", render_actions_csv, kind="data", help="<pack>.actions.csv: the actions for an action-tracking system")

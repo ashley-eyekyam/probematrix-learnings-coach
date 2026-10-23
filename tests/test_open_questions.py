@@ -1,6 +1,7 @@
 """Phase 5, Task 4: open-questions, the absence and hedge lexicons, blank Incident Summary fields, and the
 follow-up.csv of an open-questions-register pack. Synthetic data only."""
 import json
+import shutil
 import subprocess
 import sys
 
@@ -106,7 +107,7 @@ def test_open_questions_thin_export(tmp_path):
     items = json.loads(r.stdout)
     assert isinstance(items, list)
     oq = json.loads((d / "open_questions.json").read_text(encoding="utf-8"))
-    assert oq["version"] == 1 and oq["gaps"] == [] and isinstance(oq["notes"], list)
+    assert oq["version"] == 1 and oq["gaps"] == [] and any("word lists" in n for n in oq["notes"])
 
 
 def test_old_workspace_without_blank_fields_gets_a_note(tmp_path):
@@ -121,7 +122,6 @@ def test_old_workspace_without_blank_fields_gets_a_note(tmp_path):
 
 def test_gaps_json_is_merged(tmp_path):
     d = _ws(tmp_path)
-    (tmp_path / "outputs").mkdir()                   # legacy layout: ws/outputs
     out = d / "outputs"
     out.mkdir()
     (out / "gaps.json").write_text(json.dumps({"gaps": [{"pack": "board-brief", "text": "Why was the test skipped?",
@@ -143,12 +143,21 @@ def test_status_lists_open_questions(tmp_path):
     assert st["open_questions.json"] == "stale"
 
 
-# ----------------------------------------------------------------------------- follow-up.csv for the register pack
+# ----------------------------------------------------------------------------- the register pack's CSV
 
-def _oq_pack(ws):
+OQ_CSV = "open-questions-follow-up.csv"
+
+
+def _oq_pack(ws, name="open-questions-register", cited=True, why="The justification says a record is absent"):
+    """A pack shaped like Task 15's: question items with cites, no investigator-coach follow-up table."""
     doc = json.loads((FIX / "investigator-coach.json").read_text(encoding="utf-8"))
-    doc["pack"] = "open-questions-register"
-    p = ws.parent / "outputs" / "open-questions-register.json"
+    doc["pack"] = name
+    q = {"kind": "question", "question": "What record would settle the seal change?", "why": why,
+         "good_evidence": "maintenance record"}
+    if cited:
+        q["cites"] = ["FND-0001", "FND-0002"]
+    doc["sections"] = [{"id": "questions", "heading": "Questions", "items": [q]}]
+    p = ws.parent / "outputs" / f"{name}.json"
     p.parent.mkdir(exist_ok=True)
     p.write_text(json.dumps(doc), encoding="utf-8")
     return p
@@ -159,15 +168,23 @@ def test_follow_up_csv_for_open_questions(tmp_path):
     p = _oq_pack(ws)
     r = cli("pack", str(ws), str(p))
     assert r.returncode == 0, r.stderr
-    rows = rows_of((ws.parent / "outputs" / "follow-up.csv").read_text(encoding="utf-8"))
+    rows = rows_of((ws.parent / "outputs" / OQ_CSV).read_text(encoding="utf-8"))
     assert rows[0] == ["Finding ID", "Evidence to Collect", "Key Questions", "Suggested Interviews", "Causal Hypothesis"]
-    assert len(rows) > 1 and "follow-up.csv written to" in r.stdout
+    assert [x[0] for x in rows[1:]] == ["FND-0001", "FND-0002"] and rows[1][1] == "maintenance record"
+    assert f"{OQ_CSV} written to" in r.stdout and not (ws.parent / "outputs" / "follow-up.csv").exists()
+
+
+def test_open_questions_csv_skipped_without_data_rows(tmp_path):
+    ws, _ = share_ws(tmp_path)
+    r = cli("pack", str(ws), str(_oq_pack(ws, cited=False)))
+    assert r.returncode == 0, r.stderr
+    assert not (ws.parent / "outputs" / OQ_CSV).exists()          # no header-only file to block the real one
 
 
 def test_follow_up_csv_no_overwrite(tmp_path):
     ws, _ = share_ws(tmp_path)
     p = _oq_pack(ws)
-    f = ws.parent / "outputs" / "follow-up.csv"
+    f = ws.parent / "outputs" / OQ_CSV
     f.write_text("organisation filled this in\n", encoding="utf-8")
     r = cli("pack", str(ws), str(p))
     assert r.returncode == 0, r.stderr
@@ -175,13 +192,34 @@ def test_follow_up_csv_no_overwrite(tmp_path):
     assert "left as it is" in r.stderr
 
 
+def test_coach_and_open_questions_files_do_not_collide(tmp_path):
+    ws, _ = share_ws(tmp_path)
+    outs = ws.parent / "outputs"
+    coach = _oq_pack(ws, name="investigator-coach")
+    shutil.copy(FIX / "investigator-coach.json", coach)
+    oq = _oq_pack(ws)
+    assert cli("pack", str(ws), str(oq)).returncode == 0
+    (outs / OQ_CSV).write_text("ORG FILLED\n", encoding="utf-8")
+    assert cli("pack", str(ws), str(coach)).returncode == 0
+    assert (outs / OQ_CSV).read_text(encoding="utf-8") == "ORG FILLED\n"
+    assert (outs / "follow-up.csv").is_file() and "ORG FILLED" not in (outs / "follow-up.csv").read_text(encoding="utf-8")
+
+
 @pytest.mark.parametrize("mode", ["external"])
 def test_open_questions_shared_copy(tmp_path, mode):
-    ws, _ = share_ws(tmp_path)
-    p = _oq_pack(ws)
+    ws, orgs = share_ws(tmp_path)
+    p = _oq_pack(ws, why="Bharat Seals did not keep the record")
+    q = json.loads(p.read_text(encoding="utf-8"))
+    q["sections"][0]["items"][0]["good_evidence"] = "Bharat Seals work order"
+    q["sections"][0]["items"][0]["lint_ok"] = {"rule": "JC1", "reason": "an organisation name, not a person"}
+    p.write_text(json.dumps(q), encoding="utf-8")
+    internal = cli("pack", str(ws), str(p))
+    assert "Bharat Seals" in (ws.parent / "outputs" / OQ_CSV).read_text(encoding="utf-8")    # the fixture does seed it
     sign(ws, p, "--classification", "external", "--legal-review", "cleared")
-    r = cli("pack", str(ws), str(p), "--share", mode)
-    assert r.returncode == 0, r.stderr
+    r = cli("pack", str(ws), str(p), "--share", mode, "--names", str(orgs))
+    assert r.returncode == 0, internal.stderr + r.stderr
     outs = ws.parent / "outputs"
-    assert (outs / f"follow-up.{mode}.csv").is_file()
+    text = (outs / f"follow-up.{mode}.csv").read_text(encoding="utf-8") if (outs / f"follow-up.{mode}.csv").exists() \
+        else (outs / f"open-questions-follow-up.{mode}.csv").read_text(encoding="utf-8")
+    assert "Bharat Seals" not in text and "FND-0001" in text
     assert not (outs / "follow-up.csv").exists() and not (outs / "follow-up.json").exists()

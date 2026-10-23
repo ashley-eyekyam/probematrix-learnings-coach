@@ -10,9 +10,8 @@ import re
 import sys
 from pathlib import Path
 
-from .util import _s, REFS
-from .workspace import file_sha256, is_standard_ws, load_ws, outputs_dir, record_derived
-from .util import _abs
+from .util import _abs, _s, REFS
+from .workspace import file_sha256, load_ws, outputs_dir, record_derived
 
 MAX_QUESTIONS = 30
 FOLLOW_UP_LABELS = (("evidence_to_collect", "Evidence to Collect"), ("key_questions", "Key Questions"),
@@ -35,10 +34,10 @@ def oq_matches(text, rx) -> bool:
     return bool(rx.search(text or ""))
 
 
-def _read_gaps(run) -> list:
-    if run is None:
+def _read_gaps(outputs) -> list:
+    if outputs is None:
         return []
-    p = Path(run) / "outputs" / "gaps.json"
+    p = Path(outputs) / "gaps.json"
     try:
         d = json.loads(p.read_text(encoding="utf-8")).get("gaps", [])
     except (OSError, UnicodeDecodeError, ValueError, AttributeError):
@@ -47,8 +46,8 @@ def _read_gaps(run) -> list:
              "evidence_needed": _s(g.get("evidence_needed"))} for g in d if isinstance(g, dict)] if isinstance(d, list) else []
 
 
-def collect(w, run=None) -> dict:
-    """The open_questions.json document for a loaded workspace. run is the run folder (its outputs/gaps.json is
+def collect(w, outputs=None) -> dict:
+    """The open_questions.json document for a loaded workspace. outputs is the outputs folder (its gaps.json is
     merged in) or None."""
     lex = load_lexicons()
     ab, hg = oq_pattern(lex["absence"]), oq_pattern(lex["hedge"])
@@ -63,16 +62,23 @@ def collect(w, run=None) -> dict:
         notes.append("This workspace was ingested before blank summary fields were recorded: re-run ingest to count them")
     if not F:
         notes.append("No findings: nothing to check for absence or hedging")
+    elif not any(_s(f.get("justification")).strip() for f in F):
+        notes.append("No finding has justification text: absence and hedging could not be checked")
+    absence = [f["id"] for f in F if oq_matches(f.get("justification"), ab)]
+    hedged = [f["id"] for f in F if oq_matches(f.get("justification"), hg)]
+    if F and not absence and not hedged:
+        notes.append("No justification matched the absence or hedge wording: that is a check against word lists, "
+                     "not proof that nothing is open")
     return {"version": 1, "empty_follow_up_columns": empty, "blank_summary_fields": blank, "summary_fields": total,
-            "absence": [f["id"] for f in F if oq_matches(f.get("justification"), ab)],
-            "hedged": [f["id"] for f in F if oq_matches(f.get("justification"), hg)],
-            "gaps": _read_gaps(run), "notes": notes}
+            "absence": absence, "hedged": hedged,
+            "gaps": _read_gaps(outputs), "notes": notes}
 
 
-def _source_for(text, lex) -> str:
+def _source_for(text, lex, rx=None) -> str:
+    """The good_evidence source type whose keywords the text mentions first; rx is the compiled table."""
     low = _s(text).lower()
-    for src, words in lex["sources"].items():
-        if oq_pattern(words).search(low):
+    for src, pat in (rx or {s: oq_pattern(w) for s, w in lex["sources"].items()}).items():
+        if pat.search(low):
             return src
     return _DEFAULT_SOURCE
 
@@ -81,11 +87,12 @@ def _label(f) -> str:
     return (_s(f.get("label")) or _s(f.get("short")) or _s(f.get("name"))).strip().rstrip(".")
 
 
-def question_items(oq, w=None) -> list:
+def question_items(oq, w) -> list:
     """At most MAX_QUESTIONS question items: empty follow-up columns, then top-rated absence findings, then the
-    other absence findings, then hedged ones. w (the loaded workspace) supplies the finding text."""
+    other absence findings, then hedged ones. w (the loaded workspace, required) supplies the finding text."""
     lex = load_lexicons()
-    by_id = {f["id"]: f for f in (w or {}).get("findings", [])}
+    by_id = {f["id"]: f for f in w.get("findings", [])}
+    src_rx = {s: oq_pattern(words) for s, words in lex["sources"].items()}
     col_src = lex["columns"]
     items = []
     for lab in oq["empty_follow_up_columns"]:
@@ -110,7 +117,7 @@ def question_items(oq, w=None) -> list:
             q = (f"What record or evidence would settle this: {what}?" if why.endswith("absent")
                  else f"What evidence would firm up this finding: {what}?")
             items.append({"kind": "question", "question": q, "why": f"{why} ({fid}).",
-                          "good_evidence": _source_for(" ".join((_s(f.get("justification")), _s(f.get("short")))), lex),
+                          "good_evidence": _source_for(" ".join((_s(f.get("justification")), _s(f.get("short")))), lex, src_rx),
                           "cites": [fid]})
     return items[:MAX_QUESTIONS]
 
@@ -118,8 +125,7 @@ def question_items(oq, w=None) -> list:
 def cmd_open_questions(a):
     ws = _abs(a.ws)
     w = load_ws(ws)
-    run = ws.parent if is_standard_ws(ws) else outputs_dir(ws).parent
-    oq = collect(w, run)
+    oq = collect(w, outputs_dir(ws))
     (ws / "open_questions.json").write_text(json.dumps(oq, indent=1, ensure_ascii=False, sort_keys=True), encoding="utf-8")
     record_derived(ws, "open_questions.json",
                    {n: file_sha256(ws / n) for n in ("findings.json", "incident.json") if (ws / n).is_file()})

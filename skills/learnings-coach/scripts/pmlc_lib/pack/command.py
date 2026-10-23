@@ -11,7 +11,7 @@ from ..pack.html import follow_up, update_gaps
 from ..pack.schema import _checked as _pack_checked, embedded_ids, record_check, with_item_ids
 from ..render import build_date, DEFAULT_FORMATS, render, RenderContext
 from ..render.brand import load_brand, shared_brand
-from ..render.exports import follow_up_csv, KEEP_FORMATS, refuse_existing
+from ..render.exports import follow_up_csv, KEEP_FORMATS, OQ_FOLLOW_UP_FILE, open_questions_csv, refuse_existing
 from ..util import _abs, write_json
 from ..workspace import is_standard_ws, outputs_dir, warn_stale
 
@@ -53,7 +53,7 @@ def cmd_pack(a):
         outs += [(f"{ctx.layout} layout", o) for o in render_layout(ctx)]
     coach = pack["pack"] == "investigator-coach" and mode == "internal"   # interview plans never leave the team
     fu_csv = follow_up_csv(pack) if coach else ""
-    oq_csv = follow_up_csv(rpack) if pack["pack"] == "open-questions-register" else ""    # any mode, from the masked pack
+    oq_csv = open_questions_csv(rpack) if pack["pack"] == "open-questions-register" else ""    # any mode, from the masked pack
     name_guard([o.guard_text or "" for _, o in outs] + [fu_csv, oq_csv], a)
     for note in ctx.notes:
         print(note, file=sys.stderr)
@@ -81,12 +81,12 @@ def cmd_pack(a):
         print(f"Gaps written to {gj}")
     if oq_csv:                                                       # the organisation fills this in: never overwrite
         out.mkdir(parents=True, exist_ok=True)
-        fu = shared_name(out / "follow-up.csv", mode)
+        fu = shared_name(out / OQ_FOLLOW_UP_FILE, mode)
         if fu.exists():
             print(f"note: {fu} exists and was left as it is (the organisation may have filled it in)", file=sys.stderr)
         else:
             fu.write_bytes(oq_csv.encode("utf-8"))
-            print(f"follow-up.csv written to {fu}")
+            print(f"{OQ_FOLLOW_UP_FILE} written to {fu}")
     if coach:
         fu = out / "follow-up.json"
         out.mkdir(parents=True, exist_ok=True)

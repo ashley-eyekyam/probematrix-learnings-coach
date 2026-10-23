@@ -191,7 +191,7 @@ def cmd_ingest(a):
                 continue
             if k and v and k not in ("Field",):
                 incident["fields"][k] = v
-            if k and not grab_next and k != "Field" and k != k.upper() and len(k) <= 60:    # section headings are in capitals
+            if k and not grab_next and k != "Field" and k != k.upper() and len(k) <= 60:    # section headings are in capitals; a real field whose label is ALL capitals is dropped with them (Hazira has none)
                 summary_fields.append(k)
                 if not v:
                     blank_fields.append(k)

@@ -52,10 +52,10 @@ Running it again gives byte-identical files. [status](status.md) reports `open_q
 
 - **"This workspace was ingested before blank summary fields were recorded".** The workspace was built by an older engine. Re-run [ingest](ingest.md) (or [setup](setup.md)) to count the blank fields.
 - **The blank-field count is 0 of 0 on a thin export.** The export has no Incident Summary fields at all.
-- **A pack's `follow-up.csv` is not written.** [pack](pack.md) never overwrites the file for an `open-questions-register` pack, because the organisation fills it in. Move the old one aside and render again.
+- **A pack's `open-questions-follow-up.csv` is not written.** [pack](pack.md) never overwrites the file for an `open-questions-register` pack, because the organisation fills it in; it also writes nothing when no question item cites a finding. Move the old one aside and render again.
 
 ## Related
 
 - [profile](profile.md) flags the blank summary fields too.
 - [facts](facts.md) gives the headline numbers.
-- [pack](pack.md) writes `follow-up.csv` for the `open-questions-register` pack.
+- [pack](pack.md) writes `open-questions-follow-up.csv` for the `open-questions-register` pack.
