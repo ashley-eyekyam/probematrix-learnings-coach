@@ -168,6 +168,7 @@ def _load() -> None:
         "normalise",
         "graphs",
         "bowtie",
+        "riskcsv",
         "ics",
         "quiz",
         "email",

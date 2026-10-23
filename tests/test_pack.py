@@ -39,6 +39,8 @@ MIN = {
     "toolbox": {"opening_question": "o", "story": "s", "warning_signs": ["a", "b"], "one_change": "c",
                 "crew_question": "q", "cites": ["FND-0001"]},
     "script": {"title": "t", "segments": [{"visual": "v", "narration": "n", "seconds": 30}], "cites": ["FND-0001"]},
+    "risk_change": {"risk": "r", "change_type": "kri", "current_assumption": "a", "evidence_says": "e",
+                    "proposed_change": "p", "cites": ["FND-0001"]},
 }
 
 
@@ -66,8 +68,8 @@ def problems(p, w):
     return pp.check_pack(p, w).problems
 
 
-def test_seventeen_kinds():
-    assert len(pp.KINDS) == 17 and sorted(pp.KINDS) == sorted(MIN)
+def test_eighteen_kinds():
+    assert len(pp.KINDS) == 18 and sorted(pp.KINDS) == sorted(MIN)
 
 
 @pytest.mark.parametrize("kind", sorted(MIN))

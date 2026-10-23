@@ -95,3 +95,11 @@ def test_m8_m9_reachable_by_keywords(hazira_ws):
         for m in hits:
             hits[m] += m in kw
     assert hits["M8"] >= 50 and hits["M9"] >= 50, hits
+
+
+def test_risk_coded_findings_68(hazira_ws):
+    """Task 8: findings whose code name contains "risk" (six codes) = 68."""
+    w = pmlc.load_ws(hazira_ws)
+    hits = [f for f in w["findings"] if "risk" in f["name"].lower()]
+    assert len(hits) == 68
+    assert len({f["code"].split()[0] for f in hits}) == 6

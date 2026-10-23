@@ -301,7 +301,7 @@ P4M_FORMAT_FILES = {
     "html": "<skill>.html", "md": "<skill>.md", "normalised": "<pack>.normalised.json", "docx": "<pack>.docx",
     "pptx": "<pack>.pptx", "email": "<pack>.email.html", "gift": "<pack>.gift.txt", "qti": "<pack>.qti.zip",
     "quiz-csv": "<pack>.quiz.csv", "svg": "<pack>.<item-id>.svg", "png": "<pack>.<item-id>.png",
-    "graphml": "<pack>.<item-id>.graphml", "bowtie-csv": "<pack>.bowtie.csv", "ics": "<pack>.ics",
+    "graphml": "<pack>.<item-id>.graphml", "bowtie-csv": "<pack>.bowtie.csv", "risk-csv": "<pack>.risk-changes.csv", "ics": "<pack>.ics",
     "srt": "<pack>.<item-id>.srt", "narration": "<pack>.<item-id>.narration.txt", "csv": "<pack>.actions.csv",
     "scorm": "<pack>.scorm.zip"}
 P4M_OTHER_FILES = ("<pack>.email.txt", "<pack>.paper.docx", "<pack>.<layout>.html", "<pack>.learner.<ext>",
