@@ -84,7 +84,15 @@ def test_golden_banner_and_limits():
     assert BANNERS["profile-limits"] in paras
     ct = _section(pack, "cannot-tell")
     assert ct["heading"] == "What this profile cannot tell you"
-    assert all(not it.get("owner") and not it.get("by_when") for s in pack["sections"] for it in s["items"])
+    def dicts(x):
+        if isinstance(x, dict):
+            yield x
+            for v in x.values():
+                yield from dicts(v)
+        elif isinstance(x, list):
+            for v in x:
+                yield from dicts(v)
+    assert all("owner" not in d and "by_when" not in d for d in dicts(pack))      # D7, anywhere in the pack
 
 
 def test_golden_passes_strict_and_language(hz):
@@ -92,3 +100,16 @@ def test_golden_passes_strict_and_language(hz):
     assert "OK:" in out and "problem" not in out, out                 # run() also asserts exit 0
     lang = run("check-language", str(hz), str(hz.parent / "outputs" / GOLDEN.name))
     assert "check-language: 0 errors" in lang, lang
+
+
+def test_leadership_next_reaches_the_coaches_without_this_pack():
+    """The guarded step sits last in `leadership`, so plan --next goes from the register to site-leadership-coach
+    when nobody asked for patterns (task 14 review I-1)."""
+    from pmlc_lib import plan
+    p = json.loads((ROOT / "tests" / "fixtures" / "plans" / "leadership.json").read_text(encoding="utf-8"))
+    for s in p["steps"]:
+        if s["skill"] == "learnings-register":
+            s["status"] = "done"
+    assert plan.next_step(p)["skill"] == "site-leadership-coach"
+    order = [s["skill"] for s in p["steps"]]
+    assert order[-2:] == ["engine:hfacs-profile", SKILL] and p["steps"][-1]["when"]

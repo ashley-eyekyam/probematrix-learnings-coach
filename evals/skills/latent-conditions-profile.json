@@ -50,6 +50,7 @@
   {
    "id": 1404,
    "owner": "learnings-coach",
+   "sibling": "learning-clusters",
    "kind": "router",
    "prompt": "Here is our ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Our corporate safety team asked what share of the findings sit above the sharp end, and which underlying weaknesses show up across many of them, before anyone writes a brief.",
    "files": [
@@ -57,8 +58,7 @@
    ],
    "expectations": [
     {"type": "routes_to", "value": "latent-conditions-profile"}
-   ],
-   "sibling": "learning-clusters"
+   ]
   }
  ]
 }

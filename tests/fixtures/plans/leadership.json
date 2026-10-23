@@ -55,38 +55,6 @@
   },
   {
    "n": 4,
-   "skill": "engine:hfacs-profile",
-   "status": "todo",
-   "planned_for": null,
-   "produces": "hfacs-profile",
-   "mode": null,
-   "when": null,
-   "commands": [
-    "PMLC hfacs-profile <ws>"
-   ],
-   "questions": [],
-   "gate": []
-  },
-  {
-   "n": 5,
-   "skill": "latent-conditions-profile",
-   "status": "todo",
-   "planned_for": null,
-   "produces": "latent-conditions-profile",
-   "mode": null,
-   "when": "the user asks for patterns or latent conditions",
-   "commands": [
-    "PMLC select <ws> --preset latent-conditions-profile:top-l34",
-    "PMLC check-pack <ws> <run>/outputs/latent-conditions-profile.json --strict",
-    "PMLC pack <ws> <run>/outputs/latent-conditions-profile.json"
-   ],
-   "questions": [],
-   "gate": [
-    "check-pack --strict"
-   ]
-  },
-  {
-   "n": 6,
    "skill": "site-leadership-coach",
    "status": "todo",
    "planned_for": null,
@@ -107,7 +75,7 @@
    ]
   },
   {
-   "n": 7,
+   "n": 5,
    "skill": "top-management-brief",
    "status": "todo",
    "planned_for": null,
@@ -128,7 +96,7 @@
    ]
   },
   {
-   "n": 8,
+   "n": 6,
    "skill": "board-brief",
    "status": "todo",
    "planned_for": null,
@@ -146,6 +114,38 @@
    "gate": [
     "check-pack --strict",
     "approved review"
+   ]
+  },
+  {
+   "n": 7,
+   "skill": "engine:hfacs-profile",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "hfacs-profile",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC hfacs-profile <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 8,
+   "skill": "latent-conditions-profile",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "latent-conditions-profile",
+   "mode": null,
+   "when": "the user asks for patterns or latent conditions",
+   "commands": [
+    "PMLC select <ws> --preset latent-conditions-profile:top-l34",
+    "PMLC check-pack <ws> <run>/outputs/latent-conditions-profile.json --strict",
+    "PMLC pack <ws> <run>/outputs/latent-conditions-profile.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
    ]
   }
  ],
