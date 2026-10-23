@@ -1,0 +1,37 @@
+{
+  "name": "compliance-crosswalk",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "register"
+  ],
+  "optional_inputs": [
+    "adoption",
+    "distribution"
+  ],
+  "produces": {
+    "pack": "compliance-crosswalk",
+    "files": []
+  },
+  "formats": [
+    "docx"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": [
+    "Which framework? iso45001, psm, rbps, seveso, icmm, india, or the organisation's own management-system elements as a company system CSV (columns id,title[,topics])"
+  ]
+}

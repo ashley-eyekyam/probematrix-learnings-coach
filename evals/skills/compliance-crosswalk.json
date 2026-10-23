@@ -1,0 +1,101 @@
+{
+ "evals": [
+  {
+   "id": 1901,
+   "owner": "compliance-crosswalk",
+   "skill": "compliance-crosswalk",
+   "kind": "trigger",
+   "prompt": "We have the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and its learnings register. Our ISO 45001 surveillance audit is next month: which clauses do these learnings give evidence for, and where do we still have to show our own records? Use ISO 45001.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "compliance-crosswalk"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "compliance-crosswalk"
+    },
+    {
+     "type": "language_clean",
+     "pack": "compliance-crosswalk"
+    },
+    {
+     "type": "section_exists",
+     "pack": "compliance-crosswalk",
+     "section": "crosswalk-iso45001"
+    },
+    {
+     "type": "routes_to",
+     "skill": "compliance-crosswalk"
+    }
+   ]
+  },
+  {
+   "id": 1902,
+   "owner": "compliance-crosswalk",
+   "skill": null,
+   "not_skill": "compliance-crosswalk",
+   "kind": "no-trigger",
+   "prompt": "Explain the difference between ISO 45001 and OHSAS 18001, and what changed in the clause structure.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 1903,
+   "owner": "compliance-crosswalk",
+   "skill": "compliance-crosswalk",
+   "sibling": "auditor-assurance-pack",
+   "kind": "collision",
+   "prompt": "From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and its register, map the learnings onto the 20 CCPS RBPS elements. I don't want audit test points or sampling plans, just which elements the learnings speak to and which ones the site must evidence itself.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "compliance-crosswalk"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "compliance-crosswalk"
+    },
+    {
+     "type": "language_clean",
+     "pack": "compliance-crosswalk"
+    },
+    {
+     "type": "pack_absent",
+     "pack": "auditor-assurance-pack"
+    },
+    {
+     "type": "routes_to",
+     "skill": "compliance-crosswalk"
+    }
+   ]
+  },
+  {
+   "id": 1904,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "sibling": "auditor-assurance-pack",
+   "prompt": "Here is our ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). The certification body will ask how this investigation lines up with our management system: give me a clause-by-clause view of what the learnings cover against ISO 45001.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "compliance-crosswalk"
+    }
+   ]
+  }
+ ]
+}

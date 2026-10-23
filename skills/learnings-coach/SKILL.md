@@ -57,11 +57,13 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | CEO and executive committee | `top-management-brief` | it is for directors (`board-brief`) |
 | the board or its committee | `board-brief` | it is for executives (`top-management-brief`) |
 | auditors, assurance test points | `auditor-assurance-pack` | it is an executive brief (`top-management-brief`) |
+| which clauses of a standard the learnings speak to (ISO 45001, PSM, RBPS) | `compliance-crosswalk` | it is audit test points (`auditor-assurance-pack`) |
 | the lead investigator, next questions | `investigator-coach` | an official report is supplied to compare (`report-comparison`) |
 | trainers, a course or e-learning | `training-designer` | it is a frontline card (`frontline-learning-cards`) |
 | emergency responders | `emergency-response-learnings` | it is a frontline card (`frontline-learning-cards`) |
 | engineers, integrity, MOC owners | `engineering-integrity-learnings` | it is the barrier view (`barrier-learnings`) |
 | procurement, stores, contractors | `supply-chain-contractor-learnings` | it is a function manager's change (`manager-coach`) |
+| HR, staffing, qualification, rostering | `people-workforce-learnings` | it is course content (`training-designer`) |
 | safety committee, workforce reps | `safety-committee-guide` | it is a frontline card (`frontline-learning-cards`) |
 | all learnings for one department | `cluster-learning-dossier` | it is a manager's change list (`manager-coach`) |
 | grouping by function, tier and role; placing roles | `learning-clusters` | it is the whole-organisation map (`organisation-learning-map`) |
@@ -69,6 +71,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | a formal register or spreadsheet of learnings | `learnings-register` | it is action design (`action-design`) |
 | how the factors connect | `causal-map` | it is what fell between departments (`interface-learnings`) |
 | early warnings that were missed | `precursor-timeline` | it is how the factors connect (`causal-map`) |
+| why earlier warnings and audits never led to change | `failure-to-learn-review` | it is the dated list of warnings (`precursor-timeline`) |
 | what fell between departments | `interface-learnings` | it is the causal chain (`causal-map`) |
 | which barriers failed, how strong fixes should be | `barrier-learnings` | it is the engineering view (`engineering-integrity-learnings`) |
 | comparison with an official or company report | `report-comparison` | there is no other report (`investigator-coach`) |

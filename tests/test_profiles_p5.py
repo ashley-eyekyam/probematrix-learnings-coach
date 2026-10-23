@@ -117,6 +117,8 @@ def _evals_copy(tmp_path):
     d.mkdir()
     shutil.copy(ROOT / "evals" / "evals.json", d / "evals.json")
     (d / "skills").mkdir()
+    for f in sorted((ROOT / "evals" / "skills").glob("*.json")):     # the shipped fragments: each new skill's floors
+        shutil.copy(f, d / "skills" / f.name)
     return d
 
 
@@ -131,7 +133,9 @@ def test_eval_fragments_loaded(tmp_path):
     n = int(base.stdout.split(" evals over ")[0].split()[-1])
     data = json.loads((d / "evals.json").read_text(encoding="utf-8"))
     one = next(e for e in data["evals"] if e["kind"] == "no-trigger")
-    new = dict(one, id=max(e["id"] for e in data["evals"]) + 1000)
+    ids = [e["id"] for e in data["evals"]] + [e["id"] for f in (d / "skills").glob("*.json")
+                                               for e in json.loads(f.read_text(encoding="utf-8"))["evals"]]
+    new = dict(one, id=max(ids) + 1000)
     (d / "skills" / "x.json").write_text(json.dumps({"evals": [new]}), encoding="utf-8")
     r = _check(d / "evals.json")
     assert r.returncode == 0, r.stdout + r.stderr

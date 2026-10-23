@@ -32,7 +32,7 @@ pmlc crosswalk ws [--register REGISTER] [--framework {iso45001,psm,rmp,seveso,rb
 | `--framework` | name | required unless `--system-csv` | `iso45001`, `psm`, `rmp`, `seveso`, `rbps`, `icmm` or `india` |
 | `--system-csv` | file | none | The organisation's own requirements (`id,title[,topics]`) in place of a framework |
 | `--json` | none | off | Print the crosswalk as JSON: `framework`, `title` and `rows` |
-| `--table-item` | none | off | Print a pack table item with the columns Requirement, Status, Evidence here and Organisation must show, and `row_cites` |
+| `--table-item` | none | off | Print a pack table item (id `crosswalk-<framework>-table`) with the columns Requirement, Status, Evidence here and Organisation must show, and `row_cites` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples
@@ -51,6 +51,7 @@ On Hazira with the sample register, `--framework iso45001` lists 23 requirements
 
 ## Related
 
+- The [compliance-crosswalk](../skills/compliance-crosswalk.md) skill pastes one table item per framework into its pack.
 - [pack-xlsx](pack-xlsx.md) writes a table item to Excel, once it is in a pack.
 - [table-item](table-item.md) prints the other ready tables.
 - [register-items](register-items.md) prints register learnings as pack items.

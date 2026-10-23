@@ -17,9 +17,11 @@ These skills prepare the ground or analyse the whole investigation. Their output
 | [cluster-learning-dossier](skills/cluster-learning-dossier.md) | every learning for one function | "What does maintenance need to learn?" |
 | [causal-map](skills/causal-map.md) | causal graph and pathway stories | "How do the factors connect?" |
 | [precursor-timeline](skills/precursor-timeline.md) | dated warnings and how they were handled | "Did we see this coming?" |
+| [failure-to-learn-review](skills/failure-to-learn-review.md) | why earlier warnings did not lead to change, and which step of the learning cycle broke | "Why didn't we learn from the earlier leaks?" |
 | [interface-learnings](skills/interface-learnings.md) | what fell between departments | "What fell through the cracks?" |
 | [barrier-learnings](skills/barrier-learnings.md) | failed barriers and how strong the fixes should be | "Why didn't our safeguards work?" |
 | [report-comparison](skills/report-comparison.md) | a fair comparison with an official report | "Compare this with the enquiry report" |
+| [compliance-crosswalk](skills/compliance-crosswalk.md) | which clauses of ISO 45001, PSM, RBPS or another framework the learnings speak to | "Which ISO 45001 clauses does this cover?" |
 
 ## By level of the organisation
 
@@ -44,6 +46,7 @@ One skill for each tier, from the sharp end to the board.
 | Fire services, emergency teams, incident command | [emergency-response-learnings](skills/emergency-response-learnings.md) | response timeline, plan gaps, drills |
 | Engineering, integrity, change control, instrumentation | [engineering-integrity-learnings](skills/engineering-integrity-learnings.md) | technical learnings and pending decisions |
 | Procurement, stores, vendors, contractors | [supply-chain-contractor-learnings](skills/supply-chain-contractor-learnings.md) | sourcing and contractor learnings |
+| HR, workforce planners, rostering and competence-framework owners | [people-workforce-learnings](skills/people-workforce-learnings.md) | people-system learnings and competence-framework changes |
 | Safety committees and workforce representatives | [safety-committee-guide](skills/safety-committee-guide.md) | a discussion guide and questions to raise |
 
 ## What every skill does the same way

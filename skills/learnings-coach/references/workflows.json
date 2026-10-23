@@ -38,6 +38,9 @@
         "skill": "manager-coach"
       },
       {
+        "skill": "people-workforce-learnings"
+      },
+      {
         "skill": "site-leadership-coach"
       },
       {
@@ -61,6 +64,10 @@
         "skill": "site-leadership-coach"
       },
       {
+        "skill": "failure-to-learn-review",
+        "when": "the user asks for patterns or latent conditions"
+      },
+      {
         "skill": "top-management-brief"
       },
       {
@@ -79,8 +86,7 @@
         "planned": "Phase 5"
       },
       {
-        "skill": "compliance-crosswalk",
-        "planned": "Phase 5"
+        "skill": "compliance-crosswalk"
       },
       {
         "skill": "auditor-assurance-pack"

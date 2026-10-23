@@ -1,0 +1,28 @@
+{"pack": "people-workforce-learnings", "schema": 1,
+ "title": "People & Workforce Learnings: Synthetic pump fire, 2024",
+ "audience": "HR and workforce planning", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "No competence standard said who may sign off a pressure-boundary seal change.",
+                  "cites": ["FND-0002", "EVD-0002"], "learning": "LR-01"}],
+ "scope": {"tiers": ["T3", "T4"], "levels": [2, 3, 4], "tags": ["people"], "entities": ["F12"]},
+ "sections": [
+  {"id": "banner", "heading": "About this pack", "items": [
+   {"kind": "para", "text": "Learnings about systems, not individuals' records."}]},
+  {"id": "system", "heading": "People-system learnings", "items": [
+   {"kind": "learning", "group": "Qualification and authorisation",
+    "lesson": "A seal change on a pressure boundary needs a task authorisation, not only a job title.",
+    "explanation": "The procedure index has no return-to-service entry [EVD-0002], so nothing defined who was competent to sign the job off.",
+    "owner": "Competence-framework owner", "learning": "LR-01", "cites": ["FND-0002", "EVD-0002"]}]},
+  {"id": "competence-framework", "heading": "Competence framework: what to define", "items": [
+   {"kind": "table", "columns": ["Role", "What the export shows", "What the framework should define"],
+    "rows": [["Pump technician", "Seal changed and restarted without a leak test", "Authorisation for seal changes, including the leak test"],
+             ["Stores/procurement officer", "Seals bought locally without a specification", "Who may approve a substitute part"]],
+    "row_cites": [["FND-0001", "EVD-0001"], ["FND-0003"]]}]},
+  {"id": "rostering", "heading": "Rostering, manning and workload", "items": [
+   {"kind": "learning", "group": "Crew and team composition",
+    "lesson": "A pressure-boundary job needs a second person to witness the test.",
+    "explanation": "The work order shows no test and no witness [EVD-0001].", "owner": "Workforce planner for maintenance",
+    "cites": ["FND-0001", "EVD-0001"]}]},
+  {"id": "handoff", "heading": "Hand-off to training design", "items": [
+   {"kind": "para", "text": "For training-designer: the leak test before return to service is a training need; this pack sets the standard.",
+    "cites": ["FND-0001"]}]}],
+ "limits": ["The synthetic export holds nothing on rosters or hours."]}
