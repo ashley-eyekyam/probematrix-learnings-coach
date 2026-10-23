@@ -52,7 +52,7 @@ def cmd_causal_item(a):
 # ----------------------------------------------------------------------------- table items
 
 TABLE_KINDS = ["clusters", "tiers", "relations", "hubs", "interfaces", "evidence-types", "entity-tier", "hoc",
-               "adoption"]
+               "adoption", "nine-m"]
 ROW_CITES = 5            # Finding IDs cited per table row: the highest rated, ties by ID
 NO_ADOPTION = "No adoption record yet: run PMLC templates <ws> adoption and fill it in"
 
@@ -130,6 +130,36 @@ def _hoc_table(a, ws) -> dict:
                   [sorted(cites[t], key=str)[:ROW_CITES] for t in order])
 
 
+NINE_M_NO_VALUES = ("The register has no nine_m values: copy each learning's M from the nine-m-analysis outputs "
+                    "into the register first (learnings-register)")
+NINE_M_UNSET = ["none", "No 9M value recorded"]
+
+
+def _nine_m_table(a, ws) -> dict:
+    """P5-18: the register's learnings counted per M (nine_m), M1 to M9 in order with empty Ms kept, plus a last row
+    for the learnings with no nine_m when the register has both. Row cites: each M's learnings' findings."""
+    from ..ninem import load_nine_m, NINE_M_CODES        # late: keeps the pack modules free of the 9M references
+    reg = Path(a.register) if a.register else _default_register(ws)
+    if not reg.is_file():
+        sys.exit(f"No Learnings Register at {reg}: write it first, or pass --register FILE")
+    entries = load_register_entries(reg)
+    by = collections.defaultdict(list)
+    for e in entries:
+        by[e.get("nine_m") if e.get("nine_m") in NINE_M_CODES else None].append(e)
+    if not any(by[m] for m in NINE_M_CODES):
+        sys.exit(NINE_M_NO_VALUES)
+    names = {c["code"]: c["title"] for c in load_nine_m()["chapters"]}
+    keys = list(NINE_M_CODES) + ([None] if by[None] else [])
+    rows, cites = [], []
+    for m in keys:
+        es = sorted(by[m], key=lambda e: str(e.get("lr_id")))
+        head = [m, names.get(m, m)] if m else list(NINE_M_UNSET)
+        rows.append(head + [len(es), sum(1 for e in es if e.get("priority") == 1),
+                            ", ".join(str(e.get("lr_id")) for e in es) or "none"])
+        cites.append(list(dict.fromkeys(x for e in es for x in e.get("finding_ids") or []))[:ROW_CITES])
+    return _table("nine-m-table", ["M", "Name", "Learnings", "Priority 1", "LR-IDs"], rows, cites)
+
+
 def _default_register(ws) -> Path:
     return outputs_dir(ws) / "learnings-register.json"
 
@@ -194,6 +224,8 @@ def table_item(ws, kind, a) -> dict:
                       [sorted(by[t])[:ROW_CITES] for t in order])
     if kind == "hoc":
         return _hoc_table(a, ws)
+    if kind == "nine-m":
+        return _nine_m_table(a, ws)
     if kind == "adoption":
         try:
             rows = load_adoption(ws)

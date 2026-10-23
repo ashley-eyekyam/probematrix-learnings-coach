@@ -159,3 +159,56 @@ def test_learning_clusters_shows_the_industry_pack():
     banner = INDUSTRY_BANNER.format("process")
     taxonomy = [x for x in section(text, "Write").splitlines() if "`taxonomy`" in x or "**Taxonomy" in x]
     assert any(banner in x for x in taxonomy), taxonomy
+
+
+# ----------------------------------------------------------------------------- organisation-learning-map: nine-m (P5-18)
+
+def _nine_m_register(tmp_path, values):
+    import copy
+    from test_pmlc import MINI_REG
+    reg = copy.deepcopy(MINI_REG)
+    second = dict(copy.deepcopy(reg["entries"][0]), lr_id="LR-02", priority=2, finding_ids=["FND-0003"])
+    reg["entries"].append(second)
+    for e, v in zip(reg["entries"], values):
+        if v:
+            e["nine_m"] = v
+    p = tmp_path / "learnings-register.json"
+    p.write_text(json.dumps(reg), encoding="utf-8")
+    return p
+
+
+def test_table_item_nine_m(ws, w, tmp_path):  # noqa: F811
+    import pmlc_pack as pp
+    from test_pmlc import run
+    reg = _nine_m_register(tmp_path, ["M3", "M3"])
+    it = json.loads(run("table-item", str(ws), "nine-m", "--register", str(reg)))
+    assert it["kind"] == "table" and it["id"] == "nine-m-table"
+    assert it["columns"] == ["M", "Name", "Learnings", "Priority 1", "LR-IDs"]
+    assert [r[0] for r in it["rows"]] == [f"M{i}" for i in range(1, 10)]
+    m3 = it["rows"][2]
+    assert m3[0] == "M3" and m3[2:] == [2, 1, "LR-01, LR-02"] and m3[1]
+    assert it["row_cites"][2] == ["FND-0001", "FND-0002", "FND-0003"]
+    assert all(r[2] == 0 and r[4] == "none" for i, r in enumerate(it["rows"]) if i != 2)
+    assert all(c == [] for i, c in enumerate(it["row_cites"]) if i != 2)
+    pack = {"pack": "test-pack", "schema": 1, "title": "Test", "audience": "Testers",
+            "status": "Learning purposes: not a statutory document",
+            "bottom_line": [{"text": "Tested.", "cites": ["FND-0002"]}],
+            "sections": [{"id": "nine-m", "heading": "Learnings by M", "items": [it]}]}
+    assert pp.check_pack(pack, w).problems == []
+    half = json.loads(run("table-item", str(ws), "nine-m", "--register", str(_nine_m_register(tmp_path, ["M3", None]))))
+    assert half["rows"][-1] == ["none", "No 9M value recorded", 1, 0, "LR-02"]
+
+
+def test_table_item_nine_m_needs_values(ws, tmp_path):  # noqa: F811
+    from test_pmlc import run_fail
+    r = run_fail("table-item", str(ws), "nine-m", "--register", str(_nine_m_register(tmp_path, [None, None])))
+    assert "The register has no nine_m values" in r.stderr and "Traceback" not in r.stderr
+
+
+def test_organisation_map_profile_and_skill_have_the_nine_m_table():
+    prof = load(REFS / "pack-profiles.json")["organisation-learning-plan"]
+    assert {"id": "nine-m", "kinds": ["table"], "min": 0, "max": 1} in prof["sections"]
+    text = read(SKILLS / "organisation-learning-map" / "SKILL.md")
+    assert "PMLC table-item <ws> nine-m --register <run>/outputs/learnings-register.json" in section(text, "Gather")
+    assert "table-item <ws> <clusters|tiers|relations|hubs|interfaces|evidence-types|entity-tier|hoc|adoption|nine-m>" \
+        in read(ROOT / "AGENTS.md").replace("$WS", "<ws>")
