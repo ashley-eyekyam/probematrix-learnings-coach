@@ -3,6 +3,7 @@ check-pack --strict against the sample register with no language errors, its num
 (`open-questions`), its other-pack questions are the gaps the sample packs record, and the CSV it hands over has one
 row per finding. Public Hazira sample and synthetic data only."""
 import json
+import re
 import shutil
 
 import pytest
@@ -69,7 +70,13 @@ def test_golden_tables_and_summary_follow_the_engine(hz):
     cols = section(pack, "follow-up-columns")["items"]
     assert len(cols) == 1 and [r[0] for r in cols[0]["rows"]] == oq["empty_follow_up_columns"]
     items = json.loads(run("open-questions", str(hz), "--items"))
-    src = {it["question"].split("'")[1]: it["good_evidence"] for it in items if not it.get("cites")}
+    src = {}
+    for it in items:
+        if it.get("cites"):
+            continue
+        quoted = re.findall(r"'([^']+)'", it["question"])
+        assert quoted, f"engine question no longer quotes the column name: {it['question']!r}"
+        src[quoted[0]] = it["good_evidence"]
     assert {r[0]: r[2] for r in cols[0]["rows"]} == src
     fields = section(pack, "summary-fields")["items"][0]
     got = [x for r in fields["rows"] for x in r[1].split(", ")]
