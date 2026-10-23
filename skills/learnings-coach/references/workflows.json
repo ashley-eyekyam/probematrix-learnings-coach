@@ -38,6 +38,9 @@
         "skill": "manager-coach"
       },
       {
+        "skill": "people-workforce-learnings"
+      },
+      {
         "skill": "site-leadership-coach"
       },
       {
@@ -65,6 +68,10 @@
       },
       {
         "skill": "board-brief"
+      },
+      {
+        "skill": "failure-to-learn-review",
+        "when": "the user asks for patterns or latent conditions"
       },
       {
         "skill": "latent-conditions-profile",
