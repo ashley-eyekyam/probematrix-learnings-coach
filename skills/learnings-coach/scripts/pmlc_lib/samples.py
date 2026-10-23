@@ -12,7 +12,7 @@ from .workspace import valid_run_slug
 RENDER_EXEMPT = ("learnings-register.json",)
 # Phase 5 staging (plan, New-skill checklist item 6): a new skill's Hazira golden pack lands as JSON only, and
 # Task 24 renders its HTML and MD, then empties this set. Each entry must be a pack JSON with neither rendering.
-RENDER_PENDING = frozenset({"failure-to-learn-review.json"})
+RENDER_PENDING = frozenset({"failure-to-learn-review.json", "risk-register-update.json"})
 
 
 def _sample_render_problems(d) -> list:
