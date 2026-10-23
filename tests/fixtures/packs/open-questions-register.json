@@ -1,0 +1,28 @@
+{"pack": "open-questions-register", "schema": 1, "skill": "open-questions-register",
+ "title": "Open Questions Register: Synthetic pump fire, 2024",
+ "audience": "Investigators and investigation sponsors", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "No record shows who approved buying the seals locally; the purchase records would settle it.",
+                  "cites": ["FND-0003"], "learning": "LR-01"}],
+ "sections": [
+  {"id": "summary", "heading": "What the export leaves open", "items": [
+   {"kind": "para", "text": "The export leaves its four follow-up columns empty on all three findings. The justification of one finding says a record is absent, and one is hedged.",
+    "cites": ["FND-0003", "FND-0002"], "evidence_strength": "direct"}]},
+  {"id": "follow-up-columns", "heading": "Follow-up columns", "items": [
+   {"kind": "table", "columns": ["Follow-up column", "Findings with an entry", "Suggested source"],
+    "rows": [["Evidence to Collect", "0 of 3", "document"], ["Key Questions", "0 of 3", "witness statement"]],
+    "lint_ok": {"rule": "JC1", "reason": "export column names, not people"}}]},
+  {"id": "summary-fields", "heading": "Blank Incident Summary fields", "items": [
+   {"kind": "table", "columns": ["Group", "Blank fields"], "rows": [["When and where", "Time, Shift"]]}]},
+  {"id": "questions", "heading": "Questions to settle", "items": [
+   {"kind": "question", "question": "What should be recorded under 'Evidence to Collect' for the findings?",
+    "why": "The export leaves 'Evidence to Collect' empty on every finding.", "good_evidence": "document"},
+   {"kind": "question", "question": "What record or evidence would settle this: Seals bought locally without specification?",
+    "why": "The justification says a record or fact is absent (FND-0003).", "good_evidence": "document",
+    "cites": ["FND-0003"]},
+   {"kind": "question", "question": "What evidence would firm up this finding: No return-to-service checklist?",
+    "why": "The justification is hedged (FND-0002).", "good_evidence": "inspection record", "cites": ["FND-0002"]}]},
+  {"id": "from-other-packs", "heading": "Questions other packs raised", "items": [
+   {"kind": "question", "question": "When did local seal purchases start, and what record shows the approval?",
+    "why": "Recorded as a gap by the investigator-coach pack.", "good_evidence": "Purchase orders since 2022",
+    "cites": ["FND-0003", "EVD-0003"], "group": "investigator-coach"}]}],
+ "limits": ["The questions cover every absence and hedged finding in this small export."]}

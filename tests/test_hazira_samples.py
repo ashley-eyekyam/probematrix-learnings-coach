@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 import pytest
 
 from test_pmlc import PMLC, ROOT, run
+from pmlc_lib.samples import RENDER_PENDING
 
 pytest.importorskip("openpyxl")
 SAMPLE = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire"
@@ -35,16 +36,19 @@ REGISTER_FILES = {"learnings-register.json", "learnings-register.md", "learnings
 DATE_RX = re.compile(r"generated \d{4}-\d{2}-\d{2}")
 
 
-def _packs():
+def _packs(pending=False):
+    """The rendered pack JSONs in outputs/ (pending=True: the Phase 5 goldens still waiting for Task 24's render,
+    `samples.RENDER_PENDING`; they are checked by each skill's own test until then)."""
     out = []
     for p in sorted(OUTPUTS.glob("*.json")):
         d = json.loads(p.read_text(encoding="utf-8"))
-        if isinstance(d, dict) and "pack" in d:
+        if isinstance(d, dict) and "pack" in d and (p.name in RENDER_PENDING) == pending:
             out.append(p.stem)
     return out
 
 
 PACKS = _packs()
+PENDING_PACKS = _packs(pending=True)
 README_PACK_ROW = re.compile(r"^\| `outputs/([a-z0-9-]+|dossier-F\d+)\.json`[^|]*\|[^|]*\|[^|]*\bpack JSON\b", re.M)
 
 
@@ -97,7 +101,7 @@ def _same(new, old):
 
 def test_hazira_samples_hold_exactly_the_od4_4_files():
     want = set(REGISTER_FILES) | {f for _, _, files in SHOWCASES for f in files}
-    want |= {f"{p}.{ext}" for p in PACKS for ext in ("json", "html", "md")}
+    want |= {f"{p}.{ext}" for p in PACKS for ext in ("json", "html", "md")} | {f"{p}.json" for p in PENDING_PACKS}
     assert {p.name for p in OUTPUTS.iterdir()} == want
     assert sorted(PACKS) == readme_packs() and len(PACKS) >= 25 and "frontline-learning-cards-hi" in PACKS
 

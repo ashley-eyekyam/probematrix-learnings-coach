@@ -10,6 +10,9 @@ from .workspace import valid_run_slug
 
 # Its Markdown is learnings-register.md and its HTML is the dashboard, organisation-learning-map.html (Task 27).
 RENDER_EXEMPT = ("learnings-register.json",)
+# v2.0 Phase 5: the new skills' Hazira golden packs land as JSON first; Task 24 renders them all in one pass and
+# empties this set. A pack listed here may sit without its .html and .md until then (repository tooling only).
+RENDER_PENDING = frozenset({"open-questions-register.json"})
 
 
 def _sample_render_problems(d) -> list:
@@ -17,7 +20,7 @@ def _sample_render_problems(d) -> list:
     out = d / "outputs"
     problems = []
     for p in sorted(out.glob("*.json")) if out.is_dir() else []:
-        if p.name in RENDER_EXEMPT:
+        if p.name in RENDER_EXEMPT or p.name in RENDER_PENDING:
             continue
         try:
             doc = json.loads(p.read_text(encoding="utf-8"))
