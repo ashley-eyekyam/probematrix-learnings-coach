@@ -27,7 +27,8 @@ The dossier is the function's reference file across every tier. The T3 managers'
 ```bash
 pmlc select <ws> --entity <F-id> --count-by level                                # size and S1 counts
 pmlc select <ws> --entity <F-id> --budget-chars 60000 --out <ws>/sel-<F-id>.md   # full text, highest-rated first
-pmlc select <ws> --entity <F-id> --level 1 --brief                               # level by level for large clusters
+pmlc select <ws> --entity <F-id> --fields short,code,level,rating                 # index: every finding, one line each
+pmlc select <ws> --entity <F-id> --level 1 --fields label,short,justification,code,rating --budget-chars 60000   # then levels 2, 3, 4
 pmlc table-item <ws> entity-tier --entity <F-id>                                 # S1 table, ready to paste
 pmlc interfaces <ws>                                                             # S6
 pmlc timeline-item <ws> --before incident --top 12                               # S8
@@ -37,7 +38,7 @@ pmlc pack <ws> <run>/outputs/dossier-<F-id>.json --format docx   # the reference
 pmlc dossier-index <ws>                                                          # the index of every dossier
 ```
 
-- [select](../commands/select.md): `--entity` limits the bundle to one cluster; `--count-by level` prints only the counts; `--budget-chars` keeps findings in rating order within a character budget and says how many it dropped; `--out` saves the bundle; `--level` with `--brief` reads one level at a time.
+- [select](../commands/select.md): `--entity` limits the bundle to one cluster; `--count-by level` prints only the counts; `--budget-chars` keeps findings in rating order within a character budget and says how many it dropped; `--out` saves the bundle; `--fields` keeps only the named parts of each finding (`short,code,level,rating` for the index; adding `label` and `justification` for the level passes), so each 60,000-character pass holds more findings; `--level` reads one level at a time.
 - [table-item](../commands/table-item.md) `entity-tier`, [interfaces](../commands/interfaces.md) and [timeline-item](../commands/timeline-item.md) give S1, S6 and S8.
 - [check-pack](../commands/check-pack.md) with `--strict` and [pack](../commands/pack.md) render each dossier. The pack is named `dossier-<F-id>` (for example `dossier-F02` or `dossier-F09b`), and its scope is that one entity.
 - [dossier-index](../commands/dossier-index.md) writes `dossier-index.json` from the dossier packs; render it with `pack`.
@@ -62,7 +63,7 @@ With `--format docx`, `dossier-<F-id>.docx` is the function's reference file in 
 
 ## Worked example (Hazira)
 
-On Hazira, `select --entity F02 --count-by level` showed 194 findings for Mechanical Maintenance, split 22, 36, 86 and 50 across levels 1 to 4. `--budget-chars 60000` kept the 19 highest-rated in full and reported `Dropped for budget: 175 findings (lowest kept rating 4)`, so the skill reads the rest level by level: `select --entity F02 --level 1 --brief` returned the 22 Unsafe Acts findings. `interfaces` showed F02's strongest seam, with F01 Operations & Control Room (71 shared findings).
+On Hazira, `select --entity F02 --count-by level` showed 194 findings for Mechanical Maintenance, split 22, 36, 86 and 50 across levels 1 to 4. `--budget-chars 60000` kept the 19 highest-rated in full and reported `Dropped for budget: 175 findings (lowest kept rating 4)`, so the skill reads an index of all 194 (`--fields short,code,level,rating`, about 43,000 characters) and then each level with its justifications: the four passes kept 22 of 22, 36 of 36, 38 of 86 and 41 of 50 findings in full, 137 of 194 in all. `interfaces` showed F02's strongest seam, with F01 Operations & Control Room (71 shared findings).
 
 These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, they change: on Hazira the india-process-site overlay alone moves F09b Emergency Planning & Command from 16 to 43 findings.
 

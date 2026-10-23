@@ -212,3 +212,15 @@ def test_organisation_map_profile_and_skill_have_the_nine_m_table():
     assert "PMLC table-item <ws> nine-m --register <run>/outputs/learnings-register.json" in section(text, "Gather")
     assert "table-item <ws> <clusters|tiers|relations|hubs|interfaces|evidence-types|entity-tier|hoc|adoption|nine-m>" \
         in read(ROOT / "AGENTS.md").replace("$WS", "<ws>")
+
+
+# ----------------------------------------------------------------------------- P5-19: the dossier's reading budget
+
+def test_dossier_reads_every_level_within_the_budget():
+    gather = section(read(SKILLS / "cluster-learning-dossier" / "SKILL.md"), "Gather")
+    assert "PMLC select <ws> --entity <F-id> --fields short,code,level,rating " in gather
+    assert ("PMLC select <ws> --entity <F-id> --level 1 --fields label,short,justification,code,rating "
+            "--budget-chars 60000") in gather
+    assert "--level 1 --brief" not in gather
+    body = section(read(ROOT / "docs" / "manual" / "skills" / "cluster-learning-dossier.md"), "Engine commands and flags")
+    assert "--fields" in body
