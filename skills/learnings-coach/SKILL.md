@@ -52,6 +52,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | frontline learning cards, toolbox talks | `frontline-learning-cards` | it is for supervisors (`supervisor-coach`) or a course (`training-designer`) |
 | supervisors, shift briefings | `supervisor-coach` | it is a frontline card (`frontline-learning-cards`) |
 | function managers' changes | `manager-coach` | it is the site leadership team (`site-leadership-coach`) or one department's full set (`cluster-learning-dossier`) |
+| planners and schedulers: job plans, deferrals, backlog, crewing | `manager-coach` (work-management section) | it is one department's full set (`cluster-learning-dossier`) |
 | plant or site leadership decisions | `site-leadership-coach` | it is a function manager's change (`manager-coach`) |
 | CEO and executive committee | `top-management-brief` | it is for directors (`board-brief`) |
 | the board or its committee | `board-brief` | it is for executives (`top-management-brief`) |

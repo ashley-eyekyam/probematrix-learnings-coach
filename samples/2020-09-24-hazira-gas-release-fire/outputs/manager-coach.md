@@ -8,7 +8,7 @@ Draft because: the investigation status is in progress; no finding is marked as 
 
 *Learning purposes: not a statutory document. Draft learnings from a ProbeMatrix investigation export; validate them before adoption. · Learnings drafted by an AI agent from AI-assisted findings*
 
-*About 14 min read*
+*About 16 min read*
 
 **Audience:** T3 function and department managers
 
@@ -447,6 +447,22 @@ The gasket job plan had no independent check, test witness or job safety analysi
 
 *(evidence: corroborated; learning: LR-03)*
 
+**Learning:** Repeat failures were planned as routine repairs: the same seal was replaced three times in 22 months, and each time the planning system scheduled another like-for-like job with no trigger for a reliability review. [FND-8B4A5414; FND-F0D015E1; EVD-1494]
+
+No rule in the work-management system escalated a second or third corrective job on the same tag to root-cause analysis, OEM seal restoration or meter replacement, so the inadequate repair was planned again until the fourth failure.
+
+- Owner: Work management function
+
+*(learning: LR-05)*
+
+**Learning:** Planned inspection slipped without a deferral decision: the four-year thickness survey ran in 2011 and 2017 only, and the next one was already overdue by 2020. [FND-FCCB9505; EVD-8307]
+
+The schedule let a mandated inspection move by years with no recorded deferral, approval or risk assessment, so the slip was invisible to the people who could have resourced it.
+
+- Owner: Work management function
+
+*(learning: LR-18)*
+
 **Recommendation:** Link equipment status to notification status in the maintenance system, so equipment cannot be set available while its corrective notification is open. [FND-50775B5A; FND-56C66B96; EVD-0591]
 - Control tier: engineering
 - Barrier: prevention: work close-out
@@ -462,6 +478,25 @@ The gasket job plan had no independent check, test witness or job safety analysi
 - Leading indicator: Share of safety-critical jobs with every verification step signed by someone other than the performer.
 
 *(learning: LR-03)*
+
+**Recommendation:** Add a repeat-failure trigger to the maintenance system: a second corrective job on the same tag within 24 months opens a reliability review that must be closed before the next job on that tag is scheduled. [FND-8B4A5414; FND-F0D015E1]
+- Control tier: engineering
+- Barrier: prevention: reliability review of repeat failures
+- Owner: Work management function
+- Leading indicator: Tags with two or more corrective jobs in 24 months and no closed reliability review.
+
+*(learning: LR-05)*
+
+**Recommendation:** Schedule mandated inspections as fixed-interval work orders that cannot be moved without a deferral record: the reason, a risk assessment and the approval of the integrity function's manager. [FND-FCCB9505; EVD-8307]
+- Control tier: administrative
+- Barrier: prevention: inspection and deferral control
+- Owner: Work management function
+- Leading indicator: Mandated inspections past their due interval, and deferrals without an approved record.
+- Why not stronger: Deferral control is a management-system rule; the stronger fix for known wall loss, repair or fitness-for-service assessment, belongs to asset integrity (LR-17) and is in that function's section.
+
+*(learning: LR-18)*
+
+*Language check JC6 accepted: Deferral control is a management-system barrier; its tier is stated honestly, and the stronger fix for the wall loss itself is in the asset-integrity section.*
 
 ## Summary
 
@@ -515,7 +550,7 @@ The gasket job plan had no independent check, test witness or job safety analysi
 
 ---
 
-This pack cites 124 of 246 relevant findings.
+This pack cites 125 of 246 relevant findings.
 
 55 of 93 top-rated relevant findings cited.
 

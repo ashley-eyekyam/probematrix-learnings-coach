@@ -142,6 +142,7 @@
     "PMLC select <ws> --preset manager-coach:top-tier-t3-l34",
     "PMLC select <ws> --preset manager-coach:relation",
     "PMLC select <ws> --preset manager-coach:work-management",
+    "PMLC select <ws> --preset manager-coach:work-management-svio",
     "PMLC check-pack <ws> <run>/outputs/manager-coach.json --strict",
     "PMLC pack <ws> <run>/outputs/manager-coach.json"
    ],

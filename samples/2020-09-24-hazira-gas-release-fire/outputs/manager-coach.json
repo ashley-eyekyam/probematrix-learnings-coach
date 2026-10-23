@@ -1014,6 +1014,29 @@
      "evidence_strength": "corroborated"
     },
     {
+     "kind": "learning",
+     "lesson": "Repeat failures were planned as routine repairs: the same seal was replaced three times in 22 months, and each time the planning system scheduled another like-for-like job with no trigger for a reliability review.",
+     "explanation": "No rule in the work-management system escalated a second or third corrective job on the same tag to root-cause analysis, OEM seal restoration or meter replacement, so the inadequate repair was planned again until the fourth failure.",
+     "owner": "Work management function",
+     "learning": "LR-05",
+     "cites": [
+      "FND-8B4A5414",
+      "FND-F0D015E1",
+      "EVD-1494"
+     ]
+    },
+    {
+     "kind": "learning",
+     "lesson": "Planned inspection slipped without a deferral decision: the four-year thickness survey ran in 2011 and 2017 only, and the next one was already overdue by 2020.",
+     "explanation": "The schedule let a mandated inspection move by years with no recorded deferral, approval or risk assessment, so the slip was invisible to the people who could have resourced it.",
+     "owner": "Work management function",
+     "learning": "LR-18",
+     "cites": [
+      "FND-FCCB9505",
+      "EVD-8307"
+     ]
+    },
+    {
      "kind": "recommendation",
      "change": "Link equipment status to notification status in the maintenance system, so equipment cannot be set available while its corrective notification is open.",
      "hoc_tier": "engineering",
@@ -1039,6 +1062,37 @@
       "FND-F8C125D5",
       "FND-63B6D260"
      ]
+    },
+    {
+     "kind": "recommendation",
+     "change": "Add a repeat-failure trigger to the maintenance system: a second corrective job on the same tag within 24 months opens a reliability review that must be closed before the next job on that tag is scheduled.",
+     "hoc_tier": "engineering",
+     "barrier": "prevention: reliability review of repeat failures",
+     "indicator": "Tags with two or more corrective jobs in 24 months and no closed reliability review.",
+     "owner": "Work management function",
+     "learning": "LR-05",
+     "cites": [
+      "FND-8B4A5414",
+      "FND-F0D015E1"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "change": "Schedule mandated inspections as fixed-interval work orders that cannot be moved without a deferral record: the reason, a risk assessment and the approval of the integrity function's manager.",
+     "hoc_tier": "administrative",
+     "barrier": "prevention: inspection and deferral control",
+     "why_not_stronger": "Deferral control is a management-system rule; the stronger fix for known wall loss, repair or fitness-for-service assessment, belongs to asset integrity (LR-17) and is in that function's section.",
+     "indicator": "Mandated inspections past their due interval, and deferrals without an approved record.",
+     "owner": "Work management function",
+     "learning": "LR-18",
+     "cites": [
+      "FND-FCCB9505",
+      "EVD-8307"
+     ],
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "Deferral control is a management-system barrier; its tier is stated honestly, and the stronger fix for the wall loss itself is in the asset-integrity section."
+     }
     }
    ]
   },

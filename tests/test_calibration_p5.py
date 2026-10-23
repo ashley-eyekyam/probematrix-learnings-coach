@@ -157,3 +157,20 @@ def test_hazira_event_day_52_stamps_26_times(hazira_ws):
     assert all(e["knowable_then"] is True for e in it["events"])
     run("timeline", str(hazira_ws), "--on", "incident")
     assert len(json.loads((hazira_ws / "timeline_event_day.json").read_text(encoding="utf-8"))) == 29
+
+
+# ----------------------------------------------------------------------------- Task 21: manager-coach work management
+
+def test_work_management_counts(hazira_ws):
+    """Task 21: F08 (work management and planning) holds 59 findings in clusters.json; prefix SVIO holds 28; the
+    golden manager-coach work-management section cites at least three SVIO findings."""
+    w = pmlc.load_ws(hazira_ws)
+    cl = json.loads((hazira_ws / "clusters.json").read_text(encoding="utf-8"))
+    assert sum("F08" in v.get("F", []) for v in cl["findings"].values()) == 59
+    svio = {f["id"] for f in w["findings"] if f["code"].split()[0] == "SVIO"}
+    assert len(svio) == 28
+    assert "| L3 | 28 |" in run("select", str(hazira_ws), "--prefix", "SVIO", "--count-by", "level")
+    pack = json.loads((SAMPLE / "outputs" / "manager-coach.json").read_text(encoding="utf-8"))
+    wm = next(s for s in pack["sections"] if s["id"] == "work-management")
+    cited = {x for it in wm["items"] for x in it.get("cites", [])}
+    assert len(cited & svio) >= 3, sorted(cited & svio)

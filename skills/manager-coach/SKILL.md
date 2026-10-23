@@ -25,6 +25,7 @@ PMLC select <ws> --tier T3 --brief
 PMLC select <ws> --tier T3 --level 3 4 --top-rated
 PMLC select <ws> --relation owner absent --brief            # systems they own; functions that did not exist
 PMLC select <ws> --entity F08 --level 3 4 --brief           # work management and planning (F08 in the default taxonomy)
+PMLC select <ws> --prefix SVIO --brief                      # planned operations: crewing, risk assessment, missions beyond capability
 PMLC interfaces <ws> --top 15                               # the seams with other functions
 PMLC register-items <ws> --tier T3                          # the register's T3 learnings (needs the register)
 ```
@@ -45,7 +46,7 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/manager-coach
 | 1–5 | `*` | Recommendations | change, `hoc_tier`, barrier, indicator; `why_not_stronger` at the administrative or training tier | `recommendation` | up to 4 |
 | 1–5 | `*` | Leading indicators | Measurable from systems the function already has (CMMS, permits, training records, audit tracker), each with `deterioration` | `indicator` | up to 4 |
 | 1–5 | `*` | 90-day agenda | Columns Days, Action; `row_cites` (below) | `table` | 1 |
-| 6 | `work-management` | Work management: planners and schedulers | What the planning system allowed (job plans without test steps, deferrals, backlog, permit coordination) | `learning` | optional, up to 4 |
+| 6 | `work-management` | Work management: planners and schedulers | What the planning system allowed (job plans without test steps, deferrals, backlog, permit coordination, crews and risk assessment the plan did not check) | `learning` | optional, up to 4 |
 | 6 | `work-management` | (same section) | What the planning and scheduling function should change | `recommendation` | optional, up to 4 |
 | 7 | `management-review` | Management review input | The six-row table (below) | `table` | optional, up to 1 |
 | 8 | `summary` | Summary | Columns Function, Top learning, Top recommendation, Indicator: one row per function with T3 findings, the top 5 first | `table` | 1 |
@@ -53,7 +54,7 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/manager-coach
 Rules for the content:
 
 - **90-day agenda.** First 30 days: verify the condition still exists, contain it. 60: the system change drafted with the people who do the work. 90: the indicator in the monthly report. No names or dates unless asked.
-- **Work management.** Planners and schedulers decide what work is planned, with which steps, and what is deferred. Write the section when the work-management selection returns findings; the planning function then gets no separate function section.
+- **Work management.** Planners and schedulers decide what work is planned, with which steps, and what is deferred. Write the section when the work-management selection returns findings; the planning function then gets no separate function section. Use both selections: F08 gives the planning function's own findings, and `--prefix SVIO` (Planned Inappropriate Operations) gives work planned beyond the crew's capability, crews composed without the checks the job needed, and formal risk assessment skipped. Keep a crewing finding on the system that composed the crew, never on the people in it.
 - **Management review input** (ISO 45001 9.3). Write it when the user asks for a management-review input. One `table`, columns Input, What this investigation shows, Indicator, Deterioration trigger, with **exactly six rows** in this order: Incidents and corrective actions; Monitoring results; Audit results; Risks and opportunities; Adequacy of resources; Consultation outcomes. Each row cites its findings in `row_cites`, or reads "not in this investigation" in the second cell with an empty cites list; every row with cites names an indicator and its deterioration trigger.
 - **Calendar reminders.** Only when the user gives the day the agenda starts: set each recommendation's `by_when` to its agenda horizon ("30 days", "60 days" or "90 days") and add `--format ics --start <their date>` (below). Never pick the date yourself; without `--start` the engine writes no calendar.
 - **Indicators.** Give each a baseline to establish and a deterioration trigger, in the terms of `indicators-and-effectiveness.md` §1; thresholds are for the owner to set.
