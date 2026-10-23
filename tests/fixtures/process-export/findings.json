@@ -1,0 +1,242 @@
+[
+ {
+  "id": "FND-0001",
+  "code": "AV 1.1",
+  "name": "Violation - Routine",
+  "level": 1,
+  "sub": "Violations",
+  "role": "Board operator (crude unit)"
+ },
+ {
+  "id": "FND-0002",
+  "code": "APE 1.2",
+  "name": "Perceptual Error",
+  "level": 1,
+  "sub": "Errors",
+  "role": "Alarm management lead"
+ },
+ {
+  "id": "FND-0003",
+  "code": "PPE 2.1",
+  "name": "Physical Environment",
+  "level": 2,
+  "sub": "Environmental Factors",
+  "role": "Safety instrumented system engineer"
+ },
+ {
+  "id": "FND-0004",
+  "code": "PTF 2.3",
+  "name": "Task Factors",
+  "level": 2,
+  "sub": "Personnel Factors",
+  "role": "Relief valve technician"
+ },
+ {
+  "id": "FND-0005",
+  "code": "SVI 3.1",
+  "name": "Inadequate Supervision",
+  "level": 3,
+  "sub": "Inadequate Supervision",
+  "role": "Turnaround coordinator"
+ },
+ {
+  "id": "FND-0006",
+  "code": "SVF 3.2",
+  "name": "Failure to Correct",
+  "level": 3,
+  "sub": "Failure to Correct",
+  "role": "Isolation authority"
+ },
+ {
+  "id": "FND-0007",
+  "code": "OIC 4.1",
+  "name": "Culture",
+  "level": 4,
+  "sub": "Organisational Climate",
+  "role": "Tank farm supervisor"
+ },
+ {
+  "id": "FND-0008",
+  "code": "OIP 4.2",
+  "name": "Procedures",
+  "level": 4,
+  "sub": "Organisational Process",
+  "role": "Process hazard analysis facilitator"
+ },
+ {
+  "id": "FND-0009",
+  "code": "OIR 4.3",
+  "name": "Resource Management",
+  "level": 4,
+  "sub": "Resource Management",
+  "role": "Lock-out tag-out coordinator"
+ },
+ {
+  "id": "FND-0010",
+  "code": "AV 1.1",
+  "name": "Violation - Routine",
+  "level": 1,
+  "sub": "Violations",
+  "role": "Corrosion under insulation inspector"
+ },
+ {
+  "id": "FND-0011",
+  "code": "APE 1.2",
+  "name": "Perceptual Error",
+  "level": 1,
+  "sub": "Errors",
+  "role": "Management of change reviewer"
+ },
+ {
+  "id": "FND-0012",
+  "code": "PPE 2.1",
+  "name": "Physical Environment",
+  "level": 2,
+  "sub": "Environmental Factors",
+  "role": "Gas tester"
+ },
+ {
+  "id": "FND-0013",
+  "code": "PTF 2.3",
+  "name": "Task Factors",
+  "level": 2,
+  "sub": "Personnel Factors",
+  "role": "Relief and flare system designer"
+ },
+ {
+  "id": "FND-0014",
+  "code": "SVI 3.1",
+  "name": "Inadequate Supervision",
+  "level": 3,
+  "sub": "Inadequate Supervision",
+  "role": "Emergency response team leader"
+ },
+ {
+  "id": "FND-0015",
+  "code": "SVF 3.2",
+  "name": "Failure to Correct",
+  "level": 3,
+  "sub": "Failure to Correct",
+  "role": "Unit manager"
+ },
+ {
+  "id": "FND-0016",
+  "code": "OIC 4.1",
+  "name": "Culture",
+  "level": 4,
+  "sub": "Organisational Climate",
+  "role": "Shift superintendent"
+ },
+ {
+  "id": "FND-0017",
+  "code": "OIP 4.2",
+  "name": "Procedures",
+  "level": 4,
+  "sub": "Organisational Process",
+  "role": "Loading bay operator"
+ },
+ {
+  "id": "FND-0018",
+  "code": "OIR 4.3",
+  "name": "Resource Management",
+  "level": 4,
+  "sub": "Resource Management",
+  "role": "Pressure safety valve test technician"
+ },
+ {
+  "id": "FND-0019",
+  "code": "AV 1.1",
+  "name": "Violation - Routine",
+  "level": 1,
+  "sub": "Violations",
+  "role": "Plant manager"
+ },
+ {
+  "id": "FND-0020",
+  "code": "APE 1.2",
+  "name": "Perceptual Error",
+  "level": 1,
+  "sub": "Errors",
+  "role": "Corporate process safety director"
+ },
+ {
+  "id": "FND-0021",
+  "code": "PPE 2.1",
+  "name": "Physical Environment",
+  "level": 2,
+  "sub": "Environmental Factors",
+  "role": "Permit receiver"
+ },
+ {
+  "id": "FND-0022",
+  "code": "PTF 2.3",
+  "name": "Task Factors",
+  "level": 2,
+  "sub": "Personnel Factors",
+  "role": "Interlock bypass approver"
+ },
+ {
+  "id": "FND-0023",
+  "code": "SVI 3.1",
+  "name": "Inadequate Supervision",
+  "level": 3,
+  "sub": "Inadequate Supervision",
+  "role": "Operations shift handover"
+ },
+ {
+  "id": "FND-0024",
+  "code": "SVF 3.2",
+  "name": "Failure to Correct",
+  "level": 3,
+  "sub": "Failure to Correct",
+  "role": "Heat exchanger inspector"
+ },
+ {
+  "id": "FND-0025",
+  "code": "OIC 4.1",
+  "name": "Culture",
+  "level": 4,
+  "sub": "Organisational Climate",
+  "role": "Fire-water pump technician"
+ },
+ {
+  "id": "FND-0026",
+  "code": "OIP 4.2",
+  "name": "Procedures",
+  "level": 4,
+  "sub": "Organisational Process",
+  "role": "Contractor scaffolding crew"
+ },
+ {
+  "id": "FND-0027",
+  "code": "OIR 4.3",
+  "name": "Resource Management",
+  "level": 4,
+  "sub": "Resource Management",
+  "role": "Process safety information custodian"
+ },
+ {
+  "id": "FND-0028",
+  "code": "AV 1.1",
+  "name": "Violation - Routine",
+  "level": 1,
+  "sub": "Violations",
+  "role": "Training and competence lead"
+ },
+ {
+  "id": "FND-0029",
+  "code": "APE 1.2",
+  "name": "Perceptual Error",
+  "level": 1,
+  "sub": "Errors",
+  "role": "Control room supervisor"
+ },
+ {
+  "id": "FND-0030",
+  "code": "PPE 2.1",
+  "name": "Physical Environment",
+  "level": 2,
+  "sub": "Environmental Factors",
+  "role": "Field operator (tank farm)"
+ }
+]

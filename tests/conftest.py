@@ -46,3 +46,36 @@ def png_probe():
 def needs_png(png_probe):
     """Skip (a plain pytest.skip, not a Node marker) unless png really renders here; fail under PMLC_REQUIRE_PNG=1."""
     png_gate(png_probe)
+
+
+def process_export(d: Path, name: str = "process-export.xlsx") -> Path:
+    """A synthetic process-industry export (P5-16): 30 findings whose roles use process-safety vocabulary (permits,
+    isolation, alarms, relief systems, turnaround, MOC). Rows come from tests/fixtures/process-export/findings.json.
+    Invented content only (D3)."""
+    import json
+    import openpyxl
+    rows = json.loads((Path(__file__).parent / "fixtures" / "process-export" / "findings.json").read_text())
+    wb = openpyxl.Workbook()
+    s = wb.active
+    s.title = "Incident Summary"
+    for r in [("INCIDENT SUMMARY", None), (None, None), ("Field", "Value"), ("Incident Title", "Synthetic process unit release"),
+              ("Date", "2024-05-02"), ("Investigation Status", "completed")]:
+        s.append(r)
+    f = wb.create_sheet("Identified Findings")
+    f.append(["Finding ID", "Nanocode", "Name", "Level", "Level Name", "Category", "Subcategory", "Classification",
+              "Rating", "Instance ID", "Instance Label", "Short Description", "AI Justification", "Causal Explanation",
+              "Individuals Involved", "Linked Evidence", "User Edited"])
+    for i, r in enumerate(rows):
+        f.append([r["id"], r["code"], r["name"], r["level"], "Level", "Level", r["sub"], "substantiated", 3 + i % 2,
+                  f"I-{i + 1}", r["name"], "Described briefly.", "Supported by EVD-0001.", "Described briefly.",
+                  r["role"], "EVD-0001", "No"])
+    e = wb.create_sheet("Evidence Links")
+    e.append(["Finding Code", "Finding Name", "Evidence ID", "Evidence Type", "Relevance", "Specific Reference",
+              "Evidence Description"])
+    e.append(["AV 1.1", "Violation - Routine", "EVD-0001", "document", "Shows the step", "step skipped", "Work order"])
+    c = wb.create_sheet("Causal Chain")
+    c.append(["Link ID", "From Code", "From Level", "To Code"])
+    c.append(["No causal links found", None, None, None])
+    x = d / name
+    wb.save(x)
+    return x

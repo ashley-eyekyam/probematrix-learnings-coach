@@ -13,7 +13,7 @@ from pathlib import Path
 
 from . import BRAND, DRAFT_LABEL, STATUS_PHRASE
 from .handling import effective_handling
-from .util import HERE, write_json
+from .util import HERE, INDUSTRY_BANNER, write_json
 from .workspace import check_current, load_manifest, load_ws, outputs_dir, pack_record
 
 REGISTER_NAME = "learnings-register.json"
@@ -79,6 +79,8 @@ def cmd_setup(a):
                 argv += ["--out", str(ws / "profile.md")]
             if name == "classify" and a.overlay:
                 argv += ["--overlay", a.overlay]
+            if name == "classify" and getattr(a, "industry", None):
+                argv += ["--industry", a.industry]
         code, out, err = _run(argv)
         if code:
             sys.stderr.write(out + err)
@@ -91,6 +93,8 @@ def cmd_setup(a):
     w = load_ws(ws)
     cl = w.get("clusters", {})
     unresolved = cl.get("unresolved_roles", [])
+    if getattr(a, "industry", None):
+        print(INDUSTRY_BANNER.format(a.industry))
     print(f"Ingested {len(w['findings'])} findings and {len(w.get('evidence', {}))} evidence items")
     print(f"Unresolved roles ({len(unresolved)}): " + ("; ".join(unresolved) if unresolved else "none"))
     prof = (ws / "profile.md").read_text(encoding="utf-8")

@@ -1,0 +1,23 @@
+{
+ "_about": "Role words common in process industries (refining, chemicals, gas, storage terminals): permit and isolation roles, alarm and safety-system roles, relief and integrity roles, management of change, turnaround planning and tank-farm operations. Method reference, not evidence about any incident. Apply with: pmlc.py classify <ws> --industry process. Each regex is OR-ed onto the base rule with the same ID, exactly as an --overlay is.",
+ "name": "industry:process",
+ "extend": {
+  "entities": {
+   "F01": "tank[- ]?farm|loading (bay|gantry)|unloading|board operator|outside operator|field operator|unit supervisor|operations shift|shift handover",
+   "F04": "alarm manag|safety instrumented|\\bsis\\b|\\bsil\\b|interlock|trip system|proof test|gas detect",
+   "F05": "relief (valve|device|system)|\\bpsv\\b|pressure safety valve|corrosion under insulation|\\bcui\\b|risk[- ]based inspection|\\brbi\\b|heat exchanger|pressure vessel|tank gaug",
+   "F07": "process hazard|\\bpha\\b|\\bhazop\\b|\\blopa\\b|process safety information|\\bpsi\\b|design authority|flare system|management of change",
+   "F08": "turnaround|shutdown (plan|coordinat)|outage|work package|scaffold(ing)? (plan|request)",
+   "F09b": "emergency response team|\\bert\\b|mutual aid|spill response",
+   "F11": "isolation authority|permit (receiver|issuer|authority)|lock[- ]?out|tag[- ]?out|\\bloto\\b|gas test|process safety|hot[- ]work|confined[- ]space",
+   "F12": "operator (training|qualification)|competence assurance|training and competence",
+   "F13": "unit manager|process unit|terminal manager|shift superintendent",
+   "F14": "process safety (director|committee)|corporate process"
+  },
+  "tiers": {
+   "T2": "permit (receiver|issuer)|isolation authority|unit supervisor|tank[- ]?farm supervisor|gas tester|turnaround coordinator|lock[- ]?out coordinator|tag[- ]?out coordinator|shift handover",
+   "T3": "unit manager|process unit manager|alarm management lead|design authority|custodian",
+   "T4": "terminal manager|shift superintendent"
+  }
+ }
+}

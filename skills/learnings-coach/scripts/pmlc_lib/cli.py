@@ -82,7 +82,7 @@ from .samples import cmd_check_samples
 from .templates import cmd_templates, FILES as TEMPLATE_FILES
 from .actions import cmd_export_actions, PROFILE_NAMES
 from .select import cmd_select, COUNT_BY, SELECT_FIELDS
-from .util import HERE
+from .util import HERE, industry_arg
 from .retention import cmd_purge, cmd_run_manifest, CLASSIFICATIONS, JURISDICTIONS
 from .workspace import cmd_run_path, cmd_status
 from .strings import cmd_strings, STRINGS_FORMATS
@@ -163,6 +163,9 @@ def build_parser():
     s.add_argument("--overlay", action="append", metavar="NAME_OR_PATH",
                    help="extra site role words OR-ed onto the taxonomy (repeatable); a bare name means "
                         "references/overlays/<name>.json, e.g. india-process-site")
+    s.add_argument("--industry", type=industry_arg, metavar="NAME",
+                   help="load the industry reference pack references/industry/<NAME>/overlay.json (e.g. process) like "
+                        "an overlay, applied before any --overlay. Method reference, not evidence. Remembered like --overlay")
     s.add_argument("--no-overlay", action="store_true",
                    help="use no overlay. Without --taxonomy/--overlay/--no-overlay, classify reuses the taxonomy "
                         "and overlays the previous classify used")
@@ -387,6 +390,8 @@ def build_parser():
     s.add_argument("--strict", action="store_true", help="exit 1 when a required column is missing")
     s.add_argument("--redact", metavar="MAP.json", help="JSON {name: role}; passed to ingest")
     s.add_argument("--overlay", metavar="NAME_OR_PATH", help="role overlay for classify, e.g. india-process-site")
+    s.add_argument("--industry", type=industry_arg, metavar="NAME",
+                   help="industry reference pack for classify, e.g. process (method reference, not evidence)")
     s.set_defaults(fn=cmd_setup)
 
     s = sp.add_parser("check-all", help="check every pack and the register in outputs/", allow_abbrev=False)

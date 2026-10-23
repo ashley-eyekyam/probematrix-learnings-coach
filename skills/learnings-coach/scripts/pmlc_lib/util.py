@@ -112,8 +112,28 @@ def _abs(path) -> Path:
 
 # ----------------------------------------------------------------------------- classify
 
+def industry_names() -> list:
+    """The industry reference packs shipped under references/industry/ (folders that hold an overlay.json)."""
+    base = REFS / "industry"
+    return sorted(d.name for d in base.iterdir() if (d / "overlay.json").is_file()) if base.is_dir() else []
+
+
+def industry_arg(v: str) -> str:
+    """argparse type for --industry: an unknown name exits 2 and lists what is available."""
+    import argparse
+    if v not in industry_names():
+        raise argparse.ArgumentTypeError(f"unknown industry {v!r}; available: {', '.join(industry_names()) or 'none'}")
+    return v
+
+
+INDUSTRY_BANNER = "Industry reference: {} (method reference, not evidence)"
+
+
 def _overlay_path(x) -> Path:
-    """A bare name resolves to references/overlays/<name>.json; anything with a slash or .json is a path."""
+    """A bare name resolves to references/overlays/<name>.json; `industry:<name>` to
+    references/industry/<name>/overlay.json (Ruling P5-16); anything with a slash or .json is a path."""
+    if x.startswith("industry:"):
+        return REFS / "industry" / x.split(":", 1)[1] / "overlay.json"
     if x.endswith(".json") or "/" in x or os.sep in x:
         return Path(x)
     return REFS / "overlays" / f"{x}.json"

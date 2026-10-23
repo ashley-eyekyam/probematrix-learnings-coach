@@ -9,7 +9,7 @@ import re
 import sys
 from pathlib import Path
 
-from .util import _abs, _overlay_path, REFS, write_json
+from .util import _abs, _overlay_path, INDUSTRY_BANNER, REFS, write_json
 from .workspace import file_sha256, load_manifest, load_ws, record_derived, taxonomy_hash, taxonomy_sources
 from . import privacy
 
@@ -246,10 +246,14 @@ def _previous_taxonomy(ws: Path, prev: dict):
         tax = src[0] if src and Path(src[0]).is_file() else file
     paths = src[1:] if len(src) == len(names) + 1 else [None] * len(names)
     builtin = (REFS / "overlays").resolve()
+    industry = (REFS / "industry").resolve()
     overlays = []
     for name, op in zip(names, paths):
         if op and Path(op).is_file():
-            overlays.append(Path(op).stem if Path(op).resolve().parent == builtin else op)
+            if Path(op).resolve().parent.parent == industry and Path(op).name == "overlay.json":
+                overlays.append(f"industry:{Path(op).resolve().parent.name}")   # an industry reference pack, by name
+            else:
+                overlays.append(Path(op).stem if Path(op).resolve().parent == builtin else op)
         else:
             overlays.append(name)
     return tax, overlays
@@ -276,6 +280,8 @@ def cmd_classify(a):
         if reused:
             print(f"Reusing taxonomy {taxonomy or 'taxonomy.json'} and overlays {', '.join(overlays) or 'none'} "
                   "from the previous classify (pass --taxonomy/--overlay to change, --no-overlay for none).")
+    if getattr(a, "industry", None):  # the industry reference pack goes first; the site overlay is applied after it
+        overlays = [f"industry:{a.industry}"] + [x for x in overlays if not x.startswith("industry:")]
     if a.no_org_chart and a.org_chart:
         sys.exit("--no-org-chart and --org-chart cannot be combined; pass one or the other.")
     org_chart = a.org_chart
@@ -289,6 +295,9 @@ def cmd_classify(a):
         print(f"hint: overlay(s) {', '.join(overlays)} were remembered from the previous classify; "
               "pass --no-overlay to drop the remembered overlay")
     tax = _load_taxonomy(taxonomy, overlays)
+    for name in tax["_overlays"]:
+        if name.startswith("industry:"):
+            print(INDUSTRY_BANNER.format(name.split(":", 1)[1]))
     org_rows = load_org_chart(org_chart, ws, tax) if org_chart else []
     if org_rows:
         tax = _load_taxonomy(taxonomy, overlays, org_rows)

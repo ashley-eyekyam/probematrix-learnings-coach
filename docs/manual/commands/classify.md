@@ -23,7 +23,7 @@ After [ingest](ingest.md), and before any [select](select.md) by entity, tag, ti
 ## Synopsis
 
 ```text
-pmlc classify ws [--taxonomy TAXONOMY] [--overlay NAME_OR_PATH] [--no-overlay]
+pmlc classify ws [--taxonomy TAXONOMY] [--overlay NAME_OR_PATH] [--industry NAME] [--no-overlay]
                  [--overrides OVERRIDES] [--no-overrides]
                  [--org-chart FILE.csv] [--no-org-chart]
 ```
@@ -40,6 +40,7 @@ pmlc classify ws [--taxonomy TAXONOMY] [--overlay NAME_OR_PATH] [--no-overlay]
 |---|---|---|---|
 | `--taxonomy` | file | the built-in `taxonomy.json` | Use a different taxonomy file |
 | `--overlay` | name or file | none | Extra site role words added to the taxonomy. Repeat it for several overlays. A bare name means `references/overlays/<name>.json`, for example `india-process-site` |
+| `--industry` | name | none | Load an industry reference pack, `references/industry/<name>/overlay.json`, like an overlay and apply it before any `--overlay`. The only pack in v2.0 is `process` (refining, chemicals, gas, storage). Classify prints `Industry reference: process (method reference, not evidence)`. An unknown name exits 2 and lists the packs. Remembered like `--overlay`; `--no-overlay` drops it |
 | `--no-overlay` | none | off | Use no overlay. Without `--taxonomy`, `--overlay` or `--no-overlay`, classify reuses the taxonomy and overlays the previous run used, and says so |
 | `--overrides` | file | `$WS/role_overrides.json` when it exists | A JSON object `{role: {"F": [...], "T": ..., "R": ...}}` that fixes the cluster of named roles, usually written by the agent's resolution pass |
 | `--no-overrides` | none | off | Ignore any overrides file |
@@ -116,11 +117,25 @@ warning: previous classify used taxonomy.json + india-process-site; this run use
 Classified 630 distinct roles; 96 need resolution (no entity or no tier). …
 ```
 
+For a process-industry export, load the industry reference pack. It knows permit, isolation, alarm, relief-system, turnaround and management-of-change roles:
+
+```bash
+python3 $E classify $WS --industry process
+```
+
+```text
+Industry reference: process (method reference, not evidence)
+Classified 630 distinct roles; … need resolution (no entity or no tier). …
+```
+
+The Hazira numbers in this manual come from a run without `--industry`; the pack is method reference and never changes them unless you pass the flag.
+
 ## Common problems
 
 - **Many roles need resolution.** This is normal on a first run. The agent reads `unresolved_roles.json`, proposes a cluster for each role in `role_overrides.json`, and classify picks that file up next time. Check its choices: a role placed in the wrong tier sends a learning to the wrong people.
 - **"--no-overlay and --overlay cannot be combined; pass one or the other."** They contradict each other; give one.
 - **An override names an unknown entity, tier or relation.** Classify stops and lists the IDs it knows, for example `ov.json: the override for role 'Area Supervisor' has unknown F ID(s) F55; taxonomy taxonomy.json has F01, F02, … F17, F99.` Use IDs from the taxonomy (or F99 and T9).
+- **"unknown industry 'x'; available: process".** `--industry` takes a folder name under `references/industry/`. The command exits 2.
 - **The counts moved after a re-run.** Classify reuses the previous overlay unless told otherwise; the first line says so. Pass `--no-overlay` for the base taxonomy.
 
 ## Related
