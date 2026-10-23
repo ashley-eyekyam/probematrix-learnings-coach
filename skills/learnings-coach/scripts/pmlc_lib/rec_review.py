@@ -24,7 +24,7 @@ def _rr_rules() -> dict:
         d = json.loads(p.read_text(encoding="utf-8"))
 
         def rx(words):
-            return re.compile(r"(?<![a-z0-9])(?:" + "|".join(re.escape(x) for x in words) + r")(?:s|es|ed)?(?![a-z0-9])", re.I)
+            return re.compile(r"(?<![a-z0-9])(?:" + "|".join(re.escape(x) for x in words) + r")(?![a-z0-9])", re.I)
         d["_weak_rx"] = rx(d["weak_admin"])
         d["_double_rx"] = rx(d["double_loop"])
         _RR_CACHE["r"] = d
@@ -73,7 +73,9 @@ def _rr_rec_id(e, i, r) -> str:
     return _s(r.get("id")) or f"{e.get('lr_id')}-R{i}"
 
 
-def review(register, nine_m_map=None) -> dict:
+def review(register, nine_m_map=None, finding_levels=None) -> dict:
+    """finding_levels maps a finding id to its HFACS level; with it the level match follows the cited findings (P5-14),
+    and a learning that cites none of them falls back to its own hfacs_level."""
     R = _rr_rules()
     entries = register["entries"] if isinstance(register, dict) else register
     bands = collections.OrderedDict((b, 0) for b in REC_BANDS)
@@ -97,8 +99,11 @@ def review(register, nine_m_map=None) -> dict:
                      [_s(x) for x in (e.get("audiences") or []) if _s(x)])
             for role in roles:
                 recip[role] += 1
-        m = re.match(r"L([1-4])", norm_level(e.get("hfacs_level")))
-        levels = [int(m.group(1))] if m else []
+        levels = sorted({int(finding_levels[x]) for x in (e.get("finding_ids") or [])
+                         if finding_levels and str(finding_levels.get(x, "")).isdigit()})
+        if not levels:
+            m = re.match(r"L([1-4])", norm_level(e.get("hfacs_level")))
+            levels = [int(m.group(1))] if m else []
         best = next((b for b in ("stronger", "intermediate", "weaker") if b in got), "unrated" if got else "none")
         deep = any(lv in R["deep_levels"] for lv in levels)
         ok = not (deep and best not in ("stronger", "intermediate"))
@@ -131,7 +136,7 @@ def rec_review_item(rv: dict, register, which: str) -> dict:
                       [fids.get(c["lr"], []) for c in rv["causes"]])
     if which == "spread":
         if rv["spread"] is None:
-            sys.exit("rec-review --table-item spread needs --nine-m (and outputs/nine-m-map.json)")
+            _rr_fail("rec-review --table-item spread needs --nine-m (and outputs/nine-m-map.json)")
         rows = [[k, n] for k, n in rv["spread"].items()]
         return _rr_table("rec-spread", ["9M", "Recommendations"], rows, [[] for _ in rows])
     by_lr = {}
@@ -154,12 +159,15 @@ def _rr_fail(msg):
 
 def cmd_rec_review(a):
     from .workspace import load_ws, outputs_dir
-    load_ws(a.ws)
+    w = load_ws(a.ws)
+    flv = {f.get("id"): f.get("level") for f in w.get("findings", []) if isinstance(f, dict)}
     p = Path(a.register)
     try:
         reg = json.loads(p.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         _rr_fail(f"rec-review: cannot read {p} as a learnings register (JSON)")
+    if isinstance(reg, dict) and reg.get("entries") == []:
+        _rr_fail("rec-review: the register has no entries, so there is nothing to review")
     if not rr_is_register(reg):
         _rr_fail(REC_REVIEW_REFUSAL)
     nm = None
@@ -171,7 +179,7 @@ def cmd_rec_review(a):
             nm = json.loads(mp.read_text(encoding="utf-8"))
         except ValueError:
             _rr_fail(f"rec-review: cannot read {mp} as JSON")
-    rv = review(reg, nm)
+    rv = review(reg, nm, flv)
     if a.table_item:
         print(json.dumps(rec_review_item(rv, reg, a.table_item), indent=1, ensure_ascii=False))
     elif a.json:

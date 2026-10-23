@@ -5,7 +5,7 @@
 Reads a Learnings Register and reviews the strength of its recommendations. It prints:
 
 - **Strength bands.** Each recommendation is `stronger` (elimination, substitution, engineering), `intermediate` (administrative), `weaker` (training, PPE, or an administrative change whose text is a procedure, policy, reminder, memo, warning, sign, poster, double-check or re-brief) or `unrated`. The cues are in `references/rec-review.json`.
-- **Level match.** A learning whose HFACS level is 3 or 4 and whose recommendations include nothing `stronger` or `intermediate` is flagged `weak fix for a deep cause`.
+- **Level match.** A learning whose cited findings include HFACS level 3 or 4 (its own level when none of its findings can be looked up) and whose recommendations include nothing `stronger` or `intermediate` is flagged `weak fix for a deep cause`.
 - **Loops.** A change whose text names an assumption, norm, design basis, the standard itself, a target, an incentive or a budget counts as double-loop; the rest are single-loop.
 - **SMART gaps.** A recommendation is missing "specific" when its change has fewer than 6 words, "measurable" when it has no leading indicator, and "relevant" when it cites no evidence or finding. Time-bound is never checked: dates are the organisation's to set (D7).
 - **Recipients.** How many recommendations each role receives.
@@ -15,7 +15,7 @@ It writes no file and no owner or date. A re-run gives identical output.
 
 ## When to use it
 
-In the recommendation-strength-review skill (planned for Phase 5), once the register passes [check-register](check-register.md).
+Run it once the register passes [check-register](check-register.md).
 
 ## Synopsis
 

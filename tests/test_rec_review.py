@@ -124,7 +124,7 @@ def test_rec_review_cli_and_items(ws, tmp_path):  # noqa: F811
     assert it["kind"] == "table" and len(it["row_cites"]) == len(it["rows"]) == 1 and it["cites"] == ["FND-0001", "FND-0002"]
     sm = json.loads(run("rec-review", str(ws), str(reg), "--table-item", "smart"))
     assert sm["kind"] == "table" and len(sm["row_cites"]) == len(sm["rows"])
-    run_fail("rec-review", str(ws), str(reg), "--table-item", "spread")
+    assert run_fail("rec-review", str(ws), str(reg), "--table-item", "spread").returncode == 2
 
 
 def test_rec_review_nine_m_needs_the_map(ws, tmp_path):  # noqa: F811
@@ -151,3 +151,22 @@ def test_rec_review_hazira(hazira_ws):  # noqa: F811
     assert (len(d["loops"]["double"]), len(d["loops"]["single"])) == (0, 44)
     assert d["smart"] == []
     assert d["recipients"][0] == {"role": "plant leadership", "n": 21}
+
+
+def test_level_match_follows_cited_findings():
+    e = lr(1, "L2 Preconditions", [rec("Train all technicians on the new standard of work", "training")])
+    e["finding_ids"] = ["FND-0001", "FND-0002"]
+    r = pmlc.review(reg_with(e), None, {"FND-0001": 2, "FND-0002": 4})
+    c = r["causes"][0]
+    assert c["levels"] == [2, 4] and not c["level_match"] and c["flag"] == "weak fix for a deep cause"
+    assert pmlc.review(reg_with(e), None, {})["causes"][0]["level_match"]   # no lookup: own level L2
+
+
+def test_cues_are_whole_words():
+    assert pmlc.band({"what": "Require a signed permit before restart", "hoc_tier": "administrative"}) == "intermediate"
+    assert pmlc.band({"what": "Revise the policies for spares", "hoc_tier": "administrative"}) == "weaker"
+
+
+def test_rec_review_empty_register(ws, tmp_path):  # noqa: F811
+    res = run_fail("rec-review", str(ws), str(write(tmp_path, "empty.json", {"entries": []})))
+    assert res.returncode == 2 and "no entries" in res.stderr and "Traceback" not in res.stderr
