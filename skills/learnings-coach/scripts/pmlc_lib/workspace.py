@@ -47,6 +47,8 @@ def load_ws(ws_dir: Path) -> dict:
             out[name] = json.loads(p.read_text(encoding="utf-8"))
     sp = ws_dir / "singleton_roles.json"
     out["singletons"] = json.loads(sp.read_text(encoding="utf-8")).get("roles", []) if sp.exists() else []
+    if (ws_dir / "evidence_audit.json").is_file():   # the switch for check-register's engine-strength check
+        out["evidence_audit"] = True
     cp = ws_dir / "comparator.json"   # the item ids check-pack validates comparator_refs against
     if cp.is_file():
         ids, bad, why = scan_comparator(cp)
@@ -67,11 +69,12 @@ MANIFEST = "manifest.json"
 KNOWN_DERIVED = ("findings.json", "evidence.json", "incident.json", "clusters.json", "singleton_roles.json",
                  "causal_graph.json",
                  "causal_graph.mmd", "timeline_candidates.json", "timeline_event_day.json", "interfaces.json",
-                 "plan.json")
+                 "plan.json", "evidence_audit.json")
 REBUILD = {"findings.json": "ingest", "evidence.json": "ingest", "incident.json": "ingest",
            "clusters.json": "classify", "singleton_roles.json": "classify", "causal_graph.json": "causal", "causal_graph.mmd": "causal",
            "timeline_candidates.json": "timeline", "timeline_event_day.json": "timeline",
-           "interfaces.json": "interfaces", "plan.json": "plan"}
+           "interfaces.json": "interfaces", "plan.json": "plan",
+           "evidence_audit.json": "evidence-audit"}
 
 
 def file_sha256(path) -> str:

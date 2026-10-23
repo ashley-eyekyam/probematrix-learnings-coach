@@ -22,6 +22,7 @@ python3 $E setup path/to/<export>.xlsx --slug <site>-<event> [--date YYYY-MM-DD]
 WS=path/to/pmlc-runs/<YYYY-MM-DD>-<site>-<event>/workspace      # printed by setup
 python3 $E run-manifest $WS --intended-use "internal learning" --jurisdiction in --retention-review YYYY-MM-DD   # run-manifest.json: adds the Retention review and Statutory report lines
 python3 $E facts $WS                           # headline numbers (tiers, levels, top-rated) to suggest a workflow
+python3 $E evidence-audit $WS                  # -> <ws>/evidence_audit.json: engine-computed evidence strength, single-source and document-only counts; copy its strength into the register
 python3 $E plan $WS --workflow leadership      # numbered plan -> <ws>/plan.json; show it and wait for the user's OK
 python3 $E plan $WS --next                     # the next step to do, with its commands and gate (exit 2: the plan is complete)
 python3 $E select $WS --preset board-brief     # a step's gather calls, as the plan prints them
