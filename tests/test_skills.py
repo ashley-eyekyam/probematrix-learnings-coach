@@ -60,6 +60,7 @@ OVERLAPS = {
     ("frontline-learning-cards", "supply-chain-contractor-learnings"),
     ("supply-chain-contractor-learnings", "frontline-learning-cards"),
     ("safety-committee-guide", "frontline-learning-cards"),
+    ("failure-to-learn-review", "precursor-timeline"), ("failure-to-learn-review", "site-leadership-coach"),
     ("compliance-crosswalk", "auditor-assurance-pack"), ("compliance-crosswalk", "learnings-register"),
 }
 NO_PROFILE = {"learnings-register"}        # writes a register, not a pack: its Write table has no profile

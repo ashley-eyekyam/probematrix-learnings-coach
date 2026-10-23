@@ -40,7 +40,7 @@ def _packs():
     out = []
     for p in sorted(OUTPUTS.glob("*.json")):
         d = json.loads(p.read_text(encoding="utf-8"))
-        if isinstance(d, dict) and "pack" in d:
+        if isinstance(d, dict) and "pack" in d and p.name not in RENDER_PENDING:
             out.append(p.stem)
     return out
 

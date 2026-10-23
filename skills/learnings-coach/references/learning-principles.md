@@ -36,6 +36,15 @@ Two further rules:
 - **Absence of sanction is not a fix.** Do not treat "no disciplinary action was recorded" as the missing control. Describe the missing system response instead (no review of the repeat deviation, no feedback route, no check at the hold point).
 - **Match the fix to the level of the cause.** An organisational condition (L4) gets an organisational fix; a supervision gap (L3) gets a change to checks and oversight. Do not close an L3 or L4 cause with an instruction to the frontline.
 
+## 1b. Earlier warnings: why they did not lead to change
+
+When an investigation shows earlier warnings, ask which step of the learning cycle did not turn them into change, not who missed them. The `failure-to-learn-review` skill uses these sources; each is a method reference, not evidence about the incident:
+
+- **Learning cycle** (Drupsteen and colleagues, "Critical steps in learning from incidents", 2013; unverified): learning from an incident runs through five phases, reporting, investigation and analysis, planning interventions, intervening and evaluating, and it can stall at any one of them.
+- **Failure to learn** (Hopkins, "Failure to Learn: the BP Texas City Refinery Disaster", 2008; unverified): warnings that reach an organisation still need someone with the authority and the means to act on them.
+- **Organisational memory** (Kletz, "Lessons from Disaster: How Organisations Have No Memory and Accidents Recur", 1993; unverified): a lesson that lives only in people's heads or in a report is lost when they move on; it has to be built into designs, procedures and checks.
+- **Drift** (Dekker, "Drift into Failure", 2011; unverified): practice moves away from the design basis in small steps that each made sense locally, so the drift is visible in the records, not in one decision.
+
 ## 2. Ground every sentence
 
 - Every learning cites the **Finding IDs** it rests on, and the **Evidence IDs** where a fact is stated.

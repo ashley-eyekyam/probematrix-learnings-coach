@@ -10,9 +10,9 @@ from .workspace import valid_run_slug
 
 # Its Markdown is learnings-register.md and its HTML is the dashboard, organisation-learning-map.html (Task 27).
 RENDER_EXEMPT = ("learnings-register.json",)
-# Phase 5: a new skill's Hazira golden JSON lands with its skill, and Task 24 renders it (plan, New-skill checklist
-# item 6). Until then it may sit without its .html and .md; Task 24 empties this tuple.
-RENDER_PENDING = ("compliance-crosswalk.json",)
+# Phase 5 staging (plan, New-skill checklist item 6): a new skill's Hazira golden pack lands as JSON only, and
+# Task 24 renders its HTML and MD, then empties this set. Each entry must be a pack JSON with neither rendering.
+RENDER_PENDING = frozenset({"compliance-crosswalk.json", "failure-to-learn-review.json"})
 
 
 def _sample_render_problems(d) -> list:

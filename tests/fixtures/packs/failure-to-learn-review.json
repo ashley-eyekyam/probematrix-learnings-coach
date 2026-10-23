@@ -1,0 +1,32 @@
+{"pack": "failure-to-learn-review", "schema": 1, "title": "Failure-to-Learn Review: Synthetic pump fire, 2024",
+ "audience": "Site leadership, top management and the board", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "The local seal purchases were on record for two years, but no step of the learning cycle turned them into a change.", "cites": ["FND-0003", "EVD-0003"]},
+                 {"text": "The return-to-service gap was known to supervision and was never planned out.", "cites": ["FND-0002"], "learning": "LR-01"}],
+ "scope": {"levels": [3, 4]},
+ "sections": [
+  {"id": "cycle", "heading": "Where the learning cycle broke", "items": [
+   {"kind": "table", "columns": ["Phase", "What the export shows"],
+    "rows": [["Reporting", "The local purchases were recorded, but nothing flagged them as a risk to report."],
+             ["Investigation and analysis", "No review asked why seals were bought without a specification."],
+             ["Planning interventions", "No change was planned for the missing return-to-service checklist."],
+             ["Intervening", "Not in this export: no change was made, so none could be carried out."],
+             ["Evaluating", "Not in this export: no check of a change is recorded."]],
+    "row_cites": [["FND-0003", "EVD-0003"], ["FND-0003"], ["FND-0002", "EVD-0002"], [], []]}]},
+  {"id": "missed", "heading": "Missed opportunities", "items": [
+   {"kind": "timeline", "events": [
+    {"date": "2022-03", "text": "Seals bought locally without a specification", "signal": true,
+     "knowable_then": "The purchase record was visible to Stores at the time.", "response": "None recorded",
+     "cites": ["FND-0003", "EVD-0003"]},
+    {"date": "2024-03-12", "text": "Seal changed and the pump restarted with no return-to-service checklist",
+     "knowable_then": true, "cites": ["FND-0002"]}]}]},
+  {"id": "drift", "heading": "How the practice drifted", "items": [
+   {"kind": "para", "text": "Buying seals locally became the usual way to keep the pump running. Each purchase solved the day's problem, and no record asked whether the part matched the design.", "cites": ["FND-0003"]}]},
+  {"id": "learnings", "heading": "Learnings for the organisation", "items": [
+   {"kind": "learning", "lesson": "A purchasing practice that bypasses the specification is a signal the organisation needs a route to hear.",
+    "explanation": "Purchase records showed local seals for two years [FND-0003; EVD-0003]. No function owned the question of whether the parts were fit, so the signal never reached a review.",
+    "owner": "Plant & Asset Leadership (F13, T4)", "cites": ["FND-0003", "EVD-0003"]},
+   {"kind": "learning", "lesson": "A known gap in supervision needs a planned change, not only a record.",
+    "explanation": "The missing return-to-service checklist was recorded in the procedure index [FND-0002; EVD-0002], and the spares programme that fed it was never resourced [FND-0003].",
+    "owner": "Plant & Asset Leadership (F13, T4)", "learning": "LR-01", "cites": ["FND-0002", "FND-0003"]}]},
+  {"id": "hindsight", "heading": "A note on hindsight", "items": [
+   {"kind": "para", "text": "This review knows the outcome; the people at the time did not. Each event shows what the records held then, and the learnings ask why the system did not act on it, not who missed it.", "cites": ["FND-0003"]}]}]}
