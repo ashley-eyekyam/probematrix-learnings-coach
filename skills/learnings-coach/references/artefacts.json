@@ -77,6 +77,11 @@
     "org_filled": false,
     "planned": "Phase 5"
   },
+  "nine-m-seed": {
+    "file": "workspace/nine_m_seed.json",
+    "producer": "engine:nine-m-seed",
+    "org_filled": false
+  },
   "library": {
     "file": "$PMLC_LIBRARY",
     "producer": "engine:library",

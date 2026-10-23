@@ -46,3 +46,26 @@ def png_probe():
 def needs_png(png_probe):
     """Skip (a plain pytest.skip, not a Node marker) unless png really renders here; fail under PMLC_REQUIRE_PNG=1."""
     png_gate(png_probe)
+
+
+@pytest.fixture
+def capa_planner_xlsx(tmp_path):
+    """A ProbeMatrix CAPA Planner workbook (the wrong file for nine-m-seed): its four sheets, invented rows only."""
+    openpyxl = pytest.importorskip("openpyxl")
+    wb = openpyxl.Workbook()
+    s = wb.active
+    s.title = "Corrective Actions"
+    s.append(["ID", "Chapter", "Action"])
+    s.append(["CA-1", "M3", "Invented corrective row"])
+    s = wb.create_sheet("Preventive Actions")
+    s.append(["ID", "Chapter", "Action"])
+    s.append(["PA-1", "M9", "Invented preventive row"])
+    s = wb.create_sheet("Chapter Headers")
+    s.append(["Chapter", "Title"])
+    s.append(["M1", "Invented header"])
+    s = wb.create_sheet("Residual Risks")
+    s.append(["ID", "Risk"])
+    s.append(["RR-1", "Invented residual risk"])
+    x = tmp_path / "capa-planner.xlsx"
+    wb.save(x)
+    return x
