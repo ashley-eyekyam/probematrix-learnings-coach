@@ -29,16 +29,13 @@ Draft because: the investigation status is in progress; no finding is marked as 
 
 ## Evidence base audit
 
-| Evidence type | Items | Cites |
+| Evidence strength | Findings | Cites |
 |---|---|---|
-| document | 18 | EVD-0933; EVD-1494; EVD-2397; EVD-2894; EVD-2986 |
-| log_record | 9 | EVD-0185; EVD-0591; EVD-2130; EVD-2432; EVD-2506 |
-| witness_statement | 7 | EVD-1460; EVD-4286; EVD-6234; EVD-7340; EVD-8871 |
-| recording | 6 | EVD-1284; EVD-2752; EVD-4507; EVD-8213; EVD-9587 |
-| photograph | 3 | EVD-0210; EVD-0496; EVD-1394 |
-| physical_item | 3 | EVD-0064; EVD-5780; EVD-6916 |
+| direct | 284 | FND-110F964C; FND-137BC719; FND-1662466D; FND-1A251687; FND-23139BF9 |
+| corroborated | 152 | FND-01ADF0AA; FND-01C3DE98; FND-02310148; FND-044D1DEC; FND-05841EDA |
+| inferred | 0 |  |
 
-Sources: [EVD-0064; EVD-0185; EVD-0210; EVD-0496; EVD-0591; EVD-0933; EVD-1284; EVD-1394; EVD-1460; EVD-1494; EVD-2130; EVD-2397; EVD-2432; EVD-2506; EVD-2752; EVD-2894; EVD-2986; EVD-4286; EVD-4507; EVD-5780; EVD-6234; EVD-6916; EVD-7340; EVD-8213; EVD-8871; EVD-9587]
+Sources: [FND-01ADF0AA; FND-01C3DE98; FND-02310148; FND-044D1DEC; FND-05841EDA; FND-110F964C; FND-137BC719; FND-1662466D; FND-1A251687; FND-23139BF9]
 
 Absent kinds of evidence: every item is a description of the committee's report, quoting its text, photographs or CCTV frames. No primary record was examined, and several items add the analyst's reconstruction to the quote (for example the authority chain in EVD-3932), so the quote and the inference need separating. [EVD-2894; EVD-0591; EVD-5105; EVD-8645; EVD-3932]
 
@@ -46,7 +43,7 @@ Conflicts between sources: the report gives two years for one seal change, and t
 
 Quotation accuracy: two findings quote recommendations numbered D.2.iii and D.2.iv, while the committee's report has only D.2 (i) and (ii) (REC-19, REC-20); both estimate the operating pressure with no record behind it. Some evidence items give page references one page earlier than the report's text (OBS-22 and OBS-23 are on page 28). [FND-7A32AC87; FND-212DC9B7; EVD-0591; EVD-1494]
 
-Single-source findings: several learnings rest on one evidence item each, among them the calibration change (LR-16), the drawings (LR-19), the audit extensions (LR-21), the permits (LR-22), the fire-water pumps (LR-23) and the drill records (LR-24). [FND-D4BB5251; EVD-2506; FND-82687B50; EVD-0933; FND-1D713648; EVD-6852]
+Single-source findings: 203 of the 436 findings rest on one evidence item and 195 on documents alone, and EVD-8645 supports 67 findings by itself (15%). At levels 3 and 4, where the organisational causes sit, 11 of 167 and 12 of 141 findings draw on a witness statement. Several learnings rest on one evidence item each, among them the calibration change (LR-16), the drawings (LR-19), the audit extensions (LR-21), the permits (LR-22), the fire-water pumps (LR-23) and the drill records (LR-24). [FND-D4BB5251; EVD-2506; FND-82687B50; EVD-0933; FND-1D713648; EVD-6852; EVD-8645]
 
 ## Investigation process against requirements
 

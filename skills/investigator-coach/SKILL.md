@@ -13,7 +13,7 @@ Follow `learnings-coach/references/skill-common.md` §1 and §2.
 
 Engine: `PMLC`, as `skill-common.md` §1 defines it (this skill needs the `learnings-coach` skill installed alongside it).
 
-This skill needs the **workspace** only. It uses, when present: the register (`<run>/outputs/learnings-register.json`), the comparator (`<ws>/comparator.json`) and the gaps other packs recorded (`<run>/outputs/gaps.json`).
+This skill needs the **workspace** only. It uses, when present: the register (`<run>/outputs/learnings-register.json`), the comparator (`<ws>/comparator.json`), the gaps other packs recorded (`<run>/outputs/gaps.json`) and the evidence audit (`<ws>/evidence_audit.json`, from `evidence-audit` or the `evidence-strength-scorecard` skill).
 
 - **Ask about privilege first**, one question, before you write the interview plan or the follow-up table: "Is litigation, a prosecution or a regulator's inquiry in prospect?" If yes, or the user does not know, produce the interview plan and follow-up only at the direction of the organisation's legal adviser, title the pack "Working papers", and say that `follow-up.json` is pasted back only when the adviser agrees. These outputs create no legal privilege (`skill-common.md` §7).
 - Start from the register if present: carry `learning: "LR-nn"` on method lessons and follow-up rows that test a register learning.
@@ -22,7 +22,8 @@ This skill needs the **workspace** only. It uses, when present: the register (`<
 
 ```bash
 PMLC select <ws> --top-rated --format json --out <ws>/top.json   # the high-rated findings the follow-up must cover
-PMLC table-item <ws> evidence-types                              # evidence items by type, ready to paste
+PMLC evidence-audit <ws> --table-item scorecard                  # findings by evidence strength, ready to paste (writes evidence_audit.json)
+PMLC table-item <ws> evidence-types                              # fallback: evidence items by type, when evidence-audit cannot run
 PMLC run-path <ws>                                               # top rating and incident date
 ```
 
@@ -40,7 +41,7 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/investigator-
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | The gaps that would most change the analysis | `bottom_line` | up to 7 |
-| 1 | `evidence-audit` | Evidence base audit | The `table-item evidence-types` output, pasted unchanged | `table` | 1 |
+| 1 | `evidence-audit` | Evidence base audit | The `evidence-audit --table-item scorecard` output, pasted unchanged; the `table-item evidence-types` output only when the evidence audit cannot run | `table` | 1 |
 | 1 | `evidence-audit` | (same section) | Absent kinds of evidence; conflicts between sources (dates, times, identifiers) and whether they were resolved; findings that rest on a single source | `para` | up to 4 |
 | 2 | `process` | Investigation process against requirements | One `check` per requirement (below), with `clauses`; [GAP] where the export does not show it | `check` | up to 6 |
 | 3 | `follow-up-per-finding` | Follow-up per high-rated finding | The follow-up table: `"id": "follow-up"`, one row per condition (`investigator-coach/references/follow-up.md`) | `table` | 1 |
@@ -50,6 +51,7 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/investigator-
 
 Rules for the content:
 
+- **Evidence base audit.** Use the scorecard whenever the engine can write `evidence_audit.json`: it counts the findings that rest on corroborated, direct or no evidence, which is what the follow-up must strengthen. The paragraphs then take their numbers from `PMLC evidence-audit <ws>` (single-source, document-only and the most-relied-on evidence items), never from a count of your own.
 - **Investigation process against requirements.** Check, from the Incident Summary fields and the narrative: the investigation began promptly (within 48 hours under PSM (m)(2) and RMP 68.81; `PSM-(m)(2)`, `RMP-68.81`); the team included someone who knows the process, and a contract employee where contractor work was involved (`PSM-(m)(3)`); the report holds the minimum fields: date of incident, date the investigation began, description, contributing factors, recommendations (`PSM-(m)(4)`); a system exists to resolve the recommendations (`PSM-(m)(5)`); the report will be reviewed with affected personnel, contractors included (`PSM-(m)(6)`); causes, actions and effectiveness review are planned (`ISO45001-10.2`). Where a field is absent, write the check with "[GAP]" and a top-level `gaps` entry naming the record that would show it. State what the export shows; never that a requirement was breached.
 - **Follow-up table.** The contract is in `investigator-coach/references/follow-up.md` (`check-pack` enforces it). Keep each cell specific to the finding's evidence. `pack` writes `follow-up.json` from it, ready to paste back into the investigation.
 - **Interviews** follow "Interviews in a just culture": non-disciplinary, a representative present, local rationality, no leading questions. Add one question for validating the account with the people involved before learnings are published.

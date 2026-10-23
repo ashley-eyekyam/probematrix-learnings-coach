@@ -129,3 +129,20 @@ def test_auditor_skill_asks_who_the_assurance_is_for():
     text = read(SKILLS / "auditor-assurance-pack" / "SKILL.md")
     for v in LENSES:
         assert f"`{v}`" in text, v
+
+
+# ----------------------------------------------------------------------------- investigator-coach: evidence audit
+
+def test_investigator_coach_reads_the_evidence_audit():
+    sk = load(SKILLS / "investigator-coach" / "skill.json")
+    assert "evidence-audit" in sk["optional_inputs"]
+    text = read(SKILLS / "investigator-coach" / "SKILL.md")
+    gather = section(text, "Gather")
+    assert "PMLC evidence-audit <ws> --table-item scorecard" in gather
+    assert "PMLC table-item <ws> evidence-types" in gather                    # the fallback stays
+    row = next(x for x in section(text, "Write").splitlines() if x.startswith("| 1 | `evidence-audit` |")
+               and "`table`" in x)
+    assert "scorecard" in row and "evidence-types" in row, row
+    golden = load(SAMPLE_OUT / "investigator-coach.json")
+    first = golden["sections"][0]
+    assert first["id"] == "evidence-audit" and first["items"][0]["id"] == "evidence-scorecard-table"
