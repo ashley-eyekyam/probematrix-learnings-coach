@@ -111,6 +111,12 @@ pmlc 2.0.0a4
 |---|---|
 | [compare](commands/compare.md) | Checks the comparator inventory and prints both-direction coverage tables as ready pack items |
 
+### 4b. Review the recommendations
+
+| Command | What it does |
+|---|---|
+| [rec-review](commands/rec-review.md) | Rates each recommendation's strength, flags weak fixes for deep causes, and lists loops, SMART gaps and recipients |
+
 ### 5. Repository upkeep
 
 | Command | What it does |
@@ -163,7 +169,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,table-item,register-items,timeline-item,open-questions,facts,hfacs-profile,pack-xlsx,strings} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,hfacs-profile,pack-xlsx,strings} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

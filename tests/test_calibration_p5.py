@@ -48,3 +48,12 @@ def test_hazira_open_questions_numbers(hazira_ws):
     assert len(oq["empty_follow_up_columns"]) == 4
     assert (len(oq["absence"]), len(oq["hedged"])) == (240, 193)
     assert 0 < len(json.loads(run("open-questions", str(hazira_ws), "--items"))) <= 30
+
+
+# ----------------------------------------------------------------------------- Task 6: rec-review
+
+def test_rec_review_bands(hazira_ws):
+    """Task 6: RCA2 bands over the 44 Hazira recommendations (rule: references/rec-review.json)."""
+    from pmlc_lib.rec_review import review
+    reg = json.loads((SAMPLE / "outputs" / "learnings-register.json").read_text(encoding="utf-8"))
+    assert review(reg)["bands"] == {"stronger": 24, "intermediate": 15, "weaker": 5, "unrated": 0}
