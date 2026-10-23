@@ -17,6 +17,7 @@ These skills prepare the ground or analyse the whole investigation. Their output
 | [cluster-learning-dossier](skills/cluster-learning-dossier.md) | every learning for one function | "What does maintenance need to learn?" |
 | [causal-map](skills/causal-map.md) | causal graph and pathway stories | "How do the factors connect?" |
 | [precursor-timeline](skills/precursor-timeline.md) | dated warnings and how they were handled | "Did we see this coming?" |
+| [failure-to-learn-review](skills/failure-to-learn-review.md) | why earlier warnings did not lead to change, and which step of the learning cycle broke | "Why didn't we learn from the earlier leaks?" |
 | [interface-learnings](skills/interface-learnings.md) | what fell between departments | "What fell through the cracks?" |
 | [barrier-learnings](skills/barrier-learnings.md) | failed barriers and how strong the fixes should be | "Why didn't our safeguards work?" |
 | [report-comparison](skills/report-comparison.md) | a fair comparison with an official report | "Compare this with the enquiry report" |

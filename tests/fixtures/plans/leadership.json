@@ -76,6 +76,53 @@
   },
   {
    "n": 5,
+   "skill": "engine:timeline",
+   "status": "done",
+   "planned_for": null,
+   "produces": "timeline",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC timeline <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 6,
+   "skill": "engine:missed-opportunities",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "missed-opportunities",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC missed-opportunities <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 7,
+   "skill": "failure-to-learn-review",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "failure-to-learn-review",
+   "mode": null,
+   "when": "the user asks for patterns or latent conditions",
+   "commands": [
+    "PMLC select <ws> --preset failure-to-learn-review:failure-to-correct",
+    "PMLC select <ws> --preset failure-to-learn-review:culture",
+    "PMLC check-pack <ws> <run>/outputs/failure-to-learn-review.json --strict",
+    "PMLC pack <ws> <run>/outputs/failure-to-learn-review.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 8,
    "skill": "top-management-brief",
    "status": "todo",
    "planned_for": null,
@@ -96,7 +143,7 @@
    ]
   },
   {
-   "n": 6,
+   "n": 9,
    "skill": "risk-register-update",
    "status": "todo",
    "planned_for": null,
@@ -114,7 +161,7 @@
    ]
   },
   {
-   "n": 7,
+   "n": 10,
    "skill": "board-brief",
    "status": "todo",
    "planned_for": null,
