@@ -90,6 +90,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide 
 | `interface-learnings` | managers | what fell between departments |
 | `barrier-learnings` | engineers, HSE | barriers, failure modes, control-tier fixes |
 | `report-comparison` | HSE, consultants | fair two-way comparison with an official report |
+| `evidence-strength-scorecard` | investigators, auditors, HSE leads | evidence scorecard by level, concentration, evidence requests |
 | `frontline-learning-cards` | operators, technicians, crews | Learning Cards, toolbox talks, "stop and ask" list |
 | `supervisor-coach` | supervisors, shift in-charges, permit issuers | checklists, hold points, what to refuse |
 | `manager-coach` | department managers | system learnings, indicators, 90-day agenda |

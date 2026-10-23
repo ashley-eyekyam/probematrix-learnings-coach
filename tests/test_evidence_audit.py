@@ -129,3 +129,26 @@ def test_check_register_engine_strength(tmp_path):
     reg = _reg(want)
     del reg["entries"][0]["evidence_strength"]                 # an absent value is not a mismatch
     assert not [p for p in _check(ws, reg, tmp_path) if "computed by the engine" in p]
+
+
+def test_scorecard_carries_every_audit_measure():
+    """Task 13: the scorecard item shows every spec §6.1 measure, so a pack never retypes a count: the three
+    strengths, single-source, document-only, justification-only and the codes the causal text names that no finding
+    carries (row_cites: the findings whose causal text names them)."""
+    from pmlc_lib.evidence_audit import audit_table_item
+    w = {"findings": [{"id": "F1", "code": "SV 1.4", "level": 3, "evidence": ["A"], "rating": 5,
+                       "causal": "SV 1.4 enabled ZZ 9.9"},
+                      {"id": "F2", "code": "OR 2.2", "level": 4, "evidence": [], "rating": 4, "causal": ""},
+                      {"id": "F3", "code": "OR 2.2", "level": 4, "evidence": ["A", "B"], "rating": 3, "causal": ""}],
+         "evidence": _ev(A="document", B="witness_statement")}
+    it = audit_table_item(w, audit(w), "scorecard")
+    assert it["columns"] == ["Measure", "Count"]
+    rows = {r[0]: r[1] for r in it["rows"]}
+    assert rows == {"direct": 1, "corroborated": 1, "inferred": 1, "single-source": 1, "document-only": 1,
+                    "justification only": 1, "codes named in causal text that no finding carries: ZZ 9.9": 1}
+    cites = dict(zip([r[0] for r in it["rows"]], it["row_cites"]))
+    assert cites["single-source"] == ["F1"] and cites["justification only"] == ["F2"]
+    assert cites["codes named in causal text that no finding carries: ZZ 9.9"] == ["F1"]
+    w["findings"][0]["causal"] = ""
+    rows = [r[0] for r in audit_table_item(w, audit(w), "scorecard")["rows"]]
+    assert rows[-1] == "codes named in causal text that no finding carries"      # none: the row stays, at 0

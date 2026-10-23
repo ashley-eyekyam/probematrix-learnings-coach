@@ -23,6 +23,9 @@
     {"name": "top-engineering-l34", "args": ["--tag", "engineering", "--level", "3", "4", "--top-rated"]},
     {"name": "text", "args": ["--text", "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design", "--brief"]}
   ],
+  "evidence-strength-scorecard": [
+    {"name": "top-l34-evidence", "args": ["--level", "3", "4", "--top-rated", "--fields", "label,evidence,level,rating"]}
+  ],
   "frontline-learning-cards": [
     {"name": "tier-t1", "args": ["--tier", "T1", "--brief"]},
     {"name": "top-tier-t1-l12", "args": ["--tier", "T1", "--level", "1", "2", "--top-rated"]},

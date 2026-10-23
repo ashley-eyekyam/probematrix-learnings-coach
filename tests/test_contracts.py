@@ -14,7 +14,8 @@ KEYWORDS = {"type", "enum", "required", "properties", "additionalProperties", "i
 ALLOWED = KEYWORDS | {"$schema", "$id", "title", "description"}
 KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisation-learning-map": "dissemination"}
 ANALYSIS = {"learning-clusters", "causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings",
-            "report-comparison", "cluster-learning-dossier"}
+            "report-comparison", "cluster-learning-dossier",
+            "evidence-strength-scorecard"}
 sys.path.insert(0, str(SKILLS_DIR / "learnings-coach" / "scripts"))
 from pmlc_lib.contracts import load_manifests, validate  # noqa: E402  (the engine's P3-6 validator)
 
@@ -221,9 +222,7 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
     planned = {(n, s["skill"]): s["planned"] for n, w in wf.items() for s in w["steps"] if "planned" in s}
     assert planned == {
         ("first-48-hours", "safety-alert"): "Phase 6",
-        ("assurance", "evidence-strength-scorecard"): "Phase 5",
         ("assurance", "compliance-crosswalk"): "Phase 5",
-        ("investigation-quality", "evidence-strength-scorecard"): "Phase 5",
         ("investigation-quality", "open-questions-register"): "Phase 5",
         ("action-design", "nine-m-analysis"): "Phase 5",
         ("action-design", "recommendation-strength-review"): "Phase 5",

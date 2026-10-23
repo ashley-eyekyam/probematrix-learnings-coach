@@ -20,6 +20,7 @@ These skills prepare the ground or analyse the whole investigation. Their output
 | [interface-learnings](skills/interface-learnings.md) | what fell between departments | "What fell through the cracks?" |
 | [barrier-learnings](skills/barrier-learnings.md) | failed barriers and how strong the fixes should be | "Why didn't our safeguards work?" |
 | [report-comparison](skills/report-comparison.md) | a fair comparison with an official report | "Compare this with the enquiry report" |
+| [evidence-strength-scorecard](skills/evidence-strength-scorecard.md) | how well each finding is evidenced, and the evidence that would strengthen it | "How solid is the evidence behind these findings?" |
 
 ## By level of the organisation
 

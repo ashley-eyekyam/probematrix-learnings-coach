@@ -55,18 +55,38 @@
   },
   {
    "n": 4,
-   "skill": "evidence-strength-scorecard",
-   "status": "planned",
-   "planned_for": "Phase 5",
-   "produces": null,
+   "skill": "engine:evidence-audit",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "evidence-audit",
    "mode": null,
    "when": null,
-   "commands": [],
+   "commands": [
+    "PMLC evidence-audit <ws>"
+   ],
    "questions": [],
    "gate": []
   },
   {
    "n": 5,
+   "skill": "evidence-strength-scorecard",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "evidence-strength-scorecard",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset evidence-strength-scorecard:top-l34-evidence",
+    "PMLC check-pack <ws> <run>/outputs/evidence-strength-scorecard.json --strict",
+    "PMLC pack <ws> <run>/outputs/evidence-strength-scorecard.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 6,
    "skill": "compliance-crosswalk",
    "status": "planned",
    "planned_for": "Phase 5",
@@ -78,7 +98,7 @@
    "gate": []
   },
   {
-   "n": 6,
+   "n": 7,
    "skill": "auditor-assurance-pack",
    "status": "todo",
    "planned_for": null,

@@ -57,6 +57,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | the board or its committee | `board-brief` | it is for executives (`top-management-brief`) |
 | auditors, assurance test points | `auditor-assurance-pack` | it is an executive brief (`top-management-brief`) |
 | the lead investigator, next questions | `investigator-coach` | an official report is supplied to compare (`report-comparison`) |
+| how well each finding is evidenced, where the evidence is thin | `evidence-strength-scorecard` | it is the method or interviews (`investigator-coach`) |
 | trainers, a course or e-learning | `training-designer` | it is a frontline card (`frontline-learning-cards`) |
 | emergency responders | `emergency-response-learnings` | it is a frontline card (`frontline-learning-cards`) |
 | engineers, integrity, MOC owners | `engineering-integrity-learnings` | it is the barrier view (`barrier-learnings`) |

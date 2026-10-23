@@ -8,30 +8,6 @@
  "steps": [
   {
    "n": 1,
-   "skill": "evidence-strength-scorecard",
-   "status": "planned",
-   "planned_for": "Phase 5",
-   "produces": null,
-   "mode": null,
-   "when": null,
-   "commands": [],
-   "questions": [],
-   "gate": []
-  },
-  {
-   "n": 2,
-   "skill": "open-questions-register",
-   "status": "planned",
-   "planned_for": "Phase 5",
-   "produces": null,
-   "mode": null,
-   "when": null,
-   "commands": [],
-   "questions": [],
-   "gate": []
-  },
-  {
-   "n": 3,
    "skill": "engine:ingest",
    "status": "done",
    "planned_for": null,
@@ -45,7 +21,51 @@
    "gate": []
   },
   {
+   "n": 2,
+   "skill": "engine:evidence-audit",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "evidence-audit",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC evidence-audit <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 3,
+   "skill": "evidence-strength-scorecard",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "evidence-strength-scorecard",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset evidence-strength-scorecard:top-l34-evidence",
+    "PMLC check-pack <ws> <run>/outputs/evidence-strength-scorecard.json --strict",
+    "PMLC pack <ws> <run>/outputs/evidence-strength-scorecard.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
    "n": 4,
+   "skill": "open-questions-register",
+   "status": "planned",
+   "planned_for": "Phase 5",
+   "produces": null,
+   "mode": null,
+   "when": null,
+   "commands": [],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 5,
    "skill": "investigator-coach",
    "status": "todo",
    "planned_for": null,
@@ -65,7 +85,7 @@
    ]
   },
   {
-   "n": 5,
+   "n": 6,
    "skill": "report-comparison",
    "status": "todo",
    "planned_for": null,
@@ -85,5 +105,5 @@
    ]
   }
  ],
- "next": 4
+ "next": 2
 }

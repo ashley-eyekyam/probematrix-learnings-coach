@@ -30,6 +30,13 @@ pmlc evidence-audit ws [--json] [--table-item scorecard|concentration|levels]
 
 The command always writes `evidence_audit.json`, with sorted keys, so a re-run gives identical bytes. After a re-ingest, `status` shows it as stale.
 
+The three table items:
+- `scorecard`: one row per measure (`Measure`, `Count`): the findings rated `direct`, `corroborated` and `inferred`, then the single-source, document-only and justification-only findings, then the number of codes that the causal text names and no finding carries, with those codes in the row label.
+- `levels`: per HFACS level, the findings, the single-source and document-only ones, and those citing a witness statement.
+- `concentration`: each evidence item that supports ten or more findings, with its share.
+
+The [evidence-strength-scorecard](../skills/evidence-strength-scorecard.md) skill pastes all three into its pack.
+
 ## Examples
 
 ```bash

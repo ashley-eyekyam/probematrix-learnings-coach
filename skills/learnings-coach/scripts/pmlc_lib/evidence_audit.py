@@ -19,6 +19,7 @@ EVAUDIT_ROW_CITES = 5
 EVAUDIT_DOCUMENT = "document"
 EVAUDIT_WITNESS = "witness_statement"
 EVAUDIT_STRENGTHS = ("direct", "corroborated", "inferred")
+EVAUDIT_UNKNOWN_LABEL = "codes named in causal text that no finding carries"
 
 
 def _evaudit_ids(f: dict) -> list:
@@ -112,15 +113,32 @@ def _evaudit_best(w: dict, ids) -> list:
     return sorted(ids, key=lambda i: (-rating.get(i, 0), i))[:EVAUDIT_ROW_CITES]
 
 
+def _evaudit_scorecard(w: dict, a: dict) -> dict:
+    """Every spec §6.1 measure as one row (Task 13), so a pack pastes the counts and never retypes them: the three
+    strengths, single-source, document-only and justification-only findings, then the number of codes the causal
+    text names that no finding carries (that row cites the findings whose causal text names them)."""
+    by = collections.defaultdict(list)
+    for fid, v in a["findings"].items():
+        by[v["strength"]].append(fid)
+    rows = [[s, len(by[s])] for s in EVAUDIT_STRENGTHS]
+    cites = [_evaudit_best(w, by[s]) for s in EVAUDIT_STRENGTHS]
+    for label, key in (("single-source", "single_source"), ("document-only", "document_only"),
+                       ("justification only", "justification_only")):
+        rows.append([label, len(a[key])])
+        cites.append(_evaudit_best(w, a[key]))
+    unknown = a["unknown_codes"]
+    naming = [f["id"] for f in w.get("findings", [])
+              if set(EVAUDIT_CODE_RX.findall(f.get("causal") or "")) & set(unknown)]
+    label = EVAUDIT_UNKNOWN_LABEL + (": " + ", ".join(unknown) if unknown else "")
+    rows.append([label, len(unknown)])
+    cites.append(_evaudit_best(w, naming))
+    return _evaudit_table("evidence-scorecard-table", ["Measure", "Count"], rows, cites)
+
+
 def audit_table_item(w: dict, a: dict, which: str) -> dict:
     F = w.get("findings", [])
     if which == "scorecard":
-        by = collections.defaultdict(list)
-        for fid, v in a["findings"].items():
-            by[v["strength"]].append(fid)
-        rows = [[s, len(by[s])] for s in EVAUDIT_STRENGTHS]
-        return _evaudit_table("evidence-scorecard-table", ["Evidence strength", "Findings"], rows,
-                      [_evaudit_best(w, by[s]) for s in EVAUDIT_STRENGTHS])
+        return _evaudit_scorecard(w, a)
     if which == "concentration":
         by_ev = collections.defaultdict(list)
         for f in F:
