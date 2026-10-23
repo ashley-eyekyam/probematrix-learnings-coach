@@ -165,7 +165,7 @@ def test_audiences_cover_audience_skills():
     keys = {"id", "label", "typical_people", "controls", "needs", "tier", "levels", "default_scope",
             "reading_level", "skill"}
     ids = [a["id"] for a in auds]
-    assert len(ids) == len(set(ids)) == 13
+    assert len(ids) == len(set(ids)) == sum(load(SKILLS_DIR / s / "skill.json")["kind"] == "audience" for s in SKILLS)
     for a in auds:
         assert set(a) == keys
         assert a["tier"] in (None, "T1", "T2", "T3", "T4", "T5")

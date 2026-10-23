@@ -1,0 +1,185 @@
+{
+ "evals": [
+  {
+   "id": 1701,
+   "owner": "people-workforce-learnings",
+   "skill": "people-workforce-learnings",
+   "kind": "trigger",
+   "prompt": "From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), what should HR and our workforce planners learn about how control-room posts were filled, qualified and rostered?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "language_clean",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "people-workforce-learnings",
+     "scope": {
+      "tiers": [
+       "T3",
+       "T4"
+      ],
+      "levels": [
+       2,
+       3,
+       4
+      ],
+      "tags": [
+       "people"
+      ],
+      "entities": [
+       "F12"
+      ]
+     }
+    },
+    {
+     "type": "section_exists",
+     "pack": "people-workforce-learnings",
+     "section": "competence-framework"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "people-workforce-learnings",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "people-workforce-learnings"
+    }
+   ]
+  },
+  {
+   "id": 1702,
+   "owner": "people-workforce-learnings",
+   "skill": null,
+   "not_skill": "people-workforce-learnings",
+   "kind": "no-trigger",
+   "prompt": "Draft a disciplinary letter for the control-room engineer who was on shift during the gas leak.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 1703,
+   "owner": "people-workforce-learnings",
+   "skill": "people-workforce-learnings",
+   "sibling": "training-designer",
+   "kind": "collision",
+   "prompt": "Not the course itself: from this investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), what qualification, authorisation and crew-composition standards should our HR and competence-framework owners set for the control room?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "language_clean",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "routes_to",
+     "skill": "people-workforce-learnings"
+    }
+   ]
+  },
+  {
+   "id": 1704,
+   "owner": "people-workforce-learnings",
+   "skill": "people-workforce-learnings",
+   "sibling": "manager-coach",
+   "kind": "collision",
+   "prompt": "Our HR business partners want the staffing and qualification lessons from the Hazira export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), not each department manager's agenda.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "language_clean",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "routes_to",
+     "skill": "people-workforce-learnings"
+    }
+   ]
+  },
+  {
+   "id": 1705,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "prompt": "Our people team wants to know whether crew make-up, qualifications or shift manning played a part, using this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "people-workforce-learnings"
+    }
+   ]
+  },
+  {
+   "id": 1706,
+   "owner": "people-workforce-learnings",
+   "skill": "people-workforce-learnings",
+   "kind": "trigger",
+   "prompt": "Put the people-system lessons from this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) into a docx our HR policy team can mark up.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "people-workforce-learnings"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "format": "docx"
+     },
+     "contains": [
+      "people-workforce-learnings.json"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "people-workforce-learnings"
+    }
+   ]
+  }
+ ]
+}

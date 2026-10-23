@@ -41,6 +41,10 @@
     {"name": "relation", "args": ["--relation", "owner", "absent", "--brief"]},
     {"name": "work-management", "args": ["--entity", "F08", "--level", "3", "4", "--brief"]}
   ],
+  "people-workforce-learnings": [
+    {"name": "people-codes", "args": ["--code", "OIS 4.1", "OIS 4.2", "PTF 1.1", "PTF 1.6", "SVIO 2.2", "SVIO 2.5", "SVIO 2.6", "SVV 4.4", "--brief"]},
+    {"name": "hr-entity", "args": ["--entity", "F12", "--brief"]}
+  ],
   "report-comparison": [
     {"name": "text", "args": ["--text", "recommendation|remedial", "--brief"]}
   ],
