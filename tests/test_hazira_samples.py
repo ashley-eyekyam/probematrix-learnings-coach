@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 import pytest
 
 from test_pmlc import PMLC, ROOT, run
+from pmlc_lib.samples import RENDER_PENDING  # noqa: E402  (Phase 5 packs Task 24 renders)
 
 pytest.importorskip("openpyxl")
 SAMPLE = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire"
@@ -39,7 +40,7 @@ def _packs():
     out = []
     for p in sorted(OUTPUTS.glob("*.json")):
         d = json.loads(p.read_text(encoding="utf-8"))
-        if isinstance(d, dict) and "pack" in d:
+        if isinstance(d, dict) and "pack" in d and p.name not in RENDER_PENDING:
             out.append(p.stem)
     return out
 
@@ -97,7 +98,7 @@ def _same(new, old):
 
 def test_hazira_samples_hold_exactly_the_od4_4_files():
     want = set(REGISTER_FILES) | {f for _, _, files in SHOWCASES for f in files}
-    want |= {f"{p}.{ext}" for p in PACKS for ext in ("json", "html", "md")}
+    want |= {f"{p}.{ext}" for p in PACKS for ext in ("json", "html", "md")} | set(RENDER_PENDING)
     assert {p.name for p in OUTPUTS.iterdir()} == want
     assert sorted(PACKS) == readme_packs() and len(PACKS) >= 25 and "frontline-learning-cards-hi" in PACKS
 

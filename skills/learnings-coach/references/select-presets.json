@@ -23,6 +23,10 @@
     {"name": "top-engineering-l34", "args": ["--tag", "engineering", "--level", "3", "4", "--top-rated"]},
     {"name": "text", "args": ["--text", "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design", "--brief"]}
   ],
+  "failure-to-learn-review": [
+    {"name": "failure-to-correct", "args": ["--subcategory", "Failure to Correct Known Problem", "--brief"]},
+    {"name": "culture", "args": ["--subcategory", "Organisational Climate/ Culture Influences", "--brief"]}
+  ],
   "frontline-learning-cards": [
     {"name": "tier-t1", "args": ["--tier", "T1", "--brief"]},
     {"name": "top-tier-t1-l12", "args": ["--tier", "T1", "--level", "1", "2", "--top-rated"]},
