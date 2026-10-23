@@ -133,19 +133,19 @@ def test_eval_fragments_loaded(tmp_path):
     n = int(base.stdout.split(" evals over ")[0].split()[-1])
     data = json.loads((d / "evals.json").read_text(encoding="utf-8"))
     one = next(e for e in data["evals"] if e["kind"] == "no-trigger")
-    ids = [e["id"] for e in data["evals"]] + [e["id"] for f in (d / "skills").glob("*.json")
-                                               for e in json.loads(f.read_text(encoding="utf-8"))["evals"]]
-    new = dict(one, id=max(ids) + 1000)
-    (d / "skills" / "x.json").write_text(json.dumps({"evals": [new]}), encoding="utf-8")
+    frags = [e for f in sorted((d / "skills").glob("*.json"))
+             for e in json.loads(f.read_text(encoding="utf-8"))["evals"]]
+    new = dict(one, id=max(e["id"] for e in data["evals"] + frags) + 1000)
+    (d / "skills" / "zz-x.json").write_text(json.dumps({"evals": [new]}), encoding="utf-8")
     r = _check(d / "evals.json")
     assert r.returncode == 0, r.stdout + r.stderr
     assert r.stdout.startswith(f"{n + 1} evals over ")
-    (d / "skills" / "y.json").write_text(json.dumps({"evals": [dict(new)]}), encoding="utf-8")
+    (d / "skills" / "zz-y.json").write_text(json.dumps({"evals": [dict(new)]}), encoding="utf-8")
     r = _check(d / "evals.json")
     assert r.returncode == 1 and "duplicate id" in r.stdout, r.stdout
-    (d / "skills" / "y.json").write_text("[]", encoding="utf-8")
+    (d / "skills" / "zz-y.json").write_text("[]", encoding="utf-8")
     r = _check(d / "evals.json")
-    assert r.returncode == 1 and "y.json" in r.stdout, r.stdout
+    assert r.returncode == 1 and "zz-y.json" in r.stdout, r.stdout
 
 
 def test_require_png_env(monkeypatch):

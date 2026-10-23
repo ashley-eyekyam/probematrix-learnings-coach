@@ -86,6 +86,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide 
 | `cluster-learning-dossier` | any department | complete learning dossier for one function |
 | `learnings-register` | HSE, management | Learnings Register (.md + .xlsx) with recommendations |
 | `causal-map` | investigators, leaders | causal graph and pathway stories |
+| `latent-conditions-profile` | corporate HSE, top management | HFACS heat map, recurring and upstream factors, level 3–4 share |
 | `precursor-timeline` | leaders, auditors | dated weak signals and how they were handled |
 | `failure-to-learn-review` | site leadership, top management, board | which step of the learning cycle broke, and why earlier warnings did not lead to change |
 | `interface-learnings` | managers | what fell between departments |

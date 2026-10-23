@@ -1,0 +1,33 @@
+{
+  "name": "latent-conditions-profile",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      3,
+      4
+    ],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "hfacs-profile"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "latent-conditions-profile",
+    "files": []
+  },
+  "formats": [
+    "docx",
+    "pptx"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": []
+}

@@ -64,14 +64,18 @@
         "skill": "site-leadership-coach"
       },
       {
-        "skill": "failure-to-learn-review",
-        "when": "the user asks for patterns or latent conditions"
-      },
-      {
         "skill": "top-management-brief"
       },
       {
         "skill": "board-brief"
+      },
+      {
+        "skill": "failure-to-learn-review",
+        "when": "the user asks for patterns or latent conditions"
+      },
+      {
+        "skill": "latent-conditions-profile",
+        "when": "the user asks for patterns or latent conditions"
       }
     ]
   },

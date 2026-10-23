@@ -69,6 +69,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | the whole-organisation map and dashboard | `organisation-learning-map` | it is only the grouping (`learning-clusters`) |
 | a formal register or spreadsheet of learnings | `learnings-register` | it is action design (`action-design`) |
 | how the factors connect | `causal-map` | it is what fell between departments (`interface-learnings`) |
+| recurring factors, latent conditions, the HFACS heat map | `latent-conditions-profile` | it is how the factors connect (`causal-map`) or who should learn (`learning-clusters`) |
 | early warnings that were missed | `precursor-timeline` | it is how the factors connect (`causal-map`) |
 | why earlier warnings and audits never led to change | `failure-to-learn-review` | it is the dated list of warnings (`precursor-timeline`) |
 | what fell between departments | `interface-learnings` | it is the causal chain (`causal-map`) |
