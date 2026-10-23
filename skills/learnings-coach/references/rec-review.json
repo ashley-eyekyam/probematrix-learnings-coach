@@ -1,0 +1,17 @@
+{
+ "_about": "Cues and bands for rec-review (plan ruling P5-14, after the RCA2 action hierarchy). Cues are matched at the start of a word in the recommendation's change text, lower case.",
+ "bands": {
+  "elimination": "stronger",
+  "substitution": "stronger",
+  "engineering": "stronger",
+  "administrative": "intermediate",
+  "training": "weaker",
+  "ppe": "weaker",
+  "unclassified": "unrated"
+ },
+ "weak_admin": ["procedure", "policy", "reminder", "memo", "warning", "sign", "poster", "double-check", "re-brief"],
+ "double_loop": ["assumption", "norm", "design basis", "standard itself", "why we", "policy itself", "target", "incentive", "budget"],
+ "deep_levels": [3, 4],
+ "min_change_words": 6,
+ "deep_flag": "weak fix for a deep cause"
+}

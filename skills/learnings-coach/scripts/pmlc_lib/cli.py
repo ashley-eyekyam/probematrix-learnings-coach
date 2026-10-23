@@ -7,6 +7,7 @@ Subcommands
   ingest          xlsx -> JSON workspace in <export-dir>/pmlc-runs/<date>-<site>-<event>/workspace
   profile         Markdown profile of the workspace (counts, levels, roles, data-quality flags)
   classify        map 'Individuals Involved' roles to Learning Clusters (entity x tier x relation)
+  rec-review      strength bands, level match, loops and SMART gaps of a register's recommendations
   compare         comparator inventory, both-direction coverage tables and checks (ready pack items)
   select          compact Markdown/JSON bundle of findings for one audience or cluster
   causal          causal graph extracted from the AI's causal explanations (+ Causal Chain sheet)
@@ -74,6 +75,7 @@ from .privacy import cmd_scan_names
 from .profile import cmd_profile
 from .render import DEFAULT_FORMATS, FORMATS, parse_formats
 from .render.layouts import base_url_arg, LAYOUTS, PAPERS
+from .rec_review import cmd_rec_review
 from .register.check import cmd_check_register
 from .register.markdown import cmd_register_md
 from .register.render import cmd_register_render
@@ -449,6 +451,17 @@ def build_parser():
     s.add_argument("--main", metavar="PACK", help="the main pack to compare --client-safe against")
     s.add_argument("--json", action="store_true", help="print the ready pack items as JSON instead of Markdown")
     s.set_defaults(fn=cmd_compare)
+
+    s = sp.add_parser("rec-review", help="strength bands, level match, loops and SMART gaps of a register's recommendations",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("register", help="Learnings Register JSON")
+    s.add_argument("--nine-m", dest="nine_m", action="store_true",
+                   help="also read <run>/outputs/nine-m-map.json and count recommendations per M")
+    s.add_argument("--json", action="store_true", help="print the review as JSON")
+    s.add_argument("--table-item", dest="table_item", choices=["strength", "spread", "smart"],
+                   help="print a ready table item for a pack (JSON on stdout)")
+    s.set_defaults(fn=cmd_rec_review)
 
     s = sp.add_parser("table-item", help="a ready table item for a pack (JSON on stdout)", allow_abbrev=False)
     s.add_argument("ws")
