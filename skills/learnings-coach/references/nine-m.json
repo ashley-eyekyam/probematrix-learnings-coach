@@ -1,0 +1,1039 @@
+{
+ "_about": "Derived from the ProbeMatrix 9M framework (Eyekyam). Action catalogues remain in the ProbeMatrix CAPA Zone.",
+ "version": 1,
+ "chapters": [
+  {
+   "code": "M1",
+   "title": "Manpower/Mindpower",
+   "definition": "Whether the people doing the work were ready for it, and what the organisation did to make them ready.",
+   "subcategories": [
+    {
+     "id": "M1.01",
+     "name": "Selection and Qualification",
+     "definition": "How people were chosen and placed in a role, and whether their qualifications matched what the job really needed.",
+     "probes": [
+      "Did the people in the role hold the qualifications the task called for?",
+      "Was the job's real demand written down before people were chosen for it?",
+      "Were gaps found at selection followed up before the person worked alone?"
+     ]
+    },
+    {
+     "id": "M1.02",
+     "name": "Training Programme Design and Delivery",
+     "definition": "Whether training was built around the real task and delivered so that people could use it on the job.",
+     "probes": [
+      "Was the training built from the task as it is really done?",
+      "Did the training cover the abnormal and rare conditions met in this event?",
+      "Could people practise the skill before they needed it for real?"
+     ]
+    },
+    {
+     "id": "M1.03",
+     "name": "Competence Assessment and Authorisation",
+     "definition": "How the organisation confirmed that someone could do the work safely before letting them do it.",
+     "probes": [
+      "Was competence checked by watching the work, not only by a course record?",
+      "Did someone with the right standing sign the authorisation for this task?",
+      "Were authorisations reviewed when the task or the equipment changed?"
+     ]
+    },
+    {
+     "id": "M1.04",
+     "name": "Workload Management",
+     "definition": "Whether the amount and mix of work given to people left them enough time and attention to do it safely.",
+     "probes": [
+      "Was the number of people on shift right for the work planned that day?",
+      "Did anyone have more tasks running at once than they could track?",
+      "Was there a way to say the load was too high and have it acted on?"
+     ]
+    },
+    {
+     "id": "M1.05",
+     "name": "Fatigue Risk Management",
+     "definition": "How rosters, shift length and rest were set and watched so that tiredness did not erode performance.",
+     "probes": [
+      "Were shift lengths and rest breaks inside the site's own limits?",
+      "Did the event happen in a part of the shift known for low alertness?",
+      "Was tiredness something people could report without a cost to them?"
+     ]
+    },
+    {
+     "id": "M1.06",
+     "name": "Cognitive Readiness and Situational Awareness",
+     "definition": "Whether people had the information and mental picture they needed to notice, understand and anticipate the hazard.",
+     "probes": [
+      "Did people have a clear picture of the plant state before acting?",
+      "Were the cues that something was wrong visible to them in time?",
+      "Was the picture shared across the people who needed it?"
+     ]
+    },
+    {
+     "id": "M1.07",
+     "name": "Psychological Readiness and Support",
+     "definition": "Whether people were in a fit state of mind for the work, and what support existed when they were not.",
+     "probes": [
+      "Were known stressors on the team recognised before the work began?",
+      "Was support available to people after earlier difficult events?",
+      "Could someone step back from a task without being judged for it?"
+     ]
+    },
+    {
+     "id": "M1.08",
+     "name": "Communication and Coordination",
+     "definition": "How information passed between people and teams, including handovers, briefings and messages during the work.",
+     "probes": [
+      "Did the handover pass on every live hazard and open job?",
+      "Were messages confirmed back so both sides knew they matched?",
+      "Did teams working on the same system know what the others were doing?"
+     ]
+    },
+    {
+     "id": "M1.09",
+     "name": "Team Dynamics",
+     "definition": "How the team worked together: shared goals, trust, roles and the way disagreements were handled.",
+     "probes": [
+      "Were roles in the team clear to everyone on the job?",
+      "Did team members check each other's work as a normal habit?",
+      "Was a doubt raised by one member taken up by the rest?"
+     ]
+    },
+    {
+     "id": "M1.10",
+     "name": "Leadership and Authority Gradient",
+     "definition": "How rank and seniority shaped who spoke up, who decided and whether challenges reached the decision maker.",
+     "probes": [
+      "Could a junior person stop the job if they saw a problem?",
+      "Did leaders ask for views before deciding on the risky step?",
+      "Were challenges from the floor recorded and answered?"
+     ]
+    },
+    {
+     "id": "M1.11",
+     "name": "Cultural and Organisational Climate",
+     "definition": "The shared beliefs and habits around the work that made some choices feel normal and others feel hard.",
+     "probes": [
+      "Was reporting a concern treated as useful rather than as trouble?",
+      "Had a shortcut become the usual way of working without anyone deciding it?",
+      "Did what leaders rewarded match what the rules asked for?"
+     ]
+    },
+    {
+     "id": "M1.12",
+     "name": "Error Propensity and Human Limitations",
+     "definition": "The known limits of human attention, memory and perception, and whether the work was designed around them.",
+     "probes": [
+      "Did the task depend on someone remembering a step with no prompt?",
+      "Were similar-looking items or readings easy to confuse?",
+      "Had the design allowed for the slips that people predictably make?"
+     ]
+    },
+    {
+     "id": "M1.13",
+     "name": "Competence Sustainability and Continuous Improvement",
+     "definition": "How skills were kept fresh over time, especially for rare tasks, and how lessons were fed back into training.",
+     "probes": [
+      "Were rarely used skills refreshed before they were needed?",
+      "Did lessons from earlier events reach the training content?",
+      "Was there a record of when each person last did this task?"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "M2",
+   "title": "Medium",
+   "definition": "The physical and psychological surroundings of the work, and how they made it easier or harder to do safely.",
+   "subcategories": [
+    {
+     "id": "M2.01",
+     "name": "Physical Environment Controls",
+     "definition": "How temperature, ventilation, lighting and similar conditions at the workplace were kept within safe limits.",
+     "probes": [
+      "Were conditions at the work location measured or checked before the job?",
+      "Did the conditions on the day fall outside what the plan assumed?",
+      "Was there a control in place for the condition that mattered here?"
+     ]
+    },
+    {
+     "id": "M2.02",
+     "name": "Workspace Ergonomics and Human Fit",
+     "definition": "Whether the layout, reach, posture and access at the workplace fitted the people and the task.",
+     "probes": [
+      "Could people reach and see what they needed without strain?",
+      "Did the layout force awkward or unsafe positions during the task?",
+      "Were the users asked about the layout when it was designed?"
+     ]
+    },
+    {
+     "id": "M2.03",
+     "name": "Noise and Auditory Environment",
+     "definition": "How noise and sound affected hearing alarms, speech and other cues the work relied on.",
+     "probes": [
+      "Could alarms and voices be heard clearly at the work location?",
+      "Did hearing protection or background noise mask an important cue?",
+      "Was the sound environment considered when alarms were chosen?"
+     ]
+    },
+    {
+     "id": "M2.04",
+     "name": "Visual Environment and Legibility",
+     "definition": "Whether people could see the work, the plant and its labels and displays clearly enough to read them right.",
+     "probes": [
+      "Was the lighting enough to read labels and gauges at the time?",
+      "Were tags, signs and displays legible from where people stood?",
+      "Did glare, smoke or darkness hide something people needed to see?"
+     ]
+    },
+    {
+     "id": "M2.05",
+     "name": "Localised Hazards and Exposure",
+     "definition": "Hazards specific to a spot in the plant, such as releases, hot surfaces or toxic gas, and how exposure was limited.",
+     "probes": [
+      "Was the local hazard at this spot known and marked?",
+      "Were people kept out of the exposure zone while it was live?",
+      "Did monitoring cover the place where the release happened?"
+     ]
+    },
+    {
+     "id": "M2.06",
+     "name": "Operational Environment and Tempo",
+     "definition": "The pace and state of operations around the work, such as start-ups, upsets or many jobs running at once.",
+     "probes": [
+      "Was the work done during an unusual plant state or transition?",
+      "Were several jobs running at once in the same area?",
+      "Did the pace of operations leave time to pause and check?"
+     ]
+    },
+    {
+     "id": "M2.07",
+     "name": "Psychological Environment and Stressors",
+     "definition": "Pressures in the work setting, such as time pressure, conflict or uncertainty, that weighed on people's choices.",
+     "probes": [
+      "Was there pressure to finish the job within a fixed window?",
+      "Did conflicting instructions leave people unsure what to do?",
+      "Were stressful conditions known to supervision before the event?"
+     ]
+    },
+    {
+     "id": "M2.08",
+     "name": "Cultural Environment and Norms",
+     "definition": "The unwritten local norms of the work area that shaped how tasks were really done.",
+     "probes": [
+      "Did the local way of working differ from the written method?",
+      "Was the local norm known to supervisors and left as it was?",
+      "Would a newcomer have picked up the shortcut from colleagues?"
+     ]
+    },
+    {
+     "id": "M2.09",
+     "name": "Environmental Stressors and Extreme Conditions",
+     "definition": "Weather, heat, cold, rain, wind or night conditions that made the work or the response harder.",
+     "probes": [
+      "Did the weather or time of day affect the work or the response?",
+      "Were extreme conditions planned for in the method or the emergency plan?",
+      "Was there a trigger to stop work when conditions got worse?"
+     ]
+    },
+    {
+     "id": "M2.10",
+     "name": "External Environment and Stakeholders",
+     "definition": "Neighbours, regulators, contractors and other outside parties whose presence or demands shaped the risk.",
+     "probes": [
+      "Did people or assets outside the fence sit within the hazard zone?",
+      "Were outside parties told what they needed to know in time?",
+      "Did an outside demand change how or when the work was done?"
+     ]
+    },
+    {
+     "id": "M2.11",
+     "name": "Infrastructure, Access, and Traffic Interfaces",
+     "definition": "Roads, routes, access points and shared corridors, and how they affected the work and the emergency response.",
+     "probes": [
+      "Could responders reach the scene by a clear route?",
+      "Did pipelines, roads or vehicles share space in a way that added risk?",
+      "Were access restrictions in place and kept to during the work?"
+     ]
+    },
+    {
+     "id": "M2.12",
+     "name": "Emergency Preparedness in Environmental Contexts",
+     "definition": "Whether emergency arrangements fitted the actual setting, including layout, weather and neighbouring sites.",
+     "probes": [
+      "Did the emergency plan match the real layout of the area?",
+      "Were detection and alarm coverage right for this location?",
+      "Had drills tested the plan in conditions like those on the day?"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "M3",
+   "title": "Method",
+   "definition": "The procedures, processes and ways of working used to plan, carry out and control the task.",
+   "subcategories": [
+    {
+     "id": "M3.01",
+     "name": "Procedure Design and Development",
+     "definition": "How procedures were written, by whom, and whether they were tested against the task as it is really done.",
+     "probes": [
+      "Was the procedure written with the people who do the task?",
+      "Was it tried out on the job before it was issued?",
+      "Did it cover the conditions met during this event?"
+     ]
+    },
+    {
+     "id": "M3.02",
+     "name": "Standard Operating Procedures (SOPs)",
+     "definition": "Whether an approved written method existed for the task, was current and was available at the point of use.",
+     "probes": [
+      "Did an approved SOP exist for this task?",
+      "Was the version in use the current one?",
+      "Could people get to it where and when they did the work?"
+     ]
+    },
+    {
+     "id": "M3.03",
+     "name": "Compliance and Adherence",
+     "definition": "How far work followed the written method, and why the gaps between the two existed.",
+     "probes": [
+      "Was the written method followed on the day?",
+      "Where it was not, did the method fit the work as done?",
+      "Were earlier departures from the method noticed and discussed?"
+     ]
+    },
+    {
+     "id": "M3.04",
+     "name": "Flexibility and Adaptability",
+     "definition": "Whether the method allowed safe adjustment when conditions changed, and who could decide on a change.",
+     "probes": [
+      "Did the method say what to do when conditions changed?",
+      "Was it clear who could approve a change on the spot?",
+      "Were on-the-spot changes reviewed afterwards?"
+     ]
+    },
+    {
+     "id": "M3.05",
+     "name": "Documentation and Communication",
+     "definition": "How methods, permits and records were written down, shared and kept so that the next person could rely on them.",
+     "probes": [
+      "Were permits and job records complete for this work?",
+      "Did the records travel with the job between shifts?",
+      "Could a later reader tell what was done and why?"
+     ]
+    },
+    {
+     "id": "M3.06",
+     "name": "Risk Management Integration",
+     "definition": "Whether hazard identification and risk assessment were built into the method rather than done apart from it.",
+     "probes": [
+      "Was a task risk assessment done for this job?",
+      "Did its controls appear as steps in the method?",
+      "Was the assessment revisited when the job changed?"
+     ]
+    },
+    {
+     "id": "M3.07",
+     "name": "Alignment with Technology",
+     "definition": "Whether the method matched the equipment, software and controls actually installed.",
+     "probes": [
+      "Did the method describe the equipment as it was installed?",
+      "Were changes to the equipment carried into the method?",
+      "Did the control system support the steps the method asked for?"
+     ]
+    },
+    {
+     "id": "M3.08",
+     "name": "Emergency and Contingency Procedures",
+     "definition": "The written arrangements for upsets and emergencies, and whether they worked when used.",
+     "probes": [
+      "Was there a written response for this kind of release or upset?",
+      "Did the response steps work in the time available?",
+      "Were the people on duty familiar with those steps?"
+     ]
+    },
+    {
+     "id": "M3.09",
+     "name": "Continuous Improvement",
+     "definition": "How methods were reviewed and changed using findings from audits, near misses and earlier events.",
+     "probes": [
+      "Were earlier findings about this method acted on?",
+      "Was there a set review date for the method, and was it kept?",
+      "Did users have a way to propose changes to it?"
+     ]
+    },
+    {
+     "id": "M3.10",
+     "name": "Simplicity and Accessibility",
+     "definition": "Whether the method was short, clear and easy enough to use under real working conditions.",
+     "probes": [
+      "Could the method be followed without needing outside help?",
+      "Were the key steps easy to find in the document?",
+      "Was the language plain for the people who used it?"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "M4",
+   "title": "Mission",
+   "definition": "The goals, priorities and targets the organisation set, and the pressure they put on decisions about risk.",
+   "subcategories": [
+    {
+     "id": "M4.01",
+     "name": "Strategic Objectives and Priorities",
+     "definition": "How the organisation's top-level aims ranked safety against output, cost and schedule.",
+     "probes": [
+      "Did stated priorities put safety ahead of output in practice?",
+      "Were trade-offs between goals made openly and recorded?",
+      "Did senior decisions in this case follow the stated priorities?"
+     ]
+    },
+    {
+     "id": "M4.02",
+     "name": "Operational Goals and Targets",
+     "definition": "The day-to-day targets set for the site or team, and whether they pushed people towards risk.",
+     "probes": [
+      "Did a production or schedule target bear on this work?",
+      "Were targets ever relaxed when safety needed more time?",
+      "Did people feel judged on targets more than on safe work?"
+     ]
+    },
+    {
+     "id": "M4.03",
+     "name": "Resource Allocation",
+     "definition": "How people, time and equipment were shared out across goals, and whether safety-critical work got its share.",
+     "probes": [
+      "Did this work get the people and time it needed?",
+      "Was safety-critical work deferred to free resources for other goals?",
+      "Was there a way to ask for more resources and get an answer?"
+     ]
+    },
+    {
+     "id": "M4.04",
+     "name": "Leadership and Accountability",
+     "definition": "Who owned each goal and decision, and whether that ownership was clear, accepted and followed through.",
+     "probes": [
+      "Was it clear who owned the decision that mattered here?",
+      "Did that owner have the authority and the information to act?",
+      "Were open decisions tracked until someone closed them?"
+     ]
+    },
+    {
+     "id": "M4.05",
+     "name": "Risk Tolerance and Decision-Making",
+     "definition": "How much risk the organisation was willing to accept, and how decisions near that limit were made.",
+     "probes": [
+      "Was there a stated limit on the risk the site would accept?",
+      "Were decisions near that limit escalated to the right level?",
+      "Did known risks stay open for a long time without a decision?"
+     ]
+    },
+    {
+     "id": "M4.06",
+     "name": "External Influences and Stakeholder Expectations",
+     "definition": "Pressures from customers, owners, regulators or the public that shaped goals and choices.",
+     "probes": [
+      "Did an outside commitment shape the timing of this work?",
+      "Were regulator or partner expectations met on paper only?",
+      "Did outside pressure change what was reported upwards?"
+     ]
+    },
+    {
+     "id": "M4.07",
+     "name": "Mission Complexity and Clarity",
+     "definition": "Whether the task and its purpose were clear, and whether its complexity was recognised and planned for.",
+     "probes": [
+      "Was the purpose of the task clear to everyone doing it?",
+      "Was the task's complexity recognised when it was planned?",
+      "Did the plan say what success and stopping points looked like?"
+     ]
+    },
+    {
+     "id": "M4.08",
+     "name": "Organisational Culture and Mission Alignment",
+     "definition": "Whether the organisation's culture supported its stated goals or quietly worked against them.",
+     "probes": [
+      "Did daily habits match what the organisation said it valued?",
+      "Was raising a safety issue seen as part of the job?",
+      "Were known gaps between values and habits ever discussed?"
+     ]
+    },
+    {
+     "id": "M4.09",
+     "name": "Communication and Mission Integration",
+     "definition": "How goals and priorities were explained down the line so that each level understood its part.",
+     "probes": [
+      "Were the site's priorities explained to the people doing the work?",
+      "Did each level know how its tasks fed the wider goals?",
+      "Were changes in priority passed on promptly?"
+     ]
+    },
+    {
+     "id": "M4.10",
+     "name": "Continuous Evaluation and Improvement",
+     "definition": "How the organisation checked whether its goals and targets were still right, and changed them when they were not.",
+     "probes": [
+      "Were goals reviewed after earlier events or audits?",
+      "Did reviews look at the side effects of targets on safety?",
+      "Was there evidence that a goal was changed because of a lesson?"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "M5",
+   "title": "Measurement",
+   "definition": "How the organisation measured, monitored and analysed performance and safety, and acted on what it found.",
+   "subcategories": [
+    {
+     "id": "M5.01",
+     "name": "Metrics Design and Relevance",
+     "definition": "Whether the measures in use tracked the hazards that mattered, not only the easy-to-count outcomes.",
+     "probes": [
+      "Did any measure track the hazard behind this event?",
+      "Were the measures chosen for their link to major risk?",
+      "Would the measures have shown the problem growing?"
+     ]
+    },
+    {
+     "id": "M5.02",
+     "name": "Data Collection and Accuracy",
+     "definition": "How data was gathered and checked, and whether it could be trusted.",
+     "probes": [
+      "Was the data on this system collected as planned?",
+      "Were readings and records checked for errors?",
+      "Did gaps in the data go unnoticed?"
+     ]
+    },
+    {
+     "id": "M5.03",
+     "name": "Monitoring and Reporting Systems",
+     "definition": "The systems that watched plant and work in real time or by routine reports, and whether they flagged problems.",
+     "probes": [
+      "Did monitoring cover the equipment and area involved?",
+      "Were alarms or reports raised before the event?",
+      "Did anyone act on what the monitoring showed?"
+     ]
+    },
+    {
+     "id": "M5.04",
+     "name": "Analysis and Interpretation",
+     "definition": "How data was turned into understanding, and whether trends and weak signals were spotted.",
+     "probes": [
+      "Was the data on this problem ever analysed for trends?",
+      "Were repeated small failures linked together?",
+      "Did the analysis reach someone able to act on it?"
+     ]
+    },
+    {
+     "id": "M5.05",
+     "name": "Feedback Loops",
+     "definition": "How results of measurement went back to the people and processes that could change things.",
+     "probes": [
+      "Did findings from monitoring reach the people doing the work?",
+      "Were actions from earlier findings checked for effect?",
+      "Did the loop close, or did findings stop at a report?"
+     ]
+    },
+    {
+     "id": "M5.06",
+     "name": "Benchmarking and Comparisons",
+     "definition": "Whether performance was compared with other sites, peers or good practice, and gaps acted on.",
+     "probes": [
+      "Was this site's performance compared with similar sites?",
+      "Were lessons from other sites' events looked at here?",
+      "Did comparison lead to any change before this event?"
+     ]
+    },
+    {
+     "id": "M5.07",
+     "name": "Predictive Analytics and Risk Indicators",
+     "definition": "Forward-looking measures meant to warn of rising risk before harm occurs.",
+     "probes": [
+      "Were there leading measures for this hazard?",
+      "Did any of them move before the event?",
+      "Was there an agreed response when one moved?"
+     ]
+    },
+    {
+     "id": "M5.08",
+     "name": "Communication of Measurements",
+     "definition": "How measurement results were presented and shared, and whether they were understood by those who needed them.",
+     "probes": [
+      "Were results shown in a form people could read quickly?",
+      "Did results reach the level that could fund a fix?",
+      "Were bad results reported as clearly as good ones?"
+     ]
+    },
+    {
+     "id": "M5.09",
+     "name": "Continuous Improvement through Measurement",
+     "definition": "Whether measurement was used to drive change and to check that changes worked.",
+     "probes": [
+      "Was a change made because of what measurement showed?",
+      "Was the effect of that change measured afterwards?",
+      "Were measures updated when the risk picture changed?"
+     ]
+    },
+    {
+     "id": "M5.10",
+     "name": "Integration with Technology",
+     "definition": "How instruments, software and data systems supported measurement, and whether they were reliable.",
+     "probes": [
+      "Were the instruments involved calibrated and working?",
+      "Did data systems link readings to the right equipment?",
+      "Were failures of measuring equipment spotted and fixed?"
+     ]
+    },
+    {
+     "id": "M5.11",
+     "name": "Audits and Inspections",
+     "definition": "Planned checks of systems and plant, how they were scoped, and whether their findings were closed.",
+     "probes": [
+      "Did an audit or inspection cover this system before the event?",
+      "Was its scope specific to this plant's hazards?",
+      "Were its findings closed on time and checked?"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "M6",
+   "title": "Management/Money",
+   "definition": "How leadership, management practice and money shaped the resources and decisions behind the work.",
+   "subcategories": [
+    {
+     "id": "M6.01",
+     "name": "Strategic Financial Planning",
+     "definition": "How long-term budgets were set, and whether they provided for safety-critical needs over the asset's life.",
+     "probes": [
+      "Did long-term budgets include the safety-critical work involved?",
+      "Were known future needs funded before they became urgent?",
+      "Did plans allow for ageing equipment and rising risk?"
+     ]
+    },
+    {
+     "id": "M6.02",
+     "name": "Leadership and Decision-Making",
+     "definition": "How managers made decisions that affected risk, and whether they used the information available to them.",
+     "probes": [
+      "Did managers have the facts they needed for the key decision?",
+      "Was the decision made at the right level?",
+      "Were warnings from staff weighed in the decision?"
+     ]
+    },
+    {
+     "id": "M6.03",
+     "name": "Budgeting and Resource Allocation",
+     "definition": "How yearly money and staff were divided up, and whether safety-related items were cut or deferred.",
+     "probes": [
+      "Was safety-related work deferred because of budget?",
+      "Were requests for funds for this system turned down?",
+      "Did the budget process show the risk of deferring?"
+     ]
+    },
+    {
+     "id": "M6.04",
+     "name": "Training and Development Investments",
+     "definition": "How much the organisation invested in people's skills, and whether it matched the risks they managed.",
+     "probes": [
+      "Was training for this task funded and scheduled?",
+      "Were training cuts made in the period before the event?",
+      "Did investment in skills match the hazards people faced?"
+     ]
+    },
+    {
+     "id": "M6.05",
+     "name": "Risk Management and Compliance",
+     "definition": "How management identified, assessed and controlled risks, and met legal and company requirements.",
+     "probes": [
+      "Was this risk on a register with an owner?",
+      "Were the controls assessed as adequate by someone competent?",
+      "Did known legal requirements for this system get met?"
+     ]
+    },
+    {
+     "id": "M6.06",
+     "name": "Investment in Infrastructure and Technology",
+     "definition": "Spending on plant, equipment and systems, and whether known upgrades were made in time.",
+     "probes": [
+      "Was a needed upgrade known before the event?",
+      "Was it approved, and if so, was it carried out?",
+      "Did deferral of the upgrade have a recorded risk review?"
+     ]
+    },
+    {
+     "id": "M6.07",
+     "name": "Performance Monitoring and Accountability",
+     "definition": "How management tracked whether agreed work was done, and followed up when it was not.",
+     "probes": [
+      "Were overdue actions on this system tracked by management?",
+      "Did anyone follow up when actions slipped?",
+      "Were extensions to deadlines approved by the right person?"
+     ]
+    },
+    {
+     "id": "M6.08",
+     "name": "Stakeholder Engagement and Communication",
+     "definition": "How management talked with staff, contractors, owners and regulators about risk and performance.",
+     "probes": [
+      "Were contractors and staff told about the risks of this job?",
+      "Did management report the true state of the risk upward?",
+      "Were concerns from outside parties answered?"
+     ]
+    },
+    {
+     "id": "M6.09",
+     "name": "Financial Controls and Auditing",
+     "definition": "How spending decisions were checked, and whether controls on cost had side effects on safety.",
+     "probes": [
+      "Did a cost control affect a safety-related purchase?",
+      "Were purchase approvals timely for urgent safety items?",
+      "Did financial reviews look at safety consequences?"
+     ]
+    },
+    {
+     "id": "M6.10",
+     "name": "Continuous Improvement and Adaptability",
+     "definition": "Whether management learned from events and changed resources and practices as conditions changed.",
+     "probes": [
+      "Did management act on lessons from earlier events?",
+      "Were resources shifted when a new risk appeared?",
+      "Was there a review of management practice after near misses?"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "M7",
+   "title": "Machine",
+   "definition": "The equipment, tools, instruments and technology used in the work, from design through to retirement.",
+   "subcategories": [
+    {
+     "id": "M7.01",
+     "name": "Design and Suitability",
+     "definition": "Whether the equipment was designed and chosen for the duty, pressure, material and conditions it actually met.",
+     "probes": [
+      "Was the equipment rated for the duty it was used for?",
+      "Did its design allow for the failure that happened?",
+      "Were known design weaknesses reviewed and dealt with?"
+     ]
+    },
+    {
+     "id": "M7.02",
+     "name": "Maintenance and Reliability",
+     "definition": "How reliable the equipment was in service, and whether its condition supported safe operation.",
+     "probes": [
+      "Was the equipment working as intended at the time?",
+      "Had it failed in the same way before?",
+      "Was its reliability tracked by anyone?"
+     ]
+    },
+    {
+     "id": "M7.03",
+     "name": "Integration and Compatibility",
+     "definition": "Whether parts, systems and connections worked together as intended, including after changes.",
+     "probes": [
+      "Were the parts fitted compatible with the original design?",
+      "Did a change to one part affect how another worked?",
+      "Was compatibility checked when parts were substituted?"
+     ]
+    },
+    {
+     "id": "M7.04",
+     "name": "Automation and Control Systems",
+     "definition": "How control, shutdown and safety systems were set up, and whether they acted without waiting for people.",
+     "probes": [
+      "Did an automatic shutdown or interlock exist for this case?",
+      "Did the control system act in the time needed?",
+      "Were bypassed or manual-only functions known and managed?"
+     ]
+    },
+    {
+     "id": "M7.05",
+     "name": "Ergonomics and Usability",
+     "definition": "Whether controls, displays and tools were easy to use correctly and hard to use wrongly.",
+     "probes": [
+      "Were controls and displays easy to read and operate?",
+      "Could a control be operated in the wrong way easily?",
+      "Were users involved in choosing the equipment?"
+     ]
+    },
+    {
+     "id": "M7.06",
+     "name": "Monitoring and Diagnostics",
+     "definition": "How equipment reported its own condition, through detectors, gauges and alarms, and whether that was seen.",
+     "probes": [
+      "Were detectors and gauges in place where they were needed?",
+      "Did they give a warning early enough to act?",
+      "Were faulty or bypassed detectors known and tracked?"
+     ]
+    },
+    {
+     "id": "M7.07",
+     "name": "Safety Features and Risk Mitigation",
+     "definition": "The engineered protections on the equipment, such as relief, isolation and containment, and their condition.",
+     "probes": [
+      "Were the engineered protections on this equipment in place?",
+      "Did they work when called on?",
+      "Was the protection level matched to the hazard?"
+     ]
+    },
+    {
+     "id": "M7.08",
+     "name": "Lifecycle Management",
+     "definition": "How equipment was managed from purchase to retirement, including ageing, obsolescence and timely replacement.",
+     "probes": [
+      "Was the equipment past its planned replacement point?",
+      "Were ageing items identified and scheduled for renewal?",
+      "Did replacement decisions consider the risk of waiting?"
+     ]
+    },
+    {
+     "id": "M7.09",
+     "name": "Environmental Impact and Sustainability",
+     "definition": "How the equipment's releases, emissions and failures could affect people and surroundings outside the work area.",
+     "probes": [
+      "Could a failure of this equipment harm the surroundings?",
+      "Were release paths and their effects understood?",
+      "Did design choices limit the size of a possible release?"
+     ]
+    },
+    {
+     "id": "M7.10",
+     "name": "Training and Competence",
+     "definition": "Whether people knew the equipment well enough to operate, check and recover it safely.",
+     "probes": [
+      "Were operators familiar with this particular equipment?",
+      "Did they know its failure modes and warning signs?",
+      "Were vendor instructions available and understood?"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "M8",
+   "title": "Material",
+   "definition": "The materials, parts, consumables and substances used or handled, including their quality, supply and handling.",
+   "subcategories": [
+    {
+     "id": "M8.01",
+     "name": "Material Quality",
+     "definition": "Whether materials and parts met their specification and were fit for the service they went into.",
+     "probes": [
+      "Did the parts used meet the specified grade and type?",
+      "Was the quality of incoming material checked?",
+      "Had poor-quality material caused trouble before?"
+     ]
+    },
+    {
+     "id": "M8.02",
+     "name": "Material Availability and Supply Chain",
+     "definition": "Whether the right materials were in stock or obtainable in time, and how supply gaps were handled.",
+     "probes": [
+      "Were the right parts available when the job needed them?",
+      "Did a supply delay lead to a substitute being used?",
+      "Were long lead-time items ordered ahead of need?"
+     ]
+    },
+    {
+     "id": "M8.03",
+     "name": "Material Compatibility",
+     "definition": "Whether materials suited each other, the process fluid and the conditions, including any substitutes.",
+     "probes": [
+      "Was the material compatible with the process fluid and pressure?",
+      "Was a substitute part assessed before use?",
+      "Did a change of material go through a change review?"
+     ]
+    },
+    {
+     "id": "M8.04",
+     "name": "Storage and Handling",
+     "definition": "How materials and substances were stored, moved and handled so that they stayed safe and in good condition.",
+     "probes": [
+      "Were materials stored in a way that kept them in good condition?",
+      "Was the handling of hazardous substances controlled?",
+      "Were stored items labelled so the right one was picked?"
+     ]
+    },
+    {
+     "id": "M8.05",
+     "name": "Material Waste and Sustainability",
+     "definition": "How waste, spills and spent materials were managed, and whether they added hazards.",
+     "probes": [
+      "Did waste or spent material add a hazard at the scene?",
+      "Were spills and leftovers cleared under a set routine?",
+      "Was disposal of hazardous material controlled?"
+     ]
+    },
+    {
+     "id": "M8.06",
+     "name": "Material Cost Management",
+     "definition": "How the cost of materials influenced choices, and whether cheaper options were checked for risk.",
+     "probes": [
+      "Was a cheaper part chosen over the specified one?",
+      "Was the risk of the cheaper option assessed?",
+      "Did cost rules slow down buying the right part?"
+     ]
+    },
+    {
+     "id": "M8.07",
+     "name": "Compliance and Regulatory Requirements",
+     "definition": "Whether materials and their handling met the legal and company rules that applied to them.",
+     "probes": [
+      "Did the materials meet the rules that applied to them?",
+      "Were certificates for critical materials on file?",
+      "Were legal handling requirements for substances met?"
+     ]
+    },
+    {
+     "id": "M8.08",
+     "name": "Material Traceability",
+     "definition": "Whether the source, batch and history of a part could be traced from purchase to installation.",
+     "probes": [
+      "Could the part fitted be traced to its source and batch?",
+      "Were locally bought parts recorded like stock items?",
+      "Did records show which part went into which equipment?"
+     ]
+    },
+    {
+     "id": "M8.09",
+     "name": "Innovation and Material Advancements",
+     "definition": "Whether better materials or designs were known and considered, especially for repeat failures.",
+     "probes": [
+      "Was a better material known for this repeat failure?",
+      "Was it considered and, if not used, why not?",
+      "Did suppliers or specialists offer advice on the material?"
+     ]
+    },
+    {
+     "id": "M8.10",
+     "name": "Emergency and Contingency Planning",
+     "definition": "Whether materials needed in an emergency, such as foam, spares or sealing kits, were ready and sufficient.",
+     "probes": [
+      "Were emergency materials stocked and ready?",
+      "Was there enough of them for an event of this size?",
+      "Were they checked on a set schedule?"
+     ]
+    }
+   ]
+  },
+  {
+   "code": "M9",
+   "title": "Maintenance",
+   "definition": "How equipment was kept working and reliable through inspection, servicing, repair and testing over its whole life.",
+   "subcategories": [
+    {
+     "id": "M9.01",
+     "name": "Preventive Maintenance Programme",
+     "definition": "The planned, routine servicing meant to stop equipment failing, and whether it covered what mattered.",
+     "probes": [
+      "Was this equipment in a planned maintenance routine?",
+      "Was the routine done on time before the event?",
+      "Did the routine cover the part that failed?"
+     ]
+    },
+    {
+     "id": "M9.02",
+     "name": "Predictive Maintenance and Condition Monitoring",
+     "definition": "How the condition of equipment was measured over time to catch wear, corrosion or damage early.",
+     "probes": [
+      "Was the condition of this equipment measured over time?",
+      "Did measurements show wear or thinning before the event?",
+      "Were those results acted on within a set time?"
+     ]
+    },
+    {
+     "id": "M9.03",
+     "name": "Corrective Maintenance Execution",
+     "definition": "How faults and defects were repaired, and whether repairs were done properly and checked after.",
+     "probes": [
+      "Were known defects on this equipment repaired?",
+      "Was the repair done to the correct standard?",
+      "Was the repaired item tested before it went back into service?"
+     ]
+    },
+    {
+     "id": "M9.04",
+     "name": "Maintenance Planning and Scheduling",
+     "definition": "How maintenance work was planned, prioritised and fitted around operations.",
+     "probes": [
+      "Was the maintenance job planned with the right steps and parts?",
+      "Was it given priority in line with its risk?",
+      "Did operations pressure move or shorten the job?"
+     ]
+    },
+    {
+     "id": "M9.05",
+     "name": "Maintenance Personnel Competence",
+     "definition": "Whether the people doing maintenance had the skills, authority and guidance for the specific job.",
+     "probes": [
+      "Were the maintainers trained on this equipment?",
+      "Did they have the vendor guidance for the job?",
+      "Was the work checked by someone qualified?"
+     ]
+    },
+    {
+     "id": "M9.06",
+     "name": "Maintenance Documentation and Records",
+     "definition": "Whether maintenance history, work orders and test results were recorded and could be used to spot patterns.",
+     "probes": [
+      "Was the maintenance history for this item complete?",
+      "Did the records show repeat work on the same fault?",
+      "Were test results recorded and kept?"
+     ]
+    },
+    {
+     "id": "M9.07",
+     "name": "Spare Parts and Inventory Management",
+     "definition": "Whether the right spares were stocked, identified and issued for maintenance work.",
+     "probes": [
+      "Were the correct spares in stock for this equipment?",
+      "Was the spare issued checked against the specification?",
+      "Were critical spares identified and kept at a minimum level?"
+     ]
+    },
+    {
+     "id": "M9.08",
+     "name": "Maintenance Technology and Tools",
+     "definition": "The tools, test equipment and systems used to plan and carry out maintenance, and whether they were adequate.",
+     "probes": [
+      "Did maintainers have the right tools and test rigs?",
+      "Was the work management system used to plan the job?",
+      "Were special tools for this equipment available?"
+     ]
+    },
+    {
+     "id": "M9.09",
+     "name": "Software and Control System Maintenance",
+     "definition": "How control logic, detectors, alarms and safety systems were tested, updated and kept working.",
+     "probes": [
+      "Were safety systems and detectors proof-tested on schedule?",
+      "Were changes to control logic recorded and reviewed?",
+      "Were faults in alarms or detectors fixed quickly?"
+     ]
+    },
+    {
+     "id": "M9.10",
+     "name": "Safety in Maintenance Activities",
+     "definition": "How hazards during maintenance itself were controlled, through permits, isolation and return-to-service checks.",
+     "probes": [
+      "Was the maintenance job under a valid permit?",
+      "Were isolations made and proven before the work?",
+      "Was there a formal check before return to service?"
+     ]
+    },
+    {
+     "id": "M9.11",
+     "name": "Continuous Improvement in Maintenance",
+     "definition": "How maintenance learned from repeat failures and changed its routines, intervals and methods.",
+     "probes": [
+      "Did repeat failures trigger a root-cause review?",
+      "Were maintenance intervals changed after earlier findings?",
+      "Was the outcome of changes checked later?"
+     ]
+    }
+   ]
+  }
+ ]
+}

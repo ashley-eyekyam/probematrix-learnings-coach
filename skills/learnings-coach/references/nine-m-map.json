@@ -1,0 +1,571 @@
+{
+ "_about": "Nanocode to 9M map for nine-m-seed: new Eyekyam work under the repository's MIT licence, not ported from the ProbeMatrix CAPA Zone (D9, P5-12). 'prefixes' gives each HFACS prefix in hfacs-codes.json a default primary M and secondary Ms; 'codes' overrides a full Nanocode whose name clearly belongs to another M; 'keywords' are case-insensitive regexes matched on a finding's Instance Label and Short Description; 'entities' are the Learning Cluster entities (clusters.json) whose findings lean to an M. Scoring (spec §7.3): Nanocode primary 3, secondary 1, a keyword hit 1, an entity hit 1. Human-readable companion: nine-m.md.",
+ "version": 1,
+ "prefixes": {
+  "AJDE": {
+   "primary": "M1",
+   "secondary": [
+    "M3"
+   ]
+  },
+  "APE": {
+   "primary": "M1",
+   "secondary": [
+    "M2"
+   ]
+  },
+  "ASBE": {
+   "primary": "M1",
+   "secondary": [
+    "M3"
+   ]
+  },
+  "AV": {
+   "primary": "M3",
+   "secondary": [
+    "M1"
+   ]
+  },
+  "PPE": {
+   "primary": "M2",
+   "secondary": []
+  },
+  "PPI": {
+   "primary": "M1",
+   "secondary": [
+    "M2"
+   ]
+  },
+  "PSE": {
+   "primary": "M4",
+   "secondary": [
+    "M2"
+   ]
+  },
+  "PTE": {
+   "primary": "M7",
+   "secondary": []
+  },
+  "PTF": {
+   "primary": "M1",
+   "secondary": [
+    "M3"
+   ]
+  },
+  "SVF": {
+   "primary": "M6",
+   "secondary": [
+    "M5"
+   ]
+  },
+  "SVI": {
+   "primary": "M6",
+   "secondary": [
+    "M1"
+   ]
+  },
+  "SVIO": {
+   "primary": "M4",
+   "secondary": [
+    "M1"
+   ]
+  },
+  "SVV": {
+   "primary": "M3",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "OIC": {
+   "primary": "M4",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "OIP": {
+   "primary": "M3",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "OIR": {
+   "primary": "M6",
+   "secondary": []
+  },
+  "OIS": {
+   "primary": "M1",
+   "secondary": [
+    "M6"
+   ]
+  }
+ },
+ "codes": {
+  "AJDE 2.11": {
+   "primary": "M3",
+   "secondary": [
+    "M1"
+   ]
+  },
+  "ASBE 1.2": {
+   "primary": "M3",
+   "secondary": [
+    "M1"
+   ]
+  },
+  "ASBE 1.3": {
+   "primary": "M3",
+   "secondary": [
+    "M1"
+   ]
+  },
+  "PPI 5.5": {
+   "primary": "M1",
+   "secondary": [
+    "M7"
+   ]
+  },
+  "PSE 3.1": {
+   "primary": "M1",
+   "secondary": [
+    "M4"
+   ]
+  },
+  "PSE 3.3": {
+   "primary": "M4",
+   "secondary": [
+    "M2"
+   ]
+  },
+  "PTE 2.2": {
+   "primary": "M7",
+   "secondary": [
+    "M5"
+   ]
+  },
+  "PTE 2.3": {
+   "primary": "M2",
+   "secondary": [
+    "M7"
+   ]
+  },
+  "PTE 2.5": {
+   "primary": "M7",
+   "secondary": [
+    "M9"
+   ]
+  },
+  "PTE 2.7": {
+   "primary": "M3",
+   "secondary": [
+    "M7"
+   ]
+  },
+  "PTE 2.8": {
+   "primary": "M2",
+   "secondary": [
+    "M7"
+   ]
+  },
+  "PTE 2.12": {
+   "primary": "M9",
+   "secondary": [
+    "M7"
+   ]
+  },
+  "PTE 2.15": {
+   "primary": "M8",
+   "secondary": [
+    "M2"
+   ]
+  },
+  "PTF 1.4": {
+   "primary": "M1",
+   "secondary": [
+    "M7"
+   ]
+  },
+  "PTF 1.13": {
+   "primary": "M4",
+   "secondary": [
+    "M3"
+   ]
+  },
+  "PTF 1.14": {
+   "primary": "M4",
+   "secondary": [
+    "M1"
+   ]
+  },
+  "PTF 1.15": {
+   "primary": "M4",
+   "secondary": [
+    "M3"
+   ]
+  },
+  "PTF 1.17": {
+   "primary": "M1",
+   "secondary": [
+    "M2"
+   ]
+  },
+  "SVF 3.1": {
+   "primary": "M1",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "SVF 3.3": {
+   "primary": "M2",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "SVF 3.4": {
+   "primary": "M6",
+   "secondary": [
+    "M5"
+   ]
+  },
+  "SVI 1.3": {
+   "primary": "M1",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "SVI 1.4": {
+   "primary": "M3",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "SVI 1.6": {
+   "primary": "M5",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "SVI 1.7": {
+   "primary": "M3",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "SVI 1.8": {
+   "primary": "M6",
+   "secondary": [
+    "M5"
+   ]
+  },
+  "SVI 1.9": {
+   "primary": "M1",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "SVI 1.13": {
+   "primary": "M3",
+   "secondary": [
+    "M1"
+   ]
+  },
+  "SVI 1.14": {
+   "primary": "M1",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "SVIO 2.2": {
+   "primary": "M1",
+   "secondary": [
+    "M4"
+   ]
+  },
+  "SVIO 2.3": {
+   "primary": "M1",
+   "secondary": [
+    "M4"
+   ]
+  },
+  "SVIO 2.4": {
+   "primary": "M3",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "SVIO 2.6": {
+   "primary": "M1",
+   "secondary": [
+    "M4"
+   ]
+  },
+  "SVIO 2.7": {
+   "primary": "M9",
+   "secondary": [
+    "M7",
+    "M6"
+   ]
+  },
+  "SVV 4.2": {
+   "primary": "M3",
+   "secondary": [
+    "M4"
+   ]
+  },
+  "SVV 4.4": {
+   "primary": "M1",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "SVV 4.5": {
+   "primary": "M6",
+   "secondary": [
+    "M5"
+   ]
+  },
+  "OIC 2.3": {
+   "primary": "M7",
+   "secondary": [
+    "M4"
+   ]
+  },
+  "OIC 2.5": {
+   "primary": "M6",
+   "secondary": [
+    "M4"
+   ]
+  },
+  "OIC 2.7": {
+   "primary": "M6",
+   "secondary": [
+    "M4"
+   ]
+  },
+  "OIP 3.2": {
+   "primary": "M6",
+   "secondary": [
+    "M3"
+   ]
+  },
+  "OIP 3.4": {
+   "primary": "M1",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "OIP 3.5": {
+   "primary": "M4",
+   "secondary": [
+    "M3"
+   ]
+  },
+  "OIP 3.6": {
+   "primary": "M6",
+   "secondary": [
+    "M5"
+   ]
+  },
+  "OIP 3.7": {
+   "primary": "M7",
+   "secondary": [
+    "M8"
+   ]
+  },
+  "OIR 1.5": {
+   "primary": "M8",
+   "secondary": [
+    "M6"
+   ]
+  },
+  "OIR 1.6": {
+   "primary": "M9",
+   "secondary": [
+    "M8"
+   ]
+  },
+  "OIR 1.7": {
+   "primary": "M7",
+   "secondary": [
+    "M9"
+   ]
+  },
+  "OIR 1.8": {
+   "primary": "M3",
+   "secondary": [
+    "M5"
+   ]
+  }
+ },
+ "keywords": {
+  "M1": [
+   "\\btrain(ed|ing)?\\b",
+   "\\bcompeten(ce|cy|t)\\b",
+   "\\bqualifi(ed|cation)s?\\b",
+   "\\bfatigue\\b",
+   "\\bworkload\\b",
+   "\\bexperience[ds]?\\b",
+   "\\bhand-?overs?\\b",
+   "\\bbriefings?\\b",
+   "\\bawareness\\b",
+   "\\bmanning\\b",
+   "\\bstaffing\\b"
+  ],
+  "M2": [
+   "\\bweather\\b",
+   "\\bwind\\b",
+   "\\brain\\b",
+   "\\bvisibility\\b",
+   "\\blighting\\b",
+   "\\bnoise\\b",
+   "\\bdarkness\\b",
+   "\\bnight\\b",
+   "\\batmospher(e|ic)\\b",
+   "\\blayout\\b",
+   "\\bcongest(ed|ion)\\b",
+   "\\baccess\\b",
+   "\\bneighbou?r(s|ing)?\\b",
+   "\\bvapou?r cloud\\b"
+  ],
+  "M3": [
+   "\\bprocedures?\\b",
+   "\\bprocedural\\b",
+   "\\bSOPs?\\b",
+   "\\bpermits?\\b",
+   "\\bJSAs?\\b",
+   "\\bJSPs?\\b",
+   "\\bchecklists?\\b",
+   "\\bMOC\\b",
+   "\\bmanagement of change\\b",
+   "\\bwork instructions?\\b",
+   "\\bisolations?\\b",
+   "\\bstandard practice\\b"
+  ],
+  "M4": [
+   "\\btargets?\\b",
+   "\\bschedul(e|ed|ing)\\b",
+   "\\bproduction\\b",
+   "\\bpriorit(y|ies|ised|ized)\\b",
+   "\\bdeadlines?\\b",
+   "\\bobjectives?\\b",
+   "\\bmission\\b",
+   "\\bdoctrine\\b"
+  ],
+  "M5": [
+   "\\baudits?\\b",
+   "\\bmonitor(ed|ing)?\\b",
+   "\\bmeasure(d|ment|ments)?\\b",
+   "\\bindicators?\\b",
+   "\\bKPIs?\\b",
+   "\\brecords?\\b",
+   "\\btrend(s|ing)?\\b",
+   "\\bdata\\b",
+   "\\breport(ed|ing)\\b"
+  ],
+  "M6": [
+   "\\bbudget(s|ary)?\\b",
+   "\\bcosts?\\b",
+   "\\bfund(s|ed|ing)\\b",
+   "\\bresourc(e|es|ing)\\b",
+   "\\binvestment\\b",
+   "\\bapprov(al|ed)\\b",
+   "\\boversight\\b",
+   "\\bmanagement review\\b",
+   "\\bextensions?\\b"
+  ],
+  "M7": [
+   "\\bequipment\\b",
+   "\\bmeters?\\b",
+   "\\bpumps?\\b",
+   "\\bvalves?\\b",
+   "\\binstrument(s|ation)?\\b",
+   "\\bdetect(or|ors|ion)\\b",
+   "\\balarms?\\b",
+   "\\binterlocks?\\b",
+   "\\bF&G\\b",
+   "\\bcontrol system\\b",
+   "\\bDCS\\b",
+   "\\bCCTV\\b",
+   "\\bsensors?\\b",
+   "\\bautomat(ed|ic|ion)\\b",
+   "\\bflanges?\\b",
+   "\\bdesign(ed)?\\b"
+  ],
+  "M8": [
+   "\\bgaskets?\\b",
+   "\\bo-?rings?\\b",
+   "\\bseal(s|ing)?\\b",
+   "\\bmaterials?\\b",
+   "\\bspares?\\b",
+   "\\bconsumables?\\b",
+   "\\bstores\\b",
+   "\\bprocure(d|ment)\\b",
+   "\\bpurchas(e|ed|ing)\\b",
+   "\\bsuppl(y|ier|iers)\\b",
+   "\\bvendors?\\b",
+   "\\bOEM\\b",
+   "\\bchemicals?\\b",
+   "\\bsubstances?\\b",
+   "\\bcondensate\\b",
+   "\\bhydrocarbons?\\b",
+   "\\bfoam\\b",
+   "\\bsubstitut(e|ed|ion)\\b",
+   "\\bspecification\\b"
+  ],
+  "M9": [
+   "\\bmaintenance\\b",
+   "\\bmaintain(ed|ing)?\\b",
+   "\\binspect(ed|ion|ions)?\\b",
+   "\\boverhaul(ed|s)?\\b",
+   "\\bintegrity\\b",
+   "\\bcorro(sion|ded)\\b",
+   "\\bthickness\\b",
+   "\\bcalibrat(e|ed|ion)\\b",
+   "\\brepair(s|ed)?\\b",
+   "\\breplace(d|ment|ments)?\\b",
+   "\\bhydro(static)?[ -]?test\\b",
+   "\\bpitt(ed|ing)\\b",
+   "\\bworn\\b",
+   "\\bdefects?\\b",
+   "\\breturn(ed)?[ -]to[ -]service\\b",
+   "\\bproof[ -]test(ed|ing)?\\b",
+   "\\bpreventive\\b"
+  ]
+ },
+ "entities": {
+  "M1": [
+   "F12"
+  ],
+  "M2": [
+   "F15"
+  ],
+  "M3": [
+   "F07"
+  ],
+  "M4": [
+   "F14"
+  ],
+  "M5": [
+   "F04",
+   "F11"
+  ],
+  "M6": [
+   "F13",
+   "F14"
+  ],
+  "M7": [
+   "F04",
+   "F07",
+   "F16"
+  ],
+  "M8": [
+   "F06",
+   "F16"
+  ],
+  "M9": [
+   "F02",
+   "F03",
+   "F05",
+   "F08"
+  ]
+ }
+}

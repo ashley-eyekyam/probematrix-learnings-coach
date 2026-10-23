@@ -65,6 +65,7 @@ pmlc 2.0.0a4
 | [open-questions](commands/open-questions.md) | Lists what the export leaves open: empty columns, blank fields, absence and hedged findings |
 | [timeline](commands/timeline.md) | Finds dated precursor candidates and the clock times of the event day |
 | [interfaces](commands/interfaces.md) | Finds where two parts of the organisation share findings or causal links |
+| [nine-m-seed](commands/nine-m-seed.md) | Scores every finding against the nine Ms (9M) and prints the M profile |
 
 ### 3. Check what was written
 
@@ -169,7 +170,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,hfacs-profile,pack-xlsx,strings} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,hfacs-profile,pack-xlsx,strings,nine-m-seed} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

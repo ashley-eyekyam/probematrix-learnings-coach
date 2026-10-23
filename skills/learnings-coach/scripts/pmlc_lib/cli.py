@@ -45,6 +45,7 @@ Subcommands
   plan            resolve a workflow preset, audiences or skills into an ordered plan (<ws>/plan.json)
   open-questions  what the export leaves open: empty columns, blank fields, absence and hedged findings
   strings         extract a pack's text for translation (XLIFF or CSV), or apply a translation as <pack>-<lang>.json
+  nine-m-seed     score every finding against the nine Ms (9M) and print the M profile (<ws>/nine_m_seed.json)
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -92,6 +93,7 @@ from .util import HERE
 from .retention import cmd_purge, cmd_run_manifest, CLASSIFICATIONS, JURISDICTIONS
 from .workspace import cmd_run_path, cmd_status
 from .strings import cmd_strings, STRINGS_FORMATS
+from .ninem import cmd_nine_m_seed
 
 
 # ----------------------------------------------------------------------------- main
@@ -538,6 +540,14 @@ def build_parser():
     s.add_argument("--out", help="extract: default <run>/outputs/<pack>.strings.xlf or .csv; apply: default "
                                  "<run>/outputs/<pack>-<lang>.json (never overwritten)")
     s.set_defaults(fn=cmd_strings)
+
+    s = sp.add_parser("nine-m-seed", help="score every finding against the nine Ms (9M) and print the M profile",
+                      allow_abbrev=False)
+    s.add_argument("ws", help="the workspace folder (a CAPA Planner workbook is refused: pass the findings export's "
+                              "workspace)")
+    s.add_argument("--map", help="a 9M map in the nine-m-map.json format (default: references/nine-m-map.json)")
+    s.add_argument("--out", help="default: <ws>/nine_m_seed.json")
+    s.set_defaults(fn=cmd_nine_m_seed)
 
     for name in JSON_COMMANDS:   # P3-24: --json on every analysis and check command (dest as_json: check-language has a positional "json")
         sp.choices[name].add_argument("--json", dest="as_json", action="store_true",

@@ -59,6 +59,7 @@ These are the files in a fresh Hazira workspace after `ingest`, `profile` and `c
 | `timeline_event_day.json` | `timeline --on` | Every clock time on one day, with its sources. 29 on the Hazira incident day. |
 | `open_questions.json` | `open-questions` | The empty follow-up columns, the blank Incident Summary fields, and the findings whose justification says something is absent or is hedged (240 and 193 on Hazira). |
 | `interfaces.json` | `interfaces` | Pairs of functions, with shared findings and cross-entity causal mentions. 125 pairs on Hazira. |
+| `nine_m_seed.json` | `nine-m-seed` | Every finding scored against the nine Ms, the M profile and the unmapped findings. 436 findings, 0 unmapped on Hazira. |
 | `plan.json` | `plan` | The numbered plan of steps for a request, each with its state, commands and gate. It holds no dates or absolute paths. `status` shows it stale once the workspace changes; run `plan` again. |
 | `comparator.json` | the agent, in the report-comparison skill | The other report's numbered items (`OBS-`, `RC-`, `REC-`, `ACT-nn`), its issuer role and its statutory status. [compare](commands/compare.md) reads it. |
 | `comparison-map.json` | the agent, in the report-comparison skill | Which learning matches which item of the other report: `[{"lr_id", "ref", "match": "yes" or "partial" or "none"}]`. |
@@ -176,6 +177,8 @@ These files in the skills folder (`skills/learnings-coach/references/` unless st
 | `actions-profiles.json` | Column mappings for EHS systems (generic, and unverified mappings for Enablon, Intelex, Cority and SAP EHS) | `export-actions --profile` |
 | `standards-crosswalk.json` | Requirement IDs (such as `ISO45001-10.2`) for a pack item's `clauses` | `check-pack` |
 | `hfacs-codes.json` | The HFACS levels, categories and sub-categories with their definitions | `profile`, the skills |
+| `nine-m.json`, `nine-m.md` | The nine Ms (9M) and their 97 subcategories, each with a newly written definition and three probe questions; the page explains the order, the overlaps and the IP boundary | `nine-m-seed`, the 9M skill |
+| `nine-m-map.json` | How a Nanocode prefix or code, keywords and Learning Cluster entities point to an M | `nine-m-seed` (`--map` for your own copy) |
 | `glossary.json` | The terms the packs and pages use, each with a definition and its `translations` (Hindi, `hi`, AI-drafted: check with a fluent speaker) | a shared word list for writers and translators; this manual's [Glossary](Glossary.md) explains the same terms |
 | `taxonomy.json` | The Learning Cluster rules, with a `version` (2.0) that `classify` records with a fingerprint | `classify` |
 
