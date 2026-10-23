@@ -30,4 +30,4 @@
     "good_evidence": "Procedure change history, and an account from the supervisor who signs off restarts",
     "to": "Maintenance supervisor", "cites": ["FND-0002", "EVD-0002"]}]},
   {"id": "limits", "heading": "What this scorecard cannot tell you", "items": [
-   {"kind": "para", "text": "The scorecard counts the evidence links the export records [FND-0003]. It cannot judge how reliable a document or a statement is, and one strong source can outweigh several weak ones."}]}]}
+   {"kind": "para", "text": "The scorecard counts the evidence links the export records. It cannot judge how reliable a document or a statement is, and one strong source can outweigh several weak ones.", "cites": ["FND-0003"]}]}]}

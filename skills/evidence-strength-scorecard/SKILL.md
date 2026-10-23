@@ -56,7 +56,7 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/evidence-stre
 | 1 | `banner` | About this scorecard | The fixed banner, word for word (below) | `para` | 1 |
 | 2 | `scorecard` | Evidence scorecard | The `--table-item scorecard` output, unchanged | `table` | 1 |
 | 3 | `levels` | Evidence by HFACS level | The `--table-item levels` output, unchanged | `table` | 1 |
-| 4 | `concentration` | Findings resting on one item | The `--table-item concentration` output, unchanged; leave the section out when it has no rows | `table` | optional, up to 1 |
+| 4 | `concentration` | Evidence items behind many findings | The `--table-item concentration` output, unchanged; leave the section out when it has no rows | `table` | optional, up to 1 |
 | 5 | `requests` | Evidence that would strengthen confidence | One `question` per request (below) | `question` | 1–12 |
 | 6 | `limits` | What this scorecard cannot tell you | What counting links cannot show (below) | `para` | 1–2 |
 

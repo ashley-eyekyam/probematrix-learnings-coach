@@ -179,13 +179,11 @@ def cmd_evidence_audit(a):
                          indent=1, ensure_ascii=False, sort_keys=True))
         return
     n = len(res["findings"])
-    c = collections.Counter(v["strength"] for v in res["findings"].values())
     print(f"Evidence audit of {n} findings written to {ws / EVAUDIT_FILE}.\n")
-    print("| Measure | Findings |\n|---|---:|")
-    for s in EVAUDIT_STRENGTHS:
-        print(f"| {s} | {c.get(s, 0)} |")
-    print(f"| single-source | {len(res['single_source'])} |\n| document-only | {len(res['document_only'])} |\n"
-          f"| justification only | {len(res['justification_only'])} |")
+    card = _evaudit_scorecard(w, res)          # the same rows and columns as --table-item scorecard
+    print("| " + " | ".join(card["columns"]) + " |\n|---|---:|")
+    for label, count in card["rows"]:
+        print(f"| {label} | {count} |")
     for x in res["concentration"][:5]:
         print(f"\nConcentration: {x['evidence']} supports {x['findings']} findings ({round(x['share'] * 100)}%).")
     for x in res["notes"]:

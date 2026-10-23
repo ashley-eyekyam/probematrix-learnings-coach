@@ -63,7 +63,7 @@ Sources: [FND-0001; FND-0002; FND-0003; FND-0004]
 
 ## What this scorecard cannot tell you
 
-The scorecard counts the evidence links the export records [FND-0003]. It cannot judge how reliable a document or a statement is, and one strong source can outweigh several weak ones.
+The scorecard counts the evidence links the export records. It cannot judge how reliable a document or a statement is, and one strong source can outweigh several weak ones. [FND-0003]
 
 ---
 

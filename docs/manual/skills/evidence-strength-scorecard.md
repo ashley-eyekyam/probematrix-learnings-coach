@@ -57,7 +57,7 @@ The pack carries no owners or due dates: the investigation lead decides what to 
 `evidence-audit` printed:
 
 ```text
-| Measure | Findings |
+| Measure | Count |
 |---|---:|
 | direct | 284 |
 | corroborated | 152 |
@@ -65,9 +65,10 @@ The pack carries no owners or due dates: the investigation lead decides what to 
 | single-source | 203 |
 | document-only | 195 |
 | justification only | 0 |
+| codes named in causal text that no finding carries: PSE 5.6, PTE 1.5 | 2 |
 ```
 
-followed by the largest concentration: EVD-8645 supports 67 of 436 findings (15%). The `levels` table shows that 11 of the 167 level 3 findings cite a witness statement, and the scorecard names two codes the causal text mentions that no finding carries, PSE 5.6 and PTE 1.5.
+These are the same rows as `--table-item scorecard`. The summary goes on to the largest concentration: EVD-8645 supports 67 of 436 findings (15%). The `levels` table shows that 11 of the 167 level 3 findings cite a witness statement.
 
 The worked pack, `samples/2020-09-24-hazira-gas-release-fire/outputs/evidence-strength-scorecard.json` in the repository, writes eleven requests. They start with the seal practice behind LR-01, which rests largely on EVD-8645, and go on to the nine register learnings rated `direct`, such as the calibration record behind all 26 findings of LR-16.
 

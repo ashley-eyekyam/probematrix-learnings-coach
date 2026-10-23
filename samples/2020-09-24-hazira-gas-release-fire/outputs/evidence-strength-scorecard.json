@@ -260,7 +260,7 @@
   },
   {
    "id": "concentration",
-   "heading": "Findings resting on one item",
+   "heading": "Evidence items behind many findings",
    "items": [
     {
      "kind": "table",
@@ -792,7 +792,7 @@
    "items": [
     {
      "kind": "question",
-     "question": "Do stores issue records or purchase orders show when locally bought O-rings were first fitted to meter 310FT01, and who approved the switch?",
+     "question": "Do stores issue records or purchase orders show when locally bought O-rings were first fitted to meter 310FT01, and what authority approved the switch?",
      "why": "One document, EVD-8645, supports 67 of 436 findings (15%), the largest concentration. FND-23139BF9 (no accountable owner for the gasket specification) rests on it alone.",
      "good_evidence": "Stores issue records and purchase orders for the O-rings (log records), set against the meter's gasket history (EVD-1494)",
      "to": "Stores and procurement officer",
@@ -886,7 +886,7 @@
     },
     {
      "kind": "question",
-     "question": "Is there a record of who approved each extension of the twelve overdue external-audit recommendations?",
+     "question": "Is there a record of the approval for each extension of the twelve overdue external-audit recommendations?",
      "why": "All 8 findings behind LR-21 rest on one document, the audit compliance summary (EVD-6852).",
      "good_evidence": "The action-tracking log with each extension request and its approval (log records)",
      "to": "HSE action-tracking coordinator",
