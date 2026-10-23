@@ -125,7 +125,13 @@ def test_system_csv(cws, tmp_path):
     f.write_text("id,title,topics\nORG-1,Our restart rule,restart|test\nORG-2,Our permit rule\n", encoding="utf-8")
     d = go(cws, "--system-csv", str(f))
     r = rows(d)
-    assert list(r) == ["ORG-1", "ORG-2"] and r["ORG-1"]["status"] == "evidenced here" or r["ORG-1"]["status"] == "partly"
+    assert list(r) == ["ORG-1", "ORG-2"]
+    assert r["ORG-1"]["status"] == "partly"
+    reg = json.loads((cws.parent / "outputs" / "learnings-register.json").read_text(encoding="utf-8"))
+    reg["entries"][0]["clauses"] = ["ORG-1"]
+    rp = tmp_path / "reg2.json"
+    rp.write_text(json.dumps(reg), encoding="utf-8")
+    assert rows(go(cws, "--system-csv", str(f), "--register", str(rp)))["ORG-1"]["status"] == "evidenced here"
     assert r["ORG-2"]["status"] == "needs organisation evidence"
     bad = tmp_path / "bad.csv"
     bad.write_text("name\nx\n", encoding="utf-8")
@@ -154,6 +160,15 @@ def test_crosswalk_thin_export(tmp_path):
     assert len(d["rows"]) == 20 and all(r["status"] == "needs organisation evidence" for r in d["rows"])
 
 
+@pytest.mark.parametrize("fw", ["iso45001", "psm", "rmp", "seveso", "rbps", "icmm", "india"])
+def test_table_item_pastes_into_pack(cws, tmp_path, fw):
+    r = cli("crosswalk", str(cws), "--framework", fw, "--table-item")
+    assert r.returncode == 0, r.stderr
+    p = write_doc(tmp_path, wrap(json.loads(r.stdout)), "cw.json")
+    c = cli("check-pack", str(cws), str(p), "--strict")
+    assert c.returncode == 0, c.stdout + c.stderr
+
+
 def test_table_item(cws):
     r = cli("crosswalk", str(cws), "--framework", "iso45001", "--table-item")
     assert r.returncode == 0, r.stderr
@@ -167,11 +182,12 @@ def test_table_item(cws):
 
 # ----------------------------------------------------------------------------- pack-xlsx --kind table
 
-def table_pack(text="Who checked the restart?"):
+def table_pack(text="Who checked the restart?", req="ISO45001-10.2 Corrective action"):
     d = copy.deepcopy(wrap({"kind": "table", "id": "t1", "columns": ["Requirement", "Status"],
-                            "rows": [["ISO45001-10.2 Corrective action", text]], "row_cites": [["FND-0001"]],
+                            "rows": [[req, text]], "row_cites": [["FND-0001"]],
                             "cites": ["FND-0001"],
-                            "lint_ok": {"rule": "JC1", "reason": "test of the name guard"}}))
+                            "lint_ok": [{"rule": "JC1", "reason": "test of the name guard"},
+                                        {"rule": "JC7", "reason": "test of masking a singleton role"}]}))
     return d
 
 
@@ -182,7 +198,8 @@ def test_pack_xlsx_table_shared_copy(tmp_path):
     bad = write_doc(tmp_path, table_pack("Did Quillon Vantress sign?"), "bad.json")
     r = cli("pack-xlsx", str(ws), str(bad), "--kind", "table", "--names", str(names), "--out", str(tmp_path / "b.xlsx"))
     assert r.returncode == 1 and "refused: a listed name appears in the output" in r.stderr
-    p = write_doc(tmp_path, table_pack(), "good.json")
+    from test_privacy import SINGLE
+    p = write_doc(tmp_path, table_pack("Checked at 14:35 on 2024-03-20 by the " + SINGLE), "good.json")
     sign(ws, p, "--classification", "external", "--legal-review", "cleared")
     internal = tmp_path / "i.xlsx"
     assert cli("pack-xlsx", str(ws), str(p), "--kind", "table", "--out", str(internal)).returncode == 0
@@ -194,4 +211,7 @@ def test_pack_xlsx_table_shared_copy(tmp_path):
     assert r.returncode == 0, r.stderr
     shared = ws.parent / "outputs" / "test-pack-tables.external.xlsx"
     assert shared.is_file() and not (ws.parent / "outputs" / "test-pack-tables.xlsx").exists()
+    cells = " ".join(str(c.value) for row in openpyxl.load_workbook(shared)["t1"].iter_rows() for c in row)
+    assert "ISO45001-10.2" in cells and "[equipment tag]" not in cells
+    assert "14:35" not in cells and "2024-03-20" not in cells and SINGLE not in cells
     assert "Shared external" in openpyxl.load_workbook(shared)["t1"].oddHeader.center.text

@@ -89,7 +89,10 @@ def table_item(cw) -> dict:
              r["organisation_must_show"]] for r in cw["rows"]]
     cites = [r["cites"] for r in cw["rows"]]
     return {"kind": "table", "id": f"crosswalk-{cw['framework']}", "columns": list(TABLE_COLUMNS), "rows": rows,
-            "row_cites": cites, "cites": sorted({x for c in cites for x in c})}
+            "row_cites": cites, "cites": sorted({x for c in cites for x in c}),
+            "lint_ok": [{"rule": "JC1", "reason": "Requirement and element names are headings from the standard, not people."},
+                        {"rule": "JC8", "reason": "Hour limits in a requirement title come from the standard."},
+                        {"rule": "JC10", "reason": "Requirement ids such as ISO45001-10.2 are clause numbers, not equipment."}]}
 
 
 def _cw_org_rows(ws):

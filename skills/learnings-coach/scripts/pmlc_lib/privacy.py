@@ -45,6 +45,7 @@ GROUP_RX = re.compile(r"(?i)\b(?:operators|crew|team|staff|workers|personnel)\s*
 # neither are Learning Cluster entity IDs (F02, F99) or tier IDs (T4) (ruling X21). The lookbehinds keep the tail of a
 # hex ID (FND-AE629313) from matching after its hyphen.
 TAG_RX = re.compile(r"\b(?<!FND-)(?<!EVD-)(?<!LR-)(?<!ML-)(?!(?:FND|EVD|LR|ML)-)(?!(?:F\d{2}|T\d)\b)"
+                    r"(?!ISO45001\b)(?!RMP-\d)"      # standard ids in a crosswalk row (ISO45001-10.2, RMP-68.81) are not tags
                     r"[A-Z]{1,5}-?\d{2,6}[A-Z]?\b")
 # Keys whose values are IDs or taxonomy labels, not prose: share_doc keeps them as they are (and the lint skips them).
 ID_KEYS = {"id", "kind", "pack", "schema", "cites", "supporting_cites", "row_cites", "row_supporting_cites",
