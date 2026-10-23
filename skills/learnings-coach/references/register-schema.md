@@ -8,7 +8,7 @@ One row per **learning** (`LR-nn`). Each learning carries its recommendations. L
 |---|---|
 | A. Identity | `lr_id`, `ml_id` (if no counterpart), `title` |
 | B. Lesson | `lesson` (one generalisable sentence), `context` (short, de-identified narrative), `owner_entity` (F-cluster), `tiers` (T-levels that must learn) |
-| C. Evidence | `finding_ids`, `evidence_ids`, `evidence_strength` (direct / corroborated / inferred), `confidence` (high / medium / low) |
+| C. Evidence | `finding_ids`, `evidence_ids`, `evidence_strength` (direct / corroborated / inferred; computed by `evidence-audit`: corroborated is 2 or more distinct evidence items of 2 or more types across the cited findings, direct is at least 1 item, inferred is none; once `evidence_audit.json` exists `check-register` holds the value to it), `confidence` (high / medium / low) |
 | D. Causal classification | `hfacs_level` (level + sub-category), `causal_role` (initiating / contributory / escalating / failed mitigation), `barrier` (prevention or mitigation side, which barrier), `hazard`, `activity`, `performance_mode` (skill / rule / knowledge; slip / lapse / mistake / violation), `org_system` |
 | E. Pattern | `pattern` (recurrence or cross-incident pattern), `precursors` (dated weak signals) |
 | F. Comparison | `comparison` (yes / partial / none / not compared), `reason_class` for none (see `comparison-method.md`) |

@@ -40,6 +40,7 @@ Subcommands
   timeline-item   timeline candidates as a pack timeline item
   facts           the headline numbers of a workspace
   crosswalk       which standard clauses the register evidences, and what the organisation must show
+  evidence-audit  evidence strength per finding, single-source and document-only counts, concentration (engine-computed)
   hfacs-profile   level x subcategory heat map, code recurrence and causal feed counts (hfacs_profile.json)
   pack-xlsx       a pack's test points or questions as an Excel sheet
   export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
@@ -74,6 +75,7 @@ from .pack.command import cmd_pack
 from .pack.items import cmd_causal_item, cmd_register_items, cmd_table_item, cmd_timeline_item, TABLE_KINDS
 from .pack.xlsx import cmd_pack_xlsx, XLSX_KINDS
 from .crosswalk import cmd_crosswalk
+from .evidence_audit import cmd_evidence_audit, EVAUDIT_TABLE_KINDS as EVIDENCE_AUDIT_TABLES
 from .facts import cmd_facts
 from .hfacs_profile import HP_TABLE_KINDS, cmd_hfacs_profile
 from .open_questions import cmd_open_questions
@@ -525,6 +527,15 @@ def build_parser():
     s.add_argument("--json", action="store_true", help="print the crosswalk as JSON")
     s.add_argument("--table-item", action="store_true", help="print a pack table item (JSON)")
     s.set_defaults(fn=cmd_crosswalk)
+
+    s = sp.add_parser("evidence-audit", help="how well the evidence holds up: strength per finding, single-source and "
+                                             "document-only counts, concentration (writes evidence_audit.json)",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--json", action="store_true", help="print the audit as one JSON object")
+    s.add_argument("--table-item", choices=EVIDENCE_AUDIT_TABLES, metavar="|".join(EVIDENCE_AUDIT_TABLES),
+                   help="print a ready table item for a pack instead of the summary")
+    s.set_defaults(fn=cmd_evidence_audit)
 
     s = sp.add_parser("hfacs-profile", help="level x subcategory heat map, code recurrence and causal feed counts",
                       allow_abbrev=False)

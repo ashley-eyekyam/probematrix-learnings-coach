@@ -71,10 +71,9 @@
     "planned": "Phase 5"
   },
   "evidence-audit": {
-    "file": "outputs/evidence-strength-scorecard.json",
-    "producer": "skill:evidence-strength-scorecard",
-    "org_filled": false,
-    "planned": "Phase 5"
+    "file": "workspace/evidence_audit.json",
+    "producer": "engine:evidence-audit",
+    "org_filled": false
   },
   "hfacs-profile": {
     "file": "workspace/hfacs_profile.json",

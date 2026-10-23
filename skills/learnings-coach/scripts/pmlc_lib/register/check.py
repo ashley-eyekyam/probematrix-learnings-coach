@@ -9,6 +9,7 @@ from pathlib import Path
 
 from .. import LEVEL_NAMES
 from ..classify import TIER_LABELS
+from ..evidence_audit import learning_strength
 from ..handling import check_handling, unsigned_warning
 from ..util import _flat, _n, _s
 from ..workspace import downgraded_findings, EVD_RX, linked_evidence, load_ws, record_pack_check
@@ -222,6 +223,11 @@ def check_register(reg, w=None, strict=False, lint_opts=None) -> CheckResult:
         if _s(e.get("regulatory_touchpoint")):
             regulatory += 1
         _check_new_fields(e, lid, problems)
+        if has_ws and w.get("evidence_audit") and _s(e.get("evidence_strength")):
+            want = learning_strength([x for x in fids if x in F], w)
+            if _s(e.get("evidence_strength")).lower() != want:
+                problems.append(f"{lid}: evidence_strength is computed by the engine ('{want}'); run evidence-audit "
+                                f"and copy it")
         _rec_warnings(e, lid, w, words, warnings)
         # owner suggestion: entity with the most findings in this learning (a warning: the author may know better)
         cnt = collections.Counter(x for fid in fids for x in cl.get(fid, {}).get("F", []) if x != "F99")
