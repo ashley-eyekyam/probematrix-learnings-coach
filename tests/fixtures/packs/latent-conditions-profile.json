@@ -1,0 +1,34 @@
+{"pack": "latent-conditions-profile", "schema": 1, "skill": "latent-conditions-profile",
+ "title": "Latent Conditions Profile: Synthetic pump fire, 2024",
+ "audience": "Corporate HSE and top management", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "Two of the four findings (50.0%) sit at levels 3 and 4.", "cites": ["FND-0002", "FND-0003"],
+                  "lint_ok": {"rule": "JC8", "reason": "the level 3 and 4 share is share_l34 from hfacs-profile, counted from the export"}},
+                 {"text": "The spares programme (OR 2.2) feeds the most other factors: 3 links out. No code recurs.",
+                  "cites": ["FND-0003"]}],
+ "data_quality": [{"text": "The prefixes AB, OR, PE and SV are not in hfacs-codes.json; the profile keeps each finding at the level the export gives."}],
+ "sections": [
+  {"id": "heatmap", "heading": "Where the findings sit", "items": [
+   {"kind": "table", "id": "hfacs-heatmap", "columns": ["Level", "Subcategory", "Prefix", "Top rated", "Other"],
+    "rows": [["L1", "Errors", "AB", 0, 1], ["L2", "Technological Environment", "PE", 0, 1],
+             ["L3", "Supervision Inadequate", "SV", 1, 0], ["L4", "Resource Management", "OR", 1, 0]],
+    "row_cites": [["FND-0001"], ["FND-0004"], ["FND-0002"], ["FND-0003"]],
+    "cites": ["FND-0001", "FND-0002", "FND-0003", "FND-0004"]}]},
+  {"id": "feeds", "heading": "Factors that feed the most others", "items": [
+   {"kind": "table", "id": "hfacs-feeds", "columns": ["Code", "Name", "Links out", "Links in"],
+    "rows": [["OR 2.2", "Spares Programme Failure", 3, 0], ["SV 1.4", "No Guidance Provided", 1, 1],
+             ["AB 1.1", "Step Omitted", 0, 2], ["PE 2.1", "Alarm Not Configured", 0, 1]],
+    "row_cites": [["FND-0003", "FND-0001", "FND-0004"], ["FND-0002", "FND-0003", "FND-0001"],
+                  ["FND-0002", "FND-0003", "FND-0001"], ["FND-0004"]],
+    "cites": ["FND-0001", "FND-0002", "FND-0003", "FND-0004"]}]},
+  {"id": "share", "heading": "Supervision and organisation", "items": [
+   {"kind": "para", "text": "For one incident these counts describe this investigation only. They are not rates, trends or a benchmark."},
+   {"kind": "para", "text": "Two of the four findings (50.0%) sit at levels 3 and 4: one supervision finding and one organisational one.",
+    "cites": ["FND-0002", "FND-0003"],
+    "lint_ok": {"rule": "JC8", "reason": "the level 3 and 4 share is share_l34 from hfacs-profile, counted from the export"}}]},
+  {"id": "learnings", "heading": "Latent conditions", "items": [
+   {"kind": "learning", "lesson": "Seals were bought with no approved specification to buy against.",
+    "explanation": "The spares programme feeds the most other factors in the export (OR 2.2, 3 links out), down to the missing return-to-service check and the restart [EVD-0003].",
+    "learning": "LR-01", "cites": ["FND-0003", "FND-0002", "EVD-0003"], "evidence_strength": "corroborated"}]},
+  {"id": "cannot-tell", "heading": "What this profile cannot tell you", "items": [
+   {"kind": "para", "text": "The counts show how often the investigation coded a factor and named a link, not how much each one contributed. Four findings are too few to show a pattern.",
+    "cites": ["FND-0001", "FND-0004"]}]}]}

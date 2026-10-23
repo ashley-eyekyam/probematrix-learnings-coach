@@ -14,7 +14,7 @@ KEYWORDS = {"type", "enum", "required", "properties", "additionalProperties", "i
 ALLOWED = KEYWORDS | {"$schema", "$id", "title", "description"}
 KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisation-learning-map": "dissemination"}
 ANALYSIS = {"learning-clusters", "causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings",
-            "report-comparison", "cluster-learning-dossier"}
+            "report-comparison", "cluster-learning-dossier", "latent-conditions-profile"}
 sys.path.insert(0, str(SKILLS_DIR / "learnings-coach" / "scripts"))
 from pmlc_lib.contracts import load_manifests, validate  # noqa: E402  (the engine's P3-6 validator)
 
@@ -232,4 +232,5 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
         ("training", "safety-moment-deck"): "Phase 6",
         ("follow-up", "learning-effectiveness-plan"): "Phase 6"}
     whens = {(n, s["skill"]): s["when"] for n, w in wf.items() for s in w["steps"] if "when" in s}
-    assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied"}
+    assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied",
+                     ("leadership", "latent-conditions-profile"): "the user asks for patterns or latent conditions"}

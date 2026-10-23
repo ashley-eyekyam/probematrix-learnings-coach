@@ -1,0 +1,64 @@
+{
+ "evals": [
+  {
+   "id": 1401,
+   "owner": "latent-conditions-profile",
+   "skill": "latent-conditions-profile",
+   "kind": "trigger",
+   "prompt": "Our corporate HSE committee wants the pattern behind the Hazira fire, not another list of findings. From this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), show which HFACS factors recur, which organisational factors sit behind the most others, and how much of it was supervision and organisation.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "latent-conditions-profile"},
+    {"type": "check_pack_ok", "pack": "latent-conditions-profile"},
+    {"type": "language_clean", "pack": "latent-conditions-profile"},
+    {"type": "coverage_min", "pack": "latent-conditions-profile", "ratio": 0.25},
+    {"type": "routes_to", "skill": "latent-conditions-profile"}
+   ]
+  },
+  {
+   "id": 1402,
+   "owner": "latent-conditions-profile",
+   "skill": null,
+   "not_skill": "latent-conditions-profile",
+   "kind": "no-trigger",
+   "prompt": "Build me a heat map of our site's risk register by likelihood and consequence for the quarterly safety review. Here is the register as a spreadsheet.",
+   "files": [],
+   "expectations": [
+    {"type": "routes_to", "skill": null}
+   ]
+  },
+  {
+   "id": 1403,
+   "owner": "latent-conditions-profile",
+   "skill": "latent-conditions-profile",
+   "sibling": "causal-map",
+   "kind": "collision",
+   "prompt": "Using the ProbeMatrix export of the Hazira release (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), I don't need the chain of events drawn out. I need the counts: which level 3 and 4 conditions come up again and again, and which ones the most other factors trace back to.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "latent-conditions-profile"},
+    {"type": "check_pack_ok", "pack": "latent-conditions-profile"},
+    {"type": "language_clean", "pack": "latent-conditions-profile"},
+    {"type": "pack_absent", "pack": "causal-map"},
+    {"type": "routes_to", "skill": "latent-conditions-profile"}
+   ]
+  },
+  {
+   "id": 1404,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "prompt": "Here is our ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Our corporate safety team asked what share of the findings sit above the sharp end, and which underlying weaknesses show up across many of them, before anyone writes a brief.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "routes_to", "value": "latent-conditions-profile"}
+   ],
+   "sibling": "learning-clusters"
+  }
+ ]
+}

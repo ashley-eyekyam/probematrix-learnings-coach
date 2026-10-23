@@ -58,6 +58,10 @@
         "skill": "learnings-register"
       },
       {
+        "skill": "latent-conditions-profile",
+        "when": "the user asks for patterns or latent conditions"
+      },
+      {
         "skill": "site-leadership-coach"
       },
       {

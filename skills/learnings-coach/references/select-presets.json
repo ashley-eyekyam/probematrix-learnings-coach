@@ -31,6 +31,9 @@
   "investigator-coach": [
     {"name": "top-json", "args": ["--top-rated", "--format", "json"]}
   ],
+  "latent-conditions-profile": [
+    {"name": "top-l34", "args": ["--level", "3", "4", "--top-rated", "--brief"]}
+  ],
   "learnings-register": [
     {"name": "top", "args": ["--top-rated", "--brief"]}
   ],

@@ -16,6 +16,7 @@ These skills prepare the ground or analyse the whole investigation. Their output
 | [learnings-register](skills/learnings-register.md) | the Learnings Register in JSON, Markdown and Excel | "A lessons-learned register in Excel" |
 | [cluster-learning-dossier](skills/cluster-learning-dossier.md) | every learning for one function | "What does maintenance need to learn?" |
 | [causal-map](skills/causal-map.md) | causal graph and pathway stories | "How do the factors connect?" |
+| [latent-conditions-profile](skills/latent-conditions-profile.md) | HFACS heat map, the factors that recur and feed the most others | "Which conditions keep coming up?" |
 | [precursor-timeline](skills/precursor-timeline.md) | dated warnings and how they were handled | "Did we see this coming?" |
 | [interface-learnings](skills/interface-learnings.md) | what fell between departments | "What fell through the cracks?" |
 | [barrier-learnings](skills/barrier-learnings.md) | failed barriers and how strong the fixes should be | "Why didn't our safeguards work?" |
