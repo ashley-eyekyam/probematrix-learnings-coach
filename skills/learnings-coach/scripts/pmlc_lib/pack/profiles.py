@@ -290,6 +290,7 @@ def _check_nine_m_cites(pack, w, out):
 
 
 def _check_m1_balance(pack, w, out):
+    # Fires only when M1 holds strictly more recommendations than every other M: a tie for the most stays quiet.
     recs = {m: sum(1 for it in _nm_items(s) if it.get("kind") == "recommendation")
             for m, s in _nm_sections(pack).items()}
     n1 = recs.get("M1", 0)

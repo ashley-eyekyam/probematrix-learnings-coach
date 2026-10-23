@@ -65,10 +65,9 @@
     "org_filled": false
   },
   "nine-m-map": {
-    "file": "outputs/nine-m-analysis.json",
-    "producer": "skill:nine-m-analysis",
-    "org_filled": false,
-    "planned": "Phase 5"
+    "file": "outputs/nine-m-map.json",
+    "producer": "engine:pack",
+    "org_filled": false
   },
   "evidence-audit": {
     "file": "workspace/evidence_audit.json",

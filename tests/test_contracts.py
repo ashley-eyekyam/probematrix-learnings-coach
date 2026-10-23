@@ -195,7 +195,7 @@ PINNED_ARTEFACTS = {
     "verification": ("outputs/verification.jsonl", "engine:templates", None),
     "actions": ("outputs/actions.csv", "engine:export-actions", None),
     "open-questions": ("workspace/open_questions.json", "engine:open-questions", None),
-    "nine-m-map": ("outputs/nine-m-analysis.json", "skill:nine-m-analysis", "Phase 5"),
+    "nine-m-map": ("outputs/nine-m-map.json", "engine:pack", None),
     "evidence-audit": ("workspace/evidence_audit.json", "engine:evidence-audit", None),
     "hfacs-profile": ("workspace/hfacs_profile.json", "engine:hfacs-profile", None),
     "missed-opportunities": ("workspace/missed_opportunities.json", "engine:missed-opportunities", None),

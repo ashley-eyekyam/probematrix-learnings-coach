@@ -2,7 +2,7 @@
 
 ## What it does
 
-Records the answer to one 9M question in `<ws>/nine_m_session.json`. `--choice N` takes suggestion N as it was shown (source `export`); `--text` stores the user's own words exactly as given (source `user`). Answering again replaces the earlier answer.
+Records the answer to one 9M question in `<ws>/nine_m_session.json`. `--choice N` takes suggestion N as it was shown (source `export`); `--text` stores the user's own words exactly as given (source `user`). Answering again replaces the earlier answer. An option that asks for the user's own words ("Describe it in your own words …", "A list you choose …") is answered with `--text`, never `--choice`, because its wording is an instruction, not an answer. A relevance answer of "Skip the rest of this M" leaves the M open, not relevant.
 
 Facts that the user supplies are context from the organisation: the pack puts them in its "Context supplied by the organisation" section and in `data_quality`, never with a Finding ID. If a free-text answer names a date or a deadline, it is still stored as given, and a note reminds you that owners and due dates are set by the organisation and stay out of the pack (D7).
 
@@ -43,6 +43,7 @@ python3 $E nine-m-answer $WS --q Q05 --text "The spares were ordered by phone, w
 - **"… has no nine_m_session.json yet".** Ask a question with `nine-m-suggest … --record` first (exit code 2).
 - **"Q09 is not a question in nine_m_session.json".** The message lists the question ids the session holds.
 - **"--choice must be 1 to 5 for Q02".** The number is outside the list that was shown.
+- **"suggestion 3 of Q01 asks for your own words: answer with --text".** That option is a prompt for free text; give the answer with `--text` (exit code 2).
 - **"note: the answer names a date or a deadline …".** The answer is stored, but do not carry the owner or the date into the pack: the organisation sets them.
 
 ## Related

@@ -32,10 +32,18 @@ NINE_M_FREE_TEXT = ("Describe it in your own words (recorded as context supplied
                     "finding ID)")
 NINE_M_SKIP = "Skip the rest of this M (its remaining questions are recorded as not asked)"
 NINE_M_WEAK = "(weak on its own)"
+NINE_M_LIST = "A list you choose (answer with --text, naming the Ms you want)"
+NINE_M_CP = "corrective or preventive: say which for this change"     # spec §7.4 3f: stated per change, not per tier
+# Free-text options: their wording is an instruction, not an answer, so nine-m-answer takes them only as --text.
+NINE_M_TEXT_ONLY = (NINE_M_FREE_TEXT, NINE_M_LIST)
 # Never offered (§7.5): a candidate whose text carries one of these words is dropped, whatever its source.
-NINE_M_NEVER_RX = re.compile(r"\b(?:disciplin\w*|accountab\w*|consequences?|punish\w*|sanction\w*|blam\w*)", re.I)
+# "consequence" only in its sanction sense: a process-safety "consequence analysis" is a real condition.
+NINE_M_NEVER_RX = re.compile(
+    r"\b(?:disciplin\w*|accountab\w*|punish\w*|sanction\w*|blam\w*|consequence management|"
+    r"consequences?\s+(?:for|against|on)\s+(?:the\s+)?(?!(?:the|site|plant|process|people|public|environment)\b)\w+|"
+    r"(?:apply|applied|applying|impose[sd]?|imposing|face[sd]?|facing)\s+(?:\w+\s+)?consequences?)", re.I)
 # Suggestions that state no fact about the export, so they carry no finding ID (§7.4: only fact-bearing ones must).
-NINE_M_PROCEDURAL = (NINE_M_NONE, NINE_M_FREE_TEXT, NINE_M_SKIP, "Not relevant: no finding in this export", "A list you choose",
+NINE_M_PROCEDURAL = (NINE_M_NONE, NINE_M_FREE_TEXT, NINE_M_SKIP, "Not relevant: no finding in this export", NINE_M_LIST,
                      "Keep every M as a separate learning", "No causal link joins", "Ask for evidence on each unknown",
                      "Record the unknowns as gaps", "No answer was unknown", "Ask for evidence anyway",
                      "Skip the subcategory", "Every M with seed weight", "The top four by top-rated findings")
@@ -292,15 +300,15 @@ def _nm_change(w, seed, m, fs, sub, top):
     f = fs[0]
     focus = f"{f['code']} condition ({_nm_trim(f.get('name') or f.get('short'), 70)})"
     cites = [g["id"] for g in fs[:3]]
-    tiers = [("Elimination (preventive)", f"remove the hazard or the task, so that nobody has to catch the {focus}")]
+    tiers = [(f"Elimination ({NINE_M_CP})", f"remove the hazard or the task, so that nobody has to catch the {focus}")]
     if m in ("M7", "M8"):
-        tiers.append(("Substitution (preventive)", f"replace the equipment or material involved in the {focus} with "
-                                                   f"a less hazardous one"))
-    tiers += [("Engineering (corrective)", f"add a physical or automated control so that the {focus} cannot go "
-                                           f"unnoticed"),
-              ("Administrative (preventive)", f"change the procedure, permit or planning step that let the {focus} "
-                                              f"arise"),
-              (f"Engineering plus training {NINE_M_WEAK}, preventive",
+        tiers.append((f"Substitution ({NINE_M_CP})", f"replace the equipment or material involved in the {focus} with "
+                                                    f"a less hazardous one"))
+    tiers += [(f"Engineering ({NINE_M_CP})", f"add a physical or automated control so that the {focus} cannot go "
+                                             f"unnoticed"),
+              (f"Administrative ({NINE_M_CP})", f"change the procedure, permit or planning step that let the {focus} "
+                                                f"arise"),
+              (f"Engineering plus training {NINE_M_WEAK} ({NINE_M_CP})",
                f"pair the engineered control with practice on the {focus}")]
     return [{"text": f"{t}: {body}", "cites": cites} for t, body in tiers]
 
@@ -324,7 +332,7 @@ def _nm_scope(w, seed, top):
     if four and four != weighted:
         out.append({"text": f"The top four by top-rated findings: {', '.join(four)}",
                     "cites": [lead[m][0]["id"] for m in four]})
-    out.append({"text": "A list you choose (type the Ms, for example M3, M8)", "cites": []})
+    out.append({"text": NINE_M_LIST, "cites": []})
     if len(out) < NINE_M_TOP_MIN:
         out.append({"text": NINE_M_FREE_TEXT, "cites": []})
     return out
@@ -417,8 +425,14 @@ def suggest(w, seed, m, step, subcategory=None, top=4, session=None) -> list:
 
 # ----------------------------------------------------------------------------- the session
 
+# A relevance answer that says no: "Not relevant ...", or a bare "No" (alone or before punctuation). "No clear
+# link, but ..." is not a no: it goes on to say why the M mattered.
+_NM_NO_RX = re.compile(r"(?i)\s*(?:not relevant\b|no\s*(?:[.,;:!\u2013\u2014-]|$))")
+
+
 def m_status(session, m) -> str:
-    """relevant, not-relevant, unknown (answered None / unknown) or open (no answered relevance question)."""
+    """relevant, not-relevant, unknown (answered None / unknown) or open (no answered relevance question, or one
+    answered with a procedural option such as Skip, whose wording is not an answer about the M)."""
     recs = [r for r in (session or {}).get("records") or []
             if r.get("m") == m and r.get("step") == "relevance" and isinstance(r.get("answer"), dict)]
     if not recs:
@@ -426,7 +440,9 @@ def m_status(session, m) -> str:
     text = _s(recs[-1]["answer"].get("text"))
     if text == NINE_M_NONE:
         return "unknown"
-    return "not-relevant" if re.match(r"(?i)\s*(?:not relevant|no\b)", text) else "relevant"
+    if _NM_NO_RX.match(text):
+        return "not-relevant"
+    return "open" if is_procedural(text) else "relevant"
 
 
 def session_scope(session) -> list:
@@ -435,7 +451,12 @@ def session_scope(session) -> list:
                 and isinstance(r.get("answer"), dict)), None)
     if rec is None:
         return [m for m in NINE_M_CODES if any(r.get("m") == m for r in (session or {}).get("records") or [])]
-    got = set(re.findall(r"\bM[1-9]\b", _s(rec["answer"].get("text")).upper()))
+    text = _s(rec["answer"].get("text"))
+    if text == NINE_M_NONE or text.startswith(NINE_M_TEXT_ONLY):   # an option's wording, not a list: all nine
+        return list(NINE_M_CODES)
+    if is_procedural(text) and ":" in text:        # "Every M with seed weight, in order M1 to M9: M2, M5": the list
+        text = text.rsplit(":", 1)[1]
+    got = set(re.findall(r"\bM[1-9]\b", text.upper()))
     return [m for m in NINE_M_CODES if m in got] or list(NINE_M_CODES)
 
 
@@ -512,6 +533,8 @@ def cmd_nine_m_answer(a):
         n = len(rec["suggestions"])
         if not 1 <= a.choice <= n:
             _nm_fail(f"--choice must be 1 to {n} for {a.q}")
+        if rec["suggestions"][a.choice - 1]["text"].startswith(NINE_M_TEXT_ONLY):
+            _nm_fail(f"suggestion {a.choice} of {a.q} asks for your own words: answer with --text \"...\" instead")
         rec["answer"] = {"choice": a.choice, "text": rec["suggestions"][a.choice - 1]["text"], "source": "export"}
     else:
         rec["answer"] = {"choice": None, "text": a.text, "source": "user"}       # verbatim, owners and dates too
@@ -620,8 +643,10 @@ def nine_m_map(pack, session) -> dict:
 
 
 def _nm_corrective(text) -> str:
-    hit = re.search(r"\b(corrective|preventive)\b", _s(text), re.I)
-    return hit.group(1).capitalize() if hit else ""
+    """Corrective or Preventive when the change names exactly one of them; blank when it names neither or both (the
+    suggestion wording "corrective or preventive: say which" left unanswered)."""
+    got = {h.lower() for h in re.findall(r"\b(corrective|preventive)\b", _s(text), re.I)}
+    return got.pop().capitalize() if len(got) == 1 else ""
 
 
 def template_rows(pack) -> list:

@@ -13,12 +13,12 @@ The suggestions are deterministic: the same workspace gives the same list, in ra
 | `condition` | One condition per Nanocode among the M's findings, in rating order, worded from the finding's short description |
 | `driver` | Causal links in `causal_graph.json` from a level 3 or 4 code into the M's codes (why it made sense), then the M's own level 3 and 4 findings |
 | `barrier` | Evidence quotes from the M's findings, one finding at a time, with a barrier state from the shared vocabulary (absent, degraded, defeated, worked partly) |
-| `change` | Directions of change, strongest first: elimination, substitution (M7 and M8 only), engineering, administrative. Training is offered only together with an engineered control and is labelled "(weak on its own)". Each says whether it is corrective or preventive |
-| `scope` | Which Ms to work through: every M with seed weight, the top four by top-rated findings, or a list you choose |
+| `change` | Directions of change, strongest first: elimination, substitution (M7 and M8 only), engineering, administrative. Training is offered only together with an engineered control and is labelled "(weak on its own)". Each asks you to say whether this change is corrective or preventive, since the tier alone does not decide it |
+| `scope` | Which Ms to work through: every M with seed weight, the top four by top-rated findings, or a list you choose (answered with `nine-m-answer --text`, naming the Ms) |
 | `cross-m` | Pairs of relevant Ms that a causal link joins, to keep as one learning or separate |
 | `gaps` | Evidence requests for every question answered "None / unknown" |
 
-Discipline, accountability and consequences are never offered, whatever the export's wording. No suggestion names an owner or a date.
+Discipline, accountability and consequences (as a sanction) are never offered, whatever the export's wording. A process-safety condition such as "consequence analysis not done" is kept. No suggestion names an owner or a date.
 
 ## When to use it
 

@@ -94,6 +94,7 @@ def test_suggest_deterministic_order_and_cites(nws, step):
     suggestion cites a finding of this workspace."""
     w, seed = ctx(nws)
     ids = {f["id"] for f in w["findings"]}
+    evd = set(w.get("evidence") or {})
     for m in ninem.NINE_M_CODES:
         a = ns.suggest(w, seed, m, step)
         assert a == ns.suggest(w, seed, m, step)
@@ -101,6 +102,8 @@ def test_suggest_deterministic_order_and_cites(nws, step):
         for s in a[:-1]:
             fnds = [x for x in s["cites"] if x.startswith("FND-")]
             assert all(x in ids for x in fnds)
+            assert all(x in evd for x in s["cites"] if x.startswith("EVD-")), (m, step, s)
+            assert all(x.startswith(("FND-", "EVD-")) for x in s["cites"]), (m, step, s)
             if not ns.is_procedural(s["text"]):
                 assert fnds, (m, step, s)
 
@@ -710,3 +713,98 @@ def test_m8_m9_reachable_by_relevance(tmp_path_factory):
             if not ns.is_procedural(sg["text"]):
                 assert [x for x in sg["cites"] if FND_RX.match(x)], (rec["q"], sg)
     assert sum(1 for rec in s["records"]) <= 9 * ns.NINE_M_BUDGET_PER_M + ns.NINE_M_BUDGET_GLOBAL
+
+
+# ----------------------------------------------------------------------------- fix round 1
+
+def _sess(*recs):
+    return {"version": 1, "mode": "interview", "records": [
+        {"q": f"Q{i:02d}", "m": m, "step": step, "subcategory": None, "suggestions": [], "answer": ans}
+        for i, (m, step, ans) in enumerate(recs, 1)]}
+
+
+def _a(text, choice=1):
+    return {"choice": choice, "text": text, "source": "export" if choice else "user"}
+
+
+def test_procedural_choice_is_not_an_answer():
+    """Review I2: a chosen option's fixed wording is never read as the user's scope or relevance."""
+    assert not re.search(r"\bM[1-9]\b", ns.NINE_M_LIST)
+    for text in (ns.NINE_M_LIST, ns.NINE_M_FREE_TEXT, ninem.NINE_M_NONE):
+        assert ns.session_scope(_sess((None, "scope", _a(text)))) == list(ninem.NINE_M_CODES), text
+    assert ns.session_scope(_sess((None, "scope", _a("M3, M8", None)))) == ["M3", "M8"]
+    assert ns.session_scope(_sess((None, "scope", _a("Every M with seed weight, in order M1 to M9: M2, M5")))) == \
+        ["M2", "M5"]
+    for text in (ns.NINE_M_FREE_TEXT, ns.NINE_M_SKIP):
+        assert ns.m_status(_sess(("M3", "relevance", _a(text))), "M3") == "open", text
+    cases = {"No clear link, but the target pressure mattered": "relevant", "No": "not-relevant",
+             "No.": "not-relevant", "no, it played no part": "not-relevant", "Not relevant: incidental": "not-relevant",
+             "Nothing in the export, but the night shift was short": "relevant",
+             "Not relevant: no finding in this export points to M3 Method": "not-relevant"}
+    for text, want in cases.items():
+        assert ns.m_status(_sess(("M3", "relevance", _a(text, None))), "M3") == want, text
+    # a skipped M is not counted as relevant by the cross-m step
+    s = _sess(("M3", "relevance", _a(ns.NINE_M_SKIP)), ("M9", "relevance", _a("Relevant: yes")))
+    assert [m for m in ninem.NINE_M_CODES if ns.m_status(s, m) == "relevant"] == ["M9"]
+
+
+def test_answer_refuses_choice_on_free_text_option(fresh):
+    """Review I2: --choice on an option that asks for the user's own words is refused; --text is the way."""
+    run("nine-m-suggest", str(fresh), "--step", "scope", "--record")
+    sug = session_of(fresh)["records"][0]["suggestions"]
+    n = next(i for i, s in enumerate(sug, 1) if s["text"] == ns.NINE_M_LIST)
+    r = cli("nine-m-answer", str(fresh), "--q", "Q01", "--choice", str(n))
+    assert r.returncode == 2 and "--text" in r.stderr and "Traceback" not in r.stderr
+    assert session_of(fresh)["records"][0]["answer"] is None
+    assert cli("nine-m-answer", str(fresh), "--q", "Q01", "--text", "M3, M9").returncode == 0
+    assert ns.session_scope(session_of(fresh)) == ["M3", "M9"]
+
+
+def test_never_rx_keeps_consequence_analysis():
+    """Review m2: "consequences" is dropped only in its sanction sense; a consequence analysis is a real condition."""
+    for keep in ("Consequence analysis not done for the release case", "the consequences of a seal leak were not "
+                 "modelled", "consequences for the site of a jet fire were not assessed"):
+        assert not ns.NINE_M_NEVER_RX.search(keep), keep
+    for drop in ("consequences for the technician", "Consequence management for the crew", "apply consequences",
+                 "faced serious consequences", "Disciplinary action", "accountability gap", "blame"):
+        assert ns.NINE_M_NEVER_RX.search(drop), drop
+
+
+def test_change_step_asks_corrective_or_preventive(nws):
+    """Review m4 (spec §7.4 3f): no tier carries a fixed corrective or preventive tag; the template reads the tag only
+    when the change names exactly one."""
+    w, seed = ctx(nws)
+    for s in ns.suggest(w, seed, "M3", "change")[:-1]:
+        assert ns.NINE_M_CP in s["text"], s
+    assert ns._nm_corrective("Interlock the restart (preventive)") == "Preventive"
+    assert ns._nm_corrective("Fix the valve: corrective") == "Corrective"
+    assert ns._nm_corrective(f"Engineering ({ns.NINE_M_CP}): add a trip") == ""
+    assert ns._nm_corrective("Add a trip") == ""
+
+
+def test_profiles_nine_m_codes_in_step():
+    """Review m6: pack/profiles.py keeps its own copy of the codes (it must not read the workspace); it stays equal."""
+    assert profiles.NINE_M_CODES == ninem.NINE_M_CODES
+
+
+def test_nine_m_map_shared_copy(tmp_path):
+    """Review m1 (Review Focus 1): under pack --share external the map is nine-m-map.external.json, from the masked
+    pack, and no internal nine-m-map.json is written."""
+    ws, orgs = share_ws(tmp_path)
+    run("nine-m-seed", str(ws))
+    from test_privacy import SINGLE
+    pack = nine_m_pack()
+    rec = pack["sections"][1]["items"][2]
+    rec["change"] = "Interlock the restart checked at 14:35 on 2024-03-20 by the " + SINGLE
+    rec["lint_ok"] = [{"rule": "JC7", "reason": "test of masking a singleton role"}]
+    p = write_doc(tmp_path, pack, "nine-m-analysis.json")
+    sign(ws, p, "--classification", "external", "--legal-review", "cleared")
+    out = tmp_path / "out"
+    r = cli("pack", str(ws), str(p), "--share", "external", "--orgs", str(orgs), "--out", str(out))
+    assert r.returncode == 0, r.stderr
+    shared = out / "nine-m-map.external.json"
+    assert shared.is_file() and not (out / "nine-m-map.json").exists()
+    mp = json.loads(shared.read_text(encoding="utf-8"))
+    assert mp["conditions"]["c-m3-1"]["m"] == "M3" and mp["conditions"]["c-m3-1"]["recommendation_ids"]
+    text = shared.read_text(encoding="utf-8")
+    assert "14:35" not in text and "2024-03-20" not in text and SINGLE not in text
