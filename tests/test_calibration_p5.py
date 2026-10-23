@@ -103,3 +103,34 @@ def test_risk_coded_findings_68(hazira_ws):
     hits = [f for f in w["findings"] if "risk" in f["name"].lower()]
     assert len(hits) == 68
     assert len({f["code"].split()[0] for f in hits}) == 6
+
+
+# ----------------------------------------------------------------------------- Task 7: missed opportunities, event day
+
+def test_hazira_missed_opportunity_sets(hazira_ws):
+    import re
+    w = pmlc.load_ws(hazira_ws)
+    prior = [f["id"] for f in w["findings"] if re.search(r"\brecommend", f["justification"], re.I)]
+    svf = [f["id"] for f in w["findings"] if f["code"].split()[0] == "SVF"]
+    assert (len(prior), len(svf)) == (107, 40)
+    run("missed-opportunities", str(hazira_ws))
+    m = json.loads((hazira_ws / "missed_opportunities.json").read_text(encoding="utf-8"))
+    assert (len(m["prior_recommendation"]), len(m["failure_to_correct"])) == (107, 40)
+    assert sorted(prior) == m["prior_recommendation"] and sorted(svf) == m["failure_to_correct"]
+    assert m["dated"] and all(d["date"] < "2020-09-24" for d in m["dated"])
+
+
+def test_hazira_event_day_52_stamps_26_times(hazira_ws):
+    import re
+    narrative = pmlc.load_ws(hazira_ws)["incident"]["narrative"]
+    stamps = [f"{int(m.group(1)):02d}:{m.group(2)}"
+              for m in re.finditer(r"\b([01]?\d|2[0-3])[:.]([0-5]\d)\b", narrative)]
+    assert (len(stamps), len(set(stamps))) == (52, 26)
+    it = json.loads(run("timeline-item", str(hazira_ws), "--event-day"))
+    times = [e["time"] for e in it["events"]]
+    assert len(times) == 26 and sorted(times) == sorted(set(stamps))
+    assert [(e["date"], e["time"]) for e in it["events"]][:2] == [("2020-09-23", "20:00"), ("2020-09-24", "02:11")]
+    assert all(e["date"] == "2020-09-24" for e in it["events"][1:])
+    assert all(e["knowable_then"] is True for e in it["events"])
+    run("timeline", str(hazira_ws), "--on", "incident")
+    assert len(json.loads((hazira_ws / "timeline_event_day.json").read_text(encoding="utf-8"))) == 29

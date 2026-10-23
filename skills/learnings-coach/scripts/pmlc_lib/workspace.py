@@ -67,12 +67,13 @@ MANIFEST = "manifest.json"
 KNOWN_DERIVED = ("findings.json", "evidence.json", "incident.json", "clusters.json", "singleton_roles.json",
                  "causal_graph.json",
                  "causal_graph.mmd", "timeline_candidates.json", "timeline_event_day.json", "interfaces.json",
-                 "hfacs_profile.json", "open_questions.json", "plan.json", "nine_m_seed.json")
+                 "hfacs_profile.json", "open_questions.json", "plan.json", "nine_m_seed.json",
+                 "missed_opportunities.json")
 REBUILD = {"findings.json": "ingest", "evidence.json": "ingest", "incident.json": "ingest",
            "clusters.json": "classify", "singleton_roles.json": "classify", "causal_graph.json": "causal", "causal_graph.mmd": "causal",
            "timeline_candidates.json": "timeline", "timeline_event_day.json": "timeline",
            "interfaces.json": "interfaces", "hfacs_profile.json": "hfacs-profile", "open_questions.json": "open-questions",
-           "plan.json": "plan", "nine_m_seed.json": "nine-m-seed"}
+           "plan.json": "plan", "nine_m_seed.json": "nine-m-seed", "missed_opportunities.json": "missed-opportunities"}
 
 
 def file_sha256(path) -> str:

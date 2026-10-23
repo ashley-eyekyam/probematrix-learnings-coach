@@ -86,6 +86,11 @@
     "producer": "engine:nine-m-seed",
     "org_filled": false
   },
+  "missed-opportunities": {
+    "file": "workspace/missed_opportunities.json",
+    "producer": "engine:missed-opportunities",
+    "org_filled": false
+  },
   "library": {
     "file": "$PMLC_LIBRARY",
     "producer": "engine:library",

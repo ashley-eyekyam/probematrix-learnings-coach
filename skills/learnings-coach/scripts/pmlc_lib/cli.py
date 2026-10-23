@@ -46,6 +46,7 @@ Subcommands
   open-questions  what the export leaves open: empty columns, blank fields, absence and hedged findings
   strings         extract a pack's text for translation (XLIFF or CSV), or apply a translation as <pack>-<lang>.json
   nine-m-seed     score every finding against the nine Ms (9M) and print the M profile (<ws>/nine_m_seed.json)
+  missed-opportunities  earlier recommendations, Failure-to-Correct findings and dated precursors before the incident
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -94,6 +95,7 @@ from .retention import cmd_purge, cmd_run_manifest, CLASSIFICATIONS, JURISDICTIO
 from .workspace import cmd_run_path, cmd_status
 from .strings import cmd_strings, STRINGS_FORMATS
 from .ninem import cmd_nine_m_seed
+from .missed import cmd_missed_opportunities
 
 
 # ----------------------------------------------------------------------------- main
@@ -492,8 +494,11 @@ def build_parser():
 
     s = sp.add_parser("timeline-item", help="timeline candidates as a pack timeline item (JSON on stdout)", allow_abbrev=False)
     s.add_argument("ws")
-    s.add_argument("--before", required=True, help="ISO date, or the word incident")
+    s.add_argument("--before", help="ISO date, or the word incident (required unless --event-day)")
     s.add_argument("--top", type=int, default=12, help="events to keep (default 12)")
+    s.add_argument("--event-day", dest="event_day", action="store_true",
+                   help="the incident day instead: one event per distinct hh:mm in the incident narrative, in clock "
+                        "order, each the whole sentence, cited to the findings that hold the same time")
     s.set_defaults(fn=cmd_timeline_item)
 
     s = sp.add_parser("open-questions", help="what the export leaves open: empty columns, blank fields, absence and hedged findings",
@@ -553,6 +558,16 @@ def build_parser():
     s.add_argument("--map", help="a 9M map in the nine-m-map.json format (default: references/nine-m-map.json)")
     s.add_argument("--out", help="default: <ws>/nine_m_seed.json")
     s.set_defaults(fn=cmd_nine_m_seed)
+
+    s = sp.add_parser("missed-opportunities", help="earlier recommendations, Failure-to-Correct findings and dated "
+                      "precursors before the incident (writes <ws>/missed_opportunities.json)", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--json", action="store_true", help="print missed_opportunities.json on stdout")
+    s.add_argument("--timeline-item", dest="timeline_item", action="store_true",
+                   help="print the dated missed opportunities as a ready timeline item (knowable_then: true)")
+    s.add_argument("--top", type=int, default=None, metavar="N",
+                   help="with --timeline-item: keep the N dated entries that cite the most findings (default: all)")
+    s.set_defaults(fn=cmd_missed_opportunities)
 
     for name in JSON_COMMANDS:   # P3-24: --json on every analysis and check command (dest as_json: check-language has a positional "json")
         sp.choices[name].add_argument("--json", dest="as_json", action="store_true",

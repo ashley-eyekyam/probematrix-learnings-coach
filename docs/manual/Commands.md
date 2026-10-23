@@ -59,7 +59,8 @@ pmlc 2.0.0a4
 | [causal-item](commands/causal-item.md) | Prints the top causal links as a ready graph item for a pack |
 | [table-item](commands/table-item.md) | Prints a ready table item (clusters, tiers, hubs, hoc, adoption and more) for a pack |
 | [register-items](commands/register-items.md) | Prints one tier's register learnings as learning items for a pack |
-| [timeline-item](commands/timeline-item.md) | Prints the dated candidates as a timeline item for a pack |
+| [timeline-item](commands/timeline-item.md) | Prints the dated candidates, or the incident-day sequence, as a timeline item for a pack |
+| [missed-opportunities](commands/missed-opportunities.md) | Finds earlier recommendations, Failure-to-Correct findings and the dated precursors that cite them |
 | [facts](commands/facts.md) | Prints the headline numbers of a workspace |
 | [hfacs-profile](commands/hfacs-profile.md) | Counts findings by HFACS level and subcategory, recurring codes and causal feeds |
 | [open-questions](commands/open-questions.md) | Lists what the export leaves open: empty columns, blank fields, absence and hedged findings |
@@ -171,7 +172,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,hfacs-profile,pack-xlsx,strings,nine-m-seed} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,hfacs-profile,pack-xlsx,strings,nine-m-seed,missed-opportunities} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 
