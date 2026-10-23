@@ -87,6 +87,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide 
 | `learnings-register` | HSE, management | Learnings Register (.md + .xlsx) with recommendations |
 | `causal-map` | investigators, leaders | causal graph and pathway stories |
 | `precursor-timeline` | leaders, auditors | dated weak signals and how they were handled |
+| `failure-to-learn-review` | site leadership, top management, board | which step of the learning cycle broke, and why earlier warnings did not lead to change |
 | `interface-learnings` | managers | what fell between departments |
 | `barrier-learnings` | engineers, HSE | barriers, failure modes, control-tier fixes |
 | `report-comparison` | HSE, consultants | fair two-way comparison with an official report |
@@ -103,6 +104,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide 
 | `emergency-response-learnings` | fire services, ERT, incident command | response timeline, plan gaps, drills |
 | `engineering-integrity-learnings` | engineering, integrity, MOC, I&C | technical learnings and decisions |
 | `supply-chain-contractor-learnings` | procurement, stores, vendors, contractors | sourcing and contractor learnings |
+| `people-workforce-learnings` | HR, workforce planning, rostering, competence frameworks | people-system learnings, competence-framework changes |
 | `safety-committee-guide` | safety committees, workforce reps | discussion guide and questions |
 
 All skills share one engine, `skills/learnings-coach/scripts/pmlc.py`, which does the counting, filtering, causal extraction and file writing deterministically, so the model spends its effort on judgement.

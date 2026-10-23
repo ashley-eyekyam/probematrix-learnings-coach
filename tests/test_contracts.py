@@ -14,7 +14,8 @@ KEYWORDS = {"type", "enum", "required", "properties", "additionalProperties", "i
 ALLOWED = KEYWORDS | {"$schema", "$id", "title", "description"}
 KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisation-learning-map": "dissemination"}
 ANALYSIS = {"learning-clusters", "causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings",
-            "report-comparison", "cluster-learning-dossier", "open-questions-register"}
+            "report-comparison", "cluster-learning-dossier", "open-questions-register",
+            "failure-to-learn-review"}
 sys.path.insert(0, str(SKILLS_DIR / "learnings-coach" / "scripts"))
 from pmlc_lib.contracts import load_manifests, validate  # noqa: E402  (the engine's P3-6 validator)
 
@@ -165,7 +166,7 @@ def test_audiences_cover_audience_skills():
     keys = {"id", "label", "typical_people", "controls", "needs", "tier", "levels", "default_scope",
             "reading_level", "skill"}
     ids = [a["id"] for a in auds]
-    assert len(ids) == len(set(ids)) == 13
+    assert len(ids) == len(set(ids)) == sum(load(SKILLS_DIR / s / "skill.json")["kind"] == "audience" for s in SKILLS)
     for a in auds:
         assert set(a) == keys
         assert a["tier"] in (None, "T1", "T2", "T3", "T4", "T5")
@@ -231,4 +232,5 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
         ("training", "safety-moment-deck"): "Phase 6",
         ("follow-up", "learning-effectiveness-plan"): "Phase 6"}
     whens = {(n, s["skill"]): s["when"] for n, w in wf.items() for s in w["steps"] if "when" in s}
-    assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied"}
+    assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied",
+                     ("leadership", "failure-to-learn-review"): "the user asks for patterns or latent conditions"}

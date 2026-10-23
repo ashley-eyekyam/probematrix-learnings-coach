@@ -1,0 +1,44 @@
+{
+  "name": "people-workforce-learnings",
+  "kind": "audience",
+  "audiences": [
+    "hr-workforce"
+  ],
+  "scope": {
+    "tiers": [
+      "T3",
+      "T4"
+    ],
+    "levels": [
+      2,
+      3,
+      4
+    ],
+    "tags": [
+      "people"
+    ],
+    "entities": [
+      "F12"
+    ]
+  },
+  "requires": [
+    "workspace",
+    "clusters"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "people-workforce-learnings",
+    "files": []
+  },
+  "formats": [
+    "docx",
+    "email"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": []
+}

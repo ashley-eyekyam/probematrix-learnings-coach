@@ -1,0 +1,126 @@
+{
+ "evals": [
+  {
+   "id": 1600,
+   "owner": "failure-to-learn-review",
+   "skill": "failure-to-learn-review",
+   "kind": "trigger",
+   "prompt": "The Hazira gasket had leaked and been replaced before, and the 2018 external audit recommendations were still open. From this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) explain why none of those warnings led to a change, and which step of our learning-from-incidents process broke.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "failure-to-learn-review"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "failure-to-learn-review"
+    },
+    {
+     "type": "language_clean",
+     "pack": "failure-to-learn-review"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "failure-to-learn-review",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "failure-to-learn-review"
+    }
+   ]
+  },
+  {
+   "id": 1601,
+   "owner": "failure-to-learn-review",
+   "skill": null,
+   "not_skill": "failure-to-learn-review",
+   "kind": "no-trigger",
+   "prompt": "Our lessons-learned database is slow to search. Suggest a better way to tag and index entries so engineers find past incidents faster.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 1602,
+   "owner": "failure-to-learn-review",
+   "skill": "failure-to-learn-review",
+   "sibling": "precursor-timeline",
+   "kind": "collision",
+   "prompt": "Not just a list of dated warning signs this time: using the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), I want to understand why the repeat seal failures and the overdue audit actions never turned into a change, and where our learning process stalled.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "failure-to-learn-review"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "failure-to-learn-review"
+    },
+    {
+     "type": "language_clean",
+     "pack": "failure-to-learn-review"
+    },
+    {
+     "type": "routes_to",
+     "skill": "failure-to-learn-review"
+    }
+   ]
+  },
+  {
+   "id": 1603,
+   "owner": "failure-to-learn-review",
+   "skill": "failure-to-learn-review",
+   "sibling": "site-leadership-coach",
+   "kind": "collision",
+   "prompt": "For the board's safety committee, not a site workshop: from this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), show why earlier warnings and recommendations at Hazira went unanswered and what that says about how the organisation learns.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "failure-to-learn-review"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "failure-to-learn-review"
+    },
+    {
+     "type": "language_clean",
+     "pack": "failure-to-learn-review"
+    },
+    {
+     "type": "routes_to",
+     "skill": "failure-to-learn-review"
+    }
+   ]
+  },
+  {
+   "id": 1604,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "prompt": "We keep fixing the same leaking joint and closing audit actions late. Using this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), help me see why the organisation never learned from the earlier repairs before the fire.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "failure-to-learn-review"
+    }
+   ],
+   "sibling": "precursor-timeline"
+  }
+ ]
+}
