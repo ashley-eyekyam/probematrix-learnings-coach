@@ -244,3 +244,20 @@ def test_event_day_named_day_dates_the_event():
     assert [(e["date"], e["time"]) for e in seq] == [
         ("2020-12-31", "23:50"), ("2021-01-01", "00:10"), ("2021-01-01", "00:40"), ("2021-01-01", "00:50"),
         ("2021-01-01", "02:00")]
+
+
+def test_event_day_modal_may_and_lower_case_month_words_keep_the_incident_day():
+    narrative = ("Operators found valve 2 may be open at 09:15. The 3 dec valves were shut at 09:30. "
+                 "On 23 Mar at 10:00 the drill ran. Line 4 mar was reported at 10:20.")
+    seq = items.event_day_events(narrative, [], "2024-03-24")
+    assert [(e["date"], e["time"]) for e in seq] == [
+        ("2024-03-23", "10:00"), ("2024-03-24", "09:15"), ("2024-03-24", "09:30"), ("2024-03-24", "10:20")]
+
+
+def test_event_day_item_notes_each_re_dated_event(tmp_path):
+    ws = _ws(tmp_path, narrative=NARRATIVE.replace("Earlier, at 09.05", "On 19 Mar at 22:10"))
+    r = cli("timeline-item", str(ws), "--event-day")
+    assert r.returncode == 0, r.stderr
+    assert [(e["date"], e["time"]) for e in json.loads(r.stdout)["events"]] == [
+        ("2024-03-19", "22:10"), ("2024-03-20", "09:05"), ("2024-03-20", "10:30"), ("2024-03-20", "11:45")]
+    assert "22:10 dated 2024-03-19" in r.stderr and "10:30 dated" not in r.stderr

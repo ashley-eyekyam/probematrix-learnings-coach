@@ -359,12 +359,14 @@ _DAY_MONTH_RX = re.compile(r"\b(?:(\d{1,2})(?:st|nd|rd|th)?\s+" + _MONTH_RX + r"
 def _named_day(text, pos, day):
     """The YYYY-MM-DD of the day-and-month named nearest before `pos` in `text` (e.g. '23 Sep 20:00'), with the year
     from the incident `day` (one year earlier when the month is more than six months after the incident's); None when
-    the unit names no day before the time or the day is not a real date."""
+    the unit names no day before the time or the day is not a real date. The month name must be capitalised
+    ('23 Sep', '23 SEP'), so a number before the modal verb 'may' or a lower-case word never re-dates an event."""
     last = None
     for m in _DAY_MONTH_RX.finditer(text):
         if m.start() >= pos:
             break
-        last = m
+        if (m.group(2) or m.group(3))[0].isupper():   # 'valve 2 may be open', '3 dec valves': prose, not a date
+            last = m
     if not last:
         return None
     d = int(last.group(1) or last.group(4))
@@ -409,6 +411,10 @@ def event_day_item(ws) -> dict:
     if not day:
         sys.exit("No incident date in this workspace; pass --date to ingest.")
     item["events"] = event_day_events(narrative, w["findings"], day)
+    for e in item["events"]:
+        if e["date"] != day:
+            print(f"Event {e['time']} dated {e['date']}, not the incident day {day}, from the day and month its "
+                  "sentence names; check the date before using the item.", file=sys.stderr)
     item["cites"] = sorted({x for e in item["events"] for x in e["cites"]})
     return item
 
