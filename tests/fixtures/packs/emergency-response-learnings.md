@@ -8,7 +8,7 @@ Draft because: no finding is marked as edited by a person
 
 *Learning purposes: not a statutory document · Learnings drafted by an AI agent from AI-assisted findings*
 
-*About 1 min read*
+*About 2 min read*
 
 **Audience:** Emergency response, fire and control-room roles
 
@@ -20,9 +20,17 @@ Draft because: no finding is marked as edited by a person
 
 ## Response timeline
 
-- 2024-03-20: Gas detector alarms on the control-room display only [FND-0004]
+- 2024-03-20 14:05: Gas detector alarms on the control-room display only [FND-0004]
   - Received by: Control room operators
-- 2024-03-20: Response depends on the alarm being noticed; the export gives no times [FND-0004]
+  - Knowable then: yes
+- 2024-03-20 14:17: Isolation decided once the alarm is noticed at a shift handover [FND-0004]
+  - Knowable then: yes
+
+## Gaps between steps
+
+| From | To | Minutes | What the export says | Cites |
+|---|---|---|---|---|
+| 14:05 | 14:17 | 12 | The alarm showed on the display only and started no shutdown | FND-0004; EVD-0002 |
 
 ## Learnings by response phase
 

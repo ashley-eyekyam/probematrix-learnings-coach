@@ -8,7 +8,7 @@ Draft because: the investigation status is in progress; no finding is marked as 
 
 *Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress. · Learnings drafted by an AI agent from AI-assisted findings*
 
-*About 10 min read*
+*About 12 min read*
 
 **Audience:** Emergency response: fire and fire-water teams, emergency planners, shift and site controllers, security and camera-room staff
 
@@ -28,36 +28,74 @@ Draft because: the investigation status is in progress; no finding is marked as 
 
 ## Response timeline
 
-Times are those the cited records give for the event day. The narrative also lists later recovery steps; those without a cited record are left out.
+Built from the clock times in the incident narrative (timeline-item --event-day). Each step cites the findings that describe it; steps marked 'incident narrative only' have no cited record and are there to keep the order. Control-room clocks differed by 2 to 12 minutes, so times are approximate.
 
 Sources: [FND-AEA16F83; EVD-6414]
 
+- 2020-09-24 02:11: The camera's last frame of the metering skid with no vapour: the facilities are intact. [FND-C7F16268; EVD-9587]
+  - Knowable then: yes
 - 2020-09-24 02:12: Leak onset recorded by the camera covering the metering skid. The camera did not alert anyone, and no detector raised an alarm in the control room at this point. *(weak signal)* [FND-B5C0CE8F; FND-F91D4A48; EVD-1284]
   - Received by: No one (recorded only)
   - Knowable then: Visible on camera; nobody was alerted
-- 2020-09-24 02:15: Detection: security staff at a watch tower see the cloud and hear the noise, and call the security main gate, the fire station and another plant's control room. Gap since onset: about 2 minutes. *(weak signal)* [FND-5AB5DFA3; FND-95F9205E; EVD-4286]
+- 2020-09-24 02:15: Detection: security staff at a watch tower see the cloud and hear the noise, and call the security main gate, the fire station and another plant's control room. A second post at the gas terminal gate also sees it and calls the camera control room. *(weak signal)* [FND-5AB5DFA3; FND-95F9205E; EVD-4286]
   - Received by: Security network, fire station and another control room
   - Knowable then: yes
-- 2020-09-24 02:16: Security staff at the gas terminal gate, who also saw the cloud at 02:15, call the camera control room and the security main gate. Gap: about 1 minute. *(weak signal)* [FND-1ABF45B7; FND-2F736E5F; EVD-6234]
-  - Received by: Camera control room (security)
-  - Knowable then: yes
-- 2020-09-24 02:18: First call: the camera control room confirms heavy leakage on screen and calls the gas terminal control room, describing "some vapour cloud or steam leakage". Gap: about 2 minutes. *(weak signal)* [FND-37BC45CF; FND-57281AC5; EVD-8871; EVD-1460]
+- 2020-09-24 02:18: First call: the camera control room confirms heavy leakage on screen and calls the gas terminal control room, describing "some vapour cloud or steam leakage". The security posts had no direct line to that control room. *(weak signal)* [FND-37BC45CF; FND-57281AC5; FND-1ABF45B7; FND-BC00FF3A; EVD-8871; EVD-6234; EVD-1460]
   - Received by: Gas terminal control room
   - Knowable then: yes
-- 2020-09-24 02:20: Alarm: the gas alarm sounds on the annunciator panel in the gas terminal control room, about 7 minutes after the camera recorded the leak. The control-room engineers go out, see a heavy cloud and cannot approach the source; they phone the shift in-charges. Gap: about 2 minutes. *(weak signal)* [FND-A245072B; FND-C5000A82; FND-F887999D; EVD-8657; EVD-1460; EVD-9220]
+- 2020-09-24 02:20: Alarm: the gas alarm sounds on the annunciator panel in the gas terminal control room, after people had already seen the cloud. The control-room engineers go out, see a heavy cloud and cannot approach the source; they phone the shift in-charges. *(weak signal)* [FND-A245072B; FND-C5000A82; FND-F887999D; EVD-8657; EVD-1460; EVD-9220]
   - Received by: Gas terminal control-room engineers
   - Knowable then: yes
-- 2020-09-24 02:35: Decision: the shift in-charges, called from their quarters, reach the gas terminal gate and cannot enter because of the gas. The overall shift in-charge instructs closure of the 36-inch pressure control valve and informs senior management one after another. Gap: about 15 minutes. [FND-594A80E9; FND-36179046; FND-A206DFD6; EVD-9612; EVD-7340]
+- 2020-09-24 02:35: Decision: the shift in-charges, called from their quarters, reach the gas terminal gate and cannot enter because of the gas. The overall shift in-charge instructs closure of the 36-inch pressure control valve and informs senior management one after another. [FND-594A80E9; FND-36179046; FND-A206DFD6; EVD-9612; EVD-7340]
   - Received by: Shift in-charges (operations)
   - Knowable then: yes
-- 2020-09-24 03:01: Isolation: the first isolation valve on the condensate inlet is closed by hand at the valve, about 46 minutes after the first detection. The valves had no remote operation from the control room. Gap: about 26 minutes. [FND-AE629313; FND-31405D96; EVD-9612; EVD-6414]
+- 2020-09-24 02:40: Security staff barricade the road to the slug catcher area on the overall shift in-charge's instruction (incident narrative only).
+  - Knowable then: yes
+- 2020-09-24 02:45: The resident engineer arrives; the head of operations, the plant manager and the area in-charge are informed (incident narrative only).
+  - Knowable then: yes
+- 2020-09-24 03:00: The head of operations takes the site incident controller role (incident narrative); the camera shows vapour all around the skid, even at height. [FND-AE629313; EVD-8213]
+  - Knowable then: yes
+- 2020-09-24 03:01: Isolation: the first isolation valve on the condensate inlet is closed by hand at the valve. The valves had no remote operation from the control room. [FND-AE629313; FND-31405D96; EVD-9612; EVD-6414]
   - Received by: Shift in-charge (operations)
-- 2020-09-24 03:04: The 36-inch pressure control valve is closed. Gap: about 3 minutes. [FND-C92C29DB; EVD-7340; EVD-6414]
-- 2020-09-24 03:08: Ignition: the cloud already in the air ignites, after both isolation actions; the probable ignition source is a damaged flameproof lamp. Seconds later the only camera view is lost when its cable burns through. Gap: about 4 minutes. [FND-74A80D24; FND-AEA16F83; FND-AA71AC71; EVD-4507; EVD-6916; EVD-2752]
-- 2020-09-24 03:50: Control: active fire-cooling begins, carried by electrical fire-water pumps; fire-water tank level and header pressure stay healthy. [FND-B6BB0738; EVD-2432]
+  - Knowable then: yes
+- 2020-09-24 03:04: The 36-inch pressure control valve is closed from the gas terminal control room. [FND-C92C29DB; EVD-7340; EVD-6414]
+  - Knowable then: yes
+- 2020-09-24 03:08: Ignition: the cloud already in the air ignites, after both isolation actions; the probable ignition source is a damaged flameproof lamp. Seconds later the only camera view is lost when its cable burns through. [FND-74A80D24; FND-AEA16F83; FND-AA71AC71; EVD-4507; EVD-6916; EVD-2752]
+  - Knowable then: yes
+- 2020-09-24 03:10: The site incident controller declares an off-site emergency with the plant manager, and a mutual-aid call is placed. [FND-82D49143; EVD-7340]
+  - Knowable then: yes
+- 2020-09-24 03:15: The plant manager takes the chief incident controller role and reaches the emergency control room (incident narrative only).
+  - Knowable then: yes
+- 2020-09-24 03:30: Mobile teams confirm the sectionalisation valves on the 36-inch and 42-inch lines closed (incident narrative only).
+  - Knowable then: yes
+- 2020-09-24 03:50: Control: active fire cooling begins, carried by electrical fire-water pumps; fire-water tank level and header pressure stay healthy. [FND-B6BB0738; EVD-2432]
   - Received by: Fire team
-- 2020-09-24 06:00: The fire is extinguished. The diesel fire-water pumps were not the ones that carried the response: two of four were under maintenance and one tripped. [FND-B955FBD6; FND-B6BB0738; EVD-2432]
+  - Knowable then: yes
+- 2020-09-24 04:30: An 8-inch header interconnection valve between the two plant phases is closed; depressurisation continues (incident narrative only).
+  - Knowable then: yes
+- 2020-09-24 05:30: Two more motor-operated valves are closed, isolating the bulk hydrocarbons from the slug catcher (incident narrative only).
+  - Knowable then: yes
+- 2020-09-24 06:00: The fire is brought under control. The diesel fire-water pumps were not the ones that carried the response: two of four were under maintenance and one tripped. [FND-B955FBD6; FND-B6BB0738; EVD-2432]
   - Received by: Fire team
+  - Knowable then: yes
+- 2020-09-24 07:00: The 36-inch main trunk-line inlet valve is closed once the area can be approached, and zero gas is verified (incident narrative only).
+  - Knowable then: yes
+- 2020-09-24 07:30: All clear is declared after zero gas readings and a full head count. [FND-26BF96E1; EVD-2432]
+  - Knowable then: yes
+
+## Gaps between steps
+
+Minutes worked out from the times on the response timeline above.
+
+| From | To | Minutes | What the export says | Cites |
+|---|---|---|---|---|
+| 02:12 | 02:15 | 3 | The camera recorded the leak but alerted no one; people saw the cloud first. | FND-B5C0CE8F; FND-F91D4A48; EVD-1284 |
+| 02:15 | 02:18 | 3 | Security posts had no direct line to the gas terminal control room, so the first call went through the camera control room. | FND-BC00FF3A; FND-37BC45CF; EVD-8871; EVD-6234 |
+| 02:12 | 02:20 | 8 | Gas detection alarmed on the panel only after the leak was on camera and people had seen the cloud. | FND-A245072B; FND-B5C0CE8F; EVD-8657 |
+| 02:20 | 02:35 | 15 | The control-room engineers could not approach the source and called the shift in-charges from their quarters. | FND-594A80E9; FND-36179046; EVD-9612 |
+| 02:15 | 03:01 | 46 | From the first sighting to the first isolation valve, closed by hand at the valve. | FND-AE629313; FND-31405D96; EVD-6414 |
+| 03:04 | 03:08 | 4 | Both isolation actions were done before ignition, but the cloud was already in the air. | FND-AEA16F83; FND-74A80D24; EVD-4507 |
+| 03:08 | 03:50 | 42 | From ignition to the start of active fire cooling, carried by the electrical fire-water pumps. | FND-B6BB0738; EVD-2432 |
 
 ## Learnings by response phase
 
@@ -256,8 +294,8 @@ Regulated-plan note. Where the emergency plan is a regulated plan, a change to i
 
 ## Limits of this pack
 
-- The findings say nothing about mutual aid, the public fire service or neighbouring communities, so the external responders phase is left out.
-- Recovery steps after the fire was extinguished appear in the incident narrative only, without cited records, so no recovery learning is written.
+- The incident narrative records a mutual-aid call at 03:10, but no finding examines mutual aid, the public fire service or neighbouring communities, so the external responders phase is left out.
+- Recovery steps after ignition (valve closures until 07:00) appear in the incident narrative only, without cited records: they are on the timeline to keep the order, and no recovery learning is written.
 - The barrier analysis behind detection and isolation is for barrier-learnings; the build-up before the day is for precursor-timeline.
 
 ## Supporting citations

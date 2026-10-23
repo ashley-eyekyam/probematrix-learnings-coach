@@ -6,9 +6,14 @@
  "sections": [
   {"id": "timeline", "heading": "Response timeline", "items": [
    {"kind": "timeline", "events": [
-     {"date": "2024-03-20", "text": "Gas detector alarms on the control-room display only", "received_by": "Control room operators",
-      "cites": ["FND-0004"]},
-     {"date": "2024-03-20", "text": "Response depends on the alarm being noticed; the export gives no times", "cites": ["FND-0004"]}]}]},
+     {"date": "2024-03-20", "time": "14:05", "text": "Gas detector alarms on the control-room display only", "received_by": "Control room operators",
+      "knowable_then": true, "cites": ["FND-0004"]},
+     {"date": "2024-03-20", "time": "14:17", "text": "Isolation decided once the alarm is noticed at a shift handover", "knowable_then": true,
+      "cites": ["FND-0004"]}]}]},
+  {"id": "gaps-between-steps", "heading": "Gaps between steps", "items": [
+   {"kind": "table", "columns": ["From", "To", "Minutes", "What the export says"],
+    "rows": [["14:05", "14:17", "12", "The alarm showed on the display only and started no shutdown"]],
+    "row_cites": [["FND-0004", "EVD-0002"]]}]},
   {"id": "by-phase", "heading": "Learnings by response phase", "items": [
    {"kind": "learning", "group": "Detection and alarm", "lesson": "A display-only gas alarm leaves detection to chance.",
     "explanation": "The DCS list shows no shutdown on the gas detector [EVD-0002].", "owner": "Emergency planning (F09b)",

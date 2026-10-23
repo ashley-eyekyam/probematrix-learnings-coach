@@ -83,3 +83,51 @@ def test_precursor_fixture_has_missed_section():
     sec = _section(_load(FIX / "precursor-timeline.json"), "missed")
     assert sec and sec["items"][0]["kind"] == "timeline"
     assert all("knowable_then" in e for e in sec["items"][0]["events"])
+
+
+# ----------------------------------------------------------------------------- emergency-response-learnings (P5-10)
+
+def test_emergency_profile_has_gaps_between_steps():
+    assert _entries("emergency-response-learnings", "gaps-between-steps") == {"table": (0, 1)}
+
+
+def test_emergency_skill_md_uses_event_day():
+    md = (SKILLS / "emergency-response-learnings" / "SKILL.md").read_text(encoding="utf-8")
+    assert "PMLC timeline-item <ws> --event-day" in md
+    assert "`gaps-between-steps`" in md and "What the export says" in md
+    assert len(md.splitlines()) <= 150
+
+
+def test_emergency_golden_timeline_from_event_day(hz):
+    printed = json.loads(run("timeline-item", str(hz), "--event-day"))
+    assert len(printed["events"]) == 26                                     # P5-10: 26 distinct narrative times
+    by_time = {e["time"]: set(e["cites"]) for e in printed["events"]}
+    pack = _load(OUTPUTS / "emergency-response-learnings.json")
+    events = _section(pack, "timeline")["items"][0]["events"]
+    assert len(events) >= 15
+    times = [e["time"] for e in events]
+    assert times == sorted(times, key=_minutes) and len(set(times)) == len(times)
+    for e in events:
+        assert e["time"] in by_time, e["time"]                             # every time is a narrative time
+        fnd = {c for c in e.get("cites", []) if c.startswith("FND-")}
+        assert fnd <= by_time[e["time"]], e["time"]                        # cites narrowed from the printed list
+
+
+def test_emergency_golden_gaps_computed_from_event_times():
+    pack = _load(OUTPUTS / "emergency-response-learnings.json")
+    times = {e["time"] for e in _section(pack, "timeline")["items"][0]["events"]}
+    sec = _section(pack, "gaps-between-steps")
+    assert sec and len(sec["items"]) == 1
+    t = sec["items"][0]
+    assert t["kind"] == "table" and t["columns"] == GAP_COLUMNS
+    assert len(t["rows"]) >= 3 and len(t["row_cites"]) == len(t["rows"])
+    for row, cites in zip(t["rows"], t["row_cites"]):
+        a, b, mins, said = row
+        assert a in times and b in times, row
+        assert int(mins) == _minutes(b) - _minutes(a) > 0, row
+        assert said.strip() and cites, row
+
+
+def test_emergency_fixture_has_gaps_table():
+    t = _section(_load(FIX / "emergency-response-learnings.json"), "gaps-between-steps")["items"][0]
+    assert t["columns"] == GAP_COLUMNS
