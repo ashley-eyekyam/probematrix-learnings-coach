@@ -38,6 +38,7 @@ Subcommands
   register-items  a tier's learnings from the register as learning items
   timeline-item   timeline candidates as a pack timeline item
   facts           the headline numbers of a workspace
+  hfacs-profile   level x subcategory heat map, code recurrence and causal feed counts (hfacs_profile.json)
   pack-xlsx       a pack's test points or questions as an Excel sheet
   export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
   plan            resolve a workflow preset, audiences or skills into an ordered plan (<ws>/plan.json)
@@ -68,6 +69,7 @@ from .pack.command import cmd_pack
 from .pack.items import cmd_causal_item, cmd_register_items, cmd_table_item, cmd_timeline_item, TABLE_KINDS
 from .pack.xlsx import cmd_pack_xlsx, XLSX_KINDS
 from .facts import cmd_facts
+from .hfacs_profile import HP_TABLE_KINDS, cmd_hfacs_profile
 from .pack.schema import cmd_check_pack
 from .plan import cmd_plan
 from .privacy import cmd_scan_names
@@ -482,6 +484,14 @@ def build_parser():
     s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json when present)")
     s.add_argument("--json", action="store_true", help="print one JSON object")
     s.set_defaults(fn=cmd_facts)
+
+    s = sp.add_parser("hfacs-profile", help="level x subcategory heat map, code recurrence and causal feed counts",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--json", action="store_true", help="print the profile as JSON")
+    s.add_argument("--table-item", dest="table_item", choices=HP_TABLE_KINDS,
+                   help="print a ready table item for a pack (JSON on stdout)")
+    s.set_defaults(fn=cmd_hfacs_profile)
 
     s = sp.add_parser("pack-xlsx", help="a pack's test points or questions as an Excel sheet", allow_abbrev=False)
     s.add_argument("ws")
