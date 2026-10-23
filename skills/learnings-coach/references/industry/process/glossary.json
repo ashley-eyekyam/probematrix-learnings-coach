@@ -1,0 +1,120 @@
+{
+ "version": 1,
+ "_about": "Process-industries glossary: method vocabulary for the Learnings Coach, not evidence about any incident. Same shape as ../../glossary.json. No translations are supplied; a translator adds them under the same review rule (Ruling P4-15).",
+ "terms": [
+  {
+   "term": "Process safety",
+   "definition": "Managing the integrity of operating systems that handle hazardous materials and energy, so that they stay inside their containment. It differs from personal safety, which looks at slips, trips and similar hazards to individuals.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Loss of containment (LOC)",
+   "definition": "An unplanned or uncontrolled release of material from its primary containment, such as a pipe, vessel or tank. It is usually the top event in a process bow-tie.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Primary containment",
+   "definition": "The first physical boundary that holds a hazardous material: the pipe, vessel, tank, seal or flange. Secondary containment (a bund, a dyke) catches what escapes the first.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Safety instrumented system (SIS)",
+   "definition": "An independent set of sensors, logic and final elements (such as shutdown valves) that takes the process to a safe state when a set limit is passed. It is separate from the basic process control system.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Safety integrity level (SIL)",
+   "definition": "A level that expresses how much risk reduction a safety instrumented function is designed to deliver. Say \"SIL\" only if the source documents do.",
+   "do_not_translate": true,
+   "translations": {}
+  },
+  {
+   "term": "Alarm management",
+   "definition": "The practice of keeping alarms few, meaningful and actionable, so that an operator can tell which alarm needs a response now. Alarm floods and standing alarms weaken it.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Relief system",
+   "definition": "The pressure relief valves, bursting discs, vent headers and flare or knock-out equipment that protect a vessel or line from overpressure and carry the discharge to a safe place.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Permit-to-work (PTW)",
+   "definition": "A formal written system that authorises specific work in a specific place for a limited time, after the hazards are assessed and isolations are in place. See also hold point.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Isolation",
+   "definition": "Making equipment safe to work on by separating it from sources of hazardous material or energy, by a blind, a spool removal or a double block and bleed, and then proving the isolation.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Lockout/tagout (LOTO)",
+   "definition": "Locking and labelling an isolation point so it cannot be changed while people are working. The lock belongs to the person or the crew who rely on it.",
+   "do_not_translate": true,
+   "translations": {}
+  },
+  {
+   "term": "Management of change (MOC)",
+   "definition": "A system that reviews and approves a change to plant, process, procedure or organisation before it is made, and checks it afterwards. Temporary changes and bypasses need it too.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Process safety information (PSI)",
+   "definition": "The written knowledge that defines the design basis of a plant: piping and instrument diagrams, relief design, material limits and operating limits. Decisions on change and hazard study rest on it.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Process hazard analysis (PHA)",
+   "definition": "A structured team study of what could go wrong in a process and how it is guarded, such as HAZOP or what-if. Its findings form part of the barrier record.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Mechanical integrity",
+   "definition": "Keeping equipment fit for its duty over its life through inspection, testing, maintenance and repair, with defects tracked until they are closed.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Bypass or override",
+   "definition": "Deliberately disabling an alarm, trip or interlock so that the plant keeps running. A controlled, time-limited bypass is a managed risk; one that is left in place or forgotten is a defeated barrier.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Turnaround",
+   "definition": "A planned shutdown for major maintenance, inspection and modification. It brings many contractors and many changes onto the site at once, which tests permit, isolation and planning systems.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Operating envelope",
+   "definition": "The range of pressure, temperature, level and flow inside which the process is designed to run safely. Alarm and trip settings are set in relation to it.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Shift handover",
+   "definition": "The transfer of plant status, open permits, isolations and abnormal conditions from one shift to the next. Gaps here are a common route for a condition to go unrecognised.",
+   "do_not_translate": false,
+   "translations": {}
+  },
+  {
+   "term": "Tier 1 / Tier 2 process safety event",
+   "definition": "The categories of process safety event used by some industry standards, graded by the size of the release or consequence. Name the standard only when the source documents do.",
+   "do_not_translate": false,
+   "translations": {}
+  }
+ ]
+}

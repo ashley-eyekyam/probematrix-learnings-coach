@@ -11,7 +11,7 @@ At the start of every run, instead of typing the six commands. The individual co
 ## Synopsis
 
 ```text
-pmlc setup xlsx --slug SLUG [--date DATE] [--root ROOT] [--force] [--strict] [--redact MAP.json] [--overlay NAME_OR_PATH]
+pmlc setup xlsx --slug SLUG [--date DATE] [--root ROOT] [--force] [--strict] [--redact MAP.json] [--overlay NAME_OR_PATH] [--industry NAME]
 ```
 
 ## Arguments
@@ -31,6 +31,7 @@ pmlc setup xlsx --slug SLUG [--date DATE] [--root ROOT] [--force] [--strict] [--
 | `--strict` | none | off | Exit 1 when a required column is missing |
 | `--redact` | file | none | JSON `{name: role}` applied at ingest |
 | `--overlay` | name or path | none | Role overlay for classify |
+| `--industry` | name | none | Industry reference pack for classify, for example `process`. Setup prints `Industry reference: process (method reference, not evidence)`. See [classify](classify.md) |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples
