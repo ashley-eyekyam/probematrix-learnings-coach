@@ -176,6 +176,9 @@ def test_table_item(cws):
     assert it["kind"] == "table" and it["columns"] == ["Requirement", "Status", "Evidence here",
                                                         "Organisation must show"]
     assert len(it["rows"]) == len(it["row_cites"]) and it["rows"][0][0].startswith("ISO45001-")
+    # Task 19: the compliance-crosswalk pack names its section crosswalk-<framework>, and pack ids are unique across
+    # sections and items, so the table carries its own id, as the evidence-audit tables do
+    assert it["id"] == "crosswalk-iso45001-table"
     md = cli("crosswalk", str(cws), "--framework", "iso45001")
     assert md.returncode == 0 and "| Requirement |" in md.stdout
 

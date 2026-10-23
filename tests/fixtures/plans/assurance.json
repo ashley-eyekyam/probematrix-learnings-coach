@@ -68,14 +68,21 @@
   {
    "n": 5,
    "skill": "compliance-crosswalk",
-   "status": "planned",
-   "planned_for": "Phase 5",
-   "produces": null,
+   "status": "todo",
+   "planned_for": null,
+   "produces": "compliance-crosswalk",
    "mode": null,
    "when": null,
-   "commands": [],
-   "questions": [],
-   "gate": []
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/compliance-crosswalk.json --strict",
+    "PMLC pack <ws> <run>/outputs/compliance-crosswalk.json"
+   ],
+   "questions": [
+    "Which framework? iso45001, psm, rbps, seveso, icmm, india, or the organisation's own management-system elements as a company system CSV (columns id,title[,topics])"
+   ],
+   "gate": [
+    "check-pack --strict"
+   ]
   },
   {
    "n": 6,

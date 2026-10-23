@@ -60,6 +60,7 @@ OVERLAPS = {
     ("frontline-learning-cards", "supply-chain-contractor-learnings"),
     ("supply-chain-contractor-learnings", "frontline-learning-cards"),
     ("safety-committee-guide", "frontline-learning-cards"),
+    ("compliance-crosswalk", "auditor-assurance-pack"), ("compliance-crosswalk", "learnings-register"),
 }
 NO_PROFILE = {"learnings-register"}        # writes a register, not a pack: its Write table has no profile
 # Variant packs (Task 20 review m-5): a variant has the main pack's sections (rule same-sections-as), so it shares the
