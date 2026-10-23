@@ -26,7 +26,8 @@ SUBCOMMANDS = ["ingest", "profile", "classify", "select", "causal", "timeline", 
                "check-pack", "pack", "causal-item", "sign-off", "scan-names", "run-manifest", "purge", "setup",
                "check-all", "render-all", "index", "dossier-index", "templates", "export-actions", "plan", "compare",
                "register-md", "table-item", "register-items", "timeline-item", "facts", "pack-xlsx", "register-render"]
-SUBCOMMANDS += ["strings", "hfacs-profile", "open-questions", "rec-review", "nine-m-seed", "missed-opportunities"]
+SUBCOMMANDS += ["strings", "crosswalk", "hfacs-profile", "open-questions", "rec-review", "nine-m-seed",
+                "missed-opportunities"]
 T13_PAGES = {"Home.md", "Commands.md", "Developer-tools.md"} | {f"commands/{c}.md" for c in SUBCOMMANDS}
 # Flags of other programs the pages quote (pip).
 OTHER_FLAGS = {"--user"}

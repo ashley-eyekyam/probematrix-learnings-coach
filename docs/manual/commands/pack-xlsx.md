@@ -2,7 +2,7 @@
 
 ## What it does
 
-Writes the `test_point` or `question` items of a learning pack to one Excel sheet: a column for each item field, then a `cites` column with the Finding and Evidence IDs. The sheet carries the "Learning purposes: not a statutory document" header (with DRAFT while the pack is not approved) and the ProbeMatrix footer, with the version, when printed. The pack must pass the same checks as [pack](pack.md). With `--share external` or `public` the same share gate as [pack](pack.md) applies: the pack must be approved, its classification must be at the mode's level or higher, and `legal_review` must be cleared; otherwise nothing is written and no check is recorded. A shared sheet has names, organisations, tags, singleton roles, times and full dates masked, carries no author or timestamps, and is written as `<pack>-<kind>.<mode>.xlsx`; the command refuses an `--out` that is the internal copy. The header of a shared sheet also reads `Shared external: identifying details are masked` (or `Shared public: ...`). Whatever the share mode, the cells go through the name check: if a name from `--names` (or `PMLC_NAMES`) is still in the sheet, the command exits 1 with `refused: a listed name appears in the output` and writes nothing.
+Writes the `test_point`, `question` or `table` items of a learning pack to Excel. For test points and questions it is one sheet with a column for each item field, then a `cites` column with the Finding and Evidence IDs. For `--kind table` each table item is its own sheet, named by the item id, with the table's columns and a `cites` column holding that row's own cites; the file is `<pack>-tables.xlsx`, so a `crosswalk --table-item` table can go to Excel. The sheet carries the "Learning purposes: not a statutory document" header (with DRAFT while the pack is not approved) and the ProbeMatrix footer, with the version, when printed. The pack must pass the same checks as [pack](pack.md). With `--share external` or `public` the same share gate as [pack](pack.md) applies: the pack must be approved, its classification must be at the mode's level or higher, and `legal_review` must be cleared; otherwise nothing is written and no check is recorded. A shared sheet has names, organisations, tags, singleton roles, times and full dates masked, carries no author or timestamps, and is written as `<pack>-<kind>.<mode>.xlsx`; the command refuses an `--out` that is the internal copy. The header of a shared sheet also reads `Shared external: identifying details are masked` (or `Shared public: ...`). Whatever the share mode, the cells go through the name check: if a name from `--names` (or `PMLC_NAMES`) is still in the sheet, the command exits 1 with `refused: a listed name appears in the output` and writes nothing.
 
 ## When to use it
 
@@ -11,7 +11,7 @@ When auditors or investigators want to work through a pack's test points or ques
 ## Synopsis
 
 ```text
-pmlc pack-xlsx ws pack --kind {test_point,question} [--out OUT] [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
+pmlc pack-xlsx ws pack --kind {test_point,question,table} [--out OUT] [--share {internal,external,public}] [--names NAMES] [--orgs ORGS]
 ```
 
 ## Arguments
@@ -25,8 +25,8 @@ pmlc pack-xlsx ws pack --kind {test_point,question} [--out OUT] [--share {intern
 
 | Flag | Value | Default | What it does |
 |---|---|---|---|
-| `--kind` | `test_point` or `question` | required | Which items to write |
-| `--out` | file | `<run>/outputs/<pack>-test-points.xlsx` or `-questions.xlsx` | Where to write |
+| `--kind` | `test_point`, `question` or `table` | required | Which items to write |
+| `--out` | file | `<run>/outputs/<pack>-test-points.xlsx` or `-questions.xlsx` or `-tables.xlsx` | Where to write |
 | `--share` | `internal`, `external` or `public` | `internal` | A masked copy for outside the organisation; needs an approved sign-off, the right classification and `legal_review` cleared. Written as `<name>.<mode>.xlsx`, never over the internal copy |
 | `--names` | file | `$PMLC_NAMES` | Names file for the language check |
 | `--orgs` | file | `$PMLC_ORGS` | Organisation names file for the language check |

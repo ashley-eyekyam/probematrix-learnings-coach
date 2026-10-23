@@ -4,14 +4,29 @@
     "iso45001": {
       "title": "ISO 45001:2018 Occupational health and safety management systems (ISO 9001 and ISO 14001 10.2 follow the same Annex SL pattern)",
       "requirements": [
-        {"id": "ISO45001-5.4", "title": "Consultation and participation of non-managerial workers, including in investigating incidents and determining corrective actions", "verified": true},
-        {"id": "ISO45001-7.2", "title": "Competence", "verified": true},
-        {"id": "ISO45001-7.3", "title": "Awareness, including of incidents and the outcomes of investigations relevant to workers", "verified": true},
-        {"id": "ISO45001-7.4", "title": "Communication", "verified": true},
-        {"id": "ISO45001-9.1", "title": "Monitoring, measurement, analysis and performance evaluation", "verified": true},
-        {"id": "ISO45001-9.2", "title": "Internal audit", "verified": true},
-        {"id": "ISO45001-9.3", "title": "Management review: inputs include incidents, nonconformities, corrective actions, continual improvement, monitoring and audit results", "verified": true},
-        {"id": "ISO45001-10.2", "title": "Incident, nonconformity and corrective action: determine causes, act, review effectiveness, retain and communicate documented information", "verified": true}
+        {"id": "ISO45001-4.1", "title": "Understanding the organization and its context (unverified)", "verified": false, "topics": "\\b(?:context|external|regulat|market|industry)"},
+        {"id": "ISO45001-4.2", "title": "Understanding the needs and expectations of workers and other interested parties (unverified)", "verified": false, "topics": "\\b(?:interested part|stakeholder|contractor|expectation)"},
+        {"id": "ISO45001-4.3", "title": "Determining the scope of the OH&S management system (unverified)", "verified": false, "topics": "\\b(?:scope|boundar)"},
+        {"id": "ISO45001-4.4", "title": "OH&S management system (unverified)", "verified": false, "topics": "\\b(?:management system|sms)"},
+        {"id": "ISO45001-5.1", "title": "Leadership and commitment (unverified)", "verified": false, "topics": "\\b(?:leadership|top management|commitment|senior)"},
+        {"id": "ISO45001-5.2", "title": "OH&S policy (unverified)", "verified": false, "topics": "\\b(?:policy)"},
+        {"id": "ISO45001-5.3", "title": "Organizational roles, responsibilities and authorities (unverified)", "verified": false, "topics": "\\b(?:responsibilit|authorit|accountab)"},
+        {"id": "ISO45001-5.4", "title": "Consultation and participation of non-managerial workers, including in investigating incidents and determining corrective actions", "verified": true, "topics": "\\b(?:consult|participat|worker involvement|workforce)"},
+        {"id": "ISO45001-6.1", "title": "Actions to address risks and opportunities (unverified)", "verified": false, "topics": "\\b(?:risk assessment|hazard identification|risk register|opportunit)"},
+        {"id": "ISO45001-6.2", "title": "OH&S objectives and planning to achieve them (unverified)", "verified": false, "topics": "\\b(?:objective|target|planning to achieve)"},
+        {"id": "ISO45001-7.1", "title": "Resources (unverified)", "verified": false, "topics": "\\b(?:resourc|staffing|budget|capacity)"},
+        {"id": "ISO45001-7.2", "title": "Competence", "verified": true, "topics": "\\b(?:competen|training|skill)"},
+        {"id": "ISO45001-7.3", "title": "Awareness, including of incidents and the outcomes of investigations relevant to workers", "verified": true, "topics": "\\b(?:awareness|aware|share[sd]? (the )?learning|lessons? (learn|shar))", "must_show": "Records that workers were made aware of the incident and the outcome of the investigation (for example the adoption and distribution records)."},
+        {"id": "ISO45001-7.4", "title": "Communication", "verified": true, "topics": "\\b(?:communicat|handover|brief)", "must_show": "Records of how the learnings were communicated, to whom, and when (for example the distribution record)."},
+        {"id": "ISO45001-7.5", "title": "Documented information (unverified)", "verified": false, "topics": "\\b(?:documented information|record[- ]keeping)"},
+        {"id": "ISO45001-8.1", "title": "Operational planning and control (unverified)", "verified": false, "topics": "\\b(?:operational control|management of change|procedure|permit|contractor|outsourc|procure)"},
+        {"id": "ISO45001-8.2", "title": "Emergency preparedness and response (unverified)", "verified": false, "topics": "\\b(?:emergency|response|evacuat|mustering|drill)"},
+        {"id": "ISO45001-9.1", "title": "Monitoring, measurement, analysis and performance evaluation", "verified": true, "topics": "\\b(?:monitor|measur|indicator|kpi)"},
+        {"id": "ISO45001-9.2", "title": "Internal audit", "verified": true, "topics": "\\b(?:audit|assurance)"},
+        {"id": "ISO45001-9.3", "title": "Management review: inputs include incidents, nonconformities, corrective actions, continual improvement, monitoring and audit results", "verified": true, "topics": "\\b(?:management review|review by (top|senior))"},
+        {"id": "ISO45001-10.1", "title": "Improvement, general (unverified)", "verified": false, "topics": "\\b(?:improv)"},
+        {"id": "ISO45001-10.2", "title": "Incident, nonconformity and corrective action: determine causes, act, review effectiveness, retain and communicate documented information", "verified": true, "topics": "\\b(?:corrective action|nonconformit|root cause|capa)"},
+        {"id": "ISO45001-10.3", "title": "Continual improvement (unverified)", "verified": false, "topics": "\\b(?:continual|continuous improvement|sustain)"}
       ]
     },
     "psm": {
@@ -19,10 +34,10 @@
       "requirements": [
         {"id": "PSM-(m)(1)", "title": "Incident investigation, paragraph (m)(1): content not summarised in the source review (unverified)", "verified": false},
         {"id": "PSM-(m)(2)", "title": "Incident investigation, paragraph (m)(2): content not summarised in the source review; the element requires investigation within 48 hours (unverified)", "verified": false},
-        {"id": "PSM-(m)(3)", "title": "Investigation team includes a contract employee where contractor work was involved", "verified": true},
-        {"id": "PSM-(m)(4)", "title": "Investigation report contents: date of incident, date investigation began, description, contributing factors, recommendations", "verified": true},
-        {"id": "PSM-(m)(5)", "title": "A system to promptly address and resolve report findings and recommendations, with resolutions documented", "verified": true},
-        {"id": "PSM-(m)(6)", "title": "Report reviewed with all affected personnel, including contract employees", "verified": true},
+        {"id": "PSM-(m)(3)", "title": "Investigation team includes a contract employee where contractor work was involved", "verified": true, "topics": "\\b(?:investigation team|contract)"},
+        {"id": "PSM-(m)(4)", "title": "Investigation report contents: date of incident, date investigation began, description, contributing factors, recommendations", "verified": true, "topics": "\\b(?:root cause|contributing factor|date of incident|sequence)"},
+        {"id": "PSM-(m)(5)", "title": "A system to promptly address and resolve report findings and recommendations, with resolutions documented", "verified": true, "topics": "\\b(?:resolve|corrective action|recommendation|capa|follow-up|follow up)"},
+        {"id": "PSM-(m)(6)", "title": "Report reviewed with all affected personnel, including contract employees", "verified": true, "topics": "\\b(?:affected (personnel|employees|workers)|contract(or)? (employee|worker)|share[sd]? (the )?(report|learning)|brief)", "must_show": "Records that the report was reviewed with affected personnel, including contract employees (for example the distribution record)."},
         {"id": "PSM-(m)(7)", "title": "Incident investigation reports retained for five years", "verified": true},
         {"id": "PSM-(o)(1)", "title": "Compliance audits, paragraph (o)(1): content not summarised in the source review; the element requires an audit at least every three years (unverified)", "verified": false},
         {"id": "PSM-(o)(2)", "title": "Compliance audits, paragraph (o)(2): content not summarised in the source review (unverified)", "verified": false},
@@ -34,7 +49,7 @@
     "rmp": {
       "title": "EPA Risk Management Program, 40 CFR Part 68",
       "requirements": [
-        {"id": "RMP-68.81", "title": "Incident investigation (Program 3): mirrors PSM (m), with five-year report retention; the 2024 rule added root-cause analysis and a February 2026 proposal would change that rule (check the final rule)", "verified": true}
+        {"id": "RMP-68.81", "title": "Incident investigation (Program 3): mirrors PSM (m), with five-year report retention; the 2024 rule added root-cause analysis and a February 2026 proposal would change that rule (check the final rule)", "verified": true, "topics": "\\b(?:investigat|root cause|recommendation)"}
       ]
     },
     "seveso": {
@@ -46,19 +61,35 @@
       ]
     },
     "rbps": {
-      "title": "CCPS Risk Based Process Safety, pillar \"Learn from experience\"",
+      "title": "CCPS Risk Based Process Safety, the 20 elements in four pillars (the \"Learn from experience\" pillar is the last four)",
       "requirements": [
-        {"id": "RBPS-incident-investigation", "title": "Incident Investigation", "verified": true},
-        {"id": "RBPS-measurement-and-metrics", "title": "Measurement and Metrics", "verified": true},
-        {"id": "RBPS-auditing", "title": "Auditing", "verified": true},
-        {"id": "RBPS-management-review", "title": "Management Review and Continuous Improvement", "verified": true}
+        {"id": "RBPS-process-safety-culture", "title": "Process Safety Culture (unverified)", "verified": false, "topics": "\\b(?:culture|speak up|stop[- ]work|normali[sz]ation of deviance)"},
+        {"id": "RBPS-compliance-with-standards", "title": "Compliance with Standards (unverified)", "verified": false, "topics": "\\b(?:standard|compliance|regulat|code of practice)"},
+        {"id": "RBPS-process-safety-competency", "title": "Process Safety Competency (unverified)", "verified": false, "topics": "\\b(?:competen|training|skill|knowledge)"},
+        {"id": "RBPS-workforce-involvement", "title": "Workforce Involvement (unverified)", "verified": false, "topics": "\\b(?:workforce|worker|consult|participat|involve)"},
+        {"id": "RBPS-stakeholder-outreach", "title": "Stakeholder Outreach (unverified)", "verified": false, "topics": "\\b(?:stakeholder|community|neighbour|outreach)"},
+        {"id": "RBPS-process-knowledge-management", "title": "Process Knowledge Management (unverified)", "verified": false, "topics": "\\b(?:process knowledge|design basis|p&id|drawing|documentation|as-built)"},
+        {"id": "RBPS-hazard-identification-and-risk-analysis", "title": "Hazard Identification and Risk Analysis (unverified)", "verified": false, "topics": "\\b(?:hazop|hazid|risk assessment|hazard identification|risk analysis|what-if|layer of protection)"},
+        {"id": "RBPS-operating-procedures", "title": "Operating Procedures (unverified)", "verified": false, "topics": "\\b(?:operating procedure|sop|start-?up|shutdown|procedure)"},
+        {"id": "RBPS-safe-work-practices", "title": "Safe Work Practices (unverified)", "verified": false, "topics": "\\b(?:permit|isolation|lockout|lototo|hot work|safe work|work practice)"},
+        {"id": "RBPS-asset-integrity-and-reliability", "title": "Asset Integrity and Reliability (unverified)", "verified": false, "topics": "\\b(?:integrity|inspection|maintenance|corrosion|reliab|fitness for service|relief|interlock)"},
+        {"id": "RBPS-contractor-management", "title": "Contractor Management (unverified)", "verified": false, "topics": "\\b(?:contractor|subcontract|supplier|outsourc)"},
+        {"id": "RBPS-training-and-performance-assurance", "title": "Training and Performance Assurance (unverified)", "verified": false, "topics": "\\b(?:training|performance assurance|refresher)"},
+        {"id": "RBPS-management-of-change", "title": "Management of Change (unverified)", "verified": false, "topics": "\\b(?:management of change|moc|modification|temporary change|change control)"},
+        {"id": "RBPS-operational-readiness", "title": "Operational Readiness (unverified)", "verified": false, "topics": "\\b(?:readiness|commission|pre-?start|restart|start-?up review)"},
+        {"id": "RBPS-conduct-of-operations", "title": "Conduct of Operations (unverified)", "verified": false, "topics": "\\b(?:conduct of operations|handover|shift|log ?book|discipline|alarm response)"},
+        {"id": "RBPS-emergency-management", "title": "Emergency Management (unverified)", "verified": false, "topics": "\\b(?:emergency|response|evacuat|mustering|fire ?water|drill|mutual aid)"},
+        {"id": "RBPS-incident-investigation", "title": "Incident Investigation", "verified": true, "topics": "\\b(?:investigat|root cause|causal)"},
+        {"id": "RBPS-measurement-and-metrics", "title": "Measurement and Metrics", "verified": true, "topics": "\\b(?:metric|indicator|kpi|measure)"},
+        {"id": "RBPS-auditing", "title": "Auditing", "verified": true, "topics": "\\b(?:audit|assurance)"},
+        {"id": "RBPS-management-review", "title": "Management Review and Continuous Improvement", "verified": true, "topics": "\\b(?:management review|continuous improvement|review by)"}
       ]
     },
     "icmm": {
       "title": "ICMM Critical Control Management (2015 implementation guide; superseded by a 2026 consolidated guide)",
       "requirements": [
-        {"id": "ICMM-CCM-8", "title": "Step 8: verification and reporting", "verified": true},
-        {"id": "ICMM-CCM-9", "title": "Step 9: responding to inadequate critical control performance", "verified": true}
+        {"id": "ICMM-CCM-8", "title": "Step 8: verification and reporting", "verified": true, "topics": "\\b(?:critical control|verification)"},
+        {"id": "ICMM-CCM-9", "title": "Step 9: responding to inadequate critical control performance", "verified": true, "topics": "\\b(?:critical control|inadequate|defeated|degraded)"}
       ]
     },
     "india": {

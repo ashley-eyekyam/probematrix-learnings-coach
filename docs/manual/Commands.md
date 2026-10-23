@@ -62,6 +62,7 @@ pmlc 2.0.0a4
 | [timeline-item](commands/timeline-item.md) | Prints the dated candidates, or the incident-day sequence, as a timeline item for a pack |
 | [missed-opportunities](commands/missed-opportunities.md) | Finds earlier recommendations, Failure-to-Correct findings and the dated precursors that cite them |
 | [facts](commands/facts.md) | Prints the headline numbers of a workspace |
+| [crosswalk](commands/crosswalk.md) | Maps the register to the clauses of a standard and says what the organisation must still show |
 | [hfacs-profile](commands/hfacs-profile.md) | Counts findings by HFACS level and subcategory, recurring codes and causal feeds |
 | [open-questions](commands/open-questions.md) | Lists what the export leaves open: empty columns, blank fields, absence and hedged findings |
 | [timeline](commands/timeline.md) | Finds dated precursor candidates and the clock times of the event day |
@@ -172,7 +173,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,hfacs-profile,pack-xlsx,strings,nine-m-seed,missed-opportunities} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,crosswalk,hfacs-profile,pack-xlsx,strings,nine-m-seed,missed-opportunities} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 
