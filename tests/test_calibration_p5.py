@@ -47,3 +47,27 @@ def test_evidence_counts(hazira_ws):
     assert "0 problem(s)" in reg, reg
     top = a["concentration"][0]
     assert top["evidence"] == "EVD-8645" and top["findings"] == 67
+
+
+# ----------------------------------------------------------------------------- Task 3: hfacs-profile
+
+def test_profile_counts(hazira_ws):
+    """SVI 1.4 recurs 21 times; OIC 2.1 has 36 links out in causal_graph.json (Task 3)."""
+    run("hfacs-profile", str(hazira_ws))
+    prof = json.loads((hazira_ws / "hfacs_profile.json").read_text(encoding="utf-8"))
+    assert {r["code"]: r["n"] for r in prof["recurrence"]}["SVI 1.4"] == 21
+    assert {r["code"]: r["out"] for r in prof["feeds"]}["OIC 2.1"] == 36
+
+
+# ----------------------------------------------------------------------------- Task 4: open-questions
+
+def test_hazira_open_questions_numbers(hazira_ws):
+    """Blank summary fields 21 of 30; 4 empty follow-up columns; absence 240 and hedged 193 are what the lexicons in
+    references/open-questions.json give on `justification` (P5-7). The spec's 236 and 185 are superseded: R1 never
+    recorded its word lists, so they cannot be reproduced."""
+    run("open-questions", str(hazira_ws))
+    oq = json.loads((hazira_ws / "open_questions.json").read_text(encoding="utf-8"))
+    assert (len(oq["blank_summary_fields"]), oq["summary_fields"]) == (21, 30)
+    assert len(oq["empty_follow_up_columns"]) == 4
+    assert (len(oq["absence"]), len(oq["hedged"])) == (240, 193)
+    assert 0 < len(json.loads(run("open-questions", str(hazira_ws), "--items"))) <= 30

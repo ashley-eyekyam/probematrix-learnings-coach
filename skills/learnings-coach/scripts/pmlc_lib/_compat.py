@@ -37,6 +37,7 @@ MODULES = [
     "pmlc_lib.compare",
     "pmlc_lib.facts",
     "pmlc_lib.evidence_audit",
+    "pmlc_lib.hfacs_profile",
     "pmlc_lib.render",
     "pmlc_lib.render.labels",
     "pmlc_lib.render.fields",
@@ -56,6 +57,7 @@ MODULES = [
     "pmlc_lib.render.scorm",
     "pmlc_lib.pack.command",
     "pmlc_lib.strings",
+    "pmlc_lib.open_questions",
     "pmlc_lib.cli",
 ]
 PACK_MODULES = ["pmlc_lib.pack.profiles", "pmlc_lib.pack.schema", "pmlc_lib.pack.graph_layout", "pmlc_lib.pack.items",

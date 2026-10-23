@@ -59,6 +59,11 @@
     "producer": "engine:export-actions",
     "org_filled": false
   },
+  "open-questions": {
+    "file": "workspace/open_questions.json",
+    "producer": "engine:open-questions",
+    "org_filled": false
+  },
   "nine-m-map": {
     "file": "outputs/nine-m-analysis.json",
     "producer": "skill:nine-m-analysis",
@@ -71,10 +76,9 @@
     "org_filled": false
   },
   "hfacs-profile": {
-    "file": "outputs/latent-conditions-profile.json",
-    "producer": "skill:latent-conditions-profile",
-    "org_filled": false,
-    "planned": "Phase 5"
+    "file": "workspace/hfacs_profile.json",
+    "producer": "engine:hfacs-profile",
+    "org_filled": false
   },
   "library": {
     "file": "$PMLC_LIBRARY",

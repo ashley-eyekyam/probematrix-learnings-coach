@@ -2,7 +2,7 @@
 
 ## What it does
 
-Writes a one-page Markdown summary of the investigation: the incident fields, how many findings sit at each HFACS level and rating, an **HFACS levels** table (level, name, definition, findings), the sub-categories, the most frequent factors, the roles named most often, the kinds of evidence, and a list of **data-quality flags**: things to know before you write any learning (for example, that no finding has been reviewed by a person yet).
+Writes a one-page Markdown summary of the investigation: the incident fields, how many findings sit at each HFACS level and rating, an **HFACS levels** table (level, name, definition, findings), the sub-categories, the most frequent factors, the roles named most often, the kinds of evidence, and a list of **data-quality flags** (including how many Incident Summary fields are blank): things to know before you write any learning (for example, that no finding has been reviewed by a person yet).
 
 ## When to use it
 
@@ -26,7 +26,7 @@ pmlc profile ws [--top TOP] [--out OUT]
 |---|---|---|---|
 | `--top` | number | 15 | How many rows to show in the "most frequent factors" and "most-named roles" tables |
 | `--out` | file | print to the screen | Write the profile to this file instead. The usual place is `$WS/profile.md` |
-| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output}` plus, for this command, `incident`, `findings`, `evidence_items`, `distinct_factor_codes`, `distinct_roles`, `supervision_and_organisational`, `levels`, `ratings`, `sub_categories`, `top_factors`, `top_roles`, `evidence_types`, `empty_columns`, `investigation_status`, `any_user_edited` and `flags` (the data-quality flags). On failure `ok` is false and `error` holds the reason. Messages go to stderr. The exit code is the same as without `--json` |
+| `--json` | none | off | Print one JSON object on stdout instead of the report: `{command, ok, exit_code, output}` plus, for this command, `incident`, `findings`, `evidence_items`, `distinct_factor_codes`, `distinct_roles`, `supervision_and_organisational`, `levels`, `ratings`, `sub_categories`, `top_factors`, `top_roles`, `evidence_types`, `empty_columns`, `blank_summary_fields`, `summary_fields`, `investigation_status`, `any_user_edited` and `flags` (the data-quality flags). On failure `ok` is false and `error` holds the reason. Messages go to stderr. The exit code is the same as without `--json` |
 | `-h`, `--help` | none | | Show the flags and stop |
 
 ## Examples

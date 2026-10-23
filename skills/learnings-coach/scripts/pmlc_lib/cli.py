@@ -39,9 +39,11 @@ Subcommands
   timeline-item   timeline candidates as a pack timeline item
   facts           the headline numbers of a workspace
   evidence-audit  evidence strength per finding, single-source and document-only counts, concentration (engine-computed)
+  hfacs-profile   level x subcategory heat map, code recurrence and causal feed counts (hfacs_profile.json)
   pack-xlsx       a pack's test points or questions as an Excel sheet
   export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
   plan            resolve a workflow preset, audiences or skills into an ordered plan (<ws>/plan.json)
+  open-questions  what the export leaves open: empty columns, blank fields, absence and hedged findings
   strings         extract a pack's text for translation (XLIFF or CSV), or apply a translation as <pack>-<lang>.json
 
 Only dependency outside the standard library: openpyxl.
@@ -70,6 +72,8 @@ from .pack.items import cmd_causal_item, cmd_register_items, cmd_table_item, cmd
 from .pack.xlsx import cmd_pack_xlsx, XLSX_KINDS
 from .evidence_audit import cmd_evidence_audit, EVAUDIT_TABLE_KINDS as EVIDENCE_AUDIT_TABLES
 from .facts import cmd_facts
+from .hfacs_profile import HP_TABLE_KINDS, cmd_hfacs_profile
+from .open_questions import cmd_open_questions
 from .pack.schema import cmd_check_pack
 from .plan import cmd_plan
 from .privacy import cmd_scan_names
@@ -474,6 +478,13 @@ def build_parser():
     s.add_argument("--top", type=int, default=12, help="events to keep (default 12)")
     s.set_defaults(fn=cmd_timeline_item)
 
+    s = sp.add_parser("open-questions", help="what the export leaves open: empty columns, blank fields, absence and hedged findings",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--json", dest="as_json", action="store_true", help="print open_questions.json")
+    s.add_argument("--items", action="store_true", help="print up to 30 ready question items (JSON)")
+    s.set_defaults(fn=cmd_open_questions)
+
     s = sp.add_parser("facts", help="the headline numbers of a workspace", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json when present)")
@@ -488,6 +499,13 @@ def build_parser():
     s.add_argument("--table-item", choices=EVIDENCE_AUDIT_TABLES, metavar="|".join(EVIDENCE_AUDIT_TABLES),
                    help="print a ready table item for a pack instead of the summary")
     s.set_defaults(fn=cmd_evidence_audit)
+    s = sp.add_parser("hfacs-profile", help="level x subcategory heat map, code recurrence and causal feed counts",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--json", action="store_true", help="print the profile as JSON")
+    s.add_argument("--table-item", dest="table_item", choices=HP_TABLE_KINDS,
+                   help="print a ready table item for a pack (JSON on stdout)")
+    s.set_defaults(fn=cmd_hfacs_profile)
 
     s = sp.add_parser("pack-xlsx", help="a pack's test points or questions as an Excel sheet", allow_abbrev=False)
     s.add_argument("ws")

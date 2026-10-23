@@ -1,0 +1,29 @@
+{
+ "version": 1,
+ "_about": "Word lists for the open-questions command. Entries are words or phrases, matched case-insensitively at word boundaries on a finding's AI justification only. absence: the justification says a record or fact is missing. hedge: the justification is not sure. drift: wording that suggests a practice became normal over time (used by missed-opportunities). sources: the evidence type to ask for, chosen by the first keyword found in the finding's text (default: document).",
+ "absence": [
+  "no record", "not documented", "unclear", "undocumented", "unknown", "not available", "absent", "absence",
+  "no evidence", "missing", "lack of", "lacked", "no documented", "not known", "never", "not provided", "no formal"
+ ],
+ "hedge": [
+  "may", "might", "likely", "possibly", "suggest", "suggests", "appear", "appears", "could", "unclear",
+  "potentially", "indicate", "indicates", "implies", "would have", "not directly", "probably", "perhaps",
+  "seem", "seems", "presumably", "apparently"
+ ],
+ "drift": [
+  "normalised", "normalized", "routine", "routinely", "usual practice", "accepted practice", "custom", "workaround",
+  "work-around", "tolerated", "over time", "gradually", "became the norm", "had become", "informal"
+ ],
+ "sources": {
+  "witness statement": ["interview", "witness", "told", "said", "statement", "recalled", "briefed", "briefing"],
+  "inspection record": ["inspect", "inspection", "audit", "checklist", "walkdown", "walk-down", "test record", "calibration"],
+  "data log": ["log", "trend", "alarm", "dcs", "scada", "sensor", "data", "history", "reading"],
+  "photograph": ["photo", "photograph", "image", "footage", "cctv", "video", "visual"]
+ },
+ "columns": {
+  "evidence_to_collect": "document",
+  "key_questions": "witness statement",
+  "suggested_interviews": "witness statement",
+  "causal_hypothesis": "data log"
+ }
+}

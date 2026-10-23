@@ -114,7 +114,7 @@ def test_schema_keyword_subset():
 
 def test_artefact_names_closed():
     art = load(REFS / "artefacts.json")
-    assert len(art) == 16
+    assert len(art) == 17
     for name, a in art.items():
         assert set(a) <= {"file", "producer", "org_filled", "planned"}, name
         kind, _, who = a["producer"].partition(":")
@@ -194,9 +194,10 @@ PINNED_ARTEFACTS = {
     "distribution": ("outputs/distribution.csv", "engine:templates", None),
     "verification": ("outputs/verification.jsonl", "engine:templates", None),
     "actions": ("outputs/actions.csv", "engine:export-actions", None),
+    "open-questions": ("workspace/open_questions.json", "engine:open-questions", None),
     "nine-m-map": ("outputs/nine-m-analysis.json", "skill:nine-m-analysis", "Phase 5"),
     "evidence-audit": ("workspace/evidence_audit.json", "engine:evidence-audit", None),
-    "hfacs-profile": ("outputs/latent-conditions-profile.json", "skill:latent-conditions-profile", "Phase 5"),
+    "hfacs-profile": ("workspace/hfacs_profile.json", "engine:hfacs-profile", None),
     "library": ("$PMLC_LIBRARY", "engine:library", "Phase 7"),
 }
 
