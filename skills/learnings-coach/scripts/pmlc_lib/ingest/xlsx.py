@@ -169,6 +169,7 @@ def cmd_ingest(a):
                                "reference": _s(r.get("Specific Reference"))})
 
     incident = {"fields": {}, "narrative": ""}
+    summary_fields, blank_fields = [], []        # every Field row of the sheet, filled or not (open-questions)
     isht = find_sheet(wb, "Incident Summary")
     if isht is not None:
         grab_next = False
@@ -190,6 +191,10 @@ def cmd_ingest(a):
                 continue
             if k and v and k not in ("Field",):
                 incident["fields"][k] = v
+            if k and not grab_next and k != "Field" and k != k.upper() and len(k) <= 60:    # section headings are in capitals; a real field whose label is ALL capitals is dropped with them (Hazira has none)
+                summary_fields.append(k)
+                if not v:
+                    blank_fields.append(k)
 
     causal_sheet = []
     cs = find_sheet(wb, "Causal Chain")
@@ -197,6 +202,8 @@ def cmd_ingest(a):
         for r in rows_as_dicts(cs):
             if _s(r.get("From Code")) and _s(r.get("To Code")):
                 causal_sheet.append({k: _s(v) for k, v in r.items()})
+    incident["summary_fields"] = summary_fields
+    incident["blank_summary_fields"] = blank_fields
     incident["causal_chain_sheet"] = causal_sheet
     votes = []
     vs = find_sheet(wb, "Collaboration Data")

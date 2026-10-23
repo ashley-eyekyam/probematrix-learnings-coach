@@ -117,6 +117,10 @@ def cmd_profile(a):
                      ("suggested_interviews", "Suggested Interviews"), ("causal_hypothesis", "Causal Hypothesis")):
         if n and not any(f[col] for f in F):
             flags.append(f"Column '{lab}' is empty on every finding (the investigator-coach skill can draft it).")
+    blank = inc.get("blank_summary_fields") or []
+    if blank:
+        flags.append(f"{len(blank)} of {len(inc.get('summary_fields') or [])} Incident Summary fields are blank "
+                     f"({', '.join(blank[:6])}{', ...' if len(blank) > 6 else ''}); `open-questions` lists what is open.")
     if not inc.get("causal_chain_sheet"):
         flags.append("Causal Chain sheet is empty; use `pmlc.py causal` to extract links from the causal explanations.")
     if n and not any(is_edited(f["user_edited"]) for f in F):
@@ -167,6 +171,7 @@ def cmd_profile(a):
                                                    ("suggested_interviews", "Suggested Interviews"),
                                                    ("causal_hypothesis", "Causal Hypothesis"))
                               if n and not any(f[col] for f in F)],
+               blank_summary_fields=list(blank), summary_fields=len(inc.get("summary_fields") or []),
                investigation_status=_s(fields.get("Investigation Status")),
                any_user_edited=any(is_edited(f["user_edited"]) for f in F),
                flags=list(flags))

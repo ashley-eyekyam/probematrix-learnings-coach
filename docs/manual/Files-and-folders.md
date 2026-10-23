@@ -57,6 +57,7 @@ These are the files in a fresh Hazira workspace after `ingest`, `profile` and `c
 | `causal_graph.json`, `causal_graph.mmd` | `causal` | The factor-to-factor links, with mention counts and supporting finding IDs; the `.mmd` file is the same graph for tools that draw Mermaid diagrams. |
 | `timeline_candidates.json` | `timeline` | Every dated mention in findings and evidence, with its precision and sources. 92 before the Hazira incident date. |
 | `timeline_event_day.json` | `timeline --on` | Every clock time on one day, with its sources. 29 on the Hazira incident day. |
+| `open_questions.json` | `open-questions` | The empty follow-up columns, the blank Incident Summary fields, and the findings whose justification says something is absent or is hedged (240 and 193 on Hazira). |
 | `interfaces.json` | `interfaces` | Pairs of functions, with shared findings and cross-entity causal mentions. 125 pairs on Hazira. |
 | `plan.json` | `plan` | The numbered plan of steps for a request, each with its state, commands and gate. It holds no dates or absolute paths. `status` shows it stale once the workspace changes; run `plan` again. |
 | `comparator.json` | the agent, in the report-comparison skill | The other report's numbered items (`OBS-`, `RC-`, `REC-`, `ACT-nn`), its issuer role and its statutory status. [compare](commands/compare.md) reads it. |
@@ -95,7 +96,8 @@ The language check (JC7) flags a singleton role in your own wording, and a share
 | `gaps.json` | `pack` | What the evidence could not show, collected from every pack that has `gaps`, for the investigator: `{"gaps": [{"pack", "text", "cites", "evidence_needed"}]}`. Each `pack` run replaces that pack's entries and keeps the others. |
 | `<pack>-test-points.xlsx`, `<pack>-questions.xlsx` | [pack-xlsx](commands/pack-xlsx.md) | A pack's test points or questions as one Excel sheet. |
 | `follow-up.json` | `pack` on the investigator-coach pack | One entry per finding: evidence to collect, key questions, suggested interviews and a causal hypothesis, ready to paste back into ProbeMatrix. |
-| `follow-up.csv` | `pack` on the investigator-coach pack | The same follow-up table as a spreadsheet, in the export's own columns (`Finding ID,Evidence to Collect,Key Questions,Suggested Interviews,Causal Hypothesis`). A shared copy writes neither file. |
+| `follow-up.csv` | `pack` on the investigator-coach pack | The same follow-up table as a spreadsheet, in the export's own columns (`Finding ID,Evidence to Collect,Key Questions,Suggested Interviews,Causal Hypothesis`). A shared copy writes neither file.  |
+| `open-questions-follow-up.csv` | `pack` on the `open-questions-register` pack | One row per finding that a `question` item cites (Finding ID, the item's `good_evidence` under Evidence to Collect, its question under Key Questions; the other two columns blank). Written in any mode (a shared copy as `open-questions-follow-up.<mode>.csv`, masked); not written when no question cites a finding; an existing file is never overwritten, because the organisation fills it in. |
 | `report-comparison-client-safe.json`, `report-comparison-regulator-safe.json` and their pages | report-comparison | Neutral versions for the authors of the other report and for a regulator. |
 | `learnings-register.json` | learnings-register | The register: the source of truth. |
 | `learnings-register.xlsx` | `register-xlsx` | The workbook: Learnings Register, Recommendations, Learning Plan, Summary and About. |

@@ -62,6 +62,7 @@ pmlc 2.0.0a4
 | [timeline-item](commands/timeline-item.md) | Prints the dated candidates as a timeline item for a pack |
 | [facts](commands/facts.md) | Prints the headline numbers of a workspace |
 | [hfacs-profile](commands/hfacs-profile.md) | Counts findings by HFACS level and subcategory, recurring codes and causal feeds |
+| [open-questions](commands/open-questions.md) | Lists what the export leaves open: empty columns, blank fields, absence and hedged findings |
 | [timeline](commands/timeline.md) | Finds dated precursor candidates and the clock times of the event day |
 | [interfaces](commands/interfaces.md) | Finds where two parts of the organisation share findings or causal links |
 
@@ -162,7 +163,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,table-item,register-items,timeline-item,facts,hfacs-profile,pack-xlsx,strings} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,table-item,register-items,timeline-item,open-questions,facts,hfacs-profile,pack-xlsx,strings} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 
