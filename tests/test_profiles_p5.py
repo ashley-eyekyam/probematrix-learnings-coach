@@ -117,6 +117,8 @@ def _evals_copy(tmp_path):
     d.mkdir()
     shutil.copy(ROOT / "evals" / "evals.json", d / "evals.json")
     (d / "skills").mkdir()
+    for f in (ROOT / "evals" / "skills").glob("*.json"):       # the skills' own fragments: the floors need them
+        shutil.copy(f, d / "skills" / f.name)
     return d
 
 
