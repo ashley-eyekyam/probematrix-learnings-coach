@@ -34,7 +34,8 @@ PMLC select <ws> --subcategory "Organisational Climate/ Culture Influences" --br
 `<ws>/missed_opportunities.json`: the findings whose justification cites an earlier recommendation, the
 Failure-to-Correct findings, the dated candidates before the incident that cite either set, and the findings whose
 justification uses drift wording (routine, normalised, informal, had become). The engine finds them; you decide
-which step of the cycle each one shows.
+which step of the cycle each one shows. A finding can cite the post-incident committee's recommendation: that is not
+an earlier warning, so leave it out of the missed opportunities and say so in `limits`.
 
 ## Write
 
