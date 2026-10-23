@@ -61,16 +61,23 @@ OQ_FOLLOW_UP_FILE = "open-questions-follow-up.csv"      # not follow-up.csv: tha
 
 def open_questions_csv(pack) -> str:
     """The open-questions-register pack's question items that cite a finding, as CSV in the export's follow-up
-    columns: one row per cited finding, the question under Key Questions and its good_evidence under Evidence to
-    Collect; Suggested Interviews and Causal Hypothesis stay blank. Items without cites (column questions) have no
-    Finding ID and are left out. Returns "" when no row qualifies, so the caller writes nothing."""
-    rows = []
+    columns: one row per cited Finding ID (it pastes back into the export, Task 15), the questions under Key
+    Questions and their good_evidence under Evidence to Collect, each joined with '; ' in cite order without
+    repeats; Suggested Interviews and Causal Hypothesis stay blank. Evidence IDs and items without a cited finding
+    (column questions) give no row. Returns "" when no row qualifies, so the caller writes nothing."""
+    by_fid = {}
     for s in pack["sections"]:
         for it in s["items"]:
             if it.get("kind") == "question":
                 for fid in it.get("cites") or []:
-                    rows.append([fid, actions._csv_cell(it.get("good_evidence", "")),
-                                 actions._csv_cell(it.get("question", "")), "", ""])
+                    if not str(fid).startswith("FND-"):
+                        continue
+                    ev, qs = by_fid.setdefault(fid, ([], []))
+                    for acc, text in ((ev, it.get("good_evidence", "")), (qs, it.get("question", ""))):
+                        if text and text not in acc:
+                            acc.append(text)
+    rows = [[fid, actions._csv_cell("; ".join(ev)), actions._csv_cell("; ".join(qs)), "", ""]
+            for fid, (ev, qs) in by_fid.items()]
     return _ex_csv_text(FOLLOW_UP_HEADER, rows) if rows else ""
 
 
