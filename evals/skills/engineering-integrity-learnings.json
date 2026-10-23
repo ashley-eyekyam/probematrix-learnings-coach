@@ -1,0 +1,37 @@
+{
+ "evals": [
+  {
+   "id": 2003,
+   "owner": "engineering-integrity-learnings",
+   "skill": "engineering-integrity-learnings",
+   "kind": "trigger",
+   "prompt": "What should our instrument and control engineers learn about alarm design, gas-detection logic and what the control-room displays showed, from this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx)?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "engineering-integrity-learnings"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "engineering-integrity-learnings"
+    },
+    {
+     "type": "section_exists",
+     "pack": "engineering-integrity-learnings",
+     "section": "alarms-automation"
+    },
+    {
+     "type": "language_clean",
+     "pack": "engineering-integrity-learnings"
+    },
+    {
+     "type": "routes_to",
+     "skill": "engineering-integrity-learnings"
+    }
+   ]
+  }
+ ]
+}

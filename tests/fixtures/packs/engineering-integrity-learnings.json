@@ -13,6 +13,14 @@
     "indicator": "% of critical-spares orders with a specification reference", "cites": ["FND-0003"]},
    {"kind": "recommendation", "group": "Specification and substitution", "change": "Route: MOC. Put every substitute part through change control before it is bought",
     "hoc_tier": "administrative", "indicator": "Substitutions approved through change control", "cites": ["FND-0003"]}]},
+  {"id": "alarms-automation", "heading": "Alarms and automation", "items": [
+   {"kind": "learning", "group": "Gas alarm with no executive action", "lesson": "A gas alarm that only lights a display leaves the shutdown to whoever notices it.",
+    "explanation": "The DCS list shows no shutdown on the gas detector [FND-0004; EVD-0002].", "owner": "Instrument engineering", "cites": ["FND-0004", "EVD-0002"]},
+   {"kind": "barrier", "group": "Gas alarm with no executive action", "barrier": "Gas detection that starts isolation", "type": "mitigation",
+    "owner": "Instrument engineering", "state": "worked partly", "failure_mode": "The detector alarmed on the display; nothing tripped",
+    "hoc_tier": "engineering", "fix": "Confirmed-gas logic that starts isolation", "indicator": "% of gas detectors with an executive action", "cites": ["FND-0004"]},
+   {"kind": "recommendation", "group": "Gas alarm with no executive action", "change": "Route: MOC. Add confirmed-gas logic that starts isolation of the pump",
+    "hoc_tier": "engineering", "indicator": "Detectors with a tested executive action", "cites": ["FND-0004", "EVD-0002"]}]},
   {"id": "decisions", "heading": "Engineering decisions pending", "items": [
    {"kind": "decision", "decision": "Which leak test applies after a seal change, and at what pressure?",
     "options": ["Set by the technical authority per pump class", "One site-wide test standard"], "owner": "Technical authority",

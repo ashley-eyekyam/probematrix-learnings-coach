@@ -8,7 +8,7 @@ Draft because: the investigation status is in progress; no finding is marked as 
 
 *Learning purposes: not a statutory document; draft: the investigation status is in progress · Learnings drafted by an AI agent from AI-assisted findings*
 
-*About 8 min read*
+*About 9 min read*
 
 **Audience:** Site leaders, maintenance and integrity managers
 
@@ -26,6 +26,7 @@ Draft because: the investigation status is in progress; no finding is marked as 
 - The most repeated signal was the meter seal itself: the meter was serviced in November 2018 and resealed in February 2019 and again in September 2020 with locally bought O-rings, and the repeats were never escalated into a root-cause review. [FND-AC9A1E69; FND-D14B8424; EVD-1494; EVD-8645] *(evidence: direct; learning: LR-05)*
 - The last signals came days before the release: a malfunction notification on 17 September 2020 that was never closed, and a reseal on 18 September proved only at operating pressure. [FND-FA807C69; FND-FDFA6FF5; EVD-0591; EVD-2894] *(evidence: direct; learning: LR-04)*
 - The longest-running signal was pipe-wall loss: thickness surveys six years apart against a four-year schedule, a 2017 report asking for corrective action, and pitting in July 2019 that was painted. The findings do not link these lines to the failed meter. [FND-6FA2CEDE; FND-C6992EAF; FND-ABDADA0C; FND-98A4D631; EVD-8307; EVD-5527; EVD-2397] *(evidence: direct; learning: LR-17)*
+- The organisation had dated chances to learn: an external audit's open recommendations extended without approval, a repeat seal job, an unrecorded calibration change and a notification left open; none led to a change before the release. [FND-1D713648; FND-82FC718D; FND-E94D563C; FND-FA807C69; EVD-6852; EVD-1494; EVD-2506; EVD-0591] *(evidence: direct)*
 - Most signals have no recorded response. Where one was recorded, it treated the symptom: painting for metal loss, and the same reseal for a repeat seal failure. [FND-ABDADA0C; FND-CEE3D4D7; EVD-2397; EVD-1494] *(evidence: direct)*
 
 ## Signals before the event
@@ -75,25 +76,63 @@ Sources: [EVD-0591; EVD-1494; EVD-2397; EVD-2506; EVD-2894; EVD-2986; EVD-5527; 
   - Response: Returned to service; no test to design pressure and no close-out review.
   - Knowable then: The crew and the shift that took the meter back knew the joint had been proved only at operating pressure.
 
+## Missed opportunities
+
+Four dated chances to learn before the release, from the engine's missed-opportunities sets: findings that name a recommendation or a failure to correct, placed at the dates the export gives. Many of these findings quote the investigation committee's own later recommendations; each event is placed for what was on record at its date, not for a recommendation made afterwards.
+
+Sources: [EVD-0591; EVD-1494; EVD-2506; EVD-6852; FND-1D713648; FND-3A34BAD3; FND-5A742738; FND-82FC718D; FND-C2B4989C; FND-E94D563C; FND-FA807C69; FND-FEC84761]
+
+- 2018-02 (31 months before): An external safety audit leaves 12 of its 308 recommendations open, and their target dates are extended to 2021 without the approval the procedure requires. *(weak signal)* [FND-1D713648; FND-5A742738; EVD-6852]
+  - Received by: Plant & Asset Leadership (F13, T4)
+  - Response: Target dates extended; no record of the required approval.
+  - Knowable then: The open recommendations, their new dates and the missing approval were in the audit action records.
+- 2019-02-25 (18 months before): The same meter needs its second job, a gasket change, within four months of its service: a chance to treat the recurrence as a reliability concern. *(weak signal)* [FND-82FC718D; FND-FEC84761; FND-3A34BAD3; EVD-1494]
+  - Received by: Mechanical Maintenance (F02, T2)
+  - Response: Repaired like for like; the recurrence was not reviewed.
+  - Knowable then: Both jobs were in the meter's maintenance history.
+- 2019-12-18 (9 months before): A calibration setting on the meter is changed and changed back with no checklist, and the signed calibration documents do not mention it. *(weak signal)* [FND-C2B4989C; FND-E94D563C; EVD-2506]
+  - Received by: Instrumentation, Control & Calibration (F04, T1)
+  - Response: None recorded.
+  - Knowable then: Only the calibration team knew of the change; the signed record did not show it to anyone else.
+- 2020-09-17: A malfunction notification is raised on the meter seven days before the release; after the next day's gasket change it is never closed or reviewed. *(weak signal)* [FND-FA807C69; EVD-0591]
+  - Received by: Work Management & Planning (F08, T2)
+  - Response: Gasket replaced; the notification was left open with no close-out review.
+  - Knowable then: The open notification and the meter's repair history were in the work-management system.
+
 ## The event sequence
 
 24 September 2020, from CCTV, witness statements and the reconstructed response timeline.
 
 - 2020-09-24 02:11: CCTV shows the metering skid intact, with no vapour (02:11:43). [FND-C7F16268; EVD-9587]
+  - Knowable then: yes
 - 2020-09-24 02:12: CCTV shows the vapour leak beginning at the condensate metering skid (02:12:50). [FND-9B406A83; EVD-1284]
+  - Knowable then: yes
 - 2020-09-24 02:15: A perimeter security post hears noise and sees a vapour cloud from the gas terminal area, and informs the main gate, the fire station and the LPG control room. [FND-5AB5DFA3; EVD-4286]
+  - Knowable then: yes
 - 2020-09-24 02:16: The gas terminal gate post, which also saw the cloud, informs the CCTV control room and the main gate. [FND-1ABF45B7; EVD-6234]
+  - Knowable then: yes
 - 2020-09-24 02:18: The CCTV control room confirms heavy leakage on camera and informs the gas terminal control room. [FND-37BC45CF; EVD-8871]
+  - Knowable then: yes
 - 2020-09-24 02:20: The gas terminal control room hears the annunciator alarm and takes a call about 'some vapour cloud or steam leakage'; staff go outside and find heavy cloud and very poor visibility. [FND-C75F81B9; FND-01ADF0AA; EVD-1460]
+  - Knowable then: yes
 - 2020-09-24 02:35: The shift in-charges are called from their quarters. One cannot enter the gas control room area for the gas smell; the other instructs that the 36-inch pressure control valve be closed and the control room left, and informs senior managers. [FND-36179046; EVD-9612; EVD-7340]
+  - Knowable then: yes
 - 2020-09-24 03:00: CCTV shows vapour all around the skid, even at height (03:00:44). [FND-AE629313; EVD-8213]
+  - Knowable then: yes
 - 2020-09-24 03:01: The first emergency isolation valve is closed by hand. [FND-AEA16F83; EVD-6414]
+  - Knowable then: yes
 - 2020-09-24 03:04: The 36-inch pressure control valve is closed. [FND-82D49143; EVD-7340]
+  - Knowable then: yes
 - 2020-09-24 03:08: The cloud ignites (03:08:15); seven seconds later the CCTV cable burns and the recording stops. [FND-74A80D24; FND-2E2F2A38; EVD-4507; EVD-2752]
+  - Knowable then: yes
 - 2020-09-24 03:10: Stopping the offshore supply is ordered, after ignition. [FND-82D49143]
+  - Knowable then: yes
 - 2020-09-24 03:50: Active fire cooling begins, carried by the electric fire-water pumps. [FND-B6BB0738; EVD-2432]
+  - Knowable then: yes
 - 2020-09-24 06:00: The fire is extinguished; cooling continues. [FND-B6BB0738; EVD-2432]
+  - Knowable then: yes
 - 2020-09-24 07:30: All clear. [FND-26BF96E1]
+  - Knowable then: yes
 
 ## Signal learnings
 
@@ -178,7 +217,7 @@ The management-of-change procedure was published in August 2016 and not used aft
 ## Limits of this pack
 
 - The signals are those the export dates; undated warnings in the findings are not on the timeline.
-- Earlier recommendations never acted on across incidents are listed as signals only (a later v2.0 skill reviews them).
+- Why earlier recommendations and failures to correct did not lead to change is analysed in failure-to-learn-review; here they are placed on the timeline only.
 
 ---
 

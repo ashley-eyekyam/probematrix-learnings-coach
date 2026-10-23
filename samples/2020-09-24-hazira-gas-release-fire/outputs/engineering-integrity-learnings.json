@@ -248,66 +248,6 @@
     },
     {
      "kind": "learning",
-     "group": "Detection, alarm and shutdown design",
-     "lesson": "If fire and gas detection is designed to inform rather than act, every protective action waits on people noticing, checking and deciding.",
-     "explanation": "The hydrocarbon and H2S detectors were configured to the annunciator panel only, with no history in the control system and no automatic shutdown or suppression. No policy required the interlock, and the system was never upgraded, so the first alarm came after people had already seen the cloud.",
-     "owner": "Technical authority (engineering function)",
-     "evidence_strength": "corroborated",
-     "learning": "LR-10",
-     "cites": [
-      "FND-119E6CF7",
-      "FND-4D7CF773",
-      "FND-01C3DE98",
-      "EVD-3452",
-      "EVD-8657"
-     ],
-     "supporting_cites": [
-      "FND-A245072B",
-      "FND-94C28ACE",
-      "FND-9399FA02",
-      "FND-D45021AD",
-      "FND-5BC96E8A",
-      "FND-2D90823E",
-      "FND-6155A1C2",
-      "FND-4458E0C0",
-      "FND-5897D1E4",
-      "FND-15B4E60F"
-     ]
-    },
-    {
-     "kind": "barrier",
-     "group": "Detection, alarm and shutdown design",
-     "learning": "LR-10",
-     "barrier": "Fire and gas detection with automatic executive action",
-     "type": "mitigation",
-     "failure_mode": "Detection lit an annunciator only: no shutdown, isolation or suppression, and no signal history.",
-     "state": "worked partly",
-     "hoc_tier": "engineering",
-     "owner": "Instrumentation and control engineering",
-     "fix": "Confirmed-gas logic that starts isolation, and deluge where designed, with every detector signal kept in history.",
-     "indicator": "% of major-release areas covered by automatic executive action",
-     "cites": [
-      "FND-01C3DE98",
-      "FND-119E6CF7",
-      "EVD-8657"
-     ]
-    },
-    {
-     "kind": "recommendation",
-     "group": "Detection, alarm and shutdown design",
-     "learning": "LR-10",
-     "change": "Route: MOC. Implement confirmed-gas logic that starts isolation by itself (and deluge where designed) in the metering and gas terminal areas, and keep every detector signal in history.",
-     "hoc_tier": "engineering",
-     "barrier": "Fire and gas detection with automatic executive action",
-     "owner": "Instrumentation and control engineering",
-     "indicator": "% of detectors with signal history; proof-test and spurious-trip records reviewed each quarter",
-     "cites": [
-      "FND-4D7CF773",
-      "EVD-3452"
-     ]
-    },
-    {
-     "kind": "learning",
      "group": "Emergency isolation design",
      "lesson": "Emergency isolation valves that can only be worked at the valve are out of reach in the event they exist for.",
      "explanation": "The gas terminal emergency valves were supplied as local-manual valves with no remote operation from the control room, and were never upgraded. The vapour cloud kept people away, and the first valve was closed by hand once the shift in-charge reached it.",
@@ -553,6 +493,128 @@
      "cites": [
       "FND-82687B50",
       "EVD-0933"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "alarms-automation",
+   "heading": "Alarms and automation",
+   "intro": "From the 48 findings coded to the technological environment (PTE): how detection, automatic action and the control-room displays shaped what operators could see and do.",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "Detection, alarm and shutdown design",
+     "lesson": "If fire and gas detection is designed to inform rather than act, every protective action waits on people noticing, checking and deciding.",
+     "explanation": "The hydrocarbon and H2S detectors were configured to the annunciator panel only, with no history in the control system and no automatic shutdown or suppression. No policy required the interlock, and the system was never upgraded, so the first alarm came after people had already seen the cloud.",
+     "owner": "Technical authority (engineering function)",
+     "evidence_strength": "corroborated",
+     "learning": "LR-10",
+     "cites": [
+      "FND-119E6CF7",
+      "FND-4D7CF773",
+      "FND-01C3DE98",
+      "EVD-3452",
+      "EVD-8657"
+     ],
+     "supporting_cites": [
+      "FND-A245072B",
+      "FND-94C28ACE",
+      "FND-9399FA02",
+      "FND-D45021AD",
+      "FND-5BC96E8A",
+      "FND-2D90823E",
+      "FND-6155A1C2",
+      "FND-4458E0C0",
+      "FND-5897D1E4",
+      "FND-15B4E60F"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "group": "Detection, alarm and shutdown design",
+     "learning": "LR-10",
+     "barrier": "Fire and gas detection with automatic executive action",
+     "type": "mitigation",
+     "failure_mode": "Detection lit an annunciator only: no shutdown, isolation or suppression, and no signal history.",
+     "state": "worked partly",
+     "hoc_tier": "engineering",
+     "owner": "Instrumentation and control engineering",
+     "fix": "Confirmed-gas logic that starts isolation, and deluge where designed, with every detector signal kept in history.",
+     "indicator": "% of major-release areas covered by automatic executive action",
+     "cites": [
+      "FND-01C3DE98",
+      "FND-119E6CF7",
+      "EVD-8657"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "group": "Detection, alarm and shutdown design",
+     "learning": "LR-10",
+     "change": "Route: MOC. Implement confirmed-gas logic that starts isolation by itself (and deluge where designed) in the metering and gas terminal areas, and keep every detector signal in history.",
+     "hoc_tier": "engineering",
+     "barrier": "Fire and gas detection with automatic executive action",
+     "owner": "Instrumentation and control engineering",
+     "indicator": "% of detectors with signal history; proof-test and spurious-trip records reviewed each quarter",
+     "cites": [
+      "FND-4D7CF773",
+      "EVD-3452"
+     ]
+    },
+    {
+     "kind": "learning",
+     "group": "Process signals at the control-room display",
+     "lesson": "If transmitters at a leak point send nothing to the control system and its clocks disagree, operators lose the pressure trend that could show a leak, and the sequence has to be rebuilt afterwards from other records.",
+     "explanation": "Three pressure transmitters on the metering lines were shown on the drawing but had no data in the control system, so operators had no pressure trend at the source. Clocks across the control rooms differed by 2 to 12 minutes, so times on the day had to be taken from the camera and witness statements.",
+     "owner": "Instrumentation and control engineering",
+     "evidence_strength": "corroborated",
+     "learning": "LR-15",
+     "cites": [
+      "FND-2B5C46B9",
+      "FND-4108DB15",
+      "FND-EE34220F",
+      "EVD-6470",
+      "EVD-5532"
+     ],
+     "supporting_cites": [
+      "FND-6163C9EB",
+      "FND-0C37BB1E"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "group": "Process signals at the control-room display",
+     "learning": "LR-15",
+     "barrier": "Pressure monitoring at the leak point, shown and kept in the control system",
+     "type": "mitigation",
+     "failure_mode": "Transmitters on the drawing delivered no data, so no trend or alarm on pressure was possible, and the control-room clocks disagreed.",
+     "state": "absent",
+     "hoc_tier": "engineering",
+     "owner": "Instrumentation and control engineering",
+     "fix": "Live, retained data from every transmitter on the drawing, an alarm on pressure loss, and one time source for all control-system clocks.",
+     "indicator": "% of safety-relevant transmitters on the drawings with live, retained data",
+     "cites": [
+      "FND-6163C9EB",
+      "FND-0C37BB1E",
+      "EVD-6470",
+      "EVD-5532"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "group": "Process signals at the control-room display",
+     "learning": "LR-15",
+     "change": "Route: MOC. Connect the metering-line pressure transmitters to the control system with signal history and an alarm on pressure loss, and set every control-system clock to one time source.",
+     "hoc_tier": "engineering",
+     "barrier": "Pressure monitoring at the leak point",
+     "owner": "Instrumentation and control engineering",
+     "indicator": "Transmitters with live, retained data; the clock offset between control rooms, checked each month",
+     "cites": [
+      "FND-2B5C46B9",
+      "FND-0C37BB1E",
+      "EVD-6470",
+      "EVD-5532"
      ]
     }
    ]

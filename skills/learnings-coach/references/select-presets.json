@@ -21,7 +21,8 @@
   "engineering-integrity-learnings": [
     {"name": "engineering", "args": ["--tag", "engineering", "--brief"]},
     {"name": "top-engineering-l34", "args": ["--tag", "engineering", "--level", "3", "4", "--top-rated"]},
-    {"name": "text", "args": ["--text", "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design", "--brief"]}
+    {"name": "text", "args": ["--text", "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design", "--brief"]},
+    {"name": "pte", "args": ["--prefix", "PTE", "--brief"]}
   ],
   "failure-to-learn-review": [
     {"name": "failure-to-correct", "args": ["--subcategory", "Failure to Correct Known Problem", "--brief"]},

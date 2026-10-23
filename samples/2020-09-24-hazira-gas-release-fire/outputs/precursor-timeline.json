@@ -69,6 +69,20 @@
    "learning": "LR-17"
   },
   {
+   "text": "The organisation had dated chances to learn: an external audit's open recommendations extended without approval, a repeat seal job, an unrecorded calibration change and a notification left open; none led to a change before the release.",
+   "cites": [
+    "FND-1D713648",
+    "FND-82FC718D",
+    "FND-E94D563C",
+    "FND-FA807C69",
+    "EVD-6852",
+    "EVD-1494",
+    "EVD-2506",
+    "EVD-0591"
+   ],
+   "evidence_strength": "direct"
+  },
+  {
    "text": "Most signals have no recorded response. Where one was recorded, it treated the symptom: painting for metal loss, and the same reseal for a repeat seal failure.",
    "cites": [
     "FND-ABDADA0C",
@@ -449,6 +463,85 @@
    ]
   },
   {
+   "id": "missed",
+   "heading": "Missed opportunities",
+   "intro": "Four dated chances to learn before the release, from the engine's missed-opportunities sets: findings that name a recommendation or a failure to correct, placed at the dates the export gives. Many of these findings quote the investigation committee's own later recommendations; each event is placed for what was on record at its date, not for a recommendation made afterwards.",
+   "items": [
+    {
+     "kind": "timeline",
+     "id": "missed-timeline",
+     "events": [
+      {
+       "date": "2018-02",
+       "text": "An external safety audit leaves 12 of its 308 recommendations open, and their target dates are extended to 2021 without the approval the procedure requires.",
+       "signal": true,
+       "received_by": "Plant & Asset Leadership (F13, T4)",
+       "response": "Target dates extended; no record of the required approval.",
+       "knowable_then": "The open recommendations, their new dates and the missing approval were in the audit action records.",
+       "cites": [
+        "FND-1D713648",
+        "FND-5A742738",
+        "EVD-6852"
+       ]
+      },
+      {
+       "date": "2019-02-25",
+       "text": "The same meter needs its second job, a gasket change, within four months of its service: a chance to treat the recurrence as a reliability concern.",
+       "signal": true,
+       "received_by": "Mechanical Maintenance (F02, T2)",
+       "response": "Repaired like for like; the recurrence was not reviewed.",
+       "knowable_then": "Both jobs were in the meter's maintenance history.",
+       "cites": [
+        "FND-82FC718D",
+        "FND-FEC84761",
+        "FND-3A34BAD3",
+        "EVD-1494"
+       ]
+      },
+      {
+       "date": "2019-12-18",
+       "text": "A calibration setting on the meter is changed and changed back with no checklist, and the signed calibration documents do not mention it.",
+       "signal": true,
+       "received_by": "Instrumentation, Control & Calibration (F04, T1)",
+       "response": "None recorded.",
+       "knowable_then": "Only the calibration team knew of the change; the signed record did not show it to anyone else.",
+       "cites": [
+        "FND-C2B4989C",
+        "FND-E94D563C",
+        "EVD-2506"
+       ]
+      },
+      {
+       "date": "2020-09-17",
+       "text": "A malfunction notification is raised on the meter seven days before the release; after the next day's gasket change it is never closed or reviewed.",
+       "signal": true,
+       "received_by": "Work Management & Planning (F08, T2)",
+       "response": "Gasket replaced; the notification was left open with no close-out review.",
+       "knowable_then": "The open notification and the meter's repair history were in the work-management system.",
+       "cites": [
+        "FND-FA807C69",
+        "EVD-0591"
+       ]
+      }
+     ],
+     "cites": [
+      "EVD-0591",
+      "EVD-1494",
+      "EVD-2506",
+      "EVD-6852",
+      "FND-1D713648",
+      "FND-3A34BAD3",
+      "FND-5A742738",
+      "FND-82FC718D",
+      "FND-C2B4989C",
+      "FND-E94D563C",
+      "FND-FA807C69",
+      "FND-FEC84761"
+     ]
+    }
+   ]
+  },
+  {
    "id": "event-day",
    "heading": "The event sequence",
    "intro": "24 September 2020, from CCTV, witness statements and the reconstructed response timeline.",
@@ -464,7 +557,8 @@
        "cites": [
         "FND-C7F16268",
         "EVD-9587"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -473,7 +567,8 @@
        "cites": [
         "FND-9B406A83",
         "EVD-1284"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -482,7 +577,8 @@
        "cites": [
         "FND-5AB5DFA3",
         "EVD-4286"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -491,7 +587,8 @@
        "cites": [
         "FND-1ABF45B7",
         "EVD-6234"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -500,7 +597,8 @@
        "cites": [
         "FND-37BC45CF",
         "EVD-8871"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -510,7 +608,8 @@
         "FND-C75F81B9",
         "FND-01ADF0AA",
         "EVD-1460"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -520,7 +619,8 @@
         "FND-36179046",
         "EVD-9612",
         "EVD-7340"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -529,7 +629,8 @@
        "cites": [
         "FND-AE629313",
         "EVD-8213"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -538,7 +639,8 @@
        "cites": [
         "FND-AEA16F83",
         "EVD-6414"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -547,7 +649,8 @@
        "cites": [
         "FND-82D49143",
         "EVD-7340"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -558,7 +661,8 @@
         "FND-2E2F2A38",
         "EVD-4507",
         "EVD-2752"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -566,7 +670,8 @@
        "text": "Stopping the offshore supply is ordered, after ignition.",
        "cites": [
         "FND-82D49143"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -575,7 +680,8 @@
        "cites": [
         "FND-B6BB0738",
         "EVD-2432"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -584,7 +690,8 @@
        "cites": [
         "FND-B6BB0738",
         "EVD-2432"
-       ]
+       ],
+       "knowable_then": true
       },
       {
        "date": "2020-09-24",
@@ -592,7 +699,8 @@
        "text": "All clear.",
        "cites": [
         "FND-26BF96E1"
-       ]
+       ],
+       "knowable_then": true
       }
      ]
     }
@@ -749,6 +857,6 @@
  ],
  "limits": [
   "The signals are those the export dates; undated warnings in the findings are not on the timeline.",
-  "Earlier recommendations never acted on across incidents are listed as signals only (a later v2.0 skill reviews them)."
+  "Why earlier recommendations and failures to correct did not lead to change is analysed in failure-to-learn-review; here they are placed on the timeline only."
  ]
 }
