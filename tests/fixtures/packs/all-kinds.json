@@ -41,4 +41,10 @@
    "segments": [{"visual": "A pump on its skid.", "narration": "This pump was restarted after a seal change without a leak test.",
                  "seconds": 20, "on_screen": "Test, record, restart"},
                 {"visual": "A signed test sheet.", "narration": "Ask for the signed test record before any restart.",
-                 "seconds": 25, "cites": ["FND-0002"]}]}]}]}
+                 "seconds": 25, "cites": ["FND-0002"]}]},
+  {"kind": "risk_change", "id": "risk-seal", "risk": "Seal failure on the transfer pump",
+   "change_type": "control-rating",
+   "current_assumption": "The leak test before restart is rated as a reliable control.",
+   "evidence_says": "The test record was not asked for after a seal change.",
+   "proposed_change": "Re-rate the control as degraded until the record is part of the work order.",
+   "cites": ["FND-0001"]}]}]}

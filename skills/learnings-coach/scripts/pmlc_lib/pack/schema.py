@@ -185,6 +185,27 @@ def _ps_p4_media_kinds() -> None:
 _ps_p4_media_kinds()
 
 
+# Phase 5, Task 8: the risk_change kind. The risk owner decides, so the kind has no owner, date or rating field.
+RISK_CHANGE_TYPES = ("missing-threat", "control-rating", "accepted-without-authority", "kri", "other")
+
+
+def _ps_p5_risk_change() -> None:
+    KINDS["risk_change"] = {"req": ["risk", "change_type", "current_assumption", "evidence_says", "proposed_change"],
+                            "opt": [], "cite": True,
+                            "fields": [["risk", "title"], ["change_type", "badge"], ["current_assumption", "body"],
+                                       ["evidence_says", "body"], ["proposed_change", "body"]]}
+    INLINE_FIELDS["risk_change"] = ["current_assumption", "evidence_says", "proposed_change"]
+
+
+_ps_p5_risk_change()
+
+
+def _check_risk_change(it, ip, bad):
+    """risk_change: change_type is one of RISK_CHANGE_TYPES."""
+    if "change_type" in it and it["change_type"] not in RISK_CHANGE_TYPES:
+        bad(f"{ip}.change_type", f"must be one of {', '.join(RISK_CHANGE_TYPES)}")
+
+
 def _check_script(it, ip, bad):
     """script (L4-19): channel is one of SCRIPT_CHANNELS; each segment {visual*, narration*, seconds* (1-600),
     on_screen, cites}."""
@@ -508,7 +529,8 @@ def _check_item(it, ip, bad, warn):
      "barrier": _check_barrier}.get(kind, lambda *x: None)(it, ip, bad)
     if kind == "question":
         _check_question(it, ip, bad, warn)
-    {"script": _check_script, "scenario": _check_injects}.get(kind, lambda *x: None)(it, ip, bad)
+    {"script": _check_script, "scenario": _check_injects,
+     "risk_change": _check_risk_change}.get(kind, lambda *x: None)(it, ip, bad)
     if not spec.get("cite") and not any(True for _ in _walk_ids(_citable_item(it), "")):
         warn(ip, "no Finding or Evidence ID cited")
 

@@ -49,13 +49,13 @@ DOC_TARGETS += [f"{t}:learner" for t in DOC_TARGETS]                         # t
 REGISTER_TARGETS = ("register-render:docx", "register-render:email", "register-xlsx", "pack-xlsx:test_point",
                     "pack-xlsx:question")
 
-# P4-20: data formats with no status slot, and why. follow-up.csv is no format: investigator-coach writes it beside
+# P4-20 (risk-csv joined in Phase 5): data formats with no status slot, and why. follow-up.csv is no format: investigator-coach writes it beside
 # follow-up.json.
 IMPORT_CLEAN = "import files must stay clean: a status row would be imported as data"
 ON_AIR = ("the status would be shown on screen or spoken aloud; the shooting script in html, md and docx carries the "
           "status for them")
-EXEMPT = {"csv": IMPORT_CLEAN, "quiz-csv": IMPORT_CLEAN, "bowtie-csv": IMPORT_CLEAN, "follow-up.csv": IMPORT_CLEAN,
-          "srt": ON_AIR, "narration": ON_AIR}
+EXEMPT = {"csv": IMPORT_CLEAN, "quiz-csv": IMPORT_CLEAN, "bowtie-csv": IMPORT_CLEAN, "risk-csv": IMPORT_CLEAN,
+          "follow-up.csv": IMPORT_CLEAN, "srt": ON_AIR, "narration": ON_AIR}
 NAMES = ("Fictional Person", "Tarvo Quillane")    # invented names for the shared-copy test
 
 
@@ -347,7 +347,7 @@ def test_xliff_file_note_carries_status_and_brand(env):
 def test_data_format_exempt_list_is_p4_20():
     """The exempt list is exactly P4-20's, each with its reason; every other data format has a slot reader."""
     assert EXEMPT == {"csv": IMPORT_CLEAN, "quiz-csv": IMPORT_CLEAN, "bowtie-csv": IMPORT_CLEAN,
-                      "follow-up.csv": IMPORT_CLEAN, "srt": ON_AIR, "narration": ON_AIR}
+                      "risk-csv": IMPORT_CLEAN, "follow-up.csv": IMPORT_CLEAN, "srt": ON_AIR, "narration": ON_AIR}
     assert "follow-up.csv" not in R.FORMATS                         # written by investigator-coach, not a format
     assert set(DATA_FORMATS) == (set(EXEMPT) - {"follow-up.csv"}) | set(DATA_SLOTS)
     assert not set(DATA_SLOTS) & set(EXEMPT)
@@ -437,7 +437,7 @@ def shared(tmp_path_factory):
     for s in doc["sections"]:
         for it in s["items"]:
             for k in ("text", "title", "question", "change", "story", "what_happened", "lesson", "barrier",
-                      "failure_mode"):
+                      "failure_mode", "evidence_says"):
                 if isinstance(it.get(k), str):
                     it[k] = f"{it[k]} {a} and {b} were there."
             for n in it.get("nodes") or []:

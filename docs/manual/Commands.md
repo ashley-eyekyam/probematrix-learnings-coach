@@ -132,6 +132,7 @@ pmlc 2.0.0a4
 | `png` | data | `<pack>.<item-id>.png` | The same picture as a PNG, drawn by a local Chromium-family browser |
 | `graphml` | data | `<pack>.<item-id>.graphml` | Each graph item for yEd and other graph tools |
 | `bowtie-csv` | data | `<pack>.bowtie.csv` | The barriers, one row each, for a bow-tie tool |
+| `risk-csv` | data | `<pack>.risk-changes.csv` | The `risk_change` items, one row each, for a risk register; the risk owner's decision column is blank |
 | `ics` | data | `<pack>.ics` | Calendar reminders for the follow-ups, counted from `--start` |
 | `gift` | data | `<pack>.gift.txt` | The questions for a Moodle import |
 | `qti` | data | `<pack>.qti.zip` | The questions as an IMS QTI 2.1 package for other LMSs |

@@ -24,3 +24,11 @@ def test_hazira_436_findings_46_evidence(hazira_ws):
     w = pmlc.load_ws(hazira_ws)
     assert len(w["findings"]) == 436
     assert len(w["evidence"]) == 46
+
+
+def test_risk_coded_findings_68(hazira_ws):
+    """Task 8: findings whose code name contains "risk" (six codes) = 68."""
+    w = pmlc.load_ws(hazira_ws)
+    hits = [f for f in w["findings"] if "risk" in f["name"].lower()]
+    assert len(hits) == 68
+    assert len({f["code"].split()[0] for f in hits}) == 6

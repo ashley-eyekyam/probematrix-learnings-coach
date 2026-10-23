@@ -1529,6 +1529,9 @@
         },
         {
           "$ref": "#/$defs/item_script"
+        },
+        {
+          "$ref": "#/$defs/item_risk_change"
         }
       ]
     },
@@ -1665,6 +1668,76 @@
         "content_hash": {
           "type": "string",
           "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "item_risk_change": {
+      "type": "object",
+      "required": [
+        "kind",
+        "risk",
+        "change_type",
+        "current_assumption",
+        "evidence_says",
+        "proposed_change",
+        "cites"
+      ],
+      "properties": {
+        "kind": {
+          "const": "risk_change"
+        },
+        "risk": {
+          "$ref": "#/$defs/text"
+        },
+        "change_type": {
+          "enum": [
+            "missing-threat",
+            "control-rating",
+            "accepted-without-authority",
+            "kri",
+            "other"
+          ]
+        },
+        "current_assumption": {
+          "$ref": "#/$defs/text"
+        },
+        "evidence_says": {
+          "$ref": "#/$defs/text"
+        },
+        "proposed_change": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites_required"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
         }
       }
     }
