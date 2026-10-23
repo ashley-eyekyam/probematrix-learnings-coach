@@ -479,11 +479,11 @@ The schedule let a mandated inspection move by years with no recorded deferral, 
 
 *(learning: LR-03)*
 
-**Recommendation:** Add a repeat-failure trigger to the maintenance system: a second corrective job on the same tag within 24 months opens a reliability review that must be closed before the next job on that tag is scheduled. [FND-8B4A5414; FND-F0D015E1]
+**Recommendation:** Add a repeat-failure trigger to the maintenance system: a second corrective job on the same tag within an interval the owning function sets opens a reliability review that must be closed before the next job on that tag is scheduled. [FND-8B4A5414; FND-F0D015E1]
 - Control tier: engineering
 - Barrier: prevention: reliability review of repeat failures
 - Owner: Work management function
-- Leading indicator: Tags with two or more corrective jobs in 24 months and no closed reliability review.
+- Leading indicator: Tags with two or more corrective jobs within that interval and no closed reliability review.
 
 *(learning: LR-05)*
 

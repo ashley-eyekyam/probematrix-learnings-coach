@@ -24,7 +24,7 @@ This skill needs the **workspace** and **clusters** (see `learning-clusters`). I
 ```bash
 PMLC select <ws> --entity <F-id> --count-by level                                       # size floor and S1 counts
 PMLC select <ws> --entity <F-id> --budget-chars 60000 --out <ws>/sel-<F-id>.md          # full text with evidence quotes, highest-rated first
-PMLC select <ws> --entity <F-id> --fields short,code,level,rating                        # index: every finding, one short line each
+PMLC select <ws> --entity <F-id> --fields short,code,level,rating --budget-chars 60000   # index: every finding, one short line each
 PMLC select <ws> --entity <F-id> --level 1 --fields label,short,justification,code,rating --budget-chars 60000   # then --level 2, 3 and 4
 PMLC table-item <ws> entity-tier --entity <F-id>                                        # S1: findings by tier, ready to paste
 PMLC interfaces <ws>                                                                    # S6: pairs involving this entity

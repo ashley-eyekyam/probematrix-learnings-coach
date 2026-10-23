@@ -63,7 +63,8 @@ PMLC classify <ws> --industry process                    # process-industry role
 ```
 
 All three are remembered by later `classify` runs (`--no-org-chart` forgets the chart, `--no-overlay` the overlay
-and the industry pack). For a full custom
+and the industry pack). A new `--overlay` replaces the remembered overlay and industry pack, so pass `--industry`
+again with it. For a full custom
 taxonomy, copy `learnings-coach/references/taxonomy.json` and pass `--taxonomy <file>`; keep IDs stable once
 outputs are shared, and give new entities `tags` (`emergency`, `supply`, `contractor` …) so the audience
 skills, which select by tag, still find them.

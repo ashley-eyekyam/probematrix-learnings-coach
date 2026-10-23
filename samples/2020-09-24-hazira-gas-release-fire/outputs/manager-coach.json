@@ -1065,10 +1065,10 @@
     },
     {
      "kind": "recommendation",
-     "change": "Add a repeat-failure trigger to the maintenance system: a second corrective job on the same tag within 24 months opens a reliability review that must be closed before the next job on that tag is scheduled.",
+     "change": "Add a repeat-failure trigger to the maintenance system: a second corrective job on the same tag within an interval the owning function sets opens a reliability review that must be closed before the next job on that tag is scheduled.",
      "hoc_tier": "engineering",
      "barrier": "prevention: reliability review of repeat failures",
-     "indicator": "Tags with two or more corrective jobs in 24 months and no closed reliability review.",
+     "indicator": "Tags with two or more corrective jobs within that interval and no closed reliability review.",
      "owner": "Work management function",
      "learning": "LR-05",
      "cites": [

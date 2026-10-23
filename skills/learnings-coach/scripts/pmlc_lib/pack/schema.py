@@ -815,8 +815,13 @@ LENSES = ("regulator", "insurer", "jv-partner", "client")      # P5-17: who the 
 
 def _check_lens(pack, bad, soft):
     """Optional top-level `lens` (P5-17): one of LENSES. A pack with a lens needs a `lens` section holding a para on
-    what that reader needs (a profile problem: soft, so a problem under --strict)."""
+    what that reader needs (a profile problem: soft, so a problem under --strict). A lens section in a pack with no
+    `lens` (internal audit) is soft too: set the lens or drop the section."""
     if "lens" not in pack:
+        secs = pack.get("sections") if isinstance(pack.get("sections"), list) else []
+        if any(isinstance(s, dict) and s.get("id") == "lens" for s in secs):
+            soft("lens", "a lens section needs the pack's lens field set (regulator, insurer, jv-partner or client); "
+                         "for internal audit drop the section")
         return
     lens = pack["lens"]
     if lens not in LENSES:

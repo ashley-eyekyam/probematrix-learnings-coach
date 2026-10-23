@@ -95,6 +95,15 @@ def test_lens_needs_its_section(w):
                 if x.startswith("lens")]
 
 
+def test_lens_section_without_lens_is_flagged(w):
+    """M2: a stray lens section in an internal-audit pack is a warning (a problem under --strict)."""
+    import pmlc_pack as pp
+    msg = ("lens: a lens section needs the pack's lens field set (regulator, insurer, jv-partner or client); "
+           "for internal audit drop the section")
+    assert msg in pp.check_pack(_lens_pack(None), w).warnings
+    assert msg in pp.check_pack(_lens_pack(None), w, strict=True).problems
+
+
 def test_lens_in_schema_labels_and_locked_fields():
     from pmlc_lib import strings
     from pmlc_lib.render import fields
@@ -187,7 +196,7 @@ def test_table_item_nine_m(ws, w, tmp_path):  # noqa: F811
     assert [r[0] for r in it["rows"]] == [f"M{i}" for i in range(1, 10)]
     m3 = it["rows"][2]
     assert m3[0] == "M3" and m3[2:] == [2, 1, "LR-01, LR-02"] and m3[1]
-    assert it["row_cites"][2] == ["FND-0001", "FND-0002", "FND-0003"]
+    assert sorted(it["row_cites"][2]) == ["FND-0001", "FND-0002", "FND-0003"]   # order: rating (M3 test below)
     assert all(r[2] == 0 and r[4] == "none" for i, r in enumerate(it["rows"]) if i != 2)
     assert all(c == [] for i, c in enumerate(it["row_cites"]) if i != 2)
     pack = {"pack": "test-pack", "schema": 1, "title": "Test", "audience": "Testers",
@@ -203,6 +212,29 @@ def test_table_item_nine_m_needs_values(ws, tmp_path):  # noqa: F811
     from test_pmlc import run_fail
     r = run_fail("table-item", str(ws), "nine-m", "--register", str(_nine_m_register(tmp_path, [None, None])))
     assert "The register has no nine_m values" in r.stderr and "Traceback" not in r.stderr
+
+
+def test_table_item_nine_m_refuses_pack(ws, tmp_path):  # noqa: F811
+    """I1: a pack, a malformed entries list or bad JSON exits with one plain sentence naming the file expected."""
+    from test_pmlc import run_fail
+    cases = {"pack.json": json.dumps({"pack": "board-brief", "sections": []}),
+             "strings.json": json.dumps({"entries": ["LR-01"]}), "broken.json": "{not json"}
+    for name, body in cases.items():
+        p = tmp_path / name
+        p.write_text(body, encoding="utf-8")
+        r = run_fail("table-item", str(ws), "nine-m", "--register", str(p))
+        assert "is not a Learnings Register" in r.stderr and "Traceback" not in r.stderr, (name, r.stderr)
+
+
+def test_table_item_nine_m_refuses_unknown_code(ws, w, tmp_path):  # noqa: F811
+    """M4: a nine_m that is not M1 to M9 is refused, not counted as unset; M3/M4 row cites follow rating order."""
+    from test_pmlc import run, run_fail
+    r = run_fail("table-item", str(ws), "nine-m", "--register", str(_nine_m_register(tmp_path, ["M3", "M10"])))
+    assert "not a 9M code: LR-02 (M10)" in r.stderr and "Traceback" not in r.stderr
+    it = json.loads(run("table-item", str(ws), "nine-m", "--register", str(_nine_m_register(tmp_path, ["M3", "M3"]))))
+    rating = {f["id"]: (f.get("rating") or 0) for f in w["findings"]}
+    got = it["row_cites"][2]
+    assert got == sorted(got, key=lambda x: (-rating.get(x, 0), x))
 
 
 def test_organisation_map_profile_and_skill_have_the_nine_m_table():

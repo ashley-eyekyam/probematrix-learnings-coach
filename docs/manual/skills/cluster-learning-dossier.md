@@ -27,7 +27,7 @@ The dossier is the function's reference file across every tier. The T3 managers'
 ```bash
 pmlc select <ws> --entity <F-id> --count-by level                                # size and S1 counts
 pmlc select <ws> --entity <F-id> --budget-chars 60000 --out <ws>/sel-<F-id>.md   # full text, highest-rated first
-pmlc select <ws> --entity <F-id> --fields short,code,level,rating                 # index: every finding, one line each
+pmlc select <ws> --entity <F-id> --fields short,code,level,rating --budget-chars 60000   # index: every finding, one line each
 pmlc select <ws> --entity <F-id> --level 1 --fields label,short,justification,code,rating --budget-chars 60000   # then levels 2, 3, 4
 pmlc table-item <ws> entity-tier --entity <F-id>                                 # S1 table, ready to paste
 pmlc interfaces <ws>                                                             # S6
