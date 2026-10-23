@@ -112,7 +112,7 @@ def _evaudit_best(w: dict, ids) -> list:
     return sorted(ids, key=lambda i: (-rating.get(i, 0), i))[:EVAUDIT_ROW_CITES]
 
 
-def table_item(w: dict, a: dict, which: str) -> dict:
+def audit_table_item(w: dict, a: dict, which: str) -> dict:
     F = w.get("findings", [])
     if which == "scorecard":
         by = collections.defaultdict(list)
@@ -154,7 +154,7 @@ def cmd_evidence_audit(a):
     record_derived(ws, EVAUDIT_FILE, {n: file_sha256(ws / n) for n in ("findings.json", "evidence.json")
                                   if (ws / n).exists()})
     if a.table_item:
-        print(json.dumps(table_item(w, res, a.table_item), indent=1, ensure_ascii=False))
+        print(json.dumps(audit_table_item(w, res, a.table_item), indent=1, ensure_ascii=False))
         return
     if a.json:
         print(json.dumps({"command": "evidence-audit", "ok": True, "exit_code": 0, "audit": res},
