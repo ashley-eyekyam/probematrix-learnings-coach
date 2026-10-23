@@ -465,24 +465,12 @@
   {
    "id": "missed",
    "heading": "Missed opportunities",
-   "intro": "Five dated chances to learn before the release, from the engine's missed-opportunities sets: findings that name a recommendation or a failure to correct, placed at the dates the export gives. Many of these findings quote the investigation committee's own later recommendations; each event is placed for what was on record at its date, not for a recommendation made afterwards.",
+   "intro": "Four dated chances to learn before the release, from the engine's missed-opportunities sets: findings that name a recommendation or a failure to correct, placed at the dates the export gives. Many of these findings quote the investigation committee's own later recommendations; each event is placed for what was on record at its date, not for a recommendation made afterwards.",
    "items": [
     {
      "kind": "timeline",
      "id": "missed-timeline",
      "events": [
-      {
-       "date": "2018",
-       "text": "An internal safety audit is carried out without a filled checklist, and no checklist format exists to show which areas it covered.",
-       "signal": true,
-       "received_by": "HSE, Process Safety & Audit (F11, T3)",
-       "response": "Observations recorded; the gaps in coverage were not identified.",
-       "knowable_then": "The audit team and the audit's recipients could see that no checklist had been filled in.",
-       "cites": [
-        "FND-C0466EB3",
-        "EVD-7681"
-       ]
-      },
       {
        "date": "2018-02",
        "text": "An external safety audit leaves 12 of its 308 recommendations open, and their target dates are extended to 2021 without the approval the procedure requires.",
@@ -498,7 +486,7 @@
       },
       {
        "date": "2019-02-25",
-       "text": "The same meter needs a second seal job within about three months: a chance to treat the recurrence as a reliability concern.",
+       "text": "The same meter needs its second job, a gasket change, within four months of its service: a chance to treat the recurrence as a reliability concern.",
        "signal": true,
        "received_by": "Mechanical Maintenance (F02, T2)",
        "response": "Repaired like for like; the recurrence was not reviewed.",
@@ -532,7 +520,6 @@
        "knowable_then": "The open notification and the meter's repair history were in the work-management system.",
        "cites": [
         "FND-FA807C69",
-        "FND-56C66B96",
         "EVD-0591"
        ]
       }
@@ -542,13 +529,10 @@
       "EVD-1494",
       "EVD-2506",
       "EVD-6852",
-      "EVD-7681",
       "FND-1D713648",
       "FND-3A34BAD3",
-      "FND-56C66B96",
       "FND-5A742738",
       "FND-82FC718D",
-      "FND-C0466EB3",
       "FND-C2B4989C",
       "FND-E94D563C",
       "FND-FA807C69",

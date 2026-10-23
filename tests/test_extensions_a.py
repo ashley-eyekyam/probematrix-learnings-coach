@@ -64,7 +64,7 @@ def test_precursor_skill_md_splits_missed_opportunities():
 def test_precursor_golden_missed_events_cite_prior_recommendations(hz):
     m = json.loads(run("missed-opportunities", str(hz), "--json"))
     prior = set(m["prior_recommendation"])
-    dated = {d["date"] for d in m["dated"]}
+    printed = json.loads(run("missed-opportunities", str(hz), "--timeline-item", "--top", "12"))["events"]
     pack = _load(OUTPUTS / "precursor-timeline.json")
     sec = _section(pack, "missed")
     assert sec and len(sec["items"]) == 1 and sec["items"][0]["kind"] == "timeline"
@@ -73,7 +73,8 @@ def test_precursor_golden_missed_events_cite_prior_recommendations(hz):
     for e in events:
         assert "knowable_then" in e, e
         assert set(e["cites"]) & prior, e["date"]
-        assert e["date"] in dated, e["date"]          # placed at a date the engine found before the incident
+        fnd = {c for c in e["cites"] if c.startswith("FND-")}
+        assert any(p["date"] == e["date"] and fnd <= set(p["cites"]) for p in printed), e["date"]   # SKILL.md gather
     for s in pack["sections"]:                        # the knowable-then rule covers every timeline in the pack
         for it in s["items"]:
             if it["kind"] == "timeline":

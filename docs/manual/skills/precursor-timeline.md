@@ -62,7 +62,7 @@ With `--layout poster`, `precursor-timeline.poster.html` prints the bottom line,
 
 `timeline-item --before incident --top 12` printed a timeline item with 12 events; the first, dated 2018-11, is the recurring sealing failures on the meters, received by Mechanical Maintenance (F02, T2).
 
-`missed-opportunities` found 107 findings that name a recommendation, 40 Failure-to-Correct findings and 34 dated entries before the incident. The sample pack keeps five of them as missed opportunities: an internal audit in 2018 without a filled checklist, the February 2018 external audit whose open recommendations were extended without approval, the second seal job on the meter in February 2019, the unrecorded calibration change of December 2019 and the notification of 17 September 2020 that was never closed. Each cites a finding from the recommendation set.
+`missed-opportunities` found 107 findings that name a recommendation, 40 Failure-to-Correct findings and 34 dated entries before the incident. `--timeline-item --top 12` printed the twelve dated entries that cite the most findings; the sample pack keeps four of them as missed opportunities: the February 2018 external audit whose open recommendations were extended without approval, the gasket change on the meter in February 2019, the unrecorded calibration change of December 2019 and the notification of 17 September 2020 that was never closed. Each cites a finding from the recommendation set.
 
 ## Related skills
 

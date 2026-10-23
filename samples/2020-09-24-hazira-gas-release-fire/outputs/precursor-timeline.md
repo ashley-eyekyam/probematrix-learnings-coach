@@ -78,19 +78,15 @@ Sources: [EVD-0591; EVD-1494; EVD-2397; EVD-2506; EVD-2894; EVD-2986; EVD-5527; 
 
 ## Missed opportunities
 
-Five dated chances to learn before the release, from the engine's missed-opportunities sets: findings that name a recommendation or a failure to correct, placed at the dates the export gives. Many of these findings quote the investigation committee's own later recommendations; each event is placed for what was on record at its date, not for a recommendation made afterwards.
+Four dated chances to learn before the release, from the engine's missed-opportunities sets: findings that name a recommendation or a failure to correct, placed at the dates the export gives. Many of these findings quote the investigation committee's own later recommendations; each event is placed for what was on record at its date, not for a recommendation made afterwards.
 
-Sources: [EVD-0591; EVD-1494; EVD-2506; EVD-6852; EVD-7681; FND-1D713648; FND-3A34BAD3; FND-56C66B96; FND-5A742738; FND-82FC718D; FND-C0466EB3; FND-C2B4989C; FND-E94D563C; FND-FA807C69; FND-FEC84761]
+Sources: [EVD-0591; EVD-1494; EVD-2506; EVD-6852; FND-1D713648; FND-3A34BAD3; FND-5A742738; FND-82FC718D; FND-C2B4989C; FND-E94D563C; FND-FA807C69; FND-FEC84761]
 
-- c. 2018 (about 2 years before): An internal safety audit is carried out without a filled checklist, and no checklist format exists to show which areas it covered. *(weak signal)* [FND-C0466EB3; EVD-7681]
-  - Received by: HSE, Process Safety & Audit (F11, T3)
-  - Response: Observations recorded; the gaps in coverage were not identified.
-  - Knowable then: The audit team and the audit's recipients could see that no checklist had been filled in.
 - 2018-02 (31 months before): An external safety audit leaves 12 of its 308 recommendations open, and their target dates are extended to 2021 without the approval the procedure requires. *(weak signal)* [FND-1D713648; FND-5A742738; EVD-6852]
   - Received by: Plant & Asset Leadership (F13, T4)
   - Response: Target dates extended; no record of the required approval.
   - Knowable then: The open recommendations, their new dates and the missing approval were in the audit action records.
-- 2019-02-25 (18 months before): The same meter needs a second seal job within about three months: a chance to treat the recurrence as a reliability concern. *(weak signal)* [FND-82FC718D; FND-FEC84761; FND-3A34BAD3; EVD-1494]
+- 2019-02-25 (18 months before): The same meter needs its second job, a gasket change, within four months of its service: a chance to treat the recurrence as a reliability concern. *(weak signal)* [FND-82FC718D; FND-FEC84761; FND-3A34BAD3; EVD-1494]
   - Received by: Mechanical Maintenance (F02, T2)
   - Response: Repaired like for like; the recurrence was not reviewed.
   - Knowable then: Both jobs were in the meter's maintenance history.
@@ -98,7 +94,7 @@ Sources: [EVD-0591; EVD-1494; EVD-2506; EVD-6852; EVD-7681; FND-1D713648; FND-3A
   - Received by: Instrumentation, Control & Calibration (F04, T1)
   - Response: None recorded.
   - Knowable then: Only the calibration team knew of the change; the signed record did not show it to anyone else.
-- 2020-09-17: A malfunction notification is raised on the meter seven days before the release; after the next day's gasket change it is never closed or reviewed. *(weak signal)* [FND-FA807C69; FND-56C66B96; EVD-0591]
+- 2020-09-17: A malfunction notification is raised on the meter seven days before the release; after the next day's gasket change it is never closed or reviewed. *(weak signal)* [FND-FA807C69; EVD-0591]
   - Received by: Work Management & Planning (F08, T2)
   - Response: Gasket replaced; the notification was left open with no close-out review.
   - Knowable then: The open notification and the meter's repair history were in the work-management system.
