@@ -26,9 +26,9 @@ The barrier-by-barrier analysis across all functions is [barrier-learnings](barr
 pmlc select <ws> --tag engineering --brief
 pmlc select <ws> --tag engineering --level 3 4 --top-rated
 pmlc select <ws> --text "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design" --brief
-pmlc select <ws> --preset engineering-integrity-learnings   # the three calls above at once
-pmlc timeline <ws> --before incident
 pmlc select <ws> --prefix PTE --brief                       # technological environment: alarms, automation, displays
+pmlc select <ws> --preset engineering-integrity-learnings   # the four calls above at once
+pmlc timeline <ws> --before incident
 pmlc check-pack <ws> <run>/outputs/engineering-integrity-learnings.json --strict
 pmlc pack <ws> <run>/outputs/engineering-integrity-learnings.json
 pmlc pack <ws> <run>/outputs/engineering-integrity-learnings.json --format docx   # for the technical review
