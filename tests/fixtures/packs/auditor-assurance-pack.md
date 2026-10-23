@@ -8,15 +8,21 @@ Draft because: no finding is marked as edited by a person
 
 *Learning purposes: not a statutory document · Learnings drafted by an AI agent from AI-assisted findings*
 
-*About 1 min read*
+*About 2 min read*
 
 **Audience:** Internal and external auditors
+
+**Assurance for:** an insurer
 
 **Incident:** Synthetic pump fire · 2024-03-20
 
 ## Bottom line
 
 - Restarts and spares purchases can both be tested from existing records. [FND-0002; FND-0003]
+
+## Assurance lens: an insurer
+
+For an insurer, the controls that prevent or limit a major loss come first: the leak test before restart and the specification of critical spares. The test points start with them, and the evidence requests name the records a surveyor can sample. [FND-0002; FND-0003]
 
 ## Why existing assurance did not catch it
 

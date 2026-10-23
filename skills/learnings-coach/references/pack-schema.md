@@ -49,6 +49,7 @@ The shape of a pack is also published as a JSON Schema, [`pack.schema.json`](pac
   - The fixed copy (the status line, the DRAFT label, the coverage lines and the ProbeMatrix footer) always stays in English, word for word.
   - `hi.json` (Hindi) is AI-drafted: have a fluent speaker check it before use.
 - **`translation_of` (optional):** the name of the English pack this one translates, written by `PMLC strings apply` together with `lang` and the name `<translation_of>-<lang>`. Never write it by hand. Its items may carry `source_text` (each field's English) and `back_translation`. `check-pack` warns `item <id> is safety-critical: add back_translation` (a problem under `--strict`), and when `<translation_of>.json` is beside it or in the run's outputs it requires the same cites, ids, kinds and section ids. Every page shows `Translated with AI assistance: have a fluent speaker check it before use` under the status line.
+- **`lens` (optional):** who the assurance is for, in `auditor-assurance-pack` only: `regulator`, `insurer`, `jv-partner` or `client`; leave it out for internal audit. The page shows "Assurance for: <reader>" under the audience. With a lens the pack needs a `lens` section with one `para` on what that reader needs (`check-pack` warns, a problem under `--strict`); any other value is a problem. It is never offered for translation.
 - **`status`:** must contain `Learning purposes: not a statutory document`.
 - **`bottom_line`:** 1 to 7 takeaways, each citing at least one Finding or Evidence ID.
 - **`scope` (optional):**

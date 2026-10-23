@@ -219,5 +219,10 @@
  "ui.scorm.passed": "passed",
  "ui.scorm.failed": "below the pass mark",
  "ui.scorm.completed": "Completed",
- "ui.scorm.no_lms": "No learning system was found, so the result was not recorded."
+ "ui.scorm.no_lms": "No learning system was found, so the result was not recorded.",
+ "f.lens": "Assurance for",
+ "ui.lens.regulator": "a regulator",
+ "ui.lens.insurer": "an insurer",
+ "ui.lens.jv-partner": "a joint-venture partner",
+ "ui.lens.client": "a client"
 }

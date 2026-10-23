@@ -6,7 +6,7 @@ import datetime as dt
 from .. import BRAND, DRAFT_LABEL
 from ..analysis.timeline import months_between
 from ..handling import effective_handling, handling_lines, is_draft, md_escape, SHARED_LINE, status_line
-from ..pack.schema import _text, cited_ids, relevant_findings, TOP_PRINT_LINE, top_rated_of
+from ..pack.schema import _text, cited_ids, LENSES, relevant_findings, TOP_PRINT_LINE, top_rated_of
 from ..register.check import norm_hoc
 from ..workspace import downgraded_findings, incident_date
 from .. import privacy
@@ -345,6 +345,8 @@ def render_pack_md(pack, w, eh=None, share=None, labels=None) -> str:
     from ..render import translation_lines                     # late: render imports this module's renderer
     out += _handling_lines(eh, share) + [f"*{status_line(pack['status'])}*"] + [f"*{x}*" for x in translation_lines(pack)]
     out += [f"*{t('ui.reading_time', n=reading_minutes(pack))}*", f"**{t('f.audience')}:** {pack['audience']}"]
+    if pack.get("lens") in LENSES:                             # P5-17: who the assurance is for
+        out.append(f"**{t('f.lens')}:** {t('ui.lens.' + pack['lens'])}")
     fields, inc = w.get("incident", {}).get("fields", {}), pack.get("incident") or {}
     shown = [str(x) for x in (inc.get("title") or fields.get("Incident Title"), inc.get("date") or fields.get("Date")) if x]
     if shown:
