@@ -39,6 +39,7 @@ Subcommands
   timeline-item   timeline candidates as a pack timeline item
   facts           the headline numbers of a workspace
   crosswalk       which standard clauses the register evidences, and what the organisation must show
+  hfacs-profile   level x subcategory heat map, code recurrence and causal feed counts (hfacs_profile.json)
   pack-xlsx       a pack's test points or questions as an Excel sheet
   export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
   plan            resolve a workflow preset, audiences or skills into an ordered plan (<ws>/plan.json)
@@ -70,6 +71,7 @@ from .pack.items import cmd_causal_item, cmd_register_items, cmd_table_item, cmd
 from .pack.xlsx import cmd_pack_xlsx, XLSX_KINDS
 from .crosswalk import cmd_crosswalk
 from .facts import cmd_facts
+from .hfacs_profile import HP_TABLE_KINDS, cmd_hfacs_profile
 from .pack.schema import cmd_check_pack
 from .plan import cmd_plan
 from .privacy import cmd_scan_names
@@ -489,6 +491,14 @@ def build_parser():
     s.add_argument("--json", action="store_true", help="print the crosswalk as JSON")
     s.add_argument("--table-item", action="store_true", help="print a pack table item (JSON)")
     s.set_defaults(fn=cmd_crosswalk)
+
+    s = sp.add_parser("hfacs-profile", help="level x subcategory heat map, code recurrence and causal feed counts",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--json", action="store_true", help="print the profile as JSON")
+    s.add_argument("--table-item", dest="table_item", choices=HP_TABLE_KINDS,
+                   help="print a ready table item for a pack (JSON on stdout)")
+    s.set_defaults(fn=cmd_hfacs_profile)
 
     s = sp.add_parser("pack-xlsx", help="a pack's test points or questions as an Excel sheet", allow_abbrev=False)
     s.add_argument("ws")
