@@ -38,6 +38,7 @@ Subcommands
   register-items  a tier's learnings from the register as learning items
   timeline-item   timeline candidates as a pack timeline item
   facts           the headline numbers of a workspace
+  crosswalk       which standard clauses the register evidences, and what the organisation must show
   pack-xlsx       a pack's test points or questions as an Excel sheet
   export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
   plan            resolve a workflow preset, audiences or skills into an ordered plan (<ws>/plan.json)
@@ -67,6 +68,7 @@ from .orchestrate import cmd_check_all, cmd_dossier_index, cmd_index, cmd_render
 from .pack.command import cmd_pack
 from .pack.items import cmd_causal_item, cmd_register_items, cmd_table_item, cmd_timeline_item, TABLE_KINDS
 from .pack.xlsx import cmd_pack_xlsx, XLSX_KINDS
+from .crosswalk import cmd_crosswalk
 from .facts import cmd_facts
 from .pack.schema import cmd_check_pack
 from .plan import cmd_plan
@@ -477,6 +479,16 @@ def build_parser():
     s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json when present)")
     s.add_argument("--json", action="store_true", help="print one JSON object")
     s.set_defaults(fn=cmd_facts)
+
+    s = sp.add_parser("crosswalk", help="which standard clauses the register gives evidence for, and what the organisation must show",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json)")
+    s.add_argument("--framework", choices=["iso45001", "psm", "rmp", "seveso", "rbps", "icmm", "india"])
+    s.add_argument("--system-csv", metavar="FILE", help="the organisation's own requirements (columns id,title[,topics]); replaces the framework")
+    s.add_argument("--json", action="store_true", help="print the crosswalk as JSON")
+    s.add_argument("--table-item", action="store_true", help="print a pack table item (JSON)")
+    s.set_defaults(fn=cmd_crosswalk)
 
     s = sp.add_parser("pack-xlsx", help="a pack's test points or questions as an Excel sheet", allow_abbrev=False)
     s.add_argument("ws")

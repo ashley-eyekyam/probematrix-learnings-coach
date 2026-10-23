@@ -179,7 +179,7 @@ def test_crosswalk_shape():
         assert isinstance(fw["title"], str) and fw["title"], key
         assert fw["requirements"], key
         for r in fw["requirements"]:
-            assert set(r) == {"id", "title", "verified"}, r
+            assert {"id", "title", "verified"} <= set(r) <= {"id", "title", "verified", "topics", "source", "must_show"}, r
             assert isinstance(r["title"], str) and r["title"], r
             assert isinstance(r["verified"], bool), r
 

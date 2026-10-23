@@ -36,6 +36,7 @@ MODULES = [
     "pmlc_lib.plan",
     "pmlc_lib.compare",
     "pmlc_lib.facts",
+    "pmlc_lib.crosswalk",
     "pmlc_lib.render",
     "pmlc_lib.render.labels",
     "pmlc_lib.render.fields",
