@@ -1,6 +1,8 @@
 """Phase 5 Hazira calibration (P3-20 still in force): the numbers the Phase 5 engine commands give on the public
 Hazira sample, each with its rule (plan, Global Constraints table). Task 1 creates the file and the workspace
 fixture; each engine task appends its own numbers. A number that moves needs a ruling."""
+import json
+
 import pytest
 
 from test_pmlc import ROOT, run
@@ -24,3 +26,11 @@ def test_hazira_436_findings_46_evidence(hazira_ws):
     w = pmlc.load_ws(hazira_ws)
     assert len(w["findings"]) == 436
     assert len(w["evidence"]) == 46
+
+
+def test_profile_counts(hazira_ws):
+    """SVI 1.4 recurs 21 times; OIC 2.1 has 36 links out in causal_graph.json (Task 3)."""
+    run("hfacs-profile", str(hazira_ws))
+    prof = json.loads((hazira_ws / "hfacs_profile.json").read_text(encoding="utf-8"))
+    assert {r["code"]: r["n"] for r in prof["recurrence"]}["SVI 1.4"] == 21
+    assert {r["code"]: r["out"] for r in prof["feeds"]}["OIC 2.1"] == 36
