@@ -216,6 +216,18 @@
     "word_limits": {},
     "coverage_floor": 0.25
   },
+  "risk-register-update": {
+    "sections": [
+      {"id": "banner", "kinds": ["para"], "min": 1, "max": 1},
+      {"id": "risk-changes", "kinds": ["risk_change"], "min": 1, "max": 15},
+      {"id": "kri", "kinds": ["indicator"], "min": 1, "max": 8},
+      {"id": "bowtie", "kinds": ["barrier"], "min": 0, "max": 10}
+    ],
+    "rules": ["banner:risk", "no-owner-due"],
+    "bottom_line": {"min": 1, "max": 5},
+    "word_limits": {},
+    "coverage_floor": 0.25
+  },
   "report-comparison": {
     "sections": [
       {"id": "basis", "kinds": ["para"], "min": 1, "max": 3},

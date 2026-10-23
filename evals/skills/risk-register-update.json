@@ -1,0 +1,177 @@
+{
+ "evals": [
+  {
+   "id": 1801,
+   "owner": "risk-register-update",
+   "skill": "risk-register-update",
+   "kind": "trigger",
+   "prompt": "Using the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), what should our ERM team change in the gas terminal's risk register: missing threats, controls we rated too highly, and risks nobody signed off?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "language_clean",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "risk-register-update",
+     "scope": {
+      "tiers": [],
+      "levels": [
+       2,
+       3,
+       4
+      ],
+      "tags": []
+     }
+    },
+    {
+     "type": "section_exists",
+     "pack": "risk-register-update",
+     "section": "risk-changes"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "risk-register-update",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "risk-register-update"
+    }
+   ]
+  },
+  {
+   "id": 1802,
+   "owner": "risk-register-update",
+   "skill": null,
+   "not_skill": "risk-register-update",
+   "kind": "no-trigger",
+   "prompt": "Work out the insured loss and the premium increase we should expect after last month's gas terminal fire.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 1803,
+   "owner": "risk-register-update",
+   "skill": "risk-register-update",
+   "sibling": "barrier-learnings",
+   "kind": "collision",
+   "prompt": "Not the barrier-by-barrier analysis: from this investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), which entries in our corporate risk register need a new threat, a re-rated control or a key risk indicator?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "language_clean",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "routes_to",
+     "skill": "risk-register-update"
+    }
+   ]
+  },
+  {
+   "id": 1804,
+   "owner": "risk-register-update",
+   "skill": "risk-register-update",
+   "sibling": "board-brief",
+   "kind": "collision",
+   "prompt": "Our risk owners, not the board, need the proposed changes to the enterprise risk register from the Hazira export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "language_clean",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "routes_to",
+     "skill": "risk-register-update"
+    }
+   ]
+  },
+  {
+   "id": 1805,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "prompt": "The insurer's risk engineer wants to know which hazards our register never listed and which safeguards we over-scored, based on this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "risk-register-update"
+    }
+   ]
+  },
+  {
+   "id": 1806,
+   "owner": "risk-register-update",
+   "skill": "risk-register-update",
+   "kind": "trigger",
+   "prompt": "Turn the risk-register changes from this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) into a CSV our risk tool can import, with the decision column left for the risk owner.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "risk-register-update"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "format": "risk-csv"
+     },
+     "contains": [
+      "risk-register-update.json"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "risk-register-update"
+    }
+   ]
+  }
+ ]
+}

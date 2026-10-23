@@ -41,6 +41,9 @@
     {"name": "relation", "args": ["--relation", "owner", "absent", "--brief"]},
     {"name": "work-management", "args": ["--entity", "F08", "--level", "3", "4", "--brief"]}
   ],
+  "risk-register-update": [
+    {"name": "risk-codes", "args": ["--code", "OIC 2.7", "OIP 3.2", "SVF 3.4", "SVI 1.8", "SVIO 2.4", "SVV 4.5", "--brief"]}
+  ],
   "report-comparison": [
     {"name": "text", "args": ["--text", "recommendation|remedial", "--brief"]}
   ],

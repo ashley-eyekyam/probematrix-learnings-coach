@@ -1372,7 +1372,7 @@ SKILL_FILES = sorted((ROOT / "skills").glob("*/SKILL.md"))
 
 def test_sub_skills_state_dependency():
     subs = [p for p in SKILL_FILES if p.parent.name != "learnings-coach"]
-    assert len(subs) == 22
+    assert len(subs) == len(list((ROOT / "skills").glob("*/skill.json"))) - 1      # P5-1: derived from the folders
     for p in subs:
         engine = [ln for ln in p.read_text(encoding="utf-8").splitlines() if ln.startswith("Engine:")]
         assert engine, p

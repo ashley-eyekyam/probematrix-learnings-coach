@@ -64,6 +64,10 @@
         "skill": "top-management-brief"
       },
       {
+        "skill": "risk-register-update",
+        "when": "the user asks for risk-register or bow-tie changes"
+      },
+      {
         "skill": "board-brief"
       }
     ]
