@@ -41,8 +41,11 @@ def test_evidence_counts(hazira_ws):
     assert sum("EVD-8645" in f["evidence"] for f in F) == 67
     a = json.loads((hazira_ws / "evidence_audit.json").read_text(encoding="utf-8"))
     # The raw-column rule gives 203. The engine counts DISTINCT items, and two findings (FND-4317808B, FND-FC482A83)
-    # list the same item twice, so they are single-source too: 205. Reported to the ledger as a ruling.
+    # list the same item twice, so they are single-source too: 205. 205 is the canonical engine number (distinct items,
+    # the same rule as the strength); 203 is the raw-column count, superseded. Ruling recorded in the Task 2 report.
     assert len(a["single_source"]) == 205 and len(a["document_only"]) == 195
     assert a["levels"]["3"]["findings"] == 167 and a["levels"]["3"]["witness"] == 11
+    reg = run("check-register", str(hazira_ws), str(SAMPLE / "outputs" / "learnings-register.json"))
+    assert "0 problem(s)" in reg, reg
     top = a["concentration"][0]
     assert top["evidence"] == "EVD-8645" and top["findings"] == 67

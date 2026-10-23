@@ -6,7 +6,7 @@ Counts how well the evidence behind the findings holds up, and writes `evidence_
 
 ## When to use it
 
-Before writing a register: copy each learning's `evidence_strength` from `learning_strength` over its cited findings. Once `evidence_audit.json` exists, `check-register` reports a learning whose `evidence_strength` differs from the engine's value as a problem. Also when a pack needs a scorecard, a concentration table or a level table.
+Before writing a register: run this command, so `evidence_audit.json` exists. The engine pools the findings a learning cites and works out its `evidence_strength` by the same rule. `check-register` then reports a learning whose `evidence_strength` differs, and its message names the value to use; this command itself prints per-finding strengths only. Also when a pack needs a scorecard, a concentration table or a level table.
 
 ## Synopsis
 
