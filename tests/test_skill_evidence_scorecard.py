@@ -27,7 +27,7 @@ def test_manifest():
     m = load(ROOT / "skills" / SKILL / "skill.json")
     assert (m["kind"], m["audiences"], m["scope"]["levels"]) == ("analysis", [], [1, 2, 3, 4])
     assert m["requires"] == ["workspace", "evidence-audit"] and m["optional_inputs"] == ["register"]
-    # The plan listed csv, but `--format csv` writes only recommendation, decision and indicator items, which this
+    # Ruling P5-21: the plan listed csv, but `--format csv` writes only recommendation, decision and indicator items, which this
     # pack has none of; the spreadsheet route is pack-xlsx --kind question|table (Task 13 report, Decisions).
     assert m["produces"]["pack"] == SKILL and m["formats"] == ["docx"]
     assert (m["share_default"], m["embed_default"], m["since"]) == ("internal", "cited", "2.0.0")
