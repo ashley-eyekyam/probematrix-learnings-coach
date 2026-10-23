@@ -6,7 +6,7 @@ Turns a learning pack JSON into the files people read:
 
 - `<pack>.html`: a self-contained page that works offline and prints well. Each cited ID opens the finding or evidence it refers to, the findings in scope that the pack does not cite are listed, and the footer carries the status phrase and the ProbeMatrix credit;
 - `<pack>.md`: the same content as Markdown, for email, a wiki or a document.
-- `follow-up.json` and `follow-up.csv`, for an internal `investigator-coach` pack only: the follow-up table by Finding ID. The CSV header is the export's own: `Finding ID,Evidence to Collect,Key Questions,Suggested Interviews,Causal Hypothesis`. A shared copy never writes either file, because interview plans stay inside the team;
+- `follow-up.json` and `follow-up.csv`, for an internal `investigator-coach` pack only: the follow-up table by Finding ID. The CSV header is the export's own: `Finding ID,Evidence to Collect,Key Questions,Suggested Interviews,Causal Hypothesis`. A shared copy never writes either file, because interview plans stay inside the team. An `open-questions-register` pack also writes `follow-up.csv` (in any mode, from the masked pack in a shared copy, named `follow-up.<mode>.csv`), and leaves an existing file as it is because the organisation fills it in;
 - `gaps.json`, when the pack has `gaps`: the run's outputs folder collects every pack's evidence gaps there for the investigator. Each run replaces this pack's entries and keeps the other packs'. It is always written to the run's outputs folder, even with `--out`.
 
 `--format` chooses which of these files to write (the default, `html,md`, writes exactly the two above). The formats are listed under [Formats](#formats).
