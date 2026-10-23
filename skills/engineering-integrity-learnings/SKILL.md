@@ -30,6 +30,7 @@ PMLC select <ws> --tag engineering --brief                        # the engineer
 PMLC select <ws> --tag engineering --level 3 4 --top-rated        # how the conditions persisted
 PMLC select <ws> --text "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design" --brief
 PMLC timeline <ws> --before incident                              # the build-up, for "how it persisted"
+PMLC select <ws> --prefix PTE --brief                             # technological environment: alarms, automation, displays
 ```
 
 ## Write
@@ -43,13 +44,20 @@ Pack `<run>/outputs/engineering-integrity-learnings.json` (shape: `learnings-coa
 | 1 | `themes` | Technical learnings by theme | The technical condition and how it persisted (L3–L4); `group` = the theme | `learning` | up to 8 |
 | 1 | `themes` | Technical learnings by theme | The barrier it weakened (type, owner, state, failure_mode, hoc_tier, fix, indicator), same `group` | `barrier` | up to 8 |
 | 1 | `themes` | Technical learnings by theme | The fix, engineering controls first where credible, with its route (below) and a technical leading indicator, same `group` | `recommendation` | up to 8 |
-| 2 | `decisions` | Engineering decisions pending | Questions the technical authority must settle (e.g. test pressure after pressure-boundary work, acceptance of substitute components), as options without answers; `owner` = the technical authority | `decision` | up to 6 |
-| 3 | `records` | Data and records | Which technical records were missing or unreliable, and the minimum record, `when` = the point in the work | `check` | up to 8 |
+| 2 | `alarms-automation` | Alarms and automation | Alarm and detection design, automatic and executive actions, what the control-room displays and records showed (HMI, signal history, clocks): the learning, `group` = the theme | `learning` | optional, up to 4 |
+| 2 | `alarms-automation` | Alarms and automation | The barrier it weakened, same `group` | `barrier` | optional, up to 4 |
+| 2 | `alarms-automation` | Alarms and automation | The fix with its route and indicator, same `group` | `recommendation` | optional, up to 4 |
+| 3 | `decisions` | Engineering decisions pending | Questions the technical authority must settle (e.g. test pressure after pressure-boundary work, acceptance of substitute components), as options without answers; `owner` = the technical authority | `decision` | up to 6 |
+| 4 | `records` | Data and records | Which technical records were missing or unreliable, and the minimum record, `when` = the point in the work | `check` | up to 8 |
 
 - **Themes.** Specification and substitution of parts; testing after maintenance; change management; inspection
-  and corrosion programmes; documents and as-built records; detection, alarm and shutdown design; hazardous-area
-  equipment integrity; ageing equipment. Only the themes the evidence supports. Each theme has one learning, one
-  barrier and one recommendation with the same `group`.
+  and corrosion programmes; documents and as-built records; emergency isolation design; hazardous-area equipment
+  integrity; ageing equipment. Only the themes the evidence supports. Each theme has one learning, one barrier and
+  one recommendation with the same `group`.
+- **Alarms and automation.** Gather from `select --prefix PTE` (the technological environment) and write here the
+  themes about alarm and detection design, automatic shutdown and other executive actions, and what operators
+  could see on their displays (missing signals, no history, clocks that disagree), as triplets like the themes.
+  Leave the section out when the PTE findings hold none. Mention cyber security only when the export names it.
 - **Route.** Each recommendation's `change` starts with the route it takes to be adopted: "Route: MOC.",
   "Route: engineering standard revision.", "Route: inspection plan change." or "Route: technical query." Pick
   the route the change needs, not the quickest one.

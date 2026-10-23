@@ -41,6 +41,29 @@ Seals were bought locally without a specification from March 2022 [FND-0003; EVD
 - Control tier: administrative
 - Leading indicator: Substitutions approved through change control
 
+## Alarms and automation
+
+### Gas alarm with no executive action
+
+**Learning:** A gas alarm that only lights a display leaves the shutdown to whoever notices it. [FND-0004; EVD-0002]
+
+The DCS list shows no shutdown on the gas detector [FND-0004; EVD-0002].
+
+- Owner: Instrument engineering
+
+**Barrier:** Gas detection that starts isolation [FND-0004]
+- Failure mode: The detector alarmed on the display; nothing tripped
+- Type: mitigation
+- State on the day: worked partly
+- Owner: Instrument engineering
+- Control tier: engineering
+- Fix: Confirmed-gas logic that starts isolation
+- Leading indicator: % of gas detectors with an executive action
+
+**Recommendation:** Route: MOC. Add confirmed-gas logic that starts isolation of the pump [FND-0004; EVD-0002]
+- Control tier: engineering
+- Leading indicator: Detectors with a tested executive action
+
 ## Engineering decisions pending
 
 **Decision:** Which leak test applies after a seal change, and at what pressure? [FND-0001]

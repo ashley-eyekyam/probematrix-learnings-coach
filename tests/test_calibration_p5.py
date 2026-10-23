@@ -157,3 +157,12 @@ def test_hazira_event_day_52_stamps_26_times(hazira_ws):
     assert all(e["knowable_then"] is True for e in it["events"])
     run("timeline", str(hazira_ws), "--on", "incident")
     assert len(json.loads((hazira_ws / "timeline_event_day.json").read_text(encoding="utf-8"))) == 29
+
+
+# ----------------------------------------------------------------------------- Task 20: engineering alarms-automation
+
+def test_hazira_pte_findings_48(hazira_ws):
+    """Task 20: the alarms-automation section gathers with select --prefix PTE: 48 findings (prefix PTE)."""
+    w = pmlc.load_ws(hazira_ws)
+    assert sum(f["code"].split()[0] == "PTE" for f in w["findings"]) == 48
+    assert len(json.loads(run("select", str(hazira_ws), "--prefix", "PTE", "--json"))) == 48

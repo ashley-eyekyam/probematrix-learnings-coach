@@ -8,7 +8,7 @@ Draft because: the investigation status is in progress; no finding is marked as 
 
 *Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; learnings are evidence-linked but should be validated by the organisation before adoption. Draft learnings: the investigation status is in progress. · Learnings drafted by an AI agent from AI-assisted findings*
 
-*About 10 min read*
+*About 11 min read*
 
 **Audience:** Engineering, asset integrity, instrumentation, electrical and management-of-change functions, and the technical authority
 
@@ -118,35 +118,6 @@ The procedure was published in August 2016, but no change had been taken through
 - Leading indicator: % of substitute-part issues with a change reference
 
 *(learning: LR-06)*
-
-### Detection, alarm and shutdown design
-
-**Learning:** If fire and gas detection is designed to inform rather than act, every protective action waits on people noticing, checking and deciding. [FND-119E6CF7; FND-4D7CF773; FND-01C3DE98; EVD-3452; EVD-8657]
-
-The hydrocarbon and H2S detectors were configured to the annunciator panel only, with no history in the control system and no automatic shutdown or suppression. No policy required the interlock, and the system was never upgraded, so the first alarm came after people had already seen the cloud.
-
-- Owner: Technical authority (engineering function)
-
-*(evidence: corroborated; +10 supporting; learning: LR-10)*
-
-**Barrier:** Fire and gas detection with automatic executive action [FND-01C3DE98; FND-119E6CF7; EVD-8657]
-- Failure mode: Detection lit an annunciator only: no shutdown, isolation or suppression, and no signal history.
-- Type: mitigation
-- State on the day: worked partly
-- Owner: Instrumentation and control engineering
-- Control tier: engineering
-- Fix: Confirmed-gas logic that starts isolation, and deluge where designed, with every detector signal kept in history.
-- Leading indicator: % of major-release areas covered by automatic executive action
-
-*(learning: LR-10)*
-
-**Recommendation:** Route: MOC. Implement confirmed-gas logic that starts isolation by itself (and deluge where designed) in the metering and gas terminal areas, and keep every detector signal in history. [FND-4D7CF773; EVD-3452]
-- Control tier: engineering
-- Barrier: Fire and gas detection with automatic executive action
-- Owner: Instrumentation and control engineering
-- Leading indicator: % of detectors with signal history; proof-test and spurious-trip records reviewed each quarter
-
-*(learning: LR-10)*
 
 ### Emergency isolation design
 
@@ -269,6 +240,68 @@ The original metering drawings were lost; a vendor prepared replacements that we
 
 *Language check JC6 accepted: The document-control standard is the system fix for this L3/L4 records gap; no stronger tier applies.*
 
+## Alarms and automation
+
+From the 48 findings coded to the technological environment (PTE): how detection, automatic action and the control-room displays shaped what operators could see and do.
+
+### Detection, alarm and shutdown design
+
+**Learning:** If fire and gas detection is designed to inform rather than act, every protective action waits on people noticing, checking and deciding. [FND-119E6CF7; FND-4D7CF773; FND-01C3DE98; EVD-3452; EVD-8657]
+
+The hydrocarbon and H2S detectors were configured to the annunciator panel only, with no history in the control system and no automatic shutdown or suppression. No policy required the interlock, and the system was never upgraded, so the first alarm came after people had already seen the cloud.
+
+- Owner: Technical authority (engineering function)
+
+*(evidence: corroborated; +10 supporting; learning: LR-10)*
+
+**Barrier:** Fire and gas detection with automatic executive action [FND-01C3DE98; FND-119E6CF7; EVD-8657]
+- Failure mode: Detection lit an annunciator only: no shutdown, isolation or suppression, and no signal history.
+- Type: mitigation
+- State on the day: worked partly
+- Owner: Instrumentation and control engineering
+- Control tier: engineering
+- Fix: Confirmed-gas logic that starts isolation, and deluge where designed, with every detector signal kept in history.
+- Leading indicator: % of major-release areas covered by automatic executive action
+
+*(learning: LR-10)*
+
+**Recommendation:** Route: MOC. Implement confirmed-gas logic that starts isolation by itself (and deluge where designed) in the metering and gas terminal areas, and keep every detector signal in history. [FND-4D7CF773; EVD-3452]
+- Control tier: engineering
+- Barrier: Fire and gas detection with automatic executive action
+- Owner: Instrumentation and control engineering
+- Leading indicator: % of detectors with signal history; proof-test and spurious-trip records reviewed each quarter
+
+*(learning: LR-10)*
+
+### Process signals at the control-room display
+
+**Learning:** If transmitters at a leak point send nothing to the control system and its clocks disagree, operators lose the pressure trend that could show a leak, and the sequence has to be rebuilt afterwards from other records. [FND-2B5C46B9; FND-4108DB15; FND-EE34220F; EVD-6470; EVD-5532]
+
+Three pressure transmitters on the metering lines were shown on the drawing but had no data in the control system, so operators had no pressure trend at the source. Clocks across the control rooms differed by 2 to 12 minutes, so times on the day had to be taken from the camera and witness statements.
+
+- Owner: Instrumentation and control engineering
+
+*(evidence: corroborated; +2 supporting; learning: LR-15)*
+
+**Barrier:** Pressure monitoring at the leak point, shown and kept in the control system [FND-6163C9EB; FND-0C37BB1E; EVD-6470; EVD-5532]
+- Failure mode: Transmitters on the drawing delivered no data, so no trend or alarm on pressure was possible, and the control-room clocks disagreed.
+- Type: mitigation
+- State on the day: absent
+- Owner: Instrumentation and control engineering
+- Control tier: engineering
+- Fix: Live, retained data from every transmitter on the drawing, an alarm on pressure loss, and one time source for all control-system clocks.
+- Leading indicator: % of safety-relevant transmitters on the drawings with live, retained data
+
+*(learning: LR-15)*
+
+**Recommendation:** Route: MOC. Connect the metering-line pressure transmitters to the control system with signal history and an alarm on pressure loss, and set every control-system clock to one time source. [FND-2B5C46B9; FND-0C37BB1E; EVD-6470; EVD-5532]
+- Control tier: engineering
+- Barrier: Pressure monitoring at the leak point
+- Owner: Instrumentation and control engineering
+- Leading indicator: Transmitters with live, retained data; the clock offset between control rooms, checked each month
+
+*(learning: LR-15)*
+
 ## Engineering decisions pending
 
 Options only: the technical authority settles these. No engineering value is set here beyond what the cited records state.
@@ -335,15 +368,16 @@ Options only: the technical authority settles these. No engineering value is set
 
 - Technical learnings by theme › 1: FND-45363DCA; FND-42BEF461; FND-D40839C1; FND-BC4FD086; FND-23139BF9; FND-B440C1BF; FND-DE30BD8B
 - Technical learnings by theme › 7: FND-5A5F6AB3; FND-CDE8E62D; FND-07080447; FND-6ECCE231; FND-EB48C68C; FND-9F8CA896; FND-3FEE59DF; FND-922A04DB; FND-EEC2407A
-- Technical learnings by theme › 10: FND-A245072B; FND-94C28ACE; FND-9399FA02; FND-D45021AD; FND-5BC96E8A; FND-2D90823E; FND-6155A1C2; FND-4458E0C0; FND-5897D1E4; FND-15B4E60F
-- Technical learnings by theme › 13: FND-A7137BC4; FND-DE978BF5; FND-DBE08E73; FND-05841EDA
-- Technical learnings by theme › 16: FND-784A23E4; FND-74A80D24; FND-C7F16268; FND-554BFB4A; FND-0B35D995; FND-5E08D0F8; FND-675D99DD; FND-1280E788; FND-ABF11182; FND-76BE46EF
-- Technical learnings by theme › 19: FND-98A4D631; FND-6D307E93; FND-5EC15274; FND-47B1702F; FND-E5C4209D; FND-C6992EAF; FND-B2B200D4; FND-1F685360; FND-B5D6A73E; FND-256214D9
-- Technical learnings by theme › 22: FND-72DCEE68; FND-D25BF914; FND-9D19BE37; FND-99B3F80E; FND-733F5A1A; FND-6710C6BA; FND-73312E54; FND-83AD4621; FND-107C8238
+- Technical learnings by theme › 10: FND-A7137BC4; FND-DE978BF5; FND-DBE08E73; FND-05841EDA
+- Technical learnings by theme › 13: FND-784A23E4; FND-74A80D24; FND-C7F16268; FND-554BFB4A; FND-0B35D995; FND-5E08D0F8; FND-675D99DD; FND-1280E788; FND-ABF11182; FND-76BE46EF
+- Technical learnings by theme › 16: FND-98A4D631; FND-6D307E93; FND-5EC15274; FND-47B1702F; FND-E5C4209D; FND-C6992EAF; FND-B2B200D4; FND-1F685360; FND-B5D6A73E; FND-256214D9
+- Technical learnings by theme › 19: FND-72DCEE68; FND-D25BF914; FND-9D19BE37; FND-99B3F80E; FND-733F5A1A; FND-6710C6BA; FND-73312E54; FND-83AD4621; FND-107C8238
+- Alarms and automation › 1: FND-A245072B; FND-94C28ACE; FND-9399FA02; FND-D45021AD; FND-5BC96E8A; FND-2D90823E; FND-6155A1C2; FND-4458E0C0; FND-5897D1E4; FND-15B4E60F
+- Alarms and automation › 4: FND-6163C9EB; FND-0C37BB1E
 
 ---
 
-This pack cites 95 of 203 relevant findings.
+This pack cites 99 of 203 relevant findings.
 
 48 of 58 top-rated relevant findings cited.
 

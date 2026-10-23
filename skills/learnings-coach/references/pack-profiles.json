@@ -104,6 +104,9 @@
       {"id": "themes", "kinds": ["learning"], "min": 1, "max": 8},
       {"id": "themes", "kinds": ["barrier"], "min": 1, "max": 8},
       {"id": "themes", "kinds": ["recommendation"], "min": 1, "max": 8},
+      {"id": "alarms-automation", "kinds": ["learning"], "min": 0, "max": 4},
+      {"id": "alarms-automation", "kinds": ["barrier"], "min": 0, "max": 4},
+      {"id": "alarms-automation", "kinds": ["recommendation"], "min": 0, "max": 4},
       {"id": "decisions", "kinds": ["decision"], "min": 1, "max": 6},
       {"id": "records", "kinds": ["check"], "min": 1, "max": 8}
     ],

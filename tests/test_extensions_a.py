@@ -3,6 +3,7 @@ emergency-response-learnings (P5-10: the event-day timeline and the gaps between
 engineering-integrity-learnings (the alarms-automation triplets from select --prefix PTE). The profiles, the SKILL.md
 wording, the synthetic fixtures and the Hazira golden packs, checked against what the engine prints on Hazira."""
 import json
+import re
 
 import pytest
 
@@ -131,3 +132,40 @@ def test_emergency_golden_gaps_computed_from_event_times():
 def test_emergency_fixture_has_gaps_table():
     t = _section(_load(FIX / "emergency-response-learnings.json"), "gaps-between-steps")["items"][0]
     assert t["columns"] == GAP_COLUMNS
+
+
+# ----------------------------------------------------------------------------- engineering-integrity-learnings
+
+def test_engineering_profile_has_alarms_automation():
+    assert _entries("engineering-integrity-learnings", "alarms-automation") == {
+        "learning": (0, 4), "barrier": (0, 4), "recommendation": (0, 4)}
+    assert "triplets" in PROFILES["engineering-integrity-learnings"]["rules"]
+
+
+def test_engineering_skill_md_alarms_and_cyber_rule():
+    md = (SKILLS / "engineering-integrity-learnings" / "SKILL.md").read_text(encoding="utf-8")
+    assert "PMLC select <ws> --prefix PTE" in md
+    assert "`alarms-automation`" in md
+    assert "Mention cyber security only when the export names it." in md
+    assert len(md.splitlines()) <= 150
+
+
+def test_engineering_golden_alarm_triplet(hz):
+    pte = {f["id"] for f in json.loads(run("select", str(hz), "--prefix", "PTE", "--json"))}
+    assert len(pte) == 48
+    pack = _load(OUTPUTS / "engineering-integrity-learnings.json")
+    items = _section(pack, "alarms-automation")["items"]
+    groups = {}
+    for it in items:
+        groups.setdefault(it["group"], set()).add(it["kind"])
+    full = [g for g, k in groups.items() if k == {"learning", "barrier", "recommendation"}]
+    assert full and len(full) == len(groups)
+    assert any(re.search(r"alarm|HMI|display", g, re.I) for g in full)
+    assert any(set(it["cites"]) & pte for it in items)
+    text = json.dumps(pack).lower()
+    assert "cyber" not in text                                            # the export does not name it
+
+
+def test_engineering_fixture_has_alarms_triplet():
+    items = _section(_load(FIX / "engineering-integrity-learnings.json"), "alarms-automation")["items"]
+    assert {it["kind"] for it in items} == {"learning", "barrier", "recommendation"}
