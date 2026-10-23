@@ -87,6 +87,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide 
 | `learnings-register` | HSE, management | Learnings Register (.md + .xlsx) with recommendations |
 | `causal-map` | investigators, leaders | causal graph and pathway stories |
 | `precursor-timeline` | leaders, auditors | dated weak signals and how they were handled |
+| `failure-to-learn-review` | site leadership, top management, board | which step of the learning cycle broke, and why earlier warnings did not lead to change |
 | `interface-learnings` | managers | what fell between departments |
 | `barrier-learnings` | engineers, HSE | barriers, failure modes, control-tier fixes |
 | `report-comparison` | HSE, consultants | fair two-way comparison with an official report |
