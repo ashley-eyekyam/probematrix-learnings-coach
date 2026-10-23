@@ -143,3 +143,16 @@ def test_hazira_golden_content():
     rostering = [it for it in items["rostering"] if it["kind"] == "learning"]
     assert {"FND-0AEE9898", "FND-615DB819"} <= {c for it in rostering for c in it["cites"]}
     assert "fatigue" in " ".join(pack["limits"])                                      # no inferred fatigue
+
+
+def test_render_pending_only_names_unrendered_packs():
+    """The Phase 5 staging set (pmlc_lib.samples.RENDER_PENDING) cannot hide a rendered or missing pack: each entry is
+    a pack JSON in the Hazira outputs with no HTML and no MD yet. Task 24 renders them and empties the set."""
+    from pmlc_lib.samples import RENDER_PENDING, sample_folder_problems
+    out = SAMPLE / "outputs"
+    assert f"{SKILL}.json" in RENDER_PENDING or (out / f"{SKILL}.html").is_file()
+    for name in RENDER_PENDING:
+        stem = name[: -len(".json")]
+        assert "pack" in load(out / name), name
+        assert not (out / f"{stem}.html").exists() and not (out / f"{stem}.md").exists(), name
+    assert sample_folder_problems(ROOT / "samples") == []
