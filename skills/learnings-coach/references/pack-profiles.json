@@ -116,6 +116,21 @@
     "coverage_floor": 0.25,
     "rules": ["triplets"]
   },
+  "failure-to-learn-review": {
+    "sections": [
+      {"id": "cycle", "kinds": ["table"], "min": 1, "max": 1},
+      {"id": "missed", "kinds": ["timeline"], "min": 1, "max": 1},
+      {"id": "drift", "kinds": ["para"], "min": 1, "max": 3},
+      {"id": "learnings", "kinds": ["learning"], "min": 1, "max": 6},
+      {"id": "hindsight", "kinds": ["para"], "min": 1, "max": 1}
+    ],
+    "required_scope": [],
+    "bottom_line": {"min": 1, "max": 5},
+    "word_limits": {},
+    "coverage_floor": 0.25,
+    "rules": ["knowable-then"],
+    "lint_errors": ["JC3", "JC4"]
+  },
   "frontline-learning-cards": {
     "sections": [
       {"id": "delivery", "kinds": ["para"], "min": 1, "max": 1},
@@ -205,6 +220,21 @@
     ],
     "required_scope": [],
     "bottom_line": {"min": 1, "max": 7},
+    "word_limits": {},
+    "coverage_floor": 0.25
+  },
+  "people-workforce-learnings": {
+    "sections": [
+      {"id": "banner", "kinds": ["para"], "min": 1, "max": 1},
+      {"id": "system", "kinds": ["learning"], "min": 1, "max": 8},
+      {"id": "competence-framework", "kinds": ["table"], "min": 1, "max": 1},
+      {"id": "rostering", "kinds": ["learning"], "min": 0, "max": 4},
+      {"id": "handoff", "kinds": ["para"], "min": 1, "max": 1}
+    ],
+    "rules": ["banner:people"],
+    "lint_errors": ["JC2"],
+    "required_scope": ["tiers"],
+    "bottom_line": {"min": 1, "max": 5},
     "word_limits": {},
     "coverage_floor": 0.25
   },
