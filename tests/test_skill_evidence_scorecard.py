@@ -127,11 +127,13 @@ def test_golden_passes_strict_and_language(hz):
     assert lang["ok"] and lang["output"][-1].startswith("check-language: 0 errors"), lang
 
 
-def test_golden_waits_for_task_24_render(tmp_path):
-    """The golden JSON lands before Task 24 renders it (plan, New-skill checklist item 6): check-samples lets a pack
-    listed in RENDER_PENDING sit without its .html and .md, and only that pack."""
+def test_render_pending_exempts_only_its_packs(tmp_path, monkeypatch):
+    """A golden JSON may land before its render (plan, New-skill checklist item 6): check-samples lets a pack listed
+    in RENDER_PENDING sit without its .html and .md, and only that pack. Task 24 rendered this golden."""
     from pmlc_lib import samples
-    assert f"{SKILL}.json" in samples.RENDER_PENDING
+    assert f"{SKILL}.json" not in samples.RENDER_PENDING
+    assert all(GOLDEN.with_suffix(f".{ext}").is_file() for ext in ("html", "md"))
+    monkeypatch.setattr(samples, "RENDER_PENDING", frozenset({f"{SKILL}.json"}))
     d = tmp_path / "2020-09-24-hazira-gas-release-fire"
     out = d / "outputs"
     out.mkdir(parents=True)

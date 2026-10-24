@@ -147,10 +147,10 @@ def test_hazira_golden_content():
 
 def test_render_pending_only_names_unrendered_packs():
     """The Phase 5 staging set (pmlc_lib.samples.RENDER_PENDING) cannot hide a rendered or missing pack: each entry is
-    a pack JSON in the Hazira outputs with no HTML and no MD yet. Task 24 renders them and empties the set."""
+    a pack JSON in the Hazira outputs with no HTML and no MD yet. Task 24 rendered them and emptied the set."""
     from pmlc_lib.samples import RENDER_PENDING, sample_folder_problems
     out = SAMPLE / "outputs"
-    assert f"{SKILL}.json" in RENDER_PENDING or (out / f"{SKILL}.html").is_file()
+    assert f"{SKILL}.json" not in RENDER_PENDING and (out / f"{SKILL}.html").is_file()     # Task 24 rendered it
     for name in RENDER_PENDING:
         stem = name[: -len(".json")]
         assert "pack" in load(out / name), name

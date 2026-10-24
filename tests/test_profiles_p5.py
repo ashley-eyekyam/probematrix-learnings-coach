@@ -168,9 +168,10 @@ P5_ARTEFACTS = {"evidence_audit.json": ["evidence-audit"], "hfacs_profile.json":
                 "missed_opportunities.json": ["missed-opportunities"]}
 
 
-@pytest.mark.xfail(strict=True, reason="each Phase 5 engine task registers its artefact with status; Task 24 "
-                                       "removes this marker")
 def test_status_knows_p5_artefacts(tmp_path):
+    """Review Focus 5: after a re-ingest of a changed export, status reports every Phase 5 derived artefact as stale
+    (an unchanged export rebuilds byte-identical inputs, so nothing would be stale; Task 24)."""
+    from test_pmlc import _changed_export
     x = make_export(tmp_path)
     d = tmp_path / "ws"
     run("ingest", str(x), "--legacy-out", str(d))
@@ -179,7 +180,10 @@ def test_status_knows_p5_artefacts(tmp_path):
     run("timeline", str(d))
     for cmd in P5_ARTEFACTS.values():
         run(*cmd, str(d))
-    run("ingest", str(x), "--legacy-out", str(d))
+    state = {f["file"]: f["state"] for f in json.loads(run("status", str(d), "--json"))["files"]}
+    assert all(state.get(name) == "current" for name in P5_ARTEFACTS), state
+    (tmp_path / "changed").mkdir()
+    run("ingest", str(_changed_export(tmp_path / "changed")), "--legacy-out", str(d), "--force")
     out = json.loads(run("status", str(d), "--json"))
     state = {f["file"]: f["state"] for f in out["files"]}
     for name in P5_ARTEFACTS:
