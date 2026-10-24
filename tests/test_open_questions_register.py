@@ -114,8 +114,8 @@ def test_golden_hand_over_csv(hz, tmp_path):
     assert all(r[3] == "" and r[4] == "" for r in rows[1:])                  # interviews and hypotheses: blank
 
 
-def test_golden_is_waiting_for_its_render():
-    """Plan checklist item 6: the golden is JSON only until Task 24 renders it; check-samples knows to wait."""
-    assert GOLDEN.is_file() and not GOLDEN.with_suffix(".html").exists()
-    assert GOLDEN.name in SAMPLES.RENDER_PENDING
+def test_golden_is_rendered():
+    """Plan checklist item 6: Task 24 rendered the golden beside its JSON, so check-samples holds it to OD4-4."""
+    assert all(GOLDEN.with_suffix(f".{ext}").is_file() for ext in ("html", "md"))
+    assert GOLDEN.name not in SAMPLES.RENDER_PENDING
     assert run("check-samples", str(ROOT / "samples")).strip().endswith("0 problem(s) in " + str(ROOT / "samples"))
