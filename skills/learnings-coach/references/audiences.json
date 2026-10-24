@@ -287,6 +287,30 @@
     "skill": "safety-committee-guide"
   },
   {
+    "id": "enterprise-risk",
+    "label": "Enterprise risk management",
+    "typical_people": "ERM leads, risk owners, insurers' risk engineers",
+    "controls": "the risk register, bow-ties, control ratings, risk acceptance and key risk indicators",
+    "needs": "proposed risk-register and bow-tie changes with the evidence behind each, for the risk owner to assess",
+    "tier": "T4",
+    "levels": [
+      2,
+      3,
+      4
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [
+        2,
+        3,
+        4
+      ],
+      "tags": []
+    },
+    "reading_level": "executive",
+    "skill": "risk-register-update"
+  },
+  {
     "id": "hr-workforce",
     "label": "HR and workforce planning",
     "typical_people": "HR business partners, workforce planners, rostering and fatigue owners, competence-framework owners",

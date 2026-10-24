@@ -234,7 +234,8 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
     whens = {(n, s["skill"]): s["when"] for n, w in wf.items() for s in w["steps"] if "when" in s}
     assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied",
                      ("leadership", "failure-to-learn-review"): "the user asks for patterns or latent conditions",
-                     ("leadership", "latent-conditions-profile"): "the user asks for patterns or latent conditions"}
+                     ("leadership", "latent-conditions-profile"): "the user asks for patterns or latent conditions",
+                     ("leadership", "risk-register-update"): "the user asks for risk-register or bow-tie changes"}
     # plan --next stops on the first todo step and does not read "when": a guarded step must come after every
     # unguarded step of its preset, or a user who never asked for it cannot reach the rest (task 14 review I-1)
     for name, w in wf.items():

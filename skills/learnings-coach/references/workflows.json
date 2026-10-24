@@ -76,6 +76,10 @@
       {
         "skill": "latent-conditions-profile",
         "when": "the user asks for patterns or latent conditions"
+      },
+      {
+        "skill": "risk-register-update",
+        "when": "the user asks for risk-register or bow-tie changes"
       }
     ]
   },

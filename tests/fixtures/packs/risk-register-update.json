@@ -1,0 +1,27 @@
+{"pack": "risk-register-update", "schema": 1,
+ "title": "Risk Register Update: Synthetic pump fire, 2024",
+ "audience": "Enterprise risk management", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "Add the threat of an unspecified seal on the pump, and revisit the rating of the leak test after maintenance.",
+                  "cites": ["FND-0002", "FND-0003", "EVD-0002"], "learning": "LR-01"}],
+ "scope": {"tiers": [], "levels": [2, 3, 4], "tags": []},
+ "sections": [
+  {"id": "banner", "heading": "About this pack", "items": [
+   {"kind": "para", "text": "Proposals for the risk owner to assess: no loss estimates and no rating decisions."}]},
+  {"id": "risk-changes", "heading": "Proposed risk-register changes", "items": [
+   {"kind": "risk_change", "id": "rc-seal", "risk": "Loss of containment at the pump", "change_type": "missing-threat",
+    "current_assumption": "Seals match the original specification.",
+    "evidence_says": "Seals were bought locally without a specification [EVD-0003].",
+    "proposed_change": "Add an unspecified seal as a threat to this risk.", "cites": ["FND-0003", "EVD-0003"]},
+   {"kind": "risk_change", "id": "rc-leak-test", "risk": "Loss of containment at the pump", "change_type": "control-rating",
+    "current_assumption": "A leak test is done before every restart.",
+    "evidence_says": "The procedure index has no return-to-service entry [EVD-0002].",
+    "proposed_change": "Reassess the rating of the leak-test control against its records.", "learning": "LR-01",
+    "cites": ["FND-0002", "EVD-0002"]}]},
+  {"id": "kri", "heading": "Key risk and control indicators", "items": [
+   {"kind": "indicator", "name": "Restarts with a leak-test record", "measure": "Share of pump restarts with a signed test record",
+    "deterioration": "Any restart without a record", "cites": ["FND-0002"]}]},
+  {"id": "bowtie", "heading": "Barriers for the bow-tie", "items": [
+   {"kind": "barrier", "group": "Prevention", "barrier": "maintenance and testing: leak test before return to service",
+    "type": "procedural", "state": "absent", "failure_mode": "No checklist required the test", "hoc_tier": "engineering",
+    "fix": "Interlock the restart on a signed test record", "cites": ["FND-0002", "FND-0001"]}]}],
+ "limits": ["The synthetic export holds no cost or loss data, so the pack gives no loss estimate."]}

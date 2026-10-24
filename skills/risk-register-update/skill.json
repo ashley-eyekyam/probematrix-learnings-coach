@@ -1,0 +1,35 @@
+{
+  "name": "risk-register-update",
+  "kind": "audience",
+  "audiences": [
+    "enterprise-risk"
+  ],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      2,
+      3,
+      4
+    ],
+    "tags": []
+  },
+  "requires": [
+    "workspace"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "risk-register-update",
+    "files": []
+  },
+  "formats": [
+    "risk-csv",
+    "bowtie-csv"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": []
+}

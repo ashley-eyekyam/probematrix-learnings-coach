@@ -112,4 +112,6 @@ def test_leadership_next_reaches_the_coaches_without_this_pack():
             s["status"] = "done"
     assert plan.next_step(p)["skill"] == "site-leadership-coach"
     order = [s["skill"] for s in p["steps"]]
-    assert order[-2:] == ["engine:hfacs-profile", SKILL] and p["steps"][-1]["when"]
+    i = order.index(SKILL)
+    assert order[i - 1] == "engine:hfacs-profile" and p["steps"][i]["when"]
+    assert all(s["when"] for s in p["steps"][i:])          # only guarded steps follow it

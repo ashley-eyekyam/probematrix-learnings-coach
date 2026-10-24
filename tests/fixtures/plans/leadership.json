@@ -194,6 +194,24 @@
    "gate": [
     "check-pack --strict"
    ]
+  },
+  {
+   "n": 12,
+   "skill": "risk-register-update",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "risk-register-update",
+   "mode": null,
+   "when": "the user asks for risk-register or bow-tie changes",
+   "commands": [
+    "PMLC select <ws> --preset risk-register-update:risk-codes",
+    "PMLC check-pack <ws> <run>/outputs/risk-register-update.json --strict",
+    "PMLC pack <ws> <run>/outputs/risk-register-update.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
   }
  ],
  "next": 3
