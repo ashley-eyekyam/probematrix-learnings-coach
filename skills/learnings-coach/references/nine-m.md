@@ -88,12 +88,12 @@ The `nine-m-analysis` skill asks one question per turn. Each question is printed
 |---|---|---|
 | 2 scope | Which Ms should we work through? | The Ms asked about, always in the order M1 to M9 |
 | 3a relevance | Is this M relevant to the incident? | "Not relevant" ends the M: its reason and cites go in the `not-relevant` table |
-| 3b subcategory | Which subcategory fits best? | The subcategory id (`M8.03`) on the condition and in `nine-m-map.json`; an overlap (section 2) is settled here |
+| 3b subcategory | Which subcategory fits best? | The subcategory id (`M8.03`) on the condition and in `nine-m-map.json`; an overlap (section 2) is settled in this answer (`--text` naming the owning M), never a seventh question |
 | 3c condition | Which condition is it? | One learning per condition; two suggestions that are one condition are merged |
 | 3d driver | Why did it make sense at the time, and what system drove it? | The driver in the learning's explanation; for M1 it is asked before any M1 learning is written |
 | 3e barrier | What state was the barrier in? | The `barrier` item: absent, degraded, defeated or worked partly |
 | 3f change | Which direction of change? | The `recommendation` tier, strongest first; corrective or preventive, said by the user |
-| 3g indicator | How would you see the change working? | The recommendation's leading indicator (optional) |
+| 3g indicator | Not asked: no engine step, and a to f use the M's six | The analyst derives the leading indicator, and corrective or preventive when 3f leaves it open, and says so in `data_quality` |
 | 4 cross-M | Keep linked Ms as one learning, or separate? | Whether a condition is counted once across two Ms |
 | 5 gaps | What evidence would settle each unknown? | A `gaps` entry for every "None / unknown" |
 

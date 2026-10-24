@@ -41,12 +41,14 @@ last one, `None / unknown (record as a gap)`. Never add an option of your own. T
 2. **Scope** (`--step scope`): every M with seed weight, M1 to M9 (recommended); the top four; a list; unknown runs all.
 3. **Per M in scope, in order M1 to M9**, at most 6 questions, and "skip the rest of this M" is always allowed:
    a. `relevance`: "Not relevant" stops the M; keep its reason and cites for the `not-relevant` table.
-   b. `subcategory`: when a suggestion says it overlaps another M, ask which M owns it (`nine-m.md` §2).
+   b. `subcategory`: when a suggestion says it overlaps another M, settle which M owns it in this same answer
+      (`--text` naming the owning M, `nine-m.md` §2), not with a seventh question.
    c. `condition`: merge conditions that are one learning; count learnings, not instances.
    d. `driver`: why it made sense at the time, from causal links into level 3 and 4 codes.
    e. `barrier`: its state in the shared vocabulary (absent, degraded, defeated, worked partly).
    f. `change`: the strongest feasible tier first; the user says whether it is corrective or preventive.
-   g. A leading indicator, optional: ask it as free text within the M's 6.
+   g. A leading indicator: there is no engine step for it and a to f use the M's 6, so do not ask it. Derive
+      the indicator, and corrective or preventive when 3f leaves it open, and say in `data_quality` they are yours.
    **For M1, get the 3d answer before you write any M1 learning**, or record the driver as unknown.
 4. **Cross-M** (`--step cross-m`): keep Ms that a causal link joins as one learning, or separate them.
 5. **Gaps** (`--step gaps`): an evidence request for every "None / unknown".

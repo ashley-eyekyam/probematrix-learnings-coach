@@ -15,6 +15,9 @@
   },
   {
    "text": "The answers come from a scripted replay (nine-m-replay --accept-recommended), which takes the recommended suggestion at every question. They show the method; the organisation's own interview replaces them."
+  },
+  {
+   "text": "The leading indicators and the corrective or preventive label on each recommendation are the analyst's own, derived from the condition: the session asked no indicator question (each M used its six questions on steps a to f), and no change answer chose corrective or preventive."
   }
  ],
  "bottom_line": [
@@ -367,8 +370,8 @@
     {
      "kind": "recommendation",
      "group": "c-m3-1",
-     "change": "Preventive: remove the route by which an unassessed substitution reaches the plant. The maintenance system cannot raise a job that fits a different pressure-boundary part until an approved management-of-change record is linked to it.",
-     "indicator": "Part-substitution jobs raised without a linked management-of-change record (count)",
+     "change": "Preventive: remove the seal that could be swapped without a risk assessment. Replace the O-ring-sealed joints on the metering pressure boundary with welded connections where the design allows, so no seal is left to substitute outside the management-of-change process.",
+     "indicator": "Seal-dependent joints left on the metering pressure boundary (count)",
      "hoc_tier": "elimination",
      "cites": [
       "FND-8083ECAC",
@@ -419,10 +422,11 @@
     {
      "kind": "recommendation",
      "group": "c-m4-1",
-     "change": "Corrective: remove the isolation decision from the escalation chain for a confirmed major leak. On confirmed detection the metering area is isolated at once, so nobody waits for a senior decision.",
-     "indicator": "Major-leak drills: minutes from confirmed detection to isolation",
+     "change": "Corrective: remove the ignition sources the doctrine left to run to breakdown. Move electrical equipment that does not need to be in the Zone 1 metering area out of it, so a major leak there finds nothing to ignite while isolation is decided.",
+     "indicator": "Electrical items inside the Zone 1 metering area that do not need to be there (count)",
      "hoc_tier": "elimination",
      "cites": [
+      "FND-1280E788",
       "FND-5C7B163D"
      ]
     }
@@ -470,13 +474,11 @@
     {
      "kind": "recommendation",
      "group": "c-m5-1",
-     "change": "Preventive: remove open-ended waiting on critical safety information. The maintenance and audit systems cannot close a safety-critical job or extend a safety recommendation without the review and approval each requires, so an open item cannot sit unseen.",
-     "indicator": "Safety-critical notifications and audit recommendations past their date without approval (count)",
+     "change": "Corrective: remove a known-defective item from the gas path. A pressure-boundary item with an open malfunction notification, such as the failed meter, is spaded out of the gas path until it is repaired and the notification is closed, so no gas flows through an item whose warning is still waiting for a response.",
+     "indicator": "Pressure-boundary items left in the gas path with an open malfunction notification (count)",
      "hoc_tier": "elimination",
      "cites": [
-      "FND-FA807C69",
-      "FND-1D713648",
-      "FND-5F3E97E1"
+      "FND-FA807C69"
      ]
     }
    ]

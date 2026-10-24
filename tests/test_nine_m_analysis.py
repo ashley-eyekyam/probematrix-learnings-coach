@@ -95,7 +95,8 @@ def test_skill_md_sets_out_the_interview():
     for need in ("PMLC nine-m-seed <ws>", "PMLC nine-m-suggest <ws>", "--record", "PMLC nine-m-answer <ws>",
                  "PMLC nine-m-actions-template <ws>", "one question per turn", "6 questions per M plus 4",
                  "3d", "organisation-context", "data_quality", "references/nine-m.md", NINE_M_NONE,
-                 "nine-m-replay", BANNERS["nine-m-demo"]):
+                 "nine-m-replay", BANNERS["nine-m-demo"], "say in `data_quality` they are yours",
+                 "not with a seventh question"):
         assert need in t, need
     never = t.split("Never offered", 1)[1].split("\n\n", 1)[0].lower()
     for word in ("discipline", "accountability", "consequences"):
@@ -168,6 +169,33 @@ def test_golden_is_written_from_the_session():
     assert secs["cross-m"]["items"][0]["kind"] == "graph"
     lrs = [it["learning"] for s in pack["sections"] for it in s["items"] if it.get("learning")]
     assert len(lrs) == len(set(lrs))                                           # one M per register learning
+
+
+def test_golden_says_which_choices_were_derived():
+    """Fix round 1: with no 3g record and no 3f answer choosing corrective or preventive, the pack says the indicators
+    and the labels are the analyst's own (SKILL.md: 'derive ... and say in data_quality they are yours')."""
+    pack, session = load(GOLDEN), load(SESSION)
+    recs = [it for s in pack["sections"] for it in s["items"] if it["kind"] == "recommendation"]
+    steps = {r["step"] for r in session["records"]}
+    dq = " ".join(x["text"] for x in pack["data_quality"]).lower()
+    if any(r.get("indicator") for r in recs) and "indicator" not in steps:
+        assert "indicators" in dq and "analyst's own" in dq, dq
+    chosen = [r["answer"]["text"] for r in session["records"] if r["step"] == "change"]
+    if any(r["change"].lower().startswith(("corrective", "preventive")) for r in recs) and all(
+            "corrective or preventive" in a.lower() for a in chosen):                # no answer chose either
+        assert "corrective or preventive label" in dq, dq
+
+
+def test_golden_elimination_changes_are_not_gates():
+    """Fix round 1: an elimination-tier change removes the hazard or the task; it is not a workflow gate, an approval
+    rule or an automatic trip (engineering or administrative controls, which rec-review bands lower)."""
+    gate = re.compile(r"\b(?:cannot (?:raise|close|extend)|until an approved|without the review and approval|"
+                      r"isolated at once|escalation chain)\b", re.I)
+    for s in load(GOLDEN)["sections"]:
+        for it in s["items"]:
+            if it["kind"] == "recommendation" and it["hoc_tier"] == "elimination":
+                assert re.search(r"\b(?:remov\w*|retire)\b", it["change"], re.I), (s["id"], it["change"])
+                assert not gate.search(it["change"]), (s["id"], it["change"])
 
 
 def test_golden_d7_roles_and_never_offered():
