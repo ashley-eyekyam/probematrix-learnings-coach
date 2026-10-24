@@ -37,6 +37,13 @@ and, for Phase 4:
   uat-print-cards.json         the two Hazira print cards with the card fields, two toolbox talks and three checks
                                (one a hold point), for the print layouts
   uat-quiz.json                five Hazira questions: single, multi, truefalse, short and one discussion question
+and, for Phase 5:
+  uat-weak-fix-register.json   the Hazira sample register with LR-08's administrative fix reworded as a reminder memo,
+                               so rec-review flags LR-08 as a weak fix for a deep cause
+  uat-capa-planner-9m.xlsx     a CAPA Planner workbook as the planner writes it (four sheets, no Identified
+                               Findings), which nine-m-seed and setup refuse
+  uat-process-export.xlsx      the synthetic process-industry export of tests/conftest.py (30 invented findings), for
+                               setup --industry process
 
 The export shape follows tests/test_pmlc.py (FIND_COLS, ROWS, make_export), duplicated here so this tool
 needs only the standard library and openpyxl. The workbooks are rebuilt from scratch on every run.
@@ -483,6 +490,78 @@ def phase4_files():
             "uat-quiz.json": dump(QUIZ)}
 
 
+# ----------------------------------------------------------------------------- Phase 5 inputs
+
+PROCESS_ROWS = ROOT / "tests" / "fixtures" / "process-export" / "findings.json"
+WEAK_FIX_LR, WEAK_FIX_TEXT = "LR-08", ("Issue a reminder memo to control-room shift leaders on the isolation procedure "
+                                       "for major releases.")
+
+
+def weak_fix_register():
+    """The sample register with LR-08's administrative fix reworded as a reminder memo: a weaker change (P5-14), so
+    LR-08, a level 3 cause, has nothing stronger than training and rec-review flags 'weak fix for a deep cause'."""
+    r = json.loads(SAMPLE_REGISTER.read_text(encoding="utf-8"))
+    e = next(x for x in r["entries"] if x["lr_id"] == WEAK_FIX_LR)
+    rec = next(x for x in e["recommendations"] if x["hoc_tier"] == "administrative")
+    rec["what"] = WEAK_FIX_TEXT
+    return r
+
+
+def capa_planner_9m() -> bytes:
+    """A ProbeMatrix CAPA Planner workbook as the planner writes it: its four sheets and no Identified Findings, so
+    nine-m-seed (and setup) refuse it. Invented rows only."""
+    wb = openpyxl.Workbook()
+    wb.remove(wb.active)
+    for title, head, row in [("Corrective Actions", ["ID", "Chapter", "Action"], ["CA-1", "M3", "Invented corrective row"]),
+                             ("Preventive Actions", ["ID", "Chapter", "Action"], ["PA-1", "M9", "Invented preventive row"]),
+                             ("Chapter Headers", ["Chapter", "Title"], ["M1", "Invented header"]),
+                             ("Residual Risks", ["ID", "Risk"], ["RR-1", "Invented residual risk"])]:
+        s = wb.create_sheet(title)
+        s.append(head)
+        s.append(row)
+    return _xlsx_bytes(wb)
+
+
+def process_export() -> bytes:
+    """The synthetic process-industry export of tests/conftest.py process_export (P5-16): 30 invented findings whose
+    roles use process-safety words. Without --industry process, 10 of them are F99; with it, none."""
+    rows = json.loads(PROCESS_ROWS.read_text(encoding="utf-8"))
+    wb = openpyxl.Workbook()
+    s = wb.active
+    s.title = "Incident Summary"
+    for r in [("INCIDENT SUMMARY", None), (None, None), ("Field", "Value"),
+              ("Incident Title", "Synthetic process unit release"), ("Date", "2024-05-02"),
+              ("Investigation Status", "completed")]:
+        s.append(r)
+    f = wb.create_sheet("Identified Findings")
+    f.append(FIND_COLS[:16] + ["User Edited"])
+    for i, r in enumerate(rows):
+        f.append([r["id"], r["code"], r["name"], r["level"], "Level", "Level", r["sub"], "substantiated", 3 + i % 2,
+                  f"I-{i + 1}", r["name"], "Described briefly.", "Supported by EVD-0001.", "Described briefly.",
+                  r["role"], "EVD-0001", "No"])
+    e = wb.create_sheet("Evidence Links")
+    e.append(["Finding Code", "Finding Name", "Evidence ID", "Evidence Type", "Relevance", "Specific Reference",
+              "Evidence Description"])
+    e.append(["AV 1.1", "Violation - Routine", "EVD-0001", "document", "Shows the step", "step skipped", "Work order"])
+    c = wb.create_sheet("Causal Chain")
+    c.append(["Link ID", "From Code", "From Level", "To Code"])
+    c.append(["No causal links found", None, None, None])
+    return _xlsx_bytes(wb)
+
+
+def _xlsx_bytes(wb) -> bytes:
+    buf = io.BytesIO()
+    wb.save(buf)
+    return buf.getvalue()
+
+
+def phase5_files():
+    """{file name: bytes} for the Phase 5 inputs."""
+    dump = lambda o: (json.dumps(o, indent=1, ensure_ascii=False) + "\n").encode("utf-8")   # noqa: E731
+    return {"uat-weak-fix-register.json": dump(weak_fix_register()), "uat-capa-planner-9m.xlsx": capa_planner_9m(),
+            "uat-process-export.xlsx": process_export()}
+
+
 def main():
     ap = argparse.ArgumentParser(description="Write the UAT input files.")
     ap.add_argument("--out", type=Path, default=OUT, help="output folder (default: docs/uat/inputs)")
@@ -499,7 +578,7 @@ def main():
     for name, text in TEXT_FILES.items():
         (out / name).write_text(text, encoding="utf-8")
         print(f"wrote {out / name}")
-    for name, data in {**phase3_files(), **phase4_files()}.items():
+    for name, data in {**phase3_files(), **phase4_files(), **phase5_files()}.items():
         (out / name).write_bytes(data)
         print(f"wrote {out / name}")
 
