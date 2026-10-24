@@ -62,6 +62,7 @@ OVERLAPS = {
     ("safety-committee-guide", "frontline-learning-cards"),
     ("latent-conditions-profile", "causal-map"), ("latent-conditions-profile", "learning-clusters"),
     ("open-questions-register", "investigator-coach"),
+    ("evidence-strength-scorecard", "investigator-coach"), ("evidence-strength-scorecard", "auditor-assurance-pack"),
     ("failure-to-learn-review", "precursor-timeline"), ("failure-to-learn-review", "site-leadership-coach"),
     ("risk-register-update", "barrier-learnings"), ("risk-register-update", "board-brief"),
     ("people-workforce-learnings", "training-designer"), ("people-workforce-learnings", "manager-coach"),

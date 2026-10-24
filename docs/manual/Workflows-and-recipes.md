@@ -50,15 +50,15 @@ pmlc plan <ws> --workflow leadership --json      # the same plan as one JSON obj
 pmlc plan <ws> --next                            # the next step to do; exit code 2 when the plan is complete
 ```
 
-The table shows what `plan --workflow <preset>` printed for each preset on a fresh Hazira workspace (after `setup` with the `india-process-site` overlay, before any pack or register was written). "Engine" steps are `ingest`, `classify`, `timeline`, `missed-opportunities`, `hfacs-profile`, `open-questions`, `templates` and `export-actions`; "planned" steps belong to skills that arrive in a later v2.0 phase and are skipped.
+The table shows what `plan --workflow <preset>` printed for each preset on a fresh Hazira workspace (after `setup` with the `india-process-site` overlay, before any pack or register was written). "Engine" steps are `ingest`, `classify`, `evidence-audit`, `timeline`, `missed-opportunities`, `hfacs-profile`, `open-questions`, `templates` and `export-actions`; "planned" steps belong to skills that arrive in a later v2.0 phase and are skipped.
 
 | Preset | What it is for | Steps on Hazira | Planned (skipped) |
 |---|---|---|---|
 | `first-48-hours` | A draft register, an alert and the supervisor briefing within two days | 5: ingest and classify (done), learnings-register (draft), supervisor-coach | `safety-alert` (Phase 6) |
 | `full-cascade` | Every level, frontline to board | 12: ingest and classify (done), learning-clusters, learnings-register, organisation-learning-map, frontline-learning-cards, supervisor-coach, manager-coach, site-leadership-coach, top-management-brief, board-brief, then `templates` | none |
 | `leadership` | Register, site leadership, top management and board | 12: ingest and classify (done), learnings-register, site-leadership-coach, top-management-brief, board-brief, then (only when the user asks for patterns or latent conditions) `timeline` (done) and `missed-opportunities`, failure-to-learn-review, `hfacs-profile` and latent-conditions-profile, then risk-register-update (only when the user asks for risk-register or bow-tie changes) | none |
-| `assurance` | Register, evidence strength, standards crosswalk and the auditor pack | 6: ingest and classify (done), learnings-register, compliance-crosswalk, auditor-assurance-pack | `evidence-strength-scorecard` (Phase 5) |
-| `investigation-quality` | Evidence strength, open questions and investigator coaching | 6: ingest (done), `open-questions`, open-questions-register, investigator-coach, report-comparison (only when an official report is supplied) | `evidence-strength-scorecard` (Phase 5) |
+| `assurance` | Register, evidence strength, standards crosswalk and the auditor pack | 7: ingest and classify (done), learnings-register, `evidence-audit`, evidence-strength-scorecard, compliance-crosswalk, auditor-assurance-pack | none |
+| `investigation-quality` | Evidence strength, open questions and investigator coaching | 7: ingest (done), `evidence-audit`, evidence-strength-scorecard, `open-questions`, open-questions-register, investigator-coach, report-comparison (only when an official report is supplied) | none |
 | `action-design` | 9M analysis, recommendation strength and an action export | 6: ingest and classify (done), learnings-register, then `export-actions` | `nine-m-analysis`, `recommendation-strength-review` (Phase 5) |
 | `sister-sites` | An alert and "could it happen here" for other sites | 5: ingest and classify (done), learnings-register | `safety-alert`, `could-it-happen-here` (Phase 6) |
 | `training` | Register, training design, frontline cards and a safety-moment deck | 6: ingest and classify (done), learnings-register, training-designer, frontline-learning-cards | `safety-moment-deck` (Phase 6) |

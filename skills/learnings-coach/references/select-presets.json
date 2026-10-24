@@ -24,6 +24,9 @@
     {"name": "text", "args": ["--text", "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design", "--brief"]},
     {"name": "pte", "args": ["--prefix", "PTE", "--brief"]}
   ],
+  "evidence-strength-scorecard": [
+    {"name": "top-l34-evidence", "args": ["--level", "3", "4", "--top-rated", "--fields", "label,evidence,level,rating"]}
+  ],
   "failure-to-learn-review": [
     {"name": "failure-to-correct", "args": ["--subcategory", "Failure to Correct Known Problem", "--brief"]},
     {"name": "culture", "args": ["--subcategory", "Organisational Climate/ Culture Influences", "--brief"]}

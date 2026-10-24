@@ -94,6 +94,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide 
 | `report-comparison` | HSE, consultants | fair two-way comparison with an official report |
 | `compliance-crosswalk` | HSE leads, management-system owners, auditors | learnings mapped to ISO 45001, PSM, RBPS and other frameworks |
 | `open-questions-register` | investigators, investigation sponsors | open questions, what would settle each, follow-up CSV |
+| `evidence-strength-scorecard` | investigators, auditors, HSE leads | evidence scorecard by level, concentration, evidence requests |
 | `frontline-learning-cards` | operators, technicians, crews | Learning Cards, toolbox talks, "stop and ask" list |
 | `supervisor-coach` | supervisors, shift in-charges, permit issuers | checklists, hold points, what to refuse |
 | `manager-coach` | department managers | system learnings, indicators, 90-day agenda |

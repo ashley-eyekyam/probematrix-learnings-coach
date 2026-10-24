@@ -1,0 +1,34 @@
+{
+  "name": "evidence-strength-scorecard",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "evidence-audit"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "evidence-strength-scorecard",
+    "files": []
+  },
+  "formats": [
+    "docx"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": []
+}

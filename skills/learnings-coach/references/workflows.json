@@ -90,8 +90,7 @@
         "skill": "learnings-register"
       },
       {
-        "skill": "evidence-strength-scorecard",
-        "planned": "Phase 5"
+        "skill": "evidence-strength-scorecard"
       },
       {
         "skill": "compliance-crosswalk"
@@ -105,8 +104,7 @@
     "title": "Investigation quality: evidence strength, open questions and investigator coaching",
     "steps": [
       {
-        "skill": "evidence-strength-scorecard",
-        "planned": "Phase 5"
+        "skill": "evidence-strength-scorecard"
       },
       {
         "skill": "open-questions-register"
