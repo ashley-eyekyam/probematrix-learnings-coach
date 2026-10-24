@@ -121,7 +121,7 @@
    "items": [
     {
      "kind": "para",
-     "text": "The export leaves its four follow-up columns empty on all 436 findings, and 21 of 30 Incident Summary fields blank. The AI justification of 240 of the 436 findings says a record or fact is absent, and 193 justifications are hedged (\"may\", \"likely\", \"suggests\"). Other packs in this run recorded 14 gaps of their own.",
+     "text": "The export leaves its four follow-up columns empty on all 436 findings, and 21 of 30 Incident Summary fields blank. The AI justification of 240 of the 436 findings says a record or fact is absent, and 193 justifications are hedged (\"may\", \"likely\", \"suggests\"). Other packs in this run recorded 15 gaps of their own.",
      "cites": [
       "FND-05841EDA",
       "FND-0B35D995",
@@ -647,6 +647,17 @@
       "FND-5897D1E4"
      ],
      "group": "top-management-brief"
+    },
+    {
+     "kind": "question",
+     "question": "Do the same latent conditions exist at other sites?",
+     "why": "Recorded as a gap by the latent-conditions-profile pack.",
+     "good_evidence": "Findings from other investigations coded on the same HFACS framework, or an audit of the same conditions at other sites.",
+     "cites": [
+      "FND-B86F67F0",
+      "FND-DE30BD8B"
+     ],
+     "group": "latent-conditions-profile"
     }
    ]
   }
