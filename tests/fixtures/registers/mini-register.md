@@ -52,6 +52,12 @@ Draft because: no finding is marked as edited by a person
 | administrative | 1 |
 | engineering | 2 |
 
+**Learnings by 9M and HFACS level**
+
+| Value | Count |
+|---|---|
+| M7 × L2 Preconditions | 1 |
+
 1 learning(s) flagged for legal or compliance review.
 
 ## Priority 1 learnings

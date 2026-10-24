@@ -28,7 +28,8 @@ def _full(e: dict) -> str:
     meta = [f"{label}: {_flat(e.get(k))}" for k, label in (
         ("owner_entity", "Owner entity"), ("hfacs_level", "HFACS level"), ("urgency", "Urgency"),
         ("recommendation_class", "Class"), ("recipient_role", "Recipient"),
-        ("regulatory_touchpoint", "Regulatory touchpoint")) if _flat(e.get(k))]
+        ("regulatory_touchpoint", "Regulatory touchpoint"), ("nine_m", "9M"),
+        ("nine_m_subcategory", "9M subcategory")) if _flat(e.get(k))]
     if meta:
         out.append(" · ".join(meta))
     recs = [r for r in (e.get("recommendations") or []) if isinstance(r, dict)]

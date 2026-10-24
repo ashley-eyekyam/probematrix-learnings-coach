@@ -88,6 +88,30 @@ def mask_org(org: dict, share) -> dict:
             "lr_pack_matrix": matrix}
 
 
+def nine_m_strip(entries) -> str:
+    """P5-18: nine cells, M1 to M9, each counting the register's learnings with that nine_m and linking to them; ''
+    when no learning has a nine_m value."""
+    from ..ninem import load_nine_m, NINE_M_CODES
+    by_m = {m: [e for e in entries if _s(e.get("nine_m")).upper() == m] for m in NINE_M_CODES}
+    if not any(by_m.values()):
+        return ""
+    titles = {c["code"]: c["title"] for c in load_nine_m()["chapters"]}
+    head = "".join(f'<th scope="col">{m} {html.escape(titles.get(m, ""))}</th>' for m in NINE_M_CODES)
+    cells = []
+    for m in NINE_M_CODES:
+        mine = by_m[m]
+        if not mine:
+            cells.append('<td class="z"><span aria-hidden="true">·</span><span class="vh">No learning</span></td>')
+            continue
+        links = " ".join(f'<a class="lr-link" href="#detail/{html.escape(_s(e.get("lr_id")))}">'
+                         f'{html.escape(_s(e.get("lr_id")))}</a>' for e in mine)
+        cells.append(f'<td style="--o:.55"><b>{len(mine)}</b> {links}</td>')
+    return ('\n<h2>Learnings by 9M</h2>\n<p class="m">How many learnings the register places under each of the nine Ms '
+            '(the nine_m field); each link opens the learning.</p>\n'
+            f'<div class="wrap"><table id="nine-m-strip"><thead><tr>{head}</tr></thead><tbody><tr>{"".join(cells)}'
+            '</tr></tbody></table></div>')
+
+
 def cmd_dashboard(a):
     brand = load_brand(a.brand) if getattr(a, "brand", None) else None      # before anything is read or written
     ws = Path(a.ws)
@@ -198,7 +222,8 @@ def cmd_dashboard(a):
         hoc = collections.Counter(norm_hoc(r.get("hoc_tier")) for r in recs)
         hoc_bars = "".join(f'<div class="bar"><span>{t}</span><i style="width:{100*hoc[t]/max(hoc.values()):.0f}%"></i><b>{hoc[t]}</b></div>'
                            for t in HOC_TIERS + ["unclassified"] if hoc.get(t))
-        learn_html = _render("learnings", matrix=matrix, per_tier="".join(per_tier), hoc_bars=hoc_bars)
+        learn_html = _render("learnings", matrix=matrix, per_tier="".join(per_tier), hoc_bars=hoc_bars,
+                             nine_m=nine_m_strip(entries))
     for x in org["warnings"]:
         print(f"warning: {x}", file=sys.stderr)
     overview = _render("overview", org=org_section(org), kpis="".join(f"<div><b>{v}</b><span>{html.escape(k)}</span></div>" for k, v in kpis),

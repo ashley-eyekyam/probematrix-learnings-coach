@@ -27,6 +27,7 @@ Controlled values (keep to these so summaries count cleanly; put detail in anoth
 - `hoc_tier`: one of `elimination`, `substitution`, `engineering`, `administrative`, `training`, `ppe` (a trailing "control" is fine). Free text is read by `norm_hoc`: an administrative cue (review, procedure, checklist, audit, permit, plan, instruction, sign) at the start of a word gives `administrative`; otherwise the strongest tier mentioned (in the order above) wins; text naming no tier warns as ambiguous.
 - `priority`: `1`, `2` or `3`. A priority-1 learning needs at least one recommendation above the administrative tier (`elimination`, `substitution` or `engineering`) or a non-empty `why_not_stronger`: `check-register` warns, and `check-register --strict` fails.
 - `urgency`, `recommendation_class` and `nine_m` take the values in section K; any other value is a problem.
+- `nine_m_subcategory` is a subcategory id from `references/nine-m.json` (for example `M8.02`). An id that is not in that file, or that belongs to another M than `nine_m`, is a problem; free text is kept with a warning.
 - `learning_level`: `single-loop` or `double-loop`, chosen by the written criteria in `indicators-and-effectiveness.md` section 7.
 - Recommendation `owner` is optional and must be a role; owners and due dates are set by the organisation (D7), so a `due` or a date value draws a warning.
 - `comparison`: `yes`, `partial`, `none`, `not compared`.

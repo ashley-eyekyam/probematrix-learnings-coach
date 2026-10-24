@@ -2,10 +2,12 @@
 registry, run the name guard over every output, then write them (shared copies under their own names)."""
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
 from ..dashboard.data import embedded_records, print_witness_note, resolve_embed
+from ..ninem_session import NINE_M_MAP_FILE, NINE_M_PACK, nine_m_map, read_session
 from ..handling import effective_handling, name_guard, share_ctx, share_gate, shared_copy, SHARED_LINE, shared_name
 from ..pack.html import follow_up, update_gaps
 from ..pack.schema import _checked as _pack_checked, embedded_ids, record_check, with_item_ids
@@ -54,7 +56,10 @@ def cmd_pack(a):
     coach = pack["pack"] == "investigator-coach" and mode == "internal"   # interview plans never leave the team
     fu_csv = follow_up_csv(pack) if coach else ""
     oq_csv = open_questions_csv(rpack) if pack["pack"] == "open-questions-register" else ""    # any mode, from the masked pack
-    name_guard([o.guard_text or "" for _, o in outs] + [fu_csv, oq_csv], a)
+    nm_map = ""                                                      # the 9M side output (Task 12), from the masked pack
+    if pack["pack"] == NINE_M_PACK:
+        nm_map = json.dumps(nine_m_map(ctx.pack, read_session(ws)), indent=1, ensure_ascii=False, sort_keys=True)
+    name_guard([o.guard_text or "" for _, o in outs] + [fu_csv, oq_csv, nm_map], a)
     for note in ctx.notes:
         print(note, file=sys.stderr)
     out = Path(a.out) if a.out else outputs_dir(ws)
@@ -79,6 +84,11 @@ def cmd_pack(a):
     gj = update_gaps(ws, pack)
     if gj:
         print(f"Gaps written to {gj}")
+    if nm_map:
+        out.mkdir(parents=True, exist_ok=True)
+        nm = shared_name(out / NINE_M_MAP_FILE, mode)
+        nm.write_text(nm_map, encoding="utf-8")
+        print(f"{NINE_M_MAP_FILE} written to {nm}")
     if oq_csv:                                                       # the organisation fills this in: never overwrite
         out.mkdir(parents=True, exist_ok=True)
         fu = shared_name(out / OQ_FOLLOW_UP_FILE, mode)

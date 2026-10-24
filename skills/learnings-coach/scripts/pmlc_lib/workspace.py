@@ -49,6 +49,18 @@ def load_ws(ws_dir: Path) -> dict:
     out["singletons"] = json.loads(sp.read_text(encoding="utf-8")).get("roles", []) if sp.exists() else []
     if (ws_dir / "evidence_audit.json").is_file():   # the switch for check-register's engine-strength check
         out["evidence_audit"] = True
+    for name, key in (("nine_m_seed.json", "nine_m_seed"), ("nine_m_session.json", "nine_m_session")):
+        p9 = ws_dir / name       # select --m and the 9M profile rules (nine-m-cites, m1-balance, banner:nine-m-demo)
+        if p9.is_file():
+            try:
+                d9 = json.loads(p9.read_text(encoding="utf-8"))
+            except ValueError:
+                d9 = None
+            if isinstance(d9, dict):
+                if key == "nine_m_session":
+                    out["nine_m_session_mode"] = d9.get("mode")
+                else:
+                    out[key] = d9
     cp = ws_dir / "comparator.json"   # the item ids check-pack validates comparator_refs against
     if cp.is_file():
         ids, bad, why = scan_comparator(cp)

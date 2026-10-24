@@ -37,7 +37,9 @@ REG_COLS = [
 ]
 # Phase 3 fields: a column appears only when some entry carries the field, in this order, after the last column above.
 OPTIONAL_REG_COLS = [("urgency", "Urgency"), ("recommendation_class", "Recommendation class"),
-                     ("regulatory_touchpoint", "Regulatory touchpoint")]
+                     ("regulatory_touchpoint", "Regulatory touchpoint"), ("nine_m", "9M"),
+                     ("nine_m_subcategory", "9M subcategory")]
+NINE_M_GROUP = "Learnings by 9M and HFACS level"        # P5-18: the 9M x HFACS level pivot, only with a nine_m value
 PRIORITIES = ("1", "2", "3")
 COMPARISONS = ("yes", "partial", "none", "not compared")
 SHARED_EPOCH = datetime.datetime(2000, 1, 1)
@@ -75,6 +77,10 @@ def summary_groups(entries, recs) -> tuple:
         ("Learnings by tier that must act", collections.Counter(t for e in entries for t in (e.get("tier_messages") or {}))),
         ("Recommendations by control tier", collections.Counter(norm_hoc(r.get("hoc_tier")) for r in recs)),
     ]
+    nine = [e for e in entries if _flat(e.get("nine_m"))]
+    if nine:
+        groups.append((NINE_M_GROUP, collections.Counter(f"{_flat(e.get('nine_m')).upper()} × {norm_level(e.get('hfacs_level'))}"
+                                                         for e in nine)))
     strong = sum(1 for r in recs if norm_hoc(r.get("hoc_tier")) in ("elimination", "substitution", "engineering"))
     return groups, strong
 

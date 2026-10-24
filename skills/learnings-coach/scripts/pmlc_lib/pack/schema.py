@@ -1056,7 +1056,7 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
                 low = low.replace("a quarter", f"{floor:.0%}")
             W.append(f"coverage: cites {got} of {len(rel)} relevant findings; {low}")
     _check_comparator_refs(pack, w, bad, warn)
-    strict_msgs = profiles.check(pack, prof, top) if prof else []
+    strict_msgs = profiles.check(pack, prof, top, w=w) if prof else []
     strict_msgs += [f"items: {x}" for x in profiles.padding(pack)]
     strict_msgs += [f"scope: {x}" for x in profiles.scope_drift(pack, profiles.load_audiences())]
     (P if strict else W).extend(strict_msgs)
