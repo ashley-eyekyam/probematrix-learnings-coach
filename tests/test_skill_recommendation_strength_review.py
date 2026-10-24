@@ -173,6 +173,8 @@ def test_owner_on_a_direction_fails_without_strict(hz, tmp_path):
     assert r.returncode != 0 and "owner and due dates are set by the organisation" in r.stdout + r.stderr
 
 
-def test_golden_waits_for_task_24_render():
+def test_golden_is_rendered():
+    """Task 24 rendered the golden beside its JSON (OD4-4), so it is no longer staged in RENDER_PENDING."""
     from pmlc_lib import samples
-    assert f"{SKILL}.json" in samples.RENDER_PENDING
+    assert f"{SKILL}.json" not in samples.RENDER_PENDING
+    assert all(GOLDEN.with_suffix(f".{ext}").is_file() for ext in ("html", "md"))

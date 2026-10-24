@@ -144,6 +144,8 @@ def test_jc5_is_an_error_in_this_pack(hz, tmp_path):
         shutil.copy(GOLDEN, p)
 
 
-def test_golden_waits_for_task_24_render():
+def test_golden_is_rendered():
+    """Task 24 rendered the golden beside its JSON (OD4-4), so it is no longer staged in RENDER_PENDING."""
     from pmlc_lib import samples
-    assert f"{SKILL}.json" in samples.RENDER_PENDING
+    assert f"{SKILL}.json" not in samples.RENDER_PENDING
+    assert all(GOLDEN.with_suffix(f".{ext}").is_file() for ext in ("html", "md"))

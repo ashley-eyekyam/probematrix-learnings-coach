@@ -22,16 +22,21 @@ SAMPLE = ROOT / "samples" / "2020-09-24-hazira-gas-release-fire"
 EXPORT = SAMPLE / "2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
 OUTPUTS = SAMPLE / "outputs"
 REGISTER = OUTPUTS / "learnings-register.json"
-# OD4-4: one showcase of each other document format: (pack, pmlc pack flags, files it contributes)
+# OD4-4: one showcase of each other document format: (command, pack, flags, files it contributes). "pack" runs
+# `pmlc pack <ws> <pack> --out <dir> <flags>`; the other commands write their one file to `--out <dir>/<file>`.
 SHOWCASES = [
-    ("board-brief", ["--format", "docx", "--layout", "paper"], ["board-brief.docx", "board-brief.paper.docx"]),
-    ("board-brief", ["--format", "email"], ["board-brief.email.html", "board-brief.email.txt"]),
-    ("site-leadership-coach", ["--format", "pptx"], ["site-leadership-coach.pptx"]),
-    ("frontline-learning-cards", ["--layout", "cards"], ["frontline-learning-cards.cards.html"]),
-    ("training-designer", ["--format", "gift"], ["training-designer.gift.txt"]),
-    ("causal-map", ["--format", "svg,graphml"], ["causal-map.causal-map.svg", "causal-map.causal-map.graphml"]),
+    ("pack", "board-brief", ["--format", "docx", "--layout", "paper"], ["board-brief.docx", "board-brief.paper.docx"]),
+    ("pack", "board-brief", ["--format", "email"], ["board-brief.email.html", "board-brief.email.txt"]),
+    ("pack", "site-leadership-coach", ["--format", "pptx"], ["site-leadership-coach.pptx"]),
+    ("pack", "frontline-learning-cards", ["--layout", "cards"], ["frontline-learning-cards.cards.html"]),
+    ("pack", "training-designer", ["--format", "gift"], ["training-designer.gift.txt"]),
+    ("pack", "causal-map", ["--format", "svg,graphml"], ["causal-map.causal-map.svg", "causal-map.causal-map.graphml"]),
     # Task 22 (OD5-1): pack writes the 9M map from the golden pack and the committed scripted session
-    ("nine-m-analysis", [], ["nine-m-map.json"]),
+    ("pack", "nine-m-analysis", [], ["nine-m-map.json"]),
+    # Task 24: the Phase 5 formats and organisation files
+    ("pack", "risk-register-update", ["--format", "risk-csv"], ["risk-register-update.risk-changes.csv"]),
+    ("nine-m-actions-template", "nine-m-analysis", [], ["nine-m-analysis.actions-template.xlsx"]),
+    ("pack-xlsx", "compliance-crosswalk", ["--kind", "table"], ["compliance-crosswalk.xlsx"]),
 ]
 # Inputs committed beside the packs: the scripted 9M session the nine-m-analysis golden was written from (OD5-1),
 # copied into the workspace as nine_m_session.json
@@ -86,11 +91,19 @@ def hz(tmp_path_factory):
     return ws
 
 
-def _pack(ws, name, out, *flags):
+def _pack(ws, name, out, *flags, command="pack"):
     env = dict(os.environ, SOURCE_DATE_EPOCH=_epoch())
-    r = subprocess.run([sys.executable, str(PMLC), "pack", str(ws), str(ws.parent / "outputs" / f"{name}.json"),
+    r = subprocess.run([sys.executable, str(PMLC), command, str(ws), str(ws.parent / "outputs" / f"{name}.json"),
                         "--out", str(out), *flags], capture_output=True, text=True, env=env)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+def _cells(path) -> dict:
+    """An xlsx workbook's sheets and cell values: openpyxl stamps the save time into the package, so a fresh render
+    is compared by content, not bytes."""
+    import openpyxl
+    wb = openpyxl.load_workbook(path)
+    return {ws.title: [[c.value for c in row] for row in ws.iter_rows()] for ws in wb.worksheets}
 
 
 def _parts(path) -> dict:
@@ -101,6 +114,8 @@ def _parts(path) -> dict:
 def _same(new, old):
     if old.suffix in (".docx", ".pptx", ".zip"):
         assert _parts(new) == _parts(old), old.name
+    elif old.suffix == ".xlsx":
+        assert _cells(new) == _cells(old), old.name
     elif old.suffix == ".html":
         norm = [DATE_RX.sub("generated <date>", p.read_text(encoding="utf-8")) for p in (new, old)]
         assert norm[0] == norm[1], f"{old.name} differs from a fresh render"
@@ -109,7 +124,7 @@ def _same(new, old):
 
 
 def test_hazira_samples_hold_exactly_the_od4_4_files():
-    want = set(REGISTER_FILES) | set(SESSION_FILES) | {f for _, _, files in SHOWCASES for f in files}
+    want = set(REGISTER_FILES) | set(SESSION_FILES) | {f for _, _, _, files in SHOWCASES for f in files}
     want |= {f"{p}.{ext}" for p in RENDERED for ext in ("json", "html", "md")} | {f"{p}.json" for p in PENDING}
     assert {p.name for p in OUTPUTS.iterdir()} == want
     assert sorted(RENDERED) == readme_packs() and len(RENDERED) >= 25 and "frontline-learning-cards-hi" in PACKS
@@ -144,11 +159,22 @@ def test_hazira_samples_render_identically(hz, tmp_path):
         _pack(hz, name, out)
         for ext in ("html", "md"):
             _same(out / f"{name}.{ext}", OUTPUTS / f"{name}.{ext}")
-    for n, (name, flags, files) in enumerate(SHOWCASES):
+    for n, (command, name, flags, files) in enumerate(SHOWCASES):
         out = tmp_path / f"showcase-{n}"
-        _pack(hz, name, out, *flags)
+        if command == "pack":
+            _pack(hz, name, out, *flags)
+        else:                                       # one organisation file, written to the path given
+            out.mkdir()
+            _pack(hz, name, out / files[0], *flags, command=command)
         for f in files:
             _same(out / f, OUTPUTS / f)
+
+
+def test_no_hazira_pack_waits_for_its_render():
+    """Task 24: every Phase 5 golden is rendered beside its JSON and listed in the README, so the staging set is
+    empty and check-samples holds every pack to the OD4-4 rule again."""
+    assert RENDER_PENDING == frozenset() and PENDING == []
+    assert len(RENDERED) == len(PACKS) == len(readme_packs()) >= 34
 
 
 MANUAL = ROOT / "docs" / "manual"
