@@ -242,7 +242,7 @@ PACK_OF = {s: n for n, s in fixture_skills().items() if n != s and not n.startsw
 DOC_NAME = {"cluster-learning-dossier": "dossier-<F-id>"}          # how SKILL.md writes the pack file name
 WAVE4 = ["latent-conditions-profile", "failure-to-learn-review",   # Phase 5: each new-skill task (13-19, 22, 23)
          "people-workforce-learnings", "compliance-crosswalk",      # adds its skill here
-         "risk-register-update"]
+         "risk-register-update", "open-questions-register"]
 DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3, "wave 4": WAVE4}
 ALL_WAVES = WAVE1 + WAVE2 + WAVE3 + WAVE4
 VERSION = pmlc.__version__

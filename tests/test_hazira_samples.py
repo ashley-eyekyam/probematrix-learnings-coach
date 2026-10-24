@@ -36,11 +36,13 @@ REGISTER_FILES = {"learnings-register.json", "learnings-register.md", "learnings
 DATE_RX = re.compile(r"generated \d{4}-\d{2}-\d{2}")
 
 
-def _packs():
+def _packs(pending=False):
+    """The rendered pack JSONs in outputs/ (pending=True: the Phase 5 goldens still waiting for Task 24's render,
+    `samples.RENDER_PENDING`; they are checked by each skill's own test until then)."""
     out = []
     for p in sorted(OUTPUTS.glob("*.json")):
         d = json.loads(p.read_text(encoding="utf-8"))
-        if isinstance(d, dict) and "pack" in d and p.name not in RENDER_PENDING:
+        if isinstance(d, dict) and "pack" in d and (p.name in RENDER_PENDING) == pending:
             out.append(p.stem)
     return out
 

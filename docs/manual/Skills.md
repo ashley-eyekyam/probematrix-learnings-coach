@@ -23,6 +23,7 @@ These skills prepare the ground or analyse the whole investigation. Their output
 | [barrier-learnings](skills/barrier-learnings.md) | failed barriers and how strong the fixes should be | "Why didn't our safeguards work?" |
 | [report-comparison](skills/report-comparison.md) | a fair comparison with an official report | "Compare this with the enquiry report" |
 | [compliance-crosswalk](skills/compliance-crosswalk.md) | which clauses of ISO 45001, PSM, RBPS or another framework the learnings speak to | "Which ISO 45001 clauses does this cover?" |
+| [open-questions-register](skills/open-questions-register.md) | what the investigation could not answer, with a follow-up CSV for the export | "What is still open in this investigation?" |
 
 ## By level of the organisation
 

@@ -1,0 +1,27 @@
+{
+  "name": "open-questions-register",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "open-questions"
+  ],
+  "optional_inputs": [
+    "gaps",
+    "evidence-audit"
+  ],
+  "produces": {
+    "pack": "open-questions-register",
+    "files": []
+  },
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": []
+}

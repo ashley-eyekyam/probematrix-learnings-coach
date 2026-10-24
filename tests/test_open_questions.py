@@ -223,3 +223,20 @@ def test_open_questions_shared_copy(tmp_path, mode):
         else (outs / f"open-questions-follow-up.{mode}.csv").read_text(encoding="utf-8")
     assert "Bharat Seals" not in text and "FND-0001" in text
     assert not (outs / "follow-up.csv").exists() and not (outs / "follow-up.json").exists()
+
+
+def test_open_questions_csv_one_row_per_finding():
+    """Task 15: the CSV pastes back into the export, so it has one row per Finding ID. Evidence IDs in `cites` are
+    not findings and give no row; two questions on one finding share its row, joined with '; ' in cite order."""
+    from pmlc_lib.render.exports import open_questions_csv
+    q1 = {"kind": "question", "question": "Who approved the seal?", "why": "w", "good_evidence": "purchase record",
+          "cites": ["FND-0001", "EVD-0001"]}
+    q2 = {"kind": "question", "question": "Was it tested?", "why": "w", "good_evidence": "test record",
+          "cites": ["FND-0002", "FND-0001"]}
+    q3 = {"kind": "question", "question": "Was it tested?", "why": "w", "good_evidence": "test record",
+          "cites": ["FND-0002"]}
+    rows = rows_of(open_questions_csv({"sections": [{"id": "q", "items": [q1, q2, q3]}]}))
+    assert [r[0] for r in rows[1:]] == ["FND-0001", "FND-0002"]
+    assert rows[1][1:3] == ["purchase record; test record", "Who approved the seal?; Was it tested?"]
+    assert rows[2][1:3] == ["test record", "Was it tested?"]                     # the same text is not repeated
+    assert open_questions_csv({"sections": [{"id": "q", "items": [dict(q1, cites=["EVD-0001"])]}]}) == ""

@@ -20,18 +20,6 @@
   },
   {
    "n": 2,
-   "skill": "open-questions-register",
-   "status": "planned",
-   "planned_for": "Phase 5",
-   "produces": null,
-   "mode": null,
-   "when": null,
-   "commands": [],
-   "questions": [],
-   "gate": []
-  },
-  {
-   "n": 3,
    "skill": "engine:ingest",
    "status": "done",
    "planned_for": null,
@@ -45,7 +33,38 @@
    "gate": []
   },
   {
+   "n": 3,
+   "skill": "engine:open-questions",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "open-questions",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC open-questions <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
    "n": 4,
+   "skill": "open-questions-register",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "open-questions-register",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/open-questions-register.json --strict",
+    "PMLC pack <ws> <run>/outputs/open-questions-register.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 5,
    "skill": "investigator-coach",
    "status": "todo",
    "planned_for": null,
@@ -65,7 +84,7 @@
    ]
   },
   {
-   "n": 5,
+   "n": 6,
    "skill": "report-comparison",
    "status": "todo",
    "planned_for": null,
@@ -85,5 +104,5 @@
    ]
   }
  ],
- "next": 4
+ "next": 3
 }
