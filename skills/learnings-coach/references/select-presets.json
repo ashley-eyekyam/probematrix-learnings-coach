@@ -24,6 +24,9 @@
     {"name": "text", "args": ["--text", "specification|drawing|P&ID|MOC|change|inspection|thickness|corrosion|calibrat|interlock|test|design", "--brief"]},
     {"name": "pte", "args": ["--prefix", "PTE", "--brief"]}
   ],
+  "evidence-strength-scorecard": [
+    {"name": "top-l34-evidence", "args": ["--level", "3", "4", "--top-rated", "--fields", "label,evidence,level,rating"]}
+  ],
   "failure-to-learn-review": [
     {"name": "failure-to-correct", "args": ["--subcategory", "Failure to Correct Known Problem", "--brief"]},
     {"name": "culture", "args": ["--subcategory", "Organisational Climate/ Culture Influences", "--brief"]}
@@ -47,7 +50,8 @@
     {"name": "tier-t3", "args": ["--tier", "T3", "--brief"]},
     {"name": "top-tier-t3-l34", "args": ["--tier", "T3", "--level", "3", "4", "--top-rated"]},
     {"name": "relation", "args": ["--relation", "owner", "absent", "--brief"]},
-    {"name": "work-management", "args": ["--entity", "F08", "--level", "3", "4", "--brief"]}
+    {"name": "work-management", "args": ["--entity", "F08", "--level", "3", "4", "--brief"]},
+    {"name": "work-management-svio", "args": ["--prefix", "SVIO", "--brief"]}
   ],
   "risk-register-update": [
     {"name": "risk-codes", "args": ["--code", "OIC 2.7", "OIP 3.2", "SVF 3.4", "SVI 1.8", "SVIO 2.4", "SVV 4.5", "--brief"]}

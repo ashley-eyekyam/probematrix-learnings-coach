@@ -27,6 +27,7 @@ pmlc dashboard <ws> --register <run>/outputs/learnings-register.json [--date <co
 pmlc register-items <ws> --tier T2                                   # a tier's learnings as ready items
 pmlc table-item <ws> hoc --register <run>/outputs/learnings-register.json
 pmlc table-item <ws> interfaces --top 3
+pmlc table-item <ws> nine-m --register <run>/outputs/learnings-register.json   # learnings per M (9M)
 pmlc check-pack <ws> <run>/outputs/organisation-learning-plan.json --strict
 pmlc pack <ws> <run>/outputs/organisation-learning-plan.json
 pmlc pack <ws> <run>/outputs/organisation-learning-plan.json --format pptx    # the plan as slides
@@ -36,7 +37,7 @@ pmlc templates <ws> distribution                                     # next: the
 
 - [dashboard](../commands/dashboard.md) writes `organisation-learning-map.html`. `--register` adds the learnings, the plan per level, the strength of fixes, the learnings × packs matrix (from the `learning` ids in the packs in `outputs/`) and the reach of each pack (from `distribution.csv`). `--date`, `--title` and `--location` correct the header when the summary sheet is wrong. `--out` writes the page elsewhere. `--embed` sets how much of the records the page carries, and `--share` makes a masked copy for outside the organisation (see [Review and sharing](../Review-and-sharing.md)).
 - [register-items](../commands/register-items.md) with `--tier` prints one tier's learnings, with their `LR-nn` ids, as ready items for the plan.
-- [table-item](../commands/table-item.md) `hoc` with `--register` counts the register's recommendations per control tier; `interfaces` with `--top` gives the strongest pairs.
+- [table-item](../commands/table-item.md) `hoc` with `--register` counts the register's recommendations per control tier; `interfaces` with `--top` gives the strongest pairs; `nine-m` with `--register` counts the register's learnings per M of the 9M lens (M1 to M9), and stops with a plain message when the register has no `nine_m` values.
 - [check-pack](../commands/check-pack.md) with `--strict` and [pack](../commands/pack.md) check and render the learning plan.
 - [templates](../commands/templates.md) `distribution` writes `distribution.csv` for the organisation to fill in as packs are delivered. It never overwrites a file that already exists.
 
@@ -47,7 +48,7 @@ This skill uses no `select` filters: the dashboard reads the whole workspace.
 - `organisation-learning-map.html`. With a register it has two tabs:
   - **Overview:** the learning-by-tier matrix (each cell holds its message for screen readers; the **Show the messages in the table** button shows them on screen), a plan per level, the control-tier profile of the recommendations, heat maps of findings by entity and tier, the most frequent factors, the learnings × packs matrix and the reach of each pack.
   - **Detailed register:** every register field, each cited finding and evidence item in full, and lenses for T1 to T5, investigators and auditors.
-- `organisation-learning-plan.html` and `.md`: where the learning sits, what each level must learn (with each learning's `LR-nn`), the top learning owners, the strongest interfaces, the strength of fixes and the **cascade plan**.
+- `organisation-learning-plan.html` and `.md`: where the learning sits, what each level must learn (with each learning's `LR-nn`), the top learning owners, the strongest interfaces, the strength of fixes, optionally the **learnings by M** (9M) table when the register carries `nine_m` values, and the **cascade plan**.
 - The cascade plan replaces the old rollout order. It is a table with the columns audience, pack, channel, deliverer role, window (relative weeks), feedback and completion measure. It names roles, never people, and relative weeks, never dates: the organisation sets those.
 - The next step: `distribution.csv`, the delivery record the organisation fills in.
 
@@ -57,7 +58,7 @@ Do not edit the HTML by hand. Change the register or the plan JSON and run the c
 
 ## Worked example (Hazira)
 
-With the sample register (25 learnings, 44 recommendations), `dashboard --register` printed `Dashboard written to …/outputs/organisation-learning-map.html`. `interfaces --top 10` put F01 Operations & Control Room and F02 Mechanical Maintenance at the top, with 71 shared findings and 391 cross-entity causal mentions, out of 126 pairs across 17 entities (with the india-process-site overlay). The plan would therefore name that seam among the strongest interfaces. Its cascade usually starts with site leadership and supervisors, then the largest clusters, then the board and auditors.
+With the sample register (25 learnings, 44 recommendations), `dashboard --register` printed `Dashboard written to …/outputs/organisation-learning-map.html`. `interfaces --top 10` put F01 Operations & Control Room and F02 Mechanical Maintenance at the top, with 71 shared findings and 391 cross-entity causal mentions, out of 126 pairs across 17 entities (with the india-process-site overlay). The plan would therefore name that seam among the strongest interfaces. Its cascade usually starts with site leadership and supervisors, then the largest clusters, then the board and auditors. The sample register has no `nine_m` values yet, so the sample plan has no 9M table, and `table-item nine-m` says so.
 
 `templates distribution` printed `wrote …/outputs/distribution.csv (0 rows); the organisation fills in the blank columns`: no pack had been written yet, so the file holds only the header row (pack, audience, channel, date, delivered_by_role, attendees, contractors_included, questions_raised, concerns_escalated).
 

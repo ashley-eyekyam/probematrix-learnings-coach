@@ -18,7 +18,7 @@ WORDS_PER_MINUTE = 200
 # Not words a reader reads: ids, citations, kinds and enum values (P4-19).
 RF_SKIP_KEYS = {"kind", "id", "date", "time", "signal", "hold_point", "hoc_tier", "state", "type",
                 "evidence_strength", "correct", "seconds", "offset", "learning", "clauses", "comparator_refs", "group",
-                "lint_ok", "lang", "dir", "channel", *CITE_FIELDS,
+                "lint_ok", "lang", "dir", "channel", "lens", *CITE_FIELDS,
                 "source_text", "back_translation"}       # a translation's English, for its reviewer (FR-4)
 
 

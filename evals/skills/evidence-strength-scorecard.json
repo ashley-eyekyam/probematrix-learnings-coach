@@ -1,0 +1,106 @@
+{
+ "evals": [
+  {
+   "id": 1301,
+   "owner": "evidence-strength-scorecard",
+   "skill": "evidence-strength-scorecard",
+   "kind": "trigger",
+   "prompt": "Before we sign off the register, I want to know how solid the evidence is behind the findings in this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). How many rest on one document, which documents carry the most findings, and what extra evidence would firm them up?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "evidence-strength-scorecard"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "evidence-strength-scorecard"
+    },
+    {
+     "type": "language_clean",
+     "pack": "evidence-strength-scorecard"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "evidence-strength-scorecard",
+     "ratio": 0.25
+    },
+    {
+     "type": "section_exists",
+     "pack": "evidence-strength-scorecard",
+     "section": "requests"
+    },
+    {
+     "type": "routes_to",
+     "skill": "evidence-strength-scorecard"
+    }
+   ]
+  },
+  {
+   "id": 1302,
+   "owner": "evidence-strength-scorecard",
+   "skill": null,
+   "not_skill": "evidence-strength-scorecard",
+   "kind": "no-trigger",
+   "prompt": "Write an evidence-collection checklist for our site investigators: what to photograph, which logs to secure and how to keep the chain of custody after a process incident.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 1303,
+   "owner": "evidence-strength-scorecard",
+   "skill": "evidence-strength-scorecard",
+   "sibling": "investigator-coach",
+   "kind": "collision",
+   "prompt": "Our lead auditor asked how much of the Hazira ProbeMatrix analysis (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) hangs on a single source. I don't need interview advice; I need the counts by HFACS level and a short list of the records that would corroborate the weakest areas.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "evidence-strength-scorecard"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "evidence-strength-scorecard"
+    },
+    {
+     "type": "language_clean",
+     "pack": "evidence-strength-scorecard"
+    },
+    {
+     "type": "pack_absent",
+     "pack": "investigator-coach"
+    },
+    {
+     "type": "routes_to",
+     "skill": "evidence-strength-scorecard"
+    }
+   ]
+  },
+  {
+   "id": 1304,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "sibling": "investigator-coach",
+   "prompt": "Here is our ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). A director wants to know whether the conclusions stand on firm ground: how many findings lean on just one report, and does any single document prop up a large share of them?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "evidence-strength-scorecard"
+    }
+   ]
+  }
+ ]
+}

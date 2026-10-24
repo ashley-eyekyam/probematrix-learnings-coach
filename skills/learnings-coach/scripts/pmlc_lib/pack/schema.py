@@ -810,6 +810,30 @@ def _check_lang_dir(pack, bad):
         bad("dir", "must be ltr or rtl")
 
 
+LENSES = ("regulator", "insurer", "jv-partner", "client")      # P5-17: who the assurance is for (none: internal audit)
+
+
+def _check_lens(pack, bad, soft):
+    """Optional top-level `lens` (P5-17): one of LENSES. A pack with a lens needs a `lens` section holding a para on
+    what that reader needs (a profile problem: soft, so a problem under --strict). A lens section in a pack with no
+    `lens` (internal audit) is soft too: set the lens or drop the section."""
+    if "lens" not in pack:
+        secs = pack.get("sections") if isinstance(pack.get("sections"), list) else []
+        if any(isinstance(s, dict) and s.get("id") == "lens" for s in secs):
+            soft("lens", "a lens section needs the pack's lens field set (regulator, insurer, jv-partner or client); "
+                         "for internal audit drop the section")
+        return
+    lens = pack["lens"]
+    if lens not in LENSES:
+        bad("lens", f"must be one of {', '.join(LENSES)} (leave it out for internal audit)")
+        return
+    secs = pack.get("sections") if isinstance(pack.get("sections"), list) else []
+    sec = next((s for s in secs if isinstance(s, dict) and s.get("id") == "lens"), None)
+    items = sec.get("items") if isinstance(sec, dict) and isinstance(sec.get("items"), list) else []
+    if not any(isinstance(it, dict) and it.get("kind") == "para" for it in items):
+        soft("lens", f"the {lens} lens needs a lens section with one para on what that reader needs")
+
+
 def _ps_base_name(pack) -> str:
     """The name the pack-name and skill rules apply to: for a translation named <translation_of>-<lang> (P4-13),
     translation_of; else the pack's own name."""
@@ -929,6 +953,7 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
         bad("pack", "must be lowercase words joined by hyphens (or dossier-F<nn>)")
     _check_skill(pack, bad)
     _check_lang_dir(pack, bad)
+    _check_lens(pack, bad, soft)
     _ps_check_translation(pack, source, bad, soft)
     inc = pack.get("incident")
     if inc is not None:

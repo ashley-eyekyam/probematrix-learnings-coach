@@ -1,8 +1,11 @@
 {"pack": "auditor-assurance-pack", "schema": 1, "title": "Auditor Assurance Pack: Synthetic pump fire, 2024",
- "audience": "Internal and external auditors", "status": "Learning purposes: not a statutory document",
+ "audience": "Internal and external auditors", "status": "Learning purposes: not a statutory document", "lens": "insurer",
  "bottom_line": [{"text": "Restarts and spares purchases can both be tested from existing records.", "cites": ["FND-0002", "FND-0003"]}],
  "scope": {"levels": [3, 4], "min_rating": 4},
  "sections": [
+  {"id": "lens", "heading": "Assurance lens: an insurer", "items": [
+   {"kind": "para", "text": "For an insurer, the controls that prevent or limit a major loss come first: the leak test before restart and the specification of critical spares. The test points start with them, and the evidence requests name the records a surveyor can sample.",
+    "cites": ["FND-0002", "FND-0003"]}]},
   {"id": "why-missed", "heading": "Why existing assurance did not catch it", "items": [
    {"kind": "para", "text": "The findings record no check of purchase records against specifications [FND-0003; EVD-0003]."}]},
   {"id": "test-points", "heading": "Audit test points", "items": [

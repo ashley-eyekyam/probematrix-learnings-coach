@@ -18,7 +18,7 @@ from ..pack.markdown import (
     _handling_lines, _knowable, _pack_incident_date, _pm_clock, coverage, event_when, lint_ok_notes, sorted_events
 )
 from ..pack.schema import (
-    cited_ids, embedded_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, relevant_findings,
+    cited_ids, embedded_ids, excluded_ids, FOLLOW_UP_KEYS, ID_RX, LENSES, relevant_findings,
     TOP_PRINT_LINE, UNCOVERED_PRINT_LINE, with_item_ids
 )
 from ..register.check import norm_hoc
@@ -436,7 +436,9 @@ def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, shar
     clear = f'<button type="button" id="clear-ticks">{t("ui.clear_ticks")}</button>' if has_checks else ""
     inc = pack.get("incident") or {}
     trace = () if share else (_ph_t(L, "ui.run", run=run), _ph_t(L, "ui.generated", date=generated))
-    meta = " · ".join(_h(x) for x in (pack["audience"], inc.get("title") or fields.get("Incident Title"),
+    lens = ((f'{_ph_t(L, "f.lens")}: {_ph_t(L, "ui.lens." + pack["lens"])}',) if pack.get("lens") in LENSES
+            else ())                                           # P5-17: who the assurance is for
+    meta = " · ".join(_h(x) for x in (pack["audience"], *lens, inc.get("title") or fields.get("Incident Title"),
                                       inc.get("date") or fields.get("Date"), *trace) if x)
     title = _h(pack["title"])
     status = _h(status_line(pack["status"]))

@@ -1,0 +1,33 @@
+{"pack": "evidence-strength-scorecard", "schema": 1, "skill": "evidence-strength-scorecard",
+ "title": "Evidence strength scorecard: Synthetic pump fire, 2024",
+ "audience": "Investigators, auditors and HSE leads", "status": "Learning purposes: not a statutory document",
+ "scope": {"levels": [1, 2, 3, 4], "min_rating": "top"},
+ "bottom_line": [{"text": "Three of the four findings rest on one document each; a second source of another type would strengthen them most.",
+                  "cites": ["FND-0001", "FND-0002"]}],
+ "sections": [
+  {"id": "banner", "heading": "About this scorecard", "items": [
+   {"kind": "para", "text": "This scorecard shows where more evidence would strengthen confidence. It does not grade the investigation team."}]},
+  {"id": "scorecard", "heading": "Evidence scorecard", "items": [
+   {"kind": "table", "id": "evidence-scorecard-table", "columns": ["Measure", "Count"],
+    "rows": [["direct", 3], ["corroborated", 1], ["inferred", 0], ["single-source", 3], ["document-only", 3],
+             ["justification only", 0], ["codes named in causal text that no finding carries", 0]],
+    "row_cites": [["FND-0002", "FND-0001", "FND-0004"], ["FND-0003"], [], ["FND-0002", "FND-0001", "FND-0004"],
+                  ["FND-0002", "FND-0001", "FND-0004"], [], []],
+    "cites": ["FND-0001", "FND-0002", "FND-0003", "FND-0004"]}]},
+  {"id": "levels", "heading": "Evidence by HFACS level", "items": [
+   {"kind": "table", "id": "evidence-levels-table",
+    "columns": ["HFACS level", "Findings", "Single-source", "Document-only", "With a witness statement"],
+    "rows": [["Level 1", 1, 1, 1, 0], ["Level 2", 1, 1, 1, 0], ["Level 3", 1, 1, 1, 0], ["Level 4", 1, 0, 0, 0]],
+    "row_cites": [["FND-0001"], ["FND-0004"], ["FND-0002"], ["FND-0003"]],
+    "cites": ["FND-0001", "FND-0002", "FND-0003", "FND-0004"]}]},
+  {"id": "requests", "heading": "Evidence that would strengthen confidence", "items": [
+   {"kind": "question", "question": "Does the maintenance log show whether a leak test was planned for the restart?",
+    "why": "The level 1 finding on the untested restart rests on one work order (EVD-0001), a single document.",
+    "good_evidence": "The maintenance log entry for the job, and the fitter's account of the restart",
+    "to": "Maintenance planner", "learning": "LR-01", "cites": ["FND-0001", "EVD-0001"]},
+   {"kind": "question", "question": "Is there a record of a return-to-service checklist ever being drafted or withdrawn?",
+    "why": "The level 3 finding on the missing checklist rests on the procedure index alone (EVD-0002), and no level 3 finding cites a witness.",
+    "good_evidence": "Procedure change history, and an account from the supervisor who signs off restarts",
+    "to": "Maintenance supervisor", "cites": ["FND-0002", "EVD-0002"]}]},
+  {"id": "limits", "heading": "What this scorecard cannot tell you", "items": [
+   {"kind": "para", "text": "The scorecard counts the evidence links the export records. It cannot judge how reliable a document or a statement is, and one strong source can outweigh several weak ones.", "cites": ["FND-0003"]}]}]}

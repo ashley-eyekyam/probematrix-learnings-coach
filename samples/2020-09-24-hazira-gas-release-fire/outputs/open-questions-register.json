@@ -1,0 +1,670 @@
+{
+ "pack": "open-questions-register",
+ "schema": 1,
+ "skill": "open-questions-register",
+ "title": "Open Questions Register: Hazira gas release and fire, 2020",
+ "audience": "Investigators, investigation sponsors and HSE professionals",
+ "status": "Learning purposes: not a statutory document. Derived from a ProbeMatrix investigation export; the questions are drawn from the analysis and should be settled by the investigation team before the learnings are adopted.",
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the export's Investigation Status is in progress and no finding is marked as edited by a person.",
+   "cites": []
+  }
+ ],
+ "bottom_line": [
+  {
+   "text": "The export's four follow-up columns are empty on all 436 findings. This register starts them with the highest-rated findings whose justification says a record is absent, and its follow-up CSV pastes the questions back into the export.",
+   "cites": [
+    "FND-05841EDA",
+    "FND-0B35D995",
+    "FND-1280E788"
+   ]
+  },
+  {
+   "text": "The record most worth finding is the seal-change trail on meter 310FT01: the job plan and supervision of the 18 September 2020 work, the authority for the locally sourced O-ring, and the return to service without a hydrotest.",
+   "cites": [
+    "FND-2FAB8D51",
+    "FND-3746C7B6",
+    "FND-42BEF461",
+    "FND-1662466D",
+    "FND-4944554C"
+   ],
+   "learning": "LR-01",
+   "supporting_cites": [
+    "FND-8C0BB623",
+    "FND-7A32AC87",
+    "FND-89962239",
+    "FND-B356F15B",
+    "FND-91B45FF9",
+    "FND-DA67926D",
+    "FND-54180594",
+    "FND-82673283",
+    "FND-45363DCA",
+    "FND-A2048FB8",
+    "FND-FFE174D0",
+    "FND-A443D288",
+    "FND-72A7D26C",
+    "FND-CEE4B00B",
+    "FND-D66ACA7B",
+    "FND-852B7EC7",
+    "FND-DEAA7F90",
+    "FND-A3D7D53F",
+    "FND-B86F67F0",
+    "FND-D40839C1",
+    "FND-BC4FD086",
+    "FND-23139BF9",
+    "FND-EBB66554",
+    "FND-B440C1BF",
+    "FND-8CE00707",
+    "FND-6B3A6492",
+    "FND-A0017E28",
+    "FND-B56701CA",
+    "FND-2B0A49CB",
+    "FND-35861FFB",
+    "FND-2CEE8915",
+    "FND-48C48354",
+    "FND-9A8F3D7A",
+    "FND-7832DDF6",
+    "FND-DE30BD8B"
+   ]
+  },
+  {
+   "text": "The emergency plan named the hydrocarbon-leak scenario but gave no isolation or stoppage decision criteria; the plan's own records would show whether criteria were ever drafted.",
+   "cites": [
+    "FND-2EC435D0",
+    "FND-33D32D4C",
+    "FND-446A7956",
+    "FND-314D34C5"
+   ],
+   "learning": "LR-07",
+   "supporting_cites": [
+    "FND-DE132C95",
+    "FND-AE629313",
+    "FND-81E3EEA0",
+    "FND-500E0B2D",
+    "FND-8DAFDADC",
+    "FND-7505B1AF",
+    "FND-BB4CC662",
+    "FND-D4A3EF8A",
+    "FND-4F687CC5",
+    "FND-D1DF4895",
+    "FND-7A2429CE",
+    "FND-DF1144C3",
+    "FND-82761CC5",
+    "FND-730D0DCA",
+    "FND-6472CD15",
+    "FND-E009D26B",
+    "FND-5C7B163D",
+    "FND-D4A6F6B6",
+    "FND-A206DFD6",
+    "FND-8A8F94A5"
+   ]
+  },
+  {
+   "text": "The investigation's own record is incomplete: the Incident Summary leaves the time, the investigation team and the due and completion dates blank, and the team's make-up is not recorded.",
+   "cites": [
+    "FND-172D2FE4"
+   ]
+  },
+  {
+   "text": "The ignition source is still named only as probable; a forensic record of the lamp would settle it.",
+   "cites": [
+    "FND-784A23E4",
+    "EVD-6916"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "summary",
+   "heading": "What the export leaves open",
+   "items": [
+    {
+     "kind": "para",
+     "text": "The export leaves its four follow-up columns empty on all 436 findings, and 21 of 30 Incident Summary fields blank. The AI justification of 240 of the 436 findings says a record or fact is absent, and 193 justifications are hedged (\"may\", \"likely\", \"suggests\"). Other packs in this run recorded 15 gaps of their own.",
+     "cites": [
+      "FND-05841EDA",
+      "FND-0B35D995",
+      "FND-1280E788",
+      "FND-1662466D",
+      "FND-1D61DC3A",
+      "FND-23139BF9"
+     ],
+     "evidence_strength": "direct"
+    },
+    {
+     "kind": "para",
+     "text": "The questions below start with the four empty columns, then take the highest-rated findings whose justification says something is absent: the seal change and return to service on meter 310FT01, the emergency plan's isolation criteria, the emergency isolation valves, the gas detection design and the flameproof lamp. Each names the kind of source that would settle it; a hedged justification marks where more evidence would raise confidence, not an error in the analysis.",
+     "cites": [
+      "FND-1662466D",
+      "FND-2EC435D0",
+      "FND-05841EDA",
+      "FND-4D7CF773",
+      "FND-0B35D995"
+     ],
+     "evidence_strength": "direct"
+    }
+   ]
+  },
+  {
+   "id": "follow-up-columns",
+   "heading": "Follow-up columns",
+   "items": [
+    {
+     "kind": "table",
+     "lint_ok": {
+      "rule": "JC1",
+      "reason": "export column and Incident Summary field names, not people"
+     },
+     "columns": [
+      "Follow-up column",
+      "Findings with an entry",
+      "Suggested source"
+     ],
+     "rows": [
+      [
+       "Evidence to Collect",
+       "0 of 436",
+       "document"
+      ],
+      [
+       "Key Questions",
+       "0 of 436",
+       "witness statement"
+      ],
+      [
+       "Suggested Interviews",
+       "0 of 436",
+       "witness statement"
+      ],
+      [
+       "Causal Hypothesis",
+       "0 of 436",
+       "data log"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "summary-fields",
+   "heading": "Blank Incident Summary fields",
+   "items": [
+    {
+     "kind": "table",
+     "lint_ok": {
+      "rule": "JC1",
+      "reason": "export column and Incident Summary field names, not people"
+     },
+     "columns": [
+      "Group",
+      "Blank fields"
+     ],
+     "rows": [
+      [
+       "When and where",
+       "Time, Shift, Department, Area/Zone, Weather Conditions, Lighting Conditions"
+      ],
+      [
+       "Consequence",
+       "Outcome, Consequence Type, Persons Affected, Fatalities, Injuries"
+      ],
+      [
+       "Risk",
+       "Risk Rating, Potential Severity, Likelihood of Recurrence"
+      ],
+      [
+       "Regulatory",
+       "Regulatory Bodies, Regulatory Reference"
+      ],
+      [
+       "People and team (roles, not names)",
+       "Investigating Officer, Supervisor at Time, Investigation Team"
+      ],
+      [
+       "Record dates",
+       "Due Date, Completed Date"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "questions",
+   "heading": "Questions to settle",
+   "items": [
+    {
+     "kind": "question",
+     "question": "What should be recorded under 'Evidence to Collect' for the findings?",
+     "why": "The export leaves 'Evidence to Collect' empty on every finding.",
+     "good_evidence": "document"
+    },
+    {
+     "kind": "question",
+     "question": "What should be recorded under 'Key Questions' for the findings?",
+     "why": "The export leaves 'Key Questions' empty on every finding.",
+     "good_evidence": "witness statement"
+    },
+    {
+     "kind": "question",
+     "question": "What should be recorded under 'Suggested Interviews' for the findings?",
+     "why": "The export leaves 'Suggested Interviews' empty on every finding.",
+     "good_evidence": "witness statement"
+    },
+    {
+     "kind": "question",
+     "question": "What should be recorded under 'Causal Hypothesis' for the findings?",
+     "why": "The export leaves 'Causal Hypothesis' empty on every finding.",
+     "good_evidence": "data log"
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Emergency isolation program risk: MOVs local-manual only with no remote operation?",
+     "why": "The justification says a record or fact is absent (FND-05841EDA).",
+     "good_evidence": "document",
+     "cites": [
+      "FND-05841EDA"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Zone 1 HPMV flame-proof lamp with three missing bolts and glass case open 5–6 cm — no preventive-maintenance or mitigation action on a reasonably apparent ignition risk?",
+     "why": "The justification says a record or fact is absent (FND-0B35D995).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-0B35D995"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Breakdown-maintenance philosophy for electrical/flame-proof equipment in Zone 1 areas?",
+     "why": "The justification says a record or fact is absent (FND-1280E788).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-1280E788"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Meter 310FT01 returned to service with locally sourced substitute O-ring gasket and no hydrotest?",
+     "why": "The justification says a record or fact is absent (FND-1662466D).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-1662466D"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Compromised HPMV flame-proof lamp in Zone 1 remained uncorrected and became the probable ignition source?",
+     "why": "The justification says a record or fact is absent (FND-1D61DC3A).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-1D61DC3A"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: No accountable owner or recorded authority for gasket material specification and procurement?",
+     "why": "The justification says a record or fact is absent (FND-23139BF9).",
+     "good_evidence": "document",
+     "cites": [
+      "FND-23139BF9"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: No standard operating procedure existed for calibration and return-to-service of the high-pressure meters, including mandatory hydrotest to design pressure?",
+     "why": "The justification says a record or fact is absent (FND-257C1100).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-257C1100"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Maintenance material & quality verification roles not assigned?",
+     "why": "The justification says a record or fact is absent (FND-28F8790B).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-28F8790B"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: DMP/ERDMP hydrocarbon-leak scenario lacked isolation/stoppage decision criteria?",
+     "why": "The justification says a record or fact is absent (FND-2EC435D0).",
+     "good_evidence": "document",
+     "cites": [
+      "FND-2EC435D0"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Maintenance job planning for the 18-Sep-2020 gasket replacement on 310FT01?",
+     "why": "The justification says a record or fact is absent (FND-2FAB8D51).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-2FAB8D51"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Control Room Operators - DMP Isolation Decision Criteria?",
+     "why": "The justification says a record or fact is absent (FND-314D34C5).",
+     "good_evidence": "document",
+     "cites": [
+      "FND-314D34C5"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: DMP/ERDMP hydrocarbon-leak scenario formally identified but isolation/stoppage decision criteria never defined?",
+     "why": "The justification says a record or fact is absent (FND-33D32D4C).",
+     "good_evidence": "data log",
+     "cites": [
+      "FND-33D32D4C"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Maintenance supervision - 18-Sep-2020 gasket replacement of meter 310FT01?",
+     "why": "The justification says a record or fact is absent (FND-3746C7B6).",
+     "good_evidence": "document",
+     "cites": [
+      "FND-3746C7B6"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Meter 310FT01 gasket replacement recurrence treated as routine maintenance?",
+     "why": "The justification says a record or fact is absent (FND-3A34BAD3).",
+     "good_evidence": "witness statement",
+     "cites": [
+      "FND-3A34BAD3"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Authorised the locally sourced O-ring substitution as a regular practice?",
+     "why": "The justification says a record or fact is absent (FND-42BEF461).",
+     "good_evidence": "document",
+     "cites": [
+      "FND-42BEF461"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: DMP/ERDMP provided no isolation/stoppage decision criteria for major hydrocarbon leaks?",
+     "why": "The justification says a record or fact is absent (FND-446A7956).",
+     "good_evidence": "document",
+     "cites": [
+      "FND-446A7956"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Maintenance fitters — routine O-ring substitution without authority or qualification?",
+     "why": "The justification says a record or fact is absent (FND-45363DCA).",
+     "good_evidence": "document",
+     "cites": [
+      "FND-45363DCA"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Return of meter 310FT01 to service after 18-Sep-2020 gasket change without design-pressure validation?",
+     "why": "The justification says a record or fact is absent (FND-491EDE74).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-491EDE74"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Pressure boundary work returned to service without hydrostatic test?",
+     "why": "The justification says a record or fact is absent (FND-4944554C).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-4944554C"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: No policy required the F&G detection system to be interlocked to automatic plant shutdown and fire-suppression activation?",
+     "why": "The justification says a record or fact is absent (FND-4D7CF773).",
+     "good_evidence": "data log",
+     "cites": [
+      "FND-4D7CF773"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Recurrent 310FT01 gasket failures - no supervisory root-cause response?",
+     "why": "The justification says a record or fact is absent (FND-4EDE038A).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-4EDE038A"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: On-site DMP emergency response planning for hydrocarbon leakage?",
+     "why": "The justification says a record or fact is absent (FND-500E0B2D).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-500E0B2D"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: No post-maintenance hydrotest or return-to-service SOP for high-pressure meter gasket work?",
+     "why": "The justification says a record or fact is absent (FND-50C7319E).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-50C7319E"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Maintenance crew unfamiliar with OEM rectangular-slot gasket specification - Sep 2020 replacement?",
+     "why": "The justification says a record or fact is absent (FND-54180594).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-54180594"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Compromised Zone-1 HPMV FLP lamp and breakdown-skewed electrical PM left uncorrected?",
+     "why": "The justification says a record or fact is absent (FND-554BFB4A).",
+     "good_evidence": "inspection record",
+     "cites": [
+      "FND-554BFB4A"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "What record or evidence would settle this: Maintenance supervision led 18-Sep-2020 gasket replacement beyond equipment/material capability (no OEM gasket, no specification, no hydrotest)?",
+     "why": "The justification says a record or fact is absent (FND-59A2F497).",
+     "good_evidence": "document",
+     "cites": [
+      "FND-59A2F497"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "from-other-packs",
+   "heading": "Questions other packs raised",
+   "items": [
+    {
+     "kind": "question",
+     "question": "What did management report to the board about these conditions before the event?",
+     "why": "Recorded as a gap by the board-brief pack.",
+     "good_evidence": "Board and committee papers and minutes covering process safety, audit results and overdue actions for the years before the event.",
+     "cites": [
+      "FND-1D713648"
+     ],
+     "group": "board-brief"
+    },
+    {
+     "kind": "question",
+     "question": "What ignited the cloud: does a forensic examination confirm the lamp, or rule out the other ignition sources?",
+     "why": "Recorded as a gap by the causal-map pack.",
+     "good_evidence": "A forensic examination record of the lamp and of the other ignition sources in the cloud's footprint.",
+     "cites": [
+      "FND-784A23E4",
+      "EVD-6916"
+     ],
+     "group": "causal-map"
+    },
+    {
+     "kind": "question",
+     "question": "Did the December 2019 calibration change contribute to the seal failure, or can it be ruled out?",
+     "why": "Recorded as a gap by the causal-map pack.",
+     "good_evidence": "The meter's configuration and operating-pressure history from December 2019 to September 2020.",
+     "cites": [
+      "FND-0B651843",
+      "EVD-2506"
+     ],
+     "group": "causal-map"
+    },
+    {
+     "kind": "question",
+     "question": "What pressure did the metering lines see in the days before the release?",
+     "why": "Recorded as a gap by the causal-map pack.",
+     "good_evidence": "Any other pressure record for the metering lines (field gauges, upstream DCS tags) for the days before the release.",
+     "cites": [
+      "FND-0D4C2C13",
+      "EVD-6470"
+     ],
+     "group": "causal-map"
+    },
+    {
+     "kind": "question",
+     "question": "When did the substitute O-ring practice begin, and what record shows its first approval?",
+     "why": "Recorded as a gap by the interface-learnings pack.",
+     "good_evidence": "Purchase and stores issue records for the meter seals since commissioning, and the first work order that used a locally bought O-ring.",
+     "cites": [
+      "FND-8CE00707",
+      "EVD-8645"
+     ],
+     "group": "interface-learnings"
+    },
+    {
+     "kind": "question",
+     "question": "When did the investigation begin?",
+     "why": "Recorded as a gap by the investigator-coach pack.",
+     "good_evidence": "The investigation's own start record, or the office order and first site visit record.",
+     "cites": [
+      "EVD-6414"
+     ],
+     "group": "investigator-coach"
+    },
+    {
+     "kind": "question",
+     "question": "Which roles and employers made up the investigation team, and did a contract employee take part?",
+     "why": "Recorded as a gap by the investigator-coach pack.",
+     "good_evidence": "The team list with each member's role and employer.",
+     "cites": [
+      "FND-172D2FE4"
+     ],
+     "group": "investigator-coach"
+    },
+    {
+     "kind": "question",
+     "question": "What system resolves this investigation's recommendations and reviews them with affected personnel?",
+     "why": "Recorded as a gap by the investigator-coach pack.",
+     "good_evidence": "The action tracker entry for each recommendation and the review plan, including contractors.",
+     "cites": [
+      "FND-1D713648"
+     ],
+     "group": "investigator-coach"
+    },
+    {
+     "kind": "question",
+     "question": "What do the primary records of the seal change and the return to service show?",
+     "why": "Recorded as a gap by the investigator-coach pack.",
+     "good_evidence": "The work order, the test record, the purchase record for the O-ring and the return-to-service acceptance.",
+     "cites": [
+      "FND-212DC9B7",
+      "EVD-2894"
+     ],
+     "group": "investigator-coach"
+    },
+    {
+     "kind": "question",
+     "question": "What were the functions' own backlog, deferral and resourcing levels before the event?",
+     "why": "Recorded as a gap by the manager-coach pack.",
+     "good_evidence": "Maintenance and inspection backlog reports, deferral records and staffing levels by function for 2018 to 2020.",
+     "cites": [
+      "FND-71D631C1",
+      "FND-5ABEE30B"
+     ],
+     "group": "manager-coach"
+    },
+    {
+     "kind": "question",
+     "question": "In the crews' own account, what was normal on shift, and how were concerns raised before the event?",
+     "why": "Recorded as a gap by the safety-committee-guide pack.",
+     "good_evidence": "Interviews with maintenance and control-room crews, held as learning interviews with a representative present.",
+     "cites": [
+      "FND-A443D288",
+      "FND-71EE9734"
+     ],
+     "group": "safety-committee-guide"
+    },
+    {
+     "kind": "question",
+     "question": "Were the repeat seal failures, the 2017 thickness findings and the unused change procedure reported to the site leadership team?",
+     "why": "Recorded as a gap by the site-leadership-coach pack.",
+     "good_evidence": "Site leadership meeting minutes and management-review records for 2018 to 2020.",
+     "cites": [
+      "FND-1A251687",
+      "FND-0F19C9FC",
+      "FND-8083ECAC"
+     ],
+     "group": "site-leadership-coach"
+    },
+    {
+     "kind": "question",
+     "question": "When, and under what authority, did gasket purchasing switch from the equipment maker to locally bought O-rings?",
+     "why": "Recorded as a gap by the supply-chain-contractor-learnings pack.",
+     "good_evidence": "Purchase orders and stores issue records for the meter's gaskets, and any approval of the substitute.",
+     "cites": [
+      "FND-23139BF9",
+      "EVD-8645"
+     ],
+     "group": "supply-chain-contractor-learnings"
+    },
+    {
+     "kind": "question",
+     "question": "Which other sites hold equipment of the same vintage, or the same detection and isolation design?",
+     "why": "Recorded as a gap by the top-management-brief pack.",
+     "good_evidence": "An asset register extract by site for legacy metering skids, emergency isolation valves and fire and gas systems.",
+     "cites": [
+      "FND-02310148",
+      "FND-5897D1E4"
+     ],
+     "group": "top-management-brief"
+    },
+    {
+     "kind": "question",
+     "question": "Do the same latent conditions exist at other sites?",
+     "why": "Recorded as a gap by the latent-conditions-profile pack.",
+     "good_evidence": "Findings from other investigations coded on the same HFACS framework, or an audit of the same conditions at other sites.",
+     "cites": [
+      "FND-B86F67F0",
+      "FND-DE30BD8B"
+     ],
+     "group": "latent-conditions-profile"
+    }
+   ]
+  }
+ ],
+ "limits": [
+  "The 30 questions reach 26 of the 240 findings whose justification says something is absent and none of the 193 hedged ones; open_questions.json in the workspace lists them all.",
+  "The absence and hedge checks match fixed word lists in the AI justification; a match is a pointer to read the finding, not a verdict.",
+  "The export is a desk analysis of the enquiry committee's report; no site records or interviews were available to answer the questions."
+ ]
+}

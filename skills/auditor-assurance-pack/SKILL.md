@@ -16,6 +16,7 @@ Engine: `PMLC`, as `skill-common.md` §1 defines it (this skill needs the `learn
 This skill needs the **workspace** and **clusters**. It uses, when present: the register (`<run>/outputs/learnings-register.json`), the adoption, distribution and verification records, and the organisation's barrier or critical-control register (a CSV the user supplies).
 
 - **Ask which framework** the test points should follow, one question: ISO 45001 (`iso45001`), OSHA PSM (`psm`), CCPS RBPS (`rbps`), Seveso III / COMAH (`seveso`), ICMM critical control management (`icmm`), the Indian regimes (`india`), or the organisation's own management-system elements. Default: the organisation's elements, grouped as in section 2.
+- **Ask who the assurance is for**, one question, after the framework: internal audit (the default), a regulator (`regulator`), an insurer (`insurer`), a joint-venture partner (`jv-partner`) or a client (`client`). Set the pack's top-level `lens` to the answer; leave it out for internal audit.
 - Start from the register if present: carry `learning: "LR-nn"` on test points that test a register learning.
 
 ## Gather
@@ -38,6 +39,7 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/auditor-assur
 | § | id | Heading | Content rule | Kind | Count |
 |---|---|---|---|---|---|
 | — | bottom_line | — | What an auditor should test first | `bottom_line` | up to 7 |
+| 0 | `lens` | Assurance lens | Only with a `lens`, and then required: what that reader needs from this assurance and how the test points serve it (below) | `para` | optional, up to 1 |
 | 1 | `why-missed` | Why existing assurance did not catch it | What the findings say about audits, inspections and records before the event (generic checklists, open recommendations, closures without data). Factual, no blame | `para` | up to 4 |
 | 2 | `test-points` | Audit test points | requirement, sample, conformity_evidence, red_flags; **must cite**. `group` = the framework clause or element; `clause` and `clauses` (below) | `test_point` | up to 20 (at least one per management-system element the evidence touches) |
 | 3 | `cross-site` | Cross-site verification protocol | Columns Condition, Records to pull, Interview, Walk-path stop; `row_cites`. Tests whether the top five conditions exist at other sites | `table` | 1 |
@@ -52,6 +54,11 @@ Rules for the content:
 - **Sampling.** State a sampling basis ("the last ten restarts after pressure-boundary work"), not statistics the evidence cannot support.
 - **Grading.** The `reporting` para gives the scale: conforming; major nonconformity (NC); minor nonconformity; opportunity for improvement (OFI); not tested. The results template's Response to finding column is for the audited organisation's documented response to each finding (PSM (o)(4)): the engine and the coach leave it blank.
 - **Critical controls.** Write section 4 when the user picks `icmm`, or supplies a barrier or critical-control register. For each critical control the evidence touches, state the verification activity and the verifier role (ICMM step 8, `ICMM-CCM-8`). Map each to the register's own id in Barrier register id; write "unmapped" where the register has no entry, and list the unmapped controls in `limits`.
+- **Lenses.** With `lens` set, write the `lens` section first and let the test points stress what that reader needs:
+  - `regulator`: the regulator-safe wording rules of `report-comparison`: write "additional learning", never "missed" or "gap in the report"; no product claims; a `limits` line that the pack is not a statutory document and needs legal review before it leaves the organisation.
+  - `insurer`: critical controls first: put the test points on the controls that prevent or limit the major loss at the top, and write section 4.
+  - `jv-partner`: the partner's assurance rights and the operator's own verification: test what the operator's own assurance checked, and name the records a partner may ask to see.
+  - `client`: the contractor-facing controls: permits, interfaces, competence and supervision of contract work at the client's site.
 - **Interviews** follow "Interviews in a just culture" in `learning-principles.md`.
 
 ```json

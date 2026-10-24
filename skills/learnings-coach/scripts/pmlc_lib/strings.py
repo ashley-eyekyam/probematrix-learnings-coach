@@ -33,7 +33,7 @@ LOCKED_FIELDS = frozenset({
     "schema", "pack", "skill", "status", "scope", "kind", "id", "cites", "supporting_cites", "row_cites",
     "row_supporting_cites", "evidence_strength", "hoc_tier", "group", "learning", "clauses", "comparator_refs", "state",
     "type", "hold_point", "seconds", "offset", "correct", "date", "time", "barrier_id", "channel", "lint_ok",
-    "handling", "lang", "dir", "translation_of", "source_text", "back_translation"})
+    "handling", "lang", "dir", "translation_of", "source_text", "back_translation", "lens"})
 SAFETY_RX = re.compile(r"\b(stop|halt|do not (start|proceed|restart|enter))\b", re.I)
 _ST_ID = r"(?:FND-[0-9A-Za-z]{4,}|EVD-\d{3,})"
 _ST_CITE_RX = re.compile(rf"\[[^\[\]]*\b{_ST_ID}\b[^\[\]]*\]|\b{_ST_ID}\b")   # a [FND-…; EVD-…] bracket, or a bare ID

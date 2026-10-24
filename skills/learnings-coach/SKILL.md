@@ -52,12 +52,14 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | frontline learning cards, toolbox talks | `frontline-learning-cards` | it is for supervisors (`supervisor-coach`) or a course (`training-designer`) |
 | supervisors, shift briefings | `supervisor-coach` | it is a frontline card (`frontline-learning-cards`) |
 | function managers' changes | `manager-coach` | it is the site leadership team (`site-leadership-coach`) or one department's full set (`cluster-learning-dossier`) |
+| planners and schedulers: job plans, deferrals, backlog, crewing | `manager-coach` (work-management section) | it is one department's full set (`cluster-learning-dossier`) |
 | plant or site leadership decisions | `site-leadership-coach` | it is a function manager's change (`manager-coach`) |
 | CEO and executive committee | `top-management-brief` | it is for directors (`board-brief`) |
 | the board or its committee | `board-brief` | it is for executives (`top-management-brief`) |
 | auditors, assurance test points | `auditor-assurance-pack` | it is an executive brief (`top-management-brief`) |
 | which clauses of a standard the learnings speak to (ISO 45001, PSM, RBPS) | `compliance-crosswalk` | it is audit test points (`auditor-assurance-pack`) |
 | the lead investigator, next questions | `investigator-coach` | an official report is supplied to compare (`report-comparison`) |
+| how well each finding is evidenced, where the evidence is thin | `evidence-strength-scorecard` | it is the method or interviews (`investigator-coach`) |
 | trainers, a course or e-learning | `training-designer` | it is a frontline card (`frontline-learning-cards`) |
 | emergency responders | `emergency-response-learnings` | it is a frontline card (`frontline-learning-cards`) |
 | engineers, integrity, MOC owners | `engineering-integrity-learnings` | it is the barrier view (`barrier-learnings`) |
@@ -77,6 +79,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | which barriers failed, how strong fixes should be | `barrier-learnings` | it is the engineering view (`engineering-integrity-learnings`) |
 | a 9M (nine Ms) analysis, corrective actions by M | `nine-m-analysis` | it reviews actions already written (`recommendation-strength-review`) |
 | comparison with an official or company report | `report-comparison` | there is no other report (`investigator-coach`) |
+| what the investigation could not answer, a list of open questions | `open-questions-register` | it is coaching the method or interviews (`investigator-coach`) |
 
 - **Named audiences** use `plan --audiences` with ids from `references/audiences.md` (for example `board,supervisors`).
 - **Broad request** ("what should we learn from this?"): the default comes from `PMLC facts <ws>`. With a register, rank the tiers by their priority-1 learnings in `p1_by_tier`; with none yet, rank by the `tiers` counts (leave out T9). Suggest `full-cascade` when three or more tiers carry the most, or else the audiences of the top two tiers, for example: "Most priority-1 learnings sit with supervisors and function managers. Start with the `full-cascade` preset?"

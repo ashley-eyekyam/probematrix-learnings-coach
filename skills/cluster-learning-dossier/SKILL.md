@@ -23,14 +23,15 @@ This skill needs the **workspace** and **clusters** (see `learning-clusters`). I
 
 ```bash
 PMLC select <ws> --entity <F-id> --count-by level                                       # size floor and S1 counts
-PMLC select <ws> --entity <F-id> --budget-chars 60000 --out <ws>/sel-<F-id>.md          # full text, highest-rated first
-PMLC select <ws> --entity <F-id> --level 1 --brief                                      # level by level for large clusters
+PMLC select <ws> --entity <F-id> --budget-chars 60000 --out <ws>/sel-<F-id>.md          # full text with evidence quotes, highest-rated first
+PMLC select <ws> --entity <F-id> --fields short,code,level,rating --budget-chars 60000   # index: every finding, one short line each
+PMLC select <ws> --entity <F-id> --level 1 --fields label,short,justification,code,rating --budget-chars 60000   # then --level 2, 3 and 4
 PMLC table-item <ws> entity-tier --entity <F-id>                                        # S1: findings by tier, ready to paste
 PMLC interfaces <ws>                                                                    # S6: pairs involving this entity
 PMLC timeline-item <ws> --before incident --top 12                                      # S8: dated warnings (keep this entity's)
 ```
 
-The `--budget-chars` call keeps findings in rating order and says how many it dropped. For a cluster with more than about 60 findings, read the dropped ones level by level (`--level 1` to `--level 4`) so each pass stays grounded.
+The `--budget-chars` call keeps findings in rating order and says how many it dropped: on a large cluster it keeps only the top few in full (19 of 194 for Hazira F02). So read the index of every finding next, then the four level passes, which keep each finding's justification without the causal text and evidence quotes and so hold many more findings in each 60,000-character pass (137 of 194 for Hazira F02). Each pass names the findings it dropped; read those by ID only when a learning rests on them.
 
 ## Write
 

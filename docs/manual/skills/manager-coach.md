@@ -31,7 +31,8 @@ pmlc select <ws> --tier T3 --brief
 pmlc select <ws> --tier T3 --level 3 4 --top-rated
 pmlc select <ws> --relation owner absent --brief
 pmlc select <ws> --entity F08 --level 3 4 --brief      # work management and planning
-pmlc select <ws> --preset manager-coach                # the five select calls above at once
+pmlc select <ws> --prefix SVIO --brief                 # planned operations: crewing, risk assessment, capability
+pmlc select <ws> --preset manager-coach                # the six select calls above at once
 pmlc interfaces <ws> --top 15
 pmlc register-items <ws> --tier T3
 pmlc check-pack <ws> <run>/outputs/manager-coach.json --strict
@@ -42,7 +43,7 @@ pmlc pack <ws> <run>/outputs/manager-coach.json --format ics --start YYYY-MM-DD 
 pmlc export-actions <ws>                               # the recommendations and indicators as an action list
 ```
 
-- [select](../commands/select.md): `--tier T3` keeps function management findings; `--count-by entity` prints only a count per function, which ranks the functions; `--level 3 4` Supervision and Organisational Influences; `--top-rated` the strongest; `--relation owner absent` the systems managers own and the functions that did not exist; `--entity F08` Work Management & Planning in the default taxonomy (use its id in yours); `--brief` short entries. A named function adds `--entity` with its id.
+- [select](../commands/select.md): `--tier T3` keeps function management findings; `--count-by entity` prints only a count per function, which ranks the functions; `--level 3 4` Supervision and Organisational Influences; `--top-rated` the strongest; `--relation owner absent` the systems managers own and the functions that did not exist; `--entity F08` Work Management & Planning in the default taxonomy (use its id in yours); `--prefix SVIO` the Nanocodes for Planned Inappropriate Operations (work planned beyond the crew's capability, crews composed without the checks the job needed, formal risk assessment skipped), whatever function owns them; `--brief` short entries. A named function adds `--entity` with its id.
 - [interfaces](../commands/interfaces.md) lists the seams between functions.
 - [check-pack](../commands/check-pack.md) with `--strict` and [pack](../commands/pack.md) render the pack. The pack's scope is tier T3.
 - [export-actions](../commands/export-actions.md) writes `actions.csv` with owners and due dates left blank for the organisation.
@@ -57,13 +58,13 @@ pmlc export-actions <ws>                               # the recommendations and
 - up to four **leading indicators**, each with a deterioration trigger;
 - a **90-day agenda**: verify and contain in the first 30 days, draft the system change with the people who do the work by 60, report the indicator by 90.
 
-Then a **work-management** section for planners and schedulers when the evidence supports it, an optional **management review input** (exactly six rows, each citing its findings or reading "not in this investigation"), and a **summary** table with a row for every function, the top five first.
+Then a **work-management** section for planners and schedulers when the evidence supports it (from both the F08 and the `--prefix SVIO` selections), an optional **management review input** (exactly six rows, each citing its findings or reading "not in this investigation"), and a **summary** table with a row for every function, the top five first.
 
 **Formats.** `--format docx` writes the agenda as a Word paper. `--format csv` writes `manager-coach.actions.csv`, the recommendations, decisions and indicators with the owner, due-date and status columns blank; once it exists it is never replaced (the command stops with exit 1). `--format ics --start <date>` writes calendar reminders for the 30, 60 and 90-day horizons, counted from the date you give; the skill sets each recommendation's `by_when` to its horizon only when you give that date, and never picks one itself. See [pack](../commands/pack.md).
 
 ## Worked example (Hazira)
 
-On the base classification, `select --tier T3 --count-by entity` ranked Mechanical Maintenance (90), Operations & Control Room (80), Engineering, Design, Documents & MOC (62), Asset Integrity (58) and HSE, Process Safety & Audit (55) as the top five, so the other functions go in the summary table. `--tier T3 --brief` returned 219 findings, `--tier T3 --level 3 4 --top-rated` 63, `--relation owner absent --brief` 75, and the work-management call 42 (26 at level 3, 16 at level 4). `interfaces --top 15` lists the seams to agree; the strongest is between Operations & Control Room and Mechanical Maintenance (71 shared findings).
+On the base classification, `select --tier T3 --count-by entity` ranked Mechanical Maintenance (90), Operations & Control Room (80), Engineering, Design, Documents & MOC (62), Asset Integrity (58) and HSE, Process Safety & Audit (55) as the top five, so the other functions go in the summary table. `--tier T3 --brief` returned 219 findings, `--tier T3 --level 3 4 --top-rated` 63, `--relation owner absent --brief` 75, the work-management call 42 (26 at level 3, 16 at level 4), and `--prefix SVIO --brief` 28, all at level 3. F08 holds 59 findings at every level. The sample's work-management section adds two planning learnings from the SVIO selection: repeat seal failures planned again as routine repairs (LR-05), and a mandated thickness survey that slipped with no deferral decision (LR-18). `interfaces --top 15` lists the seams to agree; the strongest is between Operations & Control Room and Mechanical Maintenance (71 shared findings).
 
 These counts are from the base classification, before the resolution pass. After you place the remaining roles they will change.
 

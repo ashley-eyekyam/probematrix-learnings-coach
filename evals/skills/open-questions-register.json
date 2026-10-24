@@ -1,0 +1,139 @@
+{
+ "evals": [
+  {
+   "id": 1500,
+   "owner": "open-questions-register",
+   "skill": "open-questions-register",
+   "kind": "trigger",
+   "prompt": "We sponsor the Hazira investigation. From the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), list everything the investigation could not answer: the empty columns, the blank summary fields and the findings that say a record is missing, each with the kind of record that would settle it, as a sheet we can paste back into the export.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "open-questions-register"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "open-questions-register"
+    },
+    {
+     "type": "language_clean",
+     "pack": "open-questions-register"
+    },
+    {
+     "type": "section_exists",
+     "pack": "open-questions-register",
+     "section": "questions"
+    },
+    {
+     "type": "section_exists",
+     "pack": "open-questions-register",
+     "section": "follow-up-columns"
+    },
+    {
+     "type": "routes_to",
+     "skill": "open-questions-register"
+    }
+   ]
+  },
+  {
+   "id": 1501,
+   "owner": "open-questions-register",
+   "skill": "open-questions-register",
+   "kind": "trigger",
+   "prompt": "What is still open or unknown in this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx)? I want an open-questions list for the investigation team, not a report.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "open-questions-register"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "open-questions-register"
+    },
+    {
+     "type": "language_clean",
+     "pack": "open-questions-register"
+    },
+    {
+     "type": "section_exists",
+     "pack": "open-questions-register",
+     "section": "questions"
+    },
+    {
+     "type": "routes_to",
+     "skill": "open-questions-register"
+    }
+   ]
+  },
+  {
+   "id": 1502,
+   "owner": "open-questions-register",
+   "skill": null,
+   "not_skill": "open-questions-register",
+   "kind": "no-trigger",
+   "prompt": "Give me a generic list of questions an incident investigation report should answer, as a checklist for our investigation procedure.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 1503,
+   "owner": "open-questions-register",
+   "skill": "open-questions-register",
+   "sibling": "investigator-coach",
+   "kind": "collision",
+   "prompt": "From the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), just list the open questions the investigation leaves, with the finding each would firm up and where to look. I don't need interview plans, causal hypotheses or coaching on method.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "open-questions-register"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "open-questions-register"
+    },
+    {
+     "type": "language_clean",
+     "pack": "open-questions-register"
+    },
+    {
+     "type": "pack_absent",
+     "pack": "investigator-coach"
+    },
+    {
+     "type": "routes_to",
+     "skill": "open-questions-register"
+    }
+   ]
+  },
+  {
+   "id": 1504,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "prompt": "Before the review meeting I need everything this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) left unresolved: missing records, blank fields and hedged findings, nothing else.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "open-questions-register"
+    }
+   ],
+   "sibling": "investigator-coach"
+  }
+ ]
+}

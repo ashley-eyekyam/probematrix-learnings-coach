@@ -1,0 +1,20 @@
+{
+ "evals": [
+  {
+   "id": 2101,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "prompt": "Our planners and schedulers in maintenance want to know what to change in how jobs get planned, put off and crewed after this incident. Here is the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "manager-coach"
+    }
+   ],
+   "sibling": "cluster-learning-dossier"
+  }
+ ]
+}
