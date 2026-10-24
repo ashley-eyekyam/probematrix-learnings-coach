@@ -136,6 +136,7 @@
    "id": 1705,
    "owner": "learnings-coach",
    "kind": "router",
+   "sibling": "training-designer",
    "prompt": "Our people team wants to know whether crew make-up, qualifications or shift manning played a part, using this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
