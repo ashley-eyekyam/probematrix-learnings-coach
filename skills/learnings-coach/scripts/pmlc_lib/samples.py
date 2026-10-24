@@ -14,7 +14,8 @@ RENDER_EXEMPT = ("learnings-register.json",)
 # Task 24 renders its HTML and MD, then empties this set. Each entry must be a pack JSON with neither rendering.
 RENDER_PENDING = frozenset({"compliance-crosswalk.json", "evidence-strength-scorecard.json", "failure-to-learn-review.json",
                             "latent-conditions-profile.json", "nine-m-analysis.json", "open-questions-register.json",
-                            "people-workforce-learnings.json", "risk-register-update.json"})
+                            "people-workforce-learnings.json", "recommendation-strength-review.json",
+                            "risk-register-update.json"})
 
 
 def _sample_render_problems(d) -> list:
