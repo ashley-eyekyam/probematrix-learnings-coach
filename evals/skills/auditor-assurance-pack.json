@@ -1,0 +1,37 @@
+{
+ "evals": [
+  {
+   "id": 2111,
+   "owner": "auditor-assurance-pack",
+   "skill": "auditor-assurance-pack",
+   "kind": "trigger",
+   "prompt": "Our insurer's risk surveyor visits next month. From this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) prepare the audit test points and evidence requests the surveyor will care about, critical controls first.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "auditor-assurance-pack"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "auditor-assurance-pack"
+    },
+    {
+     "type": "language_clean",
+     "pack": "auditor-assurance-pack"
+    },
+    {
+     "type": "section_exists",
+     "pack": "auditor-assurance-pack",
+     "section": "lens"
+    },
+    {
+     "type": "routes_to",
+     "skill": "auditor-assurance-pack"
+    }
+   ]
+  }
+ ]
+}

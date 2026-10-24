@@ -19,7 +19,7 @@ Coaching for investigators and HSE professionals from a real case. It audits the
 
 - A workspace from [learnings-coach](learnings-coach.md).
 - The incident narrative and Incident Summary fields (`incident.json`) and the evidence descriptions (`evidence.json`), which `ingest` writes.
-- Optional: `gaps.json`, the gaps other packs recorded, which `pack` collects.
+- Optional: `gaps.json`, the gaps other packs recorded, which `pack` collects; `evidence_audit.json`, which `evidence-audit` writes (the skill runs it).
 - An answer to one question, asked before the interview plan: is litigation, a prosecution or a regulator's inquiry in prospect? If so, the interview plan and follow-up are working papers produced at the direction of the organisation's legal adviser.
 
 ## Engine commands and flags
@@ -27,14 +27,15 @@ Coaching for investigators and HSE professionals from a real case. It audits the
 ```bash
 pmlc select <ws> --top-rated --format json --out <ws>/top.json
 pmlc select <ws> --preset investigator-coach                   # the same call, as the skill's preset
-pmlc table-item <ws> evidence-types                            # evidence items by type
+pmlc evidence-audit <ws> --table-item scorecard                # findings by evidence strength (writes evidence_audit.json)
+pmlc table-item <ws> evidence-types                            # fallback: evidence items by type
 pmlc run-path <ws>                                             # top rating and incident date
 pmlc check-pack <ws> <run>/outputs/investigator-coach.json --strict
 pmlc pack <ws> <run>/outputs/investigator-coach.json
 ```
 
 - [select](../commands/select.md): `--top-rated` keeps the strongest findings, `--format json` writes structured output and `--out` saves it to a file.
-- [table-item](../commands/table-item.md) `evidence-types` gives the evidence-audit table; [run-path](../commands/run-path.md) prints the top rating and incident date.
+- [evidence-audit](../commands/evidence-audit.md) `--table-item scorecard` gives the evidence-audit table (findings that are corroborated, direct or inferred) and, without the flag, the single-source, document-only and concentration counts the paragraphs quote; [table-item](../commands/table-item.md) `evidence-types` is the fallback table when the evidence audit cannot run; [run-path](../commands/run-path.md) prints the top rating and incident date.
 - [check-pack](../commands/check-pack.md) checks the follow-up table: with `--strict`, every top-rated finding needs a row. [pack](../commands/pack.md) also writes `follow-up.json`, one entry per finding, ready to paste back into the investigation. The follow-up table contract is in the skill's own `references/follow-up.md`.
 - The pack has no scope: coverage is measured against the top-rated findings, which are exactly what the follow-up table covers.
 
@@ -42,7 +43,7 @@ pmlc pack <ws> <run>/outputs/investigator-coach.json
 
 `investigator-coach.html`, `.md`, `follow-up.json` and `follow-up.csv` (the same rows in the export's column order, for a spreadsheet):
 
-1. an **evidence audit**: evidence by type, kinds of evidence that are absent, conflicts between sources, and findings that rest on one source;
+1. an **evidence audit**: findings by evidence strength (or, as a fallback, evidence by type), kinds of evidence that are absent, conflicts between sources, and findings that rest on one source;
 2. the **investigation process against requirements**: whether the investigation began promptly, the team's make-up (including a contract employee where contractor work was involved), the minimum report fields, the system for resolving recommendations and the review with affected personnel, each with its PSM or ISO 45001 requirement id, and "[GAP]" where the export does not show it;
 3. a **follow-up table**, one row per condition: evidence to collect, key questions, suggested interviews (by role) and a causal hypothesis;
 4. an **interview plan**: roles the evidence never heard from, each with five questions. Interviews are for learning, not discipline, with a representative offered and no leading questions;
@@ -53,7 +54,7 @@ Suggested interviews name roles only, and pass through the language check like a
 
 ## Worked example (Hazira)
 
-The profile flagged that `Evidence to Collect`, `Key Questions`, `Suggested Interviews` and `Causal Hypothesis` are empty on every finding, so this skill drafts them. `select --top-rated --format json --out <ws>/top.json` wrote the 150 top-rated findings. `table-item evidence-types` showed the 46 evidence items as 18 documents, 9 log records, 7 witness statements, 6 recordings, 3 photographs and 3 physical items. The Hazira Incident Summary has no Investigation Team, Due Date or Completed Date fields, so the process checks on team make-up and timing carry "[GAP]". The sample was a desk analysis of a published report, with no site access or interviews, so the interview plan is a list of what a site team would still need to hear.
+The profile flagged that `Evidence to Collect`, `Key Questions`, `Suggested Interviews` and `Causal Hypothesis` are empty on every finding, so this skill drafts them. `select --top-rated --format json --out <ws>/top.json` wrote the 150 top-rated findings. `evidence-audit --table-item scorecard` rated 152 findings corroborated, 284 direct and none inferred; `evidence-audit` counted 203 single-source and 195 document-only findings, with EVD-8645 alone supporting 67. As a fallback, `table-item evidence-types` shows the 46 evidence items as 18 documents, 9 log records, 7 witness statements, 6 recordings, 3 photographs and 3 physical items. The Hazira Incident Summary has no Investigation Team, Due Date or Completed Date fields, so the process checks on team make-up and timing carry "[GAP]". The sample was a desk analysis of a published report, with no site access or interviews, so the interview plan is a list of what a site team would still need to hear.
 
 ## Related skills
 

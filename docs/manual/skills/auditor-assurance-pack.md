@@ -19,7 +19,7 @@ Auditors need testable criteria and evidence to request, not narrative. Executiv
 ## What it needs
 
 - `clusters.json` from [learning-clusters](learning-clusters.md).
-- An answer to one question: which framework the test points follow (ISO 45001, OSHA PSM, CCPS RBPS, Seveso III / COMAH, ICMM critical control management, the Indian regimes, or the organisation's own elements).
+- Answers to two questions, one at a time: which framework the test points follow (ISO 45001, OSHA PSM, CCPS RBPS, Seveso III / COMAH, ICMM critical control management, the Indian regimes, or the organisation's own elements), and who the assurance is for: internal audit (the default), a regulator, an insurer, a joint-venture partner or a client. Any answer but internal audit sets the pack's `lens` (`regulator`, `insurer`, `jv-partner` or `client`).
 - Optional: the Learnings Register, the adoption, distribution and verification records, and the organisation's barrier or critical-control register.
 
 ## Engine commands and flags
@@ -45,8 +45,9 @@ pmlc templates <ws> verification
 
 ## What you get
 
-`auditor-assurance-pack.html` and `.md`:
+`auditor-assurance-pack.html` and `.md`. The header shows "Assurance for: an insurer" (or the reader you named) when the pack has a lens.
 
+0. with a lens, an **assurance lens** paragraph first, on what that reader needs. A regulator's pack follows the regulator-safe wording of [report-comparison](report-comparison.md) ("additional learning", never "missed"; no product claims; a legal-review line in the limits); an insurer's puts the critical controls first; a joint-venture partner's stresses the partner's assurance rights and the operator's own verification; a client's stresses the contractor-facing controls (permits, interfaces, competence and supervision of contract work). `check-pack --strict` refuses a pack with a lens and no such paragraph;
 1. **why existing assurance did not catch it**: what the findings say about audits, inspections and records before the event;
 2. up to twenty **audit test points**, at least one for each management-system element the evidence touches, grouped by the chosen framework's clauses: expectation, what to sample (a sampling basis, not invented statistics), evidence of conformity, red flags seen in this event;
 3. a **cross-site verification protocol**: records to pull, interviews by role and a walk-path;
@@ -61,7 +62,7 @@ With `--layout checklist`, `auditor-assurance-pack.checklist.html` prints the te
 
 ## Worked example (Hazira)
 
-On the base classification, `select --level 3 4 --top-rated --brief` returned 101 findings and `--tag assurance --brief` returned 80. The records search matched 429 of 436 findings, because these words are common in the findings' text: the agent treats it as a wide net and reads the strongest matches first. With the sample register, `table-item hoc` showed 45% of the register's fixes at the engineering tier. A test point on change control could rest on the evidence that "no more MOCs are implemented in the plant since 2018" (EVD-2986), grouped under ISO 45001 9.2 when the auditor picks that framework.
+On the base classification, `select --level 3 4 --top-rated --brief` returned 101 findings and `--tag assurance --brief` returned 80. The records search matched 429 of 436 findings, because these words are common in the findings' text: the agent treats it as a wide net and reads the strongest matches first. With the sample register, `table-item hoc` showed 45% of the register's fixes at the engineering tier. A test point on change control could rest on the evidence that "no more MOCs are implemented in the plant since 2018" (EVD-2986), grouped under ISO 45001 9.2 when the auditor picks that framework. The sample pack is written for internal audit, so it has no lens.
 
 These counts are from the base classification, before the resolution pass. After you place the remaining roles, or add an overlay, the tag counts can change.
 

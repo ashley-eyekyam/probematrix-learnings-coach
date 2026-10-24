@@ -27,6 +27,7 @@ PMLC dashboard <ws> --register <run>/outputs/learnings-register.json   # -> <run
 PMLC register-items <ws> --tier T2                       # a tier's learnings as ready items (repeat per tier)
 PMLC table-item <ws> hoc --register <run>/outputs/learnings-register.json   # recommendations per control tier
 PMLC table-item <ws> interfaces --top 3                  # the strongest interfaces
+PMLC table-item <ws> nine-m --register <run>/outputs/learnings-register.json   # learnings per M, when the register has nine_m values
 ```
 
 Add `--date <corrected date>` and `--title "<plain title>"` to `dashboard` when the profile flagged the
@@ -53,7 +54,8 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/organisation-
 | 4 | `interfaces` | Strongest interfaces | Interface, What passes between them; the top three pairs | `table` | 1 |
 | 5 | `fixes` | Strength of fixes | The share of recommendations above the administrative tier, and where stronger fixes are missing | `para` | up to 2 |
 | 5 | `fixes` | Strength of fixes | The `table-item hoc` table | `table` | 1 |
-| 6 | `cascade` | Cascade plan | A `table` with the columns Audience, Pack, Channel, Deliverer role, Window (relative weeks), Feedback, Completion measure; one row per audience pack, `row_cites` | `table` | 1 |
+| 6 | `nine-m` | Learnings by M (9M) | The `table-item nine-m` table, pasted unchanged; only when the register has `nine_m` values | `table` | optional, up to 1 |
+| 7 | `cascade` | Cascade plan | A `table` with the columns Audience, Pack, Channel, Deliverer role, Window (relative weeks), Feedback, Completion measure; one row per audience pack, `row_cites` | `table` | 1 |
 
 **The cascade** replaces the old rollout order. Each row names the audience, the pack name as `distribution.csv` will record it (with the skill that
 writes it, from `audiences.md`), the channel (toolbox talk, briefing, committee, board paper), the deliverer role (a

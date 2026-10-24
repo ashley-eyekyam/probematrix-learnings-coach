@@ -496,7 +496,7 @@ def build_parser():
     s.add_argument("--entity", metavar="F", help="entity for entity-tier, e.g. F02")
     s.add_argument("--level", nargs="+", type=int, metavar="N", help="count only findings of these HFACS levels")
     s.add_argument("--top", type=int, default=15, help="rows to keep (default 15)")
-    s.add_argument("--register", help="Learnings Register JSON (hoc, adoption)")
+    s.add_argument("--register", help="Learnings Register JSON (hoc, adoption, nine-m)")
     s.add_argument("--pack", help="pack JSON: hoc counts its recommendations and barriers; every kind drops the ids its exclusions list from the cites")
     s.set_defaults(fn=cmd_table_item)
 

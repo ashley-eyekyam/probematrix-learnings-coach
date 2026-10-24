@@ -100,7 +100,8 @@
     "PMLC pack <ws> <run>/outputs/auditor-assurance-pack.json"
    ],
    "questions": [
-    "Which framework should the test points follow: iso45001, psm, rbps, seveso, icmm, india, or the organisation's own management-system elements?"
+    "Which framework should the test points follow: iso45001, psm, rbps, seveso, icmm, india, or the organisation's own management-system elements?",
+    "Who is the assurance for? internal audit (no lens), regulator, insurer, jv-partner or client."
    ],
    "gate": [
     "check-pack --strict"

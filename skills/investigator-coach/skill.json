@@ -15,7 +15,8 @@
   "optional_inputs": [
     "register",
     "comparator",
-    "gaps"
+    "gaps",
+    "evidence-audit"
   ],
   "produces": {
     "pack": "investigator-coach",

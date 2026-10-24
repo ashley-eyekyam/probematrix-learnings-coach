@@ -46,6 +46,15 @@
     "translation_of": {
       "$ref": "#/$defs/pack_name"
     },
+    "lens": {
+      "enum": [
+        "regulator",
+        "insurer",
+        "jv-partner",
+        "client"
+      ],
+      "description": "Who the assurance is for (auditor-assurance-pack, P5-17); leave it out for internal audit. With it, the pack needs a lens section with one para."
+    },
     "incident": {
       "type": "object",
       "additionalProperties": false,

@@ -30,6 +30,7 @@ pmlc classify <ws>                                   # rules first
 pmlc select <ws> --text "<distinctive words>" --brief  # read the findings that use a puzzling role
 pmlc classify <ws>                                   # again, after writing role_overrides.json
 pmlc classify <ws> --overlay india-process-site      # add site role words (remembered next time)
+pmlc classify <ws> --industry process                # process-industry reference pack, before any overlay
 pmlc classify <ws> --org-chart departments.csv       # the organisation's own departments (remembered too)
 pmlc classify <ws> --taxonomy my-taxonomy.json       # a different list of functions
 pmlc classify <ws> --no-overlay                      # drop the overlay again
@@ -39,7 +40,7 @@ pmlc pack <ws> <run>/outputs/learning-clusters.json
 pmlc pack <ws> <run>/outputs/learning-clusters.json --format docx   # the tables as a Word document
 ```
 
-- [classify](../commands/classify.md) writes `clusters.json`, `unresolved_roles.json` and `singleton_roles.json`. It reads `role_overrides.json` on every run; `--overrides FILE` names another file and `--no-overrides` ignores it. `--org-chart FILE.csv` adds the organisation's departments (columns department, entity, match and tier; rows with no entity become F20, F21 …), and `--no-org-chart` forgets it. A plain `classify` reuses the taxonomy, overlays and org chart of the previous run.
+- [classify](../commands/classify.md) writes `clusters.json`, `unresolved_roles.json` and `singleton_roles.json`. It reads `role_overrides.json` on every run; `--overrides FILE` names another file and `--no-overrides` ignores it. `--org-chart FILE.csv` adds the organisation's departments (columns department, entity, match and tier; rows with no entity become F20, F21 …), and `--no-org-chart` forgets it. `--industry process` loads the process-industry reference pack (`references/industry/process/`) before any overlay and prints `Industry reference: process (method reference, not evidence)`; the taxonomy section of the pack quotes that line. A plain `classify` reuses the taxonomy, overlays, industry pack and org chart of the previous run.
 - [select](../commands/select.md) with `--text` (a search over the finding text) and `--brief` (short entries) shows the findings behind a role.
 - [table-item](../commands/table-item.md) prints the `clusters`, `tiers` and `relations` tables as ready items, so counts are never retyped.
 - [check-pack](../commands/check-pack.md) with `--strict` and [pack](../commands/pack.md) check and render the `learning-clusters` report.

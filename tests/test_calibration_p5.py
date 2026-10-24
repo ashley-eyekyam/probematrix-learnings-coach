@@ -166,3 +166,41 @@ def test_hazira_pte_findings_48(hazira_ws):
     w = pmlc.load_ws(hazira_ws)
     assert sum(f["code"].split()[0] == "PTE" for f in w["findings"]) == 48
     assert len(json.loads(run("select", str(hazira_ws), "--prefix", "PTE", "--json"))) == 48
+
+
+# ----------------------------------------------------------------------------- Task 21: manager-coach work management
+
+def test_work_management_counts(hazira_ws):
+    """Task 21: F08 (work management and planning) holds 59 findings in clusters.json; prefix SVIO holds 28; the
+    golden manager-coach work-management section cites at least three SVIO findings."""
+    w = pmlc.load_ws(hazira_ws)
+    cl = json.loads((hazira_ws / "clusters.json").read_text(encoding="utf-8"))
+    assert sum("F08" in v.get("F", []) for v in cl["findings"].values()) == 59
+    svio = {f["id"] for f in w["findings"] if f["code"].split()[0] == "SVIO"}
+    assert len(svio) == 28
+    assert "| L3 | 28 |" in run("select", str(hazira_ws), "--prefix", "SVIO", "--count-by", "level")
+    pack = json.loads((SAMPLE / "outputs" / "manager-coach.json").read_text(encoding="utf-8"))
+    wm = next(s for s in pack["sections"] if s["id"] == "work-management")
+    cited = {x for it in wm["items"] for x in it.get("cites", [])}
+    assert len(cited & svio) >= 3, sorted(cited & svio)
+
+
+def test_dossier_reading_passes(hazira_ws):
+    """Task 21, P5-19: the dossier reads F02 (194 findings) as a one-line index of every finding within 60,000
+    characters, then level by level with the justification; the four level passes keep at least 130 findings in full
+    (the single 60k full-text call keeps 19)."""
+    import subprocess
+    import sys
+    from test_pmlc import PMLC
+
+    def kept(*args):
+        r = subprocess.run([sys.executable, str(PMLC), "select", str(hazira_ws), "--entity", "F02", *args],
+                           capture_output=True, text=True)
+        assert r.returncode == 0, r.stderr
+        return int(r.stderr.split("select: ")[1].split(" findings")[0]), len(r.stdout)
+    n, size = kept("--fields", "short,code,level,rating")
+    assert n == 194 and size <= 60000
+    full = [kept("--level", str(lv), "--fields", "label,short,justification,code,rating", "--budget-chars", "60000")
+            for lv in (1, 2, 3, 4)]
+    assert all(s <= 60000 for _, s in full) and sum(k for k, _ in full) >= 130, full
+    assert kept("--budget-chars", "60000")[0] == 19
