@@ -1,0 +1,27 @@
+{"pack": "recommendation-strength-review", "schema": 1, "skill": "recommendation-strength-review",
+ "title": "Recommendation strength review: Synthetic pump fire, 2024",
+ "audience": "Function managers, CAPA designers and HSE leads", "status": "Learning purposes: not a statutory document",
+ "scope": {"levels": [1, 2, 3, 4], "min_rating": "top"},
+ "bottom_line": [{"text": "Of the register's 3 recommendations, 2 are stronger and 1 is intermediate; none is weaker, and no learning is flagged as a weak fix for a deep cause.",
+                  "cites": ["FND-0001", "FND-0004"]},
+                 {"text": "All 3 changes are single-loop, and none cites the finding it answers.", "cites": ["FND-0001", "FND-0002"]}],
+ "sections": [
+  {"id": "reviewed-set", "heading": "What was reviewed", "items": [
+   {"kind": "para", "text": "This review covers the learnings register: 3 recommendations across 2 learnings. There is no 9M analysis for this investigation, so the spread across the nine Ms is not shown.",
+    "cites": ["FND-0001", "FND-0004"]}]},
+  {"id": "strength", "heading": "Strength of change for each learning", "items": [
+   {"kind": "table", "id": "rec-strength", "columns": ["Learning", "Level", "Strongest change", "Level match", "Flag"],
+    "rows": [["LR-01", "L1,L3", "stronger", "yes", ""], ["LR-02", "L2", "stronger", "yes", ""]],
+    "row_cites": [["FND-0001", "FND-0002"], ["FND-0004"]], "cites": ["FND-0001", "FND-0002", "FND-0004"]}]},
+  {"id": "loops", "heading": "Single-loop and double-loop change", "items": [
+   {"kind": "para", "text": "All 3 changes are single-loop: each fixes the condition, and none questions the assumption behind it. The register marks LR-02 as double-loop, yet its change adds a shutdown without asking why the alarm was designed to display only.",
+    "cites": ["FND-0004"]}]},
+  {"id": "directions", "heading": "Directions for stronger change", "items": [
+   {"kind": "recommendation", "change": "Question the design basis that let a gas alarm only display: review which other alarms on the unit inform without acting, and give each a defined automatic or operator response.",
+    "hoc_tier": "administrative", "indicator": "Share of the unit's safety alarms with a defined and tested response",
+    "why_not_stronger": "The engineering change for this alarm is already in the register; this direction questions the rule that produced it.",
+    "learning": "LR-02", "cites": ["FND-0004", "EVD-0002"]}]},
+  {"id": "smart", "heading": "Recommendations missing a SMART element", "items": [
+   {"kind": "table", "id": "rec-smart", "columns": ["Recommendation", "Missing"],
+    "rows": [["LR-01-R1", "relevant"], ["LR-01-R2", "specific, relevant"], ["LR-02-R1", "relevant"]],
+    "row_cites": [["FND-0001", "FND-0002"], ["FND-0001", "FND-0002"], ["FND-0004"]], "cites": ["FND-0001", "FND-0002", "FND-0004"]}]}]}

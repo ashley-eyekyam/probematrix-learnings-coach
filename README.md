@@ -92,6 +92,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide 
 | `interface-learnings` | managers | what fell between departments |
 | `barrier-learnings` | engineers, HSE | barriers, failure modes, control-tier fixes |
 | `nine-m-analysis` | investigators, HSE, CAPA teams | a 9M interview: one learning and direction of change per relevant M, a blank actions sheet |
+| `recommendation-strength-review` | function managers, CAPA designers, HSE leads | strength band per learning, weak fixes for deep causes, loops, 9M spread, directions for stronger change |
 | `report-comparison` | HSE, consultants | fair two-way comparison with an official report |
 | `compliance-crosswalk` | HSE leads, management-system owners, auditors | learnings mapped to ISO 45001, PSM, RBPS and other frameworks |
 | `open-questions-register` | investigators, investigation sponsors | open questions, what would settle each, follow-up CSV |

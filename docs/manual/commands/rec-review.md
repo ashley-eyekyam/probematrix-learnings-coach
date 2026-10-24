@@ -57,3 +57,4 @@ On the Hazira register the bands are 24 stronger, 15 intermediate and 5 weaker, 
 
 - [check-register](check-register.md) checks the register this command reads.
 - [table-item](table-item.md) prints other ready table items.
+- [recommendation-strength-review](../skills/recommendation-strength-review.md) is the skill that pastes these tables into a review pack.

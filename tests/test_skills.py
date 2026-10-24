@@ -67,7 +67,8 @@ OVERLAPS = {
     ("risk-register-update", "barrier-learnings"), ("risk-register-update", "board-brief"),
     ("people-workforce-learnings", "training-designer"), ("people-workforce-learnings", "manager-coach"),
     ("compliance-crosswalk", "auditor-assurance-pack"), ("compliance-crosswalk", "learnings-register"),
-    ("nine-m-analysis", "barrier-learnings"),       # and recommendation-strength-review once Task 23 adds the folder
+    ("nine-m-analysis", "barrier-learnings"), ("nine-m-analysis", "recommendation-strength-review"),
+    ("recommendation-strength-review", "nine-m-analysis"), ("recommendation-strength-review", "learnings-register"),
 }
 NO_PROFILE = {"learnings-register"}        # writes a register, not a pack: its Write table has no profile
 # Variant packs (Task 20 review m-5): a variant has the main pack's sections (rule same-sections-as), so it shares the

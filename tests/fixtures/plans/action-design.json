@@ -89,14 +89,19 @@
   {
    "n": 6,
    "skill": "recommendation-strength-review",
-   "status": "planned",
-   "planned_for": "Phase 5",
-   "produces": null,
+   "status": "todo",
+   "planned_for": null,
+   "produces": "recommendation-strength-review",
    "mode": null,
    "when": null,
-   "commands": [],
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/recommendation-strength-review.json --strict",
+    "PMLC pack <ws> <run>/outputs/recommendation-strength-review.json"
+   ],
    "questions": [],
-   "gate": []
+   "gate": [
+    "check-pack --strict"
+   ]
   },
   {
    "n": 7,

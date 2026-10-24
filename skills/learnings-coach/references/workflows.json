@@ -128,8 +128,7 @@
         "skill": "nine-m-analysis"
       },
       {
-        "skill": "recommendation-strength-review",
-        "planned": "Phase 5"
+        "skill": "recommendation-strength-review"
       },
       {
         "skill": "engine:export-actions"

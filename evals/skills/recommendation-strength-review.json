@@ -1,0 +1,163 @@
+{
+ "evals": [
+  {
+   "id": 2301,
+   "owner": "recommendation-strength-review",
+   "skill": "recommendation-strength-review",
+   "kind": "trigger",
+   "prompt": "We have the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and its learnings register. Before the action meeting, tell me how strong the recommendations are on the hierarchy of controls: which are only training or procedures, and does any organisational cause get nothing better than that?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "language_clean",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "section_exists",
+     "pack": "recommendation-strength-review",
+     "section": "strength"
+    },
+    {
+     "type": "routes_to",
+     "skill": "recommendation-strength-review"
+    }
+   ]
+  },
+  {
+   "id": 2302,
+   "owner": "recommendation-strength-review",
+   "skill": "recommendation-strength-review",
+   "kind": "trigger",
+   "prompt": "Using the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), its register and the 9M analysis we already did, critique the corrective actions as a set: are they spread sensibly across the Ms, and does any of them question the assumptions behind the design rather than patching it?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "language_clean",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "section_exists",
+     "pack": "recommendation-strength-review",
+     "section": "spread"
+    },
+    {
+     "type": "routes_to",
+     "skill": "recommendation-strength-review"
+    }
+   ]
+  },
+  {
+   "id": 2303,
+   "owner": "recommendation-strength-review",
+   "skill": null,
+   "not_skill": "recommendation-strength-review",
+   "kind": "no-trigger",
+   "prompt": "What does SMART stand for when writing objectives, and can you give me a generic example for a fire-safety goal?",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 2304,
+   "owner": "recommendation-strength-review",
+   "skill": "recommendation-strength-review",
+   "sibling": "nine-m-analysis",
+   "kind": "collision",
+   "prompt": "From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and its register: do not interview me about the nine Ms or design new actions. Just review the recommendations that are already written and say which deep causes got only a weak fix.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "language_clean",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "pack_absent",
+     "pack": "nine-m-analysis"
+    },
+    {
+     "type": "routes_to",
+     "skill": "recommendation-strength-review"
+    }
+   ]
+  },
+  {
+   "id": 2305,
+   "owner": "recommendation-strength-review",
+   "skill": "recommendation-strength-review",
+   "sibling": "learnings-register",
+   "kind": "collision",
+   "prompt": "The learnings register for the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) is finished and checked. I don't want it rewritten; I want a second opinion on whether its recommendations are strong enough, with directions where a stronger change would fit.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "language_clean",
+     "pack": "recommendation-strength-review"
+    },
+    {
+     "type": "routes_to",
+     "skill": "recommendation-strength-review"
+    }
+   ]
+  },
+  {
+   "id": 2306,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "sibling": "nine-m-analysis",
+   "prompt": "Here is our ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and the register we wrote from it. Our CAPA board wants to know whether the fixes are robust or mostly reminders and refresher courses before it signs them off.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "recommendation-strength-review"
+    }
+   ]
+  }
+ ]
+}

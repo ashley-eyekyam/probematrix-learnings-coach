@@ -16,7 +16,8 @@ KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisati
          "nine-m-analysis": "interactive"}
 ANALYSIS = {"learning-clusters", "causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings",
             "report-comparison", "cluster-learning-dossier", "latent-conditions-profile", "failure-to-learn-review",
-            "compliance-crosswalk", "open-questions-register", "evidence-strength-scorecard"}
+            "compliance-crosswalk", "open-questions-register", "evidence-strength-scorecard",
+            "recommendation-strength-review"}
 sys.path.insert(0, str(SKILLS_DIR / "learnings-coach" / "scripts"))
 from pmlc_lib.contracts import load_manifests, validate  # noqa: E402  (the engine's P3-6 validator)
 
@@ -223,7 +224,6 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
     planned = {(n, s["skill"]): s["planned"] for n, w in wf.items() for s in w["steps"] if "planned" in s}
     assert planned == {
         ("first-48-hours", "safety-alert"): "Phase 6",
-        ("action-design", "recommendation-strength-review"): "Phase 5",
         ("sister-sites", "safety-alert"): "Phase 6",
         ("sister-sites", "could-it-happen-here"): "Phase 6",
         ("training", "safety-moment-deck"): "Phase 6",

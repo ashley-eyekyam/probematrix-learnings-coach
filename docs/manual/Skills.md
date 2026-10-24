@@ -22,6 +22,7 @@ These skills prepare the ground or analyse the whole investigation. Their output
 | [interface-learnings](skills/interface-learnings.md) | what fell between departments | "What fell through the cracks?" |
 | [barrier-learnings](skills/barrier-learnings.md) | failed barriers and how strong the fixes should be | "Why didn't our safeguards work?" |
 | [nine-m-analysis](skills/nine-m-analysis.md) | a question-by-question 9M analysis: which part of the work system each condition belongs to, with a direction of change per M | "Work through the 9Ms with me" |
+| [recommendation-strength-review](skills/recommendation-strength-review.md) | how strong the register's (and the 9M analysis's) recommendations are, which deep causes get only a weak fix, and directions for stronger change | "How strong are these corrective actions?" |
 | [report-comparison](skills/report-comparison.md) | a fair comparison with an official report | "Compare this with the enquiry report" |
 | [compliance-crosswalk](skills/compliance-crosswalk.md) | which clauses of ISO 45001, PSM, RBPS or another framework the learnings speak to | "Which ISO 45001 clauses does this cover?" |
 | [open-questions-register](skills/open-questions-register.md) | what the investigation could not answer, with a follow-up CSV for the export | "What is still open in this investigation?" |
