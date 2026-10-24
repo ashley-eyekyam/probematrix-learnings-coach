@@ -30,7 +30,12 @@ SHOWCASES = [
     ("frontline-learning-cards", ["--layout", "cards"], ["frontline-learning-cards.cards.html"]),
     ("training-designer", ["--format", "gift"], ["training-designer.gift.txt"]),
     ("causal-map", ["--format", "svg,graphml"], ["causal-map.causal-map.svg", "causal-map.causal-map.graphml"]),
+    # Task 22 (OD5-1): pack writes the 9M map from the golden pack and the committed scripted session
+    ("nine-m-analysis", [], ["nine-m-map.json"]),
 ]
+# Inputs committed beside the packs: the scripted 9M session the nine-m-analysis golden was written from (OD5-1),
+# copied into the workspace as nine_m_session.json
+SESSION_FILES = {"nine-m-session.json": "nine_m_session.json"}
 REGISTER_FILES = {"learnings-register.json", "learnings-register.md", "learnings-register.xlsx",
                   "organisation-learning-map.html"}
 DATE_RX = re.compile(r"generated \d{4}-\d{2}-\d{2}")
@@ -76,6 +81,8 @@ def hz(tmp_path_factory):
         shutil.copy(SAMPLE / "comparator" / name, ws / name)
     for p in OUTPUTS.glob("*.json"):                     # the register, and the source of the Hindi variant
         shutil.copy(p, ws.parent / "outputs" / p.name)
+    for name, ws_name in SESSION_FILES.items():
+        shutil.copy(OUTPUTS / name, ws / ws_name)
     return ws
 
 
@@ -102,7 +109,7 @@ def _same(new, old):
 
 
 def test_hazira_samples_hold_exactly_the_od4_4_files():
-    want = set(REGISTER_FILES) | {f for _, _, files in SHOWCASES for f in files}
+    want = set(REGISTER_FILES) | set(SESSION_FILES) | {f for _, _, files in SHOWCASES for f in files}
     want |= {f"{p}.{ext}" for p in RENDERED for ext in ("json", "html", "md")} | {f"{p}.json" for p in PENDING}
     assert {p.name for p in OUTPUTS.iterdir()} == want
     assert sorted(RENDERED) == readme_packs() and len(RENDERED) >= 25 and "frontline-learning-cards-hi" in PACKS

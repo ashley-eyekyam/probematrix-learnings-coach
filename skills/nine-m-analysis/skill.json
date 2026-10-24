@@ -1,0 +1,39 @@
+{
+  "name": "nine-m-analysis",
+  "kind": "interactive",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "nine-m-seed"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "nine-m-analysis",
+    "files": [
+      "outputs/nine-m-map.json"
+    ]
+  },
+  "formats": [
+    "docx",
+    "csv"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": true,
+  "since": "2.0.0",
+  "questions": [
+    "Which Ms should we work through? (Recommended) every M with seed weight, in order M1 to M9; the top four by top-rated findings; a list you choose; or unknown (run all)"
+  ]
+}

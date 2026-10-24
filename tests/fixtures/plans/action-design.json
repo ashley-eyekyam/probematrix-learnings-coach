@@ -55,18 +55,39 @@
   },
   {
    "n": 4,
-   "skill": "nine-m-analysis",
-   "status": "planned",
-   "planned_for": "Phase 5",
-   "produces": null,
+   "skill": "engine:nine-m-seed",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "nine-m-seed",
    "mode": null,
    "when": null,
-   "commands": [],
+   "commands": [
+    "PMLC nine-m-seed <ws>"
+   ],
    "questions": [],
    "gate": []
   },
   {
    "n": 5,
+   "skill": "nine-m-analysis",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "nine-m-analysis",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/nine-m-analysis.json --strict",
+    "PMLC pack <ws> <run>/outputs/nine-m-analysis.json"
+   ],
+   "questions": [
+    "Which Ms should we work through? (Recommended) every M with seed weight, in order M1 to M9; the top four by top-rated findings; a list you choose; or unknown (run all)"
+   ],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 6,
    "skill": "recommendation-strength-review",
    "status": "planned",
    "planned_for": "Phase 5",
@@ -78,7 +99,7 @@
    "gate": []
   },
   {
-   "n": 6,
+   "n": 7,
    "skill": "engine:export-actions",
    "status": "todo",
    "planned_for": null,

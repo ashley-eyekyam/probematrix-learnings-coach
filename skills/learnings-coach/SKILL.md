@@ -77,6 +77,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | why earlier warnings and audits never led to change | `failure-to-learn-review` | it is the dated list of warnings (`precursor-timeline`) |
 | what fell between departments | `interface-learnings` | it is the causal chain (`causal-map`) |
 | which barriers failed, how strong fixes should be | `barrier-learnings` | it is the engineering view (`engineering-integrity-learnings`) |
+| a 9M (nine Ms) analysis, corrective actions by M | `nine-m-analysis` | it reviews actions already written (`recommendation-strength-review`) |
 | comparison with an official or company report | `report-comparison` | there is no other report (`investigator-coach`) |
 | what the investigation could not answer, a list of open questions | `open-questions-register` | it is coaching the method or interviews (`investigator-coach`) |
 

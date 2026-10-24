@@ -12,7 +12,8 @@ SKILLS = sorted(p.name for p in SKILLS_DIR.iterdir() if (p / "SKILL.md").exists(
 SKILL_COUNT = len(list(SKILLS_DIR.glob("*/skill.json")))     # P5-1: the count is the skill folders, not a constant
 KEYWORDS = {"type", "enum", "required", "properties", "additionalProperties", "items", "pattern", "const", "minItems"}
 ALLOWED = KEYWORDS | {"$schema", "$id", "title", "description"}
-KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisation-learning-map": "dissemination"}
+KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisation-learning-map": "dissemination",
+         "nine-m-analysis": "interactive"}
 ANALYSIS = {"learning-clusters", "causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings",
             "report-comparison", "cluster-learning-dossier", "latent-conditions-profile", "failure-to-learn-review",
             "compliance-crosswalk", "open-questions-register", "evidence-strength-scorecard"}
@@ -222,7 +223,6 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
     planned = {(n, s["skill"]): s["planned"] for n, w in wf.items() for s in w["steps"] if "planned" in s}
     assert planned == {
         ("first-48-hours", "safety-alert"): "Phase 6",
-        ("action-design", "nine-m-analysis"): "Phase 5",
         ("action-design", "recommendation-strength-review"): "Phase 5",
         ("sister-sites", "safety-alert"): "Phase 6",
         ("sister-sites", "could-it-happen-here"): "Phase 6",

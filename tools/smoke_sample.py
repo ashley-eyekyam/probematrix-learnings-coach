@@ -103,6 +103,7 @@ def strict_fixtures(tmp):
     os.makedirs(d)
     pmlc("ingest", str(make_export(pathlib.Path(d))), "--legacy-out", os.path.join(d, "ws"))
     pmlc("classify", os.path.join(d, "ws"))
+    pmlc("nine-m-seed", os.path.join(d, "ws"))             # the nine-m-analysis fixture's nine-m-cites rule reads it
     fix = os.path.join(ROOT, "tests", "fixtures", "packs")
     names = sorted(f for f in os.listdir(fix) if f.endswith(".json") and f not in ("all-kinds.json", "bad-l3-01.json", "html-golden.json"))
     for f in names:
@@ -123,6 +124,8 @@ def format_loop(tmp):
     ws = os.path.join(run_dir, "workspace")
     shutil.copy(REGISTER, os.path.join(run_dir, "outputs", "learnings-register.json"))
     outputs = os.path.join(SAMPLE, "outputs")
+    pmlc("nine-m-seed", ws)                                 # nine-m-analysis: its seed and its scripted session (OD5-1)
+    shutil.copy(os.path.join(outputs, "nine-m-session.json"), os.path.join(ws, "nine_m_session.json"))
     names = []
     for f in sorted(os.listdir(outputs)):
         if f.endswith(".json"):

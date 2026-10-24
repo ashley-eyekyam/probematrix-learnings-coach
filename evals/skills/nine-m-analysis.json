@@ -1,0 +1,91 @@
+{
+ "evals": [
+  {
+   "id": 2201,
+   "owner": "nine-m-analysis",
+   "skill": "nine-m-analysis",
+   "kind": "trigger",
+   "prompt": "Here is the ProbeMatrix export of the Hazira release (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Work through the 9Ms with me, one at a time, so our CAPA team can see which M each condition belongs to.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "nine-m-analysis"},
+    {"type": "check_pack_ok", "pack": "nine-m-analysis"},
+    {"type": "language_clean", "pack": "nine-m-analysis"},
+    {"type": "coverage_min", "pack": "nine-m-analysis", "ratio": 0.25},
+    {"type": "routes_to", "skill": "nine-m-analysis"}
+   ]
+  },
+  {
+   "id": 2202,
+   "owner": "nine-m-analysis",
+   "skill": "nine-m-analysis",
+   "kind": "trigger",
+   "prompt": "From this ProbeMatrix findings export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), do a nine Ms analysis: manpower, medium, method, mission, measurement, management and money, machine, material and maintenance. I want a direction of change for each M that matters, and a blank sheet our action tracker can take.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "nine-m-analysis"},
+    {"type": "check_pack_ok", "pack": "nine-m-analysis"},
+    {"type": "language_clean", "pack": "nine-m-analysis"},
+    {"type": "routes_to", "skill": "nine-m-analysis"}
+   ]
+  },
+  {
+   "id": 2203,
+   "owner": "nine-m-analysis",
+   "skill": null,
+   "not_skill": "nine-m-analysis",
+   "kind": "no-trigger",
+   "prompt": "Draw me a fishbone diagram with the 6Ms for a late-delivery problem in our packing line. There is no investigation export, just my notes below.",
+   "files": [],
+   "expectations": [
+    {"type": "routes_to", "skill": null}
+   ]
+  },
+  {
+   "id": 2204,
+   "owner": "nine-m-analysis",
+   "skill": null,
+   "not_skill": "nine-m-analysis",
+   "kind": "no-trigger",
+   "prompt": "Our learnings register is already written and its corrective actions are agreed. Tell me how strong those recommendations are: which are only procedures or training, and which deep causes get only a weak fix. Do not start a new analysis or interview me.",
+   "files": [],
+   "expectations": [
+    {"type": "pack_absent", "pack": "nine-m-analysis"}
+   ]
+  },
+  {
+   "id": 2205,
+   "owner": "nine-m-analysis",
+   "skill": "nine-m-analysis",
+   "sibling": "barrier-learnings",
+   "kind": "collision",
+   "prompt": "Using the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), I do not want a list of failed safeguards. Ask me, question by question, whether material and maintenance played a part, and design corrective and preventive actions grouped by M.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "nine-m-analysis"},
+    {"type": "check_pack_ok", "pack": "nine-m-analysis"},
+    {"type": "pack_absent", "pack": "barrier-learnings"},
+    {"type": "routes_to", "skill": "nine-m-analysis"}
+   ]
+  },
+  {
+   "id": 2206,
+   "owner": "learnings-coach",
+   "sibling": "barrier-learnings",
+   "kind": "router",
+   "prompt": "Here is our ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). The CAPA team wants to sort what went wrong by the part of the work system it came from, people, method, machine, material, upkeep and so on, and talk each one through with me before deciding what to change.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "routes_to", "value": "nine-m-analysis"}
+   ]
+  }
+ ]
+}

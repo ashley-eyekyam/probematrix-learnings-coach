@@ -91,6 +91,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide 
 | `failure-to-learn-review` | site leadership, top management, board | which step of the learning cycle broke, and why earlier warnings did not lead to change |
 | `interface-learnings` | managers | what fell between departments |
 | `barrier-learnings` | engineers, HSE | barriers, failure modes, control-tier fixes |
+| `nine-m-analysis` | investigators, HSE, CAPA teams | a 9M interview: one learning and direction of change per relevant M, a blank actions sheet |
 | `report-comparison` | HSE, consultants | fair two-way comparison with an official report |
 | `compliance-crosswalk` | HSE leads, management-system owners, auditors | learnings mapped to ISO 45001, PSM, RBPS and other frameworks |
 | `open-questions-register` | investigators, investigation sponsors | open questions, what would settle each, follow-up CSV |

@@ -1,0 +1,2624 @@
+{
+ "mode": "replay",
+ "records": [
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Every M with seed weight, in order M1 to M9: M1, M2, M3, M4, M5, M6, M7, M8, M9"
+   },
+   "m": null,
+   "q": "Q01",
+   "step": "scope",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-337CB67F",
+      "FND-BDD73BA2",
+      "FND-137BC719",
+      "FND-5C7B163D",
+      "FND-C92C29DB",
+      "FND-82761CC5",
+      "FND-5897D1E4",
+      "FND-A0017E28",
+      "FND-1A251687"
+     ],
+     "text": "Every M with seed weight, in order M1 to M9: M1, M2, M3, M4, M5, M6, M7, M8, M9"
+    },
+    {
+     "cites": [
+      "FND-337CB67F",
+      "FND-137BC719",
+      "FND-5C7B163D",
+      "FND-82761CC5"
+     ],
+     "text": "The top four by top-rated findings: M1, M3, M4, M6"
+    },
+    {
+     "cites": [],
+     "text": "A list you choose (answer with --text, naming the Ms you want)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Relevant: 138 finding(s) point to M1 Manpower/Mindpower (72 by their Nanocode, 66 by their wording or cluster), led by SVI 1.9 Selected Individual with Lack of Proficiency"
+   },
+   "m": "M1",
+   "q": "Q02",
+   "step": "relevance",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-337CB67F",
+      "FND-615DB819",
+      "FND-F8C125D5"
+     ],
+     "text": "Relevant: 138 finding(s) point to M1 Manpower/Mindpower (72 by their Nanocode, 66 by their wording or cluster), led by SVI 1.9 Selected Individual with Lack of Proficiency"
+    },
+    {
+     "cites": [
+      "FND-4245FBF2",
+      "FND-3746C7B6",
+      "FND-D14B8424"
+     ],
+     "text": "Partly relevant: only the SVI 1.1 Leadership/Supervisory Oversight Inadequate findings"
+    },
+    {
+     "cites": [
+      "FND-337CB67F"
+     ],
+     "text": "Not relevant: the M1 Manpower/Mindpower signal in these findings is incidental (say why)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "M1.08 Communication and Coordination"
+   },
+   "m": "M1",
+   "q": "Q03",
+   "step": "subcategory",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-9399FA02",
+      "FND-A6312B6B",
+      "FND-DE978BF5"
+     ],
+     "text": "M1.08 Communication and Coordination"
+    },
+    {
+     "cites": [
+      "FND-D4BB5251",
+      "FND-C2CB60DC",
+      "FND-76BE46EF"
+     ],
+     "text": "M1.07 Psychological Readiness and Support"
+    },
+    {
+     "cites": [
+      "FND-057E89A7",
+      "FND-7885BCF5",
+      "FND-E3D07562"
+     ],
+     "text": "M1.02 Training Programme Design and Delivery (overlaps M6 and M7: say which M owns it)"
+    },
+    {
+     "cites": [
+      "FND-C2CB60DC",
+      "FND-45363DCA",
+      "FND-76BE46EF"
+     ],
+     "text": "M1.05 Fatigue Risk Management"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Condition: The 18-Sep-2020 gasket job was resourced without any independent QC role, hydrotest witness, or closing supervisor, allowing the unspecified O-ring… (OIS 4.2 Personnel Resources Selection & Staffing)"
+   },
+   "m": "M1",
+   "q": "Q04",
+   "step": "condition",
+   "subcategory": "M1.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-615DB819"
+     ],
+     "text": "Condition: The 18-Sep-2020 gasket job was resourced without any independent QC role, hydrotest witness, or closing supervisor, allowing the unspecified O-ring… (OIS 4.2 Personnel Resources Selection & Staffing)"
+    },
+    {
+     "cites": [
+      "FND-9399FA02",
+      "FND-A6312B6B",
+      "FND-DE978BF5"
+     ],
+     "text": "Condition: F&G detectors were annunciator-only with no auto-shutdown interlock; machine detection at 02:12:50 resulted in a manual, delayed response taking 46… (PTF 1.4 Over Reliance on Individual/ System or Equipment)"
+    },
+    {
+     "cites": [
+      "FND-8DAFDADC",
+      "FND-28F8790B",
+      "FND-C59DCD29"
+     ],
+     "text": "Condition: DMP lacked isolation criteria; on-shift operators had no authority to isolate, causing 46-minute delay while they escalated to senior managers. (PTF 1.5 Team Roles/ Responsibilities not Allocated or Understood)"
+    },
+    {
+     "cites": [
+      "FND-36179046",
+      "FND-7832DDF6"
+     ],
+     "text": "Condition: Night-shift leaders at the gate did not establish a shared urgent plan; MOV 54 was closed 26 minutes after their arrival and 46 minutes after… (PTF 1.1 Crew/ Team Leadership)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVV 4.1 Failure to Enforce Existing Rules (Supervisory act of Omission)"
+   },
+   "m": "M1",
+   "q": "Q05",
+   "step": "driver",
+   "subcategory": "M1.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-50C7319E",
+      "FND-ABF11182",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVV 4.1 Failure to Enforce Existing Rules (Supervisory act of Omission)"
+    },
+    {
+     "cites": [
+      "FND-89D53630",
+      "FND-B93AE333",
+      "FND-D1709E71"
+     ],
+     "text": "System driver: SVI 1.1 Leadership/Supervisory Oversight Inadequate (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+    },
+    {
+     "cites": [
+      "FND-257C1100",
+      "FND-031A3738",
+      "FND-D58142C9"
+     ],
+     "text": "System driver: SVI 1.4 Failed to Provide Appropriate Policy/ Guidance (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+    },
+    {
+     "cites": [
+      "FND-B86F67F0",
+      "FND-82FC718D",
+      "FND-F7FE8463"
+     ],
+     "text": "System driver: OIC 2.1 Organizational Culture Allows for Unsafe Task/Mission (level 4) feeds AV 1.1 Violation - Routine/Widespread"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Absent: The 18-Sep-2020 gasket job was resourced without any independent QC role, hydrotest witness, or… (EVD-2894: \"After calibration of the meter 310FE01, the gasket was replaced on 18.09.2020. No hydro test was done after replacement…\")"
+   },
+   "m": "M1",
+   "q": "Q06",
+   "step": "barrier",
+   "subcategory": "M1.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-615DB819",
+      "EVD-2894"
+     ],
+     "text": "Absent: The 18-Sep-2020 gasket job was resourced without any independent QC role, hydrotest witness, or… (EVD-2894: \"After calibration of the meter 310FE01, the gasket was replaced on 18.09.2020. No hydro test was done after replacement…\")"
+    },
+    {
+     "cites": [
+      "FND-9399FA02",
+      "EVD-8657"
+     ],
+     "text": "Absent: F&G detectors were annunciator-only with no auto-shutdown interlock; machine detection at 02:12:50… (EVD-8657: \"Hydrocarbon/H2S detectors are configured to Annunciator Panel for display but not in DCS for history' and 'F&G…\")"
+    },
+    {
+     "cites": [
+      "FND-A6312B6B",
+      "EVD-8645"
+     ],
+     "text": "Absent: Gasket replacement had no independent quality checks: no material spec, no QC, no hydrotest… (EVD-8645: \"Original Specifications of gasket are not available... use of locally purchased O ring was done in its place as a…\")"
+    },
+    {
+     "cites": [
+      "FND-8DAFDADC",
+      "EVD-4052"
+     ],
+     "text": "Absent: DMP lacked isolation criteria; on-shift operators had no authority to isolate, causing 46-minute… (EVD-4052: \"guidelines to be followed in case of hydrocarbon leakage are included but does not include isolation/stoppage of…\")"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIS 4.2 condition (Personnel Resources Selection & Staffing)"
+   },
+   "m": "M1",
+   "q": "Q07",
+   "step": "change",
+   "subcategory": "M1.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-615DB819",
+      "FND-9399FA02",
+      "FND-A6312B6B"
+     ],
+     "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIS 4.2 condition (Personnel Resources Selection & Staffing)"
+    },
+    {
+     "cites": [
+      "FND-615DB819",
+      "FND-9399FA02",
+      "FND-A6312B6B"
+     ],
+     "text": "Engineering (corrective or preventive: say which for this change): add a physical or automated control so that the OIS 4.2 condition (Personnel Resources Selection & Staffing) cannot go unnoticed"
+    },
+    {
+     "cites": [
+      "FND-615DB819",
+      "FND-9399FA02",
+      "FND-A6312B6B"
+     ],
+     "text": "Administrative (corrective or preventive: say which for this change): change the procedure, permit or planning step that let the OIS 4.2 condition (Personnel Resources Selection & Staffing) arise"
+    },
+    {
+     "cites": [
+      "FND-615DB819",
+      "FND-9399FA02",
+      "FND-A6312B6B"
+     ],
+     "text": "Engineering plus training (weak on its own) (corrective or preventive: say which for this change): pair the engineered control with practice on the OIS 4.2 condition (Personnel Resources Selection & Staffing)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Relevant: 55 finding(s) point to M2 Medium (13 by their Nanocode, 42 by their wording or cluster), led by PTE 2.3 Visibility Restrictions (Not Weather Related)"
+   },
+   "m": "M2",
+   "q": "Q08",
+   "step": "relevance",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-BDD73BA2",
+      "FND-9B406A83",
+      "FND-01ADF0AA"
+     ],
+     "text": "Relevant: 55 finding(s) point to M2 Medium (13 by their Nanocode, 42 by their wording or cluster), led by PTE 2.3 Visibility Restrictions (Not Weather Related)"
+    },
+    {
+     "cites": [
+      "FND-7A10FF70",
+      "FND-15B4E60F",
+      "FND-E6759E06"
+     ],
+     "text": "Partly relevant: only the SVF 3.3 Workspace Management findings"
+    },
+    {
+     "cites": [
+      "FND-BDD73BA2"
+     ],
+     "text": "Not relevant: the M2 Medium signal in these findings is incidental (say why)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "M2.09 Environmental Stressors and Extreme Conditions"
+   },
+   "m": "M2",
+   "q": "Q09",
+   "step": "subcategory",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-AEA16F83",
+      "FND-44219027",
+      "FND-64E24A9E"
+     ],
+     "text": "M2.09 Environmental Stressors and Extreme Conditions"
+    },
+    {
+     "cites": [
+      "FND-594A80E9",
+      "FND-44219027",
+      "FND-BDD73BA2"
+     ],
+     "text": "M2.12 Emergency Preparedness in Environmental Contexts"
+    },
+    {
+     "cites": [
+      "FND-01ADF0AA",
+      "FND-44219027",
+      "FND-A7137BC4"
+     ],
+     "text": "M2.01 Physical Environment Controls"
+    },
+    {
+     "cites": [
+      "FND-13708453",
+      "FND-BDD73BA2",
+      "FND-A7137BC4"
+     ],
+     "text": "M2.06 Operational Environment and Tempo"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Condition: Dense hydrocarbon vapour cloud physically prevented operating personnel from approaching the metering area to locate and isolate the leak source… (PTE 2.3 Visibility Restrictions (Not Weather Related))"
+   },
+   "m": "M2",
+   "q": "Q10",
+   "step": "condition",
+   "subcategory": "M2.09",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-BDD73BA2"
+     ],
+     "text": "Condition: Dense hydrocarbon vapour cloud physically prevented operating personnel from approaching the metering area to locate and isolate the leak source… (PTE 2.3 Visibility Restrictions (Not Weather Related))"
+    },
+    {
+     "cites": [
+      "FND-9B406A83"
+     ],
+     "text": "Condition: Dense condensate vapour cloud from the leak itself prevented personnel from approaching to locate source for 46 minutes, delaying isolation. (PPE 1.12 Brownout/Whiteout caused by Human Interference)"
+    },
+    {
+     "cites": [
+      "FND-01ADF0AA",
+      "FND-594A80E9"
+     ],
+     "text": "Condition: Dense hydrocarbon vapour cloud prevented Gas Terminal CR operators from approaching metering skid for 41 minutes, delaying leak-source identification… (PPE 1.13 Atmospheric Conditions)"
+    },
+    {
+     "cites": [
+      "FND-15B4E60F",
+      "FND-7A10FF70",
+      "FND-E6759E06"
+     ],
+     "text": "Condition: The emergency workspace combined display-only gas alarms, manual-only MOVs, a single 90-second-pan camera, and no isolation criteria — management… (SVF 3.3 Workspace Management)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "System driver: OIC 2.1 Organizational Culture Allows for Unsafe Task/Mission (level 4) feeds PTE 2.8 Workspace Incompatible with Operations"
+   },
+   "m": "M2",
+   "q": "Q11",
+   "step": "driver",
+   "subcategory": "M2.09",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-7D28BE30",
+      "FND-119E6CF7"
+     ],
+     "text": "System driver: OIC 2.1 Organizational Culture Allows for Unsafe Task/Mission (level 4) feeds PTE 2.8 Workspace Incompatible with Operations"
+    },
+    {
+     "cites": [
+      "FND-97325867",
+      "FND-0621F920"
+     ],
+     "text": "System driver: OIP 3.6 Inadequate Program Oversight/ Program Management (level 4) feeds PPI 5.6 Inaccurate Expectancy"
+    },
+    {
+     "cites": [
+      "FND-322112EE",
+      "FND-E63EB689"
+     ],
+     "text": "System driver: OIP 3.7 Purchasing or Providing Poorly Designed or Unsuitable Equipment (Acquisition Policies) (level 4) feeds PTE 2.8 Workspace Incompatible with Operations"
+    },
+    {
+     "cites": [
+      "FND-044D1DEC",
+      "FND-934DCBE1"
+     ],
+     "text": "System driver: OIR 1.1 Command and Control Resources are Deficient (level 4) feeds PTE 2.8 Workspace Incompatible with Operations"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Degraded: Dense hydrocarbon vapour cloud physically prevented operating personnel from approaching the… (EVD-1460: \"On going outside the control room he saw the heavy cloud in phase I area... could not approach due to dense cloud\")"
+   },
+   "m": "M2",
+   "q": "Q12",
+   "step": "barrier",
+   "subcategory": "M2.09",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-BDD73BA2",
+      "EVD-1460"
+     ],
+     "text": "Degraded: Dense hydrocarbon vapour cloud physically prevented operating personnel from approaching the… (EVD-1460: \"On going outside the control room he saw the heavy cloud in phase I area... could not approach due to dense cloud\")"
+    },
+    {
+     "cites": [
+      "FND-9B406A83",
+      "EVD-1284"
+     ],
+     "text": "Degraded: Dense condensate vapour cloud from the leak itself prevented personnel from approaching to locate… (EVD-1284: \"CCTV frame 02:12:50 — the earliest visible vapour leakage commencement at the condensate metering skid\")"
+    },
+    {
+     "cites": [
+      "FND-15B4E60F",
+      "EVD-8657"
+     ],
+     "text": "Absent: The emergency workspace combined display-only gas alarms, manual-only MOVs, a single 90-second-pan… (EVD-8657: \"Hydrocarbon/H2S detectors are configured to Annunciator Panel for display but not in DCS for history. F&G detection…\")"
+    },
+    {
+     "cites": [
+      "FND-A7137BC4",
+      "EVD-3932"
+     ],
+     "text": "Absent: Emergency MOVs were local-manual only with no remote control, requiring physical approach that gas… (EVD-3932: \"MOVs are provided in the gas terminal station for local operations but they are not having remote operation from…\")"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the PTE 2.3 condition (Visibility Restrictions (Not Weather Related))"
+   },
+   "m": "M2",
+   "q": "Q13",
+   "step": "change",
+   "subcategory": "M2.09",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-BDD73BA2",
+      "FND-9B406A83",
+      "FND-01ADF0AA"
+     ],
+     "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the PTE 2.3 condition (Visibility Restrictions (Not Weather Related))"
+    },
+    {
+     "cites": [
+      "FND-BDD73BA2",
+      "FND-9B406A83",
+      "FND-01ADF0AA"
+     ],
+     "text": "Engineering (corrective or preventive: say which for this change): add a physical or automated control so that the PTE 2.3 condition (Visibility Restrictions (Not Weather Related)) cannot go unnoticed"
+    },
+    {
+     "cites": [
+      "FND-BDD73BA2",
+      "FND-9B406A83",
+      "FND-01ADF0AA"
+     ],
+     "text": "Administrative (corrective or preventive: say which for this change): change the procedure, permit or planning step that let the PTE 2.3 condition (Visibility Restrictions (Not Weather Related)) arise"
+    },
+    {
+     "cites": [
+      "FND-BDD73BA2",
+      "FND-9B406A83",
+      "FND-01ADF0AA"
+     ],
+     "text": "Engineering plus training (weak on its own) (corrective or preventive: say which for this change): pair the engineered control with practice on the PTE 2.3 condition (Visibility Restrictions (Not Weather Related))"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Relevant: 279 finding(s) point to M3 Method (95 by their Nanocode, 184 by their wording or cluster), led by SVI 1.4 Failed to Provide Appropriate Policy/ Guidance"
+   },
+   "m": "M3",
+   "q": "Q14",
+   "step": "relevance",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-137BC719",
+      "FND-8083ECAC",
+      "FND-B56701CA"
+     ],
+     "text": "Relevant: 279 finding(s) point to M3 Method (95 by their Nanocode, 184 by their wording or cluster), led by SVI 1.4 Failed to Provide Appropriate Policy/ Guidance"
+    },
+    {
+     "cites": [
+      "FND-137BC719",
+      "FND-DE30BD8B",
+      "FND-257C1100"
+     ],
+     "text": "Partly relevant: only the SVI 1.4 Failed to Provide Appropriate Policy/ Guidance findings"
+    },
+    {
+     "cites": [
+      "FND-137BC719"
+     ],
+     "text": "Not relevant: the M3 Method signal in these findings is incidental (say why)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "M3.06 Risk Management Integration"
+   },
+   "m": "M3",
+   "q": "Q15",
+   "step": "subcategory",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-EFC192D7",
+      "FND-8083ECAC",
+      "FND-63B6D260"
+     ],
+     "text": "M3.06 Risk Management Integration"
+    },
+    {
+     "cites": [
+      "FND-DE978BF5",
+      "FND-EEC2407A",
+      "FND-BC4FD086"
+     ],
+     "text": "M3.07 Alignment with Technology"
+    },
+    {
+     "cites": [
+      "FND-DE132C95",
+      "FND-5F3E97E1",
+      "FND-AEA16F83"
+     ],
+     "text": "M3.08 Emergency and Contingency Procedures"
+    },
+    {
+     "cites": [
+      "FND-88D0E4B1",
+      "FND-36179046",
+      "FND-0BA85877"
+     ],
+     "text": "M3.05 Documentation and Communication"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Condition: The O-ring-for-OEM-gasket substitution was never processed through the Plant's MOC risk assessment, which had not been applied to any change since… (SVIO 2.4 Risk Assessment - Formal)"
+   },
+   "m": "M3",
+   "q": "Q16",
+   "step": "condition",
+   "subcategory": "M3.06",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-8083ECAC",
+      "FND-63B6D260",
+      "FND-7A2429CE"
+     ],
+     "text": "Condition: The O-ring-for-OEM-gasket substitution was never processed through the Plant's MOC risk assessment, which had not been applied to any change since… (SVIO 2.4 Risk Assessment - Formal)"
+    },
+    {
+     "cites": [
+      "FND-B56701CA",
+      "FND-446A7956",
+      "FND-FC482A83"
+     ],
+     "text": "Condition: No OEM gasket specification, substitute specification, or purchase QC information was available, so a locally procured O-ring was fitted to a… (OIR 1.8 Failure to Provide Adequate Operational Information Resources/ Support)"
+    },
+    {
+     "cites": [
+      "FND-DE30BD8B",
+      "FND-4D7CF773",
+      "FND-6ECCE231"
+     ],
+     "text": "Condition: With the OEM gasket spec lost, management provided no substitute specification, procurement control, or QC policy, leaving maintainers to install… (SVI 1.4 Failed to Provide Appropriate Policy/ Guidance)"
+    },
+    {
+     "cites": [
+      "FND-D1DF4895",
+      "FND-CEE4B00B",
+      "FND-89A8965A"
+     ],
+     "text": "Condition: No standardized isolation/stoppage criteria existed in the DMP/ERDMP, so the night-shift response varied by role and improvised serially rather than… (SVI 1.7 Lack of Standardisation)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+   },
+   "m": "M3",
+   "q": "Q17",
+   "step": "driver",
+   "subcategory": "M3.06",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+    },
+    {
+     "cites": [
+      "FND-50C7319E",
+      "FND-ABF11182",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVV 4.1 Failure to Enforce Existing Rules (Supervisory act of Omission)"
+    },
+    {
+     "cites": [
+      "FND-89D53630",
+      "FND-B93AE333",
+      "FND-D1709E71"
+     ],
+     "text": "System driver: SVI 1.1 Leadership/Supervisory Oversight Inadequate (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+    },
+    {
+     "cites": [
+      "FND-257C1100",
+      "FND-031A3738",
+      "FND-D58142C9"
+     ],
+     "text": "System driver: SVI 1.4 Failed to Provide Appropriate Policy/ Guidance (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Absent: The O-ring-for-OEM-gasket substitution was never processed through the Plant's MOC risk assessment… (EVD-8645: \"There is no record of date or authority of the decision to switch over from OEM supplied gasket to locally purchased…\")"
+   },
+   "m": "M3",
+   "q": "Q18",
+   "step": "barrier",
+   "subcategory": "M3.06",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-8083ECAC",
+      "EVD-8645"
+     ],
+     "text": "Absent: The O-ring-for-OEM-gasket substitution was never processed through the Plant's MOC risk assessment… (EVD-8645: \"There is no record of date or authority of the decision to switch over from OEM supplied gasket to locally purchased…\")"
+    },
+    {
+     "cites": [
+      "FND-446A7956",
+      "EVD-4052"
+     ],
+     "text": "Absent: The DMP/ERDMP covered the leak scenario but provided no isolation/stoppage decision criteria or… (EVD-4052: \"As per DMP On site Hazira Plant, guidelines to be followed in case of hydrocarbon leakage are included but does not…\")"
+    },
+    {
+     "cites": [
+      "FND-4D7CF773",
+      "EVD-8657"
+     ],
+     "text": "Degraded: Management failed to require automatic shutdown/suppression interlocks for the F&G system… (EVD-8657: \"Hydrocarbon/H2S detectors are configured to Annunciator Panel for display but not in DCS for history\"; \"F&G detection…\")"
+    },
+    {
+     "cites": [
+      "FND-63B6D260",
+      "EVD-5105"
+     ],
+     "text": "Absent: The high-risk gasket replacement was executed via an unreviewed SAP notification with no JSA, no… (EVD-5105: \"Job safety Plan is not attached/given in SAP document\"; committee recommendation B.5 at p.34: \"Maintenance…\")"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the SVIO 2.4 condition (Risk Assessment - Formal)"
+   },
+   "m": "M3",
+   "q": "Q19",
+   "step": "change",
+   "subcategory": "M3.06",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-8083ECAC",
+      "FND-B56701CA",
+      "FND-446A7956"
+     ],
+     "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the SVIO 2.4 condition (Risk Assessment - Formal)"
+    },
+    {
+     "cites": [
+      "FND-8083ECAC",
+      "FND-B56701CA",
+      "FND-446A7956"
+     ],
+     "text": "Engineering (corrective or preventive: say which for this change): add a physical or automated control so that the SVIO 2.4 condition (Risk Assessment - Formal) cannot go unnoticed"
+    },
+    {
+     "cites": [
+      "FND-8083ECAC",
+      "FND-B56701CA",
+      "FND-446A7956"
+     ],
+     "text": "Administrative (corrective or preventive: say which for this change): change the procedure, permit or planning step that let the SVIO 2.4 condition (Risk Assessment - Formal) arise"
+    },
+    {
+     "cites": [
+      "FND-8083ECAC",
+      "FND-B56701CA",
+      "FND-446A7956"
+     ],
+     "text": "Engineering plus training (weak on its own) (corrective or preventive: say which for this change): pair the engineered control with practice on the SVIO 2.4 condition (Risk Assessment - Formal)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Relevant: 91 finding(s) point to M4 Mission (40 by their Nanocode, 51 by their wording or cluster), led by OIP 3.5 Flawed Doctrine/ Philosophy"
+   },
+   "m": "M4",
+   "q": "Q20",
+   "step": "relevance",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5C7B163D",
+      "FND-B86F67F0",
+      "FND-82FC718D"
+     ],
+     "text": "Relevant: 91 finding(s) point to M4 Mission (40 by their Nanocode, 51 by their wording or cluster), led by OIP 3.5 Flawed Doctrine/ Philosophy"
+    },
+    {
+     "cites": [
+      "FND-730D0DCA",
+      "FND-675D99DD",
+      "FND-3A34BAD3"
+     ],
+     "text": "Partly relevant: only the OIC 2.7 Inconsistent Risk Management Practices findings"
+    },
+    {
+     "cites": [
+      "FND-5C7B163D"
+     ],
+     "text": "Not relevant: the M4 Mission signal in these findings is incidental (say why)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "M4.08 Organisational Culture and Mission Alignment (overlaps M1: say which M owns it)"
+   },
+   "m": "M4",
+   "q": "Q21",
+   "step": "subcategory",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-0F19C9FC",
+      "FND-D25BF914",
+      "FND-53C9BDB5"
+     ],
+     "text": "M4.08 Organisational Culture and Mission Alignment (overlaps M1: say which M owns it)"
+    },
+    {
+     "cites": [
+      "FND-DF1144C3",
+      "FND-0F19C9FC",
+      "FND-744032B6"
+     ],
+     "text": "M4.07 Mission Complexity and Clarity"
+    },
+    {
+     "cites": [
+      "FND-491EDE74",
+      "FND-F7FE8463",
+      "FND-BC4FD086"
+     ],
+     "text": "M4.06 External Influences and Stakeholder Expectations"
+    },
+    {
+     "cites": [
+      "FND-2FAB8D51",
+      "FND-305216AF",
+      "FND-DF1144C3"
+     ],
+     "text": "M4.09 Communication and Mission Integration"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Condition: The DMP/ERDMP doctrine defined the major-leak scenario but contained no isolation/stoppage criteria or authority, forcing serial escalation and a… (OIP 3.5 Flawed Doctrine/ Philosophy)"
+   },
+   "m": "M4",
+   "q": "Q22",
+   "step": "condition",
+   "subcategory": "M4.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5C7B163D",
+      "FND-1280E788",
+      "FND-8CE00707"
+     ],
+     "text": "Condition: The DMP/ERDMP doctrine defined the major-leak scenario but contained no isolation/stoppage criteria or authority, forcing serial escalation and a… (OIP 3.5 Flawed Doctrine/ Philosophy)"
+    },
+    {
+     "cites": [
+      "FND-B86F67F0",
+      "FND-82FC718D",
+      "FND-F7FE8463"
+     ],
+     "text": "Condition: Locally purchased O-rings were used as a 'regular practice' for a rectangular-slot flange without specification, QC, or recorded authorization, with… (OIC 2.1 Organizational Culture Allows for Unsafe Task/Mission)"
+    },
+    {
+     "cites": [
+      "FND-BC4FD086",
+      "FND-491EDE74",
+      "FND-B0BA0566"
+     ],
+     "text": "Condition: The OEM rectangular-slot gasket was replaced by a locally procured round O-ring with no specification, quality control, recorded authority or MOC… (OIC 2.4 Unit Mission/ Aircraft/ Vehicle/ Equipment Change or Unit Deactivation)"
+    },
+    {
+     "cites": [
+      "FND-59A2F497",
+      "FND-8EC441F3"
+     ],
+     "text": "Condition: The 18-Sep-2020 gasket job was led with no OEM specification, no conforming gasket, no quality control and no hydrotest, exceeding the material and… (SVIO 2.1 Ordered/ Led on Mission Beyond Capability)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "System driver: SVIO 2.4 Risk Assessment - Formal (level 3) feeds PTF 1.13 Mission Planning"
+   },
+   "m": "M4",
+   "q": "Q23",
+   "step": "driver",
+   "subcategory": "M4.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-63B6D260",
+      "FND-7A2429CE",
+      "FND-F0D015E1"
+     ],
+     "text": "System driver: SVIO 2.4 Risk Assessment - Formal (level 3) feeds PTF 1.13 Mission Planning"
+    },
+    {
+     "cites": [
+      "FND-3AB996FC",
+      "FND-6E13192C"
+     ],
+     "text": "System driver: OIC 2.1 Organizational Culture Allows for Unsafe Task/Mission (level 4) feeds SVIO 2.5 Authorised Unnecessary Hazard"
+    },
+    {
+     "cites": [
+      "FND-C34A026C",
+      "FND-BB4CC662"
+     ],
+     "text": "System driver: SVI 1.10 Failed to Communicate Intent (level 3) feeds PTF 1.13 Mission Planning"
+    },
+    {
+     "cites": [
+      "FND-110F964C",
+      "FND-4EDE038A"
+     ],
+     "text": "System driver: SVI 1.6 Lack of Supervisory Response to Critical Information (level 3) feeds PTF 1.13 Mission Planning"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Absent: The DMP/ERDMP doctrine defined the major-leak scenario but contained no isolation/stoppage criteria… (EVD-4052: \"does not include isolation/stoppage of facilities/pipelines\" (p.32); \"decision on isolation/closure of plant/pipelines…\")"
+   },
+   "m": "M4",
+   "q": "Q24",
+   "step": "barrier",
+   "subcategory": "M4.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5C7B163D",
+      "EVD-4052"
+     ],
+     "text": "Absent: The DMP/ERDMP doctrine defined the major-leak scenario but contained no isolation/stoppage criteria… (EVD-4052: \"does not include isolation/stoppage of facilities/pipelines\" (p.32); \"decision on isolation/closure of plant/pipelines…\")"
+    },
+    {
+     "cites": [
+      "FND-B86F67F0",
+      "EVD-8645"
+     ],
+     "text": "Absent: Locally purchased O-rings were used as a 'regular practice' for a rectangular-slot flange without… (EVD-8645: \"use of locally purchased O ring was done in its place as a regular practice. There was no specification or quality…\")"
+    },
+    {
+     "cites": [
+      "FND-82FC718D",
+      "EVD-1494"
+     ],
+     "text": "Absent: Three gasket replacements in ~22 months did not trigger root-cause analysis or engineering… (EVD-1494: \"meter no.1 was cleaned on 25/02/2019 & gasket was changed. Again on 18/09/2019, gasket was changed which leaked within…\")"
+    },
+    {
+     "cites": [
+      "FND-F7FE8463",
+      "EVD-2986"
+     ],
+     "text": "Absent: The MOC SOP existed since Aug-2016 but was not applied at all after 2018, so the O-ring material… (EVD-2986: \"It is informed no more MOCs are implemented in the plant since 2018\" (p.30)\")"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIP 3.5 condition (Flawed Doctrine/ Philosophy)"
+   },
+   "m": "M4",
+   "q": "Q25",
+   "step": "change",
+   "subcategory": "M4.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5C7B163D",
+      "FND-B86F67F0",
+      "FND-82FC718D"
+     ],
+     "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIP 3.5 condition (Flawed Doctrine/ Philosophy)"
+    },
+    {
+     "cites": [
+      "FND-5C7B163D",
+      "FND-B86F67F0",
+      "FND-82FC718D"
+     ],
+     "text": "Engineering (corrective or preventive: say which for this change): add a physical or automated control so that the OIP 3.5 condition (Flawed Doctrine/ Philosophy) cannot go unnoticed"
+    },
+    {
+     "cites": [
+      "FND-5C7B163D",
+      "FND-B86F67F0",
+      "FND-82FC718D"
+     ],
+     "text": "Administrative (corrective or preventive: say which for this change): change the procedure, permit or planning step that let the OIP 3.5 condition (Flawed Doctrine/ Philosophy) arise"
+    },
+    {
+     "cites": [
+      "FND-5C7B163D",
+      "FND-B86F67F0",
+      "FND-82FC718D"
+     ],
+     "text": "Engineering plus training (weak on its own) (corrective or preventive: say which for this change): pair the engineered control with practice on the OIP 3.5 condition (Flawed Doctrine/ Philosophy)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Relevant: 210 finding(s) point to M5 Measurement (13 by their Nanocode, 197 by their wording or cluster), led by SVI 1.6 Lack of Supervisory Response to Critical Information"
+   },
+   "m": "M5",
+   "q": "Q26",
+   "step": "relevance",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-C92C29DB",
+      "FND-110F964C",
+      "FND-4EDE038A"
+     ],
+     "text": "Relevant: 210 finding(s) point to M5 Measurement (13 by their Nanocode, 197 by their wording or cluster), led by SVI 1.6 Lack of Supervisory Response to Critical Information"
+    },
+    {
+     "cites": [
+      "FND-611A8BFC",
+      "FND-D45021AD",
+      "FND-2EC435D0"
+     ],
+     "text": "Partly relevant: only the SVF 3.2 Operations Management findings"
+    },
+    {
+     "cites": [
+      "FND-C92C29DB"
+     ],
+     "text": "Not relevant: the M5 Measurement signal in these findings is incidental (say why)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "M5.11 Audits and Inspections"
+   },
+   "m": "M5",
+   "q": "Q27",
+   "step": "subcategory",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-119E6CF7",
+      "FND-01C3DE98",
+      "FND-4D7CF773"
+     ],
+     "text": "M5.11 Audits and Inspections"
+    },
+    {
+     "cites": [
+      "FND-EFC192D7",
+      "FND-33D32D4C",
+      "FND-904FCA63"
+     ],
+     "text": "M5.01 Metrics Design and Relevance"
+    },
+    {
+     "cites": [
+      "FND-7F829BEB",
+      "FND-7EB223DE",
+      "FND-B0BA0566"
+     ],
+     "text": "M5.09 Continuous Improvement through Measurement"
+    },
+    {
+     "cites": [
+      "FND-5BC96E8A",
+      "FND-7C8ADD7C",
+      "FND-789D5D60"
+     ],
+     "text": "M5.02 Data Collection and Accuracy"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Condition: The DGM/GM shift supervisors received verified heavy-leak reports by 02:35 but closed no isolation valve until 03:01, leaving the release unisolated… (SVI 1.6 Lack of Supervisory Response to Critical Information)"
+   },
+   "m": "M5",
+   "q": "Q28",
+   "step": "condition",
+   "subcategory": "M5.11",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5F3E97E1",
+      "FND-1D713648",
+      "FND-FA807C69"
+     ],
+     "text": "Condition: The DGM/GM shift supervisors received verified heavy-leak reports by 02:35 but closed no isolation valve until 03:01, leaving the release unisolated… (SVI 1.6 Lack of Supervisory Response to Critical Information)"
+    },
+    {
+     "cites": [
+      "FND-D45021AD",
+      "FND-2EC435D0",
+      "FND-AE60859C"
+     ],
+     "text": "Condition: Gas detectors were configured for annunciator display only, with no auto-shutdown or suppression interlock, and management never corrected this known… (SVF 3.2 Operations Management)"
+    },
+    {
+     "cites": [
+      "FND-6155A1C2",
+      "FND-2B215AA5",
+      "FND-0D4C2C13"
+     ],
+     "text": "Condition: The F&G system was display-only with no auto-shutdown or suppression interlock, forcing a 46-minute manual isolation response after the 02:12:50 leak. (OIR 1.1 Command and Control Resources are Deficient)"
+    },
+    {
+     "cites": [
+      "FND-4458E0C0",
+      "FND-D9A35E88",
+      "FND-02310148"
+     ],
+     "text": "Condition: Gas detectors were left as annunciator-display only with no auto-shutdown or suppression interlock, converting a machine-detected 02:12:50 leak into… (OIR 1.5 Failure in Timely Acquisition/ Procurement/ Upgrade)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+   },
+   "m": "M5",
+   "q": "Q29",
+   "step": "driver",
+   "subcategory": "M5.11",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+    },
+    {
+     "cites": [
+      "FND-50C7319E",
+      "FND-ABF11182",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVV 4.1 Failure to Enforce Existing Rules (Supervisory act of Omission)"
+    },
+    {
+     "cites": [
+      "FND-89D53630",
+      "FND-B93AE333",
+      "FND-D1709E71"
+     ],
+     "text": "System driver: SVI 1.1 Leadership/Supervisory Oversight Inadequate (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+    },
+    {
+     "cites": [
+      "FND-257C1100",
+      "FND-031A3738",
+      "FND-D58142C9"
+     ],
+     "text": "System driver: SVI 1.4 Failed to Provide Appropriate Policy/ Guidance (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Absent: The DGM/GM shift supervisors received verified heavy-leak reports by 02:35 but closed no isolation… (EVD-6414: \"Decision of closure of valve was taken after about 40 minutes resulting the spread of vapour cloud in increased area\"…\")"
+   },
+   "m": "M5",
+   "q": "Q30",
+   "step": "barrier",
+   "subcategory": "M5.11",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5F3E97E1",
+      "EVD-6414"
+     ],
+     "text": "Absent: The DGM/GM shift supervisors received verified heavy-leak reports by 02:35 but closed no isolation… (EVD-6414: \"Decision of closure of valve was taken after about 40 minutes resulting the spread of vapour cloud in increased area\"…\")"
+    },
+    {
+     "cites": [
+      "FND-D45021AD",
+      "EVD-8657"
+     ],
+     "text": "Absent: Gas detectors were configured for annunciator display only, with no auto-shutdown or suppression… (EVD-8657: \"Hydrocarbon/H2S detectors are configured to Annunciator Panel for display but not in DCS for history. F&G detection…\")"
+    },
+    {
+     "cites": [
+      "FND-2EC435D0",
+      "EVD-4052"
+     ],
+     "text": "Degraded: The DMP named the hydrocarbon leak scenario but omitted isolation/stoppage decision criteria and… (EVD-4052: \"As per DMP On site Hazira Plant, guidelines to be followed in case of hydrocarbon leakage are included but does not…\")"
+    },
+    {
+     "cites": [
+      "FND-6155A1C2",
+      "EVD-3452"
+     ],
+     "text": "Absent: The F&G system was display-only with no auto-shutdown or suppression interlock, forcing a 46-minute… (EVD-3452: \"F&G detection system does not have provision for auto shut down of plant or activation of fire suppression system\"…\")"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the SVI 1.6 condition (Lack of Supervisory Response to Critical Information)"
+   },
+   "m": "M5",
+   "q": "Q31",
+   "step": "change",
+   "subcategory": "M5.11",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5F3E97E1",
+      "FND-D45021AD",
+      "FND-2EC435D0"
+     ],
+     "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the SVI 1.6 condition (Lack of Supervisory Response to Critical Information)"
+    },
+    {
+     "cites": [
+      "FND-5F3E97E1",
+      "FND-D45021AD",
+      "FND-2EC435D0"
+     ],
+     "text": "Engineering (corrective or preventive: say which for this change): add a physical or automated control so that the SVI 1.6 condition (Lack of Supervisory Response to Critical Information) cannot go unnoticed"
+    },
+    {
+     "cites": [
+      "FND-5F3E97E1",
+      "FND-D45021AD",
+      "FND-2EC435D0"
+     ],
+     "text": "Administrative (corrective or preventive: say which for this change): change the procedure, permit or planning step that let the SVI 1.6 condition (Lack of Supervisory Response to Critical Information) arise"
+    },
+    {
+     "cites": [
+      "FND-5F3E97E1",
+      "FND-D45021AD",
+      "FND-2EC435D0"
+     ],
+     "text": "Engineering plus training (weak on its own) (corrective or preventive: say which for this change): pair the engineered control with practice on the SVI 1.6 condition (Lack of Supervisory Response to Critical Information)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Relevant: 287 finding(s) point to M6 Management/Money (130 by their Nanocode, 157 by their wording or cluster), led by OIC 2.5 Organisational Structure"
+   },
+   "m": "M6",
+   "q": "Q32",
+   "step": "relevance",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-82761CC5",
+      "FND-B440C1BF",
+      "FND-4245FBF2"
+     ],
+     "text": "Relevant: 287 finding(s) point to M6 Management/Money (130 by their Nanocode, 157 by their wording or cluster), led by OIC 2.5 Organisational Structure"
+    },
+    {
+     "cites": [
+      "FND-DE30BD8B",
+      "FND-4D7CF773",
+      "FND-D4A3EF8A"
+     ],
+     "text": "Partly relevant: only the SVI 1.4 Failed to Provide Appropriate Policy/ Guidance findings"
+    },
+    {
+     "cites": [
+      "FND-82761CC5"
+     ],
+     "text": "Not relevant: the M6 Management/Money signal in these findings is incidental (say why)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "M6.05 Risk Management and Compliance"
+   },
+   "m": "M6",
+   "q": "Q33",
+   "step": "subcategory",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-2F5482CD",
+      "FND-2D90823E",
+      "FND-CDE8E62D"
+     ],
+     "text": "M6.05 Risk Management and Compliance"
+    },
+    {
+     "cites": [
+      "FND-EBB66554",
+      "FND-3FEE59DF",
+      "FND-14D093BD"
+     ],
+     "text": "M6.10 Continuous Improvement and Adaptability"
+    },
+    {
+     "cites": [
+      "FND-5EA23B17",
+      "FND-CDE8E62D",
+      "FND-2CEE8915"
+     ],
+     "text": "M6.08 Stakeholder Engagement and Communication"
+    },
+    {
+     "cites": [
+      "FND-2B53492C",
+      "FND-2F5482CD",
+      "FND-CDE8E62D"
+     ],
+     "text": "M6.06 Investment in Infrastructure and Technology"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Condition: Locally purchased O-rings replaced lost OEM rectangular-slot gaskets as regular practice without specification, QC, MOC, or any recorded authority. (OIP 3.2 Organisational Program/ Policy Risks not Adequately Assessed)"
+   },
+   "m": "M6",
+   "q": "Q34",
+   "step": "condition",
+   "subcategory": "M6.05",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-B440C1BF",
+      "FND-6472CD15",
+      "FND-05841EDA"
+     ],
+     "text": "Condition: Locally purchased O-rings replaced lost OEM rectangular-slot gaskets as regular practice without specification, QC, MOC, or any recorded authority. (OIP 3.2 Organisational Program/ Policy Risks not Adequately Assessed)"
+    },
+    {
+     "cites": [
+      "FND-2EC435D0",
+      "FND-A2048FB8",
+      "FND-611A8BFC"
+     ],
+     "text": "Condition: The DMP named the hydrocarbon leak scenario but omitted isolation/stoppage decision criteria and authority, a known procedural gap management never… (SVF 3.2 Operations Management)"
+    },
+    {
+     "cites": [
+      "FND-33D32D4C",
+      "FND-FEC84761",
+      "FND-0B35D995"
+     ],
+     "text": "Condition: The DMP and ERDMP named the major-leak scenario but management never wrote the isolation criteria or authority into the plan — the gap behind the… (SVV 4.5 No Action/ Mitigation Measures for Identified Risk)"
+    },
+    {
+     "cites": [
+      "FND-6155A1C2",
+      "FND-044D1DEC",
+      "FND-C5000A82"
+     ],
+     "text": "Condition: The F&G system was display-only with no auto-shutdown or suppression interlock, forcing a 46-minute manual isolation response after the 02:12:50 leak. (OIR 1.1 Command and Control Resources are Deficient)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+   },
+   "m": "M6",
+   "q": "Q35",
+   "step": "driver",
+   "subcategory": "M6.05",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+    },
+    {
+     "cites": [
+      "FND-50C7319E",
+      "FND-ABF11182",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVV 4.1 Failure to Enforce Existing Rules (Supervisory act of Omission)"
+    },
+    {
+     "cites": [
+      "FND-3FEE59DF",
+      "FND-5EA23B17",
+      "FND-7F829BEB"
+     ],
+     "text": "System driver: OIC 2.7 Inconsistent Risk Management Practices (level 4) feeds SVI 1.6 Lack of Supervisory Response to Critical Information"
+    },
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-A3DCEBD8",
+      "FND-4DAC9500"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVI 1.6 Lack of Supervisory Response to Critical Information"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Absent: Locally purchased O-rings replaced lost OEM rectangular-slot gaskets as regular practice without… (EVD-8645: \"The meter is very old (1986) and having rectangular slot for the gasket... use of locally purchased O ring was done in…\")"
+   },
+   "m": "M6",
+   "q": "Q36",
+   "step": "barrier",
+   "subcategory": "M6.05",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-B440C1BF",
+      "EVD-8645"
+     ],
+     "text": "Absent: Locally purchased O-rings replaced lost OEM rectangular-slot gaskets as regular practice without… (EVD-8645: \"The meter is very old (1986) and having rectangular slot for the gasket... use of locally purchased O ring was done in…\")"
+    },
+    {
+     "cites": [
+      "FND-2EC435D0",
+      "EVD-4052"
+     ],
+     "text": "Degraded: The DMP named the hydrocarbon leak scenario but omitted isolation/stoppage decision criteria and… (EVD-4052: \"As per DMP On site Hazira Plant, guidelines to be followed in case of hydrocarbon leakage are included but does not…\")"
+    },
+    {
+     "cites": [
+      "FND-6155A1C2",
+      "EVD-3452"
+     ],
+     "text": "Absent: The F&G system was display-only with no auto-shutdown or suppression interlock, forcing a 46-minute… (EVD-3452: \"F&G detection system does not have provision for auto shut down of plant or activation of fire suppression system\"…\")"
+    },
+    {
+     "cites": [
+      "FND-044D1DEC",
+      "EVD-9612"
+     ],
+     "text": "Degraded: MOV 54 and the Gas Terminal MOVs could only be closed locally on-site, so first isolation took 46… (EVD-9612: \"closed the MOV 54 inlet condensate line from slug catcher to 36 metering area at about 0301 hrs\"; \"the MOVs in the gas…\")"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIP 3.2 condition (Organisational Program/ Policy Risks not Adequately Assessed)"
+   },
+   "m": "M6",
+   "q": "Q37",
+   "step": "change",
+   "subcategory": "M6.05",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-B440C1BF",
+      "FND-2EC435D0",
+      "FND-33D32D4C"
+     ],
+     "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIP 3.2 condition (Organisational Program/ Policy Risks not Adequately Assessed)"
+    },
+    {
+     "cites": [
+      "FND-B440C1BF",
+      "FND-2EC435D0",
+      "FND-33D32D4C"
+     ],
+     "text": "Engineering (corrective or preventive: say which for this change): add a physical or automated control so that the OIP 3.2 condition (Organisational Program/ Policy Risks not Adequately Assessed) cannot go unnoticed"
+    },
+    {
+     "cites": [
+      "FND-B440C1BF",
+      "FND-2EC435D0",
+      "FND-33D32D4C"
+     ],
+     "text": "Administrative (corrective or preventive: say which for this change): change the procedure, permit or planning step that let the OIP 3.2 condition (Organisational Program/ Policy Risks not Adequately Assessed) arise"
+    },
+    {
+     "cites": [
+      "FND-B440C1BF",
+      "FND-2EC435D0",
+      "FND-33D32D4C"
+     ],
+     "text": "Engineering plus training (weak on its own) (corrective or preventive: say which for this change): pair the engineered control with practice on the OIP 3.2 condition (Organisational Program/ Policy Risks not Adequately Assessed)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Relevant: 264 finding(s) point to M7 Machine (37 by their Nanocode, 227 by their wording or cluster), led by OIR 1.7 Phase-Out Policies (Failure to Remove Inadequate/ Worn‐Out Equipment in a Timely Manner)"
+   },
+   "m": "M7",
+   "q": "Q38",
+   "step": "relevance",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5897D1E4",
+      "FND-5BC96E8A",
+      "FND-322112EE"
+     ],
+     "text": "Relevant: 264 finding(s) point to M7 Machine (37 by their Nanocode, 227 by their wording or cluster), led by OIR 1.7 Phase-Out Policies (Failure to Remove Inadequate/ Worn‐Out Equipment in a Timely Manner)"
+    },
+    {
+     "cites": [
+      "FND-DE30BD8B",
+      "FND-4D7CF773",
+      "FND-137BC719"
+     ],
+     "text": "Partly relevant: only the SVI 1.4 Failed to Provide Appropriate Policy/ Guidance findings"
+    },
+    {
+     "cites": [
+      "FND-5897D1E4"
+     ],
+     "text": "Not relevant: the M7 Machine signal in these findings is incidental (say why)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "M7.08 Lifecycle Management"
+   },
+   "m": "M7",
+   "q": "Q39",
+   "step": "subcategory",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5897D1E4",
+      "FND-55F68376",
+      "FND-6DB250E6"
+     ],
+     "text": "M7.08 Lifecycle Management"
+    },
+    {
+     "cites": [
+      "FND-55F68376",
+      "FND-1662466D",
+      "FND-F91D4A48"
+     ],
+     "text": "M7.09 Environmental Impact and Sustainability"
+    },
+    {
+     "cites": [
+      "FND-904FCA63",
+      "FND-55F68376",
+      "FND-1662466D"
+     ],
+     "text": "M7.01 Design and Suitability"
+    },
+    {
+     "cites": [
+      "FND-55F68376",
+      "FND-69067A1C",
+      "FND-15279F97"
+     ],
+     "text": "M7.02 Maintenance and Reliability (overlaps M9: say which M owns it)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Condition: The F&G system remained annunciator-only with no auto-shutdown or suppression interlock, converting a machine-detected 02:12:50 leak into a 46-minute… (OIR 1.7 Phase-Out Policies (Failure to Remove Inadequate/ Worn‐Out Equipment in a Timely Manner))"
+   },
+   "m": "M7",
+   "q": "Q40",
+   "step": "condition",
+   "subcategory": "M7.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5897D1E4",
+      "FND-55F68376",
+      "FND-6DB250E6"
+     ],
+     "text": "Condition: The F&G system remained annunciator-only with no auto-shutdown or suppression interlock, converting a machine-detected 02:12:50 leak into a 46-minute… (OIR 1.7 Phase-Out Policies (Failure to Remove Inadequate/ Worn‐Out Equipment in a Timely Manner))"
+    },
+    {
+     "cites": [
+      "FND-5BC96E8A",
+      "FND-86CB3683",
+      "FND-D40839C1"
+     ],
+     "text": "Condition: The organization trusted a non-interlocked, annunciator-only F&G system and manual isolation chain to handle a major hydrocarbon release, a… (OIC 2.3 Organisational Over‐confidence or Under‐confidence in Equipment)"
+    },
+    {
+     "cites": [
+      "FND-322112EE",
+      "FND-01C3DE98",
+      "FND-6B3A6492"
+     ],
+     "text": "Condition: MOV 54 and the Gas Terminal emergency MOVs were provided as local-manual valves without control-room remote operation, forcing a 46-minute… (OIP 3.7 Purchasing or Providing Poorly Designed or Unsuitable Equipment (Acquisition Policies))"
+    },
+    {
+     "cites": [
+      "FND-A245072B",
+      "FND-4C645CB5",
+      "FND-2B5C46B9"
+     ],
+     "text": "Condition: Hydrocarbon/H2S detectors were configured as annunciator-only indications with no DCS history and no automatic plant shutdown or fire suppression… (PTE 2.11 Equipment Not configured Correctly)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "System driver: SVI 1.1 Leadership/Supervisory Oversight Inadequate (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+   },
+   "m": "M7",
+   "q": "Q41",
+   "step": "driver",
+   "subcategory": "M7.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-89D53630",
+      "FND-B93AE333",
+      "FND-D1709E71"
+     ],
+     "text": "System driver: SVI 1.1 Leadership/Supervisory Oversight Inadequate (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+    },
+    {
+     "cites": [
+      "FND-257C1100",
+      "FND-031A3738",
+      "FND-D58142C9"
+     ],
+     "text": "System driver: SVI 1.4 Failed to Provide Appropriate Policy/ Guidance (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+    },
+    {
+     "cites": [
+      "FND-72A7D26C",
+      "FND-535125C1",
+      "FND-C4B133AA"
+     ],
+     "text": "System driver: SVI 1.4 Failed to Provide Appropriate Policy/ Guidance (level 3) feeds PTE 2.7 Technical Guidance is Unclear/Unavailable or Incorrect"
+    },
+    {
+     "cites": [
+      "FND-B86F67F0",
+      "FND-82FC718D",
+      "FND-F7FE8463"
+     ],
+     "text": "System driver: OIC 2.1 Organizational Culture Allows for Unsafe Task/Mission (level 4) feeds AV 1.1 Violation - Routine/Widespread"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Absent: The F&G system remained annunciator-only with no auto-shutdown or suppression interlock, converting… (EVD-8657: \"Hydrocarbon/H2S detectors are configured to Annunciator Panel for display but not in DCS for history... F&G detection…\")"
+   },
+   "m": "M7",
+   "q": "Q42",
+   "step": "barrier",
+   "subcategory": "M7.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5897D1E4",
+      "EVD-8657"
+     ],
+     "text": "Absent: The F&G system remained annunciator-only with no auto-shutdown or suppression interlock, converting… (EVD-8657: \"Hydrocarbon/H2S detectors are configured to Annunciator Panel for display but not in DCS for history... F&G detection…\")"
+    },
+    {
+     "cites": [
+      "FND-5BC96E8A",
+      "EVD-3452"
+     ],
+     "text": "Degraded: The organization trusted a non-interlocked, annunciator-only F&G system and manual isolation chain… (EVD-3452: \"F&G detection system does not have provision for auto shut down of plant or activation of fire suppression system\"…\")"
+    },
+    {
+     "cites": [
+      "FND-322112EE",
+      "EVD-3932"
+     ],
+     "text": "Absent: MOV 54 and the Gas Terminal emergency MOVs were provided as local-manual valves without… (EVD-3932: \"MOVs are provided in the gas terminal station for local operations but they are not having remote operation from…\")"
+    },
+    {
+     "cites": [
+      "FND-55F68376",
+      "EVD-1494"
+     ],
+     "text": "Absent: A 1986 meter with three gasket failures in 22 months and an open malfunction notification was not… (EVD-1494: \"Cleaning/servicing/calibration of meters 1 & 2 was carried out on 12th & 13th Nov 2018. Afterwards, meter no.1 was…\")"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIR 1.7 condition (Phase-Out Policies (Failure to Remove Inadequate/ Worn‐Out Equipment…)"
+   },
+   "m": "M7",
+   "q": "Q43",
+   "step": "change",
+   "subcategory": "M7.08",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-5897D1E4",
+      "FND-5BC96E8A",
+      "FND-322112EE"
+     ],
+     "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIR 1.7 condition (Phase-Out Policies (Failure to Remove Inadequate/ Worn‐Out Equipment…)"
+    },
+    {
+     "cites": [
+      "FND-5897D1E4",
+      "FND-5BC96E8A",
+      "FND-322112EE"
+     ],
+     "text": "Substitution (corrective or preventive: say which for this change): replace the equipment or material involved in the OIR 1.7 condition (Phase-Out Policies (Failure to Remove Inadequate/ Worn‐Out Equipment…) with a less hazardous one"
+    },
+    {
+     "cites": [
+      "FND-5897D1E4",
+      "FND-5BC96E8A",
+      "FND-322112EE"
+     ],
+     "text": "Engineering (corrective or preventive: say which for this change): add a physical or automated control so that the OIR 1.7 condition (Phase-Out Policies (Failure to Remove Inadequate/ Worn‐Out Equipment…) cannot go unnoticed"
+    },
+    {
+     "cites": [
+      "FND-5897D1E4",
+      "FND-5BC96E8A",
+      "FND-322112EE"
+     ],
+     "text": "Administrative (corrective or preventive: say which for this change): change the procedure, permit or planning step that let the OIR 1.7 condition (Phase-Out Policies (Failure to Remove Inadequate/ Worn‐Out Equipment…) arise"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Relevant: 162 finding(s) point to M8 Material (9 by their Nanocode, 153 by their wording or cluster), led by OIR 1.5 Failure in Timely Acquisition/ Procurement/ Upgrade"
+   },
+   "m": "M8",
+   "q": "Q44",
+   "step": "relevance",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-A0017E28",
+      "FND-4458E0C0",
+      "FND-02310148"
+     ],
+     "text": "Relevant: 162 finding(s) point to M8 Material (9 by their Nanocode, 153 by their wording or cluster), led by OIR 1.5 Failure in Timely Acquisition/ Procurement/ Upgrade"
+    },
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-ABF11182"
+     ],
+     "text": "Partly relevant: only the OIR 1.6 Failure in Maintenance/ Spares/ Support Programme findings"
+    },
+    {
+     "cites": [
+      "FND-A0017E28"
+     ],
+     "text": "Not relevant: the M8 Material signal in these findings is incidental (say why)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "M8.03 Material Compatibility"
+   },
+   "m": "M8",
+   "q": "Q45",
+   "step": "subcategory",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-F7FE8463",
+      "FND-2CEE8915",
+      "FND-922A04DB"
+     ],
+     "text": "M8.03 Material Compatibility"
+    },
+    {
+     "cites": [
+      "FND-3FEE59DF",
+      "FND-B440C1BF",
+      "FND-EBB66554"
+     ],
+     "text": "M8.06 Material Cost Management"
+    },
+    {
+     "cites": [
+      "FND-89962239",
+      "FND-23139BF9",
+      "FND-59A2F497"
+     ],
+     "text": "M8.01 Material Quality"
+    },
+    {
+     "cites": [
+      "FND-6B3A6492",
+      "FND-B56701CA",
+      "FND-BC4FD086"
+     ],
+     "text": "M8.08 Material Traceability"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Condition: OEM gasket specification lost and never re-established; locally-purchased unspecified O-rings were substituted as regular practice with no purchase… (OIR 1.5 Failure in Timely Acquisition/ Procurement/ Upgrade)"
+   },
+   "m": "M8",
+   "q": "Q46",
+   "step": "condition",
+   "subcategory": "M8.03",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-A0017E28",
+      "FND-0FFC03BB",
+      "FND-4458E0C0"
+     ],
+     "text": "Condition: OEM gasket specification lost and never re-established; locally-purchased unspecified O-rings were substituted as regular practice with no purchase… (OIR 1.5 Failure in Timely Acquisition/ Procurement/ Upgrade)"
+    },
+    {
+     "cites": [
+      "FND-6B3A6492",
+      "FND-322112EE",
+      "FND-01C3DE98"
+     ],
+     "text": "Condition: The acquisition process supplied a locally bought, unspecified round O-ring for a 1986 flange machined for a rectangular-slot gasket, without… (OIP 3.7 Purchasing or Providing Poorly Designed or Unsuitable Equipment (Acquisition Policies))"
+    },
+    {
+     "cites": [
+      "FND-B56701CA",
+      "FND-446A7956",
+      "FND-9D19BE37"
+     ],
+     "text": "Condition: No OEM gasket specification, substitute specification, or purchase QC information was available, so a locally procured O-ring was fitted to a… (OIR 1.8 Failure to Provide Adequate Operational Information Resources/ Support)"
+    },
+    {
+     "cites": [
+      "FND-BC4FD086",
+      "FND-491EDE74",
+      "FND-D25BF914"
+     ],
+     "text": "Condition: The OEM rectangular-slot gasket was replaced by a locally procured round O-ring with no specification, quality control, recorded authority or MOC… (OIC 2.4 Unit Mission/ Aircraft/ Vehicle/ Equipment Change or Unit Deactivation)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+   },
+   "m": "M8",
+   "q": "Q47",
+   "step": "driver",
+   "subcategory": "M8.03",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+    },
+    {
+     "cites": [
+      "FND-50C7319E",
+      "FND-ABF11182",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVV 4.1 Failure to Enforce Existing Rules (Supervisory act of Omission)"
+    },
+    {
+     "cites": [
+      "FND-72A7D26C",
+      "FND-535125C1",
+      "FND-C4B133AA"
+     ],
+     "text": "System driver: SVI 1.4 Failed to Provide Appropriate Policy/ Guidance (level 3) feeds PTE 2.7 Technical Guidance is Unclear/Unavailable or Incorrect"
+    },
+    {
+     "cites": [
+      "FND-B86F67F0",
+      "FND-F7FE8463",
+      "FND-53C9BDB5"
+     ],
+     "text": "System driver: OIC 2.1 Organizational Culture Allows for Unsafe Task/Mission (level 4) feeds SVI 1.4 Failed to Provide Appropriate Policy/ Guidance"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Absent: OEM gasket specification lost and never re-established; locally-purchased unspecified O-rings were… (EVD-8645: \"Original Specifications of gasket are not available, and the gaskets were not being procured from the OEMs. Instead…\")"
+   },
+   "m": "M8",
+   "q": "Q48",
+   "step": "barrier",
+   "subcategory": "M8.03",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-A0017E28",
+      "EVD-8645"
+     ],
+     "text": "Absent: OEM gasket specification lost and never re-established; locally-purchased unspecified O-rings were… (EVD-8645: \"Original Specifications of gasket are not available, and the gaskets were not being procured from the OEMs. Instead…\")"
+    },
+    {
+     "cites": [
+      "FND-AC9A1E69",
+      "EVD-1494"
+     ],
+     "text": "Degraded: Three gasket replacements in 22 months using locally sourced O-rings were never escalated into a… (EVD-1494: \"gasket replacements 12-Nov-2018, 25-Feb-2019 and 18-Sep-2020; “Again on 18/09/2019, gasket was changed which leaked…\")"
+    },
+    {
+     "cites": [
+      "FND-F7FE8463",
+      "EVD-2986"
+     ],
+     "text": "Absent: The MOC SOP existed since Aug-2016 but was not applied at all after 2018, so the O-ring material… (EVD-2986: \"It is informed no more MOCs are implemented in the plant since 2018\" (p.30)\")"
+    },
+    {
+     "cites": [
+      "FND-491EDE74",
+      "EVD-2894"
+     ],
+     "text": "Absent: The 18-Sep-2020 gasket replacement was returned to service on 19-Sep-2020 after only an… (EVD-2894: \"No hydro test was done after replacement of the gasket. The system was only pressurised to operating pressure (Both…\")"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIR 1.5 condition (Failure in Timely Acquisition/ Procurement/ Upgrade)"
+   },
+   "m": "M8",
+   "q": "Q49",
+   "step": "change",
+   "subcategory": "M8.03",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-A0017E28",
+      "FND-6B3A6492",
+      "FND-B56701CA"
+     ],
+     "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIR 1.5 condition (Failure in Timely Acquisition/ Procurement/ Upgrade)"
+    },
+    {
+     "cites": [
+      "FND-A0017E28",
+      "FND-6B3A6492",
+      "FND-B56701CA"
+     ],
+     "text": "Substitution (corrective or preventive: say which for this change): replace the equipment or material involved in the OIR 1.5 condition (Failure in Timely Acquisition/ Procurement/ Upgrade) with a less hazardous one"
+    },
+    {
+     "cites": [
+      "FND-A0017E28",
+      "FND-6B3A6492",
+      "FND-B56701CA"
+     ],
+     "text": "Engineering (corrective or preventive: say which for this change): add a physical or automated control so that the OIR 1.5 condition (Failure in Timely Acquisition/ Procurement/ Upgrade) cannot go unnoticed"
+    },
+    {
+     "cites": [
+      "FND-A0017E28",
+      "FND-6B3A6492",
+      "FND-B56701CA"
+     ],
+     "text": "Administrative (corrective or preventive: say which for this change): change the procedure, permit or planning step that let the OIR 1.5 condition (Failure in Timely Acquisition/ Procurement/ Upgrade) arise"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Relevant: 301 finding(s) point to M9 Maintenance (27 by their Nanocode, 274 by their wording or cluster), led by OIR 1.6 Failure in Maintenance/ Spares/ Support Programme"
+   },
+   "m": "M9",
+   "q": "Q50",
+   "step": "relevance",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-ABF11182"
+     ],
+     "text": "Relevant: 301 finding(s) point to M9 Maintenance (27 by their Nanocode, 274 by their wording or cluster), led by OIR 1.6 Failure in Maintenance/ Spares/ Support Programme"
+    },
+    {
+     "cites": [
+      "FND-3A34BAD3",
+      "FND-EBB66554",
+      "FND-730D0DCA"
+     ],
+     "text": "Partly relevant: only the OIC 2.7 Inconsistent Risk Management Practices findings"
+    },
+    {
+     "cites": [
+      "FND-1A251687"
+     ],
+     "text": "Not relevant: the M9 Maintenance signal in these findings is incidental (say why)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "M9.07 Spare Parts and Inventory Management"
+   },
+   "m": "M9",
+   "q": "Q51",
+   "step": "subcategory",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-45363DCA",
+      "FND-A2048FB8",
+      "FND-CEE3D4D7"
+     ],
+     "text": "M9.07 Spare Parts and Inventory Management"
+    },
+    {
+     "cites": [
+      "FND-2B53492C",
+      "FND-CCE6F868",
+      "FND-BC4FD086"
+     ],
+     "text": "M9.03 Corrective Maintenance Execution"
+    },
+    {
+     "cites": [
+      "FND-B56701CA",
+      "FND-50C7319E",
+      "FND-59A2F497"
+     ],
+     "text": "M9.08 Maintenance Technology and Tools"
+    },
+    {
+     "cites": [
+      "FND-7DF14ADB",
+      "FND-02C51A67",
+      "FND-59A2F497"
+     ],
+     "text": "M9.04 Maintenance Planning and Scheduling"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Condition: Three gasket replacements in ~22 months on the 1986 meter never triggered root-cause investigation, OEM spares recovery or meter replacement; the… (OIR 1.6 Failure in Maintenance/ Spares/ Support Programme)"
+   },
+   "m": "M9",
+   "q": "Q52",
+   "step": "condition",
+   "subcategory": "M9.07",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-ABF11182"
+     ],
+     "text": "Condition: Three gasket replacements in ~22 months on the 1986 meter never triggered root-cause investigation, OEM spares recovery or meter replacement; the… (OIR 1.6 Failure in Maintenance/ Spares/ Support Programme)"
+    },
+    {
+     "cites": [
+      "FND-D66ACA7B",
+      "FND-8B4A5414",
+      "FND-5C43E7A3"
+     ],
+     "text": "Condition: Supervision never secured the OEM rectangular-slot gasket specification or correct replacement seal for meter 310FT01, forcing repeat use of a… (SVIO 2.7 Inappropriate Asset Management)"
+    },
+    {
+     "cites": [
+      "FND-DA67926D",
+      "FND-784A23E4",
+      "FND-FDFA6FF5"
+     ],
+     "text": "Condition: Maintenance installed a locally sourced, unspecified O-ring in place of the OEM rectangular-slot gasket on meter 310FT01, and the seal failed within… (PTE 2.12 Maintenance Not Conducted/Not Conducted Correctly)"
+    },
+    {
+     "cites": [
+      "FND-CCE6F868",
+      "FND-55F68376",
+      "FND-6DB250E6"
+     ],
+     "text": "Condition: A Zone 1 flame-proof lamp with three missing bolts and a glass case opened 5-6 cm was not removed or repaired; it supplied the ignition energy at… (OIR 1.7 Phase-Out Policies (Failure to Remove Inadequate/ Worn‐Out Equipment in a Timely Manner))"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+   },
+   "m": "M9",
+   "q": "Q53",
+   "step": "driver",
+   "subcategory": "M9.07",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk"
+    },
+    {
+     "cites": [
+      "FND-50C7319E",
+      "FND-ABF11182",
+      "FND-A3DCEBD8"
+     ],
+     "text": "System driver: OIR 1.6 Failure in Maintenance/ Spares/ Support Programme (level 4) feeds SVV 4.1 Failure to Enforce Existing Rules (Supervisory act of Omission)"
+    },
+    {
+     "cites": [
+      "FND-89D53630",
+      "FND-B93AE333",
+      "FND-D1709E71"
+     ],
+     "text": "System driver: SVI 1.1 Leadership/Supervisory Oversight Inadequate (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+    },
+    {
+     "cites": [
+      "FND-257C1100",
+      "FND-031A3738",
+      "FND-D58142C9"
+     ],
+     "text": "System driver: SVI 1.4 Failed to Provide Appropriate Policy/ Guidance (level 3) feeds ASBE 1.2 Checklist Not Followed/Not Followed Correctly"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Degraded: Three gasket replacements in ~22 months on the 1986 meter never triggered root-cause investigation… (EVD-1494: \"Again on 18/09/2019, gasket was changed which leaked within one year' — three gasket replacements in ~22 months; the…\")"
+   },
+   "m": "M9",
+   "q": "Q54",
+   "step": "barrier",
+   "subcategory": "M9.07",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-1A251687",
+      "EVD-1494"
+     ],
+     "text": "Degraded: Three gasket replacements in ~22 months on the 1986 meter never triggered root-cause investigation… (EVD-1494: \"Again on 18/09/2019, gasket was changed which leaked within one year' — three gasket replacements in ~22 months; the…\")"
+    },
+    {
+     "cites": [
+      "FND-50C7319E",
+      "EVD-2894"
+     ],
+     "text": "Absent: No hydrostatic test was performed after the 18-Sep-2020 gasket replacement and no SOP governed… (EVD-2894: \"No hydro test was done after replacement of the gasket. The system was only pressurised to operating pressure...'…\")"
+    },
+    {
+     "cites": [
+      "FND-ABF11182",
+      "EVD-6916"
+     ],
+     "text": "Absent: Electrical PM was breakdown-skewed; a Zone-1 HPMV flame-proof lamp with three missing bolts and a… (EVD-6916: \"three bolts on one of the flame proof lamps were missing resulting in it being open with its integrity compromised…\")"
+    },
+    {
+     "cites": [
+      "FND-D66ACA7B",
+      "EVD-8645"
+     ],
+     "text": "Absent: Supervision never secured the OEM rectangular-slot gasket specification or correct replacement seal… (EVD-8645: \"Original Specifications of gasket are not available, and the gaskets were not being procured from the OEMs. Instead…\")"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIR 1.6 condition (Failure in Maintenance/ Spares/ Support Programme)"
+   },
+   "m": "M9",
+   "q": "Q55",
+   "step": "change",
+   "subcategory": "M9.07",
+   "suggestions": [
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-ABF11182"
+     ],
+     "text": "Elimination (corrective or preventive: say which for this change): remove the hazard or the task, so that nobody has to catch the OIR 1.6 condition (Failure in Maintenance/ Spares/ Support Programme)"
+    },
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-ABF11182"
+     ],
+     "text": "Engineering (corrective or preventive: say which for this change): add a physical or automated control so that the OIR 1.6 condition (Failure in Maintenance/ Spares/ Support Programme) cannot go unnoticed"
+    },
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-ABF11182"
+     ],
+     "text": "Administrative (corrective or preventive: say which for this change): change the procedure, permit or planning step that let the OIR 1.6 condition (Failure in Maintenance/ Spares/ Support Programme) arise"
+    },
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-ABF11182"
+     ],
+     "text": "Engineering plus training (weak on its own) (corrective or preventive: say which for this change): pair the engineered control with practice on the OIR 1.6 condition (Failure in Maintenance/ Spares/ Support Programme)"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "Keep M9 Maintenance and M6 Management/Money as one learning (OIR 1.6 feeds SVF 3.4)"
+   },
+   "m": null,
+   "q": "Q56",
+   "step": "cross-m",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-A3DCEBD8"
+     ],
+     "text": "Keep M9 Maintenance and M6 Management/Money as one learning (OIR 1.6 feeds SVF 3.4)"
+    },
+    {
+     "cites": [
+      "FND-89D53630",
+      "FND-B93AE333",
+      "FND-D1709E71"
+     ],
+     "text": "Keep M6 Management/Money and M3 Method as one learning (SVI 1.1 feeds ASBE 1.2)"
+    },
+    {
+     "cites": [
+      "FND-50C7319E",
+      "FND-ABF11182",
+      "FND-A3DCEBD8"
+     ],
+     "text": "Keep M9 Maintenance and M3 Method as one learning (OIR 1.6 feeds SVV 4.1)"
+    },
+    {
+     "cites": [],
+     "text": "Keep every M as a separate learning"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  },
+  {
+   "answer": {
+    "choice": 1,
+    "source": "export",
+    "text": "No answer was unknown: no evidence request is needed"
+   },
+   "m": null,
+   "q": "Q57",
+   "step": "gaps",
+   "subcategory": null,
+   "suggestions": [
+    {
+     "cites": [],
+     "text": "No answer was unknown: no evidence request is needed"
+    },
+    {
+     "cites": [],
+     "text": "Ask for evidence anyway, on the conditions that rest on a single source"
+    },
+    {
+     "cites": [],
+     "text": "None / unknown (record as a gap)"
+    }
+   ]
+  }
+ ],
+ "version": 1
+}
