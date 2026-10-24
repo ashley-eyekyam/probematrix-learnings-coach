@@ -30,6 +30,8 @@ PMLC facts <ws>                                          # counts, levels and th
 2. **Owner and tiers** come from `clusters.json` for the learning's findings (the owner rule in
    `register-schema.md`).
 3. **Prioritise.** Priority 1 = a credible major consequence, likely to recur or transfer; 3 = local and minor.
+4. **9M.** When `<run>/outputs/nine-m-map.json` exists (the `nine-m-analysis` pack), copy each learning's `nine_m`
+   and `nine_m_subcategory` from the condition whose `learning_id` is its `LR-nn` (`m`, `subcategory`).
 
 ## Write
 

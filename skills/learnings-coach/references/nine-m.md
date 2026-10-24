@@ -8,6 +8,7 @@ A second lens on the same findings: where HFACS asks *at which level* a conditio
 3. M1 is not the people M
 4. How nine-m-seed scores a finding
 5. Where the words come from
+6. The interview, step by step
 
 ## 1. The nine Ms, in order
 
@@ -78,3 +79,22 @@ Codes alone under-count Material (M8) and Maintenance (M9): few Nanocodes route 
 Only the nine M codes and titles and the 97 subcategory names come from the ProbeMatrix 9M framework (Eyekyam). Every definition and probe question here and in `nine-m.json` is newly written for the coach. The framework's root-cause signals, corrective and preventive action catalogues, indicators, evidence checklists and app prompts are not copied: Action catalogues remain in the ProbeMatrix CAPA Zone.
 
 `nine-m-map.json` is new work for this repository, under its licence. Change it to fit your organisation and pass your copy with `nine-m-seed --map`.
+
+## 6. The interview, step by step
+
+The `nine-m-analysis` skill asks one question per turn. Each question is printed by `nine-m-suggest --record`, which appends it to `<ws>/nine_m_session.json` with its suggestions and their cites; `nine-m-answer` records the choice or the user's own words. The session file holds every question, what was offered and what was answered, with the source of each answer (`export` when the user took a suggestion, `user` for free text), so a run can be resumed and audited.
+
+| Step | Question | What the answer decides |
+|---|---|---|
+| 2 scope | Which Ms should we work through? | The Ms asked about, always in the order M1 to M9 |
+| 3a relevance | Is this M relevant to the incident? | "Not relevant" ends the M: its reason and cites go in the `not-relevant` table |
+| 3b subcategory | Which subcategory fits best? | The subcategory id (`M8.03`) on the condition and in `nine-m-map.json`; an overlap (section 2) is settled here |
+| 3c condition | Which condition is it? | One learning per condition; two suggestions that are one condition are merged |
+| 3d driver | Why did it make sense at the time, and what system drove it? | The driver in the learning's explanation; for M1 it is asked before any M1 learning is written |
+| 3e barrier | What state was the barrier in? | The `barrier` item: absent, degraded, defeated or worked partly |
+| 3f change | Which direction of change? | The `recommendation` tier, strongest first; corrective or preventive, said by the user |
+| 3g indicator | How would you see the change working? | The recommendation's leading indicator (optional) |
+| 4 cross-M | Keep linked Ms as one learning, or separate? | Whether a condition is counted once across two Ms |
+| 5 gaps | What evidence would settle each unknown? | A `gaps` entry for every "None / unknown" |
+
+The budget is 6 questions per M plus 4 global questions (scope, cross-M, gaps and one spare), 58 at most; the engine refuses one more. Training is offered only together with a stronger control and is labelled weak on its own. `nine-m-replay --accept-recommended` writes a whole session by taking the first suggestion every time, with `"mode": "replay"`: it is for demonstrations and tests only, and a pack written from it carries the fixed line "Answers chosen for demonstration, not by the organisation."

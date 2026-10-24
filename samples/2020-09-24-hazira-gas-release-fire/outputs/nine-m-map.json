@@ -1,0 +1,273 @@
+{
+ "conditions": {
+  "c-m1-1": {
+   "learning_id": "LR-03",
+   "m": "M1",
+   "recommendation_ids": [
+    "m1-3"
+   ],
+   "subcategory": "M1.08"
+  },
+  "c-m2-1": {
+   "learning_id": "LR-09",
+   "m": "M2",
+   "recommendation_ids": [
+    "m2-3"
+   ],
+   "subcategory": "M2.09"
+  },
+  "c-m3-1": {
+   "learning_id": "LR-06",
+   "m": "M3",
+   "recommendation_ids": [
+    "m3-3"
+   ],
+   "subcategory": "M3.06"
+  },
+  "c-m4-1": {
+   "learning_id": "LR-07",
+   "m": "M4",
+   "recommendation_ids": [
+    "m4-3"
+   ],
+   "subcategory": "M4.08"
+  },
+  "c-m5-1": {
+   "learning_id": "LR-08",
+   "m": "M5",
+   "recommendation_ids": [
+    "m5-3"
+   ],
+   "subcategory": "M5.11"
+  },
+  "c-m6-1": {
+   "learning_id": "m6-1",
+   "m": "M6",
+   "recommendation_ids": [
+    "m6-3"
+   ],
+   "subcategory": "M6.05"
+  },
+  "c-m7-1": {
+   "learning_id": "LR-10",
+   "m": "M7",
+   "recommendation_ids": [
+    "m7-3"
+   ],
+   "subcategory": "M7.08"
+  },
+  "c-m8-1": {
+   "learning_id": "LR-01",
+   "m": "M8",
+   "recommendation_ids": [
+    "m8-3"
+   ],
+   "subcategory": "M8.03"
+  },
+  "c-m9-1": {
+   "learning_id": "LR-05",
+   "m": "M9",
+   "recommendation_ids": [
+    "m9-3"
+   ],
+   "subcategory": "M9.07"
+  }
+ },
+ "findings": {
+  "FND-01ADF0AA": {
+   "condition_id": "c-m2-1",
+   "m_primary": "M2",
+   "m_secondary": [],
+   "subcategory": "M2.09"
+  },
+  "FND-05841EDA": {
+   "condition_id": "c-m6-1",
+   "m_primary": "M6",
+   "m_secondary": [],
+   "subcategory": "M6.05"
+  },
+  "FND-0FFC03BB": {
+   "condition_id": "c-m8-1",
+   "m_primary": "M8",
+   "m_secondary": [],
+   "subcategory": "M8.03"
+  },
+  "FND-1280E788": {
+   "condition_id": "c-m4-1",
+   "m_primary": "M4",
+   "m_secondary": [],
+   "subcategory": "M4.08"
+  },
+  "FND-1A251687": {
+   "condition_id": "c-m6-1",
+   "m_primary": "M6",
+   "m_secondary": [
+    "M8",
+    "M9"
+   ],
+   "subcategory": "M6.05"
+  },
+  "FND-1D713648": {
+   "condition_id": "c-m5-1",
+   "m_primary": "M5",
+   "m_secondary": [],
+   "subcategory": "M5.11"
+  },
+  "FND-4458E0C0": {
+   "condition_id": "c-m8-1",
+   "m_primary": "M8",
+   "m_secondary": [],
+   "subcategory": "M8.03"
+  },
+  "FND-50C7319E": {
+   "condition_id": "c-m3-1",
+   "m_primary": "M3",
+   "m_secondary": [
+    "M9"
+   ],
+   "subcategory": "M3.06"
+  },
+  "FND-55F68376": {
+   "condition_id": "c-m7-1",
+   "m_primary": "M7",
+   "m_secondary": [],
+   "subcategory": "M7.08"
+  },
+  "FND-5897D1E4": {
+   "condition_id": "c-m7-1",
+   "m_primary": "M7",
+   "m_secondary": [],
+   "subcategory": "M7.08"
+  },
+  "FND-5C7B163D": {
+   "condition_id": "c-m4-1",
+   "m_primary": "M4",
+   "m_secondary": [],
+   "subcategory": "M4.08"
+  },
+  "FND-5F3E97E1": {
+   "condition_id": "c-m5-1",
+   "m_primary": "M5",
+   "m_secondary": [],
+   "subcategory": "M5.11"
+  },
+  "FND-615DB819": {
+   "condition_id": "c-m1-1",
+   "m_primary": "M1",
+   "m_secondary": [],
+   "subcategory": "M1.08"
+  },
+  "FND-63B6D260": {
+   "condition_id": "c-m3-1",
+   "m_primary": "M3",
+   "m_secondary": [],
+   "subcategory": "M3.06"
+  },
+  "FND-6472CD15": {
+   "condition_id": "c-m6-1",
+   "m_primary": "M6",
+   "m_secondary": [],
+   "subcategory": "M6.05"
+  },
+  "FND-6B3A6492": {
+   "condition_id": "c-m8-1",
+   "m_primary": "M8",
+   "m_secondary": [],
+   "subcategory": "M8.03"
+  },
+  "FND-6DB250E6": {
+   "condition_id": "c-m7-1",
+   "m_primary": "M7",
+   "m_secondary": [],
+   "subcategory": "M7.08"
+  },
+  "FND-7A2429CE": {
+   "condition_id": "c-m3-1",
+   "m_primary": "M3",
+   "m_secondary": [],
+   "subcategory": "M3.06"
+  },
+  "FND-7D28BE30": {
+   "condition_id": "c-m2-1",
+   "m_primary": "M2",
+   "m_secondary": [],
+   "subcategory": "M2.09"
+  },
+  "FND-8083ECAC": {
+   "condition_id": "c-m3-1",
+   "m_primary": "M3",
+   "m_secondary": [],
+   "subcategory": "M3.06"
+  },
+  "FND-89D53630": {
+   "condition_id": "c-m7-1",
+   "m_primary": "M7",
+   "m_secondary": [],
+   "subcategory": "M7.08"
+  },
+  "FND-8CE00707": {
+   "condition_id": "c-m4-1",
+   "m_primary": "M4",
+   "m_secondary": [],
+   "subcategory": "M4.08"
+  },
+  "FND-9B406A83": {
+   "condition_id": "c-m2-1",
+   "m_primary": "M2",
+   "m_secondary": [],
+   "subcategory": "M2.09"
+  },
+  "FND-A0017E28": {
+   "condition_id": "c-m8-1",
+   "m_primary": "M8",
+   "m_secondary": [],
+   "subcategory": "M8.03"
+  },
+  "FND-A3DCEBD8": {
+   "condition_id": "c-m5-1",
+   "m_primary": "M5",
+   "m_secondary": [
+    "M9"
+   ],
+   "subcategory": "M5.11"
+  },
+  "FND-A6312B6B": {
+   "condition_id": "c-m1-1",
+   "m_primary": "M1",
+   "m_secondary": [],
+   "subcategory": "M1.08"
+  },
+  "FND-ABF11182": {
+   "condition_id": "c-m9-1",
+   "m_primary": "M9",
+   "m_secondary": [],
+   "subcategory": "M9.07"
+  },
+  "FND-B440C1BF": {
+   "condition_id": "c-m6-1",
+   "m_primary": "M6",
+   "m_secondary": [],
+   "subcategory": "M6.05"
+  },
+  "FND-B56701CA": {
+   "condition_id": "c-m3-1",
+   "m_primary": "M3",
+   "m_secondary": [
+    "M8"
+   ],
+   "subcategory": "M3.06"
+  },
+  "FND-BDD73BA2": {
+   "condition_id": "c-m2-1",
+   "m_primary": "M2",
+   "m_secondary": [],
+   "subcategory": "M2.09"
+  },
+  "FND-FA807C69": {
+   "condition_id": "c-m5-1",
+   "m_primary": "M5",
+   "m_secondary": [],
+   "subcategory": "M5.11"
+  }
+ }
+}

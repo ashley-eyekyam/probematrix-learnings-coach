@@ -21,6 +21,7 @@ These skills prepare the ground or analyse the whole investigation. Their output
 | [failure-to-learn-review](skills/failure-to-learn-review.md) | why earlier warnings did not lead to change, and which step of the learning cycle broke | "Why didn't we learn from the earlier leaks?" |
 | [interface-learnings](skills/interface-learnings.md) | what fell between departments | "What fell through the cracks?" |
 | [barrier-learnings](skills/barrier-learnings.md) | failed barriers and how strong the fixes should be | "Why didn't our safeguards work?" |
+| [nine-m-analysis](skills/nine-m-analysis.md) | a question-by-question 9M analysis: which part of the work system each condition belongs to, with a direction of change per M | "Work through the 9Ms with me" |
 | [report-comparison](skills/report-comparison.md) | a fair comparison with an official report | "Compare this with the enquiry report" |
 | [compliance-crosswalk](skills/compliance-crosswalk.md) | which clauses of ISO 45001, PSM, RBPS or another framework the learnings speak to | "Which ISO 45001 clauses does this cover?" |
 

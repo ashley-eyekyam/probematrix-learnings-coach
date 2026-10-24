@@ -242,7 +242,7 @@ PACK_OF = {s: n for n, s in fixture_skills().items() if n != s and not n.startsw
 DOC_NAME = {"cluster-learning-dossier": "dossier-<F-id>"}          # how SKILL.md writes the pack file name
 WAVE4 = ["latent-conditions-profile", "failure-to-learn-review",   # Phase 5: each new-skill task (13-19, 22, 23)
          "people-workforce-learnings", "compliance-crosswalk",      # adds its skill here
-         "risk-register-update"]
+         "risk-register-update", "nine-m-analysis"]
 DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3, "wave 4": WAVE4}
 ALL_WAVES = WAVE1 + WAVE2 + WAVE3 + WAVE4
 VERSION = pmlc.__version__
@@ -1302,9 +1302,19 @@ def test_profile_violation_warns_then_strict_fails(w, ws, tmp_path):  # noqa: F8
     assert r.returncode == 1 and msg in r.stderr
 
 
+def seeded(w, name):
+    """The workspace a fixture's strict check needs: a skill that requires nine-m-seed (nine-m-analysis, whose
+    nine-m-cites rule reads it) gets the seed of the synthetic workspace, as `nine-m-seed <ws>` writes it."""
+    m = json.loads((ROOT / "skills" / skill_of(name) / "skill.json").read_text(encoding="utf-8"))
+    if "nine-m-seed" not in m["requires"]:
+        return w
+    from pmlc_lib.ninem import seed
+    return dict(w, nine_m_seed=seed(w))
+
+
 @pytest.mark.parametrize("name", pack_fixtures())
 def test_all_fixtures_pass_strict(w, name):
-    r = pp.check_pack(fixture(name), w, strict=True)
+    r = pp.check_pack(fixture(name), seeded(w, name), strict=True)
     assert r.problems == [], r.problems
 
 
@@ -1554,7 +1564,7 @@ def test_fixture_learning_ids_in_mini_register(w, name):
     """Fixture `learning` values name learnings of the mini register (skill-common.md section 3) and strict checks
     pass with no learning warning (Tasks 21 and 23, merged)."""
     reg = json.loads(MINI_REGISTER_FILE.read_text(encoding="utf-8"))
-    r = pp.check_pack(fixture(name), w, register=reg, strict=True)
+    r = pp.check_pack(fixture(name), seeded(w, name), register=reg, strict=True)
     assert r.problems == [], r.problems
     assert not [x for x in r.warnings if "learning" in x], r.warnings
 

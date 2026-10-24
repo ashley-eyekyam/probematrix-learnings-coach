@@ -1,0 +1,733 @@
+{
+ "pack": "nine-m-analysis",
+ "schema": 1,
+ "skill": "nine-m-analysis",
+ "title": "9M Analysis: Hazira gas terminal release and fire, 2020",
+ "audience": "Investigators, HSE leads and the teams designing corrective and preventive actions",
+ "status": "Learning purposes: not a statutory document; draft: the investigation status is in progress",
+ "incident": {
+  "title": "Hazira gas terminal condensate release and fire",
+  "date": "2020-09-24"
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the ProbeMatrix investigation status is in progress and no finding is marked as edited by a person. Validate before adoption."
+  },
+  {
+   "text": "The answers come from a scripted replay (nine-m-replay --accept-recommended), which takes the recommended suggestion at every question. They show the method; the organisation's own interview replaces them."
+  }
+ ],
+ "bottom_line": [
+  {
+   "text": "All nine Ms are relevant on this export: the seed links every M to findings, and each scripted answer kept the M with one condition.",
+   "cites": [
+    "FND-137BC719",
+    "FND-337CB67F",
+    "FND-4245FBF2",
+    "FND-615DB819",
+    "FND-8083ECAC",
+    "FND-82761CC5",
+    "FND-B440C1BF",
+    "FND-B56701CA",
+    "FND-F8C125D5"
+   ]
+  },
+  {
+   "text": "Management/Money (M6) holds the most level 3 and 4 findings in the seed: all 130 of its primary findings sit at levels 3 and 4, against 24 for Manpower/Mindpower (M1).",
+   "cites": [
+    "FND-82761CC5",
+    "FND-B440C1BF",
+    "FND-4245FBF2",
+    "FND-337CB67F"
+   ]
+  },
+  {
+   "text": "Material (M8) and Maintenance (M9) are under-coded: 9 and 27 findings by Nanocode, but 162 and 301 in all once their wording and clusters count. Both reached a condition through the relevance question.",
+   "cites": [
+    "FND-A0017E28",
+    "FND-4458E0C0",
+    "FND-02310148",
+    "FND-1A251687",
+    "FND-50C7319E",
+    "FND-ABF11182"
+   ]
+  },
+  {
+   "text": "One link crosses Ms: the maintenance and spares programme (OIR 1.6, M9) feeds risks identified but not mitigated (SVF 3.4, M6). It is kept as one learning (LR-05).",
+   "cites": [
+    "FND-1A251687",
+    "FND-50C7319E",
+    "FND-A3DCEBD8"
+   ]
+  },
+  {
+   "text": "Every direction of change is at the elimination tier, the strongest offered. None names an owner or a date: the organisation sets those in the blank actions sheet.",
+   "cites": [
+    "FND-55F68376",
+    "FND-A0017E28",
+    "FND-5C7B163D"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "nine-m-overview",
+   "heading": "The nine Ms",
+   "items": [
+    {
+     "kind": "table",
+     "columns": [
+      "M",
+      "Relevance",
+      "Conditions",
+      "Top subcategory",
+      "Findings in the seed"
+     ],
+     "rows": [
+      [
+       "M1 Manpower/Mindpower",
+       "relevant",
+       "1",
+       "M1.08 Communication and Coordination",
+       "138 (72 by Nanocode)"
+      ],
+      [
+       "M2 Medium",
+       "relevant",
+       "1",
+       "M2.09 Environmental Stressors and Extreme Conditions",
+       "55 (13 by Nanocode)"
+      ],
+      [
+       "M3 Method",
+       "relevant",
+       "1",
+       "M3.06 Risk Management Integration",
+       "279 (95 by Nanocode)"
+      ],
+      [
+       "M4 Mission",
+       "relevant",
+       "1",
+       "M4.08 Organisational Culture and Mission Alignment",
+       "91 (40 by Nanocode)"
+      ],
+      [
+       "M5 Measurement",
+       "relevant",
+       "1",
+       "M5.11 Audits and Inspections",
+       "210 (13 by Nanocode)"
+      ],
+      [
+       "M6 Management/Money",
+       "relevant",
+       "1",
+       "M6.05 Risk Management and Compliance",
+       "287 (130 by Nanocode)"
+      ],
+      [
+       "M7 Machine",
+       "relevant",
+       "1",
+       "M7.08 Lifecycle Management",
+       "264 (37 by Nanocode)"
+      ],
+      [
+       "M8 Material",
+       "relevant",
+       "1",
+       "M8.03 Material Compatibility",
+       "162 (9 by Nanocode)"
+      ],
+      [
+       "M9 Maintenance",
+       "relevant",
+       "1",
+       "M9.07 Spare Parts and Inventory Management",
+       "301 (27 by Nanocode)"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-337CB67F",
+       "FND-615DB819",
+       "FND-F8C125D5"
+      ],
+      [
+       "FND-BDD73BA2",
+       "FND-9B406A83",
+       "FND-01ADF0AA"
+      ],
+      [
+       "FND-137BC719",
+       "FND-8083ECAC",
+       "FND-B56701CA"
+      ],
+      [
+       "FND-5C7B163D",
+       "FND-B86F67F0",
+       "FND-82FC718D"
+      ],
+      [
+       "FND-C92C29DB",
+       "FND-110F964C",
+       "FND-4EDE038A"
+      ],
+      [
+       "FND-82761CC5",
+       "FND-B440C1BF",
+       "FND-4245FBF2"
+      ],
+      [
+       "FND-5897D1E4",
+       "FND-5BC96E8A",
+       "FND-322112EE"
+      ],
+      [
+       "FND-A0017E28",
+       "FND-4458E0C0",
+       "FND-02310148"
+      ],
+      [
+       "FND-1A251687",
+       "FND-50C7319E",
+       "FND-ABF11182"
+      ]
+     ],
+     "cites": [
+      "FND-01ADF0AA",
+      "FND-02310148",
+      "FND-110F964C",
+      "FND-137BC719",
+      "FND-1A251687",
+      "FND-322112EE",
+      "FND-337CB67F",
+      "FND-4245FBF2",
+      "FND-4458E0C0",
+      "FND-4EDE038A",
+      "FND-50C7319E",
+      "FND-5897D1E4",
+      "FND-5BC96E8A",
+      "FND-5C7B163D",
+      "FND-615DB819",
+      "FND-8083ECAC",
+      "FND-82761CC5",
+      "FND-82FC718D",
+      "FND-9B406A83",
+      "FND-A0017E28",
+      "FND-ABF11182",
+      "FND-B440C1BF",
+      "FND-B56701CA",
+      "FND-B86F67F0",
+      "FND-BDD73BA2",
+      "FND-C92C29DB",
+      "FND-F8C125D5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m1",
+   "heading": "M1 Manpower/Mindpower",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "c-m1-1",
+     "lesson": "A high-consequence seal job was staffed with no independent check role, so the part, the method and the missing test passed straight into service.",
+     "explanation": "Subcategory M1.08 Communication and Coordination: nobody on the job was set up to check it and hand it over. The 18 Sep 2020 gasket job had no independent quality-check role, no hydrotest witness and no closing supervisor (OIS 4.2) [EVD-2894]. System driver: the maintenance and spares programme (OIR 1.6, level 4) feeds the gap in enforcing existing rules (SVV 4.1), and no return-to-service procedure existed to staff the job against. Barrier state: absent.",
+     "cites": [
+      "FND-615DB819",
+      "FND-A6312B6B",
+      "EVD-2894"
+     ],
+     "learning": "LR-03",
+     "supporting_cites": [
+      "FND-50C7319E"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "group": "c-m1-1",
+     "barrier": "Independent check of pressure-boundary work before return to service",
+     "failure_mode": "absent: no quality-check role, hydrotest witness or closing supervisor on the job",
+     "state": "absent",
+     "hoc_tier": "administrative",
+     "cites": [
+      "FND-615DB819",
+      "EVD-2894"
+     ],
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "the barrier records the administrative control the export shows was in place; the change for this condition is at the elimination tier"
+     }
+    },
+    {
+     "kind": "recommendation",
+     "group": "c-m1-1",
+     "change": "Corrective: remove the field reseal task from this class of joint, so that no crew has to judge the part, the method and the test alone. Pressure-boundary seals on the metering skid are restored by exchanging a shop-built assembly that has already passed its pressure test.",
+     "indicator": "Pressure-boundary seal jobs on the skid done by assembly exchange, as a share of all such jobs",
+     "hoc_tier": "elimination",
+     "cites": [
+      "FND-615DB819",
+      "FND-A6312B6B"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m2",
+   "heading": "M2 Medium",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "c-m2-1",
+     "lesson": "The vapour cloud made the leak area unreachable, and isolating the release depended on reaching it.",
+     "explanation": "Subcategory M2.09 Environmental Stressors and Extreme Conditions. Dense vapour kept operating staff from approaching the metering area to find and isolate the source, a 41-minute delay before remote isolation (PTE 2.3) [EVD-1460]. System driver: a culture that allowed the unsafe set-up (OIC 2.1, level 4) feeds a workspace that did not fit the operation (PTE 2.8): the emergency valves could only be worked by hand at the valve. Barrier state: degraded.",
+     "cites": [
+      "FND-BDD73BA2",
+      "FND-9B406A83",
+      "FND-01ADF0AA",
+      "FND-7D28BE30",
+      "EVD-1460"
+     ],
+     "learning": "LR-09",
+     "supporting_cites": [
+      "FND-119E6CF7"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "group": "c-m2-1",
+     "barrier": "Access to isolate the release at its source",
+     "failure_mode": "degraded: the vapour cloud blocked the approach",
+     "state": "degraded",
+     "hoc_tier": "administrative",
+     "cites": [
+      "FND-BDD73BA2",
+      "EVD-1460"
+     ],
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "the barrier records the administrative control the export shows was in place; the change for this condition is at the elimination tier"
+     }
+    },
+    {
+     "kind": "recommendation",
+     "group": "c-m2-1",
+     "change": "Preventive: remove the need for anyone to approach a release to isolate it. Every emergency isolation point for the metering area is worked from outside the area a release can cover.",
+     "indicator": "Emergency isolation points on the skid that can be worked without entering the release zone",
+     "hoc_tier": "elimination",
+     "cites": [
+      "FND-BDD73BA2",
+      "FND-7D28BE30"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m3",
+   "heading": "M3 Method",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "c-m3-1",
+     "lesson": "A change and a high-risk job went ahead without the formal risk assessment the method required.",
+     "explanation": "Subcategory M3.06 Risk Management Integration. The O-ring substitution never went through the management-of-change risk assessment, which had not been used for any change since 2018 [EVD-8645]; the gasket replacement ran on a maintenance notification with no job safety analysis, permit or procedure [EVD-5105]; and the emergency plan's risk assessment left out isolation criteria [EVD-4052] (SVIO 2.4, three findings). System driver: the maintenance and spares programme (OIR 1.6, level 4) feeds risks that were identified but not mitigated (SVF 3.4). Barrier state: absent.",
+     "cites": [
+      "FND-8083ECAC",
+      "FND-63B6D260",
+      "FND-7A2429CE",
+      "FND-50C7319E",
+      "EVD-8645",
+      "EVD-5105",
+      "EVD-4052"
+     ],
+     "learning": "LR-06",
+     "supporting_cites": [
+      "FND-1A251687"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "group": "c-m3-1",
+     "barrier": "Management-of-change risk assessment",
+     "failure_mode": "absent: not applied to any change since 2018",
+     "state": "absent",
+     "hoc_tier": "administrative",
+     "cites": [
+      "FND-8083ECAC",
+      "EVD-8645"
+     ],
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "the barrier records the administrative control the export shows was in place; the change for this condition is at the elimination tier"
+     }
+    },
+    {
+     "kind": "recommendation",
+     "group": "c-m3-1",
+     "change": "Preventive: remove the route by which an unassessed substitution reaches the plant. The maintenance system cannot raise a job that fits a different pressure-boundary part until an approved management-of-change record is linked to it.",
+     "indicator": "Part-substitution jobs raised without a linked management-of-change record (count)",
+     "hoc_tier": "elimination",
+     "cites": [
+      "FND-8083ECAC",
+      "FND-B56701CA"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m4",
+   "heading": "M4 Mission",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "c-m4-1",
+     "lesson": "The site's working doctrine made risky conditions normal: no isolation criteria in the emergency plan, breakdown repair for flameproof equipment, and unspecified seals as regular practice.",
+     "explanation": "Subcategory M4.08 Organisational Culture and Mission Alignment, kept in M4 rather than M1 because it is what the organisation's doctrine made normal, not how a team was led day to day. The emergency plan named the major-leak scenario with no isolation criteria or authority [EVD-4052]; breakdown repair was preferred over preventive inspection in Zone 1 [EVD-9999]; and locally bought O-rings were 'regular practice' [EVD-8645] (OIP 3.5, three findings). System driver: formal risk assessment (SVIO 2.4, level 3) feeds mission planning (PTF 1.13). Barrier state: absent.",
+     "cites": [
+      "FND-5C7B163D",
+      "FND-1280E788",
+      "FND-8CE00707",
+      "EVD-4052",
+      "EVD-9999",
+      "EVD-8645"
+     ],
+     "learning": "LR-07",
+     "supporting_cites": [
+      "FND-63B6D260",
+      "FND-7A2429CE"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "group": "c-m4-1",
+     "barrier": "Emergency plan isolation criteria and delegated authority",
+     "failure_mode": "absent: the plan named the scenario but not when to isolate or who decides",
+     "state": "absent",
+     "hoc_tier": "administrative",
+     "cites": [
+      "FND-5C7B163D",
+      "EVD-4052"
+     ],
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "the barrier records the administrative control the export shows was in place; the change for this condition is at the elimination tier"
+     }
+    },
+    {
+     "kind": "recommendation",
+     "group": "c-m4-1",
+     "change": "Corrective: remove the isolation decision from the escalation chain for a confirmed major leak. On confirmed detection the metering area is isolated at once, so nobody waits for a senior decision.",
+     "indicator": "Major-leak drills: minutes from confirmed detection to isolation",
+     "hoc_tier": "elimination",
+     "cites": [
+      "FND-5C7B163D"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m5",
+   "heading": "M5 Measurement",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "c-m5-1",
+     "lesson": "Critical information reached supervision, but nothing in the system turned it into action: leak reports, an open malfunction notification and overdue audit recommendations all waited without a response.",
+     "explanation": "Subcategory M5.11 Audits and Inspections. Verified heavy-leak reports reached the shift supervisors by 02:35 and no valve closed until 03:01 [EVD-6414]; the notification for the failed meter was never closed or reviewed [EVD-0591]; and 12 external-audit recommendations were extended without the required approval [EVD-6852] (SVI 1.6, three findings). System driver: the maintenance and spares programme (OIR 1.6, level 4) feeds risks that were identified but not mitigated (SVF 3.4); pipe-wall monitoring had slipped off its cycle. Barrier state: absent.",
+     "cites": [
+      "FND-5F3E97E1",
+      "FND-1D713648",
+      "FND-FA807C69",
+      "FND-A3DCEBD8",
+      "EVD-6414",
+      "EVD-0591",
+      "EVD-6852"
+     ],
+     "learning": "LR-08",
+     "supporting_cites": [
+      "FND-1A251687"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "group": "c-m5-1",
+     "barrier": "Supervisory response to critical leak information",
+     "failure_mode": "absent: no trigger or criterion turned the reports into an isolation",
+     "state": "absent",
+     "hoc_tier": "administrative",
+     "cites": [
+      "FND-5F3E97E1",
+      "EVD-6414"
+     ],
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "the barrier records the administrative control the export shows was in place; the change for this condition is at the elimination tier"
+     }
+    },
+    {
+     "kind": "recommendation",
+     "group": "c-m5-1",
+     "change": "Preventive: remove open-ended waiting on critical safety information. The maintenance and audit systems cannot close a safety-critical job or extend a safety recommendation without the review and approval each requires, so an open item cannot sit unseen.",
+     "indicator": "Safety-critical notifications and audit recommendations past their date without approval (count)",
+     "hoc_tier": "elimination",
+     "cites": [
+      "FND-FA807C69",
+      "FND-1D713648",
+      "FND-5F3E97E1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m6",
+   "heading": "M6 Management/Money",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "c-m6-1",
+     "lesson": "Programmes ran without their risks being assessed: the seal substitution, the emergency plan's isolation criteria and emergency valves that could only be worked by hand.",
+     "explanation": "Subcategory M6.05 Risk Management and Compliance. Locally bought O-rings replaced the lost OEM gasket with no specification, quality check, change review or recorded authority [EVD-8645]; the emergency plan never assessed isolation and stoppage criteria [EVD-4052]; and the risk that the manual valves would be unreachable in a release was never assessed [EVD-3932] (OIP 3.2, three findings). System driver: the maintenance and spares programme (OIR 1.6, level 4) feeds risks identified but not mitigated (SVF 3.4). The cross-M answer keeps that link as one learning, under M9 (LR-05), so it is not counted again here. Barrier state: absent.",
+     "cites": [
+      "FND-B440C1BF",
+      "FND-6472CD15",
+      "FND-05841EDA",
+      "FND-1A251687",
+      "EVD-8645",
+      "EVD-4052",
+      "EVD-3932"
+     ],
+     "supporting_cites": [
+      "FND-50C7319E"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "group": "c-m6-1",
+     "barrier": "Programme risk assessment before approval",
+     "failure_mode": "absent: three programmes ran with their major-accident risk never assessed",
+     "state": "absent",
+     "hoc_tier": "administrative",
+     "cites": [
+      "FND-B440C1BF",
+      "EVD-8645"
+     ],
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "the barrier records the administrative control the export shows was in place; the change for this condition is at the elimination tier"
+     }
+    },
+    {
+     "kind": "recommendation",
+     "group": "c-m6-1",
+     "change": "Corrective: fund the removal of the hazard the unassessed emergency-valve programme left in place. Budget the replacement of the hand-worked emergency valves, so that isolating the terminal no longer depends on anyone entering the release area.",
+     "indicator": "Hand-worked emergency isolation valves left in the terminal's release zones (count)",
+     "hoc_tier": "elimination",
+     "cites": [
+      "FND-05841EDA",
+      "FND-B440C1BF"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m7",
+   "heading": "M7 Machine",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "c-m7-1",
+     "lesson": "Ageing equipment stayed in service without upgrade or retirement: alarm-only gas detection, a 1986 meter with repeat seal failures, and emergency valves worked only by hand.",
+     "explanation": "Subcategory M7.08 Lifecycle Management. Gas detection only displayed an alarm, with no shutdown or suppression interlock, so a leak detected at 02:12:50 became a 46-minute manual response [EVD-8657]; the 1986 meter stayed in service after three seal failures in 22 months [EVD-1494]; and the emergency valves were never upgraded to remote operation [EVD-3932] (OIR 1.7, three findings). System driver: leadership and supervisory oversight (SVI 1.1, level 3) feeds checklists not followed (ASBE 1.2). Barrier state: absent.",
+     "cites": [
+      "FND-5897D1E4",
+      "FND-55F68376",
+      "FND-6DB250E6",
+      "FND-89D53630",
+      "EVD-8657",
+      "EVD-1494",
+      "EVD-3932"
+     ],
+     "learning": "LR-10",
+     "supporting_cites": [
+      "FND-B93AE333",
+      "FND-D1709E71"
+     ]
+    },
+    {
+     "kind": "barrier",
+     "group": "c-m7-1",
+     "barrier": "Automatic shutdown on confirmed gas detection",
+     "failure_mode": "absent: detection was annunciator-only",
+     "state": "absent",
+     "hoc_tier": "engineering",
+     "cites": [
+      "FND-5897D1E4",
+      "EVD-8657"
+     ]
+    },
+    {
+     "kind": "recommendation",
+     "group": "c-m7-1",
+     "change": "Corrective: retire the 1986 meter and its rectangular-slot joint, removing the seal that failed four times, and replace it with a design whose seal is specified and stocked.",
+     "indicator": "Metering-skid joints in service with two or more seal failures in 24 months (count)",
+     "hoc_tier": "elimination",
+     "cites": [
+      "FND-55F68376",
+      "FND-5897D1E4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m8",
+   "heading": "M8 Material",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "c-m8-1",
+     "lesson": "Parts and upgrades were not bought to a specification: the lost seal specification was never re-established, and pressure transmitters and gas-detection upgrades were never commissioned.",
+     "explanation": "Subcategory M8.03 Material Compatibility. The OEM gasket specification was lost and never re-established, and unspecified local O-rings became regular practice [EVD-8645]; three pressure transmitters on the drawing sent no data to the control system [EVD-6470]; and gas detection was never upgraded to shut the plant down [EVD-8657] (OIR 1.5, three findings, 9 by Nanocode but 153 more by their wording). System driver: the maintenance and spares programme (OIR 1.6, level 4) feeds risks identified but not mitigated (SVF 3.4). Barrier state: absent.",
+     "cites": [
+      "FND-A0017E28",
+      "FND-0FFC03BB",
+      "FND-4458E0C0",
+      "FND-1A251687",
+      "EVD-8645",
+      "EVD-6470",
+      "EVD-8657"
+     ],
+     "learning": "LR-01"
+    },
+    {
+     "kind": "barrier",
+     "group": "c-m8-1",
+     "barrier": "Purchase specification for pressure-boundary seals",
+     "failure_mode": "absent: the OEM specification was lost and no substitute was approved",
+     "state": "absent",
+     "hoc_tier": "administrative",
+     "cites": [
+      "FND-A0017E28",
+      "EVD-8645"
+     ],
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "the barrier records the administrative control the export shows was in place; the change for this condition is at the elimination tier"
+     }
+    },
+    {
+     "kind": "recommendation",
+     "group": "c-m8-1",
+     "change": "Preventive: remove unspecified seals from supply. Stores and purchasing hold and buy no pressure-boundary seal without an approved specification, so there is no unspecified part to fit.",
+     "indicator": "Pressure-boundary seals in stores without an approved specification (count)",
+     "hoc_tier": "elimination",
+     "cites": [
+      "FND-A0017E28",
+      "FND-6B3A6492",
+      "FND-B56701CA"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m9",
+   "heading": "M9 Maintenance",
+   "items": [
+    {
+     "kind": "learning",
+     "group": "c-m9-1",
+     "lesson": "Repeat failures of the same joint were handled as routine repairs, and the maintenance system asked for no root-cause review, no return-to-service test and only breakdown-led electrical upkeep.",
+     "explanation": "Subcategory M9.07 Spare Parts and Inventory Management. Three gasket replacements in about 22 months never led to a root-cause review, OEM spares or meter replacement [EVD-1494]; no hydrostatic test or return-to-service procedure followed the 18 Sep 2020 job [EVD-2894]; and electrical upkeep was breakdown-led, leaving a damaged flameproof lamp in Zone 1 [EVD-9999] (OIR 1.6, three findings). System driver: the same programme (OIR 1.6, level 4) feeds risks identified but not mitigated (SVF 3.4), the link the cross-M answer keeps as one learning with M6. Barrier state: degraded.",
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-ABF11182",
+      "FND-A3DCEBD8",
+      "EVD-1494",
+      "EVD-2894",
+      "EVD-9999"
+     ],
+     "learning": "LR-05"
+    },
+    {
+     "kind": "barrier",
+     "group": "c-m9-1",
+     "barrier": "Reliability review of repeat failures",
+     "failure_mode": "degraded: each failure was resealed as a routine job",
+     "state": "degraded",
+     "hoc_tier": "administrative",
+     "cites": [
+      "FND-1A251687",
+      "EVD-1494"
+     ],
+     "lint_ok": {
+      "rule": "JC6",
+      "reason": "the barrier records the administrative control the export shows was in place; the change for this condition is at the elimination tier"
+     }
+    },
+    {
+     "kind": "recommendation",
+     "group": "c-m9-1",
+     "change": "Preventive: remove the repeat-reseal path. An item whose seal fails a second time leaves routine maintenance and stays out of service until its root cause is found and fixed.",
+     "indicator": "Items with a second seal failure returned to service before a root-cause review (count)",
+     "hoc_tier": "elimination",
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cross-m",
+   "heading": "Conditions that cross Ms",
+   "items": [
+    {
+     "kind": "graph",
+     "nodes": [
+      {
+       "id": "M9",
+       "label": "M9 Maintenance: repeat seal failures handled as routine repairs (LR-05)"
+      },
+      {
+       "id": "M6",
+       "label": "M6 Management/Money: programme risks never assessed"
+      }
+     ],
+     "edges": [
+      {
+       "from": "M9",
+       "to": "M6",
+       "label": "OIR 1.6 feeds SVF 3.4: kept as one learning"
+      }
+     ],
+     "cites": [
+      "FND-1A251687",
+      "FND-50C7319E",
+      "FND-A3DCEBD8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "organisation-context",
+   "heading": "Context supplied by the organisation",
+   "items": [
+    {
+     "kind": "para",
+     "text": "Answers chosen for demonstration, not by the organisation."
+    },
+    {
+     "kind": "para",
+     "text": "No facts were supplied by the organisation in this session: every answer was taken from the export, as nine-m-session.json records (source: export). At a real interview, the organisation's own facts go here, without finding citations."
+    }
+   ]
+  }
+ ],
+ "limits": [
+  "A desk analysis of the published enquiry report: no site access, interviews or records beyond it.",
+  "One condition per M, as the replay chose it; a real interview may merge, split or drop conditions."
+ ]
+}
