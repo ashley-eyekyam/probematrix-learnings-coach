@@ -9,7 +9,7 @@ A set of agent skills that turn one **ProbeMatrix investigation export** (`.xlsx
 ## Where to start
 
 - Skills live in `skills/<name>/SKILL.md` (Agent Skills format: YAML front matter with `name` and `description`, then instructions). `.agents/skills` points to the same folder for Codex.
-- **Always start with `skills/learnings-coach/SKILL.md`.** It sets up the workspace and routes to the other 22 skills.
+- **Always start with `skills/learnings-coach/SKILL.md`.** It sets up the workspace and routes to the other 31 skills.
 - The engine is `skills/learnings-coach/scripts/pmlc.py` (Python 3.9+, `pip install openpyxl`). Run `python3 skills/learnings-coach/scripts/pmlc.py -h`.
 - Read `skills/learnings-coach/references/learning-principles.md` before writing any learning.
 
@@ -24,6 +24,7 @@ python3 $E run-manifest $WS --intended-use "internal learning" --jurisdiction in
 python3 $E open-questions $WS                   # what the export leaves open -> open_questions.json (--items: ready question items)
 python3 $E facts $WS                           # headline numbers (tiers, levels, top-rated) to suggest a workflow
 python3 $E evidence-audit $WS                  # -> <ws>/evidence_audit.json: engine-computed evidence strength, single-source and document-only counts; copy its strength into the register
+python3 $E nine-m-seed $WS                     # -> <ws>/nine_m_seed.json: every finding scored against the nine Ms (9M), the M profile; before nine-m-analysis
 python3 $E plan $WS --workflow leadership      # numbered plan -> <ws>/plan.json; show it and wait for the user's OK
 python3 $E plan $WS --next                     # the next step to do, with its commands and gate (exit 2: the plan is complete)
 python3 $E select $WS --preset board-brief     # a step's gather calls, as the plan prints them

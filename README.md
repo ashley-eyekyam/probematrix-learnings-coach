@@ -9,7 +9,7 @@
 
 **One investigation. Every level of the organisation learns.**
 
-An open-source plugin of 23 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
+An open-source plugin of 32 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
 
 Works with **Claude Code**, **Claude (Cowork / desktop)** and **OpenAI Codex**, and any agent that reads the Agent Skills format or `AGENTS.md`.
 
@@ -37,7 +37,20 @@ Audit test points · Investigator follow-up · Training modules · ER drills · 
 
 ## What's new in v2.0 so far
 
-v2.0 is in testing (current build: 2.0.0-alpha.6, Phase 4: outputs). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+v2.0 is in testing (current build: 2.0.0-alpha.7, Phase 5: new skills, wave 1). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+
+**Phase 5 (2.0.0-alpha.7):**
+
+- **Nine new skills look deeper into one investigation.** There are now 32 skills.
+  - **How solid is it?** `evidence-strength-scorecard` shows how well each finding is evidenced and which evidence would strengthen it. `open-questions-register` lists what the investigation could not answer, with a follow-up sheet you can paste back into the export.
+  - **What keeps coming back?** `latent-conditions-profile` shows the conditions that recur and the ones that feed the most others. `failure-to-learn-review` asks why earlier warnings did not lead to change, and which step of the learning cycle broke.
+  - **Are the actions strong enough?** `nine-m-analysis` works through the nine Ms (9M) with you, one question at a time, and `recommendation-strength-review` shows which deep causes get only a weak fix, such as training or a reminder.
+  - **For the functions that own the change.** `people-workforce-learnings` is for HR and workforce planners. `risk-register-update` proposes risk-register and bow-tie changes for the risk owner to decide. `compliance-crosswalk` maps the learnings to ISO 45001, PSM, RBPS and other frameworks, as an aid to assurance and never as a compliance opinion.
+- **The engine checks the evidence strength.** Once the evidence audit has run, a register learning's `direct`, `corroborated` or `inferred` label must match what the engine counts, so a label cannot claim more than the evidence shows.
+- **Earlier warnings, marked as such.** The precursor timeline separates the chances to learn that were on record at the time from what was only known later. The emergency-response pack rebuilds the incident day minute by minute from the narrative. Timeline snippets now end on whole words.
+- **Existing skills grow.** The auditor pack can be written for a regulator, an insurer, a joint-venture partner or a client. The engineering pack has an alarms-and-automation section, the manager pack covers work management, the investigator pack carries the evidence scorecard, and the organisation map shows the learnings across the nine Ms. A process-industries reference pack helps place roles in refining, chemicals, gas and storage terminals.
+- **Owners and dates stay with you.** A pack that names an owner or a due date for a change now fails its check. The 9M actions sheet, the risk owner's decision column and the open-questions follow-up sheet are written blank and are never overwritten.
+- **Routing still lands.** A fresh agent that saw only the skill descriptions routed 70 of 70 test requests to the right skill or workflow, the new ones included.
 
 **Phase 4 (2.0.0-alpha.6):**
 

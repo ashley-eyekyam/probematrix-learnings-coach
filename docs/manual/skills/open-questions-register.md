@@ -52,7 +52,7 @@ The CSV has one row per cited finding in the export's own follow-up columns: the
 
 ## Worked example (Hazira)
 
-`open-questions` on Hazira gave 4 empty follow-up columns, 21 of 30 blank Incident Summary fields, 240 of 436 findings whose justification says something is absent and 193 hedged ones. After the other sample packs were rendered, it merged their 14 gaps. The register pastes the 30 `--items` questions unchanged: the four empty columns, then 26 top-rated absence findings, led by the emergency isolation valves, the flameproof lamp and the seal change and return to service on meter 310FT01. The 14 other-pack questions include the ignition source, still named only as probable, and the date the investigation began. The bottom line ties the seal-change trail to register learning LR-01 and the emergency plan's isolation criteria to LR-07. The follow-up CSV has 42 rows, one per cited finding.
+`open-questions` on Hazira gave 4 empty follow-up columns, 21 of 30 blank Incident Summary fields, 240 of 436 findings whose justification says something is absent and 193 hedged ones. After the other sample packs were rendered, it merged their 15 gaps. The register pastes the 30 `--items` questions unchanged: the four empty columns, then 26 top-rated absence findings, led by the emergency isolation valves, the flameproof lamp and the seal change and return to service on meter 310FT01. The 15 other-pack questions include the ignition source, still named only as probable, and the date the investigation began. The bottom line ties the seal-change trail to register learning LR-01 and the emergency plan's isolation criteria to LR-07. The follow-up CSV has 44 rows, one per cited finding.
 
 ## Related skills
 

@@ -17,13 +17,15 @@ When the request is broad ("what should we learn from this?"), the agent asks wh
 
 Every pack is a web page and a Markdown file by default. Ask for it in the form your readers use and the agent adds the right option: a Word document or board paper, slides, an email digest, printed cards, toolbox sheets, checklists or a poster, a course and quiz for your learning system, another language, a picture of the causal map, or calendar reminders. See "Output formats" in [Commands](Commands.md) and the recipes, from [A board paper in Word](Workflows-and-recipes.md#a-board-paper-in-word) on.
 
+To look deeper before the learnings go out, three recipes on Hazira use skills that are new in Phase 5: [Design the actions with the nine Ms](Workflows-and-recipes.md#design-the-actions-with-the-nine-ms) (the `action-design` preset: the 9M analysis, the strength review of the actions and a blank actions sheet), [Check the quality of the investigation](Workflows-and-recipes.md#check-the-quality-of-the-investigation) (`investigation-quality`: the evidence scorecard and the open questions) and [Assurance against ISO 45001 or RBPS](Workflows-and-recipes.md#assurance-against-iso-45001-or-rbps) (`assurance`: the standards crosswalk and the auditor pack).
+
 ## How the manual is organised
 
 | Page | What it covers |
 |---|---|
 | [Getting started](Getting-started.md) | Install, your first run on the Hazira sample, what you get |
 | [Workflows and recipes](Workflows-and-recipes.md) | Common jobs from start to finish |
-| [Skills](Skills.md) | The 23 skills: which audience each serves and what it produces |
+| [Skills](Skills.md) | The 32 skills: which audience each serves and what it produces |
 | [Commands](Commands.md) | Every engine command, flag by flag, with real examples |
 | [Files and folders](Files-and-folders.md) | The run folder, the workspace, the outputs and every other format, translations, the files your organisation fills in and the shared contracts |
 | [Review and sharing](Review-and-sharing.md) | Draft status, sign-off by a reviewer, sharing outside the organisation |

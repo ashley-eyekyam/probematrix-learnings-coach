@@ -6,7 +6,8 @@ export that tests/test_pmlc.py builds, used by the fixture --strict check).
 Checks: ingest cross-check, finding and evidence counts, check-register (also --strict) and check-language on
 the sample register, facts --json, plan --workflow for every preset, every fixture pack under --strict, and the
 Phase 4 exit-gate format loop: every Hazira golden pack (every pack JSON in outputs/) passes check-pack --strict and renders in
-html,md,docx,pptx,email,csv (each docx and pptx a sound package).
+html,md,docx,pptx,email,csv (each docx and pptx a sound package). Every pack skill (the hub and the register
+aside; the nine Phase 5 skills among them) must have a golden in that loop, or the smoke run fails naming it.
 """
 import json
 import os
@@ -111,6 +112,25 @@ def strict_fixtures(tmp):
     return len(names)
 
 
+def missing_goldens(names):
+    """The pack skills (every skill but the hub and the register) whose pack has no Hazira golden among `names`
+    (pack names, without .json). A pack named `dossier-<F-id>` is met by any `dossier-F..` golden."""
+    out = []
+    for d in sorted(os.listdir(os.path.join(ROOT, "skills"))):
+        path = os.path.join(ROOT, "skills", d, "skill.json")
+        if not os.path.isfile(path):
+            continue
+        with open(path, encoding="utf-8") as fh:
+            m = json.load(fh)
+        pack = (m.get("produces") or {}).get("pack")
+        if m.get("kind") in ("hub", "register") or not pack:
+            continue
+        rx = re.compile(re.escape(pack).replace(re.escape("<F-id>"), r"F\d+") + r"\Z")
+        if not any(rx.match(n) for n in names):
+            out.append(d)
+    return out
+
+
 def format_loop(tmp):
     """The Phase 4 exit gate (Task 23): every Hazira golden pack (each JSON in outputs/ with sections, so not the
     register) passes check-pack --strict against a freshly set-up Hazira workspace, then renders in every exit-gate
@@ -135,6 +155,9 @@ def format_loop(tmp):
                 names.append(f[:-5])
     if not names:
         fail("no Hazira golden pack in " + outputs)
+    missing = missing_goldens(names)
+    if missing:
+        fail("no Hazira golden pack for skill(s): " + ", ".join(missing))
     out = os.path.join(tmp, "hazira-gate-out")
     for name in names:
         path = os.path.join(outputs, name + ".json")
