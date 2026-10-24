@@ -88,7 +88,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 - **Formats.** When the user names a file type or a channel, plan the skill with its flag (`references/skill-common.md` §8):
   - a Word board paper → `board-brief` with `--format docx --layout paper`; any brief as a Word file → `--format docx`;
   - slides for a workshop or a briefing → the audience skill with `--format pptx` (the site workshop: `site-leadership-coach`);
-  - toolbox-talk sheets → `frontline-learning-cards` with `--layout toolbox`; one card per printed page → `--layout cards`;
+  - toolbox-talk sheets → `frontline-learning-cards` with `--layout toolbox`; one card per printed page, or A5 pocket cards, → `--layout cards` (`--paper A5`); citations as end-notes with a delivery record → `--layout field`;
   - a printed checklist → `supervisor-coach`, `safety-committee-guide` or `auditor-assurance-pack` with `--layout checklist`;
   - an email digest → the pack with `--format email`; the register in Word or email → `learnings-register` with `register-render`;
   - a quiz for the learning system → `training-designer` with `--format gift` (Moodle), `qti` or `scorm`;

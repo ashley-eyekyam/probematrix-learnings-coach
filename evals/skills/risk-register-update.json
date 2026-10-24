@@ -128,6 +128,7 @@
    "id": 1805,
    "owner": "learnings-coach",
    "kind": "router",
+   "sibling": "barrier-learnings",
    "prompt": "The insurer's risk engineer wants to know which hazards our register never listed and which safeguards we over-scored, based on this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
    "files": [
     "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
