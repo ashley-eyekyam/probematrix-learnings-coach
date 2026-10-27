@@ -13,7 +13,7 @@ RENDER_EXEMPT = ("learnings-register.json",)
 # Phase 5 staging (plan, New-skill checklist item 6): a new skill's Hazira golden pack may land as JSON only, listed
 # here until its HTML and MD are rendered (Task 24 rendered the Phase 5 goldens and emptied it). Each entry must be a
 # pack JSON with neither rendering.
-RENDER_PENDING = frozenset()
+RENDER_PENDING = frozenset({"could-it-happen-here.json"})   # Phase 6: Task 18 renders
 
 
 def _sample_render_problems(d) -> list:

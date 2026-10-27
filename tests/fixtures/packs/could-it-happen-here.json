@@ -1,0 +1,27 @@
+{"pack": "could-it-happen-here", "schema": 1,
+ "title": "Could It Happen Here? Synthetic pump fire, 2024",
+ "audience": "HSE managers at the organisation's other sites", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "A pump seal fitted without a specification went back into service untested: check your sites for the same two conditions.",
+                  "cites": ["FND-0002", "FND-0003", "EVD-0002"], "learning": "LR-01"}],
+ "scope": {"tiers": [], "levels": [2, 3, 4], "tags": []},
+ "sections": [
+  {"id": "banner", "heading": "About this self-assessment", "items": [
+   {"kind": "para", "text": "A self-assessment for each site. Results show coverage and conditions, never a ranking of sites."}]},
+  {"id": "how-to-use", "heading": "How to use it", "items": [
+   {"kind": "para", "text": "The HSE lead at each site answers every self-check on the return: present, partly, absent or n/a, with the site's response and the assessor's role."}]},
+  {"id": "self-checks", "heading": "Self-checks", "items": [
+   {"kind": "self_check", "id": "check-lr-01", "lr_id": "LR-01",
+    "condition": "A pump seal is replaced with a part that has no written specification.",
+    "evidence_to_check": "Seal purchases in the last year each match a specification on file.",
+    "look_in": "Purchase records and the stores catalogue", "cites": ["FND-0003", "EVD-0003"]},
+   {"kind": "self_check", "id": "check-lr-02", "lr_id": "LR-02",
+    "condition": "A pump goes back into service after seal work without a leak test.",
+    "evidence_to_check": "Work orders after seal work each carry a signed leak-test record.",
+    "look_in": "Work orders and the return-to-service procedure", "cites": ["FND-0002", "EVD-0002"]},
+   {"kind": "self_check", "id": "check-lr-03", "lr_id": "LR-03",
+    "condition": "The restart of a repaired pump does not depend on a test record.",
+    "evidence_to_check": "The restart permit asks for the test record before the pump runs.",
+    "look_in": "The permit-to-work file", "cites": ["FND-0001"]}]},
+  {"id": "after-assessment", "heading": "After the assessment", "items": [
+   {"kind": "para", "text": "The organisation brings the returns into one view of coverage and conditions; it never scores a site."}]}],
+ "limits": ["The synthetic export describes one site only; the pack says nothing about another site until it answers."]}

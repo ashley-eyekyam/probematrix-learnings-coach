@@ -30,6 +30,10 @@ COUNT_STATEMENTS = [
 COUNT_RX = re.compile(r"\b(\d+) (?:agent |sub-)?skills\b")
 NEW_SKILLS = sorted(p.parent.name for p in (ROOT / "skills").glob("*/skill.json")
                     if json.loads(p.read_text(encoding="utf-8")).get("since") == "2.0.0")
+# plan Phase 6 (P6-2): the seven skills released in 2.0.0a8, not among the Phase 5 nine
+P6_SKILLS = ("safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+             "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan")
+P5_SKILLS = [s for s in NEW_SKILLS if s not in P6_SKILLS]
 NEW_COMMANDS = ["evidence-audit", "hfacs-profile", "open-questions", "nine-m-seed", "nine-m-suggest", "nine-m-answer",
                 "nine-m-replay", "nine-m-actions-template", "rec-review", "missed-opportunities", "crosswalk"]
 NEW_FLAGS = ["--event-day", "--m", "--m-secondary", "--industry", "--kind table"]
@@ -75,7 +79,7 @@ def test_docs_state_no_other_skill_count(doc):
 
 
 def test_nine_new_skills():
-    assert len(NEW_SKILLS) == 9, NEW_SKILLS
+    assert len(P5_SKILLS) == 9, NEW_SKILLS
 
 
 @pytest.mark.parametrize("doc,row", [("README.md", "| `{s}` |"), ("docs/manual/Skills.md", "[{s}](skills/{s}.md)")])
@@ -104,7 +108,7 @@ def test_changelog_2_0_0a7():
     assert log.index("### 2.0.0a7") < log.index("### 2.0.0a6")
     entry = log.split("### 2.0.0a7", 1)[1].split("### 2.0.0a6", 1)[0]
     missing = [f"`{c}`" for c in NEW_COMMANDS if f"`{c}`" not in entry]
-    missing += [f"`{s}`" for s in NEW_SKILLS if f"`{s}`" not in entry]
+    missing += [f"`{s}`" for s in P5_SKILLS if f"`{s}`" not in entry]
     missing += [f for f in NEW_FLAGS if f"`{f}" not in entry]
     assert not missing, missing
     notes = entry.split("**Migration notes.**", 1)[1]
