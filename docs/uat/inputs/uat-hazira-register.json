@@ -77,6 +77,7 @@
    "worst_case": "Flange seal failure releasing condensate vapour that finds an ignition source: major fire or vapour cloud explosion.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "maintenance technicians and supervisors",
     "stores and procurement",
@@ -179,6 +180,7 @@
    "worst_case": "Joint failure in service at full pressure with a large release.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "maintenance technicians and supervisors",
     "operations (acceptance)",
@@ -258,6 +260,7 @@
    "worst_case": "Undetected defect in a pressure joint released straight to service.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "maintenance planners",
     "maintenance supervisors",
@@ -341,6 +344,7 @@
    "worst_case": "Defective repair passes without review; repeat-failure signals stay invisible.",
    "transferability": "other sites",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "maintenance supervisors",
     "maintenance planners",
@@ -426,6 +430,7 @@
    "worst_case": "Known bad-actor fails during a high-consequence condition.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "maintenance managers",
     "reliability / integrity engineers",
@@ -509,6 +514,7 @@
    "worst_case": "Any unreviewed change in hydrocarbon service introduces a new failure mode.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "engineering authority",
     "maintenance and operations managers",
@@ -607,6 +613,7 @@
    "worst_case": "Vapour cloud grows for tens of minutes and ignites: fire or vapour cloud explosion with off-site impact.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "shift in-charges",
     "control-room engineers",
@@ -702,6 +709,7 @@
    "worst_case": "Isolation delayed until ignition.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "control-room engineers",
     "shift in-charges",
@@ -792,6 +800,7 @@
    "worst_case": "Release continues unchecked until ignition or inventory exhaustion.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "engineering authority",
     "operations management",
@@ -881,6 +890,7 @@
    "worst_case": "Large release detected late and not acted on automatically.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "instrument and control engineers",
     "process safety",
@@ -972,6 +982,7 @@
    "worst_case": "Any release in a zoned area finds an ignition source.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "electrical technicians and supervisors",
     "process safety",
@@ -1066,6 +1077,7 @@
    "worst_case": "Crew cannot execute the emergency response the plant relies on.",
    "transferability": "industry-wide",
    "priority": 1,
+   "urgency": "alert",
    "audiences": [
     "HR and training",
     "operations managers",
@@ -1148,6 +1160,7 @@
    "worst_case": "Minutes lost at the start of the response, when isolation is most effective.",
    "transferability": "industry-wide",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "security personnel",
     "control-room staff",
@@ -1226,6 +1239,7 @@
    "worst_case": "Release unobserved; responders without situational awareness; investigation without evidence.",
    "transferability": "other sites",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "security and surveillance",
     "instrument and telecom engineers",
@@ -1300,6 +1314,7 @@
    "worst_case": "Pre-failure pressure anomalies missed; event timeline cannot be reconstructed.",
    "transferability": "other sites",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "instrument and control engineers",
     "control-room staff",
@@ -1389,6 +1404,7 @@
    "worst_case": "Instruments silently misconfigured on safety-relevant service.",
    "transferability": "other sites",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "instrument technicians",
     "instrument supervisors"
@@ -1488,6 +1504,7 @@
    "worst_case": "Pipeline or piping rupture in a high-inventory area.",
    "transferability": "industry-wide",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "integrity and corrosion engineers",
     "maintenance managers",
@@ -1577,6 +1594,7 @@
    "worst_case": "Corrosion failure in a line with unknown remaining life.",
    "transferability": "other sites",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "integrity and inspection engineers",
     "maintenance planners"
@@ -1649,6 +1667,7 @@
    "worst_case": "Wrong isolation or wrong part chosen from an incorrect drawing.",
    "transferability": "other sites",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "engineering and document control",
     "maintenance planners",
@@ -1739,6 +1758,7 @@
    "worst_case": "Leadership believes barriers are working when they are not.",
    "transferability": "industry-wide",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "auditors",
     "HSE function",
@@ -1806,6 +1826,7 @@
    "worst_case": "Known gaps remain open until they contribute to an incident.",
    "transferability": "other sites",
    "priority": 3,
+   "urgency": "information",
    "audiences": [
     "HSE function",
     "plant leadership",
@@ -1876,6 +1897,7 @@
    "worst_case": "Hazardous work done without isolation or hazard controls.",
    "transferability": "industry-wide",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "permit issuers and holders",
     "HSE function",
@@ -1948,6 +1970,7 @@
    "worst_case": "Loss of fire water during a fire with power failure.",
    "transferability": "other sites",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "fire service",
     "electrical and mechanical maintenance",
@@ -2025,6 +2048,7 @@
    "worst_case": "Drills repeat without exposing plan gaps.",
    "transferability": "other sites",
    "priority": 3,
+   "urgency": "information",
    "audiences": [
     "fire service",
     "emergency planners",
@@ -2084,6 +2108,7 @@
    "worst_case": "Control-room occupants exposed to blast or fire.",
    "transferability": "industry-wide",
    "priority": 2,
+   "urgency": "notice",
    "audiences": [
     "engineering and projects",
     "plant leadership"

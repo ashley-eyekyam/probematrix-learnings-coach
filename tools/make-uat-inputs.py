@@ -44,6 +44,12 @@ and, for Phase 5:
                                Findings), which nine-m-seed and setup refuse
   uat-process-export.xlsx      the synthetic process-industry export of tests/conftest.py (30 invented findings), for
                                setup --industry process
+and, for Phase 6:
+  uat-no-urgency-register.json the Hazira sample register without urgency, so alert-grade suggests a grade from
+                               priority and the safety-alert skill asks the user (OD6-1)
+  uat-library-register.json    the pump-fire register (uat-register.json) whose LR-01 context names an invented site,
+                               a full date and a clock time, for library publish on a synthetic run: the public lines
+                               must code the site (S01) and keep the month only
 
 The export shape follows tests/test_pmlc.py (FIND_COLS, ROWS, make_export), duplicated here so this tool
 needs only the standard library and openpyxl. The workbooks are rebuilt from scratch on every run.
@@ -562,6 +568,34 @@ def phase5_files():
             "uat-process-export.xlsx": process_export()}
 
 
+LIBRARY_CONTEXT = ("At Kestrel Works the pump went back into service on 2024-03-20 at 03:12 after a seal change, "
+                   "with no leak test recorded.")
+
+
+def no_urgency_register():
+    """The sample register with every urgency removed: alert-grade returns grade_source "suggested" (P6-3)."""
+    r = json.loads(SAMPLE_REGISTER.read_text(encoding="utf-8"))
+    for e in r["entries"]:
+        e.pop("urgency", None)
+    return r
+
+
+def library_register():
+    """The pump-fire register with an invented site name, a full date and a clock time in LR-01's context, so a
+    library publish of the synthetic run shows the site coded and the date kept to the month (P6-12)."""
+    r = json.loads(json.dumps(REGISTER))
+    r["title"] = "UAT library register: synthetic pump fire"
+    r["entries"][0]["context"] = LIBRARY_CONTEXT
+    return r
+
+
+def phase6_files():
+    """{file name: bytes} for the Phase 6 inputs."""
+    dump = lambda o: (json.dumps(o, indent=1, ensure_ascii=False) + "\n").encode("utf-8")   # noqa: E731
+    return {"uat-no-urgency-register.json": dump(no_urgency_register()),
+            "uat-library-register.json": dump(library_register())}
+
+
 def main():
     ap = argparse.ArgumentParser(description="Write the UAT input files.")
     ap.add_argument("--out", type=Path, default=OUT, help="output folder (default: docs/uat/inputs)")
@@ -578,7 +612,7 @@ def main():
     for name, text in TEXT_FILES.items():
         (out / name).write_text(text, encoding="utf-8")
         print(f"wrote {out / name}")
-    for name, data in {**phase3_files(), **phase4_files(), **phase5_files()}.items():
+    for name, data in {**phase3_files(), **phase4_files(), **phase5_files(), **phase6_files()}.items():
         (out / name).write_bytes(data)
         print(f"wrote {out / name}")
 
