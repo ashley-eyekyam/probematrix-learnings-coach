@@ -1,0 +1,268 @@
+{
+ "pack": "could-it-happen-here",
+ "schema": 1,
+ "skill": "could-it-happen-here",
+ "title": "Could It Happen Here? Hazira gas terminal release and fire, 2020",
+ "audience": "HSE managers and advisers at the organisation's other sites",
+ "status": "Learning purposes: not a statutory document. Draft learnings from a ProbeMatrix investigation export; validate them before adoption.",
+ "scope": {
+  "tiers": [],
+  "levels": [
+   2,
+   3,
+   4
+  ],
+  "tags": []
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the export's Investigation Status is in_progress and no finding is marked as edited by a person, so this pack stays a draft, and cannot be shared outside the organisation, until the investigation is completed and reviewed.",
+   "cites": []
+  }
+ ],
+ "bottom_line": [
+  {
+   "text": "The release came from a pressure-boundary seal fitted without a specification and put back into service without a test to design pressure: check whether your site carries the same two conditions.",
+   "cites": [
+    "FND-82673283",
+    "FND-9174A5B0",
+    "EVD-8645",
+    "EVD-2894"
+   ],
+   "learning": "LR-01"
+  },
+  {
+   "text": "Isolation took about 46 minutes, because the plan held no isolation criteria and the valves could be closed only by hand inside the vapour cloud: check your emergency plan and isolation valves next.",
+   "cites": [
+    "FND-82761CC5",
+    "FND-05841EDA",
+    "EVD-4052",
+    "EVD-3932"
+   ],
+   "learning": "LR-07"
+  }
+ ],
+ "sections": [
+  {
+   "id": "banner",
+   "heading": "About this self-assessment",
+   "items": [
+    {
+     "kind": "para",
+     "text": "A self-assessment for each site. Results show coverage and conditions, never a ranking of sites."
+    }
+   ]
+  },
+  {
+   "id": "how-to-use",
+   "heading": "How to use it",
+   "items": [
+    {
+     "kind": "para",
+     "text": "The HSE lead at each site works through every self-check with the people who do the work, against the site's own records and plant. Look for the condition, not for a repeat of the event: the same condition can sit behind a different leak, a different valve or a different fire."
+    },
+    {
+     "kind": "para",
+     "text": "Record one answer for each self-check on the site's return: present, partly, absent or n/a. Add the site's response and the role of the person who assessed it. The organisation sets the date for returns."
+    }
+   ]
+  },
+  {
+   "id": "self-checks",
+   "heading": "Self-checks",
+   "items": [
+    {
+     "kind": "self_check",
+     "id": "check-lr-01",
+     "lr_id": "LR-01",
+     "condition": "A pressure-boundary seal or gasket is replaced with a part that has no written specification, or with a substitute no one has approved.",
+     "evidence_to_check": "For each pressure-boundary seal or gasket fitted in the last two years, a specification or an approved substitute is on file and matches the part that was bought.",
+     "look_in": "Spares and purchase records, the stores catalogue and the maintenance history of older equipment",
+     "cites": [
+      "FND-82673283",
+      "FND-23139BF9",
+      "FND-A0017E28",
+      "FND-6B3A6492",
+      "EVD-8645",
+      "EVD-1494"
+     ]
+    },
+    {
+     "kind": "self_check",
+     "id": "check-lr-02",
+     "lr_id": "LR-02",
+     "condition": "Pressure-boundary work goes back into service without a test to design pressure, because no procedure requires one.",
+     "evidence_to_check": "Recent seal, gasket or flange jobs on pressure equipment each have a test record that names the test type and pressure, and a return-to-service procedure requires it.",
+     "look_in": "Work orders, test certificates and the procedure index",
+     "cites": [
+      "FND-9174A5B0",
+      "FND-137BC719",
+      "FND-491EDE74",
+      "FND-50C7319E",
+      "EVD-2894",
+      "EVD-0185"
+     ]
+    },
+    {
+     "kind": "self_check",
+     "id": "check-lr-03",
+     "lr_id": "LR-03",
+     "condition": "A repair on a high-consequence pressure boundary rests on one person's judgement, with no independent check of the part, the method or the test.",
+     "evidence_to_check": "Job plans for these repairs name a check of the part, a witnessed test and a close-out review, and the records show each was done.",
+     "look_in": "Job plans, permits and inspection or witness-point records",
+     "cites": [
+      "FND-28F8790B",
+      "FND-F8C125D5",
+      "FND-615DB819",
+      "FND-63B6D260",
+      "EVD-2894",
+      "EVD-5105"
+     ]
+    },
+    {
+     "kind": "self_check",
+     "id": "check-lr-05",
+     "lr_id": "LR-05",
+     "condition": "Repeat failures of the same component are repaired as routine each time, with no root-cause review or engineering look at why they recur.",
+     "evidence_to_check": "The maintenance system can list the components repaired three or more times in two years, and each one has a root-cause review or an engineering decision on record.",
+     "look_in": "The failure history in the maintenance management system and the reliability or engineering review log",
+     "cites": [
+      "FND-69067A1C",
+      "FND-110F964C",
+      "FND-E0AE86A6",
+      "FND-1A251687",
+      "EVD-1494",
+      "EVD-0591"
+     ]
+    },
+    {
+     "kind": "self_check",
+     "id": "check-lr-06",
+     "lr_id": "LR-06",
+     "condition": "The management-of-change procedure exists on paper, but a different part, material or pipe route goes in without it.",
+     "evidence_to_check": "The MOC register shows recent entries, and a sample of recent part or material substitutions each has an MOC record.",
+     "look_in": "The MOC register, recent purchase substitutions and modification work orders",
+     "cites": [
+      "FND-8083ECAC",
+      "FND-F7FE8463",
+      "FND-5A5F6AB3",
+      "FND-3FEE59DF",
+      "EVD-2986"
+     ]
+    },
+    {
+     "kind": "self_check",
+     "id": "check-lr-07",
+     "lr_id": "LR-07",
+     "condition": "The emergency plan names a major release but gives no criteria for when to isolate and no standing authority for the shift to order it.",
+     "evidence_to_check": "For each major release scenario, the plan states the isolation trigger, the valves to close and which shift role may order isolation without waiting for a senior manager.",
+     "look_in": "The on-site emergency plan, its checklists and the control-room standing orders",
+     "cites": [
+      "FND-81E3EEA0",
+      "FND-BB4CC662",
+      "FND-82761CC5",
+      "FND-730D0DCA",
+      "EVD-4052",
+      "EVD-3932"
+     ]
+    },
+    {
+     "kind": "self_check",
+     "id": "check-lr-08",
+     "lr_id": "LR-08",
+     "condition": "When a release blocks access, the response plan still sends people to find the leak instead of switching to isolation from a safe place.",
+     "evidence_to_check": "Emergency drills and the control-room decision aids include a release that blocks access, and drill records show the switch to remote or upstream isolation.",
+     "look_in": "Drill reports, emergency scenario cards and the control-room console aids",
+     "cites": [
+      "FND-305216AF",
+      "FND-4245FBF2",
+      "FND-C92C29DB",
+      "EVD-6414",
+      "EVD-7340",
+      "EVD-9612"
+     ]
+    },
+    {
+     "kind": "self_check",
+     "id": "check-lr-09",
+     "lr_id": "LR-09",
+     "condition": "Emergency isolation valves can be closed only by hand at the valve, inside the area a release would make unreachable.",
+     "evidence_to_check": "The list of emergency isolation valves shows for each whether it can be closed remotely, and the risk that a release denies access to it has been assessed.",
+     "look_in": "The isolation valve list, the P&IDs and the site's risk assessment for releases",
+     "cites": [
+      "FND-4C645CB5",
+      "FND-DBE08E73",
+      "FND-05841EDA",
+      "FND-044D1DEC",
+      "EVD-3932",
+      "EVD-9612"
+     ]
+    },
+    {
+     "kind": "self_check",
+     "id": "check-lr-10",
+     "lr_id": "LR-10",
+     "condition": "Gas detectors only raise an alarm: they start no shutdown, isolation or protection, and their readings are not kept.",
+     "evidence_to_check": "The fire and gas cause-and-effect chart shows which detectors trip a shutdown or start protection, and the control system stores detector history.",
+     "look_in": "The fire and gas cause-and-effect chart, the control system configuration and the alarm history",
+     "cites": [
+      "FND-A245072B",
+      "FND-D45021AD",
+      "FND-2D90823E",
+      "FND-6155A1C2",
+      "EVD-8657",
+      "EVD-3452"
+     ]
+    },
+    {
+     "kind": "self_check",
+     "id": "check-lr-11",
+     "lr_id": "LR-11",
+     "condition": "Damaged flameproof electrical equipment stays in service in a hazardous area, because electrical maintenance waits for breakdowns.",
+     "evidence_to_check": "Each item of hazardous-area electrical equipment has its own inspection record within the inspection interval, and the defects found are closed out.",
+     "look_in": "The hazardous-area equipment register, the electrical inspection records and a walk of the hazardous areas",
+     "cites": [
+      "FND-784A23E4",
+      "FND-554BFB4A",
+      "FND-ABF11182",
+      "FND-5E08D0F8",
+      "EVD-6916",
+      "EVD-0496",
+      "EVD-9999"
+     ]
+    },
+    {
+     "kind": "self_check",
+     "id": "check-lr-12",
+     "lr_id": "LR-12",
+     "condition": "Control-room staff hold emergency duties with no defined qualification and no simulator or practised emergency training.",
+     "evidence_to_check": "A control-room qualification is defined, and each person on the emergency roster has met it, with simulator or drill practice on record.",
+     "look_in": "Training records, the competence framework and the control-room roster",
+     "cites": [
+      "FND-337CB67F",
+      "FND-7885BCF5",
+      "FND-954553FD",
+      "FND-E4596837",
+      "EVD-5634",
+      "EVD-1460",
+      "EVD-9220"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "after-assessment",
+   "heading": "After the assessment",
+   "items": [
+    {
+     "kind": "para",
+     "text": "The organisation brings the returns together into one view: for each learning, how many sites assessed it, and for each condition, how many sites found it present or partly. The view never ranks or scores a site. A site that finds a condition present has done what the assessment asks, and its response goes into its own action process."
+    }
+   ]
+  }
+ ],
+ "limits": [
+  "The self-checks are drawn from the Learnings Register's 11 priority-1 learnings, all transferable; the 14 priority-2 and priority-3 learnings are not here, and a site may add them.",
+  "Each condition is described from a desk review of the published enquiry report on the incident site. The pack says nothing about any other site until that site answers."
+ ]
+}

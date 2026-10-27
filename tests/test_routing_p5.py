@@ -37,7 +37,7 @@ def _router_target(e) -> str:
 
 
 def test_new_skills_are_the_nine():
-    assert len(NEW) == 9, NEW
+    assert len([s for s in NEW if s not in P6_SKILLS]) == 9, NEW          # the Phase 5 nine
 
 
 def test_hub_step2_routes_every_skill_folder():

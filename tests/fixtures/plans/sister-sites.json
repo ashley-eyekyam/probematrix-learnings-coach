@@ -68,14 +68,20 @@
   {
    "n": 5,
    "skill": "could-it-happen-here",
-   "status": "planned",
-   "planned_for": "Phase 6",
-   "produces": null,
+   "status": "todo",
+   "planned_for": null,
+   "produces": "could-it-happen-here",
    "mode": null,
    "when": null,
-   "commands": [],
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/could-it-happen-here.json --strict",
+    "PMLC pack <ws> <run>/outputs/could-it-happen-here.json"
+   ],
    "questions": [],
-   "gate": []
+   "gate": [
+    "check-pack --strict",
+    "approved review"
+   ]
   }
  ],
  "next": 3

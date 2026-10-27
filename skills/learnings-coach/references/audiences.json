@@ -365,5 +365,29 @@
     },
     "reading_level": "plain",
     "skill": "restorative-response-guide"
+  },
+  {
+    "id": "sister-sites-hse",
+    "label": "Sister-site HSE",
+    "typical_people": "HSE managers and advisers at the organisation's other sites, site process safety leads",
+    "controls": "their own site's self-assessment, the conditions they check for and the site's response",
+    "needs": "one self-check per transferable learning: the condition to look for, what to check and where, for their site to answer",
+    "tier": "T3",
+    "levels": [
+      2,
+      3,
+      4
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [
+        2,
+        3,
+        4
+      ],
+      "tags": []
+    },
+    "reading_level": "working",
+    "skill": "could-it-happen-here"
   }
 ]

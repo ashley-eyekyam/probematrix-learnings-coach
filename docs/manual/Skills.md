@@ -1,6 +1,6 @@
 # Skills
 
-The Learnings Coach is 33 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
+The Learnings Coach is 34 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
 
 **Start here:** [learnings-coach](skills/learnings-coach.md) sets up the workspace for an export and routes your request. Every other skill relies on it.
 
@@ -54,6 +54,7 @@ One skill for each tier, from the sharp end to the board.
 | Enterprise risk management, risk owners, insurers' risk engineers | [risk-register-update](skills/risk-register-update.md) | proposed risk-register and bow-tie changes, as proposals for the risk owner |
 | HR, workforce planners, rostering and competence-framework owners | [people-workforce-learnings](skills/people-workforce-learnings.md) | people-system learnings and competence-framework changes |
 | Leaders and peer supporters responding to the people involved | [restorative-response-guide](skills/restorative-response-guide.md) | restorative questions to ask, obligations and second-victim support |
+| HSE managers and advisers at the organisation's other sites | [could-it-happen-here](skills/could-it-happen-here.md) | a self-assessment for each site, with a return template and a consolidated view of coverage and conditions |
 | Safety committees and workforce representatives | [safety-committee-guide](skills/safety-committee-guide.md) | a discussion guide and questions to raise |
 
 ## What every skill does the same way
