@@ -124,6 +124,7 @@ pmlc 2.0.0a4
 | Command | What it does |
 |---|---|
 | [rec-review](commands/rec-review.md) | Rates each recommendation's strength, flags weak fixes for deep causes, and lists loops, SMART gaps and recipients |
+| [effect-plan](commands/effect-plan.md) | Sets out what to check and when for each learning, as offsets from adoption, with Kirkpatrick levels, Jacobsson spread, depth and duration, and the indicators table |
 
 ### 5. Repository upkeep
 
@@ -178,7 +179,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,hfacs-profile,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,effect-plan,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,hfacs-profile,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

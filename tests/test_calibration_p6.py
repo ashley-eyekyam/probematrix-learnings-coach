@@ -29,3 +29,12 @@ def test_hazira_workspace_and_register(hazira_ws):
     assert len(w["evidence"]) == 46
     reg = json.loads(REGISTER.read_text(encoding="utf-8"))
     assert len(reg["entries"]) == 25
+
+
+def test_effect_plan_rows(hazira_ws):
+    """Effectiveness schedule rows: 11 priority-1 learnings x 5 checks + 14 others x 3 = 97 (P6-8)."""
+    d = json.loads(run("effect-plan", str(hazira_ws), "--register", str(REGISTER), "--json"))
+    assert len(d["rows"]) == 97
+    assert len(d["learnings"]) == 25
+    assert sum(1 for r in d["rows"] if r["priority"] == 1) == 55
+    assert d["notes"] == []
