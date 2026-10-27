@@ -1,0 +1,30 @@
+{"pack": "restorative-response-guide", "schema": 1,
+ "title": "Restorative Response Guide: Synthetic pump fire, 2024",
+ "audience": "Leaders and peer support after an incident", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "Ask the seal change crew what they need before anything else.", "cites": ["FND-0001", "EVD-0001"]}],
+ "scope": {"tiers": [], "levels": [2, 3, 4], "tags": []},
+ "sections": [
+  {"id": "banner", "heading": "About this guide", "items": [
+   {"kind": "para", "text": "The export holds no information about the people affected. Every need here is a question to ask, or the organisation's own answer."}]},
+  {"id": "who-is-hurt", "heading": "Who is hurt?", "items": [
+   {"kind": "question", "question": "How is the seal change crew, now that their job is at the centre of the investigation?",
+    "why": "The work order shows the pump went back into service without a test [EVD-0001].", "to": "Line leader, with a peer supporter",
+    "cites": ["FND-0001", "EVD-0001"]}]},
+  {"id": "needs", "heading": "What do they need?", "items": [
+   {"kind": "question", "question": "What do you need from us now, and from whom?", "why": "Only the people involved can say.",
+    "to": "Line leader"},
+   {"kind": "question", "question": "What do you want to know about the investigation and how your account will be used?",
+    "why": "The findings rest on records of their job [EVD-0001].", "to": "Investigation lead", "cites": ["FND-0001", "EVD-0001"]}]},
+  {"id": "obligations", "heading": "Whose obligation is it?", "items": [
+   {"kind": "para", "text": "Meeting these needs is the organisation's obligation. It also owes the crew a return-to-service checklist, which the procedure index lacked [EVD-0002].",
+    "cites": ["FND-0002", "EVD-0002"]}]},
+  {"id": "system-conditions", "heading": "The conditions they worked in", "items": [
+   {"kind": "learning", "lesson": "No checklist said what had to be done before a pump returned to service.",
+    "explanation": "The procedure index has no return-to-service entry [EVD-0002].", "learning": "LR-01",
+    "cites": ["FND-0002", "EVD-0002"]},
+   {"kind": "learning", "lesson": "Seals were bought locally without a specification.",
+    "explanation": "Purchase records show local seals [EVD-0003].", "cites": ["FND-0003", "EVD-0003"]}]},
+  {"id": "support", "heading": "Support for the people involved", "items": [
+   {"kind": "check", "text": "Treat the seal change crew as possible second victims and offer them peer support.", "cites": ["FND-0001"]},
+   {"kind": "check", "text": "Keep support apart from the investigation, and say so at the start."}]}],
+ "limits": ["The synthetic export holds nothing about the people involved."]}
