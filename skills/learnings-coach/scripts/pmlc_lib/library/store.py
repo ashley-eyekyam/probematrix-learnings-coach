@@ -4,7 +4,7 @@
     learnings.jsonl         learning snapshots, never edited; a changed learning appends a superseding snapshot
     events.jsonl            status changes, site assessments, verification readings, withdrawals and merges
     incidents.jsonl         one line per published state of an incident (the latest line for a key is current)
-    private/sites.json      real site name -> S01..., never published (Task 16)
+    private/sites.json      real site name -> S01..., never published (deid.site_code)
     private/contexts.jsonl  each snapshot's original context, never published
 
 Nothing here edits or deletes a line. `validate()` lists every problem of the files as they stand, so `publish` can
@@ -12,6 +12,7 @@ refuse before it writes anything."""
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 
@@ -21,6 +22,8 @@ LIBRARY_HEADER = {"kind": "pmlc-library", "version": 1}
 LIBRARY_FILES = ("learnings.jsonl", "events.jsonl", "incidents.jsonl")
 LIBRARY_PRIVATE = ("private/contexts.jsonl",)
 LIBRARY_LL_RX = re.compile(r"^LL-(\d{6})$")
+LIBRARY_SITES = "private/sites.json"
+LIBRARY_SITE_RX = re.compile(r"^S(\d{2,})$")
 # The keys each line must carry before publish trusts the file.
 LIBRARY_REQUIRED = {
     "learnings.jsonl": ("ll_id", "snapshot_id", "incident_key", "lr_id", "content_hash", "learning"),
@@ -52,6 +55,8 @@ class Library:
         self._rows = {}
         self._ll_index = None       # ids.allocate's index, built on first use
         self._ll_next = 1
+        self._sites = None          # private/sites.json, plus the codes this session reserved (deid.site_code)
+        self.sites_changed = False
 
     # ---- reading
     def _raw(self, name: str) -> str:
@@ -84,7 +89,37 @@ class Library:
     def contexts(self) -> list:
         return self.rows("private/contexts.jsonl")
 
+    def sites(self) -> dict:
+        """{real site name: code} from private/sites.json, plus this session's reservations (a mutable cache; an
+        unreadable file reads as empty, and validate() reports it)."""
+        if self._sites is None:
+            try:
+                d = json.loads(self._raw(LIBRARY_SITES) or "{}")
+            except ValueError:
+                d = {}
+            self._sites = dict(d) if isinstance(d, dict) else {}
+        return self._sites
+
     # ---- checking
+    def _validate_sites(self) -> list:
+        raw = self._raw(LIBRARY_SITES)
+        if not raw:
+            return []
+        try:
+            d = json.loads(raw)
+        except ValueError:
+            return [f"{LIBRARY_SITES} is not valid JSON"]
+        if not isinstance(d, dict):
+            return [f"{LIBRARY_SITES} is not a JSON object of site names and codes"]
+        probs, seen = [], set()
+        for v in d.values():                 # the problems never quote a real site name
+            if not isinstance(v, str) or not LIBRARY_SITE_RX.match(v):
+                probs.append(f"{LIBRARY_SITES}: {v!r} is not a site code (S01, S02 ...)")
+            elif v in seen:
+                probs.append(f"{LIBRARY_SITES}: the code {v} is given to two sites")
+            seen.add(v)
+        return probs
+
     def validate(self) -> list:
         """Every problem of the files as they stand, one sentence each (empty when the library is sound)."""
         probs = []
@@ -120,6 +155,7 @@ class Library:
             if sid in snaps:
                 probs.append(f"learnings.jsonl: the snapshot {sid} appears twice")
             snaps.add(sid)
+        probs += self._validate_sites()
         return list(dict.fromkeys(probs))
 
     # ---- writing
@@ -131,6 +167,17 @@ class Library:
         for name in LIBRARY_FILES:          # the three public files exist from the first publish, even when empty
             (self.path / name).touch()
         self.new = False
+
+    def write_sites(self) -> None:
+        """Write private/sites.json when this session coded a new site (a whole-file replace, never published)."""
+        if not self.sites_changed:
+            return
+        p = self.path / LIBRARY_SITES
+        p.parent.mkdir(parents=True, exist_ok=True)
+        tmp = p.with_name(p.name + ".tmp")
+        tmp.write_text(json.dumps(self.sites(), indent=1, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
+        os.replace(tmp, p)
+        self.sites_changed = False
 
     def append(self, name: str, lines: list) -> None:
         """Append canonical lines to one file in a single write."""

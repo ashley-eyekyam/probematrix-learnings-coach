@@ -121,7 +121,7 @@ pmlc 2.0.0a4
 
 | Command | What it does |
 |---|---|
-| [library](commands/library.md) | `publish` adds a finished run's learnings to an append-only library folder, with stable `LL-` IDs and references that carry their incident |
+| [library](commands/library.md) | `publish` adds a finished run's learnings to an append-only library folder, with stable `LL-` IDs and references that carry their incident, after a de-identification gate (zero listed names, sites coded `S01`…, dates to the month) |
 
 ### 4a. Compare with another report
 

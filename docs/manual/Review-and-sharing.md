@@ -231,6 +231,16 @@ refused: a listed name appears in the output (<n> times); fix the pack text or u
 
 Fix the pack text, or redact the name at ingest.
 
+### Publishing to a library
+
+`library publish` puts the same masking in front of a learnings library (see [library](commands/library.md)). Every public line of the library is masked as an external copy, with three differences:
+
+- a name from `--names` or `PMLC_NAMES` is not masked but refused: the publish writes nothing until the register names a role instead;
+- the site becomes a code, `S01`, `S02` …, and the real names stay in the library's `private/sites.json`;
+- each learning's original context stays in `private/contexts.jsonl`; the library's public lines carry only the masked `public_context`.
+
+The library keeps dates to the month. Nothing under `private/` is ever shared.
+
 ## Keeping names out from the start
 
 Two tools help at the other end of the process:

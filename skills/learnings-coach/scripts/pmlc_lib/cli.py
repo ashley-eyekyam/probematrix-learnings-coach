@@ -736,7 +736,10 @@ def build_parser():
                                      "library on the first publish")
     s.add_argument("--site", help="the site's real name, coded S01... in the library (default: the Site or Location "
                                   "field of the export)")
-    s.add_argument("--names", help="names file, one per line, for the zero-hit name check (default: $PMLC_NAMES)")
+    s.add_argument("--names", help="names file, one per line, for the zero-hit name check: a listed name in a public "
+                                   "line refuses the publish (default: $PMLC_NAMES)")
+    s.add_argument("--orgs", help="organisation names file, one per line, masked as [organisation] in the public lines "
+                                  "(default: $PMLC_ORGS)")
     s.add_argument("--dry-run", dest="dry_run", action="store_true",
                    help="print what would be appended and write nothing")
     s.set_defaults(fn=cmd_library)
