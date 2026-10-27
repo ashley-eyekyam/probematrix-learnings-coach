@@ -21,7 +21,9 @@ import sys
 from pathlib import Path
 
 from .. import __version__
+from ..templates import OrgFileError
 from .deid import deidentify
+from .events import collect_events, event_key
 from .ids import allocate, incident_key
 from .store import LibraryError, canonical, open_library
 
@@ -32,6 +34,8 @@ PUBLISH_FIELDS = (("title", "title"), ("lesson", "lesson"), ("public_context", "
                   ("evidence_strength", "evidence_strength"), ("urgency", "urgency"))
 PUBLISH_REFS = (("finding_refs", "finding_ids"), ("evidence_refs", "evidence_ids"))
 PUBLISH_STATE_EVENTS = ("withdrawn", "status")
+PUBLISH_ORG_FILE = ("library publish refused: a file your organisation filled in has problems, so nothing was written. "
+                    "Fix these lines, then publish again:\n{problems}")
 PUBLISH_DAMAGED = ("library publish refused: the library at {path} is damaged, so nothing was written. Restore the "
                    "file from a backup, then publish again")
 
@@ -162,10 +166,16 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
     for s in lib.learnings():
         latest[s["ll_id"]] = s
         count[s["ll_id"]] = count.get(s["ll_id"], 0) + 1
-    withdrawn, ev_status, ev_hashes, last_state = {}, {}, set(), {}
+    withdrawn, ev_status, ev_hashes, last_state, org_latest = {}, {}, set(), {}, {}
+    org_last, org_seen = {}, set()
     for e in lib.events():
         ev_hashes.add(e.get("event_hash"))
         data = e.get("data") if isinstance(e.get("data"), dict) else {}
+        if e.get("source") == "organisation":
+            org_latest[event_key(e)] = {k: v for k, v in data.items() if k != "after"}
+            org_last[event_key(e)] = e.get("event_hash")
+            org_seen.add((e.get("type"), e.get("ll_id"), canonical({k: v for k, v in data.items() if k != "after"})))
+            continue
         if e.get("type") in PUBLISH_STATE_EVENTS:
             last_state[e.get("ll_id")] = e.get("event_hash")
         if e.get("type") == "withdrawn":
@@ -191,7 +201,8 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
     inc = next(o for f, o in public if f == "incidents.jsonl")
 
     out = {"learnings.jsonl": [], "events.jsonl": [], "incidents.jsonl": [], "private/contexts.jsonl": []}
-    counts = {"new": 0, "superseded": 0, "unchanged": 0, "withdrawn": 0, "reinstated": 0, "status": 0}
+    counts = {"new": 0, "superseded": 0, "unchanged": 0, "withdrawn": 0, "reinstated": 0, "status": 0,
+              "site_assessments": 0, "verifications": 0, "adoption": 0}
     report, events = [], []
     for (e, _), s in zip(cands, snaps):
         s["content_hash"] = _publish_hash(s["learning"])
@@ -220,19 +231,44 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
             events.append(("withdrawn", f"  + withdrawn {ll} ({s['lr_id']})",
                            _publish_event("withdrawn", ll, ikey, published,
                                           {"lr_id": s["lr_id"], "snapshot_id": s["snapshot_id"]})))
+    notes = []
+    try:
+        org = collect_events(ws, lib, {s["lr_id"]: (s["ll_id"], ikey) for _, s in cands}, published, notes)
+    except OrgFileError as e:
+        raise LibraryError(PUBLISH_ORG_FILE.format(problems="\n".join(e.problems)), 1)
+    kinds = {"site_assessment": "site_assessments", "verification": "verifications", "status": "adoption"}
+    undated = set()
+    for o in org:
+        if o.pop("undated", False):
+            undated.add(id(o))
+    events += [(kinds[o["type"]], None, o) for o in org]
     public_ev = _publish_deidentify([("events.jsonl", ev) for _, _, ev in events], ctx)
-    for (kind, line, _), (_, ev) in zip(events, public_ev):
+    for (kind, line, orig), (_, ev) in zip(events, public_ev):
         # A state event names the state event it follows (data.after), so each transition hashes uniquely: a
         # withdraw -> reinstate -> withdraw cycle in one month keeps its second withdrawal (review r0, C1).
-        after = last_state.get(ev["ll_id"])
+        mine = ev.get("source") == "organisation"
+        if mine:
+            seen = (ev.get("type"), ev.get("ll_id"), canonical(ev["data"]))
+            if id(orig) in undated and seen in org_seen:
+                continue                  # an undated reading takes the publish month: same content is not new
+            if org_latest.get(event_key(ev)) == ev["data"]:
+                continue                  # the latest event for this reading says the same: nothing new
+            after = org_last.get(event_key(ev))     # a changed reading names the one it follows, so A -> B -> A keeps
+        else:                                       # each change (same idea as the state events below)
+            after = last_state.get(ev["ll_id"])
         if after and isinstance(ev.get("data"), dict):
             ev["data"]["after"] = after
         ev.pop("event_hash", None)
         ev["event_hash"] = _publish_hash(ev)
         if ev["event_hash"] in ev_hashes:
             continue
+        if mine:
+            org_latest[event_key(ev)] = {k: v for k, v in ev["data"].items() if k != "after"}
+            org_last[event_key(ev)] = ev["event_hash"]
+            org_seen.add(seen)
+        else:
+            last_state[ev["ll_id"]] = ev["event_hash"]
         ev_hashes.add(ev["event_hash"])
-        last_state[ev["ll_id"]] = ev["event_hash"]
         out["events.jsonl"].append(ev)
         counts[kind] += 1                 # count only what is appended
         if line:
@@ -245,7 +281,7 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
         out["incidents.jsonl"].append(inc)
         report.append(f"  + incident {ikey} ({len(lls)} learnings)")
     missing = [src for _, src in PUBLISH_FIELDS if all(_publish_absent(e.get(src)) for e in entries)]
-    return {"lines": out, "counts": counts, "report": report, "incident_key": ikey, "missing": missing,
+    return {"lines": out, "counts": counts, "report": report, "incident_key": ikey, "missing": missing, "notes": notes,
             "site_code": inc.get("site_code")}
 
 
@@ -277,6 +313,14 @@ def cmd_library(a):
     print(f"{head}: {lib.path}{' (new library)' if lib.new else ''}")
     print(f"incident {plan['incident_key']}: {c['new']} new, {c['superseded']} superseded, {c['unchanged']} unchanged, "
           f"{c['withdrawn']} withdrawn, {c['reinstated']} reinstated, {c['status']} status changes")
+    if any(c[k] for k in ("site_assessments", "verifications", "adoption")):
+        def _n(k, one, many):
+            return f"{c[k]} {one if c[k] == 1 else many}"
+        print("organisation events: " + ", ".join((_n("site_assessments", "site assessment", "site assessments"),
+              _n("verifications", "verification reading", "verification readings"),
+              _n("adoption", "adoption response", "adoption responses"))))
+    for n in plan["notes"]:
+        print(f"note: {n}")
     if plan["missing"]:
         print("note: the register has no " + ", ".join(plan["missing"]) + " in any learning (an older register), "
               "so the snapshots leave them out")

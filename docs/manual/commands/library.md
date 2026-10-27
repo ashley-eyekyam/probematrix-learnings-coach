@@ -10,7 +10,7 @@ The folder holds JSON Lines files, one JSON object a line. Lines are only ever a
 |---|---|
 | `library.json` | `{"kind": "pmlc-library", "version": 1}`. Written when the folder is new or empty |
 | `learnings.jsonl` | One snapshot of a learning a line: its `LL-` ID, `snapshot_id` (`LL-000001#1`), `supersedes`, `incident_key`, `lr_id`, `content_hash`, `review_status` and the `learning` itself |
-| `events.jsonl` | Things that happen to a learning: `withdrawn`, and `status` (a learning back in the register, or a new review status). Each of these names the event it follows in `data.after`, so every change is kept |
+| `events.jsonl` | Things that happen to a learning: `withdrawn`, and `status` (a learning back in the register, or a new review status). Each of these names the event it follows in `data.after`, so every change is kept. Also the organisation's own events (`source` is `organisation`), described below |
 | `incidents.jsonl` | One line for each published state of an incident: `incident_key`, the site's code (`site_code`), the incident month, the taxonomy version and fingerprint, the export fingerprint, the engine version, the month it was published and its `LL-` IDs |
 | `private/contexts.jsonl` | Each snapshot's original `context`. Nothing under `private/` is shared |
 | `private/sites.json` | Each real site name and its code (`S01`, `S02` …). Never shared |
@@ -28,6 +28,14 @@ The folder holds JSON Lines files, one JSON object a line. Lines are only ever a
   4. **A last scan.** The masked lines are searched again for the listed names, organisations and site names. Any hit refuses the publish.
 
   Each learning's `context` is kept twice: masked, as `public_context` in `learnings.jsonl`, and as written, in `private/contexts.jsonl`. IDs, references, hashes and the `YYYY-MM` months are never masked. The content hash is of the masked learning, so a new names or organisations file can add a superseding snapshot.
+
+- **Organisation events.** When the run's `outputs/` folder holds files the organisation filled in, publish adds them to `events.jsonl` as events with `source` `organisation`. They pass the same de-identification gate, so a site is always its code.
+  - `cihh-events.jsonl` (from [consolidate](consolidate.md)): one `site_assessment` event for each answered row, with the site, the answer and the site's response.
+  - `verification.jsonl`: one `verification` event for each reading, with its level, evidence and assessor role. The event's `month` is the month of `check_date`, and the day is not kept. A reading with no date takes the publish month.
+  - `adoption.csv`: one `status` event for each row with a response, with `data.adoption` set to `accepted`, `modified` or `rejected`, and the reason, owning role and target window when given.
+  - Publishing again adds an event only when its reading changed. A reading that changes and changes back keeps both changes, because each event names the one it follows in `data.after`.
+  - An event for an `lr_id` the register does not hold is skipped, with a note.
+  - A file with a bad row (an unknown level or response, a line that is not valid JSON) refuses the publish and names the file and row; nothing is written.
 
 It never writes an owner, a due date or a sign-off. Publishing does not need an approved register: each snapshot records the register's review status.
 
@@ -99,6 +107,8 @@ Publishing it again prints "nothing to append: the library already holds this ru
 - **"library publish refused: … identifying detail … left in the public lines after masking"**. Masking missed a listed name, organisation or site. This should not happen in normal use; reword the register, publish again, and report it. Exit code 1.
 - **"note: no names list (--names or PMLC_NAMES), so the zero-hit name check did not run …"**. Pass your names file with `--names` or set `PMLC_NAMES`, unless the register is known to hold roles only.
 - **"private/sites.json: the code S01 is given to two sites"** (or "is not valid JSON", or "is not a site code"), then **"library publish refused: the library at … is damaged"**. Someone edited the site map by hand. Restore it from a backup. Exit code 1.
+- **"library publish refused: a file your organisation filled in has problems …"**, then one line for each bad row. Fix those rows in `verification.jsonl`, `adoption.csv` or `cihh-events.jsonl`, then publish again. Exit code 1.
+- **"note: skipped an event for LR-99: the register has no such learning"**. The event is left out; nothing else changes.
 - **"library publish reads a learnings register, and … is not one"**. You passed a pack or another JSON file. Exit code 2.
 - **"library publish: LR-01 appears twice in the register …"**. Give each learning its own LR-ID. Exit code 2.
 - **"library publish: … has no clusters.json: run classify (or setup) first"**. Exit code 2.
@@ -108,5 +118,5 @@ Publishing it again prints "nothing to append: the library already holds this ru
 - [scan-names](scan-names.md) is the same name check, for finished files.
 - [Review and sharing](../Review-and-sharing.md#publishing-to-a-library) describes the masking the library shares with `pack --share external`.
 - [templates](templates.md) writes the files your organisation fills in, such as `verification.jsonl` and `adoption.csv`.
-- [consolidate](consolidate.md) writes the sites' could-it-happen-here returns, which a later alpha publishes as site-assessment events.
+- [consolidate](consolidate.md) writes the sites' could-it-happen-here returns, whose `cihh-events.jsonl` `library publish` adds as site-assessment events.
 - [sign-off](sign-off.md) records a person's review of the register; the library records the review status it gives.
