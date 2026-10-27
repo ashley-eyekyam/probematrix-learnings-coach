@@ -3,7 +3,7 @@ The version, the brand and the other fixed copy live here only."""
 from __future__ import annotations
 
 
-__version__ = "2.0.0a6"
+__version__ = "2.0.0a7"
 BRAND = (f"Generated with ProbeMatrix Learnings Coach v{__version__} (open source, MIT) from a ProbeMatrix "
          "four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com")
 # Fixed copy: this module is the only place these strings are written; renderers import them, and the
