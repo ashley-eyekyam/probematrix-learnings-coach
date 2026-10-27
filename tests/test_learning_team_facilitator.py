@@ -177,9 +177,9 @@ def test_hazira_golden(hz):
     assert "check-language: 0 errors" in lang, lang
 
 
-def test_golden_is_render_pending():
-    """Phase 6 checklist item 6: the golden lands as JSON only; Task 18 renders it."""
+def test_golden_is_rendered():
+    """Phase 6 checklist item 6: the golden landed as JSON only; Task 18 rendered it beside its JSON."""
     from pmlc_lib.samples import RENDER_PENDING
     out = SAMPLE / "outputs"
-    assert f"{SKILL}.json" in RENDER_PENDING
-    assert not (out / f"{SKILL}.html").exists() and not (out / f"{SKILL}.md").exists()
+    assert f"{SKILL}.json" not in RENDER_PENDING
+    assert (out / f"{SKILL}.html").is_file() and (out / f"{SKILL}.md").is_file()

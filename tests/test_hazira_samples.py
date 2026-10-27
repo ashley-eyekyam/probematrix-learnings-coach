@@ -37,6 +37,15 @@ SHOWCASES = [
     ("pack", "risk-register-update", ["--format", "risk-csv"], ["risk-register-update.risk-changes.csv"]),
     ("nine-m-actions-template", "nine-m-analysis", [], ["nine-m-analysis.actions-template.xlsx"]),
     ("pack-xlsx", "compliance-crosswalk", ["--kind", "table"], ["compliance-crosswalk.xlsx"]),
+    # Phase 6 Task 18: the alert poster and deck (one content slide), the safety moment deck, the AcciMap picture, and the two
+    # organisation files (blank where the organisation fills them in). "templates" runs
+    # `pmlc templates <ws> <kind> --out <dir>/<file> <flags>`, a flag naming a .json resolved in the run's outputs/.
+    ("pack", "safety-alert", ["--layout", "poster", "--format", "pptx"],
+     ["safety-alert.poster.html", "safety-alert.pptx"]),
+    ("pack", "safety-moment-deck", ["--format", "pptx"], ["safety-moment-deck.pptx"]),
+    ("pack", "systemic-accimap", ["--format", "svg"], ["systemic-accimap.accimap.svg"]),
+    ("templates", "cihh", ["--pack", "could-it-happen-here.json"], ["could-it-happen-here.cihh-template.xlsx"]),
+    ("templates", "learning-team", [], ["learning-team-notes.csv"]),
 ]
 # Inputs committed beside the packs: the scripted 9M session the nine-m-analysis golden was written from (OD5-1),
 # copied into the workspace as nine_m_session.json
@@ -93,8 +102,13 @@ def hz(tmp_path_factory):
 
 def _pack(ws, name, out, *flags, command="pack"):
     env = dict(os.environ, SOURCE_DATE_EPOCH=_epoch())
-    r = subprocess.run([sys.executable, str(PMLC), command, str(ws), str(ws.parent / "outputs" / f"{name}.json"),
-                        "--out", str(out), *flags], capture_output=True, text=True, env=env)
+    if command == "templates":                       # the template kind, and any pack it is built from
+        target = name
+        flags = [str(ws.parent / "outputs" / f) if f.endswith(".json") else f for f in flags]
+    else:
+        target = str(ws.parent / "outputs" / f"{name}.json")
+    r = subprocess.run([sys.executable, str(PMLC), command, str(ws), target, "--out", str(out), *flags],
+                       capture_output=True, text=True, env=env)
     assert r.returncode == 0, r.stdout + r.stderr
 
 
@@ -127,7 +141,7 @@ def test_hazira_samples_hold_exactly_the_od4_4_files():
     want = set(REGISTER_FILES) | set(SESSION_FILES) | {f for _, _, _, files in SHOWCASES for f in files}
     want |= {f"{p}.{ext}" for p in RENDERED for ext in ("json", "html", "md")} | {f"{p}.json" for p in PENDING}
     assert {p.name for p in OUTPUTS.iterdir()} == want
-    assert sorted(RENDERED) == readme_packs() and len(RENDERED) >= 25 and "frontline-learning-cards-hi" in PACKS
+    assert sorted(RENDERED) == readme_packs() and len(RENDERED) >= 41 and "frontline-learning-cards-hi" in PACKS
 
 
 def test_hazira_samples_carry_phase_4_fields():
@@ -170,20 +184,19 @@ def test_hazira_samples_render_identically(hz, tmp_path):
             _same(out / f, OUTPUTS / f)
 
 
-# Phase 6: the new-skill tasks (7-13) stage their Hazira goldens as JSON only; Task 18 renders them and empties the set.
+# Phase 6: the new-skill tasks (7-13) staged their Hazira goldens as JSON only; Task 18 rendered them.
 P6_STAGED = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
              "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"}
 
 
 def test_no_hazira_pack_waits_for_its_render():
-    """Task 24: every Phase 5 golden is rendered beside its JSON and listed in the README. Phase 6 stages its new
-    goldens again (checklist item 6): each pending entry is a Phase 6 skill's golden JSON with no rendering, and
-    Phase 6 Task 18 renders them and empties the set; every other pack stays rendered and listed."""
-    assert set(PENDING) <= P6_STAGED and len(PENDING) == len(RENDER_PENDING), set(PENDING) - P6_STAGED
-    for name in PENDING:
-        assert (OUTPUTS / f"{name}.json").is_file(), name
-        assert not (OUTPUTS / f"{name}.html").exists() and not (OUTPUTS / f"{name}.md").exists(), name
-    assert len(RENDERED) == len(PACKS) == len(readme_packs()) >= 34
+    """Task 24 (Phase 5) and Task 18 (Phase 6): every golden is rendered beside its JSON and listed in the README,
+    and the staging set is empty again."""
+    assert RENDER_PENDING == frozenset() and PENDING == []
+    assert P6_STAGED <= set(RENDERED) and P6_STAGED <= set(readme_packs())
+    for name in P6_STAGED:
+        assert all((OUTPUTS / f"{name}.{ext}").is_file() for ext in ("json", "html", "md")), name
+    assert len(RENDERED) == len(PACKS) == len(readme_packs()) >= 41
 
 
 MANUAL = ROOT / "docs" / "manual"
