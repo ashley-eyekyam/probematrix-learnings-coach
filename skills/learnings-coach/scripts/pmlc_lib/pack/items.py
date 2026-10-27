@@ -15,6 +15,8 @@ from ..templates import load_adoption, load_register_entries, OrgFileError
 from ..util import _abs
 from ..workspace import incident_date, load_ws, outputs_dir
 
+TRANSFERABLE = ("other sites", "industry-wide")       # register-items --transferable (Phase 6 Task 2)
+
 
 # ----------------------------------------------------------------------------- causal graph -> graph item
 
@@ -288,15 +290,22 @@ def cmd_table_item(a):
 
 # ----------------------------------------------------------------------------- register -> learning items
 
-def register_items(entries, tier) -> list:
+def register_items(entries, tier=None, lr_ids=None, transferable=False) -> list:
     """Learning items for one tier: priority 1 first, then by LR-ID. The lesson is the tier's own message when the
-    entry has one."""
-    mine = [e for e in entries if tier in (e.get("tiers") or [])]
+    entry has one. lr_ids keeps only those learnings, in the order given; transferable keeps the `other sites` and
+    `industry-wide` ones (Phase 6 Task 2). With no tier an item's id is the LR-ID in lowercase."""
+    mine = [e for e in entries if tier is None or tier in (e.get("tiers") or [])]
+    if transferable:
+        mine = [e for e in mine if str(e.get("transferability") or "").strip().lower() in TRANSFERABLE]
     mine.sort(key=lambda e: (e.get("priority") if isinstance(e.get("priority"), int) else 9, str(e.get("lr_id"))))
+    if lr_ids:
+        order = {lr: n for n, lr in enumerate(dict.fromkeys(lr_ids))}
+        mine = sorted((e for e in mine if str(e.get("lr_id")) in order), key=lambda e: order[str(e.get("lr_id"))])
     out = []
     for e in mine:
-        msg = (e.get("tier_messages") or {}).get(tier)
-        it = {"kind": "learning", "id": f"{tier.lower()}-{str(e['lr_id']).lower()}", "learning": e["lr_id"],
+        msg = (e.get("tier_messages") or {}).get(tier) if tier else None
+        prefix = f"{tier.lower()}-" if tier else ""
+        it = {"kind": "learning", "id": f"{prefix}{str(e['lr_id']).lower()}", "learning": e["lr_id"],
               "lesson": msg or e.get("lesson") or e.get("title", "")}
         expl = e.get("lesson") if msg else e.get("context")
         if expl:
@@ -306,12 +315,25 @@ def register_items(entries, tier) -> list:
     return out
 
 
+def _ri_fail(msg):
+    print(msg, file=sys.stderr)
+    sys.exit(2)
+
+
 def cmd_register_items(a):
+    lr_ids, transferable = getattr(a, "lr", None) or [], getattr(a, "transferable", False)
+    if not (a.tier or lr_ids or transferable):
+        _ri_fail("register-items: give --tier, --lr or --transferable")
     ws = _abs(a.ws)
     reg = Path(a.register) if a.register else _default_register(ws)
     if not reg.is_file():
         sys.exit(f"No Learnings Register at {reg}: write it first, or pass --register FILE")
-    print(json.dumps(register_items(load_register_entries(reg), a.tier), indent=1, ensure_ascii=False))
+    entries = load_register_entries(reg)
+    known = {str(e.get("lr_id")) for e in entries if isinstance(e, dict)}
+    for lr in lr_ids:
+        if lr not in known:
+            _ri_fail(f"register-items: {lr} is not in the register {reg}")
+    print(json.dumps(register_items(entries, a.tier, lr_ids, transferable), indent=1, ensure_ascii=False))
 
 
 # ----------------------------------------------------------------------------- timeline candidates -> timeline item

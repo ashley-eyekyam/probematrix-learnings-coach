@@ -38,7 +38,7 @@ Subcommands
                   (cihh: a could-it-happen-here return template for each site, from a pack's self_check items)
   consolidate     the sites' could-it-happen-here returns -> cihh-consolidated.json and cihh-events.jsonl
   table-item      a ready table item for a pack (JSON on stdout)
-  register-items  a tier's learnings from the register as learning items
+  register-items  a tier's learnings (or chosen or transferable ones) from the register as learning items
   timeline-item   timeline candidates as a pack timeline item
   facts           the headline numbers of a workspace
   crosswalk       which standard clauses the register evidences, and what the organisation must show
@@ -55,6 +55,7 @@ Subcommands
   nine-m-answer   record the answer to a 9M question (a suggestion's number, or free text)
   nine-m-replay   a scripted 9M session that takes the recommended suggestion at every question (--accept-recommended)
   nine-m-actions-template  a blank actions sheet from a nine-m-analysis pack (Owner, Due date and Status left blank)
+  alert-grade     a safety alert's default learnings and grade (register urgency, or a suggestion from priority)
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -109,6 +110,7 @@ from .ninem import cmd_nine_m_seed, NINE_M_CODES
 from .ninem_session import (cmd_nine_m_actions_template, cmd_nine_m_answer, cmd_nine_m_replay, cmd_nine_m_suggest,
                             NINE_M_GLOBAL_STEPS, NINE_M_STEPS)
 from .missed import cmd_missed_opportunities
+from .alert import cmd_alert_grade
 
 
 # ----------------------------------------------------------------------------- main
@@ -526,10 +528,15 @@ def build_parser():
     s.add_argument("--pack", help="pack JSON: hoc counts its recommendations and barriers; every kind drops the ids its exclusions list from the cites")
     s.set_defaults(fn=cmd_table_item)
 
-    s = sp.add_parser("register-items", help="a tier's learnings from the register as learning items (JSON on stdout)", allow_abbrev=False)
+    s = sp.add_parser("register-items", help="a tier's, chosen or transferable learnings from the register as learning items (JSON on stdout)", allow_abbrev=False)
     s.add_argument("ws")
-    s.add_argument("--tier", required=True, choices=["T1", "T2", "T3", "T4", "T5"])
+    s.add_argument("--tier", choices=["T1", "T2", "T3", "T4", "T5"],
+                   help="one tier's learnings (required unless --lr or --transferable is given)")
     s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json)")
+    s.add_argument("--lr", action="append", metavar="LR-ID",
+                   help="keep only this learning (repeatable; the items follow the order given)")
+    s.add_argument("--transferable", action="store_true",
+                   help="keep only the learnings whose transferability is other sites or industry-wide")
     s.set_defaults(fn=cmd_register_items)
 
     s = sp.add_parser("timeline-item", help="timeline candidates as a pack timeline item (JSON on stdout)", allow_abbrev=False)
@@ -670,6 +677,15 @@ def build_parser():
     s.add_argument("--top", type=int, default=None, metavar="N",
                    help="with --timeline-item: keep the N dated entries that cite the most findings (default: all)")
     s.set_defaults(fn=cmd_missed_opportunities)
+
+    s = sp.add_parser("alert-grade", help="a safety alert's default learnings and its grade, from the register's "
+                      "urgency or a suggestion from priority", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json)")
+    s.add_argument("--lr", action="append", metavar="LR-ID",
+                   help="the learnings the alert carries (repeatable; default: the top 3 priority-1 learnings)")
+    s.add_argument("--json", action="store_true", help="print {grade, grade_source, suggested, learnings, notes}")
+    s.set_defaults(fn=cmd_alert_grade)
 
     for name in JSON_COMMANDS:   # P3-24: --json on every analysis and check command (dest as_json: check-language has a positional "json")
         sp.choices[name].add_argument("--json", dest="as_json", action="store_true",
