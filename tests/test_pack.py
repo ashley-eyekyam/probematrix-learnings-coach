@@ -1409,7 +1409,9 @@ def test_every_profile_names_a_fixture():
 def test_profiles_have_the_contract_shape():
     for name, prof in profiles.load().items():
         assert set(prof) <= {"sections", "required_scope", "bottom_line", "word_limits", "coverage_floor", "rules",
-                           "max_words", "lint_errors"}, name
+                           "max_words", "lint_errors", "pptx_slides"}, name
+        if "pptx_slides" in prof:                                    # Phase 6 Task 2: the one-slide deck, int 1 only
+            assert type(prof["pptx_slides"]) is int and prof["pptx_slides"] == 1, name
         assert all(re.fullmatch(r"JC([1-9]|1[0-2])", x) for x in prof.get("lint_errors", [])), name
         for e in prof["sections"]:
             assert set(e) == {"id", "kinds", "min", "max"} and 0 <= e["min"] <= e["max"], (name, e)
