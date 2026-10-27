@@ -114,5 +114,15 @@
     "producer": "engine:library",
     "org_filled": false,
     "planned": "Phase 7"
+  },
+  "cihh-template": {
+    "file": "outputs/<pack>.cihh-template.xlsx",
+    "producer": "engine:templates",
+    "org_filled": true
+  },
+  "cihh-consolidated": {
+    "file": "outputs/cihh-consolidated.json",
+    "producer": "engine:consolidate",
+    "org_filled": false
   }
 }

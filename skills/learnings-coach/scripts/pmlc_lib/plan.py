@@ -39,7 +39,9 @@ def _engine_commands(cmd: str, produces: list) -> list:
     if cmd == "ingest":
         return ["PMLC ingest <export.xlsx> --slug <site>-<event>"]
     if cmd == "templates":
-        return [f"PMLC templates <ws> {TEMPLATE_MODES.get(a, a)}" for a in produces]
+        # the cihh-template artefact is made by the cihh mode, from the could-it-happen-here pack
+        return ["PMLC templates <ws> cihh --pack <run>/outputs/could-it-happen-here.json" if a == "cihh-template"
+                else f"PMLC templates <ws> {TEMPLATE_MODES.get(a, a)}" for a in produces]
     return [f"PMLC {cmd} <ws>"]
 
 
@@ -60,7 +62,10 @@ class _Resolver:
     def request(self, step: dict) -> None:
         sk = step["skill"]
         if sk.startswith("engine:"):
-            made = [a for a, d in self.artefacts.items() if d.get("producer") == sk]
+            # An artefact whose file name needs an input (outputs/<pack>.cihh-template.xlsx needs --pack) is made only
+            # when a skill asks for it, never by a bare engine step (Phase 6, Task 3).
+            made = [a for a, d in self.artefacts.items() if d.get("producer") == sk
+                    and (a == step.get("mode") or "<" not in str(d.get("file", "")))]
             if step.get("mode") in made:
                 made = [step["mode"]]
             else:       # an on_request artefact is made only by a step that names it as its mode

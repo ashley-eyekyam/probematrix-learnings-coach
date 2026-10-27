@@ -52,6 +52,13 @@ def test_wai_wad_hazira_prompts_are_clean(hazira_ws):
         assert not waiwad.counterfactual_hits(it["question"])
 
 
+def test_hazira_transferable_learnings():
+    """Task 3: transferable learnings = 25, by the rule `transferability` in `other sites`, `industry-wide` (the
+    learnings a could-it-happen-here pack draws its self-checks from)."""
+    reg = json.loads(REGISTER.read_text(encoding="utf-8"))
+    assert sum(1 for e in reg["entries"] if e.get("transferability") in ("other sites", "industry-wide")) == 25
+
+
 # ----------------------------------------------------------------------------- Task 2: alert-grade (P6-3)
 
 def test_hazira_alert_grade_numbers():

@@ -117,7 +117,7 @@ def test_schema_keyword_subset():
 
 def test_artefact_names_closed():
     art = load(REFS / "artefacts.json")
-    assert len(art) == 23
+    assert len(art) == 25
     for name, a in art.items():
         assert set(a) <= {"file", "producer", "org_filled", "planned"}, name
         kind, _, who = a["producer"].partition(":")
@@ -208,6 +208,8 @@ PINNED_ARTEFACTS = {
     "effect-plan": ("workspace/effect_plan.json", "engine:effect-plan", None),
     "wai-wad": ("workspace/wai_wad.json", "engine:wai-wad", None),
     "learning-team-notes": ("outputs/learning-team-notes.csv", "engine:templates", None),
+    "cihh-template": ("outputs/<pack>.cihh-template.xlsx", "engine:templates", None),
+    "cihh-consolidated": ("outputs/cihh-consolidated.json", "engine:consolidate", None),
 }
 
 
@@ -216,7 +218,8 @@ def test_p4h_artefact_files_and_producers_pinned():
     got = {n: (a["file"], a["producer"], a.get("planned")) for n, a in art.items()}
     assert got == PINNED_ARTEFACTS
     assert {n for n, a in art.items() if a["org_filled"]} == {"adoption", "distribution", "verification",
-                                                              "learning-team-notes"}
+                                                              "learning-team-notes",
+                                                              "cihh-template"}
 
 
 def test_p4h_workflow_modes_planned_phases_and_when_pinned():

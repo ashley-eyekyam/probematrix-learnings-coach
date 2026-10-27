@@ -183,6 +183,15 @@ def _write_csv(path: Path, columns: list, rows: list) -> None:
 
 
 def cmd_templates(a):
+    if a.mode == "cihh":                                  # Phase 6 (P6-9): the could-it-happen-here return template
+        if not getattr(a, "pack", None):
+            sys.exit("templates cihh needs --pack <could-it-happen-here.json>: the pack whose self_check items "
+                     "become the rows")
+        from .cihh import cmd_cihh_template
+        return cmd_cihh_template(a)
+    for flag in ("pack", "share", "names", "orgs"):
+        if getattr(a, flag, None):
+            sys.exit(f"--{flag} is for templates cihh only")
     ws = Path(a.ws)
     out_dir = outputs_dir(ws)
     target = Path(a.out) if a.out else out_dir / FILES[a.mode]
