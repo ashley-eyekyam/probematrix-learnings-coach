@@ -3,7 +3,8 @@ one blank layout and one theme; every slide is text boxes placed in EMU. In orde
 bottom-line entry, one per decision, module and question item, one per other section (at most PX_PER_SLIDE item
 summaries a slide, then "(continued)" slides), one per graph item drawn as native shapes, and a closing slide with
 the coverage lines. Every slide carries the status phrase and the brand (which holds VERSION_STAMP) in a footer, and
-DRAFT while the pack is a draft. Each slide's citations and its items' full text go to its notes slide."""
+DRAFT while the pack is a draft. Each slide's citations and its items' full text go to its notes slide.
+A profile with "pptx_slides": 1 (Phase 6 Task 2) gives the title slide, one content slide and the closing slide."""
 from __future__ import annotations
 
 import html as px_std_html
@@ -248,7 +249,7 @@ class _PxDeck:
         self.slides.append(("".join(sp) + shapes, notes, rels_extra))
 
     def body(self, items) -> str:
-        """items: (text, kind) pairs; kind is big, bold, line, bullet or muted."""
+        """items: (text, kind) pairs; kind is big, bold, line, bullet, muted, or head and small (the one-slide deck)."""
         st, out = self.st, []
         for text, kind in items:
             text = _px_strip_cites(text)
@@ -258,6 +259,10 @@ class _PxDeck:
                 out.append(_px_p(text, st, sz=2400, b=True, after=1000))
             elif kind == "bullet":
                 out.append(_px_p(text, st, sz=1800, bullet=True))
+            elif kind == "head":
+                out.append(_px_p(text, st, sz=1600, b=True, color=st.accent, after=200))
+            elif kind == "small":
+                out.append(_px_p(text, st, sz=1400, bullet=True))
             elif kind == "muted":
                 out.append(_px_p(text, st, sz=1400, color=PX_MUTED, after=300))
             else:
@@ -529,11 +534,43 @@ def _px_closing(deck: _PxDeck, pack: dict) -> None:
     deck.add(label(L, "ui.coverage"), deck.body(lines), notes)
 
 
+def _px_one_slide(deck: _PxDeck, pack: dict, inc_date) -> None:
+    """Profile "pptx_slides": 1 (Phase 6 Task 2): the bottom line, then every section's heading and items in order, on
+    one content slide; each item is its one-line summary (clipped by _px_clip) and its full text goes to the notes."""
+    L, rows, notes, ids = deck.L, [], [], []
+    for b in (b for b in pack.get("bottom_line") or [] if isinstance(b, dict)):
+        rows.append((_px_clip(_px_strip_cites(b.get("text", ""))), "line"))
+        notes.append(str(b.get("text", "")))
+        ids += _px_ids(b)
+    for s in (s for s in pack.get("sections") or [] if isinstance(s, dict)):
+        items = [it for it in s.get("items") or [] if isinstance(it, dict)]
+        rows.append((s.get("heading", ""), "head"))
+        notes += ([""] if notes else []) + [str(s.get("heading", ""))]
+        if s.get("intro"):
+            notes.append(str(s["intro"]))
+            ids += _px_ids(s["intro"])
+        for it in items:
+            rows.append((_px_summary(it, L), "small"))
+            notes += [f"- {_px_summary(it, L)}"] + _px_item_notes(it, L, inc_date)
+            ids += _px_ids(it)
+    deck.add(str(pack.get("title", "")), deck.body(rows), notes + _px_records_block(deck, list(dict.fromkeys(ids))))
+
+
+def _px_one_slide_wanted(pack: dict) -> bool:
+    from ..pack.profiles import profile_for
+    prof = profile_for(pack.get("pack"))
+    return isinstance(prof, dict) and prof.get("pptx_slides") == 1 and not isinstance(prof.get("pptx_slides"), bool)
+
+
 def _px_slides(ctx, L, st) -> _PxDeck:
     pack = ctx.pack
     deck = _PxDeck(ctx, L, st)
     inc_date = (pack.get("incident") or {}).get("date") or incident_date(ctx.w)
     _px_cover(deck, pack)
+    if _px_one_slide_wanted(pack):
+        _px_one_slide(deck, pack, inc_date)
+        _px_closing(deck, pack)
+        return deck
     bl = [b for b in pack.get("bottom_line") or [] if isinstance(b, dict)]
     for n, b in enumerate(bl, 1):
         notes = [str(b.get("text", ""))]
