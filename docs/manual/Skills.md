@@ -1,6 +1,6 @@
 # Skills
 
-The Learnings Coach is 23 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
+The Learnings Coach is 32 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
 
 **Start here:** [learnings-coach](skills/learnings-coach.md) sets up the workspace for an export and routes your request. Every other skill relies on it.
 
@@ -57,7 +57,7 @@ One skill for each tier, from the sharp end to the board.
 
 ## What every skill does the same way
 
-- It reads the findings through the engine's [select](commands/select.md) command, with filters for tier, level, function and rating. Sixteen skills also have a recorded **preset** (`pmlc select <ws> --preset <skill>`) that runs the same gather calls in one go.
+- It reads the findings through the engine's [select](commands/select.md) command, with filters for tier, level, function and rating. Twenty-one skills also have a recorded **preset** (`pmlc select <ws> --preset <skill>`) that runs the same gather calls in one go.
 - It writes a **pack**: a JSON file the engine checks with [check-pack](commands/check-pack.md) and renders with [pack](commands/pack.md) to an offline HTML page and a Markdown file. The register skill writes a register instead.
 - It follows the [learning principles](https://github.com/ashley-eyekyam/probematrix-learnings-coach/blob/main/skills/learnings-coach/references/learning-principles.md): roles only, no blame, every sentence traced to Finding and Evidence IDs, learnings counted rather than finding instances.
 - Its outputs are marked "Learning purposes: not a statutory document" and stay **draft** until a person signs them off (see [Review and sharing](Review-and-sharing.md)).

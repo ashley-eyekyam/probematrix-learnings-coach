@@ -318,7 +318,7 @@ def test_routes_to_targets_exist(tmp_path):
     targets = [_target(e) for e in router]
     assert all(t in PRESETS or t in SUB_SKILLS for t in targets), set(targets) - set(PRESETS) - set(SUB_SKILLS)
     assert set(PRESETS) <= set(targets), set(PRESETS) - set(targets)            # all 9 presets
-    assert set(SUB_SKILLS) <= set(targets), set(SUB_SKILLS) - set(targets)      # all 22 sub-skills
+    assert set(SUB_SKILLS) <= set(targets), set(SUB_SKILLS) - set(targets)      # every sub-skill
     sibs = [e for e in router if e.get("sibling")]
     assert len(sibs) >= 8, len(sibs)
     for e in sibs:

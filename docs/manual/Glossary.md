@@ -64,6 +64,10 @@ A reviewer's vote in ProbeMatrix to downgrade, reject or remove a finding. Learn
 
 The "DRAFT" label at the top of every page until the file is approved. In Markdown it is `**DRAFT**`; in the workbook it follows the status phrase in each sheet's header.
 
+### Drupsteen's learning cycle
+
+The phases an organisation goes through to learn from an incident: reporting, investigation and analysis, planning interventions, intervening, and evaluating (after Drupsteen and colleagues, "Critical steps in learning from incidents", 2013). Learning can stall at any one of them. The [failure-to-learn-review](skills/failure-to-learn-review.md) pack has one row per phase, saying what the export shows about it.
+
 ### Embed mode (`--embed`)
 
 How much of the investigation's records a page carries: `cited` (the default: full records only for what the pack cites), `summary` (as cited, without quotes, evidence descriptions, interviews, key questions and vote reasons) or `full` (everything). A flag of `pack` and `dashboard`.
@@ -132,6 +136,10 @@ A culture in which people are not blamed for honest mistakes and system problems
 
 The question the coach asks before writing about an act: what could a competent person know at that moment, with the information and pressures they had? If the answer needs facts that came out later, the sentence is hindsight.
 
+### KRI (key risk indicator)
+
+A measure that shows a risk is getting worse before it turns into loss, such as the number of overdue inspections on a critical line. The [risk-register-update](skills/risk-register-update.md) pack proposes KRIs for the risk register, each with what is counted, from which record, and what a worsening looks like. It never names an owner or a threshold.
+
 ### Language check
 
 The check of every pack and register against the rules JC1 to JC12: names, blame, hindsight, legal conclusions, retraining-only fixes, single-holder roles, outside facts, organisation names, equipment tags, the status phrase and appeals. See [Language checks](Language-checks.md).
@@ -186,6 +194,10 @@ The workspace's bookkeeping file, `manifest.json`: fingerprints of every file an
 
 The factor code in the ProbeMatrix taxonomy, such as `OIR 1.6` or `SVF 3.4`. The letters show the level and sub-category.
 
+### Nine Ms (9M)
+
+The ProbeMatrix 9M framework: nine parts of a work system that a condition can belong to, M1 Manpower/Mindpower, M2 Medium, M3 Method, M4 Mission, M5 Measurement, M6 Management/Money, M7 Machine, M8 Material and M9 Maintenance, with 97 subcategories. [nine-m-seed](commands/nine-m-seed.md) scores each finding against them, and the [nine-m-analysis](skills/nine-m-analysis.md) skill works through them with you. M1 is not "the people M": it asks what in the system shaped what people did. Only the names come from the framework (`references/nine-m.json`); the definitions and questions are written for the coach.
+
 ### Overlay
 
 A small file of site-specific or country-specific role words added to the standard list of functions, such as `india-process-site`. Applied with `classify --overlay`.
@@ -223,6 +235,14 @@ A detail that can point to one person without naming them: a post with one holde
 ### Rating
 
 The strength of a finding's causal contribution; higher is stronger. On Hazira ratings run from 2 to 4, and the *top rating* is 4.
+
+### RBPS (Risk Based Process Safety)
+
+The Center for Chemical Process Safety's process-safety management model: 20 elements in four pillars (commit to process safety, understand hazards and risk, manage risk, learn from experience). `crosswalk --framework rbps` maps the register to the 20 elements. See [compliance-crosswalk](skills/compliance-crosswalk.md).
+
+### RCA² (Root Cause Analysis and Action)
+
+A method for root cause analysis and action, from the US National Patient Safety Foundation (2015), whose action hierarchy ranks fixes as stronger (they change the physical design or the process, so the error is harder to make), intermediate (such as checklists, redundancy or software changes) or weaker (they rely on people remembering, such as training, a new procedure or a warning). `rec-review` bands each recommendation the same way. See [recommendation-strength-review](skills/recommendation-strength-review.md).
 
 ### Redaction
 
@@ -267,6 +287,10 @@ A comparison with another report in which the investigation's evidence already i
 ### Sign-off
 
 The record that a person reviewed a file, made with `sign-off` and the reviewer's role. The agent runs it only when you say you reviewed the file.
+
+### Single-loop and double-loop learning
+
+Single-loop learning fixes the gap and keeps the goals, norms and assumptions that produced it: the seal is replaced, and the inspection interval stays as it was. Double-loop learning also questions those assumptions: why was that interval thought safe? `rec-review` counts a recommendation as double-loop when its change questions an assumption, a norm, a design basis, a target, an incentive or a budget.
 
 ### Singleton role
 

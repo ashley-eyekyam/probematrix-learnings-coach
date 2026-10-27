@@ -47,6 +47,8 @@ Each line gives the severity, the rule, the place in the JSON file (the path), t
 
 A **frontline pack** is one whose scope is exactly tier T1, such as the [frontline-learning-cards](skills/frontline-learning-cards.md) pack.
 
+**Packs that make a rule an error.** A pack's profile in `pack-profiles.json` can list rules under `lint_errors`. `check-pack`, and `check-language` given that pack, then report those rules as errors for it. JC5 is an error in the [compliance-crosswalk](skills/compliance-crosswalk.md) pack, JC3 and JC4 in the [failure-to-learn-review](skills/failure-to-learn-review.md) pack, and the [people-workforce-learnings](skills/people-workforce-learnings.md) profile lists JC2, which is an error everywhere. `lint_ok` with its reason still suppresses a hit.
+
 The examples below were run through `check-language` on the Hazira workspace.
 
 ## JC1: names

@@ -36,7 +36,7 @@ pmlc pack <ws> <run>/outputs/risk-register-update.json --format risk-csv,bowtie-
 
 - [select](../commands/select.md): `--code` takes the literal codes whose names contain "risk" in this export (rebuild the list for another export from `findings.json`); `--brief` gives short entries. The taxonomy has no `barrier` entity tag, so there is no `--tag` line.
 - [check-pack](../commands/check-pack.md) with `--strict` checks the pack against its profile: the banner line (`banner:risk`) and no owners or due dates (`no-owner-due`).
-- [pack](../commands/pack.md) `--format risk-csv` writes `risk-register-update.risk-changes.csv`, one row per `risk_change` item with the `risk_owner_decision` column left blank for the risk owner; `--format bowtie-csv` writes `risk-register-update.bowtie.csv`, one row per barrier, threat side for Prevention and consequence side for Mitigation. Neither file carries a status line, so send them with the pack.
+- [pack](../commands/pack.md) `--format risk-csv` writes `risk-register-update.risk-changes.csv`, one row per `risk_change` item with the `risk_owner_decision` column left blank for the risk owner (an existing file is never overwritten: move it or pass a new `--out`); `--format bowtie-csv` writes `risk-register-update.bowtie.csv`, one row per barrier, threat side for Prevention and consequence side for Mitigation. Neither file carries a status line, so send them with the pack.
 
 ## What you get
 

@@ -81,6 +81,28 @@ def test_risk_csv_shared_copy(tmp_path):
     assert "09:15" not in text and text.endswith(",\n")            # times masked; decision column blank
 
 
+def test_risk_csv_refuses_overwrite(tmp_path):
+    """D7: the risk owner records decisions in <pack>.risk-changes.csv, so a second `pack --format risk-csv` refuses
+    to replace it (exit 1, nothing else written), as `--format csv` does for <pack>.actions.csv."""
+    ws_, _ = share_ws(tmp_path)
+    doc = copy.deepcopy(SPACK)
+    doc["sections"][0]["items"].append(dict(RISK))
+    p = write_doc(tmp_path, doc)
+    out = tmp_path / "o"
+    r = _cli("pack", str(ws_), str(p), "--format", "risk-csv", "--out", str(out))
+    assert r.returncode == 0, r.stderr
+    f = out / "test-pack.risk-changes.csv"
+    assert f.read_bytes().endswith(b",\r\n")                      # rows kept as \r\n, decision column blank
+    decided = COLUMNS + "\r\nrc-seal,x,control-rating,a,b,c,FND-0001,Accepted by the risk owner\r\n"
+    f.write_bytes(decided.encode("utf-8"))
+    r = _cli("pack", str(ws_), str(p), "--format", "html,risk-csv", "--out", str(out))
+    assert r.returncode == 1
+    assert f"{f} already exists and may hold your organisation's entries; move it or pass a new --out" in r.stderr
+    assert f.read_bytes() == decided.encode("utf-8")
+    assert not (out / "test-pack.html").exists()                    # nothing else was written either
+    assert _cli("pack", str(ws_), str(p), "--format", "risk-csv", "--out", str(tmp_path / "o2")).returncode == 0
+
+
 def test_risk_change_all_formats(w):
     """The conformance loop over all-kinds: every registered format renders a pack with a risk_change item."""
     pack = fixture("all-kinds")
