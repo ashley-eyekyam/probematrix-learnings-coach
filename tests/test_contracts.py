@@ -231,8 +231,6 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
                      ("follow-up", "engine:templates"): "verification"}
     planned = {(n, s["skill"]): s["planned"] for n, w in wf.items() for s in w["steps"] if "planned" in s}
     assert planned == {
-        ("first-48-hours", "safety-alert"): "Phase 6",
-        ("sister-sites", "safety-alert"): "Phase 6",
         ("sister-sites", "could-it-happen-here"): "Phase 6",
         ("training", "safety-moment-deck"): "Phase 6",
         ("follow-up", "learning-effectiveness-plan"): "Phase 6"}

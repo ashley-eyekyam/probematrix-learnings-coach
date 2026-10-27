@@ -72,19 +72,38 @@ def test_plan_stale_output_not_done(fresh, tmp_path):
     assert p["next"] == 2
 
 
-def test_plan_planned_skill_skipped(fresh):
-    p = plan_json(str(fresh), "--workflow", "first-48-hours")
+def test_plan_planned_skill_skipped(fresh, tmp_path):
+    """A workflow step whose skill has no folder yet and carries `planned` is shown and skipped. Phase 6 shipped
+    safety-alert, so the step is planned here in a copy of the references (a skill not yet shipped: `future-alert`)."""
+    refs = tmp_path / "refs"
+    shutil.copytree(contracts.REFS, refs)
+    wf = json.loads((refs / "workflows.json").read_text(encoding="utf-8"))
+    wf["first-48-hours"]["steps"][1] = {"skill": "future-alert", "mode": "internal", "planned": "Phase 6"}
+    (refs / "workflows.json").write_text(json.dumps(wf), encoding="utf-8")
+    p = plan.build(fresh, fresh, workflow="first-48-hours", refs=refs)
     by = {s["skill"]: s for s in p["steps"]}
-    sa = by["safety-alert"]
+    sa = by["future-alert"]
     assert sa["status"] == "planned" and sa["planned_for"] == "Phase 6" and sa["commands"] == []
     assert sa["mode"] == "internal"
     assert by["learnings-register"]["mode"] == "draft"
-    assert [s["skill"] for s in p["steps"]][-3:] == ["learnings-register", "safety-alert", "supervisor-coach"]
-    reg = by["learnings-register"]
-    reg["status"] = "done"
+    assert [s["skill"] for s in p["steps"]][-3:] == ["learnings-register", "future-alert", "supervisor-coach"]
+    by["learnings-register"]["status"] = "done"
     assert plan.next_step(p)["skill"] == "supervisor-coach"
+    assert plan.step_lines(sa, fresh, fresh) == [f"{sa['n']:2}. future-alert [planned for v2.0, Phase 6]"]
+
+
+def test_plan_shipped_skill_ignores_planned(fresh, tmp_path):
+    """A step still marked `planned` whose skill has shipped is planned as a normal step (Phase 6 Task 7)."""
+    refs = tmp_path / "refs"
+    shutil.copytree(contracts.REFS, refs)
+    wf = json.loads((refs / "workflows.json").read_text(encoding="utf-8"))
+    wf["first-48-hours"]["steps"][1]["planned"] = "Phase 6"
+    (refs / "workflows.json").write_text(json.dumps(wf), encoding="utf-8")
+    sa = next(s for s in plan.build(fresh, fresh, workflow="first-48-hours", refs=refs)["steps"]
+              if s["skill"] == "safety-alert")
+    assert sa["status"] == "todo" and sa["planned_for"] is None and sa["mode"] == "internal"
     out = run("plan", str(fresh), "--workflow", "first-48-hours")
-    assert "planned for v2.0, Phase 6" in out
+    assert " safety-alert [todo] (mode internal)" in out and "planned for v2.0" not in out
 
 
 def _skill(root, name, requires, optional=(), pack=None):

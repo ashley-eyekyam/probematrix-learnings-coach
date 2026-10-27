@@ -97,3 +97,16 @@ def test_hazira_accimap_levels_and_gaps(hazira_ws):
     it = json.loads(run("accimap", str(hazira_ws), "--graph-item"))
     assert it["kind"] == "graph" and it["edges"] and it["cites"]
     assert sum(1 for n in it["nodes"] if n["id"].startswith("L")) >= 6
+
+
+# ----------------------------------------------------------------------------- Task 7: register urgency (OD6-1)
+
+def test_hazira_register_urgency():
+    """OD6-1: Task 7 added `urgency` to all 25 Hazira learnings by the P6-3 suggestion rule: alert 11, notice 12,
+    information 2. alert-grade then reads the grade from the register: alert for LR-01..LR-03."""
+    from collections import Counter
+    from pmlc_lib import alert
+    entries = json.loads(REGISTER.read_text(encoding="utf-8"))["entries"]
+    assert Counter(e.get("urgency") for e in entries) == {"alert": 11, "notice": 12, "information": 2}
+    g = alert.grade(entries)
+    assert (g["grade"], g["grade_source"], g["learnings"]) == ("alert", "register urgency", ["LR-01", "LR-02", "LR-03"])

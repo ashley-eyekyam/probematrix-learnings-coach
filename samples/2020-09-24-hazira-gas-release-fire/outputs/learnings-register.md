@@ -79,7 +79,7 @@ Draft because: the investigation status is in progress; no finding is marked as 
 
 **Context:** The 1986 condensate meter used a rectangular-slot gasket. Its OEM specification was not on file, so locally bought round O-rings had been used as a 'regular practice' with no specification, quality check or recorded approval, across replacements in Nov 2018, Feb 2019 and Sep 2020. The 18 Sep 2020 seal failed on 24 Sep 2020 and was the release source. Maintainers were working in a gap the organisation had left: no spec, no approved substitute, no owner.
 
-Owner entity: F02 Mechanical Maintenance (co-owners: F06, F07) · HFACS level: L4 Resource Management (equipment, spares and technical information)
+Owner entity: F02 Mechanical Maintenance (co-owners: F06, F07) · HFACS level: L4 Resource Management (equipment, spares and technical information) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|
@@ -97,7 +97,7 @@ Owner entity: F02 Mechanical Maintenance (co-owners: F06, F07) · HFACS level: L
 
 **Context:** After the 18 Sep 2020 gasket replacement, the system was pressurised to operating pressure with both meters isolated; no hydrostatic test to design pressure was done, and no SOP covered calibration or return to service of these meters. The meter went back online about 46 hours later and was in service when it failed.
 
-Owner entity: F02 Mechanical Maintenance (co-owners: F01, F07) · HFACS level: L4 Organisational Process: procedures (no return-to-service SOP)
+Owner entity: F02 Mechanical Maintenance (co-owners: F01, F07) · HFACS level: L4 Organisational Process: procedures (no return-to-service SOP) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|
@@ -114,7 +114,7 @@ Owner entity: F02 Mechanical Maintenance (co-owners: F01, F07) · HFACS level: L
 
 **Context:** The 18 Sep 2020 job was planned without the OEM specification, part QC, a hydrotest or a closing review, and it ran on a SAP notification with no job safety analysis or permit-based risk review. No one was assigned to verify seal specification, quality or post-installation integrity.
 
-Owner entity: F02 Mechanical Maintenance (co-owners: F08, F06) · HFACS level: L3 Planned Inappropriate Operations (team and job resourcing)
+Owner entity: F02 Mechanical Maintenance (co-owners: F08, F06) · HFACS level: L3 Planned Inappropriate Operations (team and job resourcing) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|
@@ -131,7 +131,7 @@ Owner entity: F02 Mechanical Maintenance (co-owners: F08, F06) · HFACS level: L
 
 **Context:** The meter's gasket was replaced in Nov 2018, Feb 2019 and Sep 2020, and a malfunction notification was raised on 17 Sep 2020. None of these triggered root-cause analysis, an engineering review, OEM spares recovery or replacement of the meter. There was no reliability function to see the pattern.
 
-Owner entity: F02 Mechanical Maintenance (co-owners: F05, F08) · HFACS level: L4 Organisational Climate/Culture (inconsistent risk management of known problems)
+Owner entity: F02 Mechanical Maintenance (co-owners: F05, F08) · HFACS level: L4 Organisational Climate/Culture (inconsistent risk management of known problems) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|
@@ -148,7 +148,7 @@ Owner entity: F02 Mechanical Maintenance (co-owners: F05, F08) · HFACS level: L
 
 **Context:** An MOC SOP was published in Aug 2016, but no MOC had been implemented since 2018. The gasket-to-O-ring substitution, and earlier header changes in 2013 and 2018, went through without change review.
 
-Owner entity: F07 Engineering, Design, Documents & MOC (co-owners: F02, F13) · HFACS level: L4 Organisational Process: oversight of programmes (MOC not implemented)
+Owner entity: F07 Engineering, Design, Documents & MOC (co-owners: F02, F13) · HFACS level: L4 Organisational Process: oversight of programmes (MOC not implemented) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|
@@ -165,7 +165,7 @@ Owner entity: F07 Engineering, Design, Documents & MOC (co-owners: F02, F13) · 
 
 **Context:** The on-site DMP covered hydrocarbon leakage but did not include isolation or stoppage decision criteria. No standing authority below the Plant Manager to close the emergency valves is recorded. The response escalated serially (control room, shift in-charges, Commander-in-Charge) with a mid-incident hand-off; the first isolation valve (MOV 54) closed at 03:01, about 46 minutes after the leak began at 02:12:50.
 
-Owner entity: F09b Emergency Planning & Command (co-owners: F01, F13) · HFACS level: L4 Organisational Process: procedures and policy (emergency plan)
+Owner entity: F09b Emergency Planning & Command (co-owners: F01, F13) · HFACS level: L4 Organisational Process: procedures and policy (emergency plan) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|
@@ -183,7 +183,7 @@ Owner entity: F09b Emergency Planning & Command (co-owners: F01, F13) · HFACS l
 
 **Context:** Control-room engineers went out to find the source and were driven back by gas density. Senior shift staff arrived at about 02:35 and could not enter the area; first isolation came at 03:01 and the 36-inch line control valve at 03:04. Responders had no isolation criteria, no remote valves and limited emergency training (see related learnings), so this is a learning about decision support, not individual blame.
 
-Owner entity: F01 Operations & Control Room (co-owners: F13, F09b) · HFACS level: L3 Supervision Inadequate (failure to respond to critical information)
+Owner entity: F01 Operations & Control Room (co-owners: F13, F09b) · HFACS level: L3 Supervision Inadequate (failure to respond to critical information) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|
@@ -202,7 +202,7 @@ Owner entity: F01 Operations & Control Room (co-owners: F13, F09b) · HFACS leve
 
 **Context:** MOV 54 and the other Gas Terminal emergency valves had no remote operation from the control room. The dense vapour cloud stopped people approaching from about 02:15; the first valve closed at 03:01. The risk that the valves would be inaccessible during a release had not been assessed.
 
-Owner entity: F01 Operations & Control Room (co-owners: F13, F07) · HFACS level: L4 Resource Management (equipment design)
+Owner entity: F01 Operations & Control Room (co-owners: F13, F07) · HFACS level: L4 Resource Management (equipment design) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|
@@ -219,7 +219,7 @@ Owner entity: F01 Operations & Control Room (co-owners: F13, F07) · HFACS level
 
 **Context:** Hydrocarbon/H2S detectors were configured annunciator-only, without DCS history and without automatic shutdown or suppression interlocks. The first control-room alarm came at about 02:20, about 7 minutes after CCTV showed the leak and 5 minutes after security staff saw it. The plant relied on a manual chain that took 46 minutes to isolate.
 
-Owner entity: F04 Instrumentation, Control & Calibration (co-owners: F01, F11) · HFACS level: L4 Organisational Climate/Culture (risk accepted in design of protective systems)
+Owner entity: F04 Instrumentation, Control & Calibration (co-owners: F01, F11) · HFACS level: L4 Organisational Climate/Culture (risk accepted in design of protective systems) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|
@@ -236,7 +236,7 @@ Owner entity: F04 Instrumentation, Control & Calibration (co-owners: F01, F11) �
 
 **Context:** The investigating committee identified as the probable ignition source an HPMV flameproof lamp at the skid with three bolts missing and its glass case open about 5-6 cm. Electrical PM was breakdown-skewed, and the post-incident audit grouped all nine lamps into one generic status. Confidence is medium because the ignition source is 'probable', not proven.
 
-Owner entity: F03 Electrical Maintenance (co-owners: F11, F02) · HFACS level: L4 Organisational Process: maintenance programme (hazardous-area equipment)
+Owner entity: F03 Electrical Maintenance (co-owners: F11, F02) · HFACS level: L4 Organisational Process: maintenance programme (hazardous-area equipment) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|
@@ -253,7 +253,7 @@ Owner entity: F03 Electrical Maintenance (co-owners: F11, F02) · HFACS level: L
 
 **Context:** Control-room training was a four-day general course, with no defined qualification in HR/Operations policy and no simulator practice; the committee recommended at least one month on simulators. The night-shift two-person crew had no member with practised emergency-isolation competence.
 
-Owner entity: F01 Operations & Control Room (co-owners: F12, F02) · HFACS level: L3 Supervision Inadequate (training and qualification)
+Owner entity: F01 Operations & Control Room (co-owners: F12, F02) · HFACS level: L3 Supervision Inadequate (training and qualification) · Urgency: alert
 
 | What should change | Control tier | Leading indicator |
 |---|---|---|

@@ -42,7 +42,7 @@ pmlc index <ws>
 ```
 
 1. **Set up.** [setup](../commands/setup.md) runs ingest, classify, profile, causal, timeline and interfaces, and prints one summary: the unresolved roles, the profile flags and the workspace path. `--date` corrects a wrong summary-sheet date, `--root` puts the run folder somewhere writable when the upload folder is read-only (as in the Claude app), and `--overlay` adds an industry's role words. [run-manifest](../commands/run-manifest.md) records `--intended-use` and `--jurisdiction`.
-2. **Work out the intent.** The hub maps your request to one of the nine presets in `workflows.json`, a set of audiences, or one or more of the 31 skills. For a broad request ("what should we learn from this?") it ranks the tiers with [facts](../commands/facts.md): by priority-1 learnings per tier (`p1_by_tier`) when a register exists, or by finding counts per tier before there is one. It then suggests a preset, for example `full-cascade`. When you name a file type or a channel (a Word board paper, slides for a workshop, toolbox-talk sheets, a printed checklist, an email digest, a quiz for your learning system, the causal map as a picture, another language, calendar reminders), the plan names the skill and its [pack](../commands/pack.md) flag, such as `frontline-learning-cards` with `--layout toolbox`.
+2. **Work out the intent.** The hub maps your request to one of the nine presets in `workflows.json`, a set of audiences, or one or more of the 32 skills. For a broad request ("what should we learn from this?") it ranks the tiers with [facts](../commands/facts.md): by priority-1 learnings per tier (`p1_by_tier`) when a register exists, or by finding counts per tier before there is one. It then suggests a preset, for example `full-cascade`. When you name a file type or a channel (a Word board paper, slides for a workshop, toolbox-talk sheets, a printed checklist, an email digest, a quiz for your learning system, the causal map as a picture, another language, calendar reminders), the plan names the skill and its [pack](../commands/pack.md) flag, such as `frontline-learning-cards` with `--layout toolbox`.
 3. **Plan and confirm.** [plan](../commands/plan.md) resolves the steps and what each needs, marks the ones already done, and lists steps whose skill arrives in a later phase as planned (they are skipped). The hub shows you the numbered plan and waits for your OK.
 4. **Run the plan.** `plan --next` names the next step not yet done. The hub follows that skill, runs its commands and passes its gate: [check-pack](../commands/check-pack.md) `--strict` for a pack, [check-register](../commands/check-register.md) `--strict` for the register. `plan --next` exits 2 when the plan is complete.
 5. **Finish.** [check-all](../commands/check-all.md) `--strict` checks every pack once more and [index](../commands/index.md) writes `outputs/index.html`. The hub gives you the HTML paths first.
@@ -75,7 +75,8 @@ Plan: first-48-hours (First 48 hours: a draft register, an alert and the supervi
  2. engine:classify [done]
  3. learnings-register [todo] (mode draft)
       gate: check-register --strict
- 4. safety-alert [planned for v2.0, Phase 6]
+ 4. safety-alert [todo] (mode internal)
+      gate: check-pack --strict
  5. supervisor-coach [todo]
       gate: check-pack --strict
 Next: step 3
