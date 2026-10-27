@@ -66,6 +66,7 @@ pmlc 2.0.0a4
 | [crosswalk](commands/crosswalk.md) | Maps the register to the clauses of a standard and says what the organisation must still show |
 | [evidence-audit](commands/evidence-audit.md) | Counts how well the evidence holds up: strength per finding, single-source and document-only findings, concentration |
 | [hfacs-profile](commands/hfacs-profile.md) | Counts findings by HFACS level and subcategory, recurring codes and causal feeds |
+| [accimap](commands/accimap.md) | Places every finding on Rasmussen's six AcciMap levels; levels 1 to 3 are inferred and a person confirms them |
 | [open-questions](commands/open-questions.md) | Lists what the export leaves open: empty columns, blank fields, absence and hedged findings |
 | [timeline](commands/timeline.md) | Finds dated precursor candidates and the clock times of the event day |
 | [interfaces](commands/interfaces.md) | Finds where two parts of the organisation share findings or causal links |
@@ -180,7 +181,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,effect-plan,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,hfacs-profile,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities,alert-grade} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,effect-plan,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,hfacs-profile,accimap,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities,alert-grade} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

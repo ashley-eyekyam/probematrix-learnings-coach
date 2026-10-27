@@ -43,6 +43,7 @@ Subcommands
   crosswalk       which standard clauses the register evidences, and what the organisation must show
   evidence-audit  evidence strength per finding, single-source and document-only counts, concentration (engine-computed)
   hfacs-profile   level x subcategory heat map, code recurrence and causal feed counts (hfacs_profile.json)
+  accimap         place every finding on Rasmussen's six AcciMap levels (accimap.json; levels 1 to 3 are inferred)
   pack-xlsx       a pack's test points or questions as an Excel sheet
   export-actions  recommendations, decisions and indicators as actions.csv / actions.json (owners left blank)
   plan            resolve a workflow preset, audiences or skills into an ordered plan (<ws>/plan.json)
@@ -84,6 +85,7 @@ from .crosswalk import cmd_crosswalk
 from .evidence_audit import cmd_evidence_audit, EVAUDIT_TABLE_KINDS as EVIDENCE_AUDIT_TABLES
 from .facts import cmd_facts
 from .hfacs_profile import HP_TABLE_KINDS, cmd_hfacs_profile
+from .accimap import ACCIMAP_TABLE_KINDS, cmd_accimap
 from .open_questions import cmd_open_questions
 from .pack.schema import cmd_check_pack
 from .plan import cmd_plan
@@ -573,6 +575,17 @@ def build_parser():
     s.add_argument("--table-item", dest="table_item", choices=HP_TABLE_KINDS,
                    help="print a ready table item for a pack (JSON on stdout)")
     s.set_defaults(fn=cmd_hfacs_profile)
+
+    s = sp.add_parser("accimap", help="place every finding on Rasmussen's six AcciMap levels (accimap.json)",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--map", metavar="FILE", help="a map file that adds keywords (level -> regexes) or replaces "
+                                                 "entity, subcategory or HFACS-level rules")
+    s.add_argument("--graph-item", dest="graph_item", action="store_true", help="print a ready graph item for a pack")
+    s.add_argument("--table-item", dest="table_item", choices=ACCIMAP_TABLE_KINDS,
+                   help="print a ready table item for a pack (JSON on stdout)")
+    s.add_argument("--json", action="store_true", help="print the placement as JSON")
+    s.set_defaults(fn=cmd_accimap)
 
     s = sp.add_parser("pack-xlsx", help="a pack's test points or questions as an Excel sheet", allow_abbrev=False)
     s.add_argument("ws")

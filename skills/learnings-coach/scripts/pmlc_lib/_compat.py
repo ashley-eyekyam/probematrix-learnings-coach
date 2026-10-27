@@ -39,6 +39,7 @@ MODULES = [
     "pmlc_lib.crosswalk",
     "pmlc_lib.evidence_audit",
     "pmlc_lib.hfacs_profile",
+    "pmlc_lib.accimap",
     "pmlc_lib.render",
     "pmlc_lib.render.labels",
     "pmlc_lib.render.fields",

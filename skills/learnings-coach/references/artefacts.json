@@ -24,6 +24,11 @@
     "producer": "engine:interfaces",
     "org_filled": false
   },
+  "accimap": {
+    "file": "workspace/accimap.json",
+    "producer": "engine:accimap",
+    "org_filled": false
+  },
   "register": {
     "file": "outputs/learnings-register.json",
     "producer": "skill:learnings-register",
