@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 
 from .lint import load_terms, personal_name
 from .util import _abs, REFS
@@ -21,6 +22,10 @@ WAIWAD_PROMPT_MAX = 30
 WAIWAD_ROW_CITES = 5
 WAIWAD_PROMPT_RULES = ("JC2", "JC3", "JC4", "JC5", "JC12")
 _WAIWAD_CACHE = {}
+WAIWAD_NO_CODE = "(no code)"
+WAIWAD_TABLE_OK = [{"rule": "JC3", "reason": "HFACS code names are taxonomy headings, not statements about people."},
+                   {"rule": "JC5", "reason": "HFACS code names are taxonomy headings, not statements about people."}]
+WAIWAD_PROMPT_OK = [{"rule": "JC3", "reason": "The why line quotes the export's own wording; the question itself is screened."}]
 
 
 def waiwad_lexicon() -> dict:
@@ -32,18 +37,26 @@ def waiwad_lexicon() -> dict:
 
 def waiwad_patterns(lex=None) -> list:
     """The compiled counterfactual patterns: whole words, case-insensitive."""
-    lex = lex or waiwad_lexicon()
-    return [re.compile(p, re.I) for p in lex["counterfactual"]]
+    if lex is not None:
+        return [re.compile(p, re.I) for p in lex["counterfactual"]]
+    if "pats" not in _WAIWAD_CACHE:
+        _WAIWAD_CACHE["pats"] = [re.compile(p, re.I) for p in waiwad_lexicon()["counterfactual"]]
+    return _WAIWAD_CACHE["pats"]
 
 
 def counterfactual_hits(text, patterns=None) -> list:
     """The distinct matched words of a text, lower-cased, in order of first appearance."""
-    out = []
+    found = []
     for rx in patterns or waiwad_patterns():
         for m in rx.finditer(text or ""):
-            s = m.group(0).lower().replace("’", "'")
-            if s not in out:
-                out.append(s)
+            found.append((m.start(), m.end(), m.group(0).lower().replace("’", "'")))
+    out = []
+    for a, b, t in found:
+        # keep the longest span: "could have" inside "could have prevented" is not a second hit
+        if any(c <= a and b <= d and (c, d) != (a, b) for c, d, _ in found):
+            continue
+        if t not in out:
+            out.append(t)
     return out
 
 
@@ -68,7 +81,7 @@ def waiwad_compare(w: dict) -> dict:
         has_doc, has_wad = bool(types & doc_t), bool(types & wad_t)
         n_wad += has_wad
         n_both += has_doc and has_wad
-        c = codes.setdefault(f.get("code") or "", {"name": f.get("name") or "", "findings": [], "doc": [], "wad": [],
+        c = codes.setdefault(f.get("code") or WAIWAD_NO_CODE, {"name": f.get("name") or "", "findings": [], "doc": [], "wad": [],
                                                    "both": [], "_doc_ev": set(), "_wad_ev": set()})
         c["findings"].append(f["id"])
         if has_doc:
@@ -115,7 +128,7 @@ def _waiwad_best(w: dict, ids) -> list:
 
 def _waiwad_table(item_id, columns, rows, row_cites) -> dict:
     return {"kind": "table", "id": item_id, "columns": columns, "rows": rows, "row_cites": row_cites,
-            "cites": sorted({x for c in row_cites for x in c})}
+            "cites": sorted({x for c in row_cites for x in c}), "lint_ok": [dict(x) for x in WAIWAD_TABLE_OK]}
 
 
 def waiwad_table_item(d: dict, which: str, w: dict = None) -> dict:
@@ -137,10 +150,11 @@ def waiwad_table_item(d: dict, which: str, w: dict = None) -> dict:
 
 def _waiwad_clean(c, text) -> bool:
     """True when the text trips none of the just-culture word rules (JC2 to JC5, JC12) or the counterfactual list."""
-    terms = load_terms()["rules"]
-    for rule in WAIWAD_PROMPT_RULES:
-        if any(re.search(p, text, re.I) for p in terms[rule]["patterns"]):
-            return False
+    if "rx" not in _WAIWAD_CACHE:
+        terms = load_terms()["rules"]
+        _WAIWAD_CACHE["rx"] = [re.compile(p, re.I) for r in WAIWAD_PROMPT_RULES for p in terms[r]["patterns"]]
+    if any(rx.search(text) for rx in _WAIWAD_CACHE["rx"]):
+        return False
     return not counterfactual_hits(text, c)
 
 
@@ -170,13 +184,17 @@ def waiwad_prompt_items(d: dict, top=None, w: dict = None) -> list:
         out.append({"kind": "question", "id": f"wai-wad-prompt-{len(out) + 1:02d}",
                     "question": f"What made sense at the time about {_waiwad_phrase(f, pats, w)}?",
                     "why": "The export's wording is counterfactual: " + ", ".join(f'"{h}"' for h in hits),
-                    "cites": [fid]})
+                    "cites": [fid], "lint_ok": [dict(x) for x in WAIWAD_PROMPT_OK]})
     return out
 
 
 # ----------------------------------------------------------------------------- command
 
 def cmd_wai_wad(a):
+    if a.top is not None and not a.items:
+        sys.exit("--top works only with --items prompts")
+    if a.top is not None and a.top < 1:
+        sys.exit("--top must be 1 or more")
     ws = _abs(a.ws)
     w = load_ws(ws)
     res = waiwad_compare(w)

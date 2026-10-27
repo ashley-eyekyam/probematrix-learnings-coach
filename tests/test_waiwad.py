@@ -3,6 +3,8 @@ learning-team notes template. Synthetic export from test_pmlc.py only; the Hazir
 test_calibration_p6.py."""
 import csv
 import json
+import subprocess
+import sys
 
 import pytest
 
@@ -56,7 +58,8 @@ def test_wai_wad_thin_export(tmp_path):
     out = run("wai-wad", str(tmp_path / "ws"))                    # exits 0
     d = json.loads((tmp_path / "ws" / "wai_wad.json").read_text(encoding="utf-8"))
     assert d["gaps"] == [] and d["counts"]["findings_wad"] == 0
-    assert d["notes"] and "no work-as-done evidence" in " ".join(d["notes"]).lower() or "Note:" in out
+    assert waiwad.waiwad_lexicon()["notes"]["no_wad"] in d["notes"]
+    assert ("Note: " + waiwad.waiwad_lexicon()["notes"]["no_wad"]) in out
     for which in ("gaps", "codes"):
         assert json.loads(run("wai-wad", str(tmp_path / "ws"), "--table-item", which))["kind"] == "table"
     assert json.loads(run("wai-wad", str(tmp_path / "ws"), "--items", "prompts")) is not None
@@ -103,14 +106,79 @@ def test_prompt_items_are_questions(tmp_path):
         assert not waiwad.counterfactual_hits(it["question"])
     assert '"failed to"' in items[0]["why"] or '"failed to"' in items[1]["why"]
     assert len(json.loads(run("wai-wad", str(ws), "--items", "prompts", "--top", "1"))) == 1
-    pack = {"pack": "wai-wad-test", "title": "t", "audience": "learning team",
+    pack = {"pack": "wai-wad-test", "schema": 1, "title": "t", "audience": "learning team",
             "status": "Learning purposes: not a statutory document",
+            "bottom_line": [{"text": "Ask what made sense at the time.", "cites": [items[0]["cites"][0]]}],
             "sections": [{"id": "s1", "heading": "Questions", "items": items}]}
     (d / "p.json").write_text(json.dumps(pack), encoding="utf-8")
+    cp = subprocess.run([sys.executable, str(PMLC), "check-pack", str(ws), str(d / "p.json")],
+                        capture_output=True, text=True)
+    assert "sections[" not in cp.stdout + cp.stderr, cp.stdout + cp.stderr       # no problem under the items
     out = run("check-language", str(ws), str(d / "p.json"), "--json")
     hits = json.loads(out).get("hits") or json.loads(out).get("findings") or []
     mine = [h for h in hits if h.get("rule") in ("JC2", "JC3") and not h["path"].endswith(".why")]
     assert not mine, hits                                          # a matched word sits only in `why`, quoted
+
+
+def test_ready_items_pass_a_profile_that_promotes_jc3_and_jc4(tmp_path):
+    """Task 10's profile makes JC3/JC4 errors: the prompt items (the why line quotes the export's words) and the
+    HFACS-named tables carry lint_ok, so a pack built from them gives no error."""
+    from pmlc_lib import lint as jc
+    from pmlc_lib.workspace import load_ws
+    run("ingest", str(make_export(tmp_path, summary=[])), "--legacy-out", str(tmp_path / "ws"))
+    run("classify", str(tmp_path / "ws"))
+    ws = tmp_path / "ws"
+    fs = json.loads((ws / "findings.json").read_text(encoding="utf-8"))
+    fs[0]["justification"] = "The crew failed to test the joint and did not log it."
+    (ws / "findings.json").write_text(json.dumps(fs), encoding="utf-8")
+    run("wai-wad", str(ws))
+    items = (json.loads(run("wai-wad", str(ws), "--items", "prompts"))
+             + [json.loads(run("wai-wad", str(ws), "--table-item", k)) for k in ("gaps", "codes")])
+    tbl = next(i for i in items if i["id"] == "wai-wad-codes-table")
+    tbl["rows"][0][1] = "Failed to correct a known problem"             # a taxonomy name that trips JC3
+    pack = {"pack": "x", "schema": 1, "title": "t", "audience": "learning team",
+            "status": "Learning purposes: not a statutory document",
+            "bottom_line": [{"text": "Ask.", "cites": ["FND-0001"]}],
+            "sections": [{"id": "s1", "heading": "H", "items": items}]}
+    w = load_ws(ws)
+    prof = {"lint_errors": ["JC3", "JC4"]}
+    errs = [h for h in jc.lint(pack, w, kind="pack", profile=prof) if h.severity == "error" and h.rule in ("JC3", "JC4", "JC5")]
+    assert not errs, errs
+    for it in items:                                                       # without lint_ok the profile would bite
+        it2 = {k: v for k, v in it.items() if k != "lint_ok"}
+        pack["sections"][0]["items"] = [it2]
+        assert any(h.rule == "JC3" for h in jc.lint(pack, w, kind="pack", profile=prof)) or it["kind"] == "table" and it["id"] == "wai-wad-gaps-table"
+
+
+def test_codes_table_values_and_json_envelope(wsd):
+    t = json.loads(run("wai-wad", str(wsd), "--table-item", "codes"))
+    d = json.loads((wsd / "wai_wad.json").read_text(encoding="utf-8"))
+    assert t["columns"][2:] == ["Findings", "With documents", "With work-as-done evidence", "With both"]
+    for row in t["rows"]:
+        c = d["codes"][row[0]]
+        assert row[2:] == [len(c["findings"]), len(c["doc"]), len(c["wad"]), len(c["both"])]
+    assert len(t["rows"]) == len(t["row_cites"]) == d["counts"]["codes"]
+    env = json.loads(run("wai-wad", str(wsd), "--json"))
+    assert env["command"] == "wai-wad" and env["ok"] is True and env["exit_code"] == 0
+    assert env["wai_wad"] == d
+
+
+def test_top_guards_and_overlapping_hits(wsd):
+    assert "--items" in run_fail("wai-wad", str(wsd), "--top", "3").stderr
+    assert "1 or more" in run_fail("wai-wad", str(wsd), "--items", "prompts", "--top", "-2").stderr
+    assert waiwad.counterfactual_hits("It could have prevented the fire") == ["could have prevented"]
+
+
+def test_finding_without_a_code_gets_a_named_key():
+    d = waiwad.waiwad_compare({"findings": [{"id": "F1", "name": "n", "evidence": [], "justification": ""}],
+                               "evidence": {}})
+    assert list(d["codes"]) == [waiwad.WAIWAD_NO_CODE]
+
+
+def test_unmoded_templates_step_leaves_out_learning_team_notes(wsd):
+    p = json.loads(run("plan", str(wsd), "--workflow", "full-cascade", "--json"))
+    tpl = next(s for s in p["steps"] if s["skill"] == "engine:templates")
+    assert "learning-team-notes" not in tpl["produces"] and "learning-team" not in " ".join(tpl["commands"])
 
 
 def test_learning_team_template_blank(tmp_path):

@@ -189,6 +189,7 @@ def cmd_templates(a):
     if target.exists():
         sys.exit(f"{target} already exists and may hold your organisation's entries; move it or pass a new --out")
     if a.mode == "learning-team":
+        # header only, so nothing can leak: no share path or name_guard is needed (unlike the CIHH template)
         rows = []                       # the team supplies every answer; the engine writes the header and nothing else
     elif a.mode == "distribution":
         rows = [{"pack": d["pack"], "audience": d.get("audience", "")} for _, d in pack_files(out_dir)]
