@@ -39,6 +39,14 @@ PX_COVER_BODY = (PX_MARGIN, 2834640, PX_SLIDE_W - 2 * PX_MARGIN, 3246120)
 PX_LOGO_BOX = (PX_MARGIN, 274320, 2286000, 777240)         # at most 2.5 x 0.85 in, top left of the title slide
 PX_PER_SLIDE = 6
 PX_SUMMARY_MAX = 180
+# The one-slide deck (profile "pptx_slides": 1) fits its body box by an estimate: sizes and spacing scale down, and
+# item summaries clip harder, until the rows fit. Each step is (item clip, scales tried in order).
+PX_ONE_KINDS = {"line": (1800, 600, False), "head": (1600, 200, False), "small": (1400, 600, True)}  # sz, after, bullet
+PX_ONE_STEPS = ((PX_SUMMARY_MAX, (1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7)),
+                (110, (1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5)))
+PX_CHAR_EM = 0.52                                            # average character width, in em, for the estimate
+PX_LINE_EM = 1.2                                             # line height, in em
+PX_BULLET_IND = 342900                                       # a bullet paragraph's left margin, in EMU
 PX_OWN_SLIDE = ("decision", "module", "question")
 PX_NOTES_ONLY = ("answer", "good_evidence")                # on a question slide these stay in the notes
 PX_DEFAULT_ACCENT = "0077B6"
@@ -127,7 +135,7 @@ def _px_kind_label(L, kind) -> str:
     return L.get(f"k.{kind}", str(kind))
 
 
-def _px_summary(it: dict, L: dict) -> str:
+def _px_summary(it: dict, L: dict, n: int = PX_SUMMARY_MAX) -> str:
     """An item's one-line summary for a section slide: its title or body field, else its kind and first value."""
     t = item_text(it)
     if not t:
@@ -144,7 +152,7 @@ def _px_summary(it: dict, L: dict) -> str:
                 break
         kind = _px_kind_label(L, it.get("kind"))
         t = f"{kind}: {first}" if first else kind
-    return _px_clip(_px_strip_cites(t))
+    return _px_clip(_px_strip_cites(t), n)
 
 
 def _px_yes_no(L, v) -> str:
@@ -249,7 +257,7 @@ class _PxDeck:
         self.slides.append(("".join(sp) + shapes, notes, rels_extra))
 
     def body(self, items) -> str:
-        """items: (text, kind) pairs; kind is big, bold, line, bullet, muted, or head and small (the one-slide deck)."""
+        """items: (text, kind) pairs; kind is big, bold, line, bullet or muted."""
         st, out = self.st, []
         for text, kind in items:
             text = _px_strip_cites(text)
@@ -259,10 +267,6 @@ class _PxDeck:
                 out.append(_px_p(text, st, sz=2400, b=True, after=1000))
             elif kind == "bullet":
                 out.append(_px_p(text, st, sz=1800, bullet=True))
-            elif kind == "head":
-                out.append(_px_p(text, st, sz=1600, b=True, color=st.accent, after=200))
-            elif kind == "small":
-                out.append(_px_p(text, st, sz=1400, bullet=True))
             elif kind == "muted":
                 out.append(_px_p(text, st, sz=1400, color=PX_MUTED, after=300))
             else:
@@ -534,26 +538,85 @@ def _px_closing(deck: _PxDeck, pack: dict) -> None:
     deck.add(label(L, "ui.coverage"), deck.body(lines), notes)
 
 
+def _px_one_size(kind: str, scale: float):
+    """(font size, space after, bullet) of a one-slide row at this scale; sizes in hundredths of a point, kept to half
+    points."""
+    sz, after, bullet = PX_ONE_KINDS[kind]
+    return max(int(sz * scale / 50) * 50, 100), int(after * scale), bullet
+
+
+def px_one_slide_height(rows, scale: float) -> float:
+    """The estimated height in points of one-slide rows [(text, kind)] at this scale: each paragraph wraps at the body
+    box's text width (less the bullet margin) at PX_CHAR_EM per character, with PX_LINE_EM line height."""
+    width = (PX_BODY[2] - 2 * 91440) / PX_EMU_PT
+    h = 0.0
+    for text, kind in rows:
+        sz, after, bullet = _px_one_size(kind, scale)
+        pt = sz / 100
+        per_line = max(int((width - (PX_BULLET_IND / PX_EMU_PT if bullet else 0)) / (PX_CHAR_EM * pt)), 1)
+        n = max(-(-len(_px_strip_cites(text)) // per_line), 1)
+        h += n * PX_LINE_EM * pt + after / 100
+    return h
+
+
+def px_one_slide_room() -> float:
+    """The body box's height in points, less its top and bottom insets."""
+    return (PX_BODY[3] - 91440) / PX_EMU_PT
+
+
+def _px_one_slide_fit(rows_for):
+    """The first (rows, scale) in PX_ONE_STEPS whose estimated height fits the body box; rows_for(clip) builds the rows
+    with item summaries clipped to clip characters. If none fits, the last step: the smallest sizes, hardest clip."""
+    room = px_one_slide_room()
+    for clip, scales in PX_ONE_STEPS:
+        rows = rows_for(clip)
+        for scale in scales:
+            if px_one_slide_height(rows, scale) <= room:
+                return rows, scale
+    return rows, scales[-1]
+
+
+def _px_one_slide_body(st: _PxStyle, rows, scale: float) -> str:
+    out = []
+    for text, kind in rows:
+        sz, after, bullet = _px_one_size(kind, scale)
+        out.append(_px_p(_px_strip_cites(text), st, sz=sz, b=kind == "head", bullet=bullet, after=after,
+                         color=st.accent if kind == "head" else None))
+    return "".join(out)
+
+
 def _px_one_slide(deck: _PxDeck, pack: dict, inc_date) -> None:
     """Profile "pptx_slides": 1 (Phase 6 Task 2): the bottom line, then every section's heading and items in order, on
-    one content slide; each item is its one-line summary (clipped by _px_clip) and its full text goes to the notes."""
-    L, rows, notes, ids = deck.L, [], [], []
-    for b in (b for b in pack.get("bottom_line") or [] if isinstance(b, dict)):
-        rows.append((_px_clip(_px_strip_cites(b.get("text", ""))), "line"))
+    one content slide; each item is its one-line summary (clipped by _px_clip) and its full text goes to the notes.
+    The rows are fitted to the body box (_px_one_slide_fit): sizes scale down and summaries clip harder as needed."""
+    L, notes, ids = deck.L, [], []
+    bl = [b for b in pack.get("bottom_line") or [] if isinstance(b, dict)]
+    secs = [(s, [it for it in s.get("items") or [] if isinstance(it, dict)])
+            for s in pack.get("sections") or [] if isinstance(s, dict)]
+    for b in bl:
         notes.append(str(b.get("text", "")))
+        if _px_ids(b):                                       # as on the normal deck's bottom-line slides
+            notes.append(f"{label(L, 'f.cites')}: {'; '.join(_px_ids(b))}")
         ids += _px_ids(b)
-    for s in (s for s in pack.get("sections") or [] if isinstance(s, dict)):
-        items = [it for it in s.get("items") or [] if isinstance(it, dict)]
-        rows.append((s.get("heading", ""), "head"))
+    for s, items in secs:
         notes += ([""] if notes else []) + [str(s.get("heading", ""))]
         if s.get("intro"):
             notes.append(str(s["intro"]))
             ids += _px_ids(s["intro"])
         for it in items:
-            rows.append((_px_summary(it, L), "small"))
             notes += [f"- {_px_summary(it, L)}"] + _px_item_notes(it, L, inc_date)
             ids += _px_ids(it)
-    deck.add(str(pack.get("title", "")), deck.body(rows), notes + _px_records_block(deck, list(dict.fromkeys(ids))))
+
+    def rows_for(clip):
+        rows = [(_px_clip(_px_strip_cites(b.get("text", ""))), "line") for b in bl]
+        for s, items in secs:
+            rows.append((str(s.get("heading", "")), "head"))
+            rows += [(_px_summary(it, L, clip), "small") for it in items]
+        return rows
+
+    rows, scale = _px_one_slide_fit(rows_for)
+    deck.add(str(pack.get("title", "")), _px_one_slide_body(deck.st, rows, scale),
+             notes + _px_records_block(deck, list(dict.fromkeys(ids))))
 
 
 def _px_one_slide_wanted(pack: dict) -> bool:

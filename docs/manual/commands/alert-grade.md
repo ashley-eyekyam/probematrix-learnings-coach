@@ -43,12 +43,14 @@ python3 $E alert-grade $WS --lr LR-01 --lr LR-04 --json
 python3 $E register-items $WS --lr LR-01 --lr LR-02 --lr LR-03
 ```
 
-On the Hazira register the default learnings are LR-01, LR-02 and LR-03, and the suggested grade is `alert`. Over all 25 learnings the rule suggests 11 alerts, 12 notices and 2 information.
+On the Hazira register the default learnings are LR-01, LR-02 and LR-03. Over all 25 learnings the rule suggests 11 alerts, 12 notices and 2 information, so while those three have no `urgency` the suggested grade is `alert`; once the register records an urgency for them, that urgency gives the grade.
 
 ## Common problems
 
 - **"alert-grade reads a learnings register, and … is not one"**. You passed a pack or another JSON file. Pass the register. Exit code 2.
 - **"alert-grade: LR-09 is not in the register …"**. An `--lr` names a learning the register does not have. Exit code 2.
+- **"note: LR-01 has urgency 'High', not one of alert, notice or information: it is ignored"**. The register's `urgency` for that learning is not one of the three grades, so it does not count. Correct it in the register. Exit code 0.
+- **"note: LR-05 is priority 2; the safety-alert check needs priority 1"**. An `--lr` names a learning that is not priority 1; `check-pack` refuses a safety alert that carries it. Exit code 0.
 - **"no priority-1 learning: choose with --lr"**. The register has no priority-1 learning, so there is no default. Choose the learnings with `--lr`. Exit code 0.
 
 ## Related

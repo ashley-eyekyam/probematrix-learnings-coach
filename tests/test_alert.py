@@ -152,13 +152,40 @@ def test_alert_grade_refuses_pack(ws, tmp_path):  # noqa: F811
     assert len(r.stderr.strip().splitlines()) == 1
 
 
-def test_alert_grade_default_register(ws):  # noqa: F811
-    r = _pmlc("alert-grade", str(ws))
-    want = pmlc.outputs_dir(ws) / "learnings-register.json"
-    if want.is_file():
-        assert r.returncode == 0
-    else:
-        assert r.returncode == 2 and str(want) in r.stderr and "Traceback" not in r.stderr
+def test_alert_grade_default_register(tmp_path):
+    """Without --register, alert-grade reads <outputs>/learnings-register.json; both branches pinned (review m3)."""
+    w = tmp_path / "w"
+    w.mkdir()
+    want = pmlc.outputs_dir(w) / "learnings-register.json"
+    r = _pmlc("alert-grade", str(w))
+    assert r.returncode == 2 and str(want) in r.stderr and "Traceback" not in r.stderr
+    want.parent.mkdir(parents=True, exist_ok=True)
+    want.write_text(json.dumps({"title": "Synthetic register", "entries": [entry("LR-04", urgency="notice")]}),
+                    encoding="utf-8")
+    r = _pmlc("alert-grade", str(w))
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.splitlines()[0] == 'alert-grade: notice for LR-04 (grade_source "register urgency")'
+
+
+def test_alert_grade_notes_odd_urgency_and_priority(ws, tmp_path):  # noqa: F811
+    """Review m1/m2: an urgency outside alert, notice, information is named and ignored; a --lr learning that is not
+    priority 1 gets a note, since the safety-alert check refuses it."""
+    g = alert.grade([entry("LR-01", urgency="High")])
+    assert g["grade_source"] == "suggested" and g["grade"] == "alert"
+    assert g["notes"] == ["LR-01 has urgency 'High', not one of alert, notice or information: it is ignored"]
+    g = alert.grade([entry("LR-01", urgency="High"), entry("LR-02", urgency="notice"), entry("LR-03")])
+    assert g["grade"] == "notice" and g["notes"] == [
+        "no urgency in the register for LR-03",
+        "LR-01 has urgency 'High', not one of alert, notice or information: it is ignored"]
+    g = alert.grade([entry("LR-01"), entry("LR-02", 2)], ["LR-02", "LR-01"])
+    assert g["notes"] == ["LR-02 is priority 2; the safety-alert check needs priority 1"]
+    assert alert.grade([entry("LR-01"), entry("LR-02", 2)])["notes"] == []      # the default choice is priority 1
+    reg = _reg(tmp_path, [entry("LR-01"), entry("LR-02", 2, urgency="High")])
+    r = _pmlc("alert-grade", str(ws), "--register", str(reg), "--lr", "LR-02")
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.splitlines()[-2:] == [
+        "note: LR-02 has urgency 'High', not one of alert, notice or information: it is ignored",
+        "note: LR-02 is priority 2; the safety-alert check needs priority 1"]
 
 
 # ----------------------------------------------------------------------------- the one-slide pptx
@@ -190,12 +217,57 @@ def test_pptx_one_slide(monkeypatch):
     assert one.index("Section one") < one.index("Check the seal") < one.index("Section two")
     assert "Long text. " * 40 not in one and "…" in one                  # clipped by _px_clip
     assert ("Long text. " * 39).strip() in notes[1]                      # the full text stays in the notes
+    assert "Cites: FND-0002" in notes[1]                                 # the bottom line's citations, as on the normal deck
     assert "This pack cites" in slides[2]
     _with_profile(monkeypatch, {"sections": []})
     plain = render_fixture("board-brief", "pptx", pack=copy.deepcopy(pack))[0]
     monkeypatch.setattr(profiles, "load", _REAL_LOAD)
     base = render_fixture("board-brief", "pptx", pack=copy.deepcopy(pack))[0]
     assert plain.data == base.data and len(pptx_slides_text(base.data)) > 3
+
+
+def _slide_paras(data: bytes, n: int) -> list:
+    """(size in points, text, bullet, space after in points) of every paragraph in the body box of slide n of a pptx."""
+    import io
+    import re
+    import zipfile
+    xml = zipfile.ZipFile(io.BytesIO(data)).read(f"ppt/slides/slide{n}.xml").decode("utf-8")
+    body = re.search(r'name="Body".*?</p:sp>', xml, re.S).group(0)
+    out = []
+    for p in re.findall(r"<a:p>.*?</a:p>", body, re.S):
+        sz = int(re.search(r'sz="(\d+)"', p).group(1)) / 100
+        after = int(re.search(r'<a:spcPts val="(\d+)"', p).group(1)) / 100
+        out.append((sz, "".join(re.findall(r"<a:t>([^<]*)</a:t>", p)), "marL=" in p, after))
+    return out
+
+
+def test_pptx_one_slide_fits_at_the_profile_maxima(monkeypatch):
+    """I1 (Task 2 review): 3 bottom-line entries, 6 sections and 13 items of 180+ characters fit the body box. The
+    height is estimated here independently of the renderer: 0.52 em per character, 1.2 em line height."""
+    from pmlc_lib.render import pptx as px
+    long = ("Interlock the restart of the transfer pump on a recorded seal test so that no pump returns to service "
+            "without a second check by the area operator and the maintenance technician on shift. ")
+    bl = [{"text": f"Bottom line {k}: " + long, "cites": ["FND-0002"]} for k in range(3)]
+    p = pack_with(*[item("para", text=f"Item {k}. " + long * 2, cites=["FND-0001"]) for k in range(3)], bottom_line=bl)
+    for n in range(2, 7):
+        p["sections"].append({"id": f"s{n}", "heading": f"Section {n}", "items": [
+            item("para", text=f"Item {n}.{k}. " + long * 2, cites=["FND-0001"]) for k in range(2)]})
+    assert sum(len(s["items"]) for s in p["sections"]) == 13 and len(p["sections"]) == 6
+    _with_profile(monkeypatch, {"sections": [], "pptx_slides": 1})
+    o = render_fixture("board-brief", "pptx", pack=copy.deepcopy(p))[0]
+    paras = _slide_paras(o.data, 2)
+    assert len(paras) == 3 + 6 + 13
+    width = (px.PX_BODY[2] - 2 * 91440) / 12700
+    h = 0.0
+    for sz, text, bullet, after in paras:
+        per = int((width - (27 if bullet else 0)) / (0.52 * sz))
+        h += -(-len(text) // per) * 1.2 * sz + after
+    assert h <= (px.PX_BODY[3] - 91440) / 12700, h                    # fits above the footer
+    assert min(sz for sz, *_ in paras) >= 9
+    assert all(len(t) <= 110 for sz, t, bullet, _ in paras if bullet)  # the items clipped harder to fit
+    small = render_fixture("board-brief", "pptx", pack=copy.deepcopy(_deck_pack()))[0]    # a short pack keeps full size
+    sizes = {sz for sz, *_ in _slide_paras(small.data, 2)}
+    assert sizes == {18.0, 16.0, 14.0}
 
 
 # ----------------------------------------------------------------------------- the P6-4 share gate, per mode

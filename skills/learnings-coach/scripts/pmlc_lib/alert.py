@@ -27,6 +27,7 @@ ALERT_STRENGTH_RANK = {"corroborated": 0, "direct": 1, "inferred": 2}
 ALERT_NO_P1 = "no priority-1 learning: choose with --lr"
 ALERT_RULE = ("priority 1 with other sites or industry-wide -> alert; priority 1 at the same site, or priority 2 -> "
               "notice; otherwise information")
+ALERT_GRADE_WORDS = "alert, notice or information"
 ALERT_ASK = 'ask the user; the pack records grade_source "chosen by the user"'
 
 
@@ -70,14 +71,20 @@ def grade(entries, lr_ids=None) -> dict:
         return {"grade": None, "grade_source": None, "suggested": None, "learnings": [], "notes": [ALERT_NO_P1]}
     rows = [by_id[lr] for lr in chosen]
     urg = {lr: _alert_s(e.get("urgency")) for lr, e in zip(chosen, rows) if _alert_s(e.get("urgency")) in GRADES}
+    odd = [(lr, e.get("urgency")) for lr, e in zip(chosen, rows)
+           if e.get("urgency") not in (None, "") and lr not in urg]
+    notes = [f"{lr} has urgency {str(u)!r}, not one of {ALERT_GRADE_WORDS}: it is ignored" for lr, u in odd]
+    if lr_ids:
+        notes += [f"{lr} is priority {_alert_priority(e) if _alert_priority(e) is not None else 'unknown'}; "
+                  f"the safety-alert check needs priority 1" for lr, e in zip(chosen, rows) if _alert_priority(e) != 1]
     if urg:
-        missing = [lr for lr in chosen if lr not in urg]
-        notes = [f"no urgency in the register for {', '.join(missing)}"] if missing else []
+        missing = [lr for lr in chosen if lr not in urg and lr not in dict(odd)]
+        notes = ([f"no urgency in the register for {', '.join(missing)}"] if missing else []) + notes
         return {"grade": min(urg.values(), key=GRADES.index), "grade_source": "register urgency", "suggested": None,
                 "learnings": chosen, "notes": notes}
     by_learning = {lr: suggest_grade(e) for lr, e in zip(chosen, rows)}
     g = min(by_learning.values(), key=GRADES.index)
-    return {"grade": g, "grade_source": ALERT_SUGGESTED, "learnings": chosen, "notes": [],
+    return {"grade": g, "grade_source": ALERT_SUGGESTED, "learnings": chosen, "notes": notes,
             "suggested": {"grade": g, "by_learning": by_learning, "rule": ALERT_RULE}}
 
 
@@ -87,7 +94,9 @@ def _alert_fail(msg):
 
 
 def _alert_entries(path: Path) -> list:
-    """The register's entries, or exit 2 with one sentence naming the file (a pack, a missing file, bad JSON)."""
+    """The register's entries, or exit 2 with one sentence naming the file (a pack, a missing file, bad JSON).
+    The plan named templates.load_register_entries here; that loader does not validate and would traceback on a pack,
+    so alert-grade validates with its own (Task 2 review m4)."""
     if not path.is_file():
         _alert_fail(f"alert-grade: no Learnings Register at {path}: write it first, or pass --register FILE")
     try:
