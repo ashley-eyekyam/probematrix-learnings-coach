@@ -61,6 +61,9 @@ These are the files in a fresh Hazira workspace after `ingest`, `profile` and `c
 | `hfacs_profile.json` | `hfacs-profile` | Findings per HFACS level, the share at levels 3 and 4, the level by subcategory heat map, the codes that recur and the codes that feed the most others in the causal graph. 70.6% at levels 3 and 4 on Hazira; SVI 1.4 recurs 21 times. |
 | `missed_opportunities.json` | `missed-opportunities` | The findings citing an earlier recommendation, the Failure-to-Correct (SVF) findings, the dated mentions before the incident that cite them, and the findings with drift wording. 107, 40, 34 and 41 on Hazira. |
 | `open_questions.json` | `open-questions` | The empty follow-up columns, the blank Incident Summary fields, and the findings whose justification says something is absent or is hedged (240 and 193 on Hazira). |
+| `wai_wad.json` | `wai-wad` | Work as imagined against work as done: for each code, its findings with document evidence, with work-as-done evidence (witness statements, log records, recordings) and with both; the codes with a gap; and the findings whose justification uses counterfactual wording (the list in `references/learning-team.json`). 68 of 94 codes with both, 92 findings with both, 210 with any work-as-done evidence and 337 counterfactual on Hazira. |
+| `accimap.json` | `accimap` | Each finding placed on one of Rasmussen's six AcciMap levels (1 government to 6 equipment), with the rule that placed it and whether the placement is inferred; the levels with no placement as `gaps`. On Hazira levels 1 and 2 are gaps and level 3 holds 143 inferred placements. |
+| `effect_plan.json` | `effect-plan` | The effectiveness checks for each register learning, counted from adoption (`30 days after adoption`), each with its Kirkpatrick level and the register's leading indicator, the lagging column blank; and each learning's Jacobsson spread, depth and duration. 97 checks for the 25 Hazira learnings. |
 | `interfaces.json` | `interfaces` | Pairs of functions, with shared findings and cross-entity causal mentions. 125 pairs on Hazira. |
 | `nine_m_seed.json` | `nine-m-seed` | Every finding scored against the nine Ms, the M profile and the unmapped findings. 436 findings, 0 unmapped on Hazira. |
 | `nine_m_session.json` | `nine-m-suggest --record`, `nine-m-answer`, `nine-m-replay` | The 9M interview: each question with its M, step, subcategory and suggestions, and the answer as given (a suggestion's number or your own words). `mode` is `interview`, or `replay` for a scripted session (57 questions in the Hazira sample). |
@@ -163,6 +166,7 @@ The engine writes these with the identifying columns filled in and every owner, 
 | `actions.csv`, `actions.json` | [export-actions](commands/export-actions.md) | `id`✱, `lr_id`✱, `change`✱, `hoc_tier`✱, `barrier`✱, `indicator`✱, `owner`, `due`, `status`, `capa_ref`, `effectiveness_check`, `cites`✱, `evidence_strength`✱. 44 actions from the Hazira register. Never overwritten: a second run refuses while either file exists (move them or pass a new `--out-dir`). |
 | `<pack>.actions.csv` | `pack --format csv` | The same columns as `actions.csv`, for one pack's recommendation, decision and indicator items. Never overwritten. |
 | `<pack>.cihh-template.xlsx` | `templates cihh --pack <pack>` | One sheet, `Return`: Site (B1, blank), Pack (B2✱, the pack's content hash), then from row 4 `lr_id`✱, `condition`✱, `evidence_to_check`✱, `answer` (present, partly, absent or n/a), `site_response`, `assessed_by_role`; one row per `self_check` item. One copy goes to each site. Never overwritten; a shared copy is `<pack>.cihh-template.external.xlsx`. |
+| `learning-team-notes.csv` | `templates learning-team` | Header only: `prompt_id`, `prompt`, `team_answer`, `source`. The learning team fills it in; the agent never writes `team_answer`. Never overwritten. |
 
 The dashboard reads `adoption.csv` and `distribution.csv` back for its reach and response columns.
 
@@ -191,11 +195,40 @@ These files in the skills folder (`skills/learnings-coach/references/` unless st
 | `nine-m-map.json` | How a Nanocode prefix or code, keywords and Learning Cluster entities point to an M | `nine-m-seed` (`--map` for your own copy) |
 | `open-questions.json` | The documented word lists: absence and hedging (for `open-questions`), drift (for `missed-opportunities`) | `open-questions`, `missed-opportunities` |
 | `rec-review.json` | The strength bands for each hierarchy-of-controls tier, the weak administrative cues and the double-loop cues | `rec-review` |
+| `learning-team.json` | Which evidence types count as work as imagined (documents) and work as done (witness statements, log records, recordings), the counterfactual word list (`did not`, `failure to`, `should have`, `lack of` and others, matched as whole words) and the columns of the learning-team notes sheet | `wai-wad`, `templates learning-team` |
+| `accimap.json` | Rasmussen's six levels and the placement rules: entities first (regulators at level 2; corporate, board and contractors at level 3, inferred), then the HFACS level | `accimap` (`--map` for your own copy) |
+| `effectiveness.json` | The check schedule by priority (offsets from adoption), the Kirkpatrick levels and the Jacobsson spread and depth rules | `effect-plan` |
 | `industry/process/` | The process-industries reference pack: `overlay.json` (role words), `barriers.md`, `indicators.md` and `glossary.json`. Method reference, not evidence | `classify --industry process`, `setup --industry process` |
 | `glossary.json` | The terms the packs and pages use, each with a definition and its `translations` (Hindi, `hi`, AI-drafted: check with a fluent speaker) | a shared word list for writers and translators; this manual's [Glossary](Glossary.md) explains the same terms |
 | `taxonomy.json` | The Learning Cluster rules, with a `version` (2.0) that `classify` records with a fingerprint | `classify` |
 
 The run-level contracts are on this page: `run-manifest.json` above, `plan.json` among the workspace files, and `gaps.json` and the files your organisation fills in among the outputs.
+
+## The learnings library
+
+A learnings library is a folder you choose, outside the run folders, that keeps learnings from many incidents. [library publish](commands/library.md) adds a run to it; nothing else writes there. Lines are only ever added.
+
+```text
+<library folder>/
+  library.json             <- {"kind": "pmlc-library", "version": 1}
+  learnings.jsonl          <- one snapshot of a learning a line, with its LL- ID
+  events.jsonl             <- withdrawn and status events, site assessments, verification readings, adoption responses
+  incidents.jsonl          <- one line for each published state of an incident
+  private/
+    sites.json             <- real site names and their codes (S01 ...). Never shared
+    contexts.jsonl         <- each learning's context as written. Never shared
+```
+
+| File | What it holds |
+|---|---|
+| `library.json` | Marks the folder as a library |
+| `learnings.jsonl` | Each learning's snapshots: `LL-` ID, `snapshot_id`, `supersedes`, incident key, LR-ID, content hash, review status and the de-identified learning |
+| `events.jsonl` | What happened to a learning later, from the engine or the organisation, by month |
+| `incidents.jsonl` | The incident key, site code, incident month, taxonomy version and fingerprint, export fingerprint, engine version, publish month and `LL-` IDs |
+| `private/sites.json` | Each real site name and its code |
+| `private/contexts.jsonl` | Each snapshot's original context |
+
+Everything outside `private/` has passed the de-identification gate: no listed name, sites as codes, months instead of days. See [The learnings library](Library.md).
 
 ## Environment variables
 
@@ -203,6 +236,7 @@ The run-level contracts are on this page: `run-manifest.json` above, `plan.json`
 |---|---|---|
 | `PMLC_NAMES` | `check-language`, `check-pack`, `check-register`, `pack`, `dashboard` and `register-xlsx` | Path to a names file used when `--names` is not given. One name per line; blank lines and lines starting with `#` are skipped. |
 | `PMLC_ORGS` | the same commands | Path to an organisation names file used when `--orgs` is not given. Same format. |
+| `PMLC_LIBRARY` | `library publish` | The library folder used when `--library` is not given. With neither, the command stops with `no library folder: pass --library <dir> or set PMLC_LIBRARY`. |
 | `PMLC_UPDATE_GOLDEN` | the repository's test suite (contributors only; `tools/release.py` prints the reminder) | Set to `1` to regenerate the golden Markdown fixtures and the HTML hashes in `tests/fixtures/packs/html-golden.json`. Not used when you analyse an investigation. |
 | `SOURCE_DATE_EPOCH` | `pack` | A time in seconds since 1970. When set, its date is the generated date written into every output, and the time of every entry in a zipped output, so the same pack gives the same files on every run. |
 | `PMLC_BROWSER` | `pack --format png` | The Chromium-family browser to draw PNG images with, tried before `chromium`, `chromium-browser`, `google-chrome`, `google-chrome-stable`, `microsoft-edge` and `msedge` on the PATH. |

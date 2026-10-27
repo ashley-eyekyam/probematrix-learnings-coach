@@ -491,3 +491,43 @@ run: npm ci --prefix tests/js
 **Why.** `--format email` keeps `<pack>.email.html` under 100 KB so that it passes mail servers and pastes into a message without being cut. It adds each section's items in order until the next one would pass that size, then ends the section with this line. The bottom line, the cited IDs, the coverage line and the status are always kept. The full pack page is much larger (on Hazira the board brief page is about 470 KB), so attach or link that, not paste it.
 
 **What to do.** Nothing, if the digest is a summary: send it with a link to the full page (`pack --base-url` adds the link). If a section must go in full, write a smaller pack for the email, or send the Word copy (`--format docx`) as an attachment.
+
+## consolidate refuses a return
+
+```text
+<file> row 1: site '<site>' already has a return (<file>)
+<n> problem(s) in the returns; nothing written (fix them, or pass --keep-going to use the good rows)
+```
+
+**Why.** [consolidate](commands/consolidate.md) reads the could-it-happen-here returns the sites filled in, and it found something it cannot count. It names each bad row by file and row, writes nothing and ends with code 1. The usual causes, each with its own line:
+
+- two returns for the same site, for example the same file given twice (the message above);
+- an answer other than `present`, `partly`, `absent` or `n/a`: `<file> row <n>: answer 'maybe' must be one of present, partly, absent, n/a (or blank)` (a blank answer is fine: that learning was not assessed);
+- no site name in B1: `<file> row 1: Site is blank; the site writes its name in B1`;
+- a return made from another pack's template: `<file> row 2: made from another pack's template (its Pack cell does not match the pack); …`;
+- a file that is not a return at all: no `Return` sheet, not an Excel workbook, or the Site and Pack cells or the column headings missing.
+
+**What to do.** Send the return back to the site to correct the named rows, or correct an obvious slip yourself and tell the site. To build the consolidated view from the good rows now, pass `--keep-going`: the bad rows are still listed and left out. Each site gets the template of the pack it is answering; if the pack changed after the templates went out, the old returns no longer match it.
+
+## library publish found a listed name
+
+```text
+library publish refused: <n> listed name<s> (<n> hit<s>) in the public lines (from --names or
+PMLC_NAMES), so nothing was written. Name a role instead in the register, then publish again
+```
+
+The message is one line, after `library publish: `; for one person written twice it reads "1 listed name (2 hits)".
+
+**Why.** A name in your names file (`--names` or `PMLC_NAMES`) appears in a line that would go into the shared part of the library. The library's de-identification gate needs zero hits, and it never masks a listed name quietly, because a name in the register means the register itself needs a fix. Nothing was written; the command ends with code 1. See [The de-identification gate](Library.md#the-de-identification-gate).
+
+**What to do.** Find the name in the register (usually a `context`, a `lesson` or a recommendation) and write the role instead, in every place. Run `pmlc check-language <ws> <register> --names <names file>` to find each one, then publish again. If the refusal says "identifying detail … left in the public lines after masking" instead, masking missed a listed name, organisation or site: reword the register and report it.
+
+## My sister-site alert says Review copy
+
+```text
+Review copy: not for distribution outside the organisation until it is approved and shared with --share external.
+```
+
+**Why.** The alert's `mode` is `sister-site` (or `industry`), and it was rendered without `--share`. That writes the internal copy, with this line first in every format, so a reviewer can read the draft before it goes to other sites. An `industry` alert says the same until it is shared with `--share public`; `--share external` of an industry alert is refused ("an industry alert is shared with --share public").
+
+**What to do.** Nothing, while the alert is being reviewed. To send it, a reviewer approves it (`sign-off`, with their role), the classification is set to `external` (or `public` for an industry alert) and the legal review is `cleared`; then `pmlc pack <ws> <run>/outputs/safety-alert.json --share external` writes the masked `safety-alert.external.*` copies without the line. Until then `--share external` says `cannot share externally: review is draft …`. See [Review and sharing](Review-and-sharing.md).

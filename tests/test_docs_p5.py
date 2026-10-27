@@ -101,8 +101,8 @@ def test_readme_whats_new_starts_with_phase_5():
     readme = read("README.md")
     news = readme.split("## What's new in v2.0 so far", 1)[1].split("\n## ", 1)[0]
     phases = re.findall(r"^\*\*Phase (\d+) \(([^)]*)\):\*\*", news, re.M)
-    assert phases[0] == ("5", "2.0.0-alpha.7"), phases
-    assert "current build: 2.0.0-alpha.7, Phase 5" in news
+    # Phase 6 (alpha.8) now comes first (tests/test_docs_p6.py); Phase 5 follows it.
+    assert ("5", "2.0.0-alpha.7") in phases[:2], phases
 
 
 def test_agents_typical_run_has_evidence_audit_and_nine_m_seed():

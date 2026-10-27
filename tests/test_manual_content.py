@@ -15,7 +15,7 @@ import pmlc  # noqa: E402
 
 REPO_BLOB = "https://github.com/ashley-eyekyam/probematrix-learnings-coach/blob/main/"
 GUIDES = ["Getting-started.md", "Workflows-and-recipes.md", "Skills.md", "Files-and-folders.md",
-          "Review-and-sharing.md", "Language-checks.md", "Troubleshooting.md", "Glossary.md"]
+          "Review-and-sharing.md", "Language-checks.md", "Troubleshooting.md", "Glossary.md", "Library.md"]
 SKILLS = sorted(p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md"))
 SKILL_COUNT = len(list((ROOT / "skills").glob("*/skill.json")))      # P5-1: derived from the folders
 SKILL_HEADINGS = ["What it is for", "How to start it", "What it needs", "Engine commands and flags", "What you get",

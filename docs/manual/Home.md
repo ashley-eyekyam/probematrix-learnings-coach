@@ -19,6 +19,8 @@ Every pack is a web page and a Markdown file by default. Ask for it in the form 
 
 To look deeper before the learnings go out, three recipes on Hazira use skills that are new in Phase 5: [Design the actions with the nine Ms](Workflows-and-recipes.md#design-the-actions-with-the-nine-ms) (the `action-design` preset: the 9M analysis, the strength review of the actions and a blank actions sheet), [Check the quality of the investigation](Workflows-and-recipes.md#check-the-quality-of-the-investigation) (`investigation-quality`: the evidence scorecard and the open questions) and [Assurance against ISO 45001 or RBPS](Workflows-and-recipes.md#assurance-against-iso-45001-or-rbps) (`assurance`: the standards crosswalk and the auditor pack).
 
+Phase 6 adds three recipes on Hazira: [Alert the sister sites and ask could it happen here](Workflows-and-recipes.md#alert-the-sister-sites-and-ask-could-it-happen-here) (the `sister-sites` preset: a graded alert, a self-check return for each site and a consolidated view that never ranks sites), [Plan the follow-up checks](Workflows-and-recipes.md#plan-the-follow-up-checks) (`follow-up`: checks counted from adoption, and the verification log) and [Prepare a learning-team session](Workflows-and-recipes.md#prepare-a-learning-team-session) (work as imagined against work as done, and a blank notes sheet for the team). To keep learnings from many incidents together, see [The learnings library](Library.md).
+
 ## How the manual is organised
 
 | Page | What it covers |
@@ -28,6 +30,7 @@ To look deeper before the learnings go out, three recipes on Hazira use skills t
 | [Skills](Skills.md) | The 38 skills: which audience each serves and what it produces |
 | [Commands](Commands.md) | Every engine command, flag by flag, with real examples |
 | [Files and folders](Files-and-folders.md) | The run folder, the workspace, the outputs and every other format, translations, the files your organisation fills in and the shared contracts |
+| [The learnings library](Library.md) | The opt-in folder that keeps learnings from many incidents: what it holds, the de-identification gate, what comes in v2.1 |
 | [Review and sharing](Review-and-sharing.md) | Draft status, sign-off by a reviewer, sharing outside the organisation |
 | [Language checks](Language-checks.md) | The just-culture and grounding checks (JC1 to JC12) |
 | [Troubleshooting](Troubleshooting.md) | Messages you may see and what to do |
