@@ -73,3 +73,4 @@ It then listed 14 `hfacs_level` wording warnings, the warning `no handling block
 - [report-comparison](report-comparison.md): compares the register with an official report.
 - [barrier-learnings](barrier-learnings.md): stronger fixes for the barriers behind each learning.
 - Recipe: [A learnings register to Excel](../Workflows-and-recipes.md#a-learnings-register-to-excel).
+- `learning-effectiveness-plan`: when and how to check that a learning took hold (3, 6 and 12 months, plus 30, 60 and 90 days for priority 1).

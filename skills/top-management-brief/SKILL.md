@@ -13,7 +13,7 @@ Follow `learnings-coach/references/skill-common.md` §1 and §2.
 
 Engine: `PMLC`, as `skill-common.md` §1 defines it (this skill needs the `learnings-coach` skill installed alongside it).
 
-This skill needs the **workspace** and **clusters**. It uses, when present: the register (`<run>/outputs/learnings-register.json`), the causal graph and the adoption record.
+This skill needs the **workspace** and **clusters**. It uses, when present: the register (`<run>/outputs/learnings-register.json`), the causal graph, the adoption record and the could-it-happen-here pack (`<run>/outputs/could-it-happen-here.json`).
 
 Start from the register if present: take the enterprise learnings from it (`register-items --tier T5`, then `--tier T4`) and carry `learning: "LR-nn"` on every item that expresses a register learning.
 
@@ -41,17 +41,19 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/top-managemen
 | — | bottom_line | — | The three enterprise-level learnings | `bottom_line` | up to 3 |
 | 1 | `summary` | Executive summary | Half a page: what happened in two sentences, the decisions requested; define the four HFACS levels once | `para` | up to 3 |
 | 2 | `transferability` | Transferability | Columns Learning, Transferability (site-specific, likely at similar sites, enterprise-wide), Reason (shared standard, system, culture or vintage of equipment); `row_cites` | `table` | 1 |
-| 3 | `policies` | Policies, standards and legal requirements implicated | One `para` per policy, standard or legal requirement (`group` = its name): what the evidence shows about its implementation; `clauses` where a crosswalk requirement applies | `para` | up to 8 |
-| 4 | `decisions` | Decisions for top management | Each with options and trade-off; `group` opens "For decision:" or "For noting:" | `decision` | up to 6 |
-| 4 | `decisions` | (same section) | The enterprise indicator that would show progress, after its decision in the same `group`, with `deterioration` | `indicator` | up to 6 |
-| 5 | `management-review` | Management review input | The six-row table (below) | `table` | optional, up to 1 |
-| 6 | `assurance` | Assurance | How the organisation will know the learning is applied across sites; `to` = the role asked | `question` | up to 6 |
+| 3 | `sister-sites` | Sister sites | Only when `<run>/outputs/could-it-happen-here.json` exists: one `para` naming that pack as the self-assessment the other sites run, and the learnings it covers; leave the section out otherwise | `para` | optional, up to 1 |
+| 4 | `policies` | Policies, standards and legal requirements implicated | One `para` per policy, standard or legal requirement (`group` = its name): what the evidence shows about its implementation; `clauses` where a crosswalk requirement applies | `para` | up to 8 |
+| 5 | `decisions` | Decisions for top management | Each with options and trade-off; `group` opens "For decision:" or "For noting:" | `decision` | up to 6 |
+| 5 | `decisions` | (same section) | The enterprise indicator that would show progress, after its decision in the same `group`, with `deterioration` | `indicator` | up to 6 |
+| 6 | `management-review` | Management review input | The six-row table (below) | `table` | optional, up to 1 |
+| 7 | `assurance` | Assurance | How the organisation will know the learning is applied across sites; `to` = the role asked | `question` | up to 6 |
 
 Rules for the content:
 
 - **Decisions.** Mark each decision "For decision:" (the committee must choose) or "For noting:" (already decided, or within a function's authority) in its `group`, such as `"group": "For decision: critical spares"`. A site decision marked "Needs corporate decision" in `site-leadership-coach` comes here as "For decision".
 - **Policies, standards and legal requirements.** Cover corporate policies and standards (change management, spares and sourcing, maintenance strategy, emergency planning, competence, audit) and the external requirements the learnings touch, for the legal-register review. Take requirement ids from `learnings-coach/references/standards-crosswalk.json` (`clauses`, such as `ISO45001-10.2`) and the regimes from `learnings-coach/references/jurisdictions.md`. Say what the evidence shows; never that a requirement was breached.
 - **Management review input** (ISO 45001 9.3, RBPS management review). Write it when the user asks for a management-review input or the brief goes to a management review. One `table`, columns Input, What this investigation shows, Indicator, Deterioration trigger, with **exactly six rows** in this order: Incidents and corrective actions; Monitoring results; Audit results; Risks and opportunities; Adequacy of resources; Consultation outcomes. Each row cites its findings in `row_cites`, or reads "not in this investigation" in the second cell with an empty cites list. Every row with cites names an indicator and its deterioration trigger (`learnings-coach/references/indicators-and-effectiveness.md` §1).
+- **Sister sites** (L1-06). When the `could-it-happen-here` pack exists, say that the other sites assess these learnings with it, cite the findings behind them, and never rank or compare sites. Without it, leave the section out; never describe a self-assessment that was not written.
 - **Assurance** questions point to `auditor-assurance-pack` for the test points.
 - Board-ready language. Neutral, factual tone; no blame of management or staff; roles only. Name the function that owns the change, not the post.
 
@@ -72,6 +74,7 @@ Rules for the content:
 - Audit test points and the cross-site verification protocol: `auditor-assurance-pack`.
 - Site decisions and the leadership workshop: `site-leadership-coach`.
 - The function-by-function action agenda: `manager-coach`.
+- The sister sites' self-assessment itself: `could-it-happen-here`.
 
 ## Check and hand over
 

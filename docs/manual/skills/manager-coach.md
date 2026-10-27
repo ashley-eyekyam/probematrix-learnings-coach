@@ -73,3 +73,4 @@ These counts are from the base classification, before the resolution pass. After
 - [supervisor-coach](supervisor-coach.md): the checks the managers' systems should support.
 - [site-leadership-coach](site-leadership-coach.md): the decisions above the functions.
 - [cluster-learning-dossier](cluster-learning-dossier.md): everything for one function, at every tier.
+- `learning-effectiveness-plan`: when and how to check that a learning took hold (3, 6 and 12 months, plus 30, 60 and 90 days for priority 1).

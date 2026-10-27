@@ -91,3 +91,5 @@ PMLC pack <ws> <run>/outputs/manager-coach.json --format ics --start YYYY-MM-DD 
 The `.actions.csv` lists every recommendation, decision and indicator with the owner, due-date and status columns blank for the organisation to fill in. Once it exists the engine never replaces it: the command stops with exit 1 and writes nothing, so run `csv` on its own line and never delete a file the organisation may have filled in. The `.ics` holds one all-day reminder per recommendation with a `by_when` horizon, counted from the user's date, with no attendees (`skill-common.md` §8).
 
 Also confirm: at most five function sections, every function with T3 findings in the summary, and the management-review table, if present, has exactly the six rows. Next: `PMLC export-actions <ws>` turns the recommendations and indicators into an action list with owners left blank.
+
+For when and how to check that a learning took hold, use `learning-effectiveness-plan`.

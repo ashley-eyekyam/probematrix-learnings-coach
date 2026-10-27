@@ -115,4 +115,6 @@ PMLC pack <ws> <run>/outputs/safety-committee-guide.json --format ics --start YY
   does not exist, `PMLC templates <ws> distribution` writes it with one row per pack (it never overwrites; add a
   row for this pack instead). The committee fills in the delivery columns, including `concerns_escalated`;
   never fill them yourself.
-- Next step: the committee's 30-day follow-up questions go to the role named in each `check`.
+- Next step: the committee's follow-up questions go to the role named in each `check`.
+
+For when and how to check that a learning took hold, use `learning-effectiveness-plan`.

@@ -129,5 +129,10 @@
     "file": "outputs/frontline-learning-cards.json",
     "producer": "skill:frontline-learning-cards",
     "org_filled": false
+  },
+  "could-it-happen-here": {
+    "file": "outputs/could-it-happen-here.json",
+    "producer": "skill:could-it-happen-here",
+    "org_filled": false
   }
 }
