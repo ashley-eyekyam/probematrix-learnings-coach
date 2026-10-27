@@ -59,7 +59,7 @@ Worked example: samples/2020-09-24-hazira-gas-release-fire/outputs/learnings-reg
 | K | `recommendation_class` | Class | `recommendation` (a change still to make), `observation` (worth knowing, no change asked), `action_taken` (already done; say so, with evidence) | value | optional |
 | K | `recipient_role` | Recipient | The role that must receive and answer the learning, never a name; use it when one role is clearly the addressee | text | optional |
 | K | `regulatory_touchpoint` | Regulatory touchpoint | Free text naming a regime the learning touches (e.g. a permit or PSM duty), as a flag for legal or compliance review, never a legal conclusion | text | optional |
-| K | `verification` | Verification | `{"method", "indicator"}`: how the organisation will check the change worked; use it for priority-1 and alert learnings | object | optional |
+| K | `verification` | Verification | `{"method", "indicator"}`: the method and indicator for checking the change; use it for priority-1 and alert learnings | object | optional |
 | K | `why_not_stronger` | Why not stronger | Only for a priority-1 learning with no fix above the administrative tier: why elimination, substitution or engineering is not possible | text | optional |
 
 Use the controlled values in `register-schema.md` for `hfacs_level`, `hoc_tier`, `priority`, `urgency`,
@@ -116,3 +116,5 @@ organisational system and control tier) the engine computes. The workbook (Learn
 Learning Plan, Summary, About) and the dashboard (Overview and Detailed register tabs) are rebuilt from the JSON:
 change the JSON and re-run, never edit the outputs. Every register entry and every audience pack that uses it
 carries the same `LR-nn`.
+
+For when and how to check that a learning took hold, use `learning-effectiveness-plan`.

@@ -767,3 +767,32 @@ def test_group_b_manual_page_names_formats(skill):
         assert re.search(rf"{flag} (\S+,)?{re.escape(f)}\b", page), f"{skill}: manual page lacks {flag} {f}"
     missing = [x for x in B_MANUAL_TEXT.get(skill, ()) if x not in page]
     assert missing == [], f"{skill}: manual page lacks {missing}"
+
+
+# Phase 6 Task 14: the follow-up pointers (spec §6.2, learning-effectiveness-plan) and the top-management-brief
+# link to could-it-happen-here (spec §4, L1-06).
+P6_FOLLOWUP_LINE = ("For when and how to check that a learning took hold, use `learning-effectiveness-plan`.")
+P6_FOLLOWUP_SKILLS = ("learnings-register", "manager-coach", "safety-committee-guide")
+
+
+@pytest.mark.parametrize("skill", P6_FOLLOWUP_SKILLS)
+def test_followup_points_to_effectiveness_plan(skill):
+    lines = [x.strip() for x in skill_md(skill).splitlines()]
+    assert P6_FOLLOWUP_LINE in lines, f"{skill}: the follow-up pointer line is missing"
+    assert len(skill_md(skill).splitlines()) <= 150, skill
+    page = read(ROOT / "docs" / "manual" / "skills" / f"{skill}.md")
+    assert "`learning-effectiveness-plan`" in page, f"{skill}: the manual page lacks the pointer"
+
+
+def test_tmb_sister_sites_optional():
+    prof = json.loads(read(REFS / "pack-profiles.json"))["top-management-brief"]
+    sec = [e for e in prof["sections"] if e["id"] == "sister-sites"]
+    assert [(e["kinds"], e["min"], e["max"]) for e in sec] == [(["para"], 0, 1)]
+    ids = [e["id"] for e in prof["sections"]]
+    assert ids.index("sister-sites") == ids.index("transferability") + 1
+    m = json.loads(read(SKILLS_DIR / "top-management-brief" / "skill.json"))
+    assert "could-it-happen-here" in m["optional_inputs"]
+    text = skill_md("top-management-brief")
+    assert "could-it-happen-here.json" in text and "`could-it-happen-here`" in section(text, "Write")
+    page = read(ROOT / "docs" / "manual" / "skills" / "top-management-brief.md")
+    assert "could-it-happen-here" in page and "sister-sites" in page

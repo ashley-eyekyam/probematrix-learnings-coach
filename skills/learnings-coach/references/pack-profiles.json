@@ -466,6 +466,7 @@
     "sections": [
       {"id": "summary", "kinds": ["para"], "min": 1, "max": 3},
       {"id": "transferability", "kinds": ["table"], "min": 1, "max": 1},
+      {"id": "sister-sites", "kinds": ["para"], "min": 0, "max": 1},
       {"id": "policies", "kinds": ["para"], "min": 1, "max": 8},
       {"id": "decisions", "kinds": ["decision"], "min": 1, "max": 6},
       {"id": "decisions", "kinds": ["indicator"], "min": 1, "max": 6},

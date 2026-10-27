@@ -21,6 +21,7 @@ Top management (tier T5) sets policy, enterprise standards and investment, and d
 
 - `clusters.json` from [learning-clusters](learning-clusters.md).
 - Optional: the Learnings Register; the brief then takes the enterprise learnings from it and carries their `LR-nn` ids.
+- Optional: the `could-it-happen-here` pack (`outputs/could-it-happen-here.json`); the brief then names it in its sister-sites section.
 
 ## Engine commands and flags
 
@@ -48,10 +49,11 @@ pmlc pack <ws> <run>/outputs/top-management-brief.json --format email       # a 
 
 1. an **executive summary**: what happened in two sentences and the decisions requested, with the three enterprise learnings as the bottom line;
 2. **transferability**: for each learning, site-specific, likely at similar sites, or enterprise-wide, with the reason;
-3. up to eight paragraphs on the **policies, standards and legal requirements implicated**, with requirement ids from the standards crosswalk where they apply, and what the evidence shows about how they were applied (never that a requirement was breached);
-4. up to six **decisions**, each marked "For decision" or "For noting", with options, a trade-off and an enterprise indicator with its deterioration trigger;
-5. optionally, the **management review input**: exactly six rows (incidents and corrective actions, monitoring results, audit results, risks and opportunities, adequacy of resources, consultation outcomes), each citing its findings or reading "not in this investigation";
-6. up to six **assurance** questions: how the organisation will know the learning is applied at every site.
+3. optionally, one **sister-sites** paragraph (section `sister-sites`), written only when the `could-it-happen-here` pack exists in the run's outputs: it names that pack as the self-assessment the other sites run and the learnings it covers, and never ranks sites;
+4. up to eight paragraphs on the **policies, standards and legal requirements implicated**, with requirement ids from the standards crosswalk where they apply, and what the evidence shows about how they were applied (never that a requirement was breached);
+5. up to six **decisions**, each marked "For decision" or "For noting", with options, a trade-off and an enterprise indicator with its deterioration trigger;
+6. optionally, the **management review input**: exactly six rows (incidents and corrective actions, monitoring results, audit results, risks and opportunities, adequacy of resources, consultation outcomes), each citing its findings or reading "not in this investigation";
+7. up to six **assurance** questions: how the organisation will know the learning is applied at every site.
 
 The tone is neutral and factual, with roles only. Owners are named as functions.
 
@@ -68,3 +70,4 @@ These counts are from the base classification, before the resolution pass. After
 - [board-brief](board-brief.md): the same event for the board's oversight role.
 - [auditor-assurance-pack](auditor-assurance-pack.md): the assurance behind the last section.
 - [site-leadership-coach](site-leadership-coach.md): the site-level decisions, and the ones marked "Needs corporate decision".
+- `could-it-happen-here`: the self-assessment the sister sites run for the transferable learnings.

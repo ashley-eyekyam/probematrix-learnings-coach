@@ -117,13 +117,14 @@ def test_schema_keyword_subset():
 
 def test_artefact_names_closed():
     art = load(REFS / "artefacts.json")
-    assert len(art) == 25
+    assert len(art) == 26
     for name, a in art.items():
         assert set(a) <= {"file", "producer", "org_filled", "planned"}, name
         kind, _, who = a["producer"].partition(":")
         assert kind in ("engine", "skill") and who, name
         if kind == "skill":
             assert who in SKILLS or "planned" in a, name
+            assert not (who in SKILLS and "planned" in a), f"{name}: {who} has shipped; drop planned"
     for s in SKILLS:
         m = load(SKILLS_DIR / s / "skill.json")
         for n in m["requires"] + m["optional_inputs"]:
@@ -210,6 +211,8 @@ PINNED_ARTEFACTS = {
     "learning-team-notes": ("outputs/learning-team-notes.csv", "engine:templates", None),
     "cihh-template": ("outputs/<pack>.cihh-template.xlsx", "engine:templates", None),
     "cihh-consolidated": ("outputs/cihh-consolidated.json", "engine:consolidate", None),
+    # Task 14: top-management-brief reads it when present; Task 8 ships the skill (then drop "planned").
+    "could-it-happen-here": ("outputs/could-it-happen-here.json", "skill:could-it-happen-here", "Phase 6"),
 }
 
 

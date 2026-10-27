@@ -1887,3 +1887,18 @@ def test_interview_plan_holds_six_roles_and_the_validation_question(w):
     assert not [m for m in _strict(p, w) if m.startswith("section interview-plan")], _strict(p, w)
     sec["items"] = qs + [dict(qs[0], question="One question too many?")]
     assert "section interview-plan: 32 question items, expected 1-31" in _strict(p, w)
+
+
+def test_tmb_sister_sites_section_checks(w):
+    """Task 14 (spec §4, L1-06): the optional sister-sites section takes one para naming the could-it-happen-here
+    pack; under --strict a second para is a profile problem, and a pack without the section stays valid."""
+    def prof(p):
+        return [x for x in pp.check_pack(p, w, strict=True).problems if "sister-sites" in x]
+    p = fixture("top-management-brief")
+    assert prof(p) == []
+    para = item("para", text="The other sites assess these learnings with the could-it-happen-here pack "
+                             "(could-it-happen-here.json).", cites=["FND-0003"])
+    p["sections"].insert(2, {"id": "sister-sites", "heading": "Sister sites", "items": [para]})
+    assert problems(p, w) == [] and prof(p) == []
+    p["sections"][2]["items"].append(copy.deepcopy(para))
+    assert prof(p), pp.check_pack(p, w, strict=True).problems
