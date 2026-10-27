@@ -8,6 +8,7 @@ Subcommands
   profile         Markdown profile of the workspace (counts, levels, roles, data-quality flags)
   classify        map 'Individuals Involved' roles to Learning Clusters (entity x tier x relation)
   rec-review      strength bands, level match, loops and SMART gaps of a register's recommendations
+  effect-plan     the effectiveness schedule of a register: what to check and when, as offsets from adoption
   compare         comparator inventory, both-direction coverage tables and checks (ready pack items)
   select          compact Markdown/JSON bundle of findings for one audience or cluster
   causal          causal graph extracted from the AI's causal explanations (+ Causal Chain sheet)
@@ -91,6 +92,7 @@ from .profile import cmd_profile
 from .render import DEFAULT_FORMATS, FORMATS, parse_formats
 from .render.layouts import base_url_arg, LAYOUTS, PAPERS
 from .rec_review import cmd_rec_review
+from .effect_plan import cmd_effect_plan, EFFECT_TABLE_KINDS
 from .register.check import cmd_check_register
 from .register.markdown import cmd_register_md
 from .register.render import cmd_register_render
@@ -491,6 +493,16 @@ def build_parser():
     s.add_argument("--table-item", dest="table_item", choices=["strength", "spread", "smart"],
                    help="print a ready table item for a pack (JSON on stdout)")
     s.set_defaults(fn=cmd_rec_review)
+
+    s = sp.add_parser("effect-plan", help="the effectiveness schedule of a register: checks as offsets from adoption (writes effect_plan.json)",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--register", required=True, help="Learnings Register JSON")
+    s.add_argument("--json", action="store_true", help="print the plan as JSON")
+    s.add_argument("--table-item", dest="table_item", choices=EFFECT_TABLE_KINDS, metavar="|".join(EFFECT_TABLE_KINDS),
+                   help="print a ready table item for a pack (JSON on stdout)")
+    s.add_argument("--items", choices=["audit"], help="print ready question items for a pack (JSON on stdout)")
+    s.set_defaults(fn=cmd_effect_plan)
 
     s = sp.add_parser("table-item", help="a ready table item for a pack (JSON on stdout)", allow_abbrev=False)
     s.add_argument("ws")

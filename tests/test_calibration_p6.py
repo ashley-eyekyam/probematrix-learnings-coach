@@ -44,3 +44,12 @@ def test_hazira_alert_grade_numbers():
     assert sum(1 for e in entries if e.get("priority") == 1) == 11
     assert Counter(alert.suggest_grade(e) for e in entries) == {"alert": 11, "notice": 12, "information": 2}
     assert alert.default_choice(entries) == ["LR-01", "LR-02", "LR-03"]
+
+
+def test_effect_plan_rows(hazira_ws):
+    """Effectiveness schedule rows: 11 priority-1 learnings x 5 checks + 14 others x 3 = 97 (P6-8)."""
+    d = json.loads(run("effect-plan", str(hazira_ws), "--register", str(REGISTER), "--json"))
+    assert len(d["rows"]) == 97
+    assert len(d["learnings"]) == 25
+    assert sum(1 for r in d["rows"] if r["priority"] == 1) == 55
+    assert d["notes"] == []

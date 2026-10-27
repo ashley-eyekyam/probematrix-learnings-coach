@@ -1,0 +1,24 @@
+{
+ "_about": "The effectiveness schedule (plan ruling P6-8). Every offset is counted from adoption, never a calendar date (D7). Kirkpatrick: communicated = L1, understood = L2, applied = L3, effective = L4.",
+ "schedules": {
+  "1": [
+   {"offset": "30 days", "check": "communicated", "kirkpatrick": "L1"},
+   {"offset": "60 days", "check": "understood", "kirkpatrick": "L2"},
+   {"offset": "90 days", "check": "applied", "kirkpatrick": "L3"},
+   {"offset": "6 months", "check": "applied", "kirkpatrick": "L3"},
+   {"offset": "12 months", "check": "effective", "kirkpatrick": "L4"}
+  ],
+  "2": [
+   {"offset": "3 months", "check": "communicated and understood", "kirkpatrick": "L1-L2"},
+   {"offset": "6 months", "check": "applied", "kirkpatrick": "L3"},
+   {"offset": "12 months", "check": "effective", "kirkpatrick": "L4"}
+  ]
+ },
+ "default_priority": "2",
+ "spread": {"same site": "site", "other sites": "organisation", "industry-wide": "industry"},
+ "depth": {"elimination": "system", "substitution": "system", "engineering": "system", "administrative": "procedure",
+           "training": "individual", "ppe": "individual"},
+ "unknown": "unknown",
+ "levels": [["L1", "communicated"], ["L2", "understood"], ["L3", "applied"], ["L4", "effective"]],
+ "suffix": "after adoption"
+}

@@ -89,6 +89,11 @@
     "producer": "engine:missed-opportunities",
     "org_filled": false
   },
+  "effect-plan": {
+    "file": "workspace/effect_plan.json",
+    "producer": "engine:effect-plan",
+    "org_filled": false
+  },
   "library": {
     "file": "$PMLC_LIBRARY",
     "producer": "engine:library",
