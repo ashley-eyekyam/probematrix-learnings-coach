@@ -79,6 +79,16 @@
     "producer": "engine:evidence-audit",
     "org_filled": false
   },
+  "wai-wad": {
+    "file": "workspace/wai_wad.json",
+    "producer": "engine:wai-wad",
+    "org_filled": false
+  },
+  "learning-team-notes": {
+    "file": "outputs/learning-team-notes.csv",
+    "producer": "engine:templates",
+    "org_filled": true
+  },
   "hfacs-profile": {
     "file": "workspace/hfacs_profile.json",
     "producer": "engine:hfacs-profile",

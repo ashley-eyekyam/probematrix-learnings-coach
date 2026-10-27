@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "_about": "wai-wad (Phase 6, Task 4). doc_types and wad_types are the Evidence Links types read as 'work as imagined' (documents) and 'work as done' (witness statements, log records, recordings). counterfactual lists the patterns that mark a counterfactual sentence in a finding's justification (Ruling P6-6): the JC3 patterns of lint-terms.json plus the phrases below. Python regular expressions, matched case-insensitively. Words are data: edit the lists here, not the code.",
+ "doc_types": ["document"],
+ "wad_types": ["witness_statement", "log_record", "recording"],
+ "counterfactual": [
+  "\\bfailed to\\b",
+  "\\bshould have\\b",
+  "\\bwould have\\b",
+  "\\bcould have prevented\\b",
+  "\\bfailure to\\b",
+  "\\bdid not\\b",
+  "\\bdidn['’]t\\b",
+  "\\bcould have\\b",
+  "\\bwas not\\b",
+  "\\bwere not\\b",
+  "\\bwasn['’]t\\b",
+  "\\bweren['’]t\\b",
+  "\\binadequate\\b",
+  "\\black of\\b",
+  "\\blacked\\b"
+ ],
+ "notes": {
+  "no_wad": "This export has no witness statement, log record or recording linked to a finding, so there is no work-as-done evidence to set against the documents. Collect it before using these prompts.",
+  "no_pairs": "No code has both document and work-as-done evidence, so there is no gap to compare.",
+  "no_evidence": "This workspace has no evidence items (no Evidence Links rows).",
+  "no_counterfactual": "No finding's justification uses counterfactual wording."
+ },
+ "learning_team_columns": ["prompt_id", "prompt", "team_answer", "source"]
+}

@@ -29,6 +29,7 @@ SUBCOMMANDS = ["ingest", "profile", "classify", "select", "causal", "timeline", 
 SUBCOMMANDS += ["strings", "crosswalk", "hfacs-profile", "open-questions", "rec-review", "nine-m-seed",
                 "missed-opportunities", "evidence-audit", "effect-plan"]
 SUBCOMMANDS += ["accimap"]
+SUBCOMMANDS += ["wai-wad"]
 SUBCOMMANDS += ["nine-m-suggest", "nine-m-answer", "nine-m-replay", "nine-m-actions-template"]
 SUBCOMMANDS += ["alert-grade"]
 T13_PAGES = {"Home.md", "Commands.md", "Developer-tools.md"} | {f"commands/{c}.md" for c in SUBCOMMANDS}

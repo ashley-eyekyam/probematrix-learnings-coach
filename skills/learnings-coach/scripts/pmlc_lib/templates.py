@@ -17,7 +17,9 @@ VERIFICATION_KEYS = ["lr_id", "check_date", "level", "evidence", "assessed_by_ro
 RESPONSES = ("accepted", "modified", "rejected")
 YES_NO = ("yes", "no")
 VERIFICATION_LEVELS = ("communicated", "understood", "applied", "effective")
-FILES = {"adoption": "adoption.csv", "distribution": "distribution.csv", "verification": "verification.jsonl"}
+FILES = {"adoption": "adoption.csv", "distribution": "distribution.csv", "verification": "verification.jsonl",
+         "learning-team": "learning-team-notes.csv"}
+LEARNING_TEAM_COLUMNS = ["prompt_id", "prompt", "team_answer", "source"]   # P6-10: header only, the team fills the rest
 REGISTER_FILE = "learnings-register.json"
 YES_NO_SHORT = {"y": "yes", "n": "no"}           # accepted for yes/no columns (M-4)
 
@@ -186,7 +188,10 @@ def cmd_templates(a):
     target = Path(a.out) if a.out else out_dir / FILES[a.mode]
     if target.exists():
         sys.exit(f"{target} already exists and may hold your organisation's entries; move it or pass a new --out")
-    if a.mode == "distribution":
+    if a.mode == "learning-team":
+        # header only, so nothing can leak: no share path or name_guard is needed (unlike the CIHH template)
+        rows = []                       # the team supplies every answer; the engine writes the header and nothing else
+    elif a.mode == "distribution":
         rows = [{"pack": d["pack"], "audience": d.get("audience", "")} for _, d in pack_files(out_dir)]
     else:
         reg = Path(a.register) if a.register else out_dir / REGISTER_FILE
@@ -195,7 +200,9 @@ def cmd_templates(a):
         entries = load_register_entries(reg)
         rows = [{"lr_id": e.get("lr_id", ""), "title": e.get("title", "")} for e in entries]
     target.parent.mkdir(parents=True, exist_ok=True)
-    if a.mode == "adoption":
+    if a.mode == "learning-team":
+        _write_csv(target, LEARNING_TEAM_COLUMNS, rows)
+    elif a.mode == "adoption":
         _write_csv(target, ADOPTION_COLUMNS, rows)
     elif a.mode == "distribution":
         _write_csv(target, DISTRIBUTION_COLUMNS, rows)
@@ -204,4 +211,7 @@ def cmd_templates(a):
             for r in rows:
                 fh.write(json.dumps({"lr_id": r["lr_id"], "check_date": None, "level": None, "evidence": None,
                                      "assessed_by_role": None}) + "\n")
+    if a.mode == "learning-team":
+        print(f"wrote {target} (header only); the learning team fills in team_answer and source")
+        return
     print(f"wrote {target} ({len(rows)} row{'s' if len(rows) != 1 else ''}); the organisation fills in the blank columns")

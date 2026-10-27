@@ -31,11 +31,15 @@ def _split(v) -> list:
     return list(dict.fromkeys(out))
 
 
+ON_REQUEST = {"learning-team-notes"}      # made only by a step that names it as its mode, never by an unmoded engine step
+TEMPLATE_MODES = {"learning-team-notes": "learning-team"}   # an artefact whose `templates` mode is not its name
+
+
 def _engine_commands(cmd: str, produces: list) -> list:
     if cmd == "ingest":
         return ["PMLC ingest <export.xlsx> --slug <site>-<event>"]
     if cmd == "templates":
-        return [f"PMLC templates <ws> {a}" for a in produces]
+        return [f"PMLC templates <ws> {TEMPLATE_MODES.get(a, a)}" for a in produces]
     return [f"PMLC {cmd} <ws>"]
 
 
@@ -59,6 +63,8 @@ class _Resolver:
             made = [a for a, d in self.artefacts.items() if d.get("producer") == sk]
             if step.get("mode") in made:
                 made = [step["mode"]]
+            else:       # an on_request artefact is made only by a step that names it as its mode
+                made = [a for a in made if a not in ON_REQUEST]
             self._node(sk, produces=made, mode=step.get("mode"), when=step.get("when"))
             self._visit(sk, [])
             return
