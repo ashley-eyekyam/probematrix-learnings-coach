@@ -10,7 +10,8 @@ nothing, not even library.json.
 - An incident line is appended when anything but its `published` month changed.
 - Absent register fields are omitted from `learning`, never written as null.
 
-The de-identification step (Task 16) runs at the `# P6-12 hook` below on every public line before it is hashed."""
+The de-identification gate (deid.deidentify, Ruling P6-12) runs on every public line before it is hashed: a listed name
+refuses the publish, the site becomes its S-code, and the text is masked as a --share external copy is."""
 from __future__ import annotations
 
 import hashlib
@@ -20,6 +21,7 @@ import sys
 from pathlib import Path
 
 from .. import __version__
+from .deid import deidentify
 from .ids import allocate, incident_key
 from .store import LibraryError, canonical, open_library
 
@@ -82,8 +84,8 @@ def snapshot(entry: dict, incident_key: str, ll_id: str, n: int, prev, review_st
 
 
 def _publish_deidentify(lines: list, ctx: dict) -> list:
-    """# P6-12 hook: Task 16's deidentify(lines, ctx) replaces this identity step. lines is [(file, obj)]."""
-    return lines
+    """# P6-12 hook: deid.deidentify on [(file, obj)] public lines (raises LibraryError on a refusal)."""
+    return deidentify(lines, ctx)
 
 
 def _publish_event(etype, ll_id, ikey, month, data) -> dict:
@@ -243,7 +245,8 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
         out["incidents.jsonl"].append(inc)
         report.append(f"  + incident {ikey} ({len(lls)} learnings)")
     missing = [src for _, src in PUBLISH_FIELDS if all(_publish_absent(e.get(src)) for e in entries)]
-    return {"lines": out, "counts": counts, "report": report, "incident_key": ikey, "missing": missing}
+    return {"lines": out, "counts": counts, "report": report, "incident_key": ikey, "missing": missing,
+            "site_code": inc.get("site_code")}
 
 
 def cmd_library(a):
@@ -265,7 +268,7 @@ def cmd_library(a):
         from ..workspace import outputs_dir
         reg = outputs_dir(ws) / "learnings-register.json"
     try:
-        plan = plan_publish(lib, ws, reg, {"site": a.site, "names": a.names})
+        plan = plan_publish(lib, ws, reg, {"site": a.site, "names": a.names, "orgs": getattr(a, "orgs", None)})
     except LibraryError as e:
         _publish_fail(f"library publish: {e}", e.code)
     lines, c = plan["lines"], plan["counts"]
@@ -277,9 +280,8 @@ def cmd_library(a):
     if plan["missing"]:
         print("note: the register has no " + ", ".join(plan["missing"]) + " in any learning (an older register), "
               "so the snapshots leave them out")
-    if a.site or a.names:
-        print("note: this version does not apply --site or --names yet: the site is not coded and no name check "
-              "runs, so publish synthetic data only", file=sys.stderr)
+    if plan["site_code"]:
+        print(f"site coded {plan['site_code']} (the real name stays in private/sites.json, which is never shared)")
     if not total:
         print("nothing to append: the library already holds this run as it stands")
         return
@@ -291,5 +293,6 @@ def cmd_library(a):
         return
     if lib.new:
         lib.init()
+    lib.write_sites()                 # the private site map first, so no public code is ever left without its name
     for name, v in lines.items():
         lib.append(name, v)
