@@ -170,13 +170,16 @@ def test_hazira_samples_render_identically(hz, tmp_path):
             _same(out / f, OUTPUTS / f)
 
 
+# Phase 6: the new-skill tasks (7-13) stage their Hazira goldens as JSON only; Task 18 renders them and empties the set.
+P6_STAGED = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+             "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"}
+
+
 def test_no_hazira_pack_waits_for_its_render():
     """Task 24: every Phase 5 golden is rendered beside its JSON and listed in the README. Phase 6 stages its new
     goldens again (checklist item 6): each pending entry is a Phase 6 skill's golden JSON with no rendering, and
     Phase 6 Task 18 renders them and empties the set; every other pack stays rendered and listed."""
-    phase6 = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
-              "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"}
-    assert set(PENDING) <= phase6, set(PENDING) - phase6
+    assert set(PENDING) <= P6_STAGED and len(PENDING) == len(RENDER_PENDING), set(PENDING) - P6_STAGED
     for name in PENDING:
         assert (OUTPUTS / f"{name}.json").is_file(), name
         assert not (OUTPUTS / f"{name}.html").exists() and not (OUTPUTS / f"{name}.md").exists(), name

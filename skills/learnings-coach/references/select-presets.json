@@ -90,6 +90,10 @@
     {"name": "people-corporate-assurance", "args": ["--tag", "people", "corporate", "assurance", "--level", "4", "--brief"]},
     {"name": "leadership-corporate", "args": ["--tag", "leadership", "corporate", "--level", "4", "--brief"]}
   ],
+  "restorative-response-guide": [
+    {"name": "in-harms-way", "args": ["--text", "on foot|head.?count|shanty|civilian|injur|casualt|evacuat|muster", "--fields", "label,level,short"]},
+    {"name": "conditions", "args": ["--level", "2", "3", "4", "--text", "on foot|head.?count|shanty|civilian|injur|casualt|evacuat|muster", "--brief"]}
+  ],
   "training-designer": [
     {"name": "text", "args": ["--text", "train|competen|qualif|knowledge|experience|familiar|skill", "--brief"]},
     {"name": "l12", "args": ["--level", "1", "2", "--brief"]},

@@ -10,12 +10,11 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 MANUAL = ROOT / "docs" / "manual"
-# Phase 6 (plan P6-1): the seven Phase 6 skills join the documented count in Task 20, which sets every document to
-# 39 and drops this exclusion. Until then the documents state the Phase 5 count, and the Phase 5 lists stay Phase 5.
+# Phase 6 (plan P6-1): the documents state the count of the skill folders, Phase 6 skills included (each integrator
+# sets it after a merge; Task 20 sets 39). The Phase 5 lists below stay Phase 5.
 PHASE6_SKILLS = frozenset({"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
                            "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"})
-SKILL_COUNT = len([p for p in (ROOT / "skills").glob("*/skill.json")
-                   if p.parent.name not in PHASE6_SKILLS])            # P5-1: the folders, never a constant
+SKILL_COUNT = len(list((ROOT / "skills").glob("*/skill.json")))      # P5-1: the folders, never a constant
 SUB_COUNT = SKILL_COUNT - 1                                           # every skill but the hub
 
 # (document, pattern whose one group is a count, the count it must state)
