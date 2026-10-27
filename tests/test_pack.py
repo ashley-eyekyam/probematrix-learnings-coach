@@ -69,8 +69,9 @@ def problems(p, w):
     return pp.check_pack(p, w).problems
 
 
-def test_nineteen_kinds():
-    assert len(pp.KINDS) == 19 and sorted(pp.KINDS) == sorted(MIN)
+def test_kinds_match_minimal_items():
+    """Every kind has a minimal item here (no hard-coded count: sibling tasks add kinds)."""
+    assert sorted(pp.KINDS) == sorted(MIN) and "self_check" in pp.KINDS
 
 
 @pytest.mark.parametrize("kind", sorted(MIN))

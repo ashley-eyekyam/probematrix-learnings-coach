@@ -187,7 +187,7 @@ def cmd_templates(a):
                      "become the rows")
         from .cihh import cmd_cihh_template
         return cmd_cihh_template(a)
-    for flag in ("pack", "share"):
+    for flag in ("pack", "share", "names", "orgs"):
         if getattr(a, flag, None):
             sys.exit(f"--{flag} is for templates cihh only")
     ws = Path(a.ws)

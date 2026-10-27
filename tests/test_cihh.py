@@ -431,6 +431,7 @@ def test_consolidate_shared_copy(env, tmp_path):
     files = three_returns(env, tmp_path)
     wb = openpyxl.load_workbook(files[0])
     wb["Return"]["E5"] = "Bharat Seals fitted the seal at 14:05"
+    wb["Return"]["E6"] = "north  works checked this; South Terminal uses the same permit"
     wb.save(files[0])
     r = _cli("consolidate", str(ws_), *map(str, files), "--pack", str(pack), "--share", "external",
              "--orgs", str(orgs))
@@ -446,8 +447,9 @@ def test_consolidate_shared_copy(env, tmp_path):
     assert {json.loads(x)["site"] for x in ev.splitlines()} == {"S01", "S02", "S03"}
     assert all(json.loads(x)["event_hash"] == cihh.event_hash(json.loads(x)) for x in ev.splitlines())
     assert d["sites"]["S02"] == ["LR-01", "LR-02", "LR-03"]           # North Works, in name order
-    for leak in ("North Works", "South Terminal", "East Depot", "Bharat Seals", "14:05"):
-        assert leak not in ev and leak not in json.dumps(d), leak
+    for leak in ("North Works", "north  works", "South Terminal", "East Depot", "Bharat Seals", "14:05"):
+        assert leak.casefold() not in ev.casefold() and leak.casefold() not in json.dumps(d).casefold(), leak
+    assert "S02 checked this; S03 uses the same permit" in ev           # a response naming sites gets their codes
     assert "Shared external" in r.stdout
 
 
@@ -491,6 +493,21 @@ def test_artefacts_registered():
 
 def test_consolidate_help():
     assert "--keep-going" in run("consolidate", "-h")
+
+
+def test_templates_refuses_cihh_flags_elsewhere(env):
+    """templates adoption|distribution|verification refuse the cihh-only flags instead of ignoring them."""
+    ws_, _, orgs, pack = env
+    for flags in (["--pack", str(pack)], ["--share", "external"], ["--names", str(orgs)], ["--orgs", str(orgs)]):
+        r = _cli("templates", str(ws_), "adoption", *flags)
+        assert r.returncode != 0 and "is for templates cihh only" in r.stderr, flags
+
+
+def test_plan_engine_commands_cihh_template():
+    from pmlc_lib.plan import _engine_commands
+    assert _engine_commands("templates", ["adoption", "cihh-template"]) == [
+        "PMLC templates <ws> adoption",
+        "PMLC templates <ws> cihh --pack <run>/outputs/could-it-happen-here.json"]
 
 
 def test_plan_engine_templates_step_leaves_out_cihh(env):

@@ -173,7 +173,8 @@ def read_return(path) -> dict:
         _cihh_raise([CIHH_NOT_RETURN.format(file=path, why=f"it has no {CIHH_SHEET} sheet")], None)
     sh = wb[CIHH_SHEET]
     head = [_cihh_cell(sh.cell(row=CIHH_HEADER_ROW, column=c).value).lower() for c in range(1, len(CIHH_COLUMNS) + 1)]
-    if (_cihh_cell(sh["A1"].value) != "Site" or _cihh_cell(sh["A2"].value) != "Pack" or head != CIHH_COLUMNS):
+    if (_cihh_cell(sh["A1"].value).lower() != "site" or _cihh_cell(sh["A2"].value).lower() != "pack"
+            or head != CIHH_COLUMNS):
         _cihh_raise([CIHH_NOT_RETURN.format(file=path, why="the Site and Pack cells or the column headings are "
                                                            "missing")], None)
     site, problems, rows = _cihh_site(sh["B1"].value), [], []
@@ -300,12 +301,35 @@ def _cihh_vet(paths, pack_hash, keys) -> tuple:
     return good, problems
 
 
+def _cihh_site_pattern(names):
+    """One regex for every site name: longest first, case-insensitive, any run of spaces, whole words only."""
+    parts = [r"\s+".join(re.escape(w) for w in n.split()) for n in sorted(names, key=len, reverse=True) if n.split()]
+    return re.compile(r"(?<!\w)(" + "|".join(parts) + r")(?!\w)", re.IGNORECASE) if parts else None
+
+
+def _cihh_recode(v, pat, code):
+    """`v` with every site name in its text (keys included) replaced by the site's code."""
+    if pat is None:
+        return v
+    if isinstance(v, str):
+        return pat.sub(lambda m: code[_cihh_site(m.group(0)).casefold()], v)
+    if isinstance(v, dict):
+        return {_cihh_recode(k, pat, code): _cihh_recode(x, pat, code) for k, x in v.items()}
+    if isinstance(v, list):
+        return [_cihh_recode(x, pat, code) for x in v]
+    return v
+
+
 def _cihh_code_sites(view, events) -> tuple:
-    """A shared copy codes each site as S01, S02... (sorted by name), in the view and the events."""
+    """A shared copy codes each site as S01, S02... (sorted by name), in the view and the events, and replaces each
+    site's name with its code wherever it appears in their text (a site response can name another site)."""
     names = sorted(view["sites"], key=str.casefold)
     code = {n: f"S{i:02d}" for i, n in enumerate(names, 1)}
+    fold = {n.casefold(): c for n, c in code.items()}
+    pat = _cihh_site_pattern(names)
     view = dict(view, sites={code[n]: v for n, v in view["sites"].items()})
-    return view, [dict(e, site=code[e["site"]]) for e in events]
+    view = _cihh_recode(view, pat, fold)
+    return view, [_cihh_recode(dict(e, site=code[e["site"]]), pat, fold) for e in events]
 
 
 def _cihh_texts(v):
@@ -347,9 +371,11 @@ def cmd_consolidate(a):
     view, events = consolidate(good, pack), site_events(good, pack)
     if mode != "internal":
         ctx = share_ctx(a, w, mode)
+        # mask first, keeping the site fields, then code the sites: a code such as S02 would be masked as an
+        # equipment tag, and a site name in the free text (a response naming another site) becomes its code
+        view = dict(shared_copy(view, ctx, w), sites=view["sites"])
+        events = [dict(shared_copy(e, ctx, w), site=e["site"]) for e in events]
         view, events = _cihh_code_sites(view, events)
-        view = shared_copy(view, ctx, w)
-        events = [dict(shared_copy(e, ctx, w), site=e["site"]) for e in events]   # the code is no equipment tag
         for e in events:
             e["event_hash"] = event_hash(e)
     name_guard(list(_cihh_texts(view)) + list(_cihh_texts(events)), a)

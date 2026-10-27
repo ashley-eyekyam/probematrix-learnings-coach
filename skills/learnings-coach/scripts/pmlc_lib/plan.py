@@ -35,7 +35,9 @@ def _engine_commands(cmd: str, produces: list) -> list:
     if cmd == "ingest":
         return ["PMLC ingest <export.xlsx> --slug <site>-<event>"]
     if cmd == "templates":
-        return [f"PMLC templates <ws> {a}" for a in produces]
+        # the cihh-template artefact is made by the cihh mode, from the could-it-happen-here pack
+        return ["PMLC templates <ws> cihh --pack <run>/outputs/could-it-happen-here.json" if a == "cihh-template"
+                else f"PMLC templates <ws> {a}" for a in produces]
     return [f"PMLC {cmd} <ws>"]
 
 
