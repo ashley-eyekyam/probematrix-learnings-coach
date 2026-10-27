@@ -1754,6 +1754,7 @@ def test_make_uat_inputs(tmp_path, where):
     _check_phase2_uat_inputs(d, tmp_path)
     _check_phase3_uat_inputs(d, tmp_path)
     _check_phase4_uat_inputs(d, tmp_path)
+    _check_phase5_uat_inputs(d, tmp_path)
 
 
 def _check_phase2_uat_inputs(d, tmp_path):
@@ -1861,6 +1862,31 @@ def _check_phase4_uat_inputs(d, tmp_path):
     quiz = json.loads((d / "uat-quiz.json").read_text(encoding="utf-8"))
     types = [i.get("type") for s in quiz["sections"] for i in s["items"] if i["kind"] == "question"]
     assert types == ["single", "multi", "truefalse", "short", None]
+
+
+def _check_phase5_uat_inputs(d, tmp_path):
+    """Phase 5 inputs: a register whose LR-08 has only weaker fixes (rec-review flags it), a CAPA Planner workbook with
+    no findings sheet (nine-m-seed and setup refuse it) and a synthetic process export (F99 only without --industry)."""
+    hw = tmp_path / "hz" / "pmlc-runs" / "2020-09-24-hazira-gas-release-fire" / "workspace"
+    run("evidence-audit", str(hw))              # P3-C1 still names only LR-08 and LR-12 once evidence_strength is checked
+    r = subprocess.run([sys.executable, str(PMLC), "check-register", str(hw), str(d / "uat-hazira-register.json"),
+                        "--strict", "--json"], capture_output=True, text=True)
+    assert [p.split()[2] for p in json.loads(r.stdout)["problems"]] == ["LR-08", "LR-12"], r.stdout
+    out = run("rec-review", str(hw), str(d / "uat-weak-fix-register.json"))
+    assert "1 learning(s) flagged 'weak fix for a deep cause': LR-08" in out, out
+    assert "stronger 24; intermediate 14; weaker 6; unrated 0" in out, out
+    planner = d / "uat-capa-planner-9m.xlsx"
+    assert openpyxl.load_workbook(planner, read_only=True).sheetnames == [
+        "Corrective Actions", "Preventive Actions", "Chapter Headers", "Residual Risks"]
+    r = subprocess.run([sys.executable, str(PMLC), "nine-m-seed", str(planner)], capture_output=True, text=True)
+    assert r.returncode == 2 and r.stderr.strip().startswith("This is a ProbeMatrix CAPA Planner workbook."), r.stderr
+    x = tmp_path / "p5" / "uat-process-export.xlsx"
+    x.parent.mkdir()
+    x.write_bytes((d / "uat-process-export.xlsx").read_bytes())
+    plain = run("setup", str(x), "--slug", "uat-process", "--root", str(tmp_path / "p5" / "plain"))
+    assert "High F99 share: 10 of 30 findings unmapped (over 10%)" in plain, plain
+    ind = run("setup", str(x), "--slug", "uat-process", "--root", str(tmp_path / "p5" / "ind"), "--industry", "process")
+    assert "Industry reference: process (method reference, not evidence)" in ind and "F99" not in ind, ind
 
 
 def test_dashboard_with_no_ratings(tmp_path):

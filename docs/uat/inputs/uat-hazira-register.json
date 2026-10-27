@@ -163,7 +163,7 @@
     "EVD-2894",
     "EVD-0185"
    ],
-   "evidence_strength": "direct",
+   "evidence_strength": "corroborated",
    "confidence": "high",
    "hfacs_level": "L4 Organisational Process: procedures (no return-to-service SOP)",
    "causal_role": "initiating",
@@ -325,7 +325,7 @@
     "EVD-0591",
     "EVD-0185"
    ],
-   "evidence_strength": "direct",
+   "evidence_strength": "corroborated",
    "confidence": "high",
    "hfacs_level": "L3 Supervision Inadequate (close-out review)",
    "causal_role": "contributory",
@@ -410,7 +410,7 @@
     "EVD-1494",
     "EVD-0591"
    ],
-   "evidence_strength": "direct",
+   "evidence_strength": "corroborated",
    "confidence": "high",
    "hfacs_level": "L4 Organisational Climate/Culture (inconsistent risk management of known problems)",
    "causal_role": "contributory",
@@ -956,7 +956,7 @@
     "EVD-9999",
     "EVD-0496"
    ],
-   "evidence_strength": "direct",
+   "evidence_strength": "corroborated",
    "confidence": "medium",
    "hfacs_level": "L4 Organisational Process: maintenance programme (hazardous-area equipment)",
    "causal_role": "contributory",
@@ -1050,7 +1050,7 @@
     "EVD-1460",
     "EVD-9220"
    ],
-   "evidence_strength": "direct",
+   "evidence_strength": "corroborated",
    "confidence": "high",
    "hfacs_level": "L3 Supervision Inadequate (training and qualification)",
    "causal_role": "contributory",
@@ -1210,7 +1210,7 @@
     "EVD-2752",
     "EVD-1284"
    ],
-   "evidence_strength": "direct",
+   "evidence_strength": "corroborated",
    "confidence": "high",
    "hfacs_level": "L4 Resource Management (surveillance equipment)",
    "causal_role": "contributory",
@@ -1472,7 +1472,7 @@
     "EVD-5527",
     "EVD-2397"
    ],
-   "evidence_strength": "direct",
+   "evidence_strength": "corroborated",
    "confidence": "high",
    "hfacs_level": "L4 Organisational Climate/Culture (deferred integrity actions)",
    "causal_role": "contributory",
@@ -1723,7 +1723,7 @@
     "EVD-9692",
     "EVD-7681"
    ],
-   "evidence_strength": "direct",
+   "evidence_strength": "corroborated",
    "confidence": "medium",
    "hfacs_level": "L4 Organisational Process: oversight (assurance)",
    "causal_role": "failed mitigation",
@@ -2068,7 +2068,7 @@
     "EVD-1460",
     "EVD-1394"
    ],
-   "evidence_strength": "inferred",
+   "evidence_strength": "corroborated",
    "confidence": "medium",
    "hfacs_level": "L4 Organisational Climate/Culture (acceptance of incomplete protection)",
    "causal_role": "escalating",
