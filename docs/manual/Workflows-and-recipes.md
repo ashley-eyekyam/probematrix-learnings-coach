@@ -61,7 +61,7 @@ The table shows what `plan --workflow <preset>` printed for each preset on a fre
 | `investigation-quality` | Evidence strength, open questions and investigator coaching | 7: ingest (done), `evidence-audit`, evidence-strength-scorecard, `open-questions`, open-questions-register, investigator-coach, report-comparison (only when an official report is supplied) | none |
 | `action-design` | 9M analysis, recommendation strength and an action export | 7: ingest and classify (done), learnings-register, `nine-m-seed` and nine-m-analysis, recommendation-strength-review, then `export-actions` | none |
 | `sister-sites` | An alert and "could it happen here" for other sites | 5: ingest and classify (done), learnings-register | `safety-alert`, `could-it-happen-here` (Phase 6) |
-| `training` | Register, training design, frontline cards and a safety-moment deck | 6: ingest and classify (done), learnings-register, training-designer, frontline-learning-cards | `safety-moment-deck` (Phase 6) |
+| `training` | Register, training design, frontline cards and a safety-moment deck | 6: ingest and classify (done), learnings-register, training-designer, frontline-learning-cards, safety-moment-deck | none |
 | `follow-up` | Effectiveness plan and the verification log | 2: `templates` (the verification log) | `learning-effectiveness-plan` (Phase 6) |
 
 All nine exit with code 0 on Hazira. Once the sample register is copied into `outputs/` and passes `check-register --strict`, the register step shows `done` in every preset that has one, so `plan --next` moves on to the first pack.

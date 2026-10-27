@@ -1,0 +1,37 @@
+{
+  "name": "safety-moment-deck",
+  "kind": "audience",
+  "audiences": [
+    "session-leaders"
+  ],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      1,
+      2
+    ],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "register"
+  ],
+  "optional_inputs": [
+    "frontline-learning-cards"
+  ],
+  "produces": {
+    "pack": "safety-moment-deck",
+    "files": []
+  },
+  "formats": [
+    "pptx",
+    "poster",
+    "srt",
+    "narration"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": []
+}

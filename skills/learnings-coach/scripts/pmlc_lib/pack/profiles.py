@@ -24,7 +24,8 @@ The Phase 6 rules (Task 1): grade-source warns when grade or grade_source is mis
 advice()); alert-priority-1 (with a register), leading-lagging and inferred-banner are problems even without
 --strict (hard()); needs-are-questions follows --strict, as the profile's kind check does.
 
-A profile may set "pptx_slides": 1 (Task 2): the pptx renderer then puts every section on one content slide."""
+A profile may set "pptx_slides": 1 (Task 2): the pptx renderer then puts every section on one content slide. Or
+"pptx_slides": "sections" (Task 9): one slide for the bottom line, then one slide per section, questions included."""
 from __future__ import annotations
 
 import fnmatch

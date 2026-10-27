@@ -32,8 +32,14 @@ def _router_target(e) -> str:
     return next(x["value"] for x in e["expectations"] if x.get("type") == "routes_to")
 
 
+P5_SKILLS = {"compliance-crosswalk", "evidence-strength-scorecard", "failure-to-learn-review", "latent-conditions-profile",
+             "nine-m-analysis", "open-questions-register", "people-workforce-learnings",
+             "recommendation-strength-review", "risk-register-update"}
+
+
 def test_new_skills_are_the_nine():
-    assert len(NEW) == 9, NEW
+    """The nine Phase 5 skills are "since": "2.0.0"; the Phase 6 skills join NEW and meet the same routing rules."""
+    assert len(P5_SKILLS) == 9 and P5_SKILLS <= set(NEW), sorted(P5_SKILLS - set(NEW))
 
 
 def test_hub_step2_routes_every_skill_folder():

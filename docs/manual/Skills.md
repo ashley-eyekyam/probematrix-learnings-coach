@@ -1,6 +1,6 @@
 # Skills
 
-The Learnings Coach is 32 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
+The Learnings Coach is 33 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
 
 **Start here:** [learnings-coach](skills/learnings-coach.md) sets up the workspace for an export and routes your request. Every other skill relies on it.
 
@@ -48,6 +48,7 @@ One skill for each tier, from the sharp end to the board.
 | Auditors, inspectors, certification bodies, insurers | [auditor-assurance-pack](skills/auditor-assurance-pack.md) | audit test points, sampling, evidence requests |
 | Investigators and HSE professionals | [investigator-coach](skills/investigator-coach.md) | evidence gaps, key questions, interviews, method lessons |
 | Training managers and instructors | [training-designer](skills/training-designer.md) | training-needs map, modules, assessments |
+| Supervisors and trainers leading a short safety moment | [safety-moment-deck](skills/safety-moment-deck.md) | a 3 to 6 slide deck, a one-page poster, optional narration and captions |
 | Fire services, emergency teams, incident command | [emergency-response-learnings](skills/emergency-response-learnings.md) | response timeline, plan gaps, drills |
 | Engineering, integrity, change control, instrumentation | [engineering-integrity-learnings](skills/engineering-integrity-learnings.md) | technical learnings and pending decisions |
 | Procurement, stores, vendors, contractors | [supply-chain-contractor-learnings](skills/supply-chain-contractor-learnings.md) | sourcing and contractor learnings |

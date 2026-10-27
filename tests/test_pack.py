@@ -247,7 +247,7 @@ WAVE4 = ["latent-conditions-profile", "failure-to-learn-review",   # Phase 5: ea
          "risk-register-update", "open-questions-register",
          "evidence-strength-scorecard", "nine-m-analysis",
          "recommendation-strength-review"]
-WAVE5 = []                         # Phase 6: each new-skill task (7-13) adds its skill here
+WAVE5 = ["safety-moment-deck"]     # Phase 6: each new-skill task (7-13) adds its skill here
 DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3, "wave 4": WAVE4, "wave 5": WAVE5}
 ALL_WAVES = WAVE1 + WAVE2 + WAVE3 + WAVE4 + WAVE5
 VERSION = pmlc.__version__
@@ -1412,8 +1412,8 @@ def test_profiles_have_the_contract_shape():
     for name, prof in profiles.load().items():
         assert set(prof) <= {"sections", "required_scope", "bottom_line", "word_limits", "coverage_floor", "rules",
                            "max_words", "lint_errors", "pptx_slides"}, name
-        if "pptx_slides" in prof:                                    # Phase 6 Task 2: the one-slide deck, int 1 only
-            assert type(prof["pptx_slides"]) is int and prof["pptx_slides"] == 1, name
+        if "pptx_slides" in prof:              # Phase 6: the one-slide deck (int 1, Task 2) or the section deck (Task 9)
+            assert type(prof["pptx_slides"]) is int and prof["pptx_slides"] == 1 or prof["pptx_slides"] == "sections", name
         assert all(re.fullmatch(r"JC([1-9]|1[0-2])", x) for x in prof.get("lint_errors", [])), name
         for e in prof["sections"]:
             assert set(e) == {"id", "kinds", "min", "max"} and 0 <= e["min"] <= e["max"], (name, e)
