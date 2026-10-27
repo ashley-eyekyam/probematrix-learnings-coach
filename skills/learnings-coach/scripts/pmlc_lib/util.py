@@ -12,6 +12,12 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parents[1]   # the scripts folder, next to pmlc.py
 REFS = HERE.parent / "references"
 CODE_RX = re.compile(r"\b([A-Z]{2,5})\s?(\d{1,2}\.\d{1,2})\b")
+# A date or a deadline in free text (D7): owners and due dates are the organisation's, never the pack's. Shared by the
+# 9M interview (answer-time note) and the no-owner-due profile rule (a warning on a date in a recommendation).
+DUE_DATE_RX = re.compile(
+    r"\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}/\d{1,2}/\d{2,4}\b|\b\d{1,2}(?:st|nd|rd|th)?\s+(?:jan|feb|mar|apr|may|jun|jul|aug|"
+    r"sep|oct|nov|dec)[a-z]*\b|\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{1,2}\b|\bby\s+(?:end of|"
+    r"next|this)\s+\w+", re.I)
 
 
 # ----------------------------------------------------------------------------- helpers

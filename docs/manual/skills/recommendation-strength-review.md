@@ -36,7 +36,7 @@ pmlc pack-xlsx <ws> <run>/outputs/recommendation-strength-review.json --kind tab
 ```
 
 - [rec-review](../commands/rec-review.md) bands each recommendation: `stronger` (elimination, substitution, engineering), `intermediate` (administrative), `weaker` (training, PPE, or an administrative change that is a procedure, policy, reminder, memo, warning, sign, poster, double-check or re-brief) or `unrated`. A learning whose findings reach HFACS level 3 or 4 with nothing `stronger` or `intermediate` is flagged `weak fix for a deep cause`. `--table-item` prints the `strength`, `spread` or `smart` table, with `row_cites`, ready to paste unchanged. Leave `--nine-m` off without a 9M map.
-- [check-pack](../commands/check-pack.md) fails the pack on any `owner` or `by_when`, even without `--strict` (the `no-owner-due` rule). [pack](../commands/pack.md) renders it, and [pack-xlsx](../commands/pack-xlsx.md) with `--kind table` writes the tables to Excel.
+- [check-pack](../commands/check-pack.md) fails the pack on any `owner`, `co_owner` or `by_when`, even without `--strict`, and warns on a date written in a change (the `no-owner-due` rule). [pack](../commands/pack.md) renders it, and [pack-xlsx](../commands/pack-xlsx.md) with `--kind table` writes the tables to Excel.
 
 ## What you get
 

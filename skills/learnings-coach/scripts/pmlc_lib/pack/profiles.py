@@ -25,7 +25,7 @@ import fnmatch
 import json
 import re
 
-from ..util import REFS
+from ..util import DUE_DATE_RX, REFS
 
 PROFILES_FILE = REFS / "pack-profiles.json"
 DOSSIER_RX = re.compile(r"^dossier-F\d+[a-z]?$")
@@ -44,6 +44,8 @@ BANNERS = {
     "nine-m-demo": "Answers chosen for demonstration, not by the organisation.",
 }
 NO_OWNER_DUE = "owner and due dates are set by the organisation, not in this pack"
+NO_OWNER_DUE_DATE = ("names a date or a deadline; owner and due dates are set by the organisation, not in this pack: "
+                     "take the date out")
 DEFAULT_COVERAGE_FLOOR = 0.25
 NO_LIMIT = 99                     # a max of 99 means the SKILL.md states no count
 _ID_SPLIT = re.compile(r"[\s,;]+")
@@ -314,11 +316,22 @@ def _filled(v) -> bool:
 
 
 def hard(pack, profile) -> list:
-    """Profile violations that are problems even without --strict: no-owner-due (D7)."""
+    """Profile violations that are problems even without --strict: no-owner-due (D7): owner, by_when, co_owner."""
     if not isinstance(pack, dict) or not isinstance(profile, dict) or "no-owner-due" not in (profile.get("rules") or []):
         return []
     return [f"{_item_name(s, n, it)}: {NO_OWNER_DUE}" for s, n, it in _items(pack)
-            if _filled(it.get("owner")) or _filled(it.get("by_when"))]
+            if _filled(it.get("owner")) or _filled(it.get("by_when")) or _filled(it.get("co_owner"))]
+
+
+def _check_due_dates(pack, out):
+    # D7, final review I1: a due date written into the words of a change ("completes this by 30 June 2026") leaks past
+    # the owner and by_when keys. A warning (a problem under --strict): the date pattern can match a fact.
+    for s, n, it in _items(pack):
+        keys = ("change", "text") if it.get("kind") == "recommendation" else ("change",)
+        for k in keys:
+            v = it.get(k)
+            if isinstance(v, str) and DUE_DATE_RX.search(v):
+                out.append(f"no-owner-due: {_item_name(s, n, it)} {k} {NO_OWNER_DUE_DATE}")
 
 
 def check(pack, profile, top=None, profiles=None, w=None) -> list:
@@ -351,8 +364,8 @@ def check(pack, profile, top=None, profiles=None, w=None) -> list:
             _check_follow_up_per_top(pack, top, out)
         elif isinstance(r, str) and r.startswith("same-sections-as:"):
             _check_same_sections(pack, r.split(":", 1)[1], load() if profiles is None else profiles, out)
-        elif r == "no-owner-due":
-            continue                                # a problem even without --strict: hard()
+        elif r == "no-owner-due":                   # owner, by_when, co_owner: a problem even without --strict: hard()
+            _check_due_dates(pack, out)
         elif r == "banner:nine-m-demo":              # only a replayed session needs the demo banner (OD5-1)
             if (w or {}).get("nine_m_session_mode") == "replay":
                 _check_banner(pack, "nine-m-demo", out)

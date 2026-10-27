@@ -398,9 +398,9 @@ priority-1 learning <LR-id> has no fix above the administrative tier
 <item>: owner and due dates are set by the organisation, not in this pack
 ```
 
-**Why.** The `nine-m-analysis`, `recommendation-strength-review` and `risk-register-update` packs carry the `no-owner-due` rule: an item with a non-empty `owner` or `by_when` is a problem, even without `--strict`. Who owns a change and by when is the organisation's decision, so the coach never writes it, even when an answer in the 9M interview names one.
+**Why.** The `nine-m-analysis`, `recommendation-strength-review` and `risk-register-update` packs carry the `no-owner-due` rule: an item with a non-empty `owner`, `co_owner` or `by_when` is a problem, even without `--strict`. A date or a deadline written into a `change` (or a recommendation's `text`), such as "by 30 June 2026", is a warning: `no-owner-due: <item> change names a date or a deadline …`, a problem under `--strict`. Who owns a change and by when is the organisation's decision, so the coach never writes it, even when an answer in the 9M interview names one.
 
-**What to do.** Remove `owner` and `by_when` from the item and run `check-pack` again. Record owners and dates in the files your organisation fills in: the 9M actions sheet from `nine-m-actions-template`, or `actions.csv` from `export-actions`, whose Owner and Due columns are left blank for you.
+**What to do.** Remove `owner`, `co_owner` and `by_when` (and any date in the change) from the item and run `check-pack` again. Record owners and dates in the files your organisation fills in: the 9M actions sheet from `nine-m-actions-template`, or `actions.csv` from `export-actions`, whose Owner and Due columns are left blank for you.
 
 ## evidence_strength is computed by the engine
 

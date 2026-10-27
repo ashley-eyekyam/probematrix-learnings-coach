@@ -50,6 +50,31 @@ def test_no_owner_due_rule(ws, w, tmp_path, monkeypatch, capsys):  # noqa: F811
     assert not [x for x in pp.check_pack(clean, w).problems if "owner and due" in x]
 
 
+def test_no_owner_due_catches_co_owner(w, monkeypatch):
+    # final review I1: co_owner is an owner too (D7), a problem without --strict
+    with_profile(monkeypatch, dict(PROF, rules=["no-owner-due"]))
+    res = pp.check_pack(pack_with(item("recommendation", id="rec-1", co_owner="the shift manager")), w)
+    assert "rec-1: owner and due dates are set by the organisation, not in this pack" in res.problems
+    assert not [x for x in pp.check_pack(pack_with(item("recommendation", co_owner="")), w).problems
+                if "owner and due" in x]
+
+
+@pytest.mark.parametrize("change", ["The maintenance planner completes this by 30 June 2026.",
+                                    "Fit the second isolation valve before 2026-06-30.", "Done by end of quarter."])
+def test_date_in_change_warns(w, monkeypatch, change):
+    # final review I1: a due date written into the change is a warning, and a problem under --strict
+    with_profile(monkeypatch, dict(PROF, rules=["no-owner-due"]))
+    pack = pack_with(item("recommendation", id="rec-1", change=change))
+    res = pp.check_pack(pack, w)
+    hit = [x for x in res.warnings if "rec-1 change names a date or a deadline" in x]
+    assert hit and not [x for x in res.problems if "names a date" in x]
+    assert [x for x in pp.check_pack(pack, w, strict=True).problems if "rec-1 change names a date" in x]
+    clean = pack_with(item("recommendation", id="rec-1", change="Fit a second isolation valve on the gas line."))
+    assert not [x for x in pp.check_pack(clean, w, strict=True).problems if "names a date" in x]
+    with_profile(monkeypatch, PROF)                 # the warning belongs to the rule
+    assert not [x for x in pp.check_pack(pack, w).warnings if "names a date" in x]
+
+
 def test_no_owner_due_needs_the_rule(w, monkeypatch):
     with_profile(monkeypatch, PROF)
     pack = pack_with(item("recommendation", owner="shift manager"))

@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 from .ninem import load_nine_m, NINE_M_CODES, NINE_M_NONE, NINE_M_SEED_FILE
-from .util import _abs, _s, write_json
+from .util import _abs, _s, DUE_DATE_RX, write_json
 from .workspace import load_ws
 
 NINE_M_SESSION_FILE = "nine_m_session.json"
@@ -50,10 +50,7 @@ NINE_M_PROCEDURAL = (NINE_M_NONE, NINE_M_FREE_TEXT, NINE_M_SKIP, "Not relevant: 
 # The four overlaps of §7.2: the skill asks which M owns a condition instead of counting it twice.
 NINE_M_OVERLAPS = {"M7.02": "M9", "M7.10": "M1", "M6.04": "M1", "M1.02": "M6 and M7", "M1.03": "M7",
                    "M1.10": "M4", "M1.11": "M4", "M4.04": "M1", "M4.08": "M1"}
-NINE_M_DATE_RX = re.compile(
-    r"\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}/\d{1,2}/\d{2,4}\b|\b\d{1,2}(?:st|nd|rd|th)?\s+(?:jan|feb|mar|apr|may|jun|jul|aug|"
-    r"sep|oct|nov|dec)[a-z]*\b|\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{1,2}\b|\bby\s+(?:end of|"
-    r"next|this)\s+\w+", re.I)
+NINE_M_DATE_RX = DUE_DATE_RX            # moved to util for the no-owner-due profile rule (final review I1)
 NINE_M_D7_NOTE = ("note: the answer names a date or a deadline; it is stored as given, but owners and due dates are "
                   "set by the organisation and stay out of the pack (D7)")
 TEMPLATE_COLUMNS = ["Recommendation ID", "M", "Change", "HoC tier", "Corrective/Preventive", "Indicator", "Owner",
