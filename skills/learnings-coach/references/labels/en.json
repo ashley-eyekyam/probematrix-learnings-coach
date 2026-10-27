@@ -224,5 +224,9 @@
  "ui.lens.regulator": "a regulator",
  "ui.lens.insurer": "an insurer",
  "ui.lens.jv-partner": "a joint-venture partner",
- "ui.lens.client": "a client"
+ "ui.lens.client": "a client",
+ "f.grade": "Grade",
+ "ui.grade.alert": "Alert",
+ "ui.grade.notice": "Notice",
+ "ui.grade.information": "Information"
 }

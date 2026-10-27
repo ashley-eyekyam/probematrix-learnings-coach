@@ -834,6 +834,19 @@ def _check_lens(pack, bad, soft):
         soft("lens", f"the {lens} lens needs a lens section with one para on what that reader needs")
 
 
+ALERT_MODES = ("internal", "sister-site", "industry")          # P6-4: who a safety alert is for
+GRADES = ("alert", "notice", "information")                    # P6-3: the alert grade, highest first
+
+
+def _ps_check_alert_fields(pack, bad):
+    """Optional top-level `mode`, `grade` and `grade_source` (Phase 6, P6-3/P6-4): a value outside its list is a
+    problem whatever the profile."""
+    from ..alert import GRADE_SOURCES                           # late: Task 2's alert module reads registers
+    for key, allowed in (("mode", ALERT_MODES), ("grade", GRADES), ("grade_source", GRADE_SOURCES)):
+        if key in pack and pack[key] not in allowed:
+            bad(key, f"must be one of {', '.join(allowed)}")
+
+
 def _ps_base_name(pack) -> str:
     """The name the pack-name and skill rules apply to: for a translation named <translation_of>-<lang> (P4-13),
     translation_of; else the pack's own name."""
@@ -954,6 +967,7 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
     _check_skill(pack, bad)
     _check_lang_dir(pack, bad)
     _check_lens(pack, bad, soft)
+    _ps_check_alert_fields(pack, bad)
     _ps_check_translation(pack, source, bad, soft)
     inc = pack.get("incident")
     if inc is not None:
@@ -1085,7 +1099,8 @@ def check_pack(pack, w, *, names=(), orgs=(), share=None, strict=False, register
     strict_msgs += [f"items: {x}" for x in profiles.padding(pack)]
     strict_msgs += [f"scope: {x}" for x in profiles.scope_drift(pack, profiles.load_audiences())]
     (P if strict else W).extend(strict_msgs)
-    P += profiles.hard(pack, prof) if prof else []                 # no-owner-due: a problem without --strict (D7)
+    P += profiles.hard(pack, prof, register) if prof else []       # no-owner-due (D7) and the Phase 6 problems
+    W += profiles.advice(pack, prof) if prof else []               # grade-source: a warning even under --strict
     hp, hw = check_handling(pack)
     P += hp
     W += hw

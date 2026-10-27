@@ -15,7 +15,7 @@ from ..pack.markdown import (_handling_lines as _em_handling, _pack_incident_dat
 from ..pack.schema import cited_ids, TOP_PRINT_LINE
 from . import LEARNER_BANNER, MORE_IN_PACK, Output, output_name, READING_TIME, register, translation_lines
 from .fields import item_blocks, reading_minutes
-from .labels import label, load_labels, text_dir
+from .labels import grade_line, label, load_labels, text_dir
 
 EM_BUDGET = 90_000                  # bytes of HTML the sections may fill (P4-24); the hard limit is 100,000
 EM_WIDTH = 78                       # columns of the plain-text twin
@@ -164,7 +164,7 @@ def _em_head_lines(ctx, pack, L, eh) -> tuple:
     kind "title", "draft", "handling" or "meta"."""
     mins = reading_minutes(pack)
     rt = label(L, "ui.reading_time", n=mins) if "ui.reading_time" in L else READING_TIME.format(n=mins)
-    rows = [(pack["title"], "title")]
+    rows = [(pack["title"], "title"), (grade_line(pack, L), "meta")]   # Phase 6: the alert grade (blank: dropped)
     if ctx.brand is not None and ctx.brand.organisation:     # P4-16: the name, never the logo; masked when shared
         rows.append((ctx.brand.organisation, "meta"))
     if is_draft(eh):

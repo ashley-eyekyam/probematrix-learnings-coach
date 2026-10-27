@@ -18,7 +18,11 @@ The 9M rules (Task 12, spec §7.3): nine-m-overview needs the nine-m-overview ta
 and each M either as a section m<n> with a cited learning or as a row of the not-relevant table with a reason;
 nine-m-cites flags a cite in a section m<n> that the workspace's nine_m_seed.json does not link to that M; m1-balance
 flags M1 holding the most recommendations while another M has more level 3-4 findings in the seed (M1 is not the
-people M). banner:nine-m-demo applies only when the workspace's nine_m_session.json is a replay (OD5-1)."""
+people M). banner:nine-m-demo applies only when the workspace's nine_m_session.json is a replay (OD5-1).
+
+The Phase 6 rules (Task 1): grade-source warns when grade or grade_source is missing, even under --strict (OD6-1:
+advice()); alert-priority-1 (with a register), leading-lagging and inferred-banner are problems even without
+--strict (hard()); needs-are-questions follows --strict, as the profile's kind check does."""
 from __future__ import annotations
 
 import fnmatch
@@ -30,7 +34,8 @@ from ..util import DUE_DATE_RX, REFS
 PROFILES_FILE = REFS / "pack-profiles.json"
 DOSSIER_RX = re.compile(r"^dossier-F\d+[a-z]?$")
 RULES = ("triplets", "assessment-answer", "follow-up-per-top", "same-sections-as:", "no-owner-due", "banner:",
-         "knowable-then", "nine-m-overview", "nine-m-cites", "m1-balance")
+         "knowable-then", "nine-m-overview", "nine-m-cites", "m1-balance",
+         "grade-source", "alert-priority-1", "leading-lagging", "needs-are-questions", "inferred-banner")
 NINE_M_CODES = tuple(f"M{i}" for i in range(1, 10))     # as pmlc_lib.ninem (not imported: it reads the workspace)
 # Fixed copy (Phase 5, verbatim): a pack meets banner:<key> only with a para whose text equals the value exactly
 BANNERS = {
@@ -42,7 +47,19 @@ BANNERS = {
     "profile-limits": "For one incident these counts describe this investigation only. They are not rates, trends or "
                       "a benchmark.",
     "nine-m-demo": "Answers chosen for demonstration, not by the organisation.",
+    # Phase 6 (verbatim)
+    "alert-review-copy": "Review copy: not for distribution outside the organisation until it is approved and shared "
+                         "with --share external.",
+    "cihh": "A self-assessment for each site. Results show coverage and conditions, never a ranking of sites.",
+    "learning-team": "The team supplies the answers. These are questions, not findings about people.",
+    "restorative": "The export holds no information about the people affected. Every need here is a question to ask, "
+                   "or the organisation's own answer.",
+    "accimap-inferred": "Placements above the company level are inferred from codes and departments. A person confirms "
+                        "them before this map is shared.",
+    "effectiveness": "The organisation sets owners, dates and statuses. This plan sets out what to check and when, "
+                     "counted from adoption.",
 }
+NEEDS_ARE_QUESTIONS = "needs are asked, never inferred"
 NO_OWNER_DUE = "owner and due dates are set by the organisation, not in this pack"
 NO_OWNER_DUE_DATE = ("names a date or a deadline; owner and due dates are set by the organisation, not in this pack: "
                      "take the date out")
@@ -315,12 +332,99 @@ def _filled(v) -> bool:
     return bool(v.strip()) if isinstance(v, str) else v not in (None, False, [], {})
 
 
-def hard(pack, profile) -> list:
-    """Profile violations that are problems even without --strict: no-owner-due (D7): owner, by_when, co_owner."""
-    if not isinstance(pack, dict) or not isinstance(profile, dict) or "no-owner-due" not in (profile.get("rules") or []):
+def hard(pack, profile, register=None) -> list:
+    """Profile violations that are problems even without --strict: no-owner-due (D7): owner, by_when, co_owner; and
+    the Phase 6 rules alert-priority-1 (only with a register), leading-lagging and inferred-banner."""
+    if not isinstance(pack, dict) or not isinstance(profile, dict):
         return []
-    return [f"{_item_name(s, n, it)}: {NO_OWNER_DUE}" for s, n, it in _items(pack)
-            if _filled(it.get("owner")) or _filled(it.get("by_when")) or _filled(it.get("co_owner"))]
+    rules = profile.get("rules") or []
+    out = []
+    if "no-owner-due" in rules:
+        out += [f"{_item_name(s, n, it)}: {NO_OWNER_DUE}" for s, n, it in _items(pack)
+                if _filled(it.get("owner")) or _filled(it.get("by_when")) or _filled(it.get("co_owner"))]
+    if "alert-priority-1" in rules and register is not None:
+        _check_alert_priority_1(pack, register, out)
+    if "leading-lagging" in rules:
+        _check_leading_lagging(pack, out)
+    if "inferred-banner" in rules:
+        _check_inferred_banner(pack, out)
+    return out
+
+
+def advice(pack, profile) -> list:
+    """Profile messages that stay warnings even under --strict: grade-source (OD6-1)."""
+    if not isinstance(pack, dict) or not isinstance(profile, dict) or "grade-source" not in (profile.get("rules") or []):
+        return []
+    miss = [k for k in ("grade", "grade_source") if pack.get(k) in (None, "")]
+    if not miss:
+        return []
+    return [f"grade-source: the pack has no {' or '.join(miss)}; record the grade and where it came from (the "
+            "register's urgency, or chosen by the user)"]
+
+
+def _p6_section_items(pack, sid):
+    for s, n, it in _items(pack):
+        if s.get("id") == sid:
+            yield s, n, it
+
+
+def _check_alert_priority_1(pack, register, out):
+    entries = register.get("entries") if isinstance(register, dict) else register
+    prio = {e["lr_id"]: e.get("priority") for e in (entries if isinstance(entries, list) else [])
+            if isinstance(e, dict) and isinstance(e.get("lr_id"), str)}
+    for s, n, it in _p6_section_items(pack, "learnings"):
+        if it.get("kind") != "learning":
+            continue
+        lr = it.get("learning")
+        if not isinstance(lr, str) or not lr.startswith("LR-"):
+            out.append(f"alert-priority-1: {_item_name(s, n, it)} cites no learning; an alert carries priority-1 "
+                       "learnings from the register (set learning to its LR- id)")
+        elif lr in prio and prio[lr] != 1:
+            out.append(f"alert-priority-1: {_item_name(s, n, it)} cites {lr}, whose priority is {prio[lr]}; an alert "
+                       "carries priority-1 learnings only")
+
+
+def _p6_col(columns, word):
+    for i, c in enumerate(columns):
+        if isinstance(c, str) and c.strip().lower().startswith(word):
+            return i
+    return None
+
+
+def _check_leading_lagging(pack, out):
+    for s, n, it in _p6_section_items(pack, "indicators"):
+        if it.get("kind") != "table":
+            continue
+        cols = it.get("columns") if isinstance(it.get("columns"), list) else []
+        name = _item_name(s, n, it)
+        where = {w: _p6_col(cols, w.lower()) for w in ("Leading", "Lagging")}
+        miss = [w for w, i in where.items() if i is None]
+        if miss:
+            out.append(f"leading-lagging: {name} needs {' and '.join(miss)} column{'s' if len(miss) > 1 else ''}")
+            continue
+        for r, row in enumerate(it.get("rows") if isinstance(it.get("rows"), list) else [], 1):
+            cells = row if isinstance(row, list) else []
+            empty = [w for w, i in where.items() if i >= len(cells) or not _filled(cells[i])]
+            if empty:
+                out.append(f"leading-lagging: {name} row {r} has no {' or '.join(empty)} indicator; every row needs "
+                           "both")
+
+
+def _check_inferred_banner(pack, out):
+    inferred = any(isinstance(nd, dict) and nd.get("inferred") is True
+                   for _, _, it in _items(pack) if it.get("kind") == "graph" and isinstance(it.get("nodes"), list)
+                   for nd in it["nodes"])
+    want = BANNERS["accimap-inferred"]
+    if inferred and not any(it.get("kind") == "para" and it.get("text") == want for _, _, it in _items(pack)):
+        out.append(f'inferred-banner: a graph has inferred placements; the pack needs a para whose text is exactly '
+                   f'"{want}"')
+
+
+def _check_needs_are_questions(pack, out):
+    for s, n, it in _p6_section_items(pack, "needs"):
+        if it.get("kind") != "question":
+            out.append(f"section needs: {_item_name(s, n, it)} is a {it.get('kind')}; {NEEDS_ARE_QUESTIONS}: write "
+                       "each need as a question")
 
 
 def _check_due_dates(pack, out):
@@ -379,6 +483,10 @@ def check(pack, profile, top=None, profiles=None, w=None) -> list:
             _check_nine_m_cites(pack, w, out)
         elif r == "m1-balance":
             _check_m1_balance(pack, w, out)
+        elif r == "needs-are-questions":
+            _check_needs_are_questions(pack, out)
+        elif r in ("grade-source", "alert-priority-1", "leading-lagging", "inferred-banner"):
+            pass                                     # advice() and hard() report these, whatever --strict says
         else:
             out.append(f"rules: unknown profile rule {r!r}")
     return out

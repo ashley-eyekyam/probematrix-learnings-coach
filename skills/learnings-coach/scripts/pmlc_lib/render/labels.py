@@ -51,6 +51,16 @@ def label(labels: dict, key: str, **fmt) -> str:
     return v.format(**fmt) if fmt else v
 
 
+def grade_line(pack, labels: dict) -> str:
+    """"Grade: Alert" for a pack with a valid top-level grade (Phase 6, P6-3), the badge every format shows under the
+    title; "" otherwise (an invalid grade is a check-pack problem, and the label file has no key for it)."""
+    g = pack.get("grade") if isinstance(pack, dict) else None
+    key = f"ui.grade.{g}" if isinstance(g, str) else ""
+    if key not in labels or "f.grade" not in labels:
+        return ""
+    return f"{labels['f.grade']}: {labels[key]}"
+
+
 def text_dir(labels: dict) -> str:
     """"rtl" or "ltr", from the labels' _dir."""
     return "rtl" if labels.get("_dir") == "rtl" else "ltr"

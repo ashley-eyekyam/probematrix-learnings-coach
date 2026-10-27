@@ -55,6 +55,29 @@
       ],
       "description": "Who the assurance is for (auditor-assurance-pack, P5-17); leave it out for internal audit. With it, the pack needs a lens section with one para."
     },
+    "mode": {
+      "enum": [
+        "internal",
+        "sister-site",
+        "industry"
+      ],
+      "description": "Who a safety alert is for (P6-4). pack of a sister-site pack without --share external or public, or of an industry pack without --share public, writes a review copy that opens with the review-copy banner; an industry pack is shared with --share public only."
+    },
+    "grade": {
+      "enum": [
+        "alert",
+        "notice",
+        "information"
+      ],
+      "description": "The alert grade (P6-3), shown as a badge under the title in every format."
+    },
+    "grade_source": {
+      "enum": [
+        "register urgency",
+        "chosen by the user"
+      ],
+      "description": "Where the grade came from (OD6-1): the register's urgency, or the user's choice. A profile with the grade-source rule warns when it is missing."
+    },
     "incident": {
       "type": "object",
       "additionalProperties": false,

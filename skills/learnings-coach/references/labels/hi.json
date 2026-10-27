@@ -224,5 +224,9 @@
  "ui.lens.regulator": "एक नियामक",
  "ui.lens.insurer": "एक बीमाकर्ता",
  "ui.lens.jv-partner": "एक संयुक्त उद्यम भागीदार",
- "ui.lens.client": "एक ग्राहक"
+ "ui.lens.client": "एक ग्राहक",
+ "f.grade": "श्रेणी",
+ "ui.grade.alert": "चेतावनी",
+ "ui.grade.notice": "सूचना",
+ "ui.grade.information": "जानकारी"
 }

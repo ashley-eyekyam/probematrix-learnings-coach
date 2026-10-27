@@ -20,6 +20,7 @@ Two flags decide what the page carries and who it is for:
 
 - `--embed` sets how much of the investigation's records the page embeds. The default, `cited`, embeds the full records only for the findings and evidence the pack cites.
 - `--share external` or `--share public` writes a separate, masked copy for people outside the organisation. It works only for an approved pack; see [Review and sharing](../Review-and-sharing.md#sharing-outside-the-organisation---share).
+- A safety alert's `mode` (v2.0 Phase 6) sets who it may reach. Without `--share external` or `--share public`, a `sister-site` pack is written as a review copy, and so is an `industry` pack without `--share public`: every format opens with "Review copy: not for distribution outside the organisation until it is approved and shared with --share external." The pack file itself is not changed. An `industry` pack is shared with `--share public` only. A pack with a `grade` shows it as a badge under the title in every format ("Grade: Alert").
 
 ## When to use it
 
@@ -309,6 +310,7 @@ warning: no handling block: rendered as draft (internal)
 - **"Nothing written."** The pack failed its check. Fix the problems listed above that line, then run pack again.
 - **The page says DRAFT.** It will until a reviewer signs it off with [sign-off](sign-off.md), and always while the investigation is not completed or no finding has been edited by a person in ProbeMatrix.
 - **Old HTML after an edit.** pack does not watch the file. Run it again after each change.
+- **"an industry alert is shared with --share public".** The pack's `mode` is `industry`, and `--share external` was given. Use `--share public` once the pack is signed off for public sharing, or set `mode` to `sister-site` for a copy that goes to named people outside the organisation.
 - **"cannot share externally: …" or "cannot share publicly: …".** Each condition after the colon is one that is not met. Sign the pack off with the right classification and legal review (`sign-off --classification external --legal-review cleared`), and leave `--embed` out (or give `summary`). Edit nothing after the sign-off: any change turns the pack back into a draft.
 - **A shared copy is refused by the language check.** At the external level the check is stricter: an organisation's name or a singleton role in the pack's own text is an error. Masking covers the embedded export records, not your wording; rewrite the text with roles and functions.
 - **"refused: a listed name appears in the output".** A name from `--names` (or `PMLC_NAMES`) is still on the page. Fix the pack text, or redact the name when you ingest (`ingest --redact`).
