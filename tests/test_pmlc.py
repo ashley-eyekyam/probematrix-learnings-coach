@@ -1755,6 +1755,7 @@ def test_make_uat_inputs(tmp_path, where):
     _check_phase3_uat_inputs(d, tmp_path)
     _check_phase4_uat_inputs(d, tmp_path)
     _check_phase5_uat_inputs(d, tmp_path)
+    _check_phase6_uat_inputs(d, tmp_path)
 
 
 def _check_phase2_uat_inputs(d, tmp_path):
@@ -1887,6 +1888,35 @@ def _check_phase5_uat_inputs(d, tmp_path):
     assert "High F99 share: 10 of 30 findings unmapped (over 10%)" in plain, plain
     ind = run("setup", str(x), "--slug", "uat-process", "--root", str(tmp_path / "p5" / "ind"), "--industry", "process")
     assert "Industry reference: process (method reference, not evidence)" in ind and "F99" not in ind, ind
+
+
+def _check_phase6_uat_inputs(d, tmp_path):
+    """Phase 6 inputs: the Hazira register without urgency (alert-grade suggests and asks) and a synthetic library
+    register for the pump fire whose LR-01 context names the site, a date and a clock time (publish codes the site
+    and keeps the month only). The registers derived from the sample match a fresh build."""
+    sample = json.loads((ROOT / "samples" / "2020-09-24-hazira-gas-release-fire" / "outputs"
+                         / "learnings-register.json").read_text(encoding="utf-8"))
+    nou = json.loads((d / "uat-no-urgency-register.json").read_text(encoding="utf-8"))
+    assert not any("urgency" in e for e in nou["entries"])
+    assert [e["lr_id"] for e in nou["entries"]] == [e["lr_id"] for e in sample["entries"]]
+    for n in ("uat-hazira-register.json", "uat-weak-fix-register.json"):    # urgency came in with Phase 6 (OD6-1)
+        assert all(e.get("urgency") for e in json.loads((d / n).read_text(encoding="utf-8"))["entries"]), n
+    hw = tmp_path / "hz" / "pmlc-runs" / "2020-09-24-hazira-gas-release-fire" / "workspace"
+    out = run("alert-grade", str(hw), "--register", str(d / "uat-no-urgency-register.json"))
+    assert out.startswith("alert-grade: suggested alert for LR-01, LR-02, LR-03 (no urgency in the register)"), out
+    lib = json.loads((d / "uat-library-register.json").read_text(encoding="utf-8"))
+    ctx = lib["entries"][0]["context"]
+    assert all(s in ctx for s in ("Kestrel Works", "2024-03-20", "03:12")), ctx
+    x = tmp_path / "p6" / "uat-approvable.xlsx"
+    x.parent.mkdir()
+    x.write_bytes((d / "uat-approvable.xlsx").read_bytes())
+    run("setup", str(x), "--slug", "uat-library", "--root", str(x.parent))
+    w = x.parent / "pmlc-runs" / "2024-03-20-uat-library" / "workspace"
+    out = run("library", "publish", str(w), "--register", str(d / "uat-library-register.json"), "--library",
+              str(tmp_path / "p6" / "library"), "--site", "Kestrel Works", "--names", str(d / "uat-names.txt"))
+    assert "2 new, 0 superseded" in out and "site coded S01" in out, out
+    public = (tmp_path / "p6" / "library" / "learnings.jsonl").read_text(encoding="utf-8")
+    assert "S01" in public and not any(s in public for s in ("Kestrel Works", "2024-03-20", "03:12")), public
 
 
 def test_dashboard_with_no_ratings(tmp_path):
