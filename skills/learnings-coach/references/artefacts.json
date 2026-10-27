@@ -112,8 +112,7 @@
   "library": {
     "file": "$PMLC_LIBRARY",
     "producer": "engine:library",
-    "org_filled": false,
-    "planned": "Phase 7"
+    "org_filled": false
   },
   "cihh-template": {
     "file": "outputs/<pack>.cihh-template.xlsx",

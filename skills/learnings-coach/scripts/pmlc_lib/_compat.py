@@ -68,6 +68,7 @@ MODULES = [
     "pmlc_lib.alert",
     "pmlc_lib.effect_plan",
     "pmlc_lib.cihh",
+    "pmlc_lib.library",
     "pmlc_lib.cli",
 ]
 PACK_MODULES = ["pmlc_lib.pack.profiles", "pmlc_lib.pack.schema", "pmlc_lib.pack.graph_layout", "pmlc_lib.pack.items",

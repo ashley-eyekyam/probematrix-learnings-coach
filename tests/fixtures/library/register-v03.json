@@ -1,0 +1,10 @@
+[
+ {"lr_id": "LR-01", "title": "Return to service without a test",
+  "lesson": "If a joint is disturbed, test it before service, because untested joints leak (EVD-0001).",
+  "finding_ids": ["FND-0001"],
+  "recommendations": [{"what": "Interlock pressurisation on a signed test record",
+                       "hoc_tier": "Engineering control: interlock"}]},
+ {"lr_id": "LR-02", "title": "Spares bought without a specification",
+  "lesson": "If spares are bought without a specification, the wrong part can reach the plant.",
+  "finding_ids": ["FND-0003"]}
+]
