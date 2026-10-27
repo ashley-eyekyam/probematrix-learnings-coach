@@ -25,7 +25,7 @@ To look deeper before the learnings go out, three recipes on Hazira use skills t
 |---|---|
 | [Getting started](Getting-started.md) | Install, your first run on the Hazira sample, what you get |
 | [Workflows and recipes](Workflows-and-recipes.md) | Common jobs from start to finish |
-| [Skills](Skills.md) | The 33 skills: which audience each serves and what it produces |
+| [Skills](Skills.md) | The 34 skills: which audience each serves and what it produces |
 | [Commands](Commands.md) | Every engine command, flag by flag, with real examples |
 | [Files and folders](Files-and-folders.md) | The run folder, the workspace, the outputs and every other format, translations, the files your organisation fills in and the shared contracts |
 | [Review and sharing](Review-and-sharing.md) | Draft status, sign-off by a reviewer, sharing outside the organisation |
