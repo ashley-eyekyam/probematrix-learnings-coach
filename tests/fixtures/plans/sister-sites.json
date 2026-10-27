@@ -56,14 +56,21 @@
   {
    "n": 4,
    "skill": "safety-alert",
-   "status": "planned",
-   "planned_for": "Phase 6",
-   "produces": null,
+   "status": "todo",
+   "planned_for": null,
+   "produces": "safety-alert",
    "mode": "sister-site",
    "when": null,
-   "commands": [],
-   "questions": [],
-   "gate": []
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/safety-alert.json --strict",
+    "PMLC pack <ws> <run>/outputs/safety-alert.json"
+   ],
+   "questions": [
+    "Who is the alert for? internal (this site and the teams around it), sister-site (the organisation's other sites, shared with --share external after an approved review) or industry (other organisations, shared with --share public after an approved review)."
+   ],
+   "gate": [
+    "check-pack --strict"
+   ]
   },
   {
    "n": 5,

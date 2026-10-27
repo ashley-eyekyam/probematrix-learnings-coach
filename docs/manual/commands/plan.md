@@ -88,16 +88,14 @@ Next: step 3
 A preset with a skill that has not been released yet:
 
 ```bash
-python3 $E plan $WS --workflow first-48-hours
+python3 $E plan $WS --workflow training
 ```
 
 ```text
 …
- 3. learnings-register [todo] (mode draft)
+ 5. frontline-learning-cards [todo]
       …
- 4. safety-alert [planned for v2.0, Phase 6]
- 5. supervisor-coach [todo]
-      …
+ 6. safety-moment-deck [planned for v2.0, Phase 6]
 Next: step 3
 ```
 

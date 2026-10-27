@@ -9,7 +9,7 @@ A set of agent skills that turn one **ProbeMatrix investigation export** (`.xlsx
 ## Where to start
 
 - Skills live in `skills/<name>/SKILL.md` (Agent Skills format: YAML front matter with `name` and `description`, then instructions). `.agents/skills` points to the same folder for Codex.
-- **Always start with `skills/learnings-coach/SKILL.md`.** It sets up the workspace and routes to the other 33 skills.
+- **Always start with `skills/learnings-coach/SKILL.md`.** It sets up the workspace and routes to the other 34 skills.
 - The engine is `skills/learnings-coach/scripts/pmlc.py` (Python 3.9+, `pip install openpyxl`). Run `python3 skills/learnings-coach/scripts/pmlc.py -h`.
 - Read `skills/learnings-coach/references/learning-principles.md` before writing any learning.
 

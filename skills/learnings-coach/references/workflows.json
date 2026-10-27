@@ -8,8 +8,7 @@
       },
       {
         "skill": "safety-alert",
-        "mode": "internal",
-        "planned": "Phase 6"
+        "mode": "internal"
       },
       {
         "skill": "supervisor-coach"
@@ -143,8 +142,7 @@
       },
       {
         "skill": "safety-alert",
-        "mode": "sister-site",
-        "planned": "Phase 6"
+        "mode": "sister-site"
       },
       {
         "skill": "could-it-happen-here"

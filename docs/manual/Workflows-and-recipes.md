@@ -54,13 +54,13 @@ The table shows what `plan --workflow <preset>` printed for each preset on a fre
 
 | Preset | What it is for | Steps on Hazira | Planned (skipped) |
 |---|---|---|---|
-| `first-48-hours` | A draft register, an alert and the supervisor briefing within two days | 5: ingest and classify (done), learnings-register (draft), supervisor-coach | `safety-alert` (Phase 6) |
+| `first-48-hours` | A draft register, an alert and the supervisor briefing within two days | 5: ingest and classify (done), learnings-register (draft), safety-alert (internal), supervisor-coach | none |
 | `full-cascade` | Every level, frontline to board | 12: ingest and classify (done), learning-clusters, learnings-register, organisation-learning-map, frontline-learning-cards, supervisor-coach, manager-coach, site-leadership-coach, top-management-brief, board-brief, then `templates` | none |
 | `leadership` | Register, site leadership, top management and board | 12: ingest and classify (done), learnings-register, site-leadership-coach, top-management-brief, board-brief, then (only when the user asks for patterns or latent conditions) `timeline` (done) and `missed-opportunities`, failure-to-learn-review, `hfacs-profile` and latent-conditions-profile, then risk-register-update (only when the user asks for risk-register or bow-tie changes) | none |
 | `assurance` | Register, evidence strength, standards crosswalk and the auditor pack | 7: ingest and classify (done), learnings-register, `evidence-audit`, evidence-strength-scorecard, compliance-crosswalk, auditor-assurance-pack | none |
 | `investigation-quality` | Evidence strength, open questions and investigator coaching | 7: ingest (done), `evidence-audit`, evidence-strength-scorecard, `open-questions`, open-questions-register, investigator-coach, report-comparison (only when an official report is supplied) | none |
 | `action-design` | 9M analysis, recommendation strength and an action export | 7: ingest and classify (done), learnings-register, `nine-m-seed` and nine-m-analysis, recommendation-strength-review, then `export-actions` | none |
-| `sister-sites` | An alert and "could it happen here" for other sites | 5: ingest and classify (done), learnings-register | `safety-alert`, `could-it-happen-here` (Phase 6) |
+| `sister-sites` | An alert and "could it happen here" for other sites | 5: ingest and classify (done), learnings-register, safety-alert (sister-site) | `could-it-happen-here` (Phase 6) |
 | `training` | Register, training design, frontline cards and a safety-moment deck | 6: ingest and classify (done), learnings-register, training-designer, frontline-learning-cards | `safety-moment-deck` (Phase 6) |
 | `follow-up` | Effectiveness plan and the verification log | 2: `templates` (the verification log) | `learning-effectiveness-plan` (Phase 6) |
 
@@ -93,7 +93,7 @@ pmlc pack <ws> <run>/outputs/supervisor-coach.json
 
 **What to check.**
 
-- On Hazira the plan has five steps: ingest and classify (done), the draft register, `safety-alert` (planned for Phase 6, skipped) and the supervisor coach.
+- On Hazira the plan has five steps: ingest and classify (done), the draft register, `safety-alert` (mode internal) and the supervisor coach. The alert is written from the register (`pmlc alert-grade <ws>`), so the register comes first.
 - The register is a draft: say so when it is shared. The full register, the organisation map and the other audiences follow with `full-cascade`.
 - After the packs are reviewed, `pmlc templates <ws> distribution` gives the record of who received each one.
 

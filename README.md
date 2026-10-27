@@ -9,7 +9,7 @@
 
 **One investigation. Every level of the organisation learns.**
 
-An open-source plugin of 34 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
+An open-source plugin of 35 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
 
 Works with **Claude Code**, **Claude (Cowork / desktop)** and **OpenAI Codex**, and any agent that reads the Agent Skills format or `AGENTS.md`.
 
@@ -126,6 +126,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.7, Phase 5: new skills, wave 1). 
 | `people-workforce-learnings` | HR, workforce planning, rostering, competence frameworks | people-system learnings, competence-framework changes |
 | `restorative-response-guide` | site and line leaders, peer supporters, employee assistance | restorative questions to ask the people involved, obligations, second-victim support |
 | `could-it-happen-here` | HSE managers and advisers at the organisation's other sites | a self-check per transferable learning, a return template for each site, a consolidated view that never ranks sites |
+| `safety-alert` | other sites, sister sites, peer operators | a one-page graded alert (alert, notice or information): Word, one-slide deck, email, A3 poster |
 | `safety-committee-guide` | safety committees, workforce reps | discussion guide and questions |
 
 All skills share one engine, `skills/learnings-coach/scripts/pmlc.py`, which does the counting, filtering, causal extraction and file writing deterministically, so the model spends its effort on judgement.
