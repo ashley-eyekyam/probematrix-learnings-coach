@@ -1,0 +1,29 @@
+{
+  "name": "learning-effectiveness-plan",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "register",
+    "effect-plan"
+  ],
+  "optional_inputs": [],
+  "produces": {
+    "pack": "learning-effectiveness-plan",
+    "files": []
+  },
+  "formats": [
+    "docx",
+    "csv"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": []
+}

@@ -27,7 +27,7 @@ Phase 6 adds three recipes on Hazira: [Alert the sister sites and ask could it h
 |---|---|
 | [Getting started](Getting-started.md) | Install, your first run on the Hazira sample, what you get |
 | [Workflows and recipes](Workflows-and-recipes.md) | Common jobs from start to finish |
-| [Skills](Skills.md) | The 38 skills: which audience each serves and what it produces |
+| [Skills](Skills.md) | The 39 skills: which audience each serves and what it produces |
 | [Commands](Commands.md) | Every engine command, flag by flag, with real examples |
 | [Files and folders](Files-and-folders.md) | The run folder, the workspace, the outputs and every other format, translations, the files your organisation fills in and the shared contracts |
 | [The learnings library](Library.md) | The opt-in folder that keeps learnings from many incidents: what it holds, the de-identification gate, what comes in v2.1 |

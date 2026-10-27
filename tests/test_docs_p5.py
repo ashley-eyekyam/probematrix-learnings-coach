@@ -80,6 +80,10 @@ def test_docs_state_no_other_skill_count(doc):
     assert not stale, (doc, stale)
 
 
+P6_SKILLS = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+             "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"}   # Phase 6, Tasks 7-13
+
+
 def test_nine_new_skills():
     assert len(P5_SKILLS) == 9, NEW_SKILLS
 

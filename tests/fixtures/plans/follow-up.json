@@ -8,18 +8,84 @@
  "steps": [
   {
    "n": 1,
-   "skill": "learning-effectiveness-plan",
-   "status": "planned",
-   "planned_for": "Phase 6",
-   "produces": null,
+   "skill": "engine:ingest",
+   "status": "done",
+   "planned_for": null,
+   "produces": "workspace",
    "mode": null,
    "when": null,
-   "commands": [],
+   "commands": [
+    "PMLC ingest <export.xlsx> --slug <site>-<event>"
+   ],
    "questions": [],
    "gate": []
   },
   {
    "n": 2,
+   "skill": "engine:classify",
+   "status": "done",
+   "planned_for": null,
+   "produces": "clusters",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC classify <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 3,
+   "skill": "learnings-register",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "register",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC select <ws> --preset learnings-register:top",
+    "PMLC check-register <ws> <run>/outputs/learnings-register.json --strict",
+    "PMLC register-xlsx <run>/outputs/learnings-register.json",
+    "PMLC register-md <ws> <run>/outputs/learnings-register.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-register --strict"
+   ]
+  },
+  {
+   "n": 4,
+   "skill": "engine:effect-plan",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "effect-plan",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC effect-plan <ws> --register <run>/outputs/learnings-register.json"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 5,
+   "skill": "learning-effectiveness-plan",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "learning-effectiveness-plan",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/learning-effectiveness-plan.json --strict",
+    "PMLC pack <ws> <run>/outputs/learning-effectiveness-plan.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 6,
    "skill": "engine:templates",
    "status": "todo",
    "planned_for": null,
@@ -33,5 +99,5 @@
    "gate": []
   }
  ],
- "next": 2
+ "next": 3
 }

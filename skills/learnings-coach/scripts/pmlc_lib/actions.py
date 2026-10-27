@@ -1,5 +1,6 @@
-"""export-actions: every recommendation, decision and indicator item of the packs, and each register
-recommendation, as actions.csv / actions.json for import into an action-tracking system. Owner, due date, status,
+"""export-actions: every recommendation, decision and indicator item of the packs, one row per row of an
+effect-plan schedule table (learning-effectiveness-plan), and each register recommendation, as actions.csv /
+actions.json for import into an action-tracking system. Owner, due date, status,
 CAPA reference and effectiveness check are always written blank (D7): the organisation assigns them."""
 from __future__ import annotations
 
@@ -46,12 +47,37 @@ def _item_row(slug: str, pack: str, it: dict) -> dict:
                   evidence_strength=it.get("evidence_strength", ""))
 
 
+def _actions_effect_rows(slug: str, d: dict) -> list:
+    """Phase 6 Task 13: the effect-plan schedule table of a learning-effectiveness-plan pack gives one row per check,
+    counted from adoption (never a date, D7); the leading indicator comes from the pack's effect-indicators table."""
+    items = [it for s in d["sections"] for it in s["items"] if it.get("kind") == "table"]
+    lead = {r[0]: r[1] for it in items if it.get("id") == "effect-indicators"
+            for r in it.get("rows") or [] if isinstance(r, list) and len(r) > 1}
+    out = []
+    for it in items:
+        cols = it.get("columns") or []
+        if it.get("id") != "effect-schedule" or not {"LR", "When", "Check", "Kirkpatrick"} <= set(cols):
+            continue
+        ix = {c: cols.index(c) for c in ("LR", "When", "Check", "Kirkpatrick")}
+        rc = it.get("row_cites") or []
+        for n, r in enumerate(it.get("rows") or [], 1):
+            if not isinstance(r, list) or len(r) < len(cols):
+                continue
+            lr = str(r[ix["LR"]])
+            out.append(_blank(id=f"{slug}/{d['pack']}/{it['id']}/{n}", lr_id=lr,
+                              change=f"Check that {lr} is {r[ix['Check']]} (Kirkpatrick {r[ix['Kirkpatrick']]}), "
+                                     f"{r[ix['When']]}",
+                              indicator=lead.get(lr, ""), cites=list(rc[n - 1]) if n <= len(rc) else []))
+    return out
+
+
 def collect_actions(slug: str, packs: list, entries: list) -> list:
     """packs: [(pack document)]; entries: register entries. Rows carry cites as a list."""
     rows = []
     for d in packs:
         for s in with_item_ids(d)["sections"]:
             rows += [_item_row(slug, d["pack"], it) for it in s["items"] if it.get("kind") in KINDS]
+        rows += _actions_effect_rows(slug, d)
     for e in entries:
         for n, r in enumerate(e.get("recommendations") or [], 1):
             rows.append(_blank(id=f"{slug}/register/{e.get('lr_id', '')}/R{n}", lr_id=e.get("lr_id", ""),

@@ -248,7 +248,8 @@ WAVE4 = ["latent-conditions-profile", "failure-to-learn-review",   # Phase 5: ea
          "evidence-strength-scorecard", "nine-m-analysis",
          "recommendation-strength-review"]
 WAVE5 = ["restorative-response-guide", "could-it-happen-here",   # Phase 6: each new-skill task (7-13) adds its skill here
-         "safety-alert", "learning-team-facilitator", "systemic-accimap", "safety-moment-deck"]
+         "safety-alert", "learning-team-facilitator", "systemic-accimap", "safety-moment-deck",
+         "learning-effectiveness-plan"]
 DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3, "wave 4": WAVE4, "wave 5": WAVE5}
 ALL_WAVES = WAVE1 + WAVE2 + WAVE3 + WAVE4 + WAVE5
 VERSION = pmlc.__version__

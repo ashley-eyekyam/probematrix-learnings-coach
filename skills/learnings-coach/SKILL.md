@@ -10,7 +10,7 @@ One investigation, learned by the whole organisation. This skill sets up the wor
 ## Where things are
 
 - Engine: `scripts/pmlc.py` in this skill's folder (Python 3.9+, needs `openpyxl`). `PMLC` means `python3 <path-to-this-skill>/scripts/pmlc.py`. Paths, the run folder and `run-path` / `status` are in `references/skill-common.md` §1.
-- The other 37 skills sit beside this one under the same `skills/` folder and use this folder's engine and references.
+- The other 38 skills sit beside this one under the same `skills/` folder and use this folder's engine and references.
 - References (read the ones you need):
   - `learnings-coach/references/learning-principles.md`: **read before writing any learning** (just culture, grounding, honest counting).
   - `references/skill-common.md`: what every skill does the same way (set-up, packs, the check loop, thin evidence, sharing).
@@ -85,6 +85,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | which barriers failed, how strong fixes should be | `barrier-learnings` | it is the engineering view (`engineering-integrity-learnings`) |
 | a 9M (nine Ms) analysis, corrective actions by M | `nine-m-analysis` | it reviews actions already written (`recommendation-strength-review`) |
 | how strong the recommendations are, weak fixes for deep causes, a CAPA critique | `recommendation-strength-review` | it designs the actions by M with the user (`nine-m-analysis`) |
+| checking that learnings took hold: when, what, indicators, an effectiveness plan | `learning-effectiveness-plan` | it writes the learnings themselves (`learnings-register`) |
 | comparison with an official or company report | `report-comparison` | there is no other report (`investigator-coach`) |
 | what the investigation could not answer, a list of open questions | `open-questions-register` | it is coaching the method or interviews (`investigator-coach`) |
 
@@ -133,8 +134,7 @@ PMLC index <ws>                           # -> <run>/outputs/index.html
 - Report the HTML paths first: `index.html`, then each pack's `.html`; then the `.md`, `.json` and `.xlsx` files and any other format written (`.docx`, `.pptx`, `.email.html`, print layouts). Every output is a draft until a person reviews it; say so.
 - Then point to what the organisation does next (the coach never does these for them):
   - **Review** with the people involved and the function owners. Sign-off records it, and is never run by you: give the user the `PMLC sign-off <ws> <file> --role "<their role>"` line to run once they have reviewed the file.
-  - **Classify for distribution** at sign-off (`--classification`, `--distribution`).
-  - **Cascade:** `PMLC templates <ws> distribution` writes the record of who received which pack.
+  - **Classify for distribution** at sign-off (`--classification`, `--distribution`), then **cascade:** `PMLC templates <ws> distribution` writes the record of who received which pack.
   - **Follow up:** `PMLC templates <ws> verification` writes the log for checking, later, that each learning was applied.
 - The organisation fills those files in. Never write owners, due dates or a reviewer's name yourself; `templates` refuses to overwrite a filled-in file.
 

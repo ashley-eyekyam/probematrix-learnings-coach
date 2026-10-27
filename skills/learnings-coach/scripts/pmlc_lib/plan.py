@@ -22,6 +22,7 @@ PLAN = "plan.json"
 PLAN_VERSION = 1
 PMLC_PATH = HERE / "pmlc.py"
 REGISTER_PACK = "learnings-register"
+_PLAN_NEEDS_REGISTER = frozenset({"effect-plan"})
 
 
 def _split(v) -> list:
@@ -42,6 +43,8 @@ def _engine_commands(cmd: str, produces: list) -> list:
         # the cihh-template artefact is made by the cihh mode, from the could-it-happen-here pack
         return ["PMLC templates <ws> cihh --pack <run>/outputs/could-it-happen-here.json" if a == "cihh-template"
                 else f"PMLC templates <ws> {TEMPLATE_MODES.get(a, a)}" for a in produces]
+    if cmd in _PLAN_NEEDS_REGISTER:          # these refuse to run without --register (Phase 6 Task 13)
+        return [f"PMLC {cmd} <ws> --register <run>/outputs/{REGISTER_PACK}.json"]
     return [f"PMLC {cmd} <ws>"]
 
 

@@ -235,7 +235,7 @@ Checks and grades the eval set in `evals/evals.json`: prompts that should (or sh
 
 | Command | What it does |
 |---|---|
-| `run_evals.py check [--file F]` | Checks the structure of the eval file, its paths, kinds and per-skill counts, and the router set: at least 30 router evals, every target a skill folder or a `workflows.json` preset, all 9 presets and 37 sub-skills covered, at least 8 sibling collisions. The automatic checks run this |
+| `run_evals.py check [--file F]` | Checks the structure of the eval file, its paths, kinds and per-skill counts, and the router set: at least 30 router evals, every target a skill folder or a `workflows.json` preset, all 9 presets and 38 sub-skills covered, at least 8 sibling collisions. The automatic checks run this |
 | `run_evals.py grade <run-dir> [--ids 3,7] [--file F] [--transcript T]` | Grades the machine expectations against a run folder's `outputs/` and `workspace/`. Expectations that need a person, such as which skill the agent chose, are reported as `manual`; so is `command_contains` (the format evals: did the agent run `pack` with the right `--format` or `--layout`) unless `--transcript` gives the commands the agent ran |
 | `run_evals.py routes <answers.json> [--file F]` | Scores the router evals against a JSON object `{"<eval id>": "<preset or skill the agent picked>"}`. Prints `Routing: x/y router evals (z%); floor 90%.` and exits 1 below 90% |
 
@@ -250,7 +250,7 @@ python3 evals/run_evals.py check
 ```
 
 ```text
-217 evals over 38 skills: 79 trigger, 39 no-trigger, 49 collision, 50 router
+221 evals over 39 skills: 80 trigger, 40 no-trigger, 50 collision, 51 router
 OK
 ```
 

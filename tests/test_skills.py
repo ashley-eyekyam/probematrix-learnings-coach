@@ -77,6 +77,8 @@ OVERLAPS = {
     ("systemic-accimap", "organisation-learning-map"),
     ("safety-moment-deck", "frontline-learning-cards"), ("safety-moment-deck", "training-designer"),
     ("safety-moment-deck", "supervisor-coach"),
+    ("learning-effectiveness-plan", "learnings-register"), ("learning-effectiveness-plan", "manager-coach"),
+    ("learning-effectiveness-plan", "safety-committee-guide"),
 }
 NO_PROFILE = {"learnings-register"}        # writes a register, not a pack: its Write table has no profile
 # Variant packs (Task 20 review m-5): a variant has the main pack's sections (rule same-sections-as), so it shares the
