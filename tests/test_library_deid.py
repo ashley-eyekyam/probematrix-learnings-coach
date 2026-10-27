@@ -24,7 +24,8 @@ CONTEXT = (f"On 24 March 2026 at 14:05 {NAME} restarted the pump at {SITE_A} aft
 def _register(tmp_path: Path, name="reg.json", lesson_extra=""):
     d = {"title": "Synthetic register D (invented content only)", "entries": [
         {"lr_id": "LR-01", "title": f"Restart at {SITE_A} without a test",
-         "lesson": f"If a joint at {SITE_A} is disturbed (seen 2026-03-24), test it before service.{lesson_extra}",
+         "lesson": (f"If a joint at {SITE_A} is disturbed (seen 2026-03-24), test it before service, as {NAME} "
+                    f"found when Brindlecombe Valves Ltd changed the seal.{lesson_extra}"),
          "context": CONTEXT, "finding_ids": ["FND-0001"], "evidence_ids": ["EVD-0001"], "priority": 1,
          "transferability": "other sites",
          "recommendations": [{"what": f"Interlock the restart at {SITE_A} on a test record",
@@ -79,13 +80,15 @@ def test_publish_public_lines_are_deidentified(dws, tmp_path):
     names.write_text(f"# invented\n{NAME}\n", encoding="utf-8")
     r = pub(dws["A"], _register(tmp_path), lib, "--names", str(names), check=False)
     assert r.returncode == 1 and "Traceback" not in r.stderr
-    assert "1 listed name" in r.stderr and "nothing was written" in r.stderr
+    assert "1 listed name (2 hits)" in r.stderr and "nothing was written" in r.stderr   # context and lesson
     assert not lib.exists()
     r = pub(dws["A"], _register(tmp_path), lib, check=False, env={"PMLC_NAMES": str(names)})   # the variable too
     assert r.returncode == 1 and "1 listed name" in r.stderr and not lib.exists()
 
-    out = pub(dws["A"], _register(tmp_path), lib).stdout
+    r = pub(dws["A"], _register(tmp_path), lib)
+    out = r.stdout
     assert "site coded S01" in out
+    assert "no names list" in r.stderr and "zero-hit name check did not run" in r.stderr
     text = public_text(lib)
     assert "S01" in text and "March 2026" in text and "[organisation]" in text
     assert SITE_A not in text and "Kestrel" not in text and "Brindlecombe" not in text
@@ -225,3 +228,35 @@ def test_blank_site_is_refused(tmp_path):
     with pytest.raises(lib_store.LibraryError):
         pmlc.site_code(lib, "  ")
     assert lib.sites() == {} and not lib.sites_changed
+
+
+def test_export_site_spelling_coded_with_site_flag(dws, tmp_path):
+    """--site names the site otherwise than the export's Site field: the field's spelling gets the same code."""
+    lib = tmp_path / "lib"
+    reg = _register(tmp_path, lesson_extra=f" The joint at {SITE_A.upper()} leaked.")
+    out = pub(dws["A"], reg, lib, "--site", "KW Plant 2").stdout
+    assert "site coded S01" in out
+    text = public_text(lib)
+    assert "Kestrel" not in text and "KESTREL" not in text and "KW Plant" not in text
+    assert "The joint at S01 leaked." in text
+    assert json.loads((lib / "private" / "sites.json").read_text(encoding="utf-8")) == {"KW Plant 2": "S01"}
+
+
+def test_export_site_spelling_residual_refuses(monkeypatch, tmp_path):
+    """The export's spelling is in the last scan too: if masking missed it, the publish is refused."""
+    lib = pmlc.open_library(tmp_path / "lib")
+    snap = {"ll_id": "LL-000001", "learning": {"lesson": f"The joint at {SITE_A} leaked."}}
+    w = {"incident": {"fields": {"Site": SITE_A}}}
+    monkeypatch.setattr(lib_deid.privacy, "share_text", lambda text, ctx: text)
+    real = lib_deid.privacy.name_pattern
+    calls = []
+
+    def text_pass_skips_alias(terms):
+        calls.append(list(terms))
+        return real([t for t in terms if t != SITE_A]) if len(calls) == 2 else real(terms)
+    monkeypatch.setattr(lib_deid.privacy, "name_pattern", text_pass_skips_alias)
+    with pytest.raises(lib_store.LibraryError) as e:
+        lib_deid.deidentify([("learnings.jsonl", snap)], {"library": lib, "w": w, "site": "KW Plant 2",
+                                                          "names": None})
+    assert e.value.code == 1 and "1 identifying detail" in str(e.value)
+    assert SITE_A in calls[-1]

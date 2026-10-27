@@ -280,6 +280,9 @@ def cmd_library(a):
     if plan["missing"]:
         print("note: the register has no " + ", ".join(plan["missing"]) + " in any learning (an older register), "
               "so the snapshots leave them out")
+    if not (a.names or os.environ.get("PMLC_NAMES")):
+        print("note: no names list (--names or PMLC_NAMES), so the zero-hit name check did not run: a personal name "
+              "written in the register could reach the library", file=sys.stderr)
     if plan["site_code"]:
         print(f"site coded {plan['site_code']} (the real name stays in private/sites.json, which is never shared)")
     if not total:

@@ -5,7 +5,9 @@ Every public line (learnings.jsonl, events.jsonl, incidents.jsonl) passes throug
 1. **Zero-hit gate.** A scan-names pass over every string of every line, with the names from --names or PMLC_NAMES,
    must find nothing. A listed name is refused, never masked: the register's wording is fixed (a role, not a name).
 2. **Sites.** The site (--site, else the export's Site or Location field) gets a code S01, S02 ... kept in
-   private/sites.json, and every site the library knows is replaced by its code wherever it appears.
+   private/sites.json, and every site the library knows is replaced by its code wherever it appears. When --site is
+   given and the export's Site or Location field spells the site another way, that spelling is replaced by the same
+   code in this run's lines and is scanned for at the end; it is not stored (sites.json keeps one name a code).
 3. **Masking.** The text goes through the `--share external` transform (privacy.share_text): name variants and
    honorific forms, organisations (--orgs, PMLC_ORGS and company suffixes), equipment tags and singleton roles are
    masked, clock times are removed (strip_times) and dates are rounded to the month (coarsen_dates).
@@ -18,16 +20,17 @@ from __future__ import annotations
 
 import copy
 import re
+from types import SimpleNamespace
 
-from .. import privacy
+from .. import handling, privacy
 from .store import LIBRARY_SITE_RX, LibraryError
 
 SITE_FIELDS = ("Site", "Location")
 # Keys inside a learning or an event's data whose values are IDs, never prose: kept as written.
 DEID_ID_KEYS = frozenset({"id", "finding_refs", "evidence_refs", "lr_id", "ll_id", "snapshot_id", "supersedes",
                           "after", "event_hash", "incident_key", "content_hash"})
-DEID_LISTED_NAME = ("library publish refused: {n} listed name{s} in the public lines (from --names or PMLC_NAMES), "
-                    "so nothing was written. Name a role instead in the register, then publish again")
+DEID_LISTED_NAME = ("library publish refused: {d} listed name{s} ({n} hit{hs}) in the public lines (from --names or "
+                    "PMLC_NAMES), so nothing was written. Name a role instead in the register, then publish again")
 DEID_RESIDUAL = ("library publish refused: {n} identifying detail{s} (a listed name, organisation or site) left in the "
                  "public lines after masking, so nothing was written")
 _DEID_OPEN, _DEID_CLOSE = "", ""     # a site placeholder no share_text rule touches
@@ -63,6 +66,17 @@ def incident_site(ctx: dict) -> str:
     return next((_deid_norm(fields[f]) for f in SITE_FIELDS if _deid_norm(fields.get(f))), "")
 
 
+def export_site_names(ctx: dict) -> list:
+    """The export's own Site and Location values (normalised, distinct ignoring case), whatever --site says."""
+    fields = ((ctx.get("w") or {}).get("incident") or {}).get("fields") or {}
+    out = []
+    for f in SITE_FIELDS:
+        v = _deid_norm(fields.get(f))
+        if v and v.casefold() not in {x.casefold() for x in out}:
+            out.append(v)
+    return out
+
+
 def _deid_strings(v):
     if isinstance(v, str):
         yield v
@@ -78,14 +92,19 @@ def _deid_count(rx, lines) -> int:
     return sum(len(rx.findall(s)) for _, obj in lines for s in _deid_strings(obj)) if rx else 0
 
 
+def _deid_hits(rx, lines) -> list:
+    return [m.group(0) for _, obj in lines for s in _deid_strings(obj) for m in rx.finditer(s)] if rx else []
+
+
 def deidentify(lines: list, ctx: dict) -> list:
     """lines is [(file, obj)]; returns de-identified copies in the same order, or raises LibraryError (exit 1).
     ctx: library, w (the loaded workspace), site (--site), names (--names), orgs (--orgs)."""
     lib = ctx["library"]
     names = privacy.load_names(ctx.get("names"))
-    n = _deid_count(privacy.name_pattern(names), lines)
-    if n:
-        raise LibraryError(DEID_LISTED_NAME.format(n=n, s="" if n == 1 else "s"), 1)
+    hits = _deid_hits(privacy.name_pattern(names), lines)
+    if hits:
+        n, d = len(hits), len({_deid_norm(h).casefold() for h in hits})
+        raise LibraryError(DEID_LISTED_NAME.format(d=d, s="" if d == 1 else "s", n=n, hs="" if n == 1 else "s"), 1)
 
     site = incident_site(ctx)
     code = site_code(lib, site) if site else None
@@ -94,8 +113,11 @@ def deidentify(lines: list, ctx: dict) -> list:
         if isinstance(data, dict) and isinstance(data.get("site"), str) and data["site"].strip():
             site_code(lib, data["site"])
     w = ctx.get("w") or {}
-    share = privacy.ShareCtx("external", names, privacy.load_orgs(ctx.get("orgs")), privacy.load_singletons(w))
-    sites = sorted(lib.sites().items(), key=lambda kv: len(_deid_norm(kv[0])), reverse=True)
+    share = handling.share_ctx(SimpleNamespace(names=ctx.get("names"), orgs=ctx.get("orgs")), w, "external")
+    known = {_deid_norm(k).casefold() for k in lib.sites()}
+    # the export's own spelling of the site, when --site names it otherwise: the same code, for this run only
+    aliases = [(a, code) for a in export_site_names(ctx) if code and a.casefold() not in known]
+    sites = sorted(list(lib.sites().items()) + aliases, key=lambda kv: len(_deid_norm(kv[0])), reverse=True)
     codes = [c for _, c in sites]
     site_rx = privacy.name_pattern([k for k, _ in sites])
     by_name = {_deid_norm(k).casefold(): i for i, (k, _) in enumerate(sites)}
@@ -130,7 +152,8 @@ def deidentify(lines: list, ctx: dict) -> list:
             obj["site_code"] = code
         out.append((f, obj))
 
-    rx = privacy.name_pattern(list(names) + list(share.orgs) + [k for k, _ in lib.sites().items()])
+    rx = privacy.name_pattern(list(names) + list(share.orgs) + [k for k, _ in lib.sites().items()]
+                              + [a for a, _ in aliases])
     n = _deid_count(rx, out)
     if n:
         raise LibraryError(DEID_RESIDUAL.format(n=n, s="" if n == 1 else "s"), 1)
