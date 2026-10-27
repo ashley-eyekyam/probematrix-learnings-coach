@@ -260,7 +260,8 @@ def test_register_and_engine_steps(fresh):
     assert reg["status"] == "todo"
     tpl = by["engine:templates"]
     assert tpl["status"] == "todo" and tpl["commands"] == [
-        "PMLC templates <ws> adoption", "PMLC templates <ws> distribution", "PMLC templates <ws> verification"]
+        "PMLC templates <ws> adoption", "PMLC templates <ws> distribution", "PMLC templates <ws> verification",
+        "PMLC templates <ws> learning-team"]
     olm = by["organisation-learning-map"]
     assert olm["commands"][0] == "PMLC dashboard <ws> --register <run>/outputs/learnings-register.json"
     order = [s["skill"] for s in p["steps"]]

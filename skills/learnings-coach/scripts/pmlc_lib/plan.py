@@ -31,11 +31,14 @@ def _split(v) -> list:
     return list(dict.fromkeys(out))
 
 
+TEMPLATE_MODES = {"learning-team-notes": "learning-team"}   # an artefact whose `templates` mode is not its name
+
+
 def _engine_commands(cmd: str, produces: list) -> list:
     if cmd == "ingest":
         return ["PMLC ingest <export.xlsx> --slug <site>-<event>"]
     if cmd == "templates":
-        return [f"PMLC templates <ws> {a}" for a in produces]
+        return [f"PMLC templates <ws> {TEMPLATE_MODES.get(a, a)}" for a in produces]
     return [f"PMLC {cmd} <ws>"]
 
 

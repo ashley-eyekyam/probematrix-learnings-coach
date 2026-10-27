@@ -29,3 +29,24 @@ def test_hazira_workspace_and_register(hazira_ws):
     assert len(w["evidence"]) == 46
     reg = json.loads(REGISTER.read_text(encoding="utf-8"))
     assert len(reg["entries"]) == 25
+
+
+# ----------------------------------------------------------------------------- Task 4: wai-wad (P6-6)
+
+def test_wai_wad_hazira_numbers(hazira_ws):
+    """Codes with both document and work-as-done evidence 68 of 94; findings with both 92; findings with any
+    work-as-done evidence 210; counterfactual findings 337 by the P6-6 list in references/learning-team.json
+    (this supersedes the spec's 353, whose word list was never recorded)."""
+    run("wai-wad", str(hazira_ws))
+    c = json.loads((hazira_ws / "wai_wad.json").read_text(encoding="utf-8"))["counts"]
+    assert c == {"codes": 94, "codes_both": 68, "findings_both": 92, "findings_wad": 210, "counterfactual": 337}
+
+
+def test_wai_wad_hazira_prompts_are_clean(hazira_ws):
+    """Every Hazira prompt is a question, cites one finding, and repeats none of the export's counterfactual words."""
+    from pmlc_lib import waiwad
+    items = json.loads(run("wai-wad", str(hazira_ws), "--items", "prompts"))
+    assert len(items) == 30
+    for it in items:
+        assert it["kind"] == "question" and len(it["cites"]) == 1
+        assert not waiwad.counterfactual_hits(it["question"])

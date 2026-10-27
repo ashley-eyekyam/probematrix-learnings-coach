@@ -64,6 +64,7 @@ pmlc 2.0.0a4
 | [facts](commands/facts.md) | Prints the headline numbers of a workspace |
 | [crosswalk](commands/crosswalk.md) | Maps the register to the clauses of a standard and says what the organisation must still show |
 | [evidence-audit](commands/evidence-audit.md) | Counts how well the evidence holds up: strength per finding, single-source and document-only findings, concentration |
+| [wai-wad](commands/wai-wad.md) | Sets work as imagined (documents) against work as done (witness, log, recording): codes with both, and counterfactual wording turned into questions |
 | [hfacs-profile](commands/hfacs-profile.md) | Counts findings by HFACS level and subcategory, recurring codes and causal feeds |
 | [open-questions](commands/open-questions.md) | Lists what the export leaves open: empty columns, blank fields, absence and hedged findings |
 | [timeline](commands/timeline.md) | Finds dated precursor candidates and the clock times of the event day |
@@ -109,7 +110,7 @@ pmlc 2.0.0a4
 
 | Command | What it does |
 |---|---|
-| [templates](commands/templates.md) | Writes a blank adoption.csv, distribution.csv or verification.jsonl for your organisation to fill in |
+| [templates](commands/templates.md) | Writes a blank adoption.csv, distribution.csv, verification.jsonl or learning-team-notes.csv for your organisation to fill in |
 | [export-actions](commands/export-actions.md) | Writes actions.csv and actions.json (owner, due date and status left blank) for your action-tracking system |
 | [nine-m-actions-template](commands/nine-m-actions-template.md) | Writes a blank actions sheet from a nine-m-analysis pack (owner, due date and status left blank) |
 
@@ -178,7 +179,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,hfacs-profile,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,wai-wad,hfacs-profile,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

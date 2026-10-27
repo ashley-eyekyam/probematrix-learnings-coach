@@ -2,7 +2,7 @@
 
 ## What it does
 
-Writes one of three files your organisation fills in: `adoption.csv` (did you accept each learning), `distribution.csv` (who each pack reached) or `verification.jsonl` (did each learning stick). The engine fills in only the ids, titles and pack names. Every column that records a decision, an owner or a date is left blank, because those belong to your organisation.
+Writes one of four files your organisation fills in: `adoption.csv` (did you accept each learning), `distribution.csv` (who each pack reached), `verification.jsonl` (did each learning stick) or `learning-team-notes.csv` (what a learning team answered to the prompts from `wai-wad`). The learning-team file holds only its header, `prompt_id, prompt, team_answer, source`: the team supplies every answer, the model never writes `team_answer`, and it needs no register. The engine fills in only the ids, titles and pack names. Every column that records a decision, an owner or a date is left blank, because those belong to your organisation.
 
 ## When to use it
 
@@ -19,7 +19,7 @@ pmlc templates ws mode [--register FILE] [--out PATH]
 | Argument | What it is |
 |---|---|
 | `ws` | The workspace folder |
-| `mode` | Which file to write: `adoption`, `distribution` or `verification` |
+| `mode` | Which file to write: `adoption`, `distribution`, `verification` or `learning-team` |
 
 ## Flags
 
@@ -29,12 +29,15 @@ pmlc templates ws mode [--register FILE] [--out PATH]
 | `--out` | file | `<run>/outputs/<file>` | Where to write the file |
 | `-h`, `--help` | none | | Show the flags and stop |
 
+The `mode` argument takes `adoption`, `distribution`, `verification` or `learning-team`; the last needs no register.
+
 ### The files
 
 | File | Columns |
 |---|---|
 | `adoption.csv` | `lr_id`, `title` (filled), then `response` (accepted, modified or rejected), `reason`, `owning_role`, `target_window` |
 | `distribution.csv` | `pack`, `audience` (filled, one row per pack in outputs), then `channel`, `date`, `delivered_by_role`, `attendees`, `contractors_included` (yes or no; `y` and `n` count too), `questions_raised`, `concerns_escalated` |
+| `learning-team-notes.csv` | The header only: `prompt_id`, `prompt`, `team_answer`, `source`. No rows: the learning team supplies every answer and the `source`; the engine and the model never write them |
 | `verification.jsonl` | One JSON line per learning: `lr_id`, then `check_date`, `level` (communicated, understood, applied or effective), `evidence`, `assessed_by_role`, all `null` |
 
 Open the CSV files in Excel and save them as CSV again; the engine reads the saved file (extra or reordered columns, blank rows and Excel's byte-order mark are fine). A value outside the allowed ones is reported with its file and row, for example `adoption.csv row 3: response 'maybe' must be one of accepted, modified, rejected`. Every bad row is reported, not only the first, and the good rows are still read.

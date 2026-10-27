@@ -34,7 +34,7 @@ Subcommands
   render-all      render every pack that passed its check, and the register
   index           write outputs/index.html, one row per pack
   dossier-index   write outputs/dossier-index.json listing the dossier-F*.json packs
-  templates       blank adoption.csv, distribution.csv or verification.jsonl for the organisation to fill in
+  templates       blank adoption.csv, distribution.csv, verification.jsonl or learning-team-notes.csv for the organisation to fill in
   table-item      a ready table item for a pack (JSON on stdout)
   register-items  a tier's learnings from the register as learning items
   timeline-item   timeline candidates as a pack timeline item
@@ -53,6 +53,7 @@ Subcommands
   nine-m-answer   record the answer to a 9M question (a suggestion's number, or free text)
   nine-m-replay   a scripted 9M session that takes the recommended suggestion at every question (--accept-recommended)
   nine-m-actions-template  a blank actions sheet from a nine-m-analysis pack (Owner, Due date and Status left blank)
+  wai-wad         work as imagined against work as done: codes with document and work-as-done evidence, counterfactual wording (wai_wad.json)
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -79,6 +80,7 @@ from .pack.command import cmd_pack
 from .pack.items import cmd_causal_item, cmd_register_items, cmd_table_item, cmd_timeline_item, TABLE_KINDS
 from .pack.xlsx import cmd_pack_xlsx, XLSX_KINDS
 from .crosswalk import cmd_crosswalk
+from .waiwad import cmd_wai_wad, WAIWAD_TABLE_KINDS
 from .evidence_audit import cmd_evidence_audit, EVAUDIT_TABLE_KINDS as EVIDENCE_AUDIT_TABLES
 from .facts import cmd_facts
 from .hfacs_profile import HP_TABLE_KINDS, cmd_hfacs_profile
@@ -441,7 +443,7 @@ def build_parser():
     s.add_argument("ws")
     s.add_argument("--out", help="default: <run>/outputs/dossier-index.json")
     s.set_defaults(fn=cmd_dossier_index)
-    s = sp.add_parser("templates", help="write adoption.csv, distribution.csv or verification.jsonl for the organisation to fill in", allow_abbrev=False)
+    s = sp.add_parser("templates", help="write adoption.csv, distribution.csv, verification.jsonl or learning-team-notes.csv for the organisation to fill in", allow_abbrev=False)
     s.add_argument("ws")
     s.add_argument("mode", choices=list(TEMPLATE_FILES))
     s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json)")
@@ -546,6 +548,17 @@ def build_parser():
     s.add_argument("--table-item", choices=EVIDENCE_AUDIT_TABLES, metavar="|".join(EVIDENCE_AUDIT_TABLES),
                    help="print a ready table item for a pack instead of the summary")
     s.set_defaults(fn=cmd_evidence_audit)
+
+    s = sp.add_parser("wai-wad", help="work as imagined against work as done: codes with document and work-as-done "
+                                      "evidence, counterfactual wording and its questions (writes wai_wad.json)",
+                      allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("--json", action="store_true", help="print the comparison as one JSON object")
+    s.add_argument("--table-item", choices=WAIWAD_TABLE_KINDS, metavar="|".join(WAIWAD_TABLE_KINDS),
+                   help="print a ready table item for a pack instead of the summary")
+    s.add_argument("--items", choices=["prompts"], help="print ready question items (what made sense at the time)")
+    s.add_argument("--top", type=int, default=None, metavar="N", help="with --items: at most N prompts (default 30)")
+    s.set_defaults(fn=cmd_wai_wad)
 
     s = sp.add_parser("hfacs-profile", help="level x subcategory heat map, code recurrence and causal feed counts",
                       allow_abbrev=False)

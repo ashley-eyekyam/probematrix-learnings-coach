@@ -238,13 +238,14 @@
    "skill": "engine:templates",
    "status": "todo",
    "planned_for": null,
-   "produces": "adoption,distribution,verification",
+   "produces": "adoption,distribution,verification,learning-team-notes",
    "mode": null,
    "when": null,
    "commands": [
     "PMLC templates <ws> adoption",
     "PMLC templates <ws> distribution",
-    "PMLC templates <ws> verification"
+    "PMLC templates <ws> verification",
+    "PMLC templates <ws> learning-team"
    ],
    "questions": [],
    "gate": []

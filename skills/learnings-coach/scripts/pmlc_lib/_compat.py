@@ -38,6 +38,7 @@ MODULES = [
     "pmlc_lib.facts",
     "pmlc_lib.crosswalk",
     "pmlc_lib.evidence_audit",
+    "pmlc_lib.waiwad",
     "pmlc_lib.hfacs_profile",
     "pmlc_lib.render",
     "pmlc_lib.render.labels",
