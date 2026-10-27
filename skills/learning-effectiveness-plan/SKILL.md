@@ -19,8 +19,8 @@ with `learnings-register` first and run `check-register` on it) and `effect-plan
 `<ws>/effect_plan.json`). Read `learnings-coach/references/learning-principles.md` (§2 ground every sentence, §4
 count honestly, §6 recommendations, not action plans).
 
-The engine reads the register only, and refuses a pack or any other file in its place. The schedule follows plan
-ruling P6-8 (`learnings-coach/references/effectiveness.json`): Kirkpatrick's four levels (L1 communicated, L2
+The engine reads the register only, and refuses a pack or any other file in its place. The schedule follows
+`learnings-coach/references/effectiveness.json`: Kirkpatrick's four levels (L1 communicated, L2
 understood, L3 applied, L4 effective) and Jacobsson's spread (from `transferability`), depth (from the strongest
 recommendation's `hoc_tier`) and duration.
 
@@ -114,4 +114,5 @@ PMLC templates <ws> verification                                                
 Offer the docx for the committee and the csv (`<pack>.actions.csv`, owner, due and status blank, never replaced) to
 load the checks into the organisation's action system. Tell the
 user how many checks the plan sets for how many learnings, that every check is counted from adoption, and that the
-organisation fills in owners, dates and statuses in `verification.jsonl`, which the model never fills in.
+organisation records each check (date, level reached, evidence, assessing role) in `verification.jsonl`, which the
+model never fills in; owners and statuses live in its own action system.

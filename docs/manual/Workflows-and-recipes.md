@@ -803,7 +803,7 @@ pmlc templates <ws> verification
 
 **What to check.**
 
-- The plan lists the effectiveness plan, then the verification log (`templates <ws> verification`).
+- The plan lists the register, `effect-plan`, the [learning-effectiveness-plan](skills/learning-effectiveness-plan.md) pack, then the verification log (`templates <ws> verification`); no step is planned for later.
 - On Hazira `effect-plan` printed `effect-plan: 97 checks for 25 learning(s) written to …/effect_plan.json.` and `Every check is counted from adoption; the organisation sets owners, dates and statuses.` That is 11 priority-1 learnings with five checks each (30, 60 and 90 days, 6 and 12 months after adoption) and 14 others with three (3, 6 and 12 months).
 - Each check names its Kirkpatrick level: communicated (L1), understood (L2), applied (L3) or effective (L4). The schedule table's first rows for LR-01 read `30 days after adoption | communicated | L1`, then `60 days after adoption | understood | L2`. No row holds a calendar date, an owner or a status.
 - The leading indicator comes from the register; the lagging column is left blank by the engine, and the `learning-effectiveness-plan` pack must fill it in for every row before its check passes.

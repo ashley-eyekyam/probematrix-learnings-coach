@@ -147,3 +147,19 @@ def test_csv_lists_every_check_with_org_columns_blank(hz):
         assert not any(r[c] for c in ("owner", "due", "status", "capa_ref", "effectiveness_check")), r
         assert "after adoption" in r["change"] and r["cites"]
     run_fail("pack", str(hz), str(out / GOLDEN.name), "--format", "csv")   # never replaced: the organisation fills it
+
+
+def test_export_actions_lists_every_check(hz, tmp_path):
+    """export-actions over this pack emits the same 97 schedule rows as --format csv, with the organisation's columns
+    blank (review task-13-r0 m1)."""
+    out = hz.parent / "outputs"
+    run("export-actions", str(hz), "--packs", str(out / GOLDEN.name), "--register", str(REGISTER),
+        "--out-dir", str(tmp_path))
+    rows = json.loads((tmp_path / "actions.json").read_text(encoding="utf-8"))
+    sched = [r for r in rows if f"/{SKILL}/effect-schedule/" in r["id"]]
+    assert len(sched) == 97
+    assert sched[0]["change"] == "Check that LR-01 is communicated (Kirkpatrick L1), 30 days after adoption"
+    for r in sched:
+        assert not any(r[c] for c in ("owner", "due", "status", "capa_ref", "effectiveness_check")), r
+        assert "after adoption" in r["change"] and r["cites"]
+    assert (tmp_path / "actions.csv").is_file()

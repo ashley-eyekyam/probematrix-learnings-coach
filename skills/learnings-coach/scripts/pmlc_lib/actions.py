@@ -1,5 +1,6 @@
-"""export-actions: every recommendation, decision and indicator item of the packs, and each register
-recommendation, as actions.csv / actions.json for import into an action-tracking system. Owner, due date, status,
+"""export-actions: every recommendation, decision and indicator item of the packs, one row per row of an
+effect-plan schedule table (learning-effectiveness-plan), and each register recommendation, as actions.csv /
+actions.json for import into an action-tracking system. Owner, due date, status,
 CAPA reference and effectiveness check are always written blank (D7): the organisation assigns them."""
 from __future__ import annotations
 
