@@ -363,5 +363,29 @@
     },
     "reading_level": "plain",
     "skill": "safety-moment-deck"
+  },
+  {
+    "id": "leaders-and-peer-support",
+    "label": "Leaders and peer support after an incident",
+    "typical_people": "site and line leaders who respond to the people involved, peer supporters, employee-assistance and occupational-health contacts",
+    "controls": "how the organisation responds to the people involved: who is asked what they need, the support offered and the system conditions put right",
+    "needs": "Dekker's restorative questions as questions to ask, the organisation's obligations and second-victim support, never an account of a person",
+    "tier": null,
+    "levels": [
+      2,
+      3,
+      4
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [
+        2,
+        3,
+        4
+      ],
+      "tags": []
+    },
+    "reading_level": "plain",
+    "skill": "restorative-response-guide"
   }
 ]

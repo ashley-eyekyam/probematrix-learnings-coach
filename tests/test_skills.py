@@ -71,6 +71,7 @@ OVERLAPS = {
     ("recommendation-strength-review", "nine-m-analysis"), ("recommendation-strength-review", "learnings-register"),
     ("safety-moment-deck", "frontline-learning-cards"), ("safety-moment-deck", "training-designer"),
     ("safety-moment-deck", "supervisor-coach"),
+    ("restorative-response-guide", "people-workforce-learnings"),   # + learning-team-facilitator once Task 10 lands
 }
 NO_PROFILE = {"learnings-register"}        # writes a register, not a pack: its Write table has no profile
 # Variant packs (Task 20 review m-5): a variant has the main pack's sections (rule same-sections-as), so it shares the

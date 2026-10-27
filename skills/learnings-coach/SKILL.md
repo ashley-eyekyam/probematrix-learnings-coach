@@ -10,7 +10,7 @@ One investigation, learned by the whole organisation. This skill sets up the wor
 ## Where things are
 
 - Engine: `scripts/pmlc.py` in this skill's folder (Python 3.9+, needs `openpyxl`). `PMLC` means `python3 <path-to-this-skill>/scripts/pmlc.py`. Paths, the run folder and `run-path` / `status` are in `references/skill-common.md` §1.
-- The other 32 skills sit beside this one under the same `skills/` folder and use this folder's engine and references.
+- The other 33 skills sit beside this one under the same `skills/` folder and use this folder's engine and references.
 - References (read the ones you need):
   - `learnings-coach/references/learning-principles.md`: **read before writing any learning** (just culture, grounding, honest counting).
   - `references/skill-common.md`: what every skill does the same way (set-up, packs, the check loop, thin evidence, sharing).
@@ -67,6 +67,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | procurement, stores, contractors | `supply-chain-contractor-learnings` | it is a function manager's change (`manager-coach`) |
 | enterprise risk, risk register, bow-tie | `risk-register-update` | it is the barrier view (`barrier-learnings`) |
 | HR, staffing, qualification, rostering | `people-workforce-learnings` | it is course content (`training-designer`) |
+| supporting the people involved, second victims, a restorative response | `restorative-response-guide` | it is HR's staffing systems (`people-workforce-learnings`) |
 | safety committee, workforce reps | `safety-committee-guide` | it is a frontline card (`frontline-learning-cards`) |
 | all learnings for one department | `cluster-learning-dossier` | it is a manager's change list (`manager-coach`) |
 | grouping by function, tier and role; placing roles | `learning-clusters` | it is the whole-organisation map (`organisation-learning-map`) |

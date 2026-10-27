@@ -28,11 +28,12 @@ COUNT_STATEMENTS = [
     ("evals/README.md", r"presets or (\d+) sub-skills", SUB_COUNT),
 ]
 COUNT_RX = re.compile(r"\b(\d+) (?:agent |sub-)?skills\b")
-# The nine Phase 5 skills. Phase 6 skills are also "since": "2.0.0"; Task 20 of Phase 6 documents those, so this list
-# is fixed rather than read from the manifests (test_phase_5_skills_are_since_2_0_0 keeps it honest).
-NEW_SKILLS = ["compliance-crosswalk", "evidence-strength-scorecard", "failure-to-learn-review",
-              "latent-conditions-profile", "nine-m-analysis", "open-questions-register", "people-workforce-learnings",
-              "recommendation-strength-review", "risk-register-update"]
+# Phase 6 skills also carry since 2.0.0; the Phase 5 checks below are about the nine Phase 5 skills only.
+P6_SKILLS = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+             "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"}
+NEW_SKILLS = sorted(p.parent.name for p in (ROOT / "skills").glob("*/skill.json")
+                    if json.loads(p.read_text(encoding="utf-8")).get("since") == "2.0.0"
+                    and p.parent.name not in P6_SKILLS)
 NEW_COMMANDS = ["evidence-audit", "hfacs-profile", "open-questions", "nine-m-seed", "nine-m-suggest", "nine-m-answer",
                 "nine-m-replay", "nine-m-actions-template", "rec-review", "missed-opportunities", "crosswalk"]
 NEW_FLAGS = ["--event-day", "--m", "--m-secondary", "--industry", "--kind table"]
