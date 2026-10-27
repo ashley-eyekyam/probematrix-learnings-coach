@@ -10,7 +10,12 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 MANUAL = ROOT / "docs" / "manual"
-SKILL_COUNT = len(list((ROOT / "skills").glob("*/skill.json")))      # P5-1: the folders, never a constant
+# Phase 6 (plan P6-1): the seven Phase 6 skills join the documented count in Task 20, which sets every document to
+# 39 and drops this exclusion. Until then the documents state the Phase 5 count, and the Phase 5 lists stay Phase 5.
+PHASE6_SKILLS = frozenset({"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+                           "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"})
+SKILL_COUNT = len([p for p in (ROOT / "skills").glob("*/skill.json")
+                   if p.parent.name not in PHASE6_SKILLS])            # P5-1: the folders, never a constant
 SUB_COUNT = SKILL_COUNT - 1                                           # every skill but the hub
 
 # (document, pattern whose one group is a count, the count it must state)
@@ -29,7 +34,8 @@ COUNT_STATEMENTS = [
 ]
 COUNT_RX = re.compile(r"\b(\d+) (?:agent |sub-)?skills\b")
 NEW_SKILLS = sorted(p.parent.name for p in (ROOT / "skills").glob("*/skill.json")
-                    if json.loads(p.read_text(encoding="utf-8")).get("since") == "2.0.0")
+                    if json.loads(p.read_text(encoding="utf-8")).get("since") == "2.0.0"
+                    and p.parent.name not in PHASE6_SKILLS)
 NEW_COMMANDS = ["evidence-audit", "hfacs-profile", "open-questions", "nine-m-seed", "nine-m-suggest", "nine-m-answer",
                 "nine-m-replay", "nine-m-actions-template", "rec-review", "missed-opportunities", "crosswalk"]
 NEW_FLAGS = ["--event-day", "--m", "--m-secondary", "--industry", "--kind table"]
