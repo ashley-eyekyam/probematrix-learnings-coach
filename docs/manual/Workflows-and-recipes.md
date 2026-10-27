@@ -688,7 +688,7 @@ pmlc export-actions <ws> --register <run>/outputs/learnings-register.json
 
 **What to check.**
 
-- On Hazira, with the sample register in `outputs/`, the plan has seven steps: ingest, classify and the register (done), then `nine-m-seed`, [nine-m-analysis](skills/nine-m-analysis.md), [recommendation-strength-review](skills/recommendation-strength-review.md) and `export-actions`.
+- On Hazira, with the sample register copied into `outputs/` and `pmlc check-register <ws> <run>/outputs/learnings-register.json --strict` run once, the plan has seven steps: ingest, classify and the register (done), then `nine-m-seed`, [nine-m-analysis](skills/nine-m-analysis.md), [recommendation-strength-review](skills/recommendation-strength-review.md) and `export-actions`.
 - `nine-m-seed` maps all 436 findings with none unmapped. By primary M: Management/Money 130, Method 95, Manpower/Mindpower 72, Mission 40, Machine 37, Maintenance 27, Medium 13, Measurement 13 and Material 9.
 - The agent asks one question per turn, each with 2 to 4 suggestions (the recommended one first) and always "None / unknown (record as a gap)". Your own words are always allowed. The Hazira sample is a scripted session of 57 questions, so its pack says "Answers chosen for demonstration, not by the organisation."
 - `rec-review` on the register and the 9M map printed `stronger 24; intermediate 15; weaker 5; unrated 0` and `0 learning(s) flagged 'weak fix for a deep cause'`. A learning at HFACS level 3 or 4 whose changes are all training, PPE or a reminder would be flagged.
@@ -749,7 +749,7 @@ pmlc pack <ws> <run>/outputs/auditor-assurance-pack.json
 
 **What to check.**
 
-- On Hazira the plan has seven steps: ingest, classify and the register (done), `evidence-audit`, the scorecard, [compliance-crosswalk](skills/compliance-crosswalk.md) (it asks which framework) and [auditor-assurance-pack](skills/auditor-assurance-pack.md) (it asks the framework, then who the assurance is for: internal audit, a regulator, an insurer, a joint-venture partner or a client).
+- On Hazira, with the sample register copied into `outputs/` and `pmlc check-register <ws> <run>/outputs/learnings-register.json --strict` run once, the plan has seven steps: ingest, classify and the register (done), `evidence-audit`, the scorecard, [compliance-crosswalk](skills/compliance-crosswalk.md) (it asks which framework) and [auditor-assurance-pack](skills/auditor-assurance-pack.md) (it asks the framework, then who the assurance is for: internal audit, a regulator, an insurer, a joint-venture partner or a client).
 - After `evidence-audit` the sample register still passes `check-register --strict` with 0 problems: every `evidence_strength` matches the engine's.
 - `crosswalk --framework iso45001` gives 23 clauses: 17 `partly` and 6 `needs organisation evidence`, among them 5.4 worker consultation, 7.3 awareness and 9.3 management review. `--framework rbps` gives the 20 elements: 16 `partly` and 4 `needs organisation evidence`. A requirement whose wording has not been checked against its primary source says "(unverified)": 15 of the 23 ISO rows.
 - The crosswalk pack says "Aid to assurance, not a compliance opinion." and makes the legal-conclusions rule JC5 an error in this pack, so wording such as "breach" or "non-compliant with" stops the check (see [Language checks](Language-checks.md)).

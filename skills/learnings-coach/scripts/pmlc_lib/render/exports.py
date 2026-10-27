@@ -14,7 +14,7 @@ from . import NOTHING_TO_WRITE, Output, output_name, register
 
 FOLLOW_UP_HEADER = ["Finding ID", "Evidence to Collect", "Key Questions", "Suggested Interviews", "Causal Hypothesis"]
 EXISTS = "{file} already exists and may hold your organisation's entries; move it or pass a new --out"
-KEEP_FORMATS = ("csv",)          # formats whose files the organisation fills in: never replaced (P3-9)
+KEEP_FORMATS = ("csv", "risk-csv")   # formats whose files the organisation fills in: never replaced (P3-9, D7)
 
 
 def _ex_csv_text(header, rows) -> str:

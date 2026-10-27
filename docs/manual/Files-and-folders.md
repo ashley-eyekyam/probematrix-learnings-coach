@@ -133,7 +133,7 @@ The language check (JC7) flags a singleton role in your own wording, and a share
 | `<pack>.quiz.csv` | `--format quiz-csv` | The questions as a spreadsheet, one row each |
 | `<pack>.<item-id>.svg`, `<pack>.<item-id>.png`, `<pack>.<item-id>.graphml` | `--format svg`, `png`, `graphml` | One file per graph item: a picture with every label whole, the same as a PNG, and the graph for yEd. On Hazira: `causal-map.causal-map.svg` |
 | `<pack>.bowtie.csv` | `--format bowtie-csv` | One row per barrier, for a bow-tie tool |
-| `<pack>.risk-changes.csv` | `--format risk-csv` | One row per risk change proposed, for a risk register; the last column is for the risk owner's decision |
+| `<pack>.risk-changes.csv` | `--format risk-csv` | One row per risk change proposed, for a risk register; the last column is for the risk owner's decision. An existing file is never overwritten |
 | `<pack>.ics` | `--format ics --start YYYY-MM-DD` | All-day calendar reminders for the follow-ups; no attendee, no organiser |
 | `<pack>.<item-id>.srt`, `<pack>.<item-id>.narration.txt` | `--format srt`, `narration` | Subtitles and the narration only, from each video or radio script |
 | `<pack>.normalised.json` | `--format normalised` | The pack for other tools, with every id filled in, the coverage counts and the cited records |

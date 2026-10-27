@@ -1,6 +1,7 @@
 """Phase 5 documentation (plan Task 26): every document states the skill count the folders give (ruling P5-1), and the
 manual, README, AGENTS.md and CHANGELOG describe the Phase 5 commands, skills, files and messages."""
 import importlib.util
+import inspect
 import json
 import re
 from pathlib import Path
@@ -158,6 +159,8 @@ def test_smoke_requires_a_golden_for_every_pack_skill():
     left = [n for n in names if n not in ("nine-m-analysis", "dossier-F02")]
     assert smoke.missing_goldens(left) == ["cluster-learning-dossier", "nine-m-analysis"]
     assert set(NEW_SKILLS) <= set(smoke.missing_goldens([]))
+    src = inspect.getsource(smoke.format_loop)                 # the gate's loop really calls it, and fails on a gap
+    assert "missing = missing_goldens(names)" in src and "if missing:" in src and "fail(" in src
 
 
 WORDS = {16: "Sixteen", 17: "Seventeen", 18: "Eighteen", 19: "Nineteen", 20: "Twenty", 21: "Twenty-one",
