@@ -10,7 +10,7 @@ One investigation, learned by the whole organisation. This skill sets up the wor
 ## Where things are
 
 - Engine: `scripts/pmlc.py` in this skill's folder (Python 3.9+, needs `openpyxl`). `PMLC` means `python3 <path-to-this-skill>/scripts/pmlc.py`. Paths, the run folder and `run-path` / `status` are in `references/skill-common.md` §1.
-- The other 31 skills sit beside this one under the same `skills/` folder and use this folder's engine and references.
+- The other 32 skills sit beside this one under the same `skills/` folder and use this folder's engine and references.
 - References (read the ones you need):
   - `learnings-coach/references/learning-principles.md`: **read before writing any learning** (just culture, grounding, honest counting).
   - `references/skill-common.md`: what every skill does the same way (set-up, packs, the check loop, thin evidence, sharing).
@@ -73,6 +73,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | a formal register or spreadsheet of learnings | `learnings-register` | it is action design (`action-design`) |
 | how the factors connect | `causal-map` | it is what fell between departments (`interface-learnings`) |
 | recurring factors, latent conditions, the HFACS heat map | `latent-conditions-profile` | it is how the factors connect (`causal-map`) or who should learn (`learning-clusters`) |
+| an AcciMap: where in the wider system, regulator to equipment, the causes sit | `systemic-accimap` | it is the causal pathways (`causal-map`) or recurring factors (`latent-conditions-profile`) |
 | early warnings that were missed | `precursor-timeline` | it is how the factors connect (`causal-map`) |
 | why earlier warnings and audits never led to change | `failure-to-learn-review` | it is the dated list of warnings (`precursor-timeline`) |
 | what fell between departments | `interface-learnings` | it is the causal chain (`causal-map`) |

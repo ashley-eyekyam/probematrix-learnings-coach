@@ -1,0 +1,47 @@
+{"pack": "systemic-accimap", "schema": 1, "skill": "systemic-accimap",
+ "title": "Systemic AcciMap: Synthetic pump fire, 2024",
+ "audience": "Corporate HSE, site leadership and the investigation team", "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "The findings reach company management (level 3) and no higher: nothing is placed at the regulator or government levels.",
+                  "cites": ["FND-0003"]},
+                 {"text": "The spares programme at level 3 (OR 2.2) links down to the missing guidance at level 4 and the omitted step at level 5.",
+                  "cites": ["FND-0003", "FND-0002", "FND-0001"]}],
+ "sections": [
+  {"id": "banner", "heading": "Before this map is shared", "items": [
+   {"kind": "para", "text": "Placements above the company level are inferred from codes and departments. A person confirms them before this map is shared."}]},
+  {"id": "map", "heading": "The AcciMap", "items": [
+   {"kind": "graph", "id": "accimap",
+    "nodes": [{"id": "L1", "label": "L1 Government policy and budgeting (0 findings)"},
+              {"id": "L2", "label": "L2 Regulatory bodies and associations (0 findings)"},
+              {"id": "L3", "label": "L3 Company management (1 finding)", "inferred": true},
+              {"id": "L3-OR 2.2", "label": "OR 2.2 Spares Programme Failure (1)", "inferred": true},
+              {"id": "L4", "label": "L4 Technical and operational management (1 finding)"},
+              {"id": "L4-SV 1.4", "label": "SV 1.4 No Guidance Provided (1)"},
+              {"id": "L5", "label": "L5 Physical processes and actor activities (1 finding)"},
+              {"id": "L5-AB 1.1", "label": "AB 1.1 Step Omitted (1)"},
+              {"id": "L6", "label": "L6 Equipment and surroundings (1 finding)"},
+              {"id": "L6-PE 2.1", "label": "PE 2.1 Alarm Not Configured (1)"}],
+    "edges": [{"from": "L3", "to": "L3-OR 2.2", "label": "holds"}, {"from": "L4", "to": "L4-SV 1.4", "label": "holds"},
+              {"from": "L5", "to": "L5-AB 1.1", "label": "holds"}, {"from": "L6", "to": "L6-PE 2.1", "label": "holds"},
+              {"from": "L3-OR 2.2", "to": "L4-SV 1.4", "label": "1 mention"},
+              {"from": "L4-SV 1.4", "to": "L5-AB 1.1", "label": "1 mention"}],
+    "cites": ["FND-0001", "FND-0002", "FND-0003", "FND-0004"]}]},
+  {"id": "levels", "heading": "Findings at each level", "items": [
+   {"kind": "table", "id": "accimap-levels", "columns": ["Level", "Name", "Findings", "Placement"],
+    "rows": [["L3", "Company management", 1, "inferred"], ["L4", "Technical and operational management", 1, "from the HFACS level"],
+             ["L5", "Physical processes and actor activities", 1, "from the HFACS level"],
+             ["L6", "Equipment and surroundings", 1, "from the HFACS level"]],
+    "row_cites": [["FND-0003"], ["FND-0002"], ["FND-0001"], ["FND-0004"]],
+    "cites": ["FND-0001", "FND-0002", "FND-0003", "FND-0004"]}]},
+  {"id": "gaps", "heading": "Levels the export does not reach", "items": [
+   {"kind": "para", "text": "Level 1 (Government policy and budgeting) and level 2 (Regulatory bodies and associations) have no placements. An empty level is a question for the organisation, not a finding that nobody there contributed.",
+    "cites": ["FND-0003"]}]},
+  {"id": "learnings", "heading": "What the wider system shows", "items": [
+   {"kind": "learning", "lesson": "Seals were bought with no approved specification, and the gap carried down to the work at the pump.",
+    "explanation": "OR 2.2 at level 3 links to SV 1.4 at level 4 (1 mention), which links to the omitted step at level 5 [EVD-0003].",
+    "learning": "LR-01", "cites": ["FND-0003", "FND-0002", "EVD-0003"], "evidence_strength": "corroborated"}]},
+  {"id": "confirm", "heading": "For a person to confirm", "items": [
+   {"kind": "question", "question": "Is level 3 (company management) right for the spares programme finding?",
+    "why": "Level 3 is inferred from the HFACS level 4 code, not from what the export says about who decided.",
+    "good_evidence": "The corporate purchasing standard and its approval record", "cites": ["FND-0003"]},
+   {"kind": "question", "question": "Did the regulator's inspections play a part at level 2 (regulatory bodies and associations)?",
+    "why": "Level 2 is a gap: no finding is tagged to a regulator.", "cites": ["FND-0003"]}]}]}

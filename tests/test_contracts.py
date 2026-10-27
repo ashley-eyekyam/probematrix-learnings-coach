@@ -17,7 +17,7 @@ KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisati
 ANALYSIS = {"learning-clusters", "causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings",
             "report-comparison", "cluster-learning-dossier", "latent-conditions-profile", "failure-to-learn-review",
             "compliance-crosswalk", "open-questions-register", "evidence-strength-scorecard",
-            "recommendation-strength-review"}
+            "recommendation-strength-review", "systemic-accimap"}
 sys.path.insert(0, str(SKILLS_DIR / "learnings-coach" / "scripts"))
 from pmlc_lib.contracts import load_manifests, validate  # noqa: E402  (the engine's P3-6 validator)
 
@@ -240,7 +240,8 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
     assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied",
                      ("leadership", "failure-to-learn-review"): "the user asks for patterns or latent conditions",
                      ("leadership", "latent-conditions-profile"): "the user asks for patterns or latent conditions",
-                     ("leadership", "risk-register-update"): "the user asks for risk-register or bow-tie changes"}
+                     ("leadership", "risk-register-update"): "the user asks for risk-register or bow-tie changes",
+                     ("leadership", "systemic-accimap"): "the user asks for patterns or latent conditions"}
     # plan --next stops on the first todo step and does not read "when": a guarded step must come after every
     # unguarded step of its preset, or a user who never asked for it cannot reach the rest (task 14 review I-1)
     for name, w in wf.items():

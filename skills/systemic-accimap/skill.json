@@ -1,0 +1,32 @@
+{
+  "name": "systemic-accimap",
+  "kind": "analysis",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "accimap"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "systemic-accimap",
+    "files": []
+  },
+  "formats": [
+    "docx",
+    "pptx",
+    "svg",
+    "graphml"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": []
+}

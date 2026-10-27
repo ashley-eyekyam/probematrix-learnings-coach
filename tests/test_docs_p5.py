@@ -74,8 +74,12 @@ def test_docs_state_no_other_skill_count(doc):
     assert not stale, (doc, stale)
 
 
+P6_SKILLS = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+             "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"}   # Phase 6, Tasks 7-13
+
+
 def test_nine_new_skills():
-    assert len(NEW_SKILLS) == 9, NEW_SKILLS
+    assert len(set(NEW_SKILLS) - P6_SKILLS) == 9, NEW_SKILLS          # the Phase 5 nine; Phase 6 adds its own
 
 
 @pytest.mark.parametrize("doc,row", [("README.md", "| `{s}` |"), ("docs/manual/Skills.md", "[{s}](skills/{s}.md)")])
@@ -104,7 +108,7 @@ def test_changelog_2_0_0a7():
     assert log.index("### 2.0.0a7") < log.index("### 2.0.0a6")
     entry = log.split("### 2.0.0a7", 1)[1].split("### 2.0.0a6", 1)[0]
     missing = [f"`{c}`" for c in NEW_COMMANDS if f"`{c}`" not in entry]
-    missing += [f"`{s}`" for s in NEW_SKILLS if f"`{s}`" not in entry]
+    missing += [f"`{s}`" for s in NEW_SKILLS if s not in P6_SKILLS and f"`{s}`" not in entry]   # a7: Phase 5 only
     missing += [f for f in NEW_FLAGS if f"`{f}" not in entry]
     assert not missing, missing
     notes = entry.split("**Migration notes.**", 1)[1]

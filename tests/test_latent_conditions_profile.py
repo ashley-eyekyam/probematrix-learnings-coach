@@ -114,4 +114,5 @@ def test_leadership_next_reaches_the_coaches_without_this_pack():
     order = [s["skill"] for s in p["steps"]]
     i = order.index(SKILL)
     assert order[i - 1] == "engine:hfacs-profile" and p["steps"][i]["when"]
-    assert all(s["when"] for s in p["steps"][i:])          # only guarded steps follow it
+    # only guarded steps follow it, and the engine steps that feed them (Phase 6 Task 12: engine:accimap)
+    assert all(s["when"] or s["skill"].startswith("engine:") for s in p["steps"][i:])

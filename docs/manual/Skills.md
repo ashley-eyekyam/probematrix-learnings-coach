@@ -1,6 +1,6 @@
 # Skills
 
-The Learnings Coach is 32 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
+The Learnings Coach is 33 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
 
 **Start here:** [learnings-coach](skills/learnings-coach.md) sets up the workspace for an export and routes your request. Every other skill relies on it.
 
@@ -17,6 +17,7 @@ These skills prepare the ground or analyse the whole investigation. Their output
 | [cluster-learning-dossier](skills/cluster-learning-dossier.md) | every learning for one function | "What does maintenance need to learn?" |
 | [causal-map](skills/causal-map.md) | causal graph and pathway stories | "How do the factors connect?" |
 | [latent-conditions-profile](skills/latent-conditions-profile.md) | HFACS heat map, the factors that recur and feed the most others | "Which conditions keep coming up?" |
+| [systemic-accimap](skills/systemic-accimap.md) | an AcciMap: the findings on six levels from government to equipment, with the empty levels to confirm | "Where in the wider system did this come from?" |
 | [precursor-timeline](skills/precursor-timeline.md) | dated warnings and how they were handled | "Did we see this coming?" |
 | [failure-to-learn-review](skills/failure-to-learn-review.md) | why earlier warnings did not lead to change, and which step of the learning cycle broke | "Why didn't we learn from the earlier leaks?" |
 | [interface-learnings](skills/interface-learnings.md) | what fell between departments | "What fell through the cracks?" |

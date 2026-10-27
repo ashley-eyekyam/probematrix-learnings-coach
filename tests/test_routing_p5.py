@@ -9,8 +9,10 @@ from test_evals import ROOT, all_evals, runner
 
 HUB = ROOT / "skills" / "learnings-coach" / "SKILL.md"
 FOLDERS = sorted(p.parent.name for p in (ROOT / "skills").glob("*/skill.json"))
-NEW = sorted(s for s in FOLDERS
-             if json.loads((ROOT / "skills" / s / "skill.json").read_text(encoding="utf-8")).get("since") == "2.0.0")
+P6_SKILLS = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+             "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"}   # Phase 6, Tasks 7-13
+NEW = sorted(s for s in FOLDERS if s not in P6_SKILLS     # the Phase 5 nine; Phase 6 skills route by Task 19's checks
+             and json.loads((ROOT / "skills" / s / "skill.json").read_text(encoding="utf-8")).get("since") == "2.0.0")
 BASE_EVALS = 134            # evals.json at the start of Phase 5 (117ad35)
 
 
