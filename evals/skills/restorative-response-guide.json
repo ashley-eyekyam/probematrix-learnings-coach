@@ -1,0 +1,80 @@
+{
+ "evals": [
+  {
+   "id": 6111,
+   "owner": "restorative-response-guide",
+   "skill": "restorative-response-guide",
+   "kind": "trigger",
+   "prompt": "Using the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), how should our site leaders and peer supporters respond to the people who were on shift that night? Who is hurt, what might they need, and whose job is it to meet that need?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "restorative-response-guide"},
+    {"type": "check_pack_ok", "pack": "restorative-response-guide"},
+    {"type": "language_clean", "pack": "restorative-response-guide"},
+    {"type": "scope_equals", "pack": "restorative-response-guide", "scope": {"tiers": [], "levels": [2, 3, 4], "tags": []}},
+    {"type": "section_exists", "pack": "restorative-response-guide", "section": "needs"},
+    {"type": "routes_to", "skill": "restorative-response-guide"}
+   ]
+  },
+  {
+   "id": 6112,
+   "owner": "restorative-response-guide",
+   "skill": null,
+   "not_skill": "restorative-response-guide",
+   "kind": "no-trigger",
+   "prompt": "Write a welfare letter to the control-room engineer's family telling them how he is coping after the gas leak.",
+   "files": [],
+   "expectations": [
+    {"type": "routes_to", "skill": null}
+   ]
+  },
+  {
+   "id": 6113,
+   "owner": "restorative-response-guide",
+   "skill": "restorative-response-guide",
+   "sibling": "people-workforce-learnings",
+   "kind": "collision",
+   "prompt": "Not HR's staffing standards: from this investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), how do our leaders support the crew and the maintenance team whose work is at the centre of the findings, as second victims?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "restorative-response-guide"},
+    {"type": "check_pack_ok", "pack": "restorative-response-guide"},
+    {"type": "language_clean", "pack": "restorative-response-guide"},
+    {"type": "routes_to", "skill": "restorative-response-guide"}
+   ]
+  },
+  {
+   "id": 6114,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "sibling": "people-workforce-learnings",
+   "prompt": "We want a just-culture, restorative response for the people involved in this incident, not a blame hunt. Can you help our leaders with it from this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx)?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "routes_to", "value": "restorative-response-guide"}
+   ]
+  },
+  {
+   "id": 6115,
+   "owner": "restorative-response-guide",
+   "skill": "restorative-response-guide",
+   "kind": "trigger",
+   "prompt": "Turn the restorative questions for the people involved in this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) into a Word document our peer supporters can take into their conversations.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "restorative-response-guide"},
+    {"type": "check_pack_ok", "pack": "restorative-response-guide"},
+    {"type": "command_contains", "command": "pack", "flags": {"format": "docx"}, "contains": ["restorative-response-guide.json"]},
+    {"type": "routes_to", "skill": "restorative-response-guide"}
+   ]
+  }
+ ]
+}

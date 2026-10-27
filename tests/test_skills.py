@@ -69,6 +69,7 @@ OVERLAPS = {
     ("compliance-crosswalk", "auditor-assurance-pack"), ("compliance-crosswalk", "learnings-register"),
     ("nine-m-analysis", "barrier-learnings"), ("nine-m-analysis", "recommendation-strength-review"),
     ("recommendation-strength-review", "nine-m-analysis"), ("recommendation-strength-review", "learnings-register"),
+    ("restorative-response-guide", "people-workforce-learnings"),   # + learning-team-facilitator once Task 10 lands
     ("learning-effectiveness-plan", "learnings-register"), ("learning-effectiveness-plan", "manager-coach"),
     ("learning-effectiveness-plan", "safety-committee-guide"),
 }
