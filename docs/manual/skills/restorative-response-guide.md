@@ -22,7 +22,7 @@ The guide never says what a person feels, needs or did wrong. It opens with the 
 - The workspace only. The skill reads the findings that place people in harm's way, and the level 2 to 4 findings that show the conditions they worked in.
 - Optional: the Learnings Register. Its entries that cite those findings keep their wording and their `LR-nn` ids in the conditions section.
 - The default scope is HFACS levels 2 to 4: preconditions, supervision and organisation. Level 1 findings, the acts of a person, are never cited as conditions.
-- No workflow preset includes it. Ask for it by name, or plan it with `pmlc plan <ws> --skills restorative-response-guide`.
+- The `first-48-hours` preset plans it as its last step, used only when the user asks how leaders should respond to and support the people involved. Otherwise ask for it by name, or plan it with `pmlc plan <ws> --skills restorative-response-guide`.
 
 ## Engine commands and flags
 

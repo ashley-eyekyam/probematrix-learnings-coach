@@ -74,10 +74,16 @@ def test_description_tie_breaks():
         assert f"use `{s}`" in d, s
 
 
-def test_no_workflow_step_reached_through_skills(tmp_path):
-    """P6 Task 11: no preset runs it; it is reached through `plan --skills`, the hub row and a router eval."""
+def test_guarded_first_48_hours_step_and_skills_route(tmp_path):
+    """Spec §9.2 item 8 (final review I3, superseding plan Task 11's "none"): first-48-hours runs it as its last,
+    guarded step; it is also reached through `plan --skills`, the hub row and a router eval."""
     wf = load(REFS / "workflows.json")
-    assert SKILL not in json.dumps(wf)
+    steps = [s for n, w in wf.items() for s in w["steps"] if s["skill"] == SKILL]
+    assert wf["first-48-hours"]["steps"][-1] == {
+        "skill": SKILL, "when": "the user asks how leaders should respond to and support the people involved"}
+    assert len(steps) == 1
+    plan = load(ROOT / "tests" / "fixtures" / "plans" / "first-48-hours.json")
+    assert plan["steps"][-1]["skill"] == SKILL and plan["steps"][-1]["when"]
     hub = (SKILLS_DIR / "learnings-coach" / "SKILL.md").read_text(encoding="utf-8")
     assert f"| `{SKILL}` |" in hub and len(hub.splitlines()) <= 150
     evals = load(ROOT / "evals" / "skills" / f"{SKILL}.json")["evals"]

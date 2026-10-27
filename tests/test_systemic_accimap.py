@@ -7,7 +7,7 @@ import shutil
 
 import pytest
 
-from test_pmlc import ROOT, run
+from test_pmlc import ROOT, run, ws  # noqa: F401  (ws is a module-scoped fixture)
 from pmlc_lib.pack.profiles import BANNERS
 
 pytest.importorskip("openpyxl")
@@ -24,11 +24,11 @@ def hz(tmp_path_factory):
     root = tmp_path_factory.mktemp("hazira-accimap")
     run("setup", str(EXPORT), "--slug", "hazira-gas-release-fire", "--date", "2020-09-24", "--root", str(root),
         "--overlay", "india-process-site")
-    ws = root / "pmlc-runs" / "2020-09-24-hazira-gas-release-fire" / "workspace"
-    run("accimap", str(ws))
-    shutil.copy(REGISTER, ws.parent / "outputs" / REGISTER.name)
-    shutil.copy(GOLDEN, ws.parent / "outputs" / GOLDEN.name)
-    return ws
+    hw = root / "pmlc-runs" / "2020-09-24-hazira-gas-release-fire" / "workspace"
+    run("accimap", str(hw))
+    shutil.copy(REGISTER, hw.parent / "outputs" / REGISTER.name)
+    shutil.copy(GOLDEN, hw.parent / "outputs" / GOLDEN.name)
+    return hw
 
 
 def _pack():
@@ -113,3 +113,32 @@ def test_fixture_needs_the_banner(tmp_path):
     assert profiles.hard(pack, prof) == []
     pack["sections"] = [s for s in pack["sections"] if s["id"] != "banner"]
     assert any(m.startswith("inferred-banner:") for m in profiles.hard(pack, prof))
+
+
+def test_standalone_graph_files_mark_inferred(ws, tmp_path):  # noqa: F811
+    """Final review I2 (spec §6.2): the stand-alone SVG and GraphML mark each inferred node, and carry the inferred
+    banner in their <desc>, so a map pasted on its own still says its upper placements are inferred."""
+    import re
+    pack = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    graph = next(it for s in pack["sections"] for it in s["items"] if it.get("kind") == "graph")
+    inferred = [n for n in graph["nodes"] if n.get("inferred") is True]
+    plain = [n for n in graph["nodes"] if n.get("inferred") is not True]
+    assert inferred and plain
+    p = tmp_path / f"{SKILL}.json"
+    p.write_text(json.dumps(pack), encoding="utf-8")
+    out = tmp_path / "out"
+    run("pack", str(ws), str(p), "--out", str(out), "--format", "svg,graphml")
+    svg = (out / f"{SKILL}.{graph['id']}.svg").read_text(encoding="utf-8")
+    gml = (out / f"{SKILL}.{graph['id']}.graphml").read_text(encoding="utf-8")
+    banner = BANNERS["accimap-inferred"]
+    for text in (svg, gml):
+        desc = re.search(r"<desc>(.*?)</desc>", text, re.S).group(1)
+        assert desc.startswith(banner), desc
+    assert svg.count("(inferred)") >= len(inferred)
+    assert '<key id="inferred" for="node" attr.name="inferred" attr.type="boolean">' in gml
+    for n in inferred:
+        node = re.search(rf'<node id="{re.escape(n["id"])}">(.*?)</node>', gml).group(1)
+        assert '<data key="inferred">true</data>' in node and "(inferred)" in node, node
+    for n in plain:
+        node = re.search(rf'<node id="{re.escape(n["id"])}">(.*?)</node>', gml).group(1)
+        assert "inferred" not in node, node

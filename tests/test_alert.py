@@ -294,6 +294,25 @@ def test_sister_site_share_needs_approval(tmp_path, shws):
     assert REVIEW in (tmp_path / "int" / "test-pack.md").read_text(encoding="utf-8")
 
 
+def test_shared_layouts_drop_the_review_copy(tmp_path, shws):
+    """Final review I1: an approved sister-site pack shared externally prints no review-copy line in any layout,
+    while its internal print layouts all keep it."""
+    from pmlc_lib.render.layouts import LAYOUTS
+    ws_, orgs = shws
+    pk = dict(copy.deepcopy(SPACK), mode="sister-site")
+    pk["sections"][0]["items"] += [item("card"), item("check"), item("toolbox")]
+    p = sign(ws_, write_doc(tmp_path, pk), "--classification", "external", "--legal-review", "cleared")
+    for layout in LAYOUTS:
+        out, inner = tmp_path / f"x-{layout}", tmp_path / f"n-{layout}"
+        r = _cli("pack", str(ws_), str(p), "--share", "external", "--orgs", str(orgs), "--out", str(out),
+                 "--layout", layout)
+        assert r.returncode == 0, r.stderr
+        assert REVIEW not in (out / f"test-pack.{layout}.external.html").read_text(encoding="utf-8"), layout
+        r = _cli("pack", str(ws_), str(p), "--out", str(inner), "--layout", layout)
+        assert r.returncode == 0, r.stderr
+        assert REVIEW in (inner / f"test-pack.{layout}.html").read_text(encoding="utf-8"), layout
+
+
 def test_industry_share_needs_public_approval(tmp_path, shws):
     ws_, orgs = shws
     p = write_doc(tmp_path, dict(copy.deepcopy(SPACK), mode="industry"))

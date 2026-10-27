@@ -56,6 +56,7 @@ All 25 Hazira learnings are transferable and 11 are priority 1, so the pack hold
 
 ## Related skills
 
+- [safety-alert](safety-alert.md): the one-page alert sent to the other sites first (`sister-site` mode); this self-check is what each receiving site fills in and returns.
 - [top-management-brief](top-management-brief.md): the executive decisions on transferring the learning across the organisation.
 - [learnings-register](learnings-register.md): the register the self-checks are drawn from, with each learning's transferability and priority.
 - [frontline-learning-cards](frontline-learning-cards.md): cards the crews keep, once a site has found a condition.

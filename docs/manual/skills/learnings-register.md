@@ -40,7 +40,7 @@ pmlc dashboard <ws> --register <run>/outputs/learnings-register.json [--date <co
 - [register-xlsx](../commands/register-xlsx.md) writes the workbook. `--out` names it, and `--ws` points to the workspace when the register is not in the standard run folder. It also takes `--share`, `--names` and `--orgs` for a masked copy (see [Review and sharing](../Review-and-sharing.md)).
 - [dashboard](../commands/dashboard.md) with `--register` is required for this skill.
 
-The optional spine fields, each used only when it applies: `urgency` (alert, notice or information), `recommendation_class` (recommendation, observation or action already taken), `recipient_role` (the role that must answer), `regulatory_touchpoint` (a regime the learning touches, as a flag for legal or compliance review), `verification` (how the organisation will check the change worked) and `why_not_stronger` (for a priority-1 learning with only administrative or training fixes).
+The optional spine fields, each used only when it applies: `urgency` (alert, notice or information), `recommendation_class` (recommendation, observation or action already taken), `recipient_role` (the role that must answer), `regulatory_touchpoint` (a regime the learning touches, as a flag for legal or compliance review), `verification` (`{"method", "indicator"}`: the method and indicator for checking the change, for priority-1 and alert learnings) and `why_not_stronger` (for a priority-1 learning with only administrative or training fixes).
 
 ## What you get
 
@@ -73,4 +73,4 @@ It then listed 14 `hfacs_level` wording warnings, the warning `no handling block
 - [report-comparison](report-comparison.md): compares the register with an official report.
 - [barrier-learnings](barrier-learnings.md): stronger fixes for the barriers behind each learning.
 - Recipe: [A learnings register to Excel](../Workflows-and-recipes.md#a-learnings-register-to-excel).
-- `learning-effectiveness-plan`: when and how to check that a learning took hold (3, 6 and 12 months, plus 30, 60 and 90 days for priority 1).
+- [learning-effectiveness-plan](learning-effectiveness-plan.md): when and how to check that a learning took hold (3, 6 and 12 months, plus 30, 60 and 90 days for priority 1).

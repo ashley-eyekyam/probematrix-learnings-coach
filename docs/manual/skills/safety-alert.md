@@ -56,6 +56,6 @@ pmlc pack <ws> <run>/outputs/safety-alert.json --layout poster
 ## Related skills
 
 - [frontline-learning-cards](frontline-learning-cards.md): cards the crew keep, with warning signs and what good looks like.
-- `could-it-happen-here`: a self-assessment each receiving site fills in and returns.
+- [could-it-happen-here](could-it-happen-here.md): a self-assessment each receiving site fills in and returns.
 - [board-brief](board-brief.md): the board's assurance questions.
 - [learnings-register](learnings-register.md): where the learnings, their priority and their urgency come from.

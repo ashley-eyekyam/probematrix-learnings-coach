@@ -200,6 +200,29 @@ def test_grade_badge_every_format(ws, tmp_path):  # noqa: F811
     assert "Grade:" not in (tmp_path / "o2" / "test-pack.md").read_text(encoding="utf-8")
 
 
+LAYOUT_ITEMS = ("para", "card", "check", "toolbox")      # something for each of the six layouts to print
+
+
+@pytest.mark.parametrize("mode", ["sister-site", "industry"])
+def test_review_copy_every_layout(ws, tmp_path, mode):  # noqa: F811
+    """Final review I1 (P6-4): every print layout carries the review-copy line and the grade on each printed page;
+    an internal pack carries neither the line nor a grade it does not have."""
+    from pmlc_lib.render.layouts import LAYOUTS
+    p = _write(tmp_path, pack_with(*(item(k) for k in LAYOUT_ITEMS), mode=mode, grade="alert",
+                                   grade_source="chosen by the user"))
+    internal = _write(tmp_path, pack_with(*(item(k) for k in LAYOUT_ITEMS)), "internal.json")
+    for layout in LAYOUTS:
+        out, out2 = tmp_path / f"o-{mode}-{layout}", tmp_path / f"i-{mode}-{layout}"
+        run("pack", str(ws), str(p), "--out", str(out), "--layout", layout)
+        page = (out / f"test-pack.{layout}.html").read_text(encoding="utf-8")
+        n_pages = page.count('<section class="page')
+        assert n_pages and page.count(REVIEW) == n_pages, (layout, page.count(REVIEW), n_pages)
+        assert page.count("Grade: Alert") == n_pages, layout
+        run("pack", str(ws), str(internal), "--out", str(out2), "--layout", layout)
+        page2 = (out2 / f"test-pack.{layout}.html").read_text(encoding="utf-8")
+        assert REVIEW not in page2 and "Grade:" not in page2, layout
+
+
 def test_alert_fields_are_not_translated():
     from pmlc_lib import strings
     assert {"mode", "grade", "grade_source"} <= strings.LOCKED_FIELDS

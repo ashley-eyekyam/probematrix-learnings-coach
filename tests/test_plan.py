@@ -86,7 +86,8 @@ def test_plan_planned_skill_skipped(fresh, tmp_path):
     assert sa["status"] == "planned" and sa["planned_for"] == "Phase 6" and sa["commands"] == []
     assert sa["mode"] == "internal"
     assert by["learnings-register"]["mode"] == "draft"
-    assert [s["skill"] for s in p["steps"]][-3:] == ["learnings-register", "future-alert", "supervisor-coach"]
+    assert [s["skill"] for s in p["steps"]][-4:] == ["learnings-register", "future-alert", "supervisor-coach",
+                                                    "restorative-response-guide"]
     by["learnings-register"]["status"] = "done"
     assert plan.next_step(p)["skill"] == "supervisor-coach"
     assert plan.step_lines(sa, fresh, fresh) == [f"{sa['n']:2}. future-alert [planned for v2.0, Phase 6]"]

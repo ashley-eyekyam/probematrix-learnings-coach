@@ -21,7 +21,7 @@ Top management (tier T5) sets policy, enterprise standards and investment, and d
 
 - `clusters.json` from [learning-clusters](learning-clusters.md).
 - Optional: the Learnings Register; the brief then takes the enterprise learnings from it and carries their `LR-nn` ids.
-- Optional: the `could-it-happen-here` pack (`outputs/could-it-happen-here.json`); the brief then names it in its sister-sites section.
+- Optional: the [could-it-happen-here](could-it-happen-here.md) pack (`outputs/could-it-happen-here.json`); the brief then names it in its sister-sites section.
 
 ## Engine commands and flags
 
@@ -70,4 +70,4 @@ These counts are from the base classification, before the resolution pass. After
 - [board-brief](board-brief.md): the same event for the board's oversight role.
 - [auditor-assurance-pack](auditor-assurance-pack.md): the assurance behind the last section.
 - [site-leadership-coach](site-leadership-coach.md): the site-level decisions, and the ones marked "Needs corporate decision".
-- `could-it-happen-here`: the self-assessment the sister sites run for the transferable learnings.
+- [could-it-happen-here](could-it-happen-here.md): the self-assessment the sister sites run for the transferable learnings.

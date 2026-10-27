@@ -75,6 +75,19 @@
     {"type": "command_contains", "command": "pack", "flags": {"format": "docx"}, "contains": ["restorative-response-guide.json"]},
     {"type": "routes_to", "skill": "restorative-response-guide"}
    ]
+  },
+  {
+   "id": 6116,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "sibling": "restorative-response-guide",
+   "prompt": "The Hazira export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) arrived this morning. By Monday the shifts need a briefing and an early warning, and our managers have asked how to look after the operators who were on duty that night.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "routes_to", "value": "first-48-hours"}
+   ]
   }
  ]
 }

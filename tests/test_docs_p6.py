@@ -49,8 +49,8 @@ def slug(heading: str) -> str:
 
 
 def test_phase_6_skills_on_this_branch():
-    """Six of the seven are merged; learning-effectiveness-plan lands with its own task (the count follows)."""
-    assert len(PRESENT) >= 6, PRESENT
+    """All seven Phase 6 skills are merged (final review I5: was >= 6 while Task 13 was pending)."""
+    assert tuple(PRESENT) == tuple(PHASE6_SKILLS), PRESENT
 
 
 @pytest.mark.parametrize("doc,row", [("README.md", "| `{s}` |"), ("docs/manual/Skills.md", "[{s}](skills/{s}.md)")])

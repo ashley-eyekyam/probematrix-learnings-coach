@@ -91,6 +91,25 @@
    "gate": [
     "check-pack --strict"
    ]
+  },
+  {
+   "n": 6,
+   "skill": "restorative-response-guide",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "restorative-response-guide",
+   "mode": null,
+   "when": "the user asks how leaders should respond to and support the people involved",
+   "commands": [
+    "PMLC select <ws> --preset restorative-response-guide:in-harms-way",
+    "PMLC select <ws> --preset restorative-response-guide:conditions",
+    "PMLC check-pack <ws> <run>/outputs/restorative-response-guide.json --strict",
+    "PMLC pack <ws> <run>/outputs/restorative-response-guide.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
   }
  ],
  "next": 3
