@@ -68,4 +68,6 @@ One skill for each tier, from the sharp end to the board.
 - It follows the [learning principles](https://github.com/ashley-eyekyam/probematrix-learnings-coach/blob/main/skills/learnings-coach/references/learning-principles.md): roles only, no blame, every sentence traced to Finding and Evidence IDs, learnings counted rather than finding instances.
 - Its outputs are marked "Learning purposes: not a statutory document" and stay **draft** until a person signs them off (see [Review and sharing](Review-and-sharing.md)).
 
+Skills that read across many investigations (learning verification, repeat learnings, portfolio trends, change and task lessons, and a learning-from-incidents health check) come in v2.1. The [learnings library](Library.md) they will read from starts in v2.0, with `library publish`.
+
 For ready-made sequences of skills, see [Workflows and recipes](Workflows-and-recipes.md). Each page uses the words in the [Glossary](Glossary.md).
