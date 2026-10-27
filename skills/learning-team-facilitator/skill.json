@@ -1,0 +1,37 @@
+{
+  "name": "learning-team-facilitator",
+  "kind": "interactive",
+  "audiences": [],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "wai-wad"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "learning-team-facilitator",
+    "files": []
+  },
+  "formats": [
+    "docx"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": true,
+  "since": "2.0.0",
+  "questions": [
+    "What is the session's scope? (Recommended) one activity the work-as-done evidence covers, such as the emergency isolation or the job before the event; one cluster (a function, for example Operations); one learning from the register (LR-nn); or unknown (the top prompts across the export)",
+    "Who will be in the room, by roles only? (Recommended) the people who do the work (for example field operators, the control-room operator, a maintenance technician), with one facilitator who did not investigate; add a supervisor only if the team agrees; or unknown (plan for 5 to 8 workers by role)"
+  ]
+}

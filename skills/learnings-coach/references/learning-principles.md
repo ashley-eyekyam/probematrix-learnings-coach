@@ -51,6 +51,7 @@ When an investigation shows earlier warnings, ask which step of the learning cyc
 - **Failure to learn** (Hopkins, "Failure to Learn: the BP Texas City Refinery Disaster", 2008; unverified): warnings that reach an organisation still need someone with the authority and the means to act on them.
 - **Organisational memory** (Kletz, "Lessons from Disaster: How Organisations Have No Memory and Accidents Recur", 1993; unverified): a lesson that lives only in people's heads or in a report is lost when they move on; it has to be built into designs, procedures and checks.
 - **Drift** (Dekker, "Drift into Failure", 2011; unverified): practice moves away from the design basis in small steps that each made sense locally, so the drift is visible in the records, not in one decision.
+- **Learning teams** (Conklin, "Pre-Accident Investigations: Better Questions", 2016; unverified): the people who do the work are the experts on it; a facilitator who did not investigate asks how the work normally goes, the team learns first and fixes later, after a pause to let the answers soak. The `learning-team-facilitator` skill plans such a session; the team supplies every answer.
 
 ## 2. Ground every sentence
 

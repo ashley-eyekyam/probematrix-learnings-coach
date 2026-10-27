@@ -176,9 +176,13 @@ P6_STAGED = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "lear
 
 
 def test_no_hazira_pack_waits_for_its_render():
-    """Task 24: every Phase 5 golden is rendered beside its JSON and listed in the README, so the staging set holds
-    nothing else and check-samples holds every other pack to the OD4-4 rule. Phase 6 Task 18 empties it again."""
-    assert set(PENDING) <= P6_STAGED and len(PENDING) == len(RENDER_PENDING)
+    """Task 24: every Phase 5 golden is rendered beside its JSON and listed in the README. Phase 6 stages its new
+    goldens again (checklist item 6): each pending entry is a Phase 6 skill's golden JSON with no rendering, and
+    Phase 6 Task 18 renders them and empties the set; every other pack stays rendered and listed."""
+    assert set(PENDING) <= P6_STAGED and len(PENDING) == len(RENDER_PENDING), set(PENDING) - P6_STAGED
+    for name in PENDING:
+        assert (OUTPUTS / f"{name}.json").is_file(), name
+        assert not (OUTPUTS / f"{name}.html").exists() and not (OUTPUTS / f"{name}.md").exists(), name
     assert len(RENDERED) == len(PACKS) == len(readme_packs()) >= 34
 
 

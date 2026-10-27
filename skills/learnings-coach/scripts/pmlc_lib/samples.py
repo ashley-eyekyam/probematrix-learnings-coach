@@ -15,7 +15,7 @@ RENDER_EXEMPT = ("learnings-register.json",)
 # pack JSON with neither rendering. Phase 6 uses it again: each new-skill task (7-13) adds its golden, and Task 18
 # renders them and empties it.
 RENDER_PENDING = frozenset({"restorative-response-guide.json", "could-it-happen-here.json",
-                            "safety-alert.json"})
+                            "safety-alert.json", "learning-team-facilitator.json"})
 
 
 def _sample_render_problems(d) -> list:

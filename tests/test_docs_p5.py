@@ -10,6 +10,10 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 MANUAL = ROOT / "docs" / "manual"
+# Phase 6 (plan P6-1): the documents state the count of the skill folders, Phase 6 skills included (each integrator
+# sets it after a merge; Task 20 sets 39). The Phase 5 lists below stay Phase 5.
+PHASE6_SKILLS = frozenset({"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+                           "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"})
 SKILL_COUNT = len(list((ROOT / "skills").glob("*/skill.json")))      # P5-1: the folders, never a constant
 SUB_COUNT = SKILL_COUNT - 1                                           # every skill but the hub
 
@@ -28,12 +32,9 @@ COUNT_STATEMENTS = [
     ("evals/README.md", r"presets or (\d+) sub-skills", SUB_COUNT),
 ]
 COUNT_RX = re.compile(r"\b(\d+) (?:agent |sub-)?skills\b")
-# Phase 6 skills also carry since 2.0.0; the Phase 5 checks below are about the nine Phase 5 skills only.
-P6_SKILLS = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
-             "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"}
 NEW_SKILLS = sorted(p.parent.name for p in (ROOT / "skills").glob("*/skill.json")
                     if json.loads(p.read_text(encoding="utf-8")).get("since") == "2.0.0"
-                    and p.parent.name not in P6_SKILLS)
+                    and p.parent.name not in PHASE6_SKILLS)
 P5_SKILLS = NEW_SKILLS   # NEW_SKILLS already leaves out the Phase 6 skills
 NEW_COMMANDS = ["evidence-audit", "hfacs-profile", "open-questions", "nine-m-seed", "nine-m-suggest", "nine-m-answer",
                 "nine-m-replay", "nine-m-actions-template", "rec-review", "missed-opportunities", "crosswalk"]

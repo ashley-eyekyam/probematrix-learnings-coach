@@ -1,6 +1,6 @@
 # Skills
 
-The Learnings Coach is 35 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
+The Learnings Coach is 36 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
 
 **Start here:** [learnings-coach](skills/learnings-coach.md) sets up the workspace for an export and routes your request. Every other skill relies on it.
 
@@ -47,6 +47,7 @@ One skill for each tier, from the sharp end to the board.
 |---|---|---|
 | Auditors, inspectors, certification bodies, insurers | [auditor-assurance-pack](skills/auditor-assurance-pack.md) | audit test points, sampling, evidence requests |
 | Investigators and HSE professionals | [investigator-coach](skills/investigator-coach.md) | evidence gaps, key questions, interviews, method lessons |
+| Learning-team facilitators and the people who do the work | [learning-team-facilitator](skills/learning-team-facilitator.md) | a learning-team session: work as imagined against work as done, "what made sense at the time" questions, a session plan and a blank notes sheet |
 | Training managers and instructors | [training-designer](skills/training-designer.md) | training-needs map, modules, assessments |
 | Fire services, emergency teams, incident command | [emergency-response-learnings](skills/emergency-response-learnings.md) | response timeline, plan gaps, drills |
 | Engineering, integrity, change control, instrumentation | [engineering-integrity-learnings](skills/engineering-integrity-learnings.md) | technical learnings and pending decisions |

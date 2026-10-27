@@ -105,6 +105,40 @@
   },
   {
    "n": 7,
+   "skill": "engine:wai-wad",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "wai-wad",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC wai-wad <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 8,
+   "skill": "learning-team-facilitator",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "learning-team-facilitator",
+   "mode": null,
+   "when": "the user asks for a learning team or work-as-done session",
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/learning-team-facilitator.json --strict",
+    "PMLC pack <ws> <run>/outputs/learning-team-facilitator.json"
+   ],
+   "questions": [
+    "What is the session's scope? (Recommended) one activity the work-as-done evidence covers, such as the emergency isolation or the job before the event; one cluster (a function, for example Operations); one learning from the register (LR-nn); or unknown (the top prompts across the export)",
+    "Who will be in the room, by roles only? (Recommended) the people who do the work (for example field operators, the control-room operator, a maintenance technician), with one facilitator who did not investigate; add a supervisor only if the team agrees; or unknown (plan for 5 to 8 workers by role)"
+   ],
+   "gate": [
+    "check-pack --strict"
+   ]
+  },
+  {
+   "n": 9,
    "skill": "report-comparison",
    "status": "todo",
    "planned_for": null,
