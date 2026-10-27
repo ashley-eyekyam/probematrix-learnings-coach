@@ -25,7 +25,10 @@ def _cw_register_entries(register) -> list:
     ents = register.get("entries", register.get("learnings")) if isinstance(register, dict) else register
     if not isinstance(ents, list) or (isinstance(register, dict) and "pack" in register and "sections" in register):
         sys.exit("crosswalk needs a Learnings Register (learnings-register.json) with entries, not a pack or another file")
-    return [e for e in ents if isinstance(e, dict)]
+    ents = [e for e in ents if isinstance(e, dict)]
+    if not ents:                # an empty table would read as a result: "the organisation must evidence everything"
+        sys.exit("crosswalk needs a Learnings Register with at least one learning (learnings-register.json)")
+    return ents
 
 
 def _cw_text(e: dict) -> str:

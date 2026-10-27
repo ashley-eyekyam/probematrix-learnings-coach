@@ -28,7 +28,7 @@ pmlc crosswalk ws [--register REGISTER] [--framework {iso45001,psm,rmp,seveso,rb
 
 | Flag | Value | Default | What it does |
 |---|---|---|---|
-| `--register` | file | `<run>/outputs/learnings-register.json` | The register to map. A pack is refused |
+| `--register` | file | `<run>/outputs/learnings-register.json` | The register to map. A pack, and a register with no learnings, are refused |
 | `--framework` | name | required unless `--system-csv` | `iso45001`, `psm`, `rmp`, `seveso`, `rbps`, `icmm` or `india` |
 | `--system-csv` | file | none | The organisation's own requirements (`id,title[,topics]`) in place of a framework |
 | `--json` | none | off | Print the crosswalk as JSON: `framework`, `title` and `rows` |
@@ -45,7 +45,7 @@ On Hazira with the sample register, `--framework iso45001` lists 23 requirements
 
 ## Common problems
 
-- **"crosswalk needs a Learnings Register …".** The file is a pack or another file. Pass `learnings-register.json`.
+- **"crosswalk needs a Learnings Register …".** The file is a pack or another file, or a register with no learnings (an empty table would read as a result). Pass a `learnings-register.json` that holds at least one learning.
 - **"… needs the columns id,title".** The `--system-csv` header is wrong.
 - **Every row says `needs organisation evidence`.** No learning text matches and no learning has `clauses`. That is an honest answer, not an error.
 

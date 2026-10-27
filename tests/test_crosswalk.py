@@ -148,6 +148,11 @@ def test_crosswalk_refuses_pack(cws, tmp_path):
     nolr.write_text(json.dumps({"title": "x"}), encoding="utf-8")
     r = cli("crosswalk", str(cws), "--register", str(nolr), "--framework", "psm")
     assert r.returncode != 0 and "Learnings Register" in r.stderr and "Traceback" not in r.stderr
+    for bad in ({"entries": []}, [1, 2]):             # final review I2: an empty table would read as a result
+        nolr.write_text(json.dumps(bad), encoding="utf-8")
+        r = cli("crosswalk", str(cws), "--register", str(nolr), "--framework", "iso45001")
+        assert r.returncode != 0 and "Traceback" not in r.stderr and r.stdout == ""
+        assert "crosswalk needs a Learnings Register with at least one learning" in r.stderr
 
 
 def test_crosswalk_thin_export(tmp_path):
@@ -155,7 +160,7 @@ def test_crosswalk_thin_export(tmp_path):
     run("ingest", str(x), "--slug", "thin", "--date", "2024-03-20")
     ws = tmp_path / "pmlc-runs" / "2024-03-20-thin" / "workspace"
     reg = tmp_path / "r.json"
-    reg.write_text(json.dumps({"entries": []}), encoding="utf-8")
+    reg.write_text(json.dumps({"entries": [{"lr_id": "LR-01", "title": "Zzz"}]}), encoding="utf-8")
     d = go(ws, "--register", str(reg), "--framework", "rbps")
     assert len(d["rows"]) == 20 and all(r["status"] == "needs organisation evidence" for r in d["rows"])
 
