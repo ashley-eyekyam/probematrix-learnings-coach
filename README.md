@@ -9,7 +9,7 @@
 
 **One investigation. Every level of the organisation learns.**
 
-An open-source plugin of 36 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
+An open-source plugin of 37 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
 
 Works with **Claude Code**, **Claude (Cowork / desktop)** and **OpenAI Codex**, and any agent that reads the Agent Skills format or `AGENTS.md`.
 
@@ -100,6 +100,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.7, Phase 5: new skills, wave 1). 
 | `learnings-register` | HSE, management | Learnings Register (.md + .xlsx) with recommendations |
 | `causal-map` | investigators, leaders | causal graph and pathway stories |
 | `latent-conditions-profile` | corporate HSE, top management | HFACS heat map, recurring and upstream factors, level 3–4 share |
+| `systemic-accimap` | corporate HSE, site leaders, investigators | AcciMap of the findings on six system levels, government to equipment, with the gaps to confirm |
 | `precursor-timeline` | leaders, auditors | dated weak signals and how they were handled |
 | `failure-to-learn-review` | site leadership, top management, board | which step of the learning cycle broke, and why earlier warnings did not lead to change |
 | `interface-learnings` | managers | what fell between departments |

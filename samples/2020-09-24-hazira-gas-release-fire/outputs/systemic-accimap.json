@@ -1,0 +1,850 @@
+{
+ "pack": "systemic-accimap",
+ "schema": 1,
+ "skill": "systemic-accimap",
+ "title": "Systemic AcciMap: Hazira gas terminal release and fire, 2020",
+ "audience": "Corporate HSE, site leadership and the investigation team",
+ "status": "Learning purposes: not a statutory document; draft: the investigation status is in progress",
+ "incident": {
+  "title": "Hazira gas terminal condensate release and fire",
+  "date": "2020-09-24"
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the ProbeMatrix investigation status is in progress and no finding is marked as edited by a person. Validate before adoption."
+  },
+  {
+   "text": "The export's Causal Chain sheet is empty. The links between codes are counted from the factor codes each finding names in its causal explanation (causal_graph.json)."
+  }
+ ],
+ "bottom_line": [
+  {
+   "text": "The findings reach company management (level 3, 143 findings) and no higher: nothing in the export is placed at the regulator or government levels.",
+   "cites": [
+    "FND-F7FE8463",
+    "FND-B86F67F0",
+    "FND-2A77BAFB"
+   ]
+  },
+  {
+   "text": "Technical and operational management (level 4) is the busiest level, with 166 findings.",
+   "cites": [
+    "FND-257C1100",
+    "FND-137BC719",
+    "FND-89D53630"
+   ]
+  },
+  {
+   "text": "The strongest links across levels run from missing policy and guidance at level 4 (SVI 1.4) down to checklists not followed at level 5 and unclear technical guidance at level 6: 6 mentions each.",
+   "cites": [
+    "FND-257C1100",
+    "FND-D58142C9",
+    "FND-72A7D26C"
+   ],
+   "evidence_strength": "corroborated"
+  }
+ ],
+ "sections": [
+  {
+   "id": "banner",
+   "heading": "Before this map is shared",
+   "items": [
+    {
+     "kind": "para",
+     "text": "Placements above the company level are inferred from codes and departments. A person confirms them before this map is shared."
+    }
+   ]
+  },
+  {
+   "id": "map",
+   "heading": "The AcciMap",
+   "items": [
+    {
+     "kind": "graph",
+     "id": "accimap",
+     "nodes": [
+      {
+       "id": "L1",
+       "label": "L1 Government policy and budgeting (0 findings)"
+      },
+      {
+       "id": "L2",
+       "label": "L2 Regulatory bodies and associations (0 findings)"
+      },
+      {
+       "id": "L3",
+       "label": "L3 Company management (143 findings)",
+       "inferred": true
+      },
+      {
+       "id": "L3-OIC 2.7",
+       "label": "OIC 2.7 Inconsistent Risk Management Practices (19)",
+       "inferred": true
+      },
+      {
+       "id": "L3-OIC 2.1",
+       "label": "OIC 2.1 Organizational Culture Allows for Unsafe Task/Mission (15)",
+       "inferred": true
+      },
+      {
+       "id": "L3-OIP 3.2",
+       "label": "OIP 3.2 Organisational Program/ Policy Risks not Adequately Assessed (15)",
+       "inferred": true
+      },
+      {
+       "id": "L3-OIP 3.6",
+       "label": "OIP 3.6 Inadequate Program Oversight/ Program Management (13)",
+       "inferred": true
+      },
+      {
+       "id": "L4",
+       "label": "L4 Technical and operational management (166 findings)"
+      },
+      {
+       "id": "L4-SVI 1.4",
+       "label": "SVI 1.4 Failed to Provide Appropriate Policy/ Guidance (20)"
+      },
+      {
+       "id": "L4-SVF 3.2",
+       "label": "SVF 3.2 Operations Management (18)"
+      },
+      {
+       "id": "L4-SVF 3.4",
+       "label": "SVF 3.4 Failed to Mitigate/ Ineffective Action against Identified Risk (14)"
+      },
+      {
+       "id": "L4-SVI 1.1",
+       "label": "SVI 1.1 Leadership/Supervisory Oversight Inadequate (14)"
+      },
+      {
+       "id": "L5",
+       "label": "L5 Physical processes and actor activities (76 findings)"
+      },
+      {
+       "id": "L5-ASBE 1.2",
+       "label": "ASBE 1.2 Checklist Not Followed/Not Followed Correctly (6)"
+      },
+      {
+       "id": "L5-AV 1.1",
+       "label": "AV 1.1 Violation - Routine/Widespread (6)"
+      },
+      {
+       "id": "L5-PTF 1.13",
+       "label": "PTF 1.13 Mission Planning (5)"
+      },
+      {
+       "id": "L5-AJDE 2.11",
+       "label": "AJDE 2.11 Misapplied or unaware of existing Policy/Procedure (4)"
+      },
+      {
+       "id": "L6",
+       "label": "L6 Equipment and surroundings (51 findings)"
+      },
+      {
+       "id": "L6-PTE 2.12",
+       "label": "PTE 2.12 Maintenance Not Conducted/Not Conducted Correctly (8)"
+      },
+      {
+       "id": "L6-PTE 2.7",
+       "label": "PTE 2.7 Technical Guidance is Unclear/Unavailable or Incorrect (8)"
+      },
+      {
+       "id": "L6-PTE 2.11",
+       "label": "PTE 2.11 Equipment Not configured Correctly (5)"
+      },
+      {
+       "id": "L6-PTE 2.5",
+       "label": "PTE 2.5 Defective Equipment in Use (5)"
+      }
+     ],
+     "edges": [
+      {
+       "from": "L3",
+       "to": "L3-OIC 2.7",
+       "label": "holds"
+      },
+      {
+       "from": "L3",
+       "to": "L3-OIC 2.1",
+       "label": "holds"
+      },
+      {
+       "from": "L3",
+       "to": "L3-OIP 3.2",
+       "label": "holds"
+      },
+      {
+       "from": "L3",
+       "to": "L3-OIP 3.6",
+       "label": "holds"
+      },
+      {
+       "from": "L4",
+       "to": "L4-SVI 1.4",
+       "label": "holds"
+      },
+      {
+       "from": "L4",
+       "to": "L4-SVF 3.2",
+       "label": "holds"
+      },
+      {
+       "from": "L4",
+       "to": "L4-SVF 3.4",
+       "label": "holds"
+      },
+      {
+       "from": "L4",
+       "to": "L4-SVI 1.1",
+       "label": "holds"
+      },
+      {
+       "from": "L5",
+       "to": "L5-ASBE 1.2",
+       "label": "holds"
+      },
+      {
+       "from": "L5",
+       "to": "L5-AV 1.1",
+       "label": "holds"
+      },
+      {
+       "from": "L5",
+       "to": "L5-PTF 1.13",
+       "label": "holds"
+      },
+      {
+       "from": "L5",
+       "to": "L5-AJDE 2.11",
+       "label": "holds"
+      },
+      {
+       "from": "L6",
+       "to": "L6-PTE 2.12",
+       "label": "holds"
+      },
+      {
+       "from": "L6",
+       "to": "L6-PTE 2.7",
+       "label": "holds"
+      },
+      {
+       "from": "L6",
+       "to": "L6-PTE 2.11",
+       "label": "holds"
+      },
+      {
+       "from": "L6",
+       "to": "L6-PTE 2.5",
+       "label": "holds"
+      },
+      {
+       "from": "L4-SVI 1.1",
+       "to": "L5-ASBE 1.2",
+       "label": "6 mentions"
+      },
+      {
+       "from": "L4-SVI 1.4",
+       "to": "L5-ASBE 1.2",
+       "label": "6 mentions"
+      },
+      {
+       "from": "L4-SVI 1.4",
+       "to": "L6-PTE 2.7",
+       "label": "6 mentions"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L5-AV 1.1",
+       "label": "5 mentions"
+      },
+      {
+       "from": "L3-OIC 2.7",
+       "to": "L5-AJDE 2.11",
+       "label": "5 mentions"
+      },
+      {
+       "from": "L3-OIC 2.7",
+       "to": "L5-ASBE 1.2",
+       "label": "5 mentions"
+      },
+      {
+       "from": "L4-SVI 1.4",
+       "to": "L5-AJDE 2.11",
+       "label": "5 mentions"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L5-ASBE 1.2",
+       "label": "4 mentions"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L4-SVI 1.4",
+       "label": "4 mentions"
+      },
+      {
+       "from": "L3-OIC 2.7",
+       "to": "L5-AV 1.1",
+       "label": "4 mentions"
+      },
+      {
+       "from": "L3-OIC 2.7",
+       "to": "L4-SVI 1.4",
+       "label": "4 mentions"
+      },
+      {
+       "from": "L6-PTE 2.12",
+       "to": "L5-AV 1.1",
+       "label": "4 mentions"
+      },
+      {
+       "from": "L6-PTE 2.7",
+       "to": "L5-ASBE 1.2",
+       "label": "4 mentions"
+      },
+      {
+       "from": "L4-SVF 3.4",
+       "to": "L5-AJDE 2.11",
+       "label": "4 mentions"
+      },
+      {
+       "from": "L4-SVI 1.1",
+       "to": "L5-AV 1.1",
+       "label": "4 mentions"
+      },
+      {
+       "from": "L4-SVI 1.4",
+       "to": "L5-AV 1.1",
+       "label": "4 mentions"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L6-PTE 2.7",
+       "label": "3 mentions"
+      },
+      {
+       "from": "L3-OIC 2.7",
+       "to": "L4-SVF 3.4",
+       "label": "3 mentions"
+      },
+      {
+       "from": "L3-OIP 3.6",
+       "to": "L5-ASBE 1.2",
+       "label": "3 mentions"
+      },
+      {
+       "from": "L6-PTE 2.12",
+       "to": "L5-ASBE 1.2",
+       "label": "3 mentions"
+      },
+      {
+       "from": "L4-SVF 3.4",
+       "to": "L5-ASBE 1.2",
+       "label": "3 mentions"
+      },
+      {
+       "from": "L4-SVF 3.4",
+       "to": "L6-PTE 2.7",
+       "label": "3 mentions"
+      },
+      {
+       "from": "L4-SVI 1.1",
+       "to": "L5-AJDE 2.11",
+       "label": "3 mentions"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L5-AJDE 2.11",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L6-PTE 2.11",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L4-SVF 3.2",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L3-OIC 2.7",
+       "to": "L6-PTE 2.12",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L3-OIC 2.7",
+       "to": "L6-PTE 2.7",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L3-OIP 3.6",
+       "to": "L5-AJDE 2.11",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L3-OIP 3.6",
+       "to": "L5-AV 1.1",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L6-PTE 2.12",
+       "to": "L5-AJDE 2.11",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L6-PTE 2.7",
+       "to": "L5-AV 1.1",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L4-SVF 3.2",
+       "to": "L5-AJDE 2.11",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L4-SVF 3.2",
+       "to": "L5-ASBE 1.2",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L4-SVF 3.2",
+       "to": "L6-PTE 2.11",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L4-SVF 3.2",
+       "to": "L6-PTE 2.7",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L4-SVF 3.4",
+       "to": "L5-AV 1.1",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L4-SVF 3.4",
+       "to": "L6-PTE 2.12",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L4-SVI 1.1",
+       "to": "L6-PTE 2.12",
+       "label": "2 mentions"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L6-PTE 2.12",
+       "label": "1 mention"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L5-PTF 1.13",
+       "label": "1 mention"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L4-SVF 3.4",
+       "label": "1 mention"
+      },
+      {
+       "from": "L3-OIC 2.1",
+       "to": "L4-SVI 1.1",
+       "label": "1 mention"
+      },
+      {
+       "from": "L3-OIC 2.7",
+       "to": "L5-PTF 1.13",
+       "label": "1 mention"
+      },
+      {
+       "from": "L3-OIP 3.6",
+       "to": "L6-PTE 2.11",
+       "label": "1 mention"
+      },
+      {
+       "from": "L3-OIP 3.6",
+       "to": "L6-PTE 2.5",
+       "label": "1 mention"
+      },
+      {
+       "from": "L3-OIP 3.6",
+       "to": "L4-SVI 1.1",
+       "label": "1 mention"
+      },
+      {
+       "from": "L3-OIP 3.6",
+       "to": "L4-SVI 1.4",
+       "label": "1 mention"
+      },
+      {
+       "from": "L6-PTE 2.5",
+       "to": "L5-AV 1.1",
+       "label": "1 mention"
+      },
+      {
+       "from": "L6-PTE 2.7",
+       "to": "L5-AJDE 2.11",
+       "label": "1 mention"
+      },
+      {
+       "from": "L4-SVF 3.2",
+       "to": "L5-AV 1.1",
+       "label": "1 mention"
+      },
+      {
+       "from": "L4-SVF 3.2",
+       "to": "L6-PTE 2.12",
+       "label": "1 mention"
+      },
+      {
+       "from": "L4-SVF 3.2",
+       "to": "L5-PTF 1.13",
+       "label": "1 mention"
+      },
+      {
+       "from": "L4-SVI 1.4",
+       "to": "L6-PTE 2.12",
+       "label": "1 mention"
+      },
+      {
+       "from": "L4-SVI 1.4",
+       "to": "L5-PTF 1.13",
+       "label": "1 mention"
+      }
+     ],
+     "cites": [
+      "FND-031A3738",
+      "FND-05841EDA",
+      "FND-0621F920",
+      "FND-07080447",
+      "FND-119E6CF7",
+      "FND-137BC719",
+      "FND-13E2037D",
+      "FND-14D093BD",
+      "FND-14E2A4B5",
+      "FND-15279F97",
+      "FND-1662466D",
+      "FND-1DF986F8",
+      "FND-257C1100",
+      "FND-267F1E09",
+      "FND-2B53492C",
+      "FND-2EC435D0",
+      "FND-2F5482CD",
+      "FND-2F99FB62",
+      "FND-2FAB8D51",
+      "FND-303495E9",
+      "FND-304A499A",
+      "FND-30C43927",
+      "FND-30EC643B",
+      "FND-314D34C5",
+      "FND-350C35AD",
+      "FND-3746C7B6",
+      "FND-3A34BAD3",
+      "FND-3AB996FC",
+      "FND-3FEE59DF",
+      "FND-4944554C",
+      "FND-4B8F9B10",
+      "FND-4C645CB5",
+      "FND-4F687CC5",
+      "FND-535125C1",
+      "FND-53C9BDB5",
+      "FND-554BFB4A",
+      "FND-5BA62765",
+      "FND-5E08D0F8",
+      "FND-5EA23B17",
+      "FND-611A8BFC",
+      "FND-62EF1667",
+      "FND-675D99DD",
+      "FND-6ECCE231",
+      "FND-71D631C1",
+      "FND-72A7D26C",
+      "FND-72DCEE68",
+      "FND-730D0DCA",
+      "FND-73312E54",
+      "FND-76A6DEC1",
+      "FND-784A23E4",
+      "FND-78ED8552",
+      "FND-7D28BE30",
+      "FND-7F829BEB",
+      "FND-81E3EEA0",
+      "FND-82673283",
+      "FND-82FC718D",
+      "FND-83AD4621",
+      "FND-856F80CE",
+      "FND-89D53630",
+      "FND-904FCA63",
+      "FND-9174A5B0",
+      "FND-922A04DB",
+      "FND-96DB7E93",
+      "FND-97325867",
+      "FND-9E1AB5BA",
+      "FND-9F27F129",
+      "FND-A1F9AC94",
+      "FND-A2048FB8",
+      "FND-A3D2773A",
+      "FND-ADF96860",
+      "FND-AE60859C",
+      "FND-B6C89A9C",
+      "FND-B86F67F0",
+      "FND-B93AE333",
+      "FND-C2B4989C",
+      "FND-C4842890",
+      "FND-C4B133AA",
+      "FND-C9C77FB7",
+      "FND-CDE8E62D",
+      "FND-CEE3D4D7",
+      "FND-D14B8424",
+      "FND-D1709E71",
+      "FND-D45021AD",
+      "FND-D5242E3B",
+      "FND-D58142C9",
+      "FND-D5A1CDD9",
+      "FND-D95B00BD",
+      "FND-DA67926D",
+      "FND-DF1144C3",
+      "FND-EB48C68C",
+      "FND-EBB66554",
+      "FND-EFC192D7",
+      "FND-F7FE8463",
+      "FND-FD98468B",
+      "FND-FDFA6FF5",
+      "FND-FFE174D0"
+     ],
+     "lint_ok": {
+      "rule": "JC3",
+      "reason": "HFACS code names in the node labels, quoted verbatim from the export"
+     }
+    }
+   ]
+  },
+  {
+   "id": "levels",
+   "heading": "Findings at each level",
+   "items": [
+    {
+     "kind": "table",
+     "id": "accimap-levels",
+     "columns": [
+      "Level",
+      "Name",
+      "Findings",
+      "Placement"
+     ],
+     "rows": [
+      [
+       "L3",
+       "Company management",
+       143,
+       "inferred"
+      ],
+      [
+       "L4",
+       "Technical and operational management",
+       166,
+       "from the HFACS level"
+      ],
+      [
+       "L5",
+       "Physical processes and actor activities",
+       76,
+       "from the HFACS level"
+      ],
+      [
+       "L6",
+       "Equipment and surroundings",
+       51,
+       "from the HFACS level"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-01C3DE98",
+       "FND-02310148",
+       "FND-044D1DEC",
+       "FND-05841EDA",
+       "FND-119E6CF7"
+      ],
+      [
+       "FND-0B35D995",
+       "FND-110F964C",
+       "FND-137BC719",
+       "FND-15B4E60F",
+       "FND-1D61DC3A"
+      ],
+      [
+       "FND-15279F97",
+       "FND-20217957",
+       "FND-212DC9B7",
+       "FND-28F8790B",
+       "FND-2FAB8D51"
+      ],
+      [
+       "FND-01ADF0AA",
+       "FND-1662466D",
+       "FND-31405D96",
+       "FND-4C645CB5",
+       "FND-54180594"
+      ]
+     ],
+     "cites": [
+      "FND-01ADF0AA",
+      "FND-01C3DE98",
+      "FND-02310148",
+      "FND-044D1DEC",
+      "FND-05841EDA",
+      "FND-0B35D995",
+      "FND-110F964C",
+      "FND-119E6CF7",
+      "FND-137BC719",
+      "FND-15279F97",
+      "FND-15B4E60F",
+      "FND-1662466D",
+      "FND-1D61DC3A",
+      "FND-20217957",
+      "FND-212DC9B7",
+      "FND-28F8790B",
+      "FND-2FAB8D51",
+      "FND-31405D96",
+      "FND-4C645CB5",
+      "FND-54180594"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "gaps",
+   "heading": "Levels the export does not reach",
+   "items": [
+    {
+     "kind": "para",
+     "text": "Level 1 (Government policy and budgeting) and level 2 (Regulatory bodies and associations) have no placements. No finding is tagged to a regulator, and the default rules place nothing at government level. The nearest findings are at level 3: external-audit recommendations extended without the required approval. An empty level is a question for the organisation, not a finding that nobody there contributed.",
+     "cites": [
+      "FND-2A77BAFB",
+      "FND-81AAC878",
+      "FND-856F80CE"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "learnings",
+   "heading": "What the wider system shows",
+   "items": [
+    {
+     "kind": "learning",
+     "lesson": "The management-of-change procedure existed at company level but was not in use, so part and material substitutions reached the work site with no review.",
+     "explanation": "Two company-level codes carry it down the map: OIC 2.1 links to routine violations at level 5 (5 mentions) and OIC 2.7 to misapplied procedures at level 5 (5 mentions). The procedure was published in 2016 and no change was put through it after 2018 [EVD-2986].",
+     "learning": "LR-06",
+     "cites": [
+      "FND-F7FE8463",
+      "FND-3FEE59DF",
+      "FND-B86F67F0",
+      "EVD-2986"
+     ],
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "learning",
+     "lesson": "No procedure for calibrating high-pressure meters and returning them to service existed at the operational management level, so the work at the meter had no checklist or test to follow.",
+     "explanation": "SVI 1.4 at level 4 links to checklists not followed at level 5 and to unclear technical guidance at level 6, 6 mentions each. The gasket was replaced and the meter returned to service with no test above operating pressure [EVD-2894].",
+     "learning": "LR-02",
+     "cites": [
+      "FND-257C1100",
+      "FND-137BC719",
+      "FND-D58142C9",
+      "EVD-2894"
+     ],
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Safety audits at company level used generic checklists, so assurance could not see plant-specific conditions at the work site.",
+     "explanation": "OIC 2.7 at level 3 links to checklists not followed at level 5 (5 mentions), and supervisory oversight at level 4 (SVI 1.1) to the same code (6 mentions). The 2018 and 2019 internal audits kept no filled checklists [EVD-7681].",
+     "learning": "LR-20",
+     "cites": [
+      "FND-C9C77FB7",
+      "FND-5BA62765",
+      "FND-B93AE333",
+      "EVD-7681"
+     ],
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "learning",
+     "lesson": "Company practice for known problems shaped the equipment level: repeat failures of the same seal stayed routine repairs, not a reliability warning.",
+     "explanation": "OIC 2.1 at level 3 and maintenance at level 6 (PTE 2.12) both link to routine violations at level 5 (5 and 4 mentions). The seal was replaced three times in 22 months [EVD-1494].",
+     "learning": "LR-05",
+     "cites": [
+      "FND-82FC718D",
+      "FND-350C35AD",
+      "EVD-1494"
+     ],
+     "evidence_strength": "corroborated"
+    },
+    {
+     "kind": "learning",
+     "lesson": "The company's emergency plan named the major-leak scenario but gave no isolation criteria, and the gap carried through the operational guidance to the people responding.",
+     "explanation": "OIC 2.1 and OIC 2.7 at level 3 each link to SVI 1.4 at level 4 (4 mentions each), and SVI 1.4 links to unclear technical guidance at level 6. The plan covered leaks but not isolation or stoppage [EVD-4052].",
+     "learning": "LR-07",
+     "cites": [
+      "FND-730D0DCA",
+      "FND-DF1144C3",
+      "FND-4F687CC5",
+      "EVD-4052"
+     ],
+     "evidence_strength": "corroborated"
+    }
+   ]
+  },
+  {
+   "id": "confirm",
+   "heading": "For a person to confirm",
+   "items": [
+    {
+     "kind": "question",
+     "question": "Is level 3 (company management) right for the 143 findings placed there, and which decisions were taken at corporate rather than at site level?",
+     "why": "Level 3 is inferred: 134 findings come from HFACS level 4 codes and 9 from corporate and vendor tags, not from what the export says about who decided.",
+     "good_evidence": "Corporate HSE standards, management committee minutes and the delegation of authority for maintenance and change",
+     "cites": [
+      "FND-01C3DE98",
+      "FND-02310148",
+      "FND-044D1DEC"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "Should the seven vendor findings stay at level 3, including the lost P&ID drawing that the HFACS codes put at levels 2 and 3?",
+     "why": "The vendor tag moves a finding to level 3 whatever its HFACS level, so these placements are inferred.",
+     "good_evidence": "The vendor contract and the drawing approval record for the metering skid",
+     "cites": [
+      "FND-72DCEE68",
+      "FND-82687B50",
+      "FND-EBB66554"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "Did the regulator's inspections, approvals or audit follow-up play a part at level 2 (regulatory bodies and associations)?",
+     "why": "Level 2 is a gap: no finding is tagged to a regulator, so the map is empty there. The export also mentions regulator involvement while it records the incident as not reportable.",
+     "good_evidence": "Statutory inspection and approval records for the terminal, and the regulator's correspondence on the external audit",
+     "cites": [
+      "FND-2A77BAFB",
+      "FND-81AAC878"
+     ]
+    },
+    {
+     "kind": "question",
+     "question": "Did any government policy or budget decision shape the conditions at level 1 (government policy and budgeting)?",
+     "why": "Level 1 has no placement rule, so it stays empty unless the organisation adds what it knows.",
+     "good_evidence": "Policy or budget documents the organisation names; they are outside this export",
+     "cites": [
+      "FND-044D1DEC",
+      "FND-02310148"
+     ]
+    }
+   ]
+  }
+ ]
+}

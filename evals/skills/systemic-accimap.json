@@ -1,0 +1,64 @@
+{
+ "evals": [
+  {
+   "id": 1201,
+   "owner": "systemic-accimap",
+   "skill": "systemic-accimap",
+   "kind": "trigger",
+   "prompt": "From this ProbeMatrix export of the Hazira release (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), draw me an AcciMap in the Rasmussen style: which findings belong to government, the regulator, the company, operational management, the work and the equipment, and which of those levels the investigation never reached.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "systemic-accimap"},
+    {"type": "check_pack_ok", "pack": "systemic-accimap"},
+    {"type": "language_clean", "pack": "systemic-accimap"},
+    {"type": "section_exists", "pack": "systemic-accimap", "section": "confirm"},
+    {"type": "routes_to", "skill": "systemic-accimap"}
+   ]
+  },
+  {
+   "id": 1202,
+   "owner": "systemic-accimap",
+   "skill": null,
+   "not_skill": "systemic-accimap",
+   "kind": "no-trigger",
+   "prompt": "Draw an organisation chart of our site from this HR spreadsheet, from the plant head down to the shift crews, for the induction pack.",
+   "files": [],
+   "expectations": [
+    {"type": "routes_to", "skill": null}
+   ]
+  },
+  {
+   "id": 1203,
+   "owner": "systemic-accimap",
+   "skill": "systemic-accimap",
+   "sibling": "causal-map",
+   "kind": "collision",
+   "prompt": "Using the ProbeMatrix export of the Hazira fire (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), I don't want the cause-and-effect stories one by one. Lay the causes out by layer of the wider system, from public authorities and the regulator down to the plant hardware, and show which layers are empty.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "systemic-accimap"},
+    {"type": "check_pack_ok", "pack": "systemic-accimap"},
+    {"type": "language_clean", "pack": "systemic-accimap"},
+    {"type": "pack_absent", "pack": "causal-map"},
+    {"type": "routes_to", "skill": "systemic-accimap"}
+   ]
+  },
+  {
+   "id": 1204,
+   "owner": "learnings-coach",
+   "sibling": "latent-conditions-profile",
+   "kind": "router",
+   "prompt": "Here is our ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). The group safety director asked how much of this sits with the regulator and head office rather than the terminal itself, laid out on a Rasmussen map she can put on the wall.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "routes_to", "value": "systemic-accimap"}
+   ]
+  }
+ ]
+}

@@ -11,6 +11,7 @@ Source: Wiegmann & Shappell's HFACS, as adapted by ProbeMatrix. The level and su
 4. Spotting a finding at the wrong level
 5. Causal direction
 6. The name: HFACS or HFMAP
+7. AcciMap levels above the company
 
 ## 1. The four levels
 
@@ -74,3 +75,9 @@ The convention in every Learnings Coach output: the higher level enables the low
 ## 6. The name: HFACS or HFMAP
 
 The export's `Analysis Statistics` sheet labels the levels "HFMAP Level". It is a label for the same four HFACS-based levels used everywhere else in the export, not a different framework. In outputs, call the method "HFACS-based (Human Factors Analysis and Classification System)" and do not use "HFMAP" in audience-facing text.
+
+## 7. AcciMap levels above the company
+
+Rasmussen's AcciMap lays the same causes out on six levels of the wider system: 1 government policy and budgeting, 2 regulatory bodies and associations, 3 company management, 4 technical and operational management, 5 physical processes and actor activities, 6 equipment and surroundings. Salmon, Cornelissen and Trotter (2012, "Systems-based accident analysis methods: a comparison of Accimap, HFACS, and STAMP", *Safety Science* 50(4)) compare it with HFACS: HFACS classifies causes inside the organisation, while AcciMap also asks what the regulators and government did, and both read causes as the higher level enabling the lower.
+
+`PMLC accimap` places each finding by the rules in `accimap.json`: the regulator entity (F15) at level 2; corporate and board (F14), vendors (F16) and contractors (F17) at level 3; then HFACS level 4 at 3, level 3 at 4, a level 2 technological or physical environment finding at 6, any other level 2 and every level 1 finding at 5. An HFACS export rarely says anything about levels 1 and 2, so they are often empty, and every placement at levels 1 to 3 is inferred from codes and departments: a person confirms it before the map is shared. An empty level is a question for the organisation ("what did the regulator's inspections look at?"), never a finding that nobody there contributed.
