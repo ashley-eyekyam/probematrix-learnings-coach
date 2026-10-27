@@ -63,6 +63,7 @@ MODULES = [
     "pmlc_lib.ninem",
     "pmlc_lib.ninem_session",
     "pmlc_lib.missed",
+    "pmlc_lib.alert",
     "pmlc_lib.cli",
 ]
 PACK_MODULES = ["pmlc_lib.pack.profiles", "pmlc_lib.pack.schema", "pmlc_lib.pack.graph_layout", "pmlc_lib.pack.items",

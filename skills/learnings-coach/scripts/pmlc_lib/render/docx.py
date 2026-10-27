@@ -26,7 +26,7 @@ from ..pack.schema import cited_ids, TOP_PRINT_LINE
 from ..register.check import norm_hoc
 from . import LEARNER_BANNER, Output, output_name, READING_TIME, register, translation_lines
 from .fields import item_blocks, reading_minutes
-from .labels import label, load_labels, LOCALE_RX, text_dir
+from .labels import grade_line, label, load_labels, LOCALE_RX, text_dir
 from .ooxml import app_props, content_types, core_props, rels, xml_text, zip_bytes
 
 # The block kinds write_docx takes. The first seven are the contract's; "note" (a Caption line) and "pagebreak"
@@ -571,8 +571,10 @@ def _dx_item(it, L, inc_date, lead="") -> list:
 def _dx_head(ctx, L, pack) -> list:
     """The title block: title, status line, learner banner, translation note, DRAFT, handling lines, reading time,
     audience and incident."""
-    out = [("title", str(pack.get("title", pack.get("pack", ""))), None),
-           ("status", status_line(pack.get("status", "")), None)]
+    out = [("title", str(pack.get("title", pack.get("pack", ""))), None)]
+    if grade_line(pack, L):                                     # Phase 6: the alert grade, under the title
+        out.append(("para", [(grade_line(pack, L), "b")], None))
+    out.append(("status", status_line(pack.get("status", "")), None))
     if ctx.view == "learner":
         out.append(("status", LEARNER_BANNER, None))
     out += [("status", x, None) for x in translation_lines(pack)]

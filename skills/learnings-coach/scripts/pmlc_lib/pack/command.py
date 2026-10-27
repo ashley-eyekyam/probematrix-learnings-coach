@@ -8,8 +8,10 @@ from pathlib import Path
 
 from ..dashboard.data import embedded_records, print_witness_note, resolve_embed
 from ..ninem_session import NINE_M_MAP_FILE, NINE_M_PACK, nine_m_map, read_session
-from ..handling import effective_handling, name_guard, share_ctx, share_gate, shared_copy, SHARED_LINE, shared_name
+from ..handling import (effective_handling, name_guard, share_ctx, share_gate, share_mode, shared_copy, SHARED_LINE,
+                        shared_name)
 from ..pack.html import follow_up, update_gaps
+from ..pack.profiles import BANNERS
 from ..pack.schema import _checked as _pack_checked, embedded_ids, record_check, with_item_ids
 from ..render import build_date, DEFAULT_FORMATS, render, RenderContext
 from ..render.brand import load_brand, shared_brand
@@ -19,6 +21,28 @@ from ..workspace import is_standard_ws, outputs_dir, warn_stale
 
 PAPER_IGNORED = "--paper applies to --layout cards only; ignored"
 WRITTEN_AS = {"html": "HTML", "md": "Markdown"}          # the v1 "<what> written to <path>" lines
+INDUSTRY_NEEDS_PUBLIC = "an industry alert is shared with --share public"
+REVIEW_COPY_ID = "alert-review-copy"
+
+
+def review_copy_needed(pack, share_mode) -> bool:
+    """P6-4: a sister-site pack written without --share external|public, or an industry pack written without --share
+    public, is a review copy: every format opens with BANNERS["alert-review-copy"]."""
+    mode = pack.get("mode") if isinstance(pack, dict) else None
+    if mode == "sister-site":
+        return share_mode not in ("external", "public")
+    if mode == "industry":
+        return share_mode != "public"
+    return False
+
+
+def with_review_copy(pack) -> dict:
+    """The render copy of a pack with the review-copy banner as the first item of its first section. The caller passes
+    a copy (with_item_ids makes one): the pack JSON on disk is never changed."""
+    secs = pack.get("sections") or []
+    if secs:
+        secs[0]["items"].insert(0, {"kind": "para", "id": REVIEW_COPY_ID, "text": BANNERS["alert-review-copy"]})
+    return pack
 
 
 def pack_formats(a) -> list:
@@ -32,6 +56,8 @@ def cmd_pack(a):
     masked copies of the pack and the workspace. In any mode the name guard runs over every output before anything
     is written."""
     w, pack, res = _pack_checked(a, record_ok=False)
+    if pack.get("mode") == "industry" and share_mode(a) == "external":      # P6-4: before the share gate's reasons
+        sys.exit(INDUSTRY_NEEDS_PUBLIC)
     warn_stale(a.ws)
     mode = share_gate(pack, w, a, src=a.pack, ws=a.ws)
     record_check(a, pack, res, w)                                  # only now: a refused share records nothing
@@ -41,7 +67,8 @@ def cmd_pack(a):
     eh = effective_handling(pack, w, src=a.pack, ws=a.ws)        # on the unmasked pack, before ids are filled in
     share = share_ctx(a, w, mode) if mode != "internal" else None
     rw, rpack = (shared_copy(w, share, w), shared_copy(pack, share, w)) if share else (w, pack)
-    ctx = RenderContext(w=rw, pack=with_item_ids(rpack), run=run, generated=build_date(), embed=embed, eh=eh,
+    rp = with_item_ids(rpack)
+    ctx = RenderContext(w=rw, pack=with_review_copy(rp) if review_copy_needed(pack, mode) else rp, run=run, generated=build_date(), embed=embed, eh=eh,
                         share=share, brand=shared_brand(load_brand(a.brand), share) if getattr(a, "brand", None) else None,
                         view=getattr(a, "view", None) or "full", src=Path(a.pack),
                         start=getattr(a, "start", None))

@@ -441,6 +441,9 @@ def render_pack_html(w, pack, run, generated, embed=EMBED_DEFAULT, eh=None, shar
     meta = " · ".join(_h(x) for x in (pack["audience"], *lens, inc.get("title") or fields.get("Incident Title"),
                                       inc.get("date") or fields.get("Date"), *trace) if x)
     title = _h(pack["title"])
+    from ..render.labels import grade_line
+    gl = grade_line(pack, _ph_labels(L))                        # Phase 6: the alert grade, a badge under the title
+    grade = f'<p class="m grade"><span class="badge">{_h(gl)}</span></p>\n' if gl else ""
     status = _h(status_line(pack["status"]))
     from ..render import translation_lines                     # late: render imports this module's renderer
     translation = "".join(f'<p class="status translation">{_h(x)}</p>\n' for x in translation_lines(pack))
@@ -470,7 +473,7 @@ footer{{margin-top:40px;color:var(--mut);font-size:12px;border-top:1px solid var
 {css}{brand_style}
 </style></head><body><a class="skip" href="#content">{t("ui.html.skip")}</a><main>
 {ribbon}{brand_id}<h1>{title}</h1>
-<p class="m">{meta}</p>
+{grade}<p class="m">{meta}</p>
 <p class="m reading">{reading}</p>
 <p class="status">{status}</p>
 {translation}{handling}

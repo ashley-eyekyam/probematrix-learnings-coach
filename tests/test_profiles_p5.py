@@ -83,7 +83,7 @@ def test_no_owner_due_needs_the_rule(w, monkeypatch):
 
 def test_banner_rule(w, monkeypatch):
     assert profiles.BANNERS["crosswalk"] == "Aid to assurance, not a compliance opinion."
-    assert set(profiles.BANNERS) == {"crosswalk", "people", "risk", "evidence", "profile-limits", "nine-m-demo"}
+    assert {"crosswalk", "people", "risk", "evidence", "profile-limits", "nine-m-demo"} <= set(profiles.BANNERS)  # + P6
     with_profile(monkeypatch, dict(PROF, rules=["banner:crosswalk"]))
     res = pp.check_pack(pack_with(item("para", text="Something else.")), w)
     assert [x for x in res.warnings if "banner" in x and "crosswalk" in x], res.warnings

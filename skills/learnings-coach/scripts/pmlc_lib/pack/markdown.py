@@ -341,7 +341,9 @@ def render_pack_md(pack, w, eh=None, share=None, labels=None) -> str:
     inc_date = _pack_incident_date(pack, w)
     eh = eh or effective_handling(pack, w)
     cov = coverage(w, pack)
-    out = [f"# {pack['title']}"] + ([f"**{DRAFT_LABEL}**"] if is_draft(eh) else [])
+    from ..render.labels import grade_line
+    gl = grade_line(pack, _pm_labels(L))                        # Phase 6: the alert grade, under the title
+    out = [f"# {pack['title']}"] + ([f"**{gl}**"] if gl else []) + ([f"**{DRAFT_LABEL}**"] if is_draft(eh) else [])
     from ..render import translation_lines                     # late: render imports this module's renderer
     out += _handling_lines(eh, share) + [f"*{status_line(pack['status'])}*"] + [f"*{x}*" for x in translation_lines(pack)]
     out += [f"*{t('ui.reading_time', n=reading_minutes(pack))}*", f"**{t('f.audience')}:** {pack['audience']}"]

@@ -22,7 +22,7 @@ from ..pack.schema import ID_RX, TOP_PRINT_LINE
 from ..workspace import incident_date
 from . import LEARNER_BANNER, Output, output_name, register, translation_lines
 from .fields import item_blocks, item_text
-from .labels import label, load_labels, LOCALE_RX, text_dir
+from .labels import grade_line, label, load_labels, LOCALE_RX, text_dir
 from .ooxml import app_props, content_types, core_props, rels, XML_DECL, xml_text, zip_bytes
 
 PX_SLIDE_W, PX_SLIDE_H = 12192000, 6858000              # 16:9, in EMU (P4-25)
@@ -272,6 +272,8 @@ def _px_cover(deck: _PxDeck, pack: dict) -> None:
     brand = ctx.brand
     if brand is not None and brand.organisation:
         lines.append((brand.organisation, "bold"))
+    if grade_line(pack, L):                                     # Phase 6: the alert grade, under the title
+        lines.append((grade_line(pack, L), "bold"))
     lines.append((f"{label(L, 'f.audience')}: {pack.get('audience', '')}", "line"))
     fields, inc = (w.get("incident") or {}).get("fields") or {}, pack.get("incident") or {}
     shown = [str(x) for x in (inc.get("title") or fields.get("Incident Title"), inc.get("date") or fields.get("Date"))
