@@ -225,4 +225,4 @@ This pack cites 42 of 150 relevant findings.
 
 42 of 150 top-rated relevant findings cited.
 
-> Generated with ProbeMatrix Learnings Coach v2.0.0a7 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a8 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

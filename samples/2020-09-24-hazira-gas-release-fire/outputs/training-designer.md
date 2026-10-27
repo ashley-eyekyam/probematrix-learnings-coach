@@ -356,4 +356,4 @@ This pack cites 104 of 435 relevant findings.
 Left out on purpose:
 - FND-44219027: Left out of the Learnings Register after a reviewer downgrade vote; the vote is recorded in the register's source note, not in this export. Left out here for the same reason.
 
-> Generated with ProbeMatrix Learnings Coach v2.0.0a7 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a8 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com

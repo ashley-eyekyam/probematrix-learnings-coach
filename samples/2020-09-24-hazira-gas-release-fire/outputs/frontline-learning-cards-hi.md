@@ -367,4 +367,4 @@ This pack cites 94 of 226 relevant findings.
 जानबूझकर छोड़े गए:
 - FND-44219027: रिव्यू करने वाले के डाउनग्रेड वोट के बाद यह सीख रजिस्टर से बाहर रखा गया; वोट रजिस्टर के स्रोत नोट में दर्ज है, इस एक्सपोर्ट में नहीं। इसी कारण यहाँ भी बाहर रखा गया।
 
-> Generated with ProbeMatrix Learnings Coach v2.0.0a7 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
+> Generated with ProbeMatrix Learnings Coach v2.0.0a8 (open source, MIT) from a ProbeMatrix four-level human-factors investigation. ProbeMatrix by Eyekyam: ashley@eyekyam.com
