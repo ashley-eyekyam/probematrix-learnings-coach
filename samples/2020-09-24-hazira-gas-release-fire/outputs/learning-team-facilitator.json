@@ -1,0 +1,527 @@
+{
+ "pack": "learning-team-facilitator",
+ "schema": 1,
+ "skill": "learning-team-facilitator",
+ "title": "Learning Team Session: the meter seal job and return to service, Hazira 2020",
+ "audience": "A learning-team facilitator who did not investigate, and the people who do the meter seal work: mechanical maintenance fitters, an instrument technician, a gas-terminal field operator and a stores clerk",
+ "status": "Learning purposes: not a statutory document; draft: the investigation status is in progress",
+ "incident": {
+  "title": "Hazira gas terminal condensate release and fire",
+  "date": "2020-09-24"
+ },
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the ProbeMatrix investigation status is in progress and no finding is marked as edited by a person. Validate before the session."
+  },
+  {
+   "text": "Scope chosen for this worked example: one activity, the gasket replacement on condensate meter 310FT01 and its return to service. The gap rows are the HFACS codes of the ten prompts kept, as printed by wai-wad; the ten prompts are the seal-job prompts among the 30 top-rated, with the topic after the colon shortened to the condition.",
+   "cites": [
+    "FND-1A251687",
+    "FND-4EDE038A",
+    "FND-45363DCA",
+    "FND-42BEF461",
+    "FND-2FAB8D51",
+    "FND-28F8790B",
+    "FND-137BC719",
+    "FND-4944554C",
+    "FND-1662466D",
+    "FND-212DC9B7"
+   ]
+  },
+  {
+   "text": "Who is in the room is the user's answer, by role only. The team's answers belong in learning-team-notes.csv, which the team fills in; this pack holds none."
+  }
+ ],
+ "bottom_line": [
+  {
+   "text": "For the meter seal job, the documents and the people's accounts describe different work: the session asks the fitters and operators how the job is really done, from the part to the test.",
+   "cites": [
+    "FND-45363DCA",
+    "FND-4944554C",
+    "FND-137BC719"
+   ]
+  },
+  {
+   "text": "Start with the repeat reseals: three recorded gasket jobs in 22 months, each closed as routine.",
+   "cites": [
+    "FND-1A251687",
+    "FND-4EDE038A"
+   ],
+   "learning": "LR-05"
+  },
+  {
+   "text": "Then return to service: what an operating-pressure test meant on the shift, when no procedure asked for a test to design pressure.",
+   "cites": [
+    "FND-4944554C",
+    "FND-212DC9B7"
+   ],
+   "learning": "LR-02"
+  }
+ ],
+ "sections": [
+  {
+   "id": "banner",
+   "heading": "About this session",
+   "items": [
+    {
+     "kind": "para",
+     "text": "The team supplies the answers. These are questions, not findings about people."
+    }
+   ]
+  },
+  {
+   "id": "wai-wad",
+   "heading": "Work as imagined and work as done",
+   "items": [
+    {
+     "kind": "table",
+     "id": "wai-wad-gaps-table",
+     "columns": [
+      "Code",
+      "Name",
+      "Document evidence",
+      "Work-as-done evidence"
+     ],
+     "rows": [
+      [
+       "AJDE 2.7",
+       "Delayed a Necessary Action",
+       "EVD-2894, EVD-4052, EVD-5527, EVD-8307",
+       "EVD-0185, EVD-0591, EVD-6414, EVD-8213, EVD-9612"
+      ],
+      [
+       "AV 1.1",
+       "Violation - Routine/Widespread",
+       "EVD-0933, EVD-1494, EVD-2894, EVD-3452, EVD-8645",
+       "EVD-0185, EVD-0591, EVD-1284, EVD-2506, EVD-8657"
+      ],
+      [
+       "OIR 1.6",
+       "Failure in Maintenance/ Spares/ Support Programme",
+       "EVD-0933, EVD-1494, EVD-2397, EVD-2894, EVD-5105, EVD-5527, EVD-8287, EVD-8307, EVD-9999",
+       "EVD-0185, EVD-0591, EVD-2432, EVD-2506"
+      ],
+      [
+       "PTE 2.5",
+       "Defective Equipment in Use",
+       "EVD-1494, EVD-2894, EVD-8645",
+       "EVD-0591, EVD-2432, EVD-6470, EVD-9587"
+      ],
+      [
+       "PTF 1.13",
+       "Mission Planning",
+       "EVD-1494, EVD-2894, EVD-3932, EVD-4052, EVD-8645, EVD-9692",
+       "EVD-0591, EVD-6414, EVD-9612"
+      ],
+      [
+       "PTF 1.5",
+       "Team Roles/ Responsibilities not Allocated or Understood",
+       "EVD-2894, EVD-4052, EVD-5105, EVD-8645",
+       "EVD-0591, EVD-2506, EVD-7340, EVD-9612"
+      ],
+      [
+       "SVF 3.1",
+       "Personnel Management",
+       "EVD-1494, EVD-7681, EVD-8645, EVD-9692, EVD-9999",
+       "EVD-2506"
+      ],
+      [
+       "SVI 1.4",
+       "Failed to Provide Appropriate Policy/ Guidance",
+       "EVD-0933, EVD-2894, EVD-2986, EVD-3452, EVD-4052, EVD-5105, EVD-5634, EVD-7681, EVD-8287, EVD-8645, EVD-9692, EVD-9999",
+       "EVD-2506, EVD-8657"
+      ],
+      [
+       "SVI 1.6",
+       "Lack of Supervisory Response to Critical Information",
+       "EVD-1494, EVD-2397, EVD-5527, EVD-6852, EVD-8645",
+       "EVD-0185, EVD-0591, EVD-2506, EVD-6414, EVD-7340, EVD-9612"
+      ],
+      [
+       "SVIO 2.5",
+       "Authorised Unnecessary Hazard",
+       "EVD-1494, EVD-2397, EVD-2894, EVD-5634, EVD-8645",
+       "EVD-0185"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-20217957",
+       "FND-212DC9B7",
+       "FND-6D307E93"
+      ],
+      [
+       "FND-4944554C",
+       "FND-91B45FF9",
+       "FND-0BA85877",
+       "FND-3D785319",
+       "FND-56C66B96"
+      ],
+      [
+       "FND-1A251687",
+       "FND-50C7319E",
+       "FND-ABF11182",
+       "FND-0B651843",
+       "FND-4DAC9500"
+      ],
+      [
+       "FND-1662466D",
+       "FND-69067A1C",
+       "FND-C7F16268",
+       "FND-6163C9EB",
+       "FND-B6BB0738"
+      ],
+      [
+       "FND-2FAB8D51",
+       "FND-500E0B2D",
+       "FND-48967DB2",
+       "FND-A19F3D9C",
+       "FND-AC8FBB26"
+      ],
+      [
+       "FND-28F8790B",
+       "FND-8DAFDADC",
+       "FND-C59DCD29"
+      ],
+      [
+       "FND-45363DCA",
+       "FND-76BE46EF",
+       "FND-C2CB60DC",
+       "FND-D4BB5251"
+      ],
+      [
+       "FND-137BC719",
+       "FND-257C1100",
+       "FND-4D7CF773",
+       "FND-4F687CC5",
+       "FND-72A7D26C"
+      ],
+      [
+       "FND-110F964C",
+       "FND-4EDE038A",
+       "FND-5F3E97E1",
+       "FND-C92C29DB",
+       "FND-1D713648"
+      ],
+      [
+       "FND-42BEF461",
+       "FND-5919B328",
+       "FND-ABDADA0C",
+       "FND-E44E0EDA"
+      ]
+     ],
+     "cites": [
+      "FND-0B651843",
+      "FND-0BA85877",
+      "FND-110F964C",
+      "FND-137BC719",
+      "FND-1662466D",
+      "FND-1A251687",
+      "FND-1D713648",
+      "FND-20217957",
+      "FND-212DC9B7",
+      "FND-257C1100",
+      "FND-28F8790B",
+      "FND-2FAB8D51",
+      "FND-3D785319",
+      "FND-42BEF461",
+      "FND-45363DCA",
+      "FND-48967DB2",
+      "FND-4944554C",
+      "FND-4D7CF773",
+      "FND-4DAC9500",
+      "FND-4EDE038A",
+      "FND-4F687CC5",
+      "FND-500E0B2D",
+      "FND-50C7319E",
+      "FND-56C66B96",
+      "FND-5919B328",
+      "FND-5F3E97E1",
+      "FND-6163C9EB",
+      "FND-69067A1C",
+      "FND-6D307E93",
+      "FND-72A7D26C",
+      "FND-76BE46EF",
+      "FND-8DAFDADC",
+      "FND-91B45FF9",
+      "FND-A19F3D9C",
+      "FND-ABDADA0C",
+      "FND-ABF11182",
+      "FND-AC8FBB26",
+      "FND-B6BB0738",
+      "FND-C2CB60DC",
+      "FND-C59DCD29",
+      "FND-C7F16268",
+      "FND-C92C29DB",
+      "FND-D4BB5251",
+      "FND-E44E0EDA"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "HFACS code names are taxonomy headings, not statements about people."
+      },
+      {
+       "rule": "JC5",
+       "reason": "HFACS code names are taxonomy headings, not statements about people."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "prompts",
+   "heading": "Questions for the team",
+   "items": [
+    {
+     "kind": "question",
+     "id": "wai-wad-prompt-10",
+     "question": "What made sense at the time about this condition: the gasket on meter 310FT01 kept leaking and was resealed each time as a routine job, with no OEM spares, root-cause review or replacement programme?",
+     "why": "The export's wording is counterfactual: \"failed to\", \"would have\", \"did not\"",
+     "cites": [
+      "FND-1A251687"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "The why line quotes the export's own wording; the question itself is screened."
+      }
+     ]
+    },
+    {
+     "kind": "question",
+     "id": "wai-wad-prompt-30",
+     "question": "What made sense at the time about this condition: three SAP-recorded gasket failures on 310FT01 in 22 months, and the same O-ring type reinstalled in September 2020?",
+     "why": "The export's wording is counterfactual: \"failure to\", \"lack of\"",
+     "cites": [
+      "FND-4EDE038A"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "The why line quotes the export's own wording; the question itself is screened."
+      }
+     ]
+    },
+    {
+     "kind": "question",
+     "id": "wai-wad-prompt-27",
+     "question": "What made sense at the time about this condition: locally purchased O-rings used in place of the lost OEM rectangular-slot gasket specification, across three replacements in 22 months?",
+     "why": "The export's wording is counterfactual: \"failure to\", \"were not\"",
+     "cites": [
+      "FND-45363DCA"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "The why line quotes the export's own wording; the question itself is screened."
+      }
+     ]
+    },
+    {
+     "kind": "question",
+     "id": "wai-wad-prompt-25",
+     "question": "What made sense at the time about this condition: a round, locally purchased O-ring becoming the regular seal for a rectangular-slot meter flange?",
+     "why": "The export's wording is counterfactual: \"lack of\"",
+     "cites": [
+      "FND-42BEF461"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "The why line quotes the export's own wording; the question itself is screened."
+      }
+     ]
+    },
+    {
+     "kind": "question",
+     "id": "wai-wad-prompt-15",
+     "question": "What made sense at the time about this condition: the 18 September 2020 gasket job planned without the OEM specification, a part quality check, a hydrostatic test or notification closure?",
+     "why": "The export's wording is counterfactual: \"would have\", \"was not\", \"were not\"",
+     "cites": [
+      "FND-2FAB8D51"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "The why line quotes the export's own wording; the question itself is screened."
+      }
+     ]
+    },
+    {
+     "kind": "question",
+     "id": "wai-wad-prompt-13",
+     "question": "What made sense at the time about this condition: no role assigned to verify the gasket's specification, its quality or its integrity after installation?",
+     "why": "The export's wording is counterfactual: \"were not\"",
+     "cites": [
+      "FND-28F8790B"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "The why line quotes the export's own wording; the question itself is screened."
+      }
+     ]
+    },
+    {
+     "kind": "question",
+     "id": "wai-wad-prompt-06",
+     "question": "What made sense at the time about this condition: no SOP for calibrating the high-pressure condensate meters and returning them to service, including the post-gasket hydrostatic test?",
+     "why": "The export's wording is counterfactual: \"failed to\", \"would have\"",
+     "cites": [
+      "FND-137BC719"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "The why line quotes the export's own wording; the question itself is screened."
+      }
+     ]
+    },
+    {
+     "kind": "question",
+     "id": "wai-wad-prompt-28",
+     "question": "What made sense at the time about this condition: meters returned to service after gasket work with an operating-pressure test only, as the usual practice across several jobs?",
+     "why": "The export's wording is counterfactual: \"inadequate\"",
+     "cites": [
+      "FND-4944554C"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "The why line quotes the export's own wording; the question itself is screened."
+      }
+     ]
+    },
+    {
+     "kind": "question",
+     "id": "wai-wad-prompt-09",
+     "question": "What made sense at the time about this condition: the meter going back into service with a round O-ring in a rectangular-slot flange and no test to design pressure?",
+     "why": "The export's wording is counterfactual: \"were not\", \"lack of\"",
+     "cites": [
+      "FND-1662466D"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "The why line quotes the export's own wording; the question itself is screened."
+      }
+     ]
+    },
+    {
+     "kind": "question",
+     "id": "wai-wad-prompt-12",
+     "question": "What made sense at the time about this condition: returning the meter to service after the 18 September 2020 gasket replacement without the hydrostatic test to design pressure?",
+     "why": "The export's wording is counterfactual: \"should have\"",
+     "cites": [
+      "FND-212DC9B7"
+     ],
+     "lint_ok": [
+      {
+       "rule": "JC3",
+       "reason": "The why line quotes the export's own wording; the question itself is screened."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "session-plan",
+   "heading": "Session plan",
+   "items": [
+    {
+     "kind": "table",
+     "columns": [
+      "Minutes",
+      "Activity",
+      "Purpose"
+     ],
+     "rows": [
+      [
+       "10",
+       "Welcome, the ground rules and the banner read aloud",
+       "Set a learning frame: the team are the experts, no one is judged"
+      ],
+      [
+       "15",
+       "Walk through a meter seal job as it normally goes, from the work order to return to service",
+       "Hear work as done before anyone opens a procedure"
+      ],
+      [
+       "15",
+       "Questions on parts and specification",
+       "Learn how the seal is chosen and obtained in practice"
+      ],
+      [
+       "20",
+       "Questions on testing and return to service",
+       "Learn what the test before return to service looks like on the shift"
+      ],
+      [
+       "10",
+       "Soak: a short break, then what surprised the team",
+       "Let the first answers settle before anyone talks about fixes"
+      ],
+      [
+       "10",
+       "What would make the seal job easier to do safely",
+       "Collect the team's own ideas for a second meeting; no decisions about people"
+      ]
+     ],
+     "row_cites": [
+      [],
+      [
+       "FND-45363DCA",
+       "FND-4944554C"
+      ],
+      [
+       "FND-1A251687",
+       "FND-4EDE038A",
+       "FND-45363DCA",
+       "FND-42BEF461",
+       "FND-2FAB8D51"
+      ],
+      [
+       "FND-28F8790B",
+       "FND-137BC719",
+       "FND-4944554C",
+       "FND-1662466D",
+       "FND-212DC9B7"
+      ],
+      [],
+      [
+       "FND-1A251687",
+       "FND-137BC719"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "facilitator-notes",
+   "heading": "Notes for the facilitator",
+   "items": [
+    {
+     "kind": "check",
+     "text": "The fitters, technicians and operators are the experts on this job: ask, listen and write down their words, not a summary of them."
+    },
+    {
+     "kind": "check",
+     "text": "Learn first and fix later: keep this meeting for discovery, and hold the fixes for a second meeting after a soak of a day or more."
+    },
+    {
+     "kind": "check",
+     "text": "Ask how the seal job normally goes on an ordinary shift, not only what happened in September 2020."
+    },
+    {
+     "kind": "check",
+     "text": "Read each question as written and let the team answer it; the export's wording behind it is in the why line, not a view to defend."
+    },
+    {
+     "kind": "check",
+     "text": "The team records its answers, in its own words, in learning-team-notes.csv; the facilitator does not fill in the answer column for them."
+    }
+   ]
+  }
+ ]
+}

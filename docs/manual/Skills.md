@@ -47,6 +47,7 @@ One skill for each tier, from the sharp end to the board.
 |---|---|---|
 | Auditors, inspectors, certification bodies, insurers | [auditor-assurance-pack](skills/auditor-assurance-pack.md) | audit test points, sampling, evidence requests |
 | Investigators and HSE professionals | [investigator-coach](skills/investigator-coach.md) | evidence gaps, key questions, interviews, method lessons |
+| Learning-team facilitators and the people who do the work | [learning-team-facilitator](skills/learning-team-facilitator.md) | a learning-team session: work as imagined against work as done, "what made sense at the time" questions, a session plan and a blank notes sheet |
 | Training managers and instructors | [training-designer](skills/training-designer.md) | training-needs map, modules, assessments |
 | Fire services, emergency teams, incident command | [emergency-response-learnings](skills/emergency-response-learnings.md) | response timeline, plan gaps, drills |
 | Engineering, integrity, change control, instrumentation | [engineering-integrity-learnings](skills/engineering-integrity-learnings.md) | technical learnings and pending decisions |

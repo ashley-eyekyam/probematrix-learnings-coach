@@ -118,6 +118,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.7, Phase 5: new skills, wave 1). 
 | `board-brief` | board, safety committee of the board | governance learnings, questions to ask, assurance |
 | `auditor-assurance-pack` | auditors, inspectors, insurers | audit test points, sampling, evidence requests |
 | `investigator-coach` | investigators, HSE professionals | evidence gaps, key questions, interviews, method |
+| `learning-team-facilitator` | learning-team facilitators and the people who do the work | work as imagined against work as done, "what made sense at the time" questions, a 60–90 minute session plan, a blank notes sheet |
 | `training-designer` | L&D, instructors | training-needs map, modules, assessments |
 | `emergency-response-learnings` | fire services, ERT, incident command | response timeline, plan gaps, drills |
 | `engineering-integrity-learnings` | engineering, integrity, MOC, I&C | technical learnings and decisions |

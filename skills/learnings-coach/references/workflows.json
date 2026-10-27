@@ -113,6 +113,10 @@
         "skill": "investigator-coach"
       },
       {
+        "skill": "learning-team-facilitator",
+        "when": "the user asks for a learning team or work-as-done session"
+      },
+      {
         "skill": "report-comparison",
         "when": "an official report is supplied"
       }

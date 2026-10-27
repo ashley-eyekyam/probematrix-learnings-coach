@@ -13,7 +13,7 @@ SKILL_COUNT = len(list(SKILLS_DIR.glob("*/skill.json")))     # P5-1: the count i
 KEYWORDS = {"type", "enum", "required", "properties", "additionalProperties", "items", "pattern", "const", "minItems"}
 ALLOWED = KEYWORDS | {"$schema", "$id", "title", "description"}
 KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisation-learning-map": "dissemination",
-         "nine-m-analysis": "interactive"}
+         "nine-m-analysis": "interactive", "learning-team-facilitator": "interactive"}
 ANALYSIS = {"learning-clusters", "causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings",
             "report-comparison", "cluster-learning-dossier", "latent-conditions-profile", "failure-to-learn-review",
             "compliance-crosswalk", "open-questions-register", "evidence-strength-scorecard",
@@ -238,6 +238,8 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
         ("follow-up", "learning-effectiveness-plan"): "Phase 6"}
     whens = {(n, s["skill"]): s["when"] for n, w in wf.items() for s in w["steps"] if "when" in s}
     assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied",
+                     ("investigation-quality", "learning-team-facilitator"):
+                         "the user asks for a learning team or work-as-done session",
                      ("leadership", "failure-to-learn-review"): "the user asks for patterns or latent conditions",
                      ("leadership", "latent-conditions-profile"): "the user asks for patterns or latent conditions",
                      ("leadership", "risk-register-update"): "the user asks for risk-register or bow-tie changes"}

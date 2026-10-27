@@ -1,0 +1,32 @@
+{"pack": "learning-team-facilitator", "schema": 1, "skill": "learning-team-facilitator",
+ "title": "Learning Team Session: Synthetic pump fire, 2024",
+ "audience": "A learning-team facilitator and the people who do the work: fitters, operators and a stores clerk",
+ "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "The spares record and the field accounts describe the seal work differently; the session asks the team how the job is really done.", "cites": ["FND-0003", "EVD-0001", "EVD-0003"]},
+                 {"text": "Start with return to service: the team knows what the missing checklist meant on shift.", "cites": ["FND-0002"], "learning": "LR-01"}],
+ "sections": [
+  {"id": "banner", "heading": "About this session", "items": [
+   {"kind": "para", "text": "The team supplies the answers. These are questions, not findings about people."}]},
+  {"id": "wai-wad", "heading": "Work as imagined and work as done", "items": [
+   {"kind": "table", "columns": ["Code", "Name", "Document evidence", "Work-as-done evidence"],
+    "rows": [["OR 2.2", "Spares Programme Failure", "EVD-0001", "EVD-0003"]],
+    "row_cites": [["FND-0003"]],
+    "lint_ok": [{"rule": "JC3", "reason": "HFACS code names are taxonomy headings, not statements about people."}]}]},
+  {"id": "prompts", "heading": "Questions for the team", "items": [
+   {"kind": "question", "question": "What made sense at the time about restarting the pump after the seal change?", "why": "The export records the restart; the team knows what the shift needed then.", "cites": ["FND-0001"]},
+   {"kind": "question", "question": "What made sense at the time about returning the pump to service with no checklist to hand?", "why": "No return-to-service checklist existed; the team knows what took its place.", "cites": ["FND-0002"]},
+   {"kind": "question", "question": "What made sense at the time about buying seals locally when the specified ones were not in stores?", "why": "The spares record shows local purchases; the team knows how the choice was made.", "cites": ["FND-0003", "EVD-0003"]},
+   {"kind": "question", "question": "What made sense at the time about how the gas alarm was answered with no automatic shutdown?", "why": "The alarm had no trip; the team knows the usual first response.", "cites": ["FND-0004"]}]},
+  {"id": "session-plan", "heading": "Session plan", "items": [
+   {"kind": "table", "columns": ["Minutes", "Activity", "Purpose"],
+    "rows": [["10", "Welcome, the ground rules and the banner read aloud", "Set a learning frame: no blame, no judgement of people"],
+             ["15", "Walk through the job as it is normally done", "Hear work as done before comparing it with the procedure"],
+             ["30", "Work through the questions, one at a time", "Collect the team's own answers"],
+             ["10", "Soak: a short break, then what surprised you", "Let the first answers settle before fixes"],
+             ["10", "What would make the job easier to do safely", "Gather the team's ideas; no decisions on people"]],
+    "row_cites": [[], ["FND-0001"], ["FND-0001", "FND-0002", "FND-0003", "FND-0004"], [], ["FND-0003"]]}]},
+  {"id": "facilitator-notes", "heading": "Notes for the facilitator", "items": [
+   {"kind": "check", "text": "The workers are the experts on the work: ask, listen and write down their words, not your summary."},
+   {"kind": "check", "text": "Learn first and fix later: keep the first meeting for discovery and hold fixes for a second meeting after a soak."},
+   {"kind": "check", "text": "Ask how the work normally goes, not only about the day of the event."},
+   {"kind": "check", "text": "The team records its answers, in its own words, in learning-team-notes.csv; the facilitator never fills in the answer column for them."}]}]}
