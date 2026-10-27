@@ -16,8 +16,7 @@ import re
 from ..templates import OrgFileError, _outputs, load_adoption, load_verification
 
 EVENTS_CIHH = "cihh-events.jsonl"
-EVENTS_ORG_TYPES = ("site_assessment", "verification", "status")
-EVENTS_ADOPT_KEYS = ("response", "reason", "owning_role", "target_window")
+EVENTS_ANSWERS = ("present", "partly", "absent", "n/a")
 EVENTS_MONTH_RX = re.compile(r"^(\d{4}-(0[1-9]|1[0-2]))")
 
 
@@ -42,6 +41,10 @@ def _events_cihh(run, problems) -> list:
                 or not _events_clean(d.get("site")) or not _events_clean(d.get("answer"))):
             problems.append(f"{EVENTS_CIHH} line {n}: not a site assessment (needs lr_id, site and answer)")
             continue
+        if _events_clean(d["answer"]) not in EVENTS_ANSWERS:
+            problems.append(f"{EVENTS_CIHH} line {n}: answer '{_events_clean(d['answer'])}' must be one of "
+                            + ", ".join(EVENTS_ANSWERS))
+            continue
         rows.append(d)
     return rows
 
@@ -57,13 +60,16 @@ def collect_events(run, lib, codes, month: str = "", notes=None) -> list:
     notes = notes if notes is not None else []
     problems, out = [], []
 
-    def add(etype, lr, mon, data):
+    def add(etype, lr, mon, data, undated=False):
         if lr not in codes:
             notes.append(f"skipped an event for {lr}: the register has no such learning")
             return
         ll, ikey = codes[lr]
-        out.append({"type": etype, "ll_id": ll, "incident_key": ikey, "month": mon or month,
-                    "source": "organisation", "data": data})
+        ev = {"type": etype, "ll_id": ll, "incident_key": ikey, "month": mon or month,
+              "source": "organisation", "data": data}
+        if undated:
+            ev["undated"] = True          # publish strips this; it lets a re-publish skip an unchanged undated reading
+        out.append(ev)
 
     for d in _events_cihh(run, problems):
         data = {"lr_id": str(d["lr_id"]), "site": _events_clean(d["site"]), "answer": _events_clean(d["answer"])}
@@ -85,7 +91,9 @@ def collect_events(run, lib, codes, month: str = "", notes=None) -> list:
         for k in ("level", "evidence", "assessed_by_role"):
             if _events_clean(r.get(k)):
                 data[k] = _events_clean(r[k])
-        add("verification", str(r["lr_id"]), m.group(1) if m else month, data)
+        if len(data) == 1:
+            continue                       # a blank template row: no reading was made, so nothing is recorded
+        add("verification", str(r["lr_id"]), m.group(1) if m else month, data, undated=not m)
     try:
         ado = load_adoption(run)
     except OrgFileError as e:
@@ -95,13 +103,18 @@ def collect_events(run, lib, codes, month: str = "", notes=None) -> list:
         if not r.get("response"):
             continue                       # no response yet: nothing to record
         data = {"lr_id": str(r["lr_id"]), "adoption": r["response"]}
-        for k, name in (("reason", "reason"), ("owning_role", "owning_role"), ("target_window", "target_window")):
+        for k in ("reason", "owning_role", "target_window"):
             if _events_clean(r.get(k)):
-                data[name] = _events_clean(r[k])
+                data[k] = _events_clean(r[k])
         add("status", str(r["lr_id"]), month, data)
     if problems:
         raise OrgFileError(problems, out)
-    return out
+    # Rows that name the same reading (event_key) are one reading: the later row wins, so a file with two rows for
+    # one slot never alternates between them on re-publish.
+    last = {}
+    for i, ev in enumerate(out):
+        last[event_key(ev)] = i
+    return [ev for i, ev in enumerate(out) if last[event_key(ev)] == i]
 
 
 def event_key(ev: dict) -> tuple:

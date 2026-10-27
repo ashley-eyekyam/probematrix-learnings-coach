@@ -21,10 +21,10 @@ import sys
 from pathlib import Path
 
 from .. import __version__
+from ..templates import OrgFileError
 from .deid import deidentify
 from .events import collect_events, event_key
 from .ids import allocate, incident_key
-from ..templates import OrgFileError
 from .store import LibraryError, canonical, open_library
 
 # The register fields a snapshot's `learning` carries, in the shared contract's order, and where each comes from.
@@ -167,13 +167,14 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
         latest[s["ll_id"]] = s
         count[s["ll_id"]] = count.get(s["ll_id"], 0) + 1
     withdrawn, ev_status, ev_hashes, last_state, org_latest = {}, {}, set(), {}, {}
-    org_last = {}
+    org_last, org_seen = {}, set()
     for e in lib.events():
         ev_hashes.add(e.get("event_hash"))
         data = e.get("data") if isinstance(e.get("data"), dict) else {}
         if e.get("source") == "organisation":
             org_latest[event_key(e)] = {k: v for k, v in data.items() if k != "after"}
             org_last[event_key(e)] = e.get("event_hash")
+            org_seen.add((e.get("type"), e.get("ll_id"), canonical({k: v for k, v in data.items() if k != "after"})))
             continue
         if e.get("type") in PUBLISH_STATE_EVENTS:
             last_state[e.get("ll_id")] = e.get("event_hash")
@@ -236,13 +237,20 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
     except OrgFileError as e:
         raise LibraryError(PUBLISH_ORG_FILE.format(problems="\n".join(e.problems)), 1)
     kinds = {"site_assessment": "site_assessments", "verification": "verifications", "status": "adoption"}
+    undated = set()
+    for o in org:
+        if o.pop("undated", False):
+            undated.add(id(o))
     events += [(kinds[o["type"]], None, o) for o in org]
     public_ev = _publish_deidentify([("events.jsonl", ev) for _, _, ev in events], ctx)
-    for (kind, line, _), (_, ev) in zip(events, public_ev):
+    for (kind, line, orig), (_, ev) in zip(events, public_ev):
         # A state event names the state event it follows (data.after), so each transition hashes uniquely: a
         # withdraw -> reinstate -> withdraw cycle in one month keeps its second withdrawal (review r0, C1).
         mine = ev.get("source") == "organisation"
         if mine:
+            seen = (ev.get("type"), ev.get("ll_id"), canonical(ev["data"]))
+            if id(orig) in undated and seen in org_seen:
+                continue                  # an undated reading takes the publish month: same content is not new
             if org_latest.get(event_key(ev)) == ev["data"]:
                 continue                  # the latest event for this reading says the same: nothing new
             after = org_last.get(event_key(ev))     # a changed reading names the one it follows, so A -> B -> A keeps
@@ -257,6 +265,7 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
         if mine:
             org_latest[event_key(ev)] = {k: v for k, v in ev["data"].items() if k != "after"}
             org_last[event_key(ev)] = ev["event_hash"]
+            org_seen.add(seen)
         else:
             last_state[ev["ll_id"]] = ev["event_hash"]
         ev_hashes.add(ev["event_hash"])
@@ -305,8 +314,11 @@ def cmd_library(a):
     print(f"incident {plan['incident_key']}: {c['new']} new, {c['superseded']} superseded, {c['unchanged']} unchanged, "
           f"{c['withdrawn']} withdrawn, {c['reinstated']} reinstated, {c['status']} status changes")
     if any(c[k] for k in ("site_assessments", "verifications", "adoption")):
-        print(f"organisation events: {c['site_assessments']} site assessments, {c['verifications']} verification "
-              f"readings, {c['adoption']} adoption responses")
+        def _n(k, one, many):
+            return f"{c[k]} {one if c[k] == 1 else many}"
+        print("organisation events: " + ", ".join((_n("site_assessments", "site assessment", "site assessments"),
+              _n("verifications", "verification reading", "verification readings"),
+              _n("adoption", "adoption response", "adoption responses"))))
     for n in plan["notes"]:
         print(f"note: {n}")
     if plan["missing"]:

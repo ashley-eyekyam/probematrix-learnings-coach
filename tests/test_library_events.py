@@ -68,7 +68,7 @@ def test_events_from_cihh(ws, tmp_path):
 def test_events_from_verification(ws, tmp_path):
     verif(ws, [{"lr_id": "LR-01", "check_date": "2026-05-14", "level": "applied",
                 "evidence": "Test records seen on 6 of 6 restarts", "assessed_by_role": "Maintenance supervisor"},
-               {"lr_id": "LR-03", "check_date": None, "level": None, "evidence": None, "assessed_by_role": None}])
+               {"lr_id": "LR-03", "check_date": None, "level": "understood", "evidence": None, "assessed_by_role": None}])
     lib = tmp_path / "lib"
     out = pub(ws, reg(tmp_path), lib).stdout
     assert "2 verification readings" in out
@@ -76,7 +76,7 @@ def test_events_from_verification(ws, tmp_path):
     assert v1["type"] == "verification" and v1["month"] == "2026-05" and v1["data"]["level"] == "applied"
     assert "check_date" not in v1["data"] and "2026-05-14" not in (lib / "events.jsonl").read_text(encoding="utf-8")
     assert v2["month"] == lines(lib, "incidents.jsonl")[0]["published"]       # no date: the publish month
-    assert v2["data"] == {"lr_id": "LR-03"}
+    assert v2["data"] == {"lr_id": "LR-03", "level": "understood"}
 
 
 def test_events_from_adoption(ws, tmp_path):
@@ -113,6 +113,42 @@ def test_events_dedupe(ws, tmp_path):
     assert [e["data"]["answer"] for e in org_events(lib) if e["type"] == "site_assessment"] == \
         ["present", "absent", "present"]
     assert len({e["event_hash"] for e in lines(lib, "events.jsonl")}) == len(lines(lib, "events.jsonl"))
+
+
+def test_events_blank_verification_template_records_nothing(ws, tmp_path):
+    verif(ws, [{"lr_id": f"LR-0{i}", "check_date": None, "level": None, "evidence": None, "assessed_by_role": None}
+               for i in (1, 2, 3)])
+    lib = tmp_path / "lib"
+    pub(ws, reg(tmp_path), lib)
+    assert org_events(lib) == []
+
+
+def test_events_same_key_readings_publish_twice(ws, tmp_path):
+    rows = [{"lr_id": "LR-01", "check_date": "2026-05-14", "level": "applied", "evidence": e, "assessed_by_role": "A"}
+            for e in ("first look", "second look")]
+    verif(ws, rows)
+    lib = tmp_path / "lib"
+    pub(ws, reg(tmp_path), lib)
+    before = snapshot_bytes(lib)
+    assert len(org_events(lib)) == 1
+    out = pub(ws, reg(tmp_path), lib).stdout
+    assert "nothing to append" in out and snapshot_bytes(lib) == before
+
+
+def test_events_undated_reading_not_repeated_in_a_later_month(ws, tmp_path):
+    verif(ws, [{"lr_id": "LR-01", "check_date": None, "level": "applied", "evidence": "seen", "assessed_by_role": "A"}])
+    lib = tmp_path / "lib"
+    pub(ws, reg(tmp_path), lib)
+    before = snapshot_bytes(lib)
+    assert len(org_events(lib)) == 1
+    out = pub(ws, reg(tmp_path), lib, env={"SOURCE_DATE_EPOCH": "1793664000"}).stdout
+    assert "nothing to append" in out and snapshot_bytes(lib) == before
+
+
+def test_events_bad_cihh_answer(ws, tmp_path):
+    cihh(ws, [{"type": "site_assessment", "lr_id": "LR-01", "site": SITE, "answer": "excellent", "site_response": ""}])
+    r = pub(ws, reg(tmp_path), tmp_path / "lib", check=False)
+    assert r.returncode == 1 and "cihh-events.jsonl line 1: answer 'excellent'" in r.stderr
 
 
 def test_events_unknown_lr(ws, tmp_path):
