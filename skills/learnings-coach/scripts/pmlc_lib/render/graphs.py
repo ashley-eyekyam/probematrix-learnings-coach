@@ -15,6 +15,7 @@ from pathlib import Path
 
 from .. import BRAND
 from ..handling import status_line
+from ..pack.profiles import BANNERS
 from ..pack.graph_layout import layout_graph
 from . import find_browser, NOTHING_TO_WRITE, Output, output_name, PNG_NO_BROWSER, register
 from .ooxml import XML_INVALID_RX, xml_text
@@ -26,23 +27,36 @@ _GX_CSS = ("svg{color:#4a5568}.node rect{fill:#fff;stroke:#1f3a5f;stroke-width:1
 _GX_SIZE_RX = re.compile(r'viewBox="0 0 (\d+) (\d+)"')
 GX_PNG_TIMEOUT = 60
 GX_REASON_MAX = 200
+INFERRED_SUFFIX = " (inferred)"          # spec §6.2: an inferred AcciMap placement says so in the stand-alone files
+
+
+def _gx_inferred(n) -> bool:
+    return isinstance(n, dict) and n.get("inferred") is True
+
+
+def _gx_label(n) -> str:
+    """A node's label, with " (inferred)" after it for a node marked inferred (final review I2)."""
+    lab = str(n["label"])
+    return lab + INFERRED_SUFFIX if _gx_inferred(n) and not lab.endswith(INFERRED_SUFFIX) else lab
 
 
 def _gx_items(ctx) -> list:
     return [it for s in ctx.pack["sections"] for it in s["items"] if it.get("kind") == "graph"]
 
 
-def _gx_desc(ctx) -> str:
-    return f"{status_line(ctx.pack['status'])} · {BRAND}"
+def _gx_desc(ctx, it=None) -> str:
+    """The status phrase and the brand; for a graph with an inferred node, the AcciMap inferred banner first."""
+    lead = f"{BANNERS['accimap-inferred']} " if it and any(_gx_inferred(n) for n in it.get("nodes") or []) else ""
+    return f"{lead}{status_line(ctx.pack['status'])} · {BRAND}"
 
 
 def _gx_svg(ctx, it) -> str:
     """The standalone SVG of one graph item: the layout of the page, without the page's CSS, with nothing clipped."""
-    nodes = [dict(n, label=XML_INVALID_RX.sub("", str(n["label"]))) for n in it["nodes"]]      # control characters
+    nodes = [dict(n, label=XML_INVALID_RX.sub("", _gx_label(n))) for n in it["nodes"]]      # control characters
     g = layout_graph(nodes, it["edges"], uid=it["id"], max_nodes=max(60, len(nodes)), label_max=None)
     body = g["svg"]
     title = f"{ctx.pack.get('title') or ctx.pack['pack']}: {it['id']}"
-    head = (f"<title>{xml_text(title)}</title><desc>{xml_text(_gx_desc(ctx))}</desc><style>{_GX_CSS}</style>"
+    head = (f"<title>{xml_text(title)}</title><desc>{xml_text(_gx_desc(ctx, it))}</desc><style>{_GX_CSS}</style>"
             '<rect width="100%" height="100%" fill="#fff"/>')
     body = body.replace('<svg class="graph"', '<svg xmlns="http://www.w3.org/2000/svg" class="graph"', 1)
     end = body.index(">") + 1
@@ -144,7 +158,7 @@ def render_png(ctx) -> list:
         if data is None:
             ctx.notes.append(f"png: the browser did not produce an image ({why})")
             continue
-        outs.append(Output(output_name(ctx.pack["pack"], "png", item_id=it["id"]), _gx_png_desc(data, _gx_desc(ctx)),
+        outs.append(Output(output_name(ctx.pack["pack"], "png", item_id=it["id"]), _gx_png_desc(data, _gx_desc(ctx, it)),
                            _gx_text(svg)))
     return outs
 
@@ -154,12 +168,16 @@ def _gx_graphml(ctx, it) -> str:
     out = ['<?xml version="1.0" encoding="UTF-8"?>',
            '<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
            ' xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">',
-           f"<desc>{x(_gx_desc(ctx))}</desc>",
+           f"<desc>{x(_gx_desc(ctx, it))}</desc>",
            '<key id="label" for="node" attr.name="label" attr.type="string"/>',
            '<key id="elabel" for="edge" attr.name="label" attr.type="string"/>',
            f'<graph id="{x(it["id"])}" edgedefault="directed">']
+    if any(_gx_inferred(n) for n in it["nodes"]):        # only a graph with inferred nodes declares the key
+        out.insert(-2, '<key id="inferred" for="node" attr.name="inferred" attr.type="boolean">'
+                       '<default>false</default></key>')
     for n in it["nodes"]:
-        out.append(f'<node id="{x(n["id"])}"><data key="label">{x(n["label"])}</data></node>')
+        inf = '<data key="inferred">true</data>' if _gx_inferred(n) else ""
+        out.append(f'<node id="{x(n["id"])}"><data key="label">{x(_gx_label(n))}</data>{inf}</node>')
     for k, e in enumerate(it["edges"]):
         lab = f'<data key="elabel">{x(e["label"])}</data>' if e.get("label") else ""
         out.append(f'<edge id="e{k}" source="{x(e["from"])}" target="{x(e["to"])}">{lab}</edge>')

@@ -21,7 +21,7 @@ from . import (
     translation_lines
 )
 from .fields import item_blocks, learner_view, reading_minutes
-from .labels import label, load_labels, text_dir
+from .labels import grade_line, label, load_labels, text_dir
 
 LAYOUTS = ("cards", "toolbox", "poster", "checklist", "paper", "field")
 PAPERS = ("A4", "A5")
@@ -39,6 +39,7 @@ POSTER_EVENTS = 8
 # A run of inline citations, "[FND-…; EVD-…]" or "[EVD-1] [EVD-2]", with the space before it.
 _LY_ID = r"(?:FND-[0-9A-Za-z]{4,}|EVD-\d{3,})"
 LY_BRACKET_RX = re.compile(rf"\s*\[\s*({_LY_ID}(?:\s*[;,]\s*{_LY_ID})*)\s*\]")
+_LY_REVIEW_ID = "alert-review-copy"         # = pack.command.REVIEW_COPY_ID: the banner item with_review_copy() inserts
 
 
 # ----------------------------------------------------------------------------- shared helpers
@@ -180,16 +181,31 @@ def _ly_brand(ctx: RenderContext) -> str:
 
 # ----------------------------------------------------------------------------- the page frame
 
+def review_copy_text(pack) -> str:
+    """The review-copy line when pack/command.py's with_review_copy() put it in the render copy (P6-4), else "". The
+    layouts print paras rarely or never, so page() carries it in every page header instead (final review I1)."""
+    for s in (pack.get("sections") or [])[:1]:
+        for it in (s.get("items") or [])[:1] if isinstance(s, dict) else []:
+            if isinstance(it, dict) and it.get("id") == _LY_REVIEW_ID:
+                return str(it.get("text") or "")
+    return ""
+
+
 def page(html_body: str, ctx: RenderContext, cls: str = "") -> str:
     """One printed page block: the pack title, the status phrase, the DRAFT label for a draft (and the learner
     banner and translation note when they apply), the body, then the short footer. Task 21 reuses it."""
     pack = ctx.pack
     status = _ly_h(status_line(pack.get("status") or ""))
     draft = f'<p class="draft" role="note">{DRAFT_LABEL}</p>' if is_draft(ctx.eh) else ""
+    gl = grade_line(pack, _ly_labels(ctx))                       # Phase 6 (P6-3): the alert grade on every page
+    grade = f'<p class="grade"><span class="badge">{_ly_h(gl)}</span></p>' if gl else ""
+    review = review_copy_text(pack)                              # P6-4: the review copy on every printed page
+    review = f'<p class="reviewcopy" role="note">{_ly_h(review)}</p>' if review else ""
     extra = ([LEARNER_BANNER] if ctx.view == "learner" else []) + translation_lines(pack)
     notes = "".join(f'<p class="status">{_ly_h(x)}</p>' for x in extra)
     return (f'<section class="page{" " + cls if cls else ""}"><header class="ph">{_ly_brand(ctx)}'
-            f'<p class="ptitle">{_ly_h(pack.get("title"))}</p>{draft}<p class="status">{status}</p>{notes}</header>'
+            f'<p class="ptitle">{_ly_h(pack.get("title"))}</p>{grade}{draft}<p class="status">{status}</p>{notes}'
+            f'{review}</header>'
             f'<div class="pbody">{html_body}</div>'
             f'<footer class="pf"><p>{status} · {_ly_h(LAYOUT_FOOTER)}</p></footer></section>')
 
@@ -428,7 +444,8 @@ def _ly_paper(ctx, L):
     annex_kinds = ("decision", "question", "table", "indicator")
     n = 0
     for s in secs:
-        rest = [it for it in s.get("items") or [] if it.get("kind") not in annex_kinds]
+        rest = [it for it in s.get("items") or [] if it.get("kind") not in annex_kinds
+                and it.get("id") != _LY_REVIEW_ID]                  # the review copy is in every page header
         if not rest:
             continue
         n += 1

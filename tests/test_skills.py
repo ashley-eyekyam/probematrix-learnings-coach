@@ -791,7 +791,8 @@ def test_followup_points_to_effectiveness_plan(skill):
     assert P6_FOLLOWUP_LINE in lines, f"{skill}: the follow-up pointer line is missing"
     assert len(skill_md(skill).splitlines()) <= 150, skill
     page = read(ROOT / "docs" / "manual" / "skills" / f"{skill}.md")
-    assert "`learning-effectiveness-plan`" in page, f"{skill}: the manual page lacks the pointer"
+    assert "[learning-effectiveness-plan](learning-effectiveness-plan.md)" in page, \
+        f"{skill}: the manual page lacks the linked pointer (final review I5)"
 
 
 def test_tmb_sister_sites_optional():

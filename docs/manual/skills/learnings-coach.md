@@ -79,6 +79,9 @@ Plan: first-48-hours (First 48 hours: a draft register, an alert and the supervi
       gate: check-pack --strict
  5. supervisor-coach [todo]
       gate: check-pack --strict
+ 6. restorative-response-guide [todo]
+      when: the user asks how leaders should respond to and support the people involved
+      gate: check-pack --strict
 Next: step 3
 ```
 

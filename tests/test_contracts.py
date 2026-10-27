@@ -236,7 +236,9 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
     planned = {(n, s["skill"]): s["planned"] for n, w in wf.items() for s in w["steps"] if "planned" in s}
     assert planned == {}
     whens = {(n, s["skill"]): s["when"] for n, w in wf.items() for s in w["steps"] if "when" in s}
-    assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied",
+    assert whens == {("first-48-hours", "restorative-response-guide"):
+                         "the user asks how leaders should respond to and support the people involved",
+                     ("investigation-quality", "report-comparison"): "an official report is supplied",
                      ("investigation-quality", "learning-team-facilitator"):
                          "the user asks for a learning team or work-as-done session",
                      ("leadership", "failure-to-learn-review"): "the user asks for patterns or latent conditions",

@@ -12,6 +12,10 @@
       },
       {
         "skill": "supervisor-coach"
+      },
+      {
+        "skill": "restorative-response-guide",
+        "when": "the user asks how leaders should respond to and support the people involved"
       }
     ]
   },
