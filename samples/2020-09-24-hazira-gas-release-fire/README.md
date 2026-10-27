@@ -31,6 +31,7 @@ Every file in `outputs/` was drafted by an AI agent with the Learnings Coach fro
 | `outputs/board-brief.json`, `.html`, `.md` | `board-brief` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/causal-map.json`, `.html`, `.md` | `causal-map` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/compliance-crosswalk.json`, `.html`, `.md` | `compliance-crosswalk` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
+| `outputs/could-it-happen-here.json`, `.html`, `.md` | `could-it-happen-here` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/dossier-F02.json`, `.html`, `.md` | `cluster-learning-dossier` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/dossier-index.json`, `.html`, `.md` | `cluster-learning-dossier` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/emergency-response-learnings.json`, `.html`, `.md` | `emergency-response-learnings` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
@@ -43,6 +44,8 @@ Every file in `outputs/` was drafted by an AI agent with the Learnings Coach fro
 | `outputs/investigator-coach.json`, `.html`, `.md` | `investigator-coach` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/latent-conditions-profile.json`, `.html`, `.md` | `latent-conditions-profile` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/learning-clusters.json`, `.html`, `.md` | `learning-clusters` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
+| `outputs/learning-effectiveness-plan.json`, `.html`, `.md` | `learning-effectiveness-plan` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
+| `outputs/learning-team-facilitator.json`, `.html`, `.md` | `learning-team-facilitator` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/manager-coach.json`, `.html`, `.md` | `manager-coach` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/nine-m-analysis.json`, `.html`, `.md` | `nine-m-analysis` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/open-questions-register.json`, `.html`, `.md` | `open-questions-register` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
@@ -53,11 +56,15 @@ Every file in `outputs/` was drafted by an AI agent with the Learnings Coach fro
 | `outputs/report-comparison-client-safe.json`, `.html`, `.md` | `report-comparison` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/report-comparison-regulator-safe.json`, `.html`, `.md` | `report-comparison` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/report-comparison.json`, `.html`, `.md` | `report-comparison` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
+| `outputs/restorative-response-guide.json`, `.html`, `.md` | `restorative-response-guide` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/risk-register-update.json`, `.html`, `.md` | `risk-register-update` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
+| `outputs/safety-alert.json`, `.html`, `.md` | `safety-alert` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/safety-committee-guide.json`, `.html`, `.md` | `safety-committee-guide` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
+| `outputs/safety-moment-deck.json`, `.html`, `.md` | `safety-moment-deck` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/site-leadership-coach.json`, `.html`, `.md` | `site-leadership-coach` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/supervisor-coach.json`, `.html`, `.md` | `supervisor-coach` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/supply-chain-contractor-learnings.json`, `.html`, `.md` | `supply-chain-contractor-learnings` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
+| `outputs/systemic-accimap.json`, `.html`, `.md` | `systemic-accimap` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/top-management-brief.json`, `.html`, `.md` | `top-management-brief` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/training-designer.json`, `.html`, `.md` | `training-designer` | pack JSON, HTML page, Markdown | AI-drafted, DRAFT, not signed off |
 | `outputs/board-brief.docx` | `board-brief` | Word document (`--format docx`) | AI-drafted, DRAFT, not signed off |
@@ -72,12 +79,18 @@ Every file in `outputs/` was drafted by an AI agent with the Learnings Coach fro
 | `outputs/risk-register-update.risk-changes.csv` | `risk-register-update` | proposed risk-register changes, CSV (`--format risk-csv`); the risk owner's decision column is blank | AI-drafted, DRAFT, not signed off |
 | `outputs/nine-m-analysis.actions-template.xlsx` | `nine-m-analysis` | 9M actions template, Excel (`nine-m-actions-template`); Owner, Due date, Status and Notes are blank for the organisation | AI-drafted, DRAFT, not signed off |
 | `outputs/compliance-crosswalk.xlsx` | `compliance-crosswalk` | the pack's tables, Excel (`pack-xlsx --kind table --out compliance-crosswalk.xlsx`) | AI-drafted, DRAFT, not signed off |
+| `outputs/safety-alert.poster.html` | `safety-alert` | printable poster layout (`--layout poster`) | AI-drafted, DRAFT, not signed off |
+| `outputs/safety-alert.pptx` | `safety-alert` | PowerPoint alert, every section on one content slide (`--format pptx`) | AI-drafted, DRAFT, not signed off |
+| `outputs/safety-moment-deck.pptx` | `safety-moment-deck` | PowerPoint deck for the safety moment (`--format pptx`) | AI-drafted, DRAFT, not signed off |
+| `outputs/systemic-accimap.accimap.svg` | `systemic-accimap` | SVG picture of the graph item `accimap` (`--format svg`) | AI-drafted, DRAFT, not signed off |
+| `outputs/could-it-happen-here.cihh-template.xlsx` | `could-it-happen-here` | site return template, Excel (`templates cihh --pack could-it-happen-here.json --out could-it-happen-here.cihh-template.xlsx`); Site, answer, site_response and assessed_by_role are blank for each site | AI-drafted, DRAFT, not signed off |
+| `outputs/learning-team-notes.csv` | `learning-team-facilitator` | learning-team notes, CSV (`templates learning-team --out learning-team-notes.csv`); header only, the team fills in its answers | AI-drafted, DRAFT, not signed off |
 | `outputs/nine-m-session.json` | `nine-m-analysis` | the scripted 9M session the pack was written from (`nine-m-replay --accept-recommended`: answers chosen for demonstration, not by the organisation); copied into the workspace as `nine_m_session.json` to re-render | AI-drafted, DRAFT, not signed off |
 | `outputs/nine-m-map.json` | `nine-m-analysis` | the 9M map side output, written by `pack` from the pack and the session | AI-drafted, DRAFT, not signed off |
 | `outputs/learnings-register.json`, `.md`, `.xlsx` | `learnings-register` | register JSON, Markdown, Excel workbook | AI-drafted, DRAFT, not signed off |
 | `outputs/organisation-learning-map.html` | `organisation-learning-map` | dashboard with the detailed register tab (self-contained, works offline); the register's HTML page | AI-drafted, DRAFT, not signed off |
 
-The files were rendered with `SOURCE_DATE_EPOCH` set, so they carry a fixed generated date, and `tests/test_hazira_samples.py` (repository only) re-renders each one and compares it with the committed file. To re-render one, build the workspace as below with `--overlay india-process-site`, copy `comparator/*.json` into the workspace, `outputs/nine-m-session.json` into it as `nine_m_session.json` and `outputs/*.json` into the run's `outputs/`, then run `python3 skills/learnings-coach/scripts/pmlc.py pack <workspace> <run>/outputs/<pack>.json` with the flags in the Format column.
+The files were rendered with `SOURCE_DATE_EPOCH` set, so they carry a fixed generated date, and `tests/test_hazira_samples.py` (repository only) re-renders each one and compares it with the committed file. To re-render one, build the workspace as below with `--overlay india-process-site`, copy `comparator/*.json` into the workspace, `outputs/nine-m-session.json` into it as `nine_m_session.json` and `outputs/*.json` into the run's `outputs/`, then run `python3 skills/learnings-coach/scripts/pmlc.py pack <workspace> <run>/outputs/<pack>.json` with the flags in the Format column (the two organisation files: `pmlc.py templates <workspace>` with the arguments shown there).
 
 The Hindi pack `frontline-learning-cards-hi` was made through `pmlc strings extract` and `strings apply --lang hi`, with English back-translations of its safety-critical items; it is an AI translation and a fluent speaker checks it before use (each page says so). The toolbox-talk group names ("Returning equipment to service", "Responding to a release") stay in English on the Hindi page, because `group` is a locked field that `strings` does not offer for translation.
 
