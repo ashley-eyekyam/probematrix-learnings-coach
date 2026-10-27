@@ -10,7 +10,7 @@ One investigation, learned by the whole organisation. This skill sets up the wor
 ## Where things are
 
 - Engine: `scripts/pmlc.py` in this skill's folder (Python 3.9+, needs `openpyxl`). `PMLC` means `python3 <path-to-this-skill>/scripts/pmlc.py`. Paths, the run folder and `run-path` / `status` are in `references/skill-common.md` §1.
-- The other 22 skills sit beside this one under the same `skills/` folder and use this folder's engine and references.
+- The other 31 skills sit beside this one under the same `skills/` folder and use this folder's engine and references.
 - References (read the ones you need):
   - `learnings-coach/references/learning-principles.md`: **read before writing any learning** (just culture, grounding, honest counting).
   - `references/skill-common.md`: what every skill does the same way (set-up, packs, the check loop, thin evidence, sharing).

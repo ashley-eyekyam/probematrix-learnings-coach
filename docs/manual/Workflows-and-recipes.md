@@ -661,3 +661,95 @@ pmlc pack <ws> <run>/outputs/investigator-coach.json
 - `pack` writes `follow-up.json`, one entry per finding, ready to paste back into ProbeMatrix.
 - Suggested interviews name roles only. Interviews are for learning, with a representative offered.
 - On Hazira, the profile shows all four follow-up columns empty, so the agent drafts them for the 150 top-rated findings.
+
+## Design the actions with the nine Ms
+
+**Goal.** Turn the register into corrective and preventive actions, designed M by M with you, check how strong they are before anyone agrees them, and hand the organisation a blank sheet to assign them. This is the `action-design` preset.
+
+**Prompt.**
+
+> We have the learnings register. Work through the 9Ms with me to design the actions, tell us how strong they are, and give us a sheet we can assign them in.
+
+**Engine commands.**
+
+```bash
+pmlc plan <ws> --workflow action-design
+pmlc nine-m-seed <ws>                                        # every finding scored against the nine Ms
+pmlc nine-m-suggest <ws> --m M8 --step relevance --record    # one question per turn
+pmlc nine-m-answer <ws> --q Q02 --choice 1                   # or --text "your own words"
+pmlc check-pack <ws> <run>/outputs/nine-m-analysis.json --strict
+pmlc pack <ws> <run>/outputs/nine-m-analysis.json            # also writes outputs/nine-m-map.json
+pmlc rec-review <ws> <run>/outputs/learnings-register.json --nine-m
+pmlc check-pack <ws> <run>/outputs/recommendation-strength-review.json --strict
+pmlc pack <ws> <run>/outputs/recommendation-strength-review.json
+pmlc nine-m-actions-template <ws> <run>/outputs/nine-m-analysis.json
+pmlc export-actions <ws> --register <run>/outputs/learnings-register.json
+```
+
+**What to check.**
+
+- On Hazira, with the sample register copied into `outputs/` and `pmlc check-register <ws> <run>/outputs/learnings-register.json --strict` run once, the plan has seven steps: ingest, classify and the register (done), then `nine-m-seed`, [nine-m-analysis](skills/nine-m-analysis.md), [recommendation-strength-review](skills/recommendation-strength-review.md) and `export-actions`.
+- `nine-m-seed` maps all 436 findings with none unmapped. By primary M: Management/Money 130, Method 95, Manpower/Mindpower 72, Mission 40, Machine 37, Maintenance 27, Medium 13, Measurement 13 and Material 9.
+- The agent asks one question per turn, each with 2 to 4 suggestions (the recommended one first) and always "None / unknown (record as a gap)". Your own words are always allowed. The Hazira sample is a scripted session of 57 questions, so its pack says "Answers chosen for demonstration, not by the organisation."
+- `rec-review` on the register and the 9M map printed `stronger 24; intermediate 15; weaker 5; unrated 0` and `0 learning(s) flagged 'weak fix for a deep cause'`. A learning at HFACS level 3 or 4 whose changes are all training, PPE or a reminder would be flagged.
+- `nine-m-actions-template` wrote `nine-m-analysis.actions-template.xlsx` with 9 recommendations, and Owner, Due date, Status and Notes blank. A second run refuses, because the sheet may already hold your entries. No pack names an owner or a date: `check-pack` refuses one that does.
+
+## Check the quality of the investigation
+
+**Goal.** Before the learnings go out, see how well each finding is evidenced, what the investigation could not answer, and what the investigator should do next. This is the `investigation-quality` preset.
+
+**Prompt.**
+
+> How solid is the evidence behind this investigation, and what is still open? Give us the evidence requests and something we can paste back into ProbeMatrix.
+
+**Engine commands.**
+
+```bash
+pmlc plan <ws> --workflow investigation-quality
+pmlc evidence-audit <ws>
+pmlc evidence-audit <ws> --table-item levels
+pmlc check-pack <ws> <run>/outputs/evidence-strength-scorecard.json --strict
+pmlc pack <ws> <run>/outputs/evidence-strength-scorecard.json
+pmlc open-questions <ws>
+pmlc open-questions <ws> --items                  # ready question items, pasted unchanged
+pmlc check-pack <ws> <run>/outputs/open-questions-register.json --strict
+pmlc pack <ws> <run>/outputs/open-questions-register.json    # also writes open-questions-follow-up.csv
+pmlc check-pack <ws> <run>/outputs/investigator-coach.json --strict
+```
+
+**What to check.**
+
+- On Hazira the plan has seven steps: ingest (done), `evidence-audit`, [evidence-strength-scorecard](skills/evidence-strength-scorecard.md), `open-questions`, [open-questions-register](skills/open-questions-register.md), [investigator-coach](skills/investigator-coach.md), and [report-comparison](skills/report-comparison.md) only when an official report is supplied.
+- `evidence-audit` counts 284 findings `direct`, 152 `corroborated` and 0 `inferred`; 203 rest on one evidence item and 195 on documents only. EVD-8645 supports 67 of the 436 findings (15%), and 11 of the 167 level 3 findings cite a witness statement.
+- The scorecard says "This scorecard shows where more evidence would strengthen confidence. It does not grade the investigation team."
+- `open-questions` finds the 4 follow-up columns empty, 21 of 30 Incident Summary fields blank, 240 findings whose justification says something is absent and 193 that are hedged. The follow-up CSV has 44 rows, one per cited finding, and is never overwritten.
+- Before the interview plan, the agent asks whether litigation, a prosecution or a regulator's inquiry is in prospect.
+
+## Assurance against ISO 45001 or RBPS
+
+**Goal.** Give an auditor or a management-system owner the register mapped to a standard's clauses, the evidence strength behind it, and the test points, without claiming the site complies. This is the `assurance` preset.
+
+**Prompt.**
+
+> Which ISO 45001 clauses and RBPS elements do these learnings speak to, and what would an auditor still need to see? Then the audit pack for our insurer.
+
+**Engine commands.**
+
+```bash
+pmlc plan <ws> --workflow assurance
+pmlc evidence-audit <ws>
+pmlc check-register <ws> <run>/outputs/learnings-register.json --strict
+pmlc crosswalk <ws> --register <run>/outputs/learnings-register.json --framework iso45001
+pmlc crosswalk <ws> --register <run>/outputs/learnings-register.json --framework rbps --table-item
+pmlc check-pack <ws> <run>/outputs/compliance-crosswalk.json --strict
+pmlc pack <ws> <run>/outputs/compliance-crosswalk.json
+pmlc check-pack <ws> <run>/outputs/auditor-assurance-pack.json --strict
+pmlc pack <ws> <run>/outputs/auditor-assurance-pack.json
+```
+
+**What to check.**
+
+- On Hazira, with the sample register copied into `outputs/` and `pmlc check-register <ws> <run>/outputs/learnings-register.json --strict` run once, the plan has seven steps: ingest, classify and the register (done), `evidence-audit`, the scorecard, [compliance-crosswalk](skills/compliance-crosswalk.md) (it asks which framework) and [auditor-assurance-pack](skills/auditor-assurance-pack.md) (it asks the framework, then who the assurance is for: internal audit, a regulator, an insurer, a joint-venture partner or a client).
+- After `evidence-audit` the sample register still passes `check-register --strict` with 0 problems: every `evidence_strength` matches the engine's.
+- `crosswalk --framework iso45001` gives 23 clauses: 17 `partly` and 6 `needs organisation evidence`, among them 5.4 worker consultation, 7.3 awareness and 9.3 management review. `--framework rbps` gives the 20 elements: 16 `partly` and 4 `needs organisation evidence`. A requirement whose wording has not been checked against its primary source says "(unverified)": 15 of the 23 ISO rows.
+- The crosswalk pack says "Aid to assurance, not a compliance opinion." and makes the legal-conclusions rule JC5 an error in this pack, so wording such as "breach" or "non-compliant with" stops the check (see [Language checks](Language-checks.md)).

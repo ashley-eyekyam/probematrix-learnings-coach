@@ -231,11 +231,11 @@ The target folder is `$CODEX_SKILLS_DIR` when set, otherwise `~/.agents/skills`.
 
 ## `evals/run_evals.py`
 
-Checks and grades the eval set in `evals/evals.json`: prompts that should (or should not) trigger each skill, with machine-checkable expectations for the outputs, and the router evals: requests the hub must turn into the right preset or skill.
+Checks and grades the eval set in `evals/evals.json`: prompts that should (or should not) trigger each skill, with machine-checkable expectations for the outputs, and the router evals: requests the hub must turn into the right preset or skill. Since Phase 5 a skill's evals can also live in its own fragment, `evals/skills/<skill>.json` (`{"evals": [...]}`): the runner loads `evals.json`, then every fragment in name order, ids must be unique across all the files, and the floors apply to the union.
 
 | Command | What it does |
 |---|---|
-| `run_evals.py check [--file F]` | Checks the structure of the eval file, its paths, kinds and per-skill counts, and the router set: at least 30 router evals, every target a skill folder or a `workflows.json` preset, all 9 presets and 22 sub-skills covered, at least 8 sibling collisions. The automatic checks run this |
+| `run_evals.py check [--file F]` | Checks the structure of the eval file, its paths, kinds and per-skill counts, and the router set: at least 30 router evals, every target a skill folder or a `workflows.json` preset, all 9 presets and 31 sub-skills covered, at least 8 sibling collisions. The automatic checks run this |
 | `run_evals.py grade <run-dir> [--ids 3,7] [--file F] [--transcript T]` | Grades the machine expectations against a run folder's `outputs/` and `workspace/`. Expectations that need a person, such as which skill the agent chose, are reported as `manual`; so is `command_contains` (the format evals: did the agent run `pack` with the right `--format` or `--layout`) unless `--transcript` gives the commands the agent ran |
 | `run_evals.py routes <answers.json> [--file F]` | Scores the router evals against a JSON object `{"<eval id>": "<preset or skill the agent picked>"}`. Prints `Routing: x/y router evals (z%); floor 90%.` and exits 1 below 90% |
 
@@ -250,7 +250,7 @@ python3 evals/run_evals.py check
 ```
 
 ```text
-134 evals over 23 skills: 51 trigger, 23 no-trigger, 26 collision, 34 router
+185 evals over 32 skills: 69 trigger, 33 no-trigger, 39 collision, 44 router
 OK
 ```
 

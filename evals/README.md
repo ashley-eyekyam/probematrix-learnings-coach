@@ -1,6 +1,6 @@
 # Evals
 
-`evals.json` holds the trigger evals for the 23 skills and the router evals for the hub, written against the public
+`evals.json` holds the trigger evals for the 32 skills and the router evals for the hub, written against the public
 Hazira sample (`samples/2020-09-24-hazira-gas-release-fire/`). Every skill owns at least three evals: at least one
 `trigger`, one `no-trigger` and one `collision`. Router evals do not count towards that floor.
 
@@ -34,7 +34,7 @@ problem.
 - **router**: a request to the hub that it must turn into the right plan. Shape: `{"id", "owner": "learnings-coach",
   "kind": "router", "prompt", "files", "expectations": [{"type": "routes_to", "value": "<preset or skill>"}]}`, with an
   optional `sibling` (the preset or skill it must not pick). `value` is a preset in
-  `skills/learnings-coach/references/workflows.json` (planned with `plan --workflow`) or one of the 22 sub-skills
+  `skills/learnings-coach/references/workflows.json` (planned with `plan --workflow`) or one of the 31 sub-skills
   (`plan --skills`). A router eval has no `skill` field.
 
 ## Expectation types
@@ -60,7 +60,7 @@ The hub (`learnings-coach`) writes no pack; its evals carry `routes_to` only.
 `check` also enforces: `skill` equals `owner` for trigger evals; a `routes_to` names the eval's `skill`; trigger evals
 list `files` and no-trigger evals list none; no absolute paths in `files` or `prompt`. For the router set
 (spec §2.5) it fails when there are fewer than 30 router evals, when a `routes_to` value or a `sibling` is neither a
-skill folder nor a `workflows.json` preset, when any of the 9 presets or 22 sub-skills has no router eval, or when
+skill folder nor a `workflows.json` preset, when any of the 9 presets or 31 sub-skills has no router eval, or when
 fewer than 8 router evals carry a `sibling`.
 
 ## Commands

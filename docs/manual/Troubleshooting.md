@@ -80,6 +80,16 @@ This is a CAPA Planner export, not a findings export. Export "Identified Finding
 
 **What to do.** In ProbeMatrix, export the investigation's Identified Findings and use that file.
 
+## nine-m-seed refuses my workbook
+
+```text
+This is a ProbeMatrix CAPA Planner workbook. nine-m-analysis reads the findings export only (Identified Findings); export that instead.
+```
+
+**Why.** `nine-m-seed` was given the CAPA Planner workbook (its Corrective Actions and related sheets) instead of a workspace. The 9M analysis scores the findings, and the CAPA Planner holds actions, not findings. The command exits 2 and writes nothing.
+
+**What to do.** In ProbeMatrix, export the investigation's Identified Findings, run `pmlc setup <export.xlsx> --slug <site>-<event>`, and pass the workspace it prints: `pmlc nine-m-seed <ws>`. Given any other file, `nine-m-seed` says it reads a workspace folder and names the file.
+
 ## A required column is missing
 
 ```text
@@ -381,6 +391,26 @@ priority-1 learning <LR-id> has no fix above the administrative tier
 **Why.** Every recommendation on a priority-1 learning is administrative or training. `check-register` prints this as a warning ending "(give why_not_stronger, or add a stronger fix)"; `check-register --strict` counts it as a problem, so a plan's register step stops here.
 
 **What to do.** Add a recommendation at the elimination, substitution or engineering tier if the evidence supports one. If the learning is about a decision or a competence that only an administrative change can address, add a `why_not_stronger` to the entry, grounded in its own cited findings. The Hazira sample register does this for LR-08 and LR-12.
+
+## check-pack says owner and due dates are set by the organisation
+
+```text
+<item>: owner and due dates are set by the organisation, not in this pack
+```
+
+**Why.** The `nine-m-analysis`, `recommendation-strength-review` and `risk-register-update` packs carry the `no-owner-due` rule: an item with a non-empty `owner` or `by_when` is a problem, even without `--strict`. Who owns a change and by when is the organisation's decision, so the coach never writes it, even when an answer in the 9M interview names one.
+
+**What to do.** Remove `owner` and `by_when` from the item and run `check-pack` again. Record owners and dates in the files your organisation fills in: the 9M actions sheet from `nine-m-actions-template`, or `actions.csv` from `export-actions`, whose Owner and Due columns are left blank for you.
+
+## evidence_strength is computed by the engine
+
+```text
+<LR-ID>: evidence_strength is computed by the engine ('<strength>'); run evidence-audit and copy it
+```
+
+**Why.** Once `evidence_audit.json` exists in the workspace, `check-register` works out each learning's evidence strength from the findings it cites: `corroborated` when they rest on at least 2 distinct evidence items of at least 2 types, `direct` with at least 1 item, and `inferred` with none. A register whose `evidence_strength` differs is a problem, so a label cannot claim more than the evidence shows. Without `evidence_audit.json` the check is not made.
+
+**What to do.** Run `pmlc evidence-audit <ws>` again if the export changed, then copy the strength the message gives into the learning's `evidence_strength`. If the label looks too low, the fix is more evidence, not a different label: the [evidence-strength-scorecard](skills/evidence-strength-scorecard.md) lists what would strengthen it.
 
 ## Learning IDs are not verified
 
