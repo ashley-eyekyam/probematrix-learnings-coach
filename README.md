@@ -9,7 +9,7 @@
 
 **One investigation. Every level of the organisation learns.**
 
-An open-source plugin of 37 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
+An open-source plugin of 38 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
 
 Works with **Claude Code**, **Claude (Cowork / desktop)** and **OpenAI Codex**, and any agent that reads the Agent Skills format or `AGENTS.md`.
 
@@ -121,6 +121,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.7, Phase 5: new skills, wave 1). 
 | `investigator-coach` | investigators, HSE professionals | evidence gaps, key questions, interviews, method |
 | `learning-team-facilitator` | learning-team facilitators and the people who do the work | work as imagined against work as done, "what made sense at the time" questions, a 60–90 minute session plan, a blank notes sheet |
 | `training-designer` | L&D, instructors | training-needs map, modules, assessments |
+| `safety-moment-deck` | supervisors and trainers leading a short session | a 3 to 6 slide deck, a one-page poster, narration and captions |
 | `emergency-response-learnings` | fire services, ERT, incident command | response timeline, plan gaps, drills |
 | `engineering-integrity-learnings` | engineering, integrity, MOC, I&C | technical learnings and decisions |
 | `supply-chain-contractor-learnings` | procurement, stores, vendors, contractors | sourcing and contractor learnings |

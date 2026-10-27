@@ -117,7 +117,7 @@ def test_schema_keyword_subset():
 
 def test_artefact_names_closed():
     art = load(REFS / "artefacts.json")
-    assert len(art) == 25
+    assert len(art) == 26
     for name, a in art.items():
         assert set(a) <= {"file", "producer", "org_filled", "planned"}, name
         kind, _, who = a["producer"].partition(":")
@@ -210,6 +210,7 @@ PINNED_ARTEFACTS = {
     "learning-team-notes": ("outputs/learning-team-notes.csv", "engine:templates", None),
     "cihh-template": ("outputs/<pack>.cihh-template.xlsx", "engine:templates", None),
     "cihh-consolidated": ("outputs/cihh-consolidated.json", "engine:consolidate", None),
+    "frontline-learning-cards": ("outputs/frontline-learning-cards.json", "skill:frontline-learning-cards", None),
 }
 
 
@@ -231,7 +232,6 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
                      ("follow-up", "engine:templates"): "verification"}
     planned = {(n, s["skill"]): s["planned"] for n, w in wf.items() for s in w["steps"] if "planned" in s}
     assert planned == {
-        ("training", "safety-moment-deck"): "Phase 6",
         ("follow-up", "learning-effectiveness-plan"): "Phase 6"}
     whens = {(n, s["skill"]): s["when"] for n, w in wf.items() for s in w["steps"] if "when" in s}
     assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied",

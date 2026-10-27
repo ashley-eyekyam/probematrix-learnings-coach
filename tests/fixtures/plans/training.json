@@ -97,14 +97,19 @@
   {
    "n": 6,
    "skill": "safety-moment-deck",
-   "status": "planned",
-   "planned_for": "Phase 6",
-   "produces": null,
+   "status": "todo",
+   "planned_for": null,
+   "produces": "safety-moment-deck",
    "mode": null,
    "when": null,
-   "commands": [],
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/safety-moment-deck.json --strict",
+    "PMLC pack <ws> <run>/outputs/safety-moment-deck.json"
+   ],
    "questions": [],
-   "gate": []
+   "gate": [
+    "check-pack --strict"
+   ]
   }
  ],
  "next": 3

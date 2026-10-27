@@ -84,6 +84,12 @@ def test_nine_new_skills():
     assert len(P5_SKILLS) == 9, NEW_SKILLS
 
 
+def test_phase_5_skills_are_since_2_0_0():
+    since = {p.parent.name for p in (ROOT / "skills").glob("*/skill.json")
+             if json.loads(p.read_text(encoding="utf-8")).get("since") == "2.0.0"}
+    assert set(NEW_SKILLS) <= since, sorted(set(NEW_SKILLS) - since)
+
+
 @pytest.mark.parametrize("doc,row", [("README.md", "| `{s}` |"), ("docs/manual/Skills.md", "[{s}](skills/{s}.md)")])
 def test_listings_name_every_new_skill(doc, row):
     text = read(doc)

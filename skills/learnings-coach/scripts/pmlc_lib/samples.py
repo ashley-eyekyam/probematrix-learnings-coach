@@ -16,7 +16,7 @@ RENDER_EXEMPT = ("learnings-register.json",)
 # renders them and empties it.
 RENDER_PENDING = frozenset({"restorative-response-guide.json", "could-it-happen-here.json",
                             "safety-alert.json", "learning-team-facilitator.json",
-                            "systemic-accimap.json"})
+                            "systemic-accimap.json", "safety-moment-deck.json"})
 
 
 def _sample_render_problems(d) -> list:

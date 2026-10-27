@@ -343,6 +343,28 @@
     "skill": "people-workforce-learnings"
   },
   {
+    "id": "session-leaders",
+    "label": "Session leaders",
+    "typical_people": "supervisors, shift in-charges and trainers who lead a short safety moment or shift-start session",
+    "controls": "what a crew hears, discusses and practises in a ten-minute session",
+    "needs": "a short deck and poster: what happened, did you know, what you can do, questions to ask the crew",
+    "tier": "T2",
+    "levels": [
+      1,
+      2
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [
+        1,
+        2
+      ],
+      "tags": []
+    },
+    "reading_level": "plain",
+    "skill": "safety-moment-deck"
+  },
+  {
     "id": "leaders-and-peer-support",
     "label": "Leaders and peer support after an incident",
     "typical_people": "site and line leaders who respond to the people involved, peer supporters, employee-assistance and occupational-health contacts",

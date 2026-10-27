@@ -1,0 +1,216 @@
+{
+ "evals": [
+  {
+   "id": 6901,
+   "owner": "safety-moment-deck",
+   "skill": "safety-moment-deck",
+   "kind": "trigger",
+   "prompt": "I run the maintenance shift-start meeting tomorrow. From this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and its Learnings Register, make me a ten-minute safety moment: a few slides, a poster for the notice board and some questions to ask the crew.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "language_clean",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "safety-moment-deck",
+     "scope": {
+      "levels": [
+       1,
+       2
+      ]
+     }
+    },
+    {
+     "type": "section_exists",
+     "pack": "safety-moment-deck",
+     "section": "what-you-can-do"
+    },
+    {
+     "type": "section_exists",
+     "pack": "safety-moment-deck",
+     "section": "questions"
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-moment-deck"
+    }
+   ]
+  },
+  {
+   "id": 6902,
+   "owner": "safety-moment-deck",
+   "skill": null,
+   "not_skill": "safety-moment-deck",
+   "kind": "no-trigger",
+   "prompt": "Write a generic safety moment on working at height for Monday's toolbox talk.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 6903,
+   "owner": "safety-moment-deck",
+   "skill": "safety-moment-deck",
+   "sibling": "frontline-learning-cards",
+   "kind": "collision",
+   "prompt": "We already have the frontline Learning Cards for the Hazira export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). Now I need the session itself: a short beacon-style deck a supervisor can present, using the same learnings as the cards.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "language_clean",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-moment-deck"
+    }
+   ]
+  },
+  {
+   "id": 6904,
+   "owner": "safety-moment-deck",
+   "skill": "safety-moment-deck",
+   "sibling": "training-designer",
+   "kind": "collision",
+   "prompt": "Not a full course or an assessment: from this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), give our trainers a 3 to 6 slide safety moment with a one-minute narrated clip and captions.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "language_clean",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "section_exists",
+     "pack": "safety-moment-deck",
+     "section": "script"
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-moment-deck"
+    }
+   ]
+  },
+  {
+   "id": 6905,
+   "owner": "safety-moment-deck",
+   "skill": "safety-moment-deck",
+   "sibling": "supervisor-coach",
+   "kind": "collision",
+   "prompt": "I'm a shift in-charge. I don't need my own checklist, I need something to show my crew at the start of shift about the Hazira release (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): what happened, did you know, what you can do.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "language_clean",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "section_exists",
+     "pack": "safety-moment-deck",
+     "section": "did-you-know"
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-moment-deck"
+    }
+   ]
+  },
+  {
+   "id": 6906,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "sibling": "frontline-learning-cards",
+   "prompt": "Our supervisors want a safety-moment slide deck and poster from this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) for next week's toolbox sessions.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "safety-moment-deck"
+    }
+   ]
+  },
+  {
+   "id": 6907,
+   "owner": "safety-moment-deck",
+   "skill": "safety-moment-deck",
+   "kind": "trigger",
+   "prompt": "Make the safety moment from this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) as a PowerPoint deck plus the A3 poster.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "language_clean",
+     "pack": "safety-moment-deck"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "format": "pptx",
+      "layout": "poster"
+     }
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-moment-deck"
+    }
+   ]
+  }
+ ]
+}

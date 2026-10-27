@@ -1,0 +1,29 @@
+{"pack": "safety-moment-deck", "schema": 1, "title": "Safety Moment: Synthetic pump fire, 2024",
+ "audience": "Session leaders: supervisors and trainers giving a ten-minute safety moment",
+ "status": "Learning purposes: not a statutory document",
+ "bottom_line": [{"text": "A joint you opened is not proven until its leak test is recorded.", "learning": "LR-01",
+                  "cites": ["FND-0001", "EVD-0001"]}],
+ "scope": {"levels": [1, 2]},
+ "sections": [
+  {"id": "what-happened", "heading": "What happened", "items": [
+   {"kind": "para", "text": "A pump was restarted after a seal change without a leak test, and the seal leaked [FND-0001; EVD-0001]. The work order had no line for the test [FND-0002].", "learning": "LR-01"}]},
+  {"id": "did-you-know", "heading": "Did you know?", "items": [
+   {"kind": "para", "text": "The gas alarm on that pump only showed on a panel; it did not stop anything [FND-0004]."}]},
+  {"id": "what-you-can-do", "heading": "What you can do", "items": [
+   {"kind": "check", "text": "Ask for the signed leak-test record before any restart.", "learning": "LR-01",
+    "cites": ["FND-0001"]},
+   {"kind": "check", "text": "Check the new seal against the specification on the work order.", "cites": ["FND-0003"]}]},
+  {"id": "questions", "heading": "Questions for the crew", "items": [
+   {"kind": "question", "question": "Which job on our unit ends without a test we can show?",
+    "why": "The restart went ahead with no recorded test [FND-0001].",
+    "answer": "Any job that opens a pressure joint should end with a recorded leak test."},
+   {"kind": "question", "question": "What does our gas alarm do when it sounds?",
+    "why": "The alarm only displayed [FND-0004]."}]},
+  {"id": "script", "heading": "Narration", "items": [
+   {"kind": "script", "id": "moment-video", "title": "Before you restart", "channel": "video",
+    "purpose": "A one-minute clip to open the safety moment.", "cites": ["FND-0001"],
+    "segments": [
+     {"visual": "A pump on its skid after a seal change.", "narration": "This pump was restarted after a seal change, with no leak test.", "seconds": 20, "on_screen": "Test, record, restart"},
+     {"visual": "A fitter hands over a signed test sheet.", "narration": "Before any restart, ask for the signed leak-test record.", "seconds": 20}]}]}
+ ]
+}

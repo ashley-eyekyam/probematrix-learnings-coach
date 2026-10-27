@@ -124,5 +124,10 @@
     "file": "outputs/cihh-consolidated.json",
     "producer": "engine:consolidate",
     "org_filled": false
+  },
+  "frontline-learning-cards": {
+    "file": "outputs/frontline-learning-cards.json",
+    "producer": "skill:frontline-learning-cards",
+    "org_filled": false
   }
 }

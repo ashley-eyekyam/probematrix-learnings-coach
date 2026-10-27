@@ -4,7 +4,9 @@ bottom-line entry, one per decision, module and question item, one per other sec
 summaries a slide, then "(continued)" slides), one per graph item drawn as native shapes, and a closing slide with
 the coverage lines. Every slide carries the status phrase and the brand (which holds VERSION_STAMP) in a footer, and
 DRAFT while the pack is a draft. Each slide's citations and its items' full text go to its notes slide.
-A profile with "pptx_slides": 1 (Phase 6 Task 2) gives the title slide, one content slide and the closing slide."""
+A profile with "pptx_slides": 1 (Phase 6 Task 2) gives the title slide, one content slide and the closing slide.
+A profile with "pptx_slides": "sections" (Phase 6 Task 9, the safety-moment deck) gives one slide for the whole bottom
+line and one slide per section, with every item (questions too) as a summary on its section's slide."""
 from __future__ import annotations
 
 import html as px_std_html
@@ -48,6 +50,8 @@ PX_CHAR_EM = 0.52                                            # average character
 PX_LINE_EM = 1.2                                             # line height, in em
 PX_BULLET_IND = 342900                                       # a bullet paragraph's left margin, in EMU
 PX_OWN_SLIDE = ("decision", "module", "question")
+PX_SECTION_DECK = "sections"                                # profile "pptx_slides": one slide per section
+PX_SECTION_SUMMARY_MAX = 480                                # the section deck shows a short story in full
 PX_NOTES_ONLY = ("answer", "good_evidence")                # on a question slide these stay in the notes
 PX_DEFAULT_ACCENT = "0077B6"
 PX_TEXT = "1F2328"
@@ -369,17 +373,17 @@ def _px_records_block(deck: _PxDeck, ids) -> list:
     return ["", label(deck.L, "ui.pptx.cited_records") + ":"] + recs if recs else []
 
 
-def _px_section_slides(deck: _PxDeck, s: dict, inc_date) -> None:
+def _px_section_slides(deck: _PxDeck, s: dict, inc_date, own=PX_OWN_SLIDE, clip: int = PX_SUMMARY_MAX) -> None:
     L = deck.L
     items = [it for it in s.get("items") or [] if isinstance(it, dict)]
-    rest = [it for it in items if it.get("kind") not in PX_OWN_SLIDE and it.get("kind") != "graph"]
+    rest = [it for it in items if it.get("kind") not in own and it.get("kind") != "graph"]
     if items and not rest:
         return                                                   # every item has a slide of its own
     heading = s.get("heading", "")
     chunks = [rest[i:i + PX_PER_SLIDE] for i in range(0, len(rest), PX_PER_SLIDE)] or [[]]
     for k, chunk in enumerate(chunks):
         rows = [(s["intro"], "line")] if k == 0 and s.get("intro") else []
-        rows += [(_px_summary(it, L), "bullet") for it in chunk]
+        rows += [(_px_summary(it, L, clip), "bullet") for it in chunk]
         notes = [str(s["intro"])] if k == 0 and s.get("intro") else []
         ids = _px_ids(s.get("intro") or "") if k == 0 else []
         for n, it in enumerate(chunk, k * PX_PER_SLIDE + 1):
@@ -619,10 +623,28 @@ def _px_one_slide(deck: _PxDeck, pack: dict, inc_date) -> None:
              notes + _px_records_block(deck, list(dict.fromkeys(ids))))
 
 
-def _px_one_slide_wanted(pack: dict) -> bool:
+def _px_deck_mode(pack: dict):
+    """The profile's "pptx_slides": 1 (the one-slide deck), "sections" (the section deck) or None."""
     from ..pack.profiles import profile_for
     prof = profile_for(pack.get("pack"))
-    return isinstance(prof, dict) and prof.get("pptx_slides") == 1 and not isinstance(prof.get("pptx_slides"), bool)
+    v = prof.get("pptx_slides") if isinstance(prof, dict) else None
+    return v if (type(v) is int and v == 1) or v == PX_SECTION_DECK else None
+
+
+def _px_one_slide_wanted(pack: dict) -> bool:
+    return _px_deck_mode(pack) == 1
+
+
+def _px_bottom_line_slide(deck: _PxDeck, bl: list) -> None:
+    """The section deck: every bottom-line point on one slide, their citations in the notes."""
+    L, notes, ids = deck.L, [], []
+    for b in bl:
+        notes.append(str(b.get("text", "")))
+        if _px_ids(b):
+            notes.append(f"{label(L, 'f.cites')}: {'; '.join(_px_ids(b))}")
+        ids += _px_ids(b)
+    deck.add(label(L, "ui.bottom_line"), deck.body([(b.get("text", ""), "bullet") for b in bl]),
+             notes + _px_records_block(deck, list(dict.fromkeys(ids))))
 
 
 def _px_slides(ctx, L, st) -> _PxDeck:
@@ -635,7 +657,11 @@ def _px_slides(ctx, L, st) -> _PxDeck:
         _px_closing(deck, pack)
         return deck
     bl = [b for b in pack.get("bottom_line") or [] if isinstance(b, dict)]
-    for n, b in enumerate(bl, 1):
+    by_section = _px_deck_mode(pack) == PX_SECTION_DECK
+    own = () if by_section else PX_OWN_SLIDE
+    if by_section and bl:
+        _px_bottom_line_slide(deck, bl)
+    for n, b in enumerate([] if by_section else bl, 1):
         notes = [str(b.get("text", ""))]
         ids = _px_ids(b)
         if ids:
@@ -645,10 +671,10 @@ def _px_slides(ctx, L, st) -> _PxDeck:
     sections = [s for s in pack.get("sections") or [] if isinstance(s, dict)]
     for s in sections:
         for it in s.get("items") or []:
-            if isinstance(it, dict) and it.get("kind") in PX_OWN_SLIDE:
+            if isinstance(it, dict) and it.get("kind") in own:
                 _px_own_slide(deck, s.get("heading", ""), it, inc_date)
     for s in sections:
-        _px_section_slides(deck, s, inc_date)
+        _px_section_slides(deck, s, inc_date, own, PX_SECTION_SUMMARY_MAX if by_section else PX_SUMMARY_MAX)
     for s in sections:
         for it in s.get("items") or []:
             if isinstance(it, dict) and it.get("kind") == "graph":
