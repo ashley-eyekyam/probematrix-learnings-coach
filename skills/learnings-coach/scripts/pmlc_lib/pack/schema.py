@@ -200,6 +200,24 @@ def _ps_p5_risk_change() -> None:
 _ps_p5_risk_change()
 
 
+# Phase 6, Task 3 (P6-5): the self_check kind of could-it-happen-here. `templates <ws> cihh` writes one return-template
+# row per self_check item; the site's answer, response and assessor are never in the pack (D7).
+def _ps_p6_self_check() -> None:
+    KINDS["self_check"] = {"req": ["condition", "evidence_to_check"], "opt": ["lr_id", "look_in"], "cite": True,
+                           "fields": [["condition", "title"], ["lr_id", "badge"], ["evidence_to_check", "body"],
+                                      ["look_in", "body"]]}
+    INLINE_FIELDS["self_check"] = ["evidence_to_check", "look_in"]
+
+
+_ps_p6_self_check()
+
+
+def _check_self_check(it, ip, bad):
+    """self_check: lr_id, when given, is a register id (LR- and two or more digits)."""
+    if "lr_id" in it and not (isinstance(it["lr_id"], str) and LR_RX.fullmatch(it["lr_id"])):
+        bad(f"{ip}.lr_id", "must be LR- followed by two or more digits, e.g. LR-01")
+
+
 def _check_risk_change(it, ip, bad):
     """risk_change: change_type is one of RISK_CHANGE_TYPES."""
     if "change_type" in it and it["change_type"] not in RISK_CHANGE_TYPES:
@@ -530,7 +548,7 @@ def _check_item(it, ip, bad, warn):
     if kind == "question":
         _check_question(it, ip, bad, warn)
     {"script": _check_script, "scenario": _check_injects,
-     "risk_change": _check_risk_change}.get(kind, lambda *x: None)(it, ip, bad)
+     "risk_change": _check_risk_change, "self_check": _check_self_check}.get(kind, lambda *x: None)(it, ip, bad)
     if not spec.get("cite") and not any(True for _ in _walk_ids(_citable_item(it), "")):
         warn(ip, "no Finding or Evidence ID cited")
 

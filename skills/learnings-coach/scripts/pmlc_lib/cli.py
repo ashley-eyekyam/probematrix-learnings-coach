@@ -35,6 +35,8 @@ Subcommands
   index           write outputs/index.html, one row per pack
   dossier-index   write outputs/dossier-index.json listing the dossier-F*.json packs
   templates       blank adoption.csv, distribution.csv or verification.jsonl for the organisation to fill in
+                  (cihh: a could-it-happen-here return template for each site, from a pack's self_check items)
+  consolidate     the sites' could-it-happen-here returns -> cihh-consolidated.json and cihh-events.jsonl
   table-item      a ready table item for a pack (JSON on stdout)
   register-items  a tier's learnings from the register as learning items
   timeline-item   timeline candidates as a pack timeline item
@@ -96,6 +98,7 @@ from .register.render import cmd_register_render
 from .register.xlsx import cmd_register_xlsx
 from .samples import cmd_check_samples
 from .templates import cmd_templates, FILES as TEMPLATE_FILES
+from .cihh import cmd_consolidate
 from .actions import cmd_export_actions, PROFILE_NAMES
 from .select import cmd_select, COUNT_BY, SELECT_FIELDS
 from .util import HERE, industry_arg
@@ -133,6 +136,16 @@ def add_share_args(s):
     s.add_argument("--names", help="names file, one per line (default: $PMLC_NAMES); masked when shared, and in any "
                                    "mode the output is refused if one appears in it")
     s.add_argument("--orgs", help="organisation names file, one per line (default: $PMLC_ORGS)")
+
+
+def _cihh_share_flags(s):
+    """--share, --names and --orgs for templates cihh and consolidate (no --embed: they embed no records)."""
+    _lint_flags(s)
+    for act in s._actions:
+        if "--share" in act.option_strings:
+            act.help = ("cihh and consolidate: internal (default), or a masked copy for outside the organisation: "
+                        "external or public. Needs an approved sign-off of the pack with that classification and "
+                        "legal_review cleared; written as <name>.<mode>.<ext> and never over the internal copy")
 
 
 def add_embed_arg(s):
@@ -443,10 +456,23 @@ def build_parser():
     s.set_defaults(fn=cmd_dossier_index)
     s = sp.add_parser("templates", help="write adoption.csv, distribution.csv or verification.jsonl for the organisation to fill in", allow_abbrev=False)
     s.add_argument("ws")
-    s.add_argument("mode", choices=list(TEMPLATE_FILES))
+    s.add_argument("mode", choices=list(TEMPLATE_FILES) + ["cihh"])
     s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json)")
     s.add_argument("--out", help="file to write (default: <run>/outputs/<file>); never overwrites an existing file")
+    s.add_argument("--pack", help="cihh only (required): the could-it-happen-here pack JSON whose self_check items "
+                                  "become the rows of <run>/outputs/<pack>.cihh-template.xlsx")
+    _cihh_share_flags(s)
     s.set_defaults(fn=cmd_templates)
+
+    s = sp.add_parser("consolidate", help="read the sites' could-it-happen-here returns into cihh-consolidated.json "
+                      "(coverage and conditions, never a ranking of sites) and cihh-events.jsonl", allow_abbrev=False)
+    s.add_argument("ws")
+    s.add_argument("returns", nargs="+", metavar="RETURN", help="the filled return workbooks (.xlsx), one per site")
+    s.add_argument("--pack", required=True, help="the pack the templates were written from")
+    s.add_argument("--keep-going", dest="keep_going", action="store_true",
+                   help="report each bad return or row, then consolidate the good rows (default: write nothing)")
+    _cihh_share_flags(s)
+    s.set_defaults(fn=cmd_consolidate)
 
     s = sp.add_parser("export-actions", help="write actions.csv and actions.json from the packs and register", allow_abbrev=False)
     s.add_argument("ws")

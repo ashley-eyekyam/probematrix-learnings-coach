@@ -1564,6 +1564,9 @@
         },
         {
           "$ref": "#/$defs/item_risk_change"
+        },
+        {
+          "$ref": "#/$defs/item_self_check"
         }
       ]
     },
@@ -1737,6 +1740,64 @@
           "$ref": "#/$defs/text"
         },
         "proposed_change": {
+          "$ref": "#/$defs/text"
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "cites": {
+          "$ref": "#/$defs/cites_required"
+        },
+        "supporting_cites": {
+          "$ref": "#/$defs/cites"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/evidence_strength"
+        },
+        "group": {
+          "$ref": "#/$defs/text"
+        },
+        "lint_ok": {},
+        "learning": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "clauses": {
+          "$ref": "#/$defs/text_list"
+        },
+        "comparator_refs": {
+          "$ref": "#/$defs/comparator_refs"
+        },
+        "source_text": {
+          "type": "object",
+          "description": "Field name to the English source text (a translated pack)."
+        },
+        "back_translation": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "item_self_check": {
+      "type": "object",
+      "required": [
+        "kind",
+        "condition",
+        "evidence_to_check",
+        "cites"
+      ],
+      "properties": {
+        "kind": {
+          "const": "self_check"
+        },
+        "condition": {
+          "$ref": "#/$defs/text"
+        },
+        "evidence_to_check": {
+          "$ref": "#/$defs/text"
+        },
+        "lr_id": {
+          "$ref": "#/$defs/learning_id"
+        },
+        "look_in": {
           "$ref": "#/$defs/text"
         },
         "id": {

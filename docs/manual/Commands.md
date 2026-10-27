@@ -109,7 +109,8 @@ pmlc 2.0.0a4
 
 | Command | What it does |
 |---|---|
-| [templates](commands/templates.md) | Writes a blank adoption.csv, distribution.csv or verification.jsonl for your organisation to fill in |
+| [templates](commands/templates.md) | Writes a blank adoption.csv, distribution.csv or verification.jsonl for your organisation to fill in, or (`cihh`) a could-it-happen-here return template for each site |
+| [consolidate](commands/consolidate.md) | Reads the sites' could-it-happen-here returns into the coverage and conditions view (never a ranking of sites) and the site-assessment events |
 | [export-actions](commands/export-actions.md) | Writes actions.csv and actions.json (owner, due date and status left blank) for your action-tracking system |
 | [nine-m-actions-template](commands/nine-m-actions-template.md) | Writes a blank actions sheet from a nine-m-analysis pack (owner, due date and status left blank) |
 
@@ -178,7 +179,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,hfacs-profile,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,consolidate,export-actions,plan,compare,rec-review,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,hfacs-profile,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

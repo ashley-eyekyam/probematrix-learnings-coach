@@ -228,5 +228,10 @@
  "f.grade": "Grade",
  "ui.grade.alert": "Alert",
  "ui.grade.notice": "Notice",
- "ui.grade.information": "Information"
+ "ui.grade.information": "Information",
+ "k.self_check": "Could it happen here?",
+ "f.condition": "Condition to look for",
+ "f.lr_id": "Learning",
+ "f.evidence_to_check": "Evidence to check",
+ "f.look_in": "Where to look"
 }

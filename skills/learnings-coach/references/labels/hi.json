@@ -228,5 +228,10 @@
  "f.grade": "श्रेणी",
  "ui.grade.alert": "चेतावनी",
  "ui.grade.notice": "सूचना",
- "ui.grade.information": "जानकारी"
+ "ui.grade.information": "जानकारी",
+ "k.self_check": "क्या यह यहाँ हो सकता है?",
+ "f.condition": "देखने वाली स्थिति",
+ "f.lr_id": "सीख",
+ "f.evidence_to_check": "जाँचने वाला साक्ष्य",
+ "f.look_in": "कहाँ देखें"
 }

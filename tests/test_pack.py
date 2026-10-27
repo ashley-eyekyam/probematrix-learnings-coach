@@ -41,6 +41,7 @@ MIN = {
     "script": {"title": "t", "segments": [{"visual": "v", "narration": "n", "seconds": 30}], "cites": ["FND-0001"]},
     "risk_change": {"risk": "r", "change_type": "kri", "current_assumption": "a", "evidence_says": "e",
                     "proposed_change": "p", "cites": ["FND-0001"]},
+    "self_check": {"condition": "c", "evidence_to_check": "e", "cites": ["FND-0001"]},
 }
 
 
@@ -68,8 +69,8 @@ def problems(p, w):
     return pp.check_pack(p, w).problems
 
 
-def test_eighteen_kinds():
-    assert len(pp.KINDS) == 18 and sorted(pp.KINDS) == sorted(MIN)
+def test_nineteen_kinds():
+    assert len(pp.KINDS) == 19 and sorted(pp.KINDS) == sorted(MIN)
 
 
 @pytest.mark.parametrize("kind", sorted(MIN))

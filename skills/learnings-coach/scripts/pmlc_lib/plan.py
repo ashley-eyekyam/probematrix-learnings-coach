@@ -56,7 +56,10 @@ class _Resolver:
     def request(self, step: dict) -> None:
         sk = step["skill"]
         if sk.startswith("engine:"):
-            made = [a for a, d in self.artefacts.items() if d.get("producer") == sk]
+            # An artefact whose file name needs an input (outputs/<pack>.cihh-template.xlsx needs --pack) is made only
+            # when a skill asks for it, never by a bare engine step (Phase 6, Task 3).
+            made = [a for a, d in self.artefacts.items() if d.get("producer") == sk
+                    and (a == step.get("mode") or "<" not in str(d.get("file", "")))]
             if step.get("mode") in made:
                 made = [step["mode"]]
             self._node(sk, produces=made, mode=step.get("mode"), when=step.get("when"))
