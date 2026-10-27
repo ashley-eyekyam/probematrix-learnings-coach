@@ -1,0 +1,25 @@
+{
+ "_about": "AcciMap level placement (Phase 6 P6-7). Rasmussen's levels run from 1 (government) to 6 (work and equipment). Entities are tried first, then the HFACS level. A --map file may add 'keywords' (level -> regexes matched against a finding's roles and label), and may replace 'entities', 'hfacs_levels' or 'subcategories' entries. Placements at levels 1 to 3 are inferred.",
+ "version": 1,
+ "levels": {
+  "1": "Government policy and budgeting",
+  "2": "Regulatory bodies and associations",
+  "3": "Company management",
+  "4": "Technical and operational management",
+  "5": "Physical processes and actor activities",
+  "6": "Equipment and surroundings"
+ },
+ "entities": {
+  "F15": {"level": 2, "rule": "entity F15 (regulators and external bodies)"},
+  "F14": {"level": 3, "rule": "entity F14 (corporate and board)"},
+  "F16": {"level": 3, "rule": "entity F16 (vendors and suppliers)", "tag": "contractor"},
+  "F17": {"level": 3, "rule": "entity F17 (contractors)", "tag": "contractor"}
+ },
+ "subcategories": {
+  "Environmental Factors - Technological Environment": 6,
+  "Environmental Factors - Physical Environment": 6
+ },
+ "hfacs_levels": {"4": 3, "3": 4, "2": 5, "1": 5},
+ "inferred_up_to": 3,
+ "keywords": {}
+}

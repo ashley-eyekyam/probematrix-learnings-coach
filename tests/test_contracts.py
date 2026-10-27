@@ -117,7 +117,7 @@ def test_schema_keyword_subset():
 
 def test_artefact_names_closed():
     art = load(REFS / "artefacts.json")
-    assert len(art) == 19
+    assert len(art) == 20
     for name, a in art.items():
         assert set(a) <= {"file", "producer", "org_filled", "planned"}, name
         kind, _, who = a["producer"].partition(":")
@@ -190,6 +190,7 @@ PINNED_ARTEFACTS = {
     "causal_graph": ("workspace/causal_graph.json", "engine:causal", None),
     "timeline": ("workspace/timeline_candidates.json", "engine:timeline", None),
     "interfaces": ("workspace/interfaces.json", "engine:interfaces", None),
+    "accimap": ("workspace/accimap.json", "engine:accimap", None),
     "register": ("outputs/learnings-register.json", "skill:learnings-register", None),
     "gaps": ("outputs/gaps.json", "engine:pack", None),
     "comparator": ("workspace/comparator.json", "skill:report-comparison", None),
