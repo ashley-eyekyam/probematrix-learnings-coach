@@ -1,0 +1,34 @@
+{
+  "name": "restorative-response-guide",
+  "kind": "audience",
+  "audiences": [
+    "leaders-and-peer-support"
+  ],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      2,
+      3,
+      4
+    ],
+    "tags": []
+  },
+  "requires": [
+    "workspace"
+  ],
+  "optional_inputs": [
+    "register"
+  ],
+  "produces": {
+    "pack": "restorative-response-guide",
+    "files": []
+  },
+  "formats": [
+    "docx"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": []
+}
