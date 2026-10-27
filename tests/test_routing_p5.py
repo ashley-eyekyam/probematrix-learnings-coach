@@ -9,8 +9,12 @@ from test_evals import ROOT, all_evals, runner
 
 HUB = ROOT / "skills" / "learnings-coach" / "SKILL.md"
 FOLDERS = sorted(p.parent.name for p in (ROOT / "skills").glob("*/skill.json"))
+# Phase 6 skills also carry since 2.0.0; the Phase 5 checks below are about the nine Phase 5 skills only.
+P6_SKILLS = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+             "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"}
 NEW = sorted(s for s in FOLDERS
-             if json.loads((ROOT / "skills" / s / "skill.json").read_text(encoding="utf-8")).get("since") == "2.0.0")
+             if json.loads((ROOT / "skills" / s / "skill.json").read_text(encoding="utf-8")).get("since") == "2.0.0"
+             and s not in P6_SKILLS)
 BASE_EVALS = 134            # evals.json at the start of Phase 5 (117ad35)
 
 
@@ -33,7 +37,7 @@ def _router_target(e) -> str:
 
 
 def test_new_skills_are_the_nine():
-    assert len(NEW) == 9, NEW
+    assert len([s for s in NEW if s not in P6_SKILLS]) == 9, NEW          # the Phase 5 nine
 
 
 def test_hub_step2_routes_every_skill_folder():

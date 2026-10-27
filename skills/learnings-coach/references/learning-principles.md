@@ -12,6 +12,13 @@ People inside the organisation will read these outputs, including the people who
 - Never name individuals. Use roles only. If a source contains a personal name, replace it with the role.
 - Prefer system fixes. "Retrain" and "remind" are the weakest controls; use them only alongside a stronger control, and say so.
 
+### After the event: a restorative response to the people involved
+
+For leaders and peer supporters after an incident (the `restorative-response-guide` skill). Each is a method reference, not evidence about the incident:
+
+- **Restorative questions** (Dekker, "Just Culture: Restoring Trust and Accountability in Your Organization", 3rd ed., 2016; unverified): ask who is hurt, what do they need, and whose obligation is it to meet that need, instead of asking which rule was broken and who broke it. The export never answers the first two: they are questions to ask the people themselves.
+- **Second victim** (Wu, "Medical error: the second victim", BMJ, 2000; unverified): the people involved in an event, including those whose acts appear in the findings, can be harmed by it too, and need support that is kept apart from the investigation.
+
 ## 1a. Hindsight: judge what was knowable then
 
 An investigation knows the outcome; the people at the time did not. Outcome bias turns "this led to the fire" into "they should have seen it". Before you write a sentence about what someone did or did not do, apply the **knowable-then test**:

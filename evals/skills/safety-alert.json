@@ -1,0 +1,179 @@
+{
+ "evals": [
+  {
+   "id": 701,
+   "owner": "safety-alert",
+   "skill": "safety-alert",
+   "kind": "trigger",
+   "prompt": "From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and its learnings register, write a one-page safety alert for our other gas terminals: what happened, what they should check now, and the grade.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "language_clean",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "section_exists",
+     "pack": "safety-alert",
+     "section": "checks"
+    },
+    {
+     "type": "coverage_min",
+     "pack": "safety-alert",
+     "ratio": 0.25
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-alert"
+    }
+   ]
+  },
+  {
+   "id": 702,
+   "owner": "safety-alert",
+   "skill": null,
+   "not_skill": "safety-alert",
+   "kind": "no-trigger",
+   "prompt": "Draft the statutory accident notice we must file with the state factories inspectorate after the fire.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 703,
+   "owner": "safety-alert",
+   "skill": "safety-alert",
+   "sibling": "frontline-learning-cards",
+   "kind": "collision",
+   "prompt": "Not cards for our own crews to keep: a short flash alert other sites can pin up this week, from this investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "language_clean",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-alert"
+    }
+   ]
+  },
+  {
+   "id": 704,
+   "owner": "safety-alert",
+   "skill": "safety-alert",
+   "sibling": "board-brief",
+   "kind": "collision",
+   "prompt": "The board does not need this one: send our sister sites a lessons-learned bulletin with what to check now, from the ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "language_clean",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-alert"
+    }
+   ]
+  },
+  {
+   "id": 705,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "sibling": "frontline-learning-cards",
+   "prompt": "We need a safety bulletin graded alert, notice or information for the rest of the industry after the condensate fire, based on this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx).",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "safety-alert"
+    }
+   ]
+  },
+  {
+   "id": 706,
+   "owner": "safety-alert",
+   "skill": "safety-alert",
+   "kind": "trigger",
+   "prompt": "Make the safety alert from this ProbeMatrix investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) as a single slide for the morning meeting and an A3 poster for the noticeboard.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "language_clean",
+     "pack": "safety-alert"
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "format": "pptx"
+     },
+     "contains": [
+      "safety-alert.json"
+     ]
+    },
+    {
+     "type": "command_contains",
+     "command": "pack",
+     "flags": {
+      "layout": "poster"
+     },
+     "contains": [
+      "safety-alert.json"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "safety-alert"
+    }
+   ]
+  }
+ ]
+}

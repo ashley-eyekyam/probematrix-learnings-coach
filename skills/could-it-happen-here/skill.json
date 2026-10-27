@@ -1,0 +1,33 @@
+{
+  "name": "could-it-happen-here",
+  "kind": "audience",
+  "audiences": [
+    "sister-sites-hse"
+  ],
+  "scope": {
+    "tiers": [],
+    "levels": [
+      2,
+      3,
+      4
+    ],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "register"
+  ],
+  "optional_inputs": [],
+  "produces": {
+    "pack": "could-it-happen-here",
+    "files": []
+  },
+  "formats": [
+    "docx"
+  ],
+  "share_default": "external",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": []
+}
