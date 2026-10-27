@@ -10,7 +10,7 @@ The folder holds JSON Lines files, one JSON object a line. Lines are only ever a
 |---|---|
 | `library.json` | `{"kind": "pmlc-library", "version": 1}`. Written when the folder is new or empty |
 | `learnings.jsonl` | One snapshot of a learning a line: its `LL-` ID, `snapshot_id` (`LL-000001#1`), `supersedes`, `incident_key`, `lr_id`, `content_hash`, `review_status` and the `learning` itself |
-| `events.jsonl` | Things that happen to a learning: `withdrawn`, and `status` (a learning back in the register, or a new review status) |
+| `events.jsonl` | Things that happen to a learning: `withdrawn`, and `status` (a learning back in the register, or a new review status). Each of these names the event it follows in `data.after`, so every change is kept |
 | `incidents.jsonl` | One line for each published state of an incident: `incident_key`, the incident month, the taxonomy version and fingerprint, the export fingerprint, the engine version, the month it was published and its `LL-` IDs |
 | `private/contexts.jsonl` | Each snapshot's original `context`. Nothing under `private/` is shared |
 
@@ -46,8 +46,8 @@ pmlc library publish ws [--register REGISTER] [--library LIBRARY] [--site SITE] 
 |---|---|---|---|
 | `--register` | file | `<run>/outputs/learnings-register.json` | The register to publish |
 | `--library` | folder | `$PMLC_LIBRARY` | The library folder. A new or empty folder becomes a library on the first publish |
-| `--site` | text | the export's Site or Location field | The site's real name, kept in `private/sites.json` and coded `S01`… in the library |
-| `--names` | file | `$PMLC_NAMES` | Names, one a line, for the zero-hit name check before anything is written |
+| `--site` | text | the export's Site or Location field | The site's real name, to be kept in `private/sites.json` and coded `S01`… in the library. Not applied yet in this alpha: the command prints a note and the site is not coded |
+| `--names` | file | `$PMLC_NAMES` | Names, one a line, for the zero-hit name check before anything is written. Not applied yet in this alpha: no name check runs, and `public_context` holds the register's context as written. Publish synthetic data only |
 | `--dry-run` | none | off | Print what would be added and write nothing |
 | `-h`, `--help` | none | | Show the flags and stop |
 
@@ -82,13 +82,15 @@ Publishing it again prints "nothing to append: the library already holds this ru
 - **"… is not a library: it holds other files and no library.json; choose a new or empty folder"**. The folder holds other files. Choose a new or empty folder, or the library's own folder. Exit code 2.
 - **"learnings.jsonl: the last line is cut short (it has no line end)"**, then **"library publish refused: the library at … is damaged, so nothing was written"**. A file was cut off, for example by a full disk or a copy that stopped. Restore it from a backup. Exit code 1.
 - **"learnings.jsonl: LL-000001 is used for two learnings …"**. Someone edited the file by hand. Restore it from a backup. Exit code 1.
+- **"learnings.jsonl: the learning INC-…/LR-01 has two LL- IDs …"**. Someone edited the file by hand. Restore it from a backup. Exit code 1.
+- **Two publishes at once.** Nothing locks the library, and each file gets its own append. Publish one run at a time, and keep a backup of the folder.
 - **"library publish reads a learnings register, and … is not one"**. You passed a pack or another JSON file. Exit code 2.
 - **"library publish: LR-01 appears twice in the register …"**. Give each learning its own LR-ID. Exit code 2.
 - **"library publish: … has no clusters.json: run classify (or setup) first"**. Exit code 2.
 
 ## Related
 
-- [scan-names](scan-names.md) is the name check the library uses before it writes.
+- [scan-names](scan-names.md) is the name check the library is to use before it writes (not applied yet in this alpha).
 - [templates](templates.md) writes the files your organisation fills in, such as `verification.jsonl` and `adoption.csv`.
-- [consolidate](consolidate.md) writes the sites' could-it-happen-here returns as site-assessment events.
+- [consolidate](consolidate.md) writes the sites' could-it-happen-here returns, which a later alpha publishes as site-assessment events.
 - [sign-off](sign-off.md) records a person's review of the register; the library records the review status it gives.

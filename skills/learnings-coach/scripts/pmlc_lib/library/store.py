@@ -104,7 +104,7 @@ class Library:
                 miss = [k for k in LIBRARY_REQUIRED[name] if k not in v]
                 if miss:
                     probs.append(f"{name} line {n} has no {', '.join(miss)}")
-        owner, snaps = {}, set()
+        owner, keyed, snaps = {}, {}, set()
         for n, s in enumerate(self.learnings(), 1):
             ll, key = s.get("ll_id"), (s.get("incident_key"), s.get("lr_id"))
             if not isinstance(ll, str) or not LIBRARY_LL_RX.match(ll):
@@ -113,6 +113,9 @@ class Library:
             if owner.setdefault(ll, key) != key:
                 probs.append(f"learnings.jsonl: {ll} is used for two learnings "
                              f"({owner[ll][0]}/{owner[ll][1]} and {key[0]}/{key[1]})")
+            if keyed.setdefault(key, ll) != ll:
+                probs.append(f"learnings.jsonl: the learning {key[0]}/{key[1]} has two LL- IDs "
+                             f"({keyed[key]} and {ll})")
             sid = s.get("snapshot_id")
             if sid in snaps:
                 probs.append(f"learnings.jsonl: the snapshot {sid} appears twice")

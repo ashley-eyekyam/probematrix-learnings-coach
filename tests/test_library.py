@@ -251,7 +251,8 @@ def test_taxonomy_fingerprint_recorded(wss, tmp_path):
 
 def test_publish_migrates_v03_register(wss, tmp_path):
     lib = tmp_path / "lib"
-    pub(wss["A"], FIX / "register-v03.json", lib)
+    out = pub(wss["A"], FIX / "register-v03.json", lib).stdout
+    assert "note: the register has no context, hfacs_level, org_system" in out     # review r0 m4
     snaps = lines(lib, "learnings.jsonl")
     assert [s["lr_id"] for s in snaps] == ["LR-01", "LR-02"]
     one, two = (s["learning"] for s in snaps)
@@ -371,3 +372,67 @@ def test_copy_of_library_keeps_working(wss, tmp_path):
     shutil.copytree(lib, moved)
     pub(wss["B"], reg(tmp_path, "register-b.json"), moved)
     assert lines(moved, "learnings.jsonl")[-1]["ll_id"] == "LL-000005"
+
+
+def test_withdraw_cycle_keeps_every_event(wss, tmp_path):
+    """Review r0 C1: full, drop, full, drop in one month gives withdrawn, reinstated, withdrawn, and the printed
+    counts match what was appended."""
+    lib = tmp_path / "lib"
+    full = reg(tmp_path)
+
+    def drop(d):
+        d["entries"] = [e for e in d["entries"] if e["lr_id"] != "LR-03"]
+    part = reg(tmp_path, edit=drop)
+    pub(wss["A"], full, lib)
+    assert "1 withdrawn" in pub(wss["A"], part, lib).stdout
+    assert "1 reinstated" in pub(wss["A"], full, lib).stdout
+    out = pub(wss["A"], part, lib).stdout
+    assert "1 withdrawn" in out and "events.jsonl: 1" in out
+    ev = lines(lib, "events.jsonl")
+    assert [(e["type"], e["data"].get("status")) for e in ev] == [
+        ("withdrawn", None), ("status", "reinstated"), ("withdrawn", None)]
+    assert "after" not in ev[0]["data"]
+    assert ev[1]["data"]["after"] == ev[0]["event_hash"] and ev[2]["data"]["after"] == ev[1]["event_hash"]
+    assert len({e["event_hash"] for e in ev}) == 3
+    for e in ev:
+        body = {k: v for k, v in e.items() if k != "event_hash"}
+        assert e["event_hash"] == hashlib.sha256(lib_store.canonical(body).encode("utf-8")).hexdigest()
+    before = snapshot_bytes(lib)
+    out = pub(wss["A"], part, lib).stdout     # still withdrawn: nothing more, and nothing counted
+    assert snapshot_bytes(lib) == before and "0 withdrawn" in out and "nothing to append" in out
+
+
+def test_review_status_toggle_keeps_every_event(wss, tmp_path, monkeypatch):
+    """Review r0 C1: approved, draft, approved in one month gives three status events per learning."""
+    from pmlc_lib.library import publish as lib_publish
+    lib = tmp_path / "lib"
+    r = reg(tmp_path)
+    pub(wss["A"], r, lib)
+    a = pmlc.build_parser().parse_args(["library", "publish", str(wss["A"]), "--register", str(r),
+                                        "--library", str(lib)])
+    for st in ("approved", "draft", "approved"):
+        monkeypatch.setattr(lib_publish, "_publish_status", lambda doc, w, src, ws, st=st: st)
+        a.fn(a)
+    ev = [e for e in lines(lib, "events.jsonl") if e["ll_id"] == "LL-000001"]
+    assert [e["data"]["review_status"] for e in ev] == ["approved", "draft", "approved"]
+    assert len({e["event_hash"] for e in ev}) == 3
+
+
+def test_validate_one_learning_two_ids(tmp_path):
+    """Review r0 m2: one (incident_key, lr_id) recorded under two LL- IDs is reported."""
+    lib = tmp_path / "lib"
+    lib.mkdir()
+    (lib / "library.json").write_text('{"kind": "pmlc-library", "version": 1}', encoding="utf-8")
+    row = {"incident_key": "INC-0000000000", "lr_id": "LR-01", "content_hash": "x", "learning": {}}
+    (lib / "learnings.jsonl").write_text(
+        "".join(lib_store.canonical(dict(row, ll_id=ll, snapshot_id=f"{ll}#1")) + "\n"
+                for ll in ("LL-000001", "LL-000002")), encoding="utf-8")
+    probs = pmlc.open_library(lib).validate()
+    assert any("INC-0000000000/LR-01 has two LL- IDs (LL-000001 and LL-000002)" in p for p in probs)
+
+
+def test_incident_key_without_basis_is_a_library_error():
+    """Review r0 m3."""
+    from pmlc_lib.library.ids import incident_key
+    with pytest.raises(lib_store.LibraryError):
+        incident_key({"incident": {"fields": {}}, "slug": " "})

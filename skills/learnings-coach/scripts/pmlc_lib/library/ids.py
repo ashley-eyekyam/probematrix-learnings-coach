@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 
-from .store import LIBRARY_LL_RX, Library
+from .store import LIBRARY_LL_RX, Library, LibraryError
 
 INCIDENT_NUMBER_FIELD = "Incident Number"
 
@@ -19,7 +19,7 @@ def incident_key(w: dict) -> str:
     fields = (w.get("incident") or {}).get("fields") or {}
     basis = str(fields.get(INCIDENT_NUMBER_FIELD) or "").strip() or str(w.get("slug") or "").strip()
     if not basis:
-        raise ValueError("the export has no Incident Number and the run has no slug")
+        raise LibraryError("the export has no Incident Number and the run has no slug, so the incident has no key")
     return "INC-" + hashlib.sha256(basis.encode("utf-8")).hexdigest()[:10]
 
 

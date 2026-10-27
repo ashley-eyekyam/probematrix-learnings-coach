@@ -29,6 +29,7 @@ PUBLISH_FIELDS = (("title", "title"), ("lesson", "lesson"), ("public_context", "
                   ("priority", "priority"), ("transferability", "transferability"),
                   ("evidence_strength", "evidence_strength"), ("urgency", "urgency"))
 PUBLISH_REFS = (("finding_refs", "finding_ids"), ("evidence_refs", "evidence_ids"))
+PUBLISH_STATE_EVENTS = ("withdrawn", "status")
 PUBLISH_DAMAGED = ("library publish refused: the library at {path} is damaged, so nothing was written. Restore the "
                    "file from a backup, then publish again")
 
@@ -159,10 +160,12 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
     for s in lib.learnings():
         latest[s["ll_id"]] = s
         count[s["ll_id"]] = count.get(s["ll_id"], 0) + 1
-    withdrawn, ev_status, ev_hashes = {}, {}, set()
+    withdrawn, ev_status, ev_hashes, last_state = {}, {}, set(), {}
     for e in lib.events():
         ev_hashes.add(e.get("event_hash"))
         data = e.get("data") if isinstance(e.get("data"), dict) else {}
+        if e.get("type") in PUBLISH_STATE_EVENTS:
+            last_state[e.get("ll_id")] = e.get("event_hash")
         if e.get("type") == "withdrawn":
             withdrawn[e.get("ll_id")] = True
         elif e.get("type") == "status" and data.get("status") == "reinstated":
@@ -195,9 +198,8 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
             counts["unchanged"] += 1
             known = ev_status.get((s["ll_id"], prev["snapshot_id"]), prev.get("review_status"))
             if known != status:
-                counts["status"] += 1
-                events.append(_publish_event("status", s["ll_id"], ikey, published,
-                                             {"review_status": status, "snapshot_id": prev["snapshot_id"]}))
+                events.append(("status", None, _publish_event("status", s["ll_id"], ikey, published,
+                               {"review_status": status, "snapshot_id": prev["snapshot_id"]})))
         else:
             counts["superseded" if prev else "new"] += 1
             out["learnings.jsonl"].append(s)
@@ -206,23 +208,33 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
                 out["private/contexts.jsonl"].append({"ll_id": s["ll_id"], "snapshot_id": s["snapshot_id"],
                                                       "context": e["context"]})
         if withdrawn.get(s["ll_id"]):
-            counts["reinstated"] += 1
             last = prev["snapshot_id"] if prev else s["snapshot_id"]
-            events.append(_publish_event("status", s["ll_id"], ikey, published,
-                                         {"status": "reinstated", "snapshot_id": last}))
-            report.append(f"  + reinstated {s['ll_id']} ({s['lr_id']})")
+            events.append(("reinstated", f"  + reinstated {s['ll_id']} ({s['lr_id']})",
+                           _publish_event("status", s["ll_id"], ikey, published,
+                                          {"status": "reinstated", "snapshot_id": last})))
     here = set(lls)
     for ll, s in sorted(latest.items()):
         if s.get("incident_key") == ikey and ll not in here and not withdrawn.get(ll):
-            counts["withdrawn"] += 1
-            events.append(_publish_event("withdrawn", ll, ikey, published,
-                                         {"lr_id": s["lr_id"], "snapshot_id": s["snapshot_id"]}))
-            report.append(f"  + withdrawn {ll} ({s['lr_id']})")
-    for _, ev in _publish_deidentify([("events.jsonl", ev) for ev in events], ctx):
+            events.append(("withdrawn", f"  + withdrawn {ll} ({s['lr_id']})",
+                           _publish_event("withdrawn", ll, ikey, published,
+                                          {"lr_id": s["lr_id"], "snapshot_id": s["snapshot_id"]})))
+    public_ev = _publish_deidentify([("events.jsonl", ev) for _, _, ev in events], ctx)
+    for (kind, line, _), (_, ev) in zip(events, public_ev):
+        # A state event names the state event it follows (data.after), so each transition hashes uniquely: a
+        # withdraw -> reinstate -> withdraw cycle in one month keeps its second withdrawal (review r0, C1).
+        after = last_state.get(ev["ll_id"])
+        if after and isinstance(ev.get("data"), dict):
+            ev["data"]["after"] = after
+        ev.pop("event_hash", None)
         ev["event_hash"] = _publish_hash(ev)
-        if ev["event_hash"] not in ev_hashes:
-            ev_hashes.add(ev["event_hash"])
-            out["events.jsonl"].append(ev)
+        if ev["event_hash"] in ev_hashes:
+            continue
+        ev_hashes.add(ev["event_hash"])
+        last_state[ev["ll_id"]] = ev["event_hash"]
+        out["events.jsonl"].append(ev)
+        counts[kind] += 1                 # count only what is appended
+        if line:
+            report.append(line)
 
     def _same(x):
         return {k: v for k, v in x.items() if k != "published"}
@@ -230,7 +242,8 @@ def plan_publish(lib, ws: Path, reg_path: Path, ctx: dict) -> dict:
     if last_inc is None or canonical(_same(last_inc)) != canonical(_same(inc)):
         out["incidents.jsonl"].append(inc)
         report.append(f"  + incident {ikey} ({len(lls)} learnings)")
-    return {"lines": out, "counts": counts, "report": report, "incident_key": ikey}
+    missing = [src for _, src in PUBLISH_FIELDS if all(_publish_absent(e.get(src)) for e in entries)]
+    return {"lines": out, "counts": counts, "report": report, "incident_key": ikey, "missing": missing}
 
 
 def cmd_library(a):
@@ -251,13 +264,22 @@ def cmd_library(a):
     else:
         from ..workspace import outputs_dir
         reg = outputs_dir(ws) / "learnings-register.json"
-    plan = plan_publish(lib, ws, reg, {"site": a.site, "names": a.names})
+    try:
+        plan = plan_publish(lib, ws, reg, {"site": a.site, "names": a.names})
+    except LibraryError as e:
+        _publish_fail(f"library publish: {e}", e.code)
     lines, c = plan["lines"], plan["counts"]
     total = sum(len(v) for v in lines.values())
     head = "library publish (dry run: nothing written)" if a.dry_run else "library publish"
     print(f"{head}: {lib.path}{' (new library)' if lib.new else ''}")
     print(f"incident {plan['incident_key']}: {c['new']} new, {c['superseded']} superseded, {c['unchanged']} unchanged, "
           f"{c['withdrawn']} withdrawn, {c['reinstated']} reinstated, {c['status']} status changes")
+    if plan["missing"]:
+        print("note: the register has no " + ", ".join(plan["missing"]) + " in any learning (an older register), "
+              "so the snapshots leave them out")
+    if a.site or a.names:
+        print("note: this version does not apply --site or --names yet: the site is not coded and no name check "
+              "runs, so publish synthetic data only", file=sys.stderr)
     if not total:
         print("nothing to append: the library already holds this run as it stands")
         return
