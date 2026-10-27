@@ -1,0 +1,142 @@
+{
+ "evals": [
+  {
+   "id": 6801,
+   "owner": "could-it-happen-here",
+   "skill": "could-it-happen-here",
+   "kind": "trigger",
+   "prompt": "Using the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and its learnings register, could this happen at our other gas terminals? Give each site a self-check to work through.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "could-it-happen-here"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "could-it-happen-here"
+    },
+    {
+     "type": "language_clean",
+     "pack": "could-it-happen-here"
+    },
+    {
+     "type": "scope_equals",
+     "pack": "could-it-happen-here",
+     "scope": {
+      "tiers": [],
+      "levels": [
+       2,
+       3,
+       4
+      ],
+      "tags": []
+     }
+    },
+    {
+     "type": "section_exists",
+     "pack": "could-it-happen-here",
+     "section": "self-checks"
+    },
+    {
+     "type": "routes_to",
+     "skill": "could-it-happen-here"
+    }
+   ]
+  },
+  {
+   "id": 6802,
+   "owner": "could-it-happen-here",
+   "skill": null,
+   "not_skill": "could-it-happen-here",
+   "kind": "no-trigger",
+   "prompt": "Rank our five plants from safest to least safe so we know where to send the inspectors first.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 6803,
+   "owner": "could-it-happen-here",
+   "skill": "could-it-happen-here",
+   "sibling": "top-management-brief",
+   "kind": "collision",
+   "prompt": "Not the executive brief: our sister-site HSE managers need a checklist from this investigation (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) to check whether the same conditions exist at their sites.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "could-it-happen-here"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "could-it-happen-here"
+    },
+    {
+     "type": "language_clean",
+     "pack": "could-it-happen-here"
+    },
+    {
+     "type": "routes_to",
+     "skill": "could-it-happen-here"
+    }
+   ]
+  },
+  {
+   "id": 6804,
+   "owner": "learnings-coach",
+   "kind": "router",
+   "sibling": "top-management-brief",
+   "prompt": "Each of our other refineries should assess itself against the conditions behind this incident (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): what to look for, which records to check and where.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "could-it-happen-here"
+    }
+   ]
+  },
+  {
+   "id": 6805,
+   "owner": "could-it-happen-here",
+   "skill": "could-it-happen-here",
+   "kind": "trigger",
+   "prompt": "Make the blank return template for our sister sites from this ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), so each site can fill in present, partly, absent or n/a.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "could-it-happen-here"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "could-it-happen-here"
+    },
+    {
+     "type": "command_contains",
+     "command": "templates",
+     "contains": [
+      "cihh",
+      "could-it-happen-here.json"
+     ]
+    },
+    {
+     "type": "routes_to",
+     "skill": "could-it-happen-here"
+    }
+   ]
+  }
+ ]
+}

@@ -9,7 +9,7 @@
 
 **One investigation. Every level of the organisation learns.**
 
-An open-source plugin of 34 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
+An open-source plugin of 39 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
 
 Works with **Claude Code**, **Claude (Cowork / desktop)** and **OpenAI Codex**, and any agent that reads the Agent Skills format or `AGENTS.md`.
 
@@ -37,7 +37,20 @@ Audit test points · Investigator follow-up · Training modules · ER drills · 
 
 ## What's new in v2.0 so far
 
-v2.0 is in testing (current build: 2.0.0-alpha.7, Phase 5: new skills, wave 1). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+v2.0 is in testing (current build: 2.0.0-alpha.8, Phase 6: new skills, wave 2, and the library foundation). This guide still describes 0.3.5 in places; it is rewritten in full before v2.0.0.
+
+**Phase 6 (2.0.0-alpha.8):**
+
+- **Seven new skills take the learning to other sites and into the room.** v2.0 ends with 39 skills.
+  - **Other sites.** `safety-alert` writes a one-page alert graded alert, notice or information, as Word, a one-slide deck, an email and an A3 poster. The grade comes from the register's urgency; when the register gives none, the coach suggests one from the learning's priority and asks you. An alert for sister sites or the industry stays a review copy until it is approved and shared as a masked copy. `could-it-happen-here` turns each transferable learning into a self-check, writes a return template for each site, and `consolidate` gathers the returns into a view of coverage and conditions that never ranks one site against another.
+  - **Into the room.** `safety-moment-deck` is a 3 to 6 slide deck with a poster and optional narration for a short session. `learning-team-facilitator` prepares a learning-team session: where work as imagined and work as done differ, "what made sense at the time" questions, a 60 to 90 minute plan and a blank notes sheet only the team fills in.
+  - **The people involved.** `restorative-response-guide` gives leaders and peer supporters the restorative questions to ask, the organisation's obligations and second-victim support. The export holds nothing about the people affected, so every need is a question, never an assumption.
+  - **The wider system.** `systemic-accimap` places the findings on Rasmussen's six AcciMap levels, from government to equipment, shows the levels the export does not reach, and asks a person to confirm every placement above the company level.
+  - **Did it stick?** `learning-effectiveness-plan` sets out what to check for each learning and when, counted from adoption (30 days, 90 days, 12 months), at the Kirkpatrick levels from "communicated" to "effective", with a leading and a lagging indicator each. Owners, dates and statuses stay with you.
+- **The learnings library begins.** `library publish` adds a finished run's learnings to an opt-in folder that keeps learnings from many incidents, with IDs that stay the same when a learning is reworded. Lines are only ever added. Before anything is written, every line passes a de-identification gate: no listed name, sites as codes, months instead of days. Nothing in the samples is a library.
+- **New engine commands behind the skills:** `alert-grade`, `templates cihh`, `consolidate`, `wai-wad` (work as imagined against work as done), `templates learning-team`, `accimap` and `effect-plan`.
+- **Owners and dates stay with you.** The site return, the learning-team notes sheet and the effectiveness plan leave every owner, date, answer and status blank, and the effectiveness checks are offsets from adoption, never calendar dates.
+- **Coming in v2.1.** The multi-incident skills (learning verification, repeat learnings, portfolio trends, change and task lessons, and a learning-from-incidents health check) and the views that read across the library come in v2.1.
 
 **Phase 5 (2.0.0-alpha.7):**
 
@@ -100,6 +113,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.7, Phase 5: new skills, wave 1). 
 | `learnings-register` | HSE, management | Learnings Register (.md + .xlsx) with recommendations |
 | `causal-map` | investigators, leaders | causal graph and pathway stories |
 | `latent-conditions-profile` | corporate HSE, top management | HFACS heat map, recurring and upstream factors, level 3–4 share |
+| `systemic-accimap` | corporate HSE, site leaders, investigators | AcciMap of the findings on six system levels, government to equipment, with the gaps to confirm |
 | `precursor-timeline` | leaders, auditors | dated weak signals and how they were handled |
 | `failure-to-learn-review` | site leadership, top management, board | which step of the learning cycle broke, and why earlier warnings did not lead to change |
 | `interface-learnings` | managers | what fell between departments |
@@ -119,13 +133,17 @@ v2.0 is in testing (current build: 2.0.0-alpha.7, Phase 5: new skills, wave 1). 
 | `board-brief` | board, safety committee of the board | governance learnings, questions to ask, assurance |
 | `auditor-assurance-pack` | auditors, inspectors, insurers | audit test points, sampling, evidence requests |
 | `investigator-coach` | investigators, HSE professionals | evidence gaps, key questions, interviews, method |
+| `learning-team-facilitator` | learning-team facilitators and the people who do the work | work as imagined against work as done, "what made sense at the time" questions, a 60–90 minute session plan, a blank notes sheet |
 | `training-designer` | L&D, instructors | training-needs map, modules, assessments |
+| `safety-moment-deck` | supervisors and trainers leading a short session | a 3 to 6 slide deck, a one-page poster, narration and captions |
 | `emergency-response-learnings` | fire services, ERT, incident command | response timeline, plan gaps, drills |
 | `engineering-integrity-learnings` | engineering, integrity, MOC, I&C | technical learnings and decisions |
 | `supply-chain-contractor-learnings` | procurement, stores, vendors, contractors | sourcing and contractor learnings |
 | `risk-register-update` | ERM leads, risk owners, insurers' risk engineers | proposed risk-register and bow-tie changes, risk-changes CSV |
 | `people-workforce-learnings` | HR, workforce planning, rostering, competence frameworks | people-system learnings, competence-framework changes |
 | `restorative-response-guide` | site and line leaders, peer supporters, employee assistance | restorative questions to ask the people involved, obligations, second-victim support |
+| `could-it-happen-here` | HSE managers and advisers at the organisation's other sites | a self-check per transferable learning, a return template for each site, a consolidated view that never ranks sites |
+| `safety-alert` | other sites, sister sites, peer operators | a one-page graded alert (alert, notice or information): Word, one-slide deck, email, A3 poster |
 | `safety-committee-guide` | safety committees, workforce reps | discussion guide and questions |
 
 All skills share one engine, `skills/learnings-coach/scripts/pmlc.py`, which does the counting, filtering, causal extraction and file writing deterministically, so the model spends its effort on judgement.

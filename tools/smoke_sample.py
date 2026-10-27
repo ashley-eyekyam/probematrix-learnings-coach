@@ -7,7 +7,8 @@ Checks: ingest cross-check, finding and evidence counts, check-register (also --
 the sample register, facts --json, plan --workflow for every preset, every fixture pack under --strict, and the
 Phase 4 exit-gate format loop: every Hazira golden pack (every pack JSON in outputs/) passes check-pack --strict and renders in
 html,md,docx,pptx,email,csv (each docx and pptx a sound package). Every pack skill (the hub and the register
-aside; the nine Phase 5 skills among them) must have a golden in that loop, or the smoke run fails naming it.
+aside; the nine Phase 5 and the Phase 6 skills among them) must have a golden in that loop, or the smoke run
+fails naming it.
 """
 import json
 import os

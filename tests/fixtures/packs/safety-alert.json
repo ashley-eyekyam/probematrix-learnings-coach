@@ -1,0 +1,26 @@
+{"pack": "safety-alert", "skill": "safety-alert", "schema": 1,
+ "title": "Safety Alert: Synthetic pump fire, 2024",
+ "audience": "Other sites and peer organisations", "status": "Learning purposes: not a statutory document",
+ "mode": "sister-site", "grade": "alert", "grade_source": "chosen by the user",
+ "bottom_line": [{"text": "A pump went back into service after a seal change without a leak test, and the seal failed.",
+                  "cites": ["FND-0001", "EVD-0001"], "learning": "LR-01"}],
+ "scope": {"tiers": [], "levels": [], "tags": []},
+ "sections": [
+  {"id": "what-happened", "heading": "What happened", "items": [
+   {"kind": "para", "text": "A transfer pump was restarted after a seal change with no leak test on the work order [EVD-0001]. The seal had been bought locally without a specification, and it leaked and caught fire [FND-0003]."}]},
+  {"id": "why-it-matters", "heading": "Why it matters to you", "items": [
+   {"kind": "para", "text": "Any site that restarts pumps after maintenance without a return-to-service checklist can repeat this [FND-0002]."}]},
+  {"id": "learnings", "heading": "What we learned", "items": [
+   {"kind": "learning", "lesson": "If a joint is disturbed, test it before service: an untested joint can leak at the first restart.",
+    "learning": "LR-01", "cites": ["FND-0001", "FND-0002", "EVD-0001"]}]},
+  {"id": "checks", "heading": "What to check now", "items": [
+   {"kind": "check", "text": "Does every restart after seal work need a signed leak-test record?", "hold_point": true,
+    "cites": ["FND-0002"]},
+   {"kind": "check", "text": "Are pump seals bought to a written specification?", "cites": ["FND-0003", "EVD-0003"]}]},
+  {"id": "crew-questions", "heading": "Questions for your crew", "items": [
+   {"kind": "question", "question": "When did a pump last go back into service here without a test?",
+    "why": "Shows whether the test is part of the job or depends on memory.", "cites": ["FND-0001"]},
+   {"kind": "question", "question": "What would you do if the test rig was not available?",
+    "why": "Shows whether people feel able to stop a restart.", "cites": ["FND-0002"]}]},
+  {"id": "contact", "heading": "Who to contact", "items": [
+   {"kind": "para", "text": "Questions about this alert go to the site reliability lead."}]}]}

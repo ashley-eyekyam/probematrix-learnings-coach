@@ -1,0 +1,17 @@
+{
+ "title": "Synthetic register B (invented content only)",
+ "source": "export-b.xlsx",
+ "entries": [
+  {"lr_id": "LR-01", "title": "Checklist with no hold point",
+   "lesson": "If a checklist has no hold point, a step can be passed without the check (EVD-0002).",
+   "context": "The return-to-service index had no checklist entry.",
+   "finding_ids": ["FND-0002"], "evidence_ids": ["EVD-0002"], "evidence_strength": "direct",
+   "hfacs_level": "L3 Supervision Inadequate", "priority": 1, "transferability": "other sites",
+   "recommendations": [{"what": "Add a hold point before acceptance", "hoc_tier": "administrative",
+                        "indicator": "Share of acceptances with the hold point signed"}]},
+  {"lr_id": "LR-02", "title": "Part number not checked",
+   "lesson": "If a part number is not checked on issue, the wrong seal can be fitted (EVD-0003).",
+   "finding_ids": ["FND-0003"], "evidence_ids": ["EVD-0003"], "priority": 2, "transferability": "same site",
+   "recommendations": [{"what": "Scan the part number on issue", "hoc_tier": "engineering"}]}
+ ]
+}

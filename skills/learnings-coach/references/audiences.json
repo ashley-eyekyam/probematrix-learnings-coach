@@ -343,6 +343,28 @@
     "skill": "people-workforce-learnings"
   },
   {
+    "id": "session-leaders",
+    "label": "Session leaders",
+    "typical_people": "supervisors, shift in-charges and trainers who lead a short safety moment or shift-start session",
+    "controls": "what a crew hears, discusses and practises in a ten-minute session",
+    "needs": "a short deck and poster: what happened, did you know, what you can do, questions to ask the crew",
+    "tier": "T2",
+    "levels": [
+      1,
+      2
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [
+        1,
+        2
+      ],
+      "tags": []
+    },
+    "reading_level": "plain",
+    "skill": "safety-moment-deck"
+  },
+  {
     "id": "leaders-and-peer-support",
     "label": "Leaders and peer support after an incident",
     "typical_people": "site and line leaders who respond to the people involved, peer supporters, employee-assistance and occupational-health contacts",
@@ -365,5 +387,50 @@
     },
     "reading_level": "plain",
     "skill": "restorative-response-guide"
+  },
+  {
+    "id": "sister-sites-hse",
+    "label": "Sister-site HSE",
+    "typical_people": "HSE managers and advisers at the organisation's other sites, site process safety leads",
+    "controls": "their own site's self-assessment, the conditions they check for and the site's response",
+    "needs": "one self-check per transferable learning: the condition to look for, what to check and where, for their site to answer",
+    "tier": "T3",
+    "levels": [
+      2,
+      3,
+      4
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [
+        2,
+        3,
+        4
+      ],
+      "tags": []
+    },
+    "reading_level": "working",
+    "skill": "could-it-happen-here"
+  },
+  {
+    "id": "other-sites",
+    "label": "Other sites and peer organisations",
+    "typical_people": "HSE leads, operations and maintenance managers and their crews at the organisation's other sites; peer operators in the same industry",
+    "controls": "the same equipment, procedures and work at their own sites, and how fast they check for the same conditions",
+    "needs": "a short alert: what happened, why it matters to them, the priority-1 learnings and what to check now",
+    "tier": null,
+    "levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "default_scope": {
+      "tiers": [],
+      "levels": [],
+      "tags": []
+    },
+    "reading_level": "working",
+    "skill": "safety-alert"
   }
 ]

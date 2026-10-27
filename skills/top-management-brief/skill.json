@@ -22,7 +22,8 @@
   "optional_inputs": [
     "register",
     "causal_graph",
-    "adoption"
+    "adoption",
+    "could-it-happen-here"
   ],
   "produces": {
     "pack": "top-management-brief",

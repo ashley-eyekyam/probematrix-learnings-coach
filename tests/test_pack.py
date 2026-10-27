@@ -247,7 +247,9 @@ WAVE4 = ["latent-conditions-profile", "failure-to-learn-review",   # Phase 5: ea
          "risk-register-update", "open-questions-register",
          "evidence-strength-scorecard", "nine-m-analysis",
          "recommendation-strength-review"]
-WAVE5 = ["restorative-response-guide", "learning-effectiveness-plan"]   # Phase 6: each new-skill task (7-13) adds its skill here
+WAVE5 = ["restorative-response-guide", "could-it-happen-here",   # Phase 6: each new-skill task (7-13) adds its skill here
+         "safety-alert", "learning-team-facilitator", "systemic-accimap", "safety-moment-deck",
+         "learning-effectiveness-plan"]
 DONE_WAVES = {"wave 1": WAVE1, "wave 2": WAVE2, "wave 3": WAVE3, "wave 4": WAVE4, "wave 5": WAVE5}
 ALL_WAVES = WAVE1 + WAVE2 + WAVE3 + WAVE4 + WAVE5
 VERSION = pmlc.__version__
@@ -1412,8 +1414,8 @@ def test_profiles_have_the_contract_shape():
     for name, prof in profiles.load().items():
         assert set(prof) <= {"sections", "required_scope", "bottom_line", "word_limits", "coverage_floor", "rules",
                            "max_words", "lint_errors", "pptx_slides"}, name
-        if "pptx_slides" in prof:                                    # Phase 6 Task 2: the one-slide deck, int 1 only
-            assert type(prof["pptx_slides"]) is int and prof["pptx_slides"] == 1, name
+        if "pptx_slides" in prof:              # Phase 6: the one-slide deck (int 1, Task 2) or the section deck (Task 9)
+            assert type(prof["pptx_slides"]) is int and prof["pptx_slides"] == 1 or prof["pptx_slides"] == "sections", name
         assert all(re.fullmatch(r"JC([1-9]|1[0-2])", x) for x in prof.get("lint_errors", [])), name
         for e in prof["sections"]:
             assert set(e) == {"id", "kinds", "min", "max"} and 0 <= e["min"] <= e["max"], (name, e)
@@ -1887,3 +1889,18 @@ def test_interview_plan_holds_six_roles_and_the_validation_question(w):
     assert not [m for m in _strict(p, w) if m.startswith("section interview-plan")], _strict(p, w)
     sec["items"] = qs + [dict(qs[0], question="One question too many?")]
     assert "section interview-plan: 32 question items, expected 1-31" in _strict(p, w)
+
+
+def test_tmb_sister_sites_section_checks(w):
+    """Task 14 (spec §4, L1-06): the optional sister-sites section takes one para naming the could-it-happen-here
+    pack; under --strict a second para is a profile problem, and a pack without the section stays valid."""
+    def prof(p):
+        return [x for x in pp.check_pack(p, w, strict=True).problems if "sister-sites" in x]
+    p = fixture("top-management-brief")
+    assert prof(p) == []
+    para = item("para", text="The other sites assess these learnings with the could-it-happen-here pack "
+                             "(could-it-happen-here.json).", cites=["FND-0003"])
+    p["sections"].insert(2, {"id": "sister-sites", "heading": "Sister sites", "items": [para]})
+    assert problems(p, w) == [] and prof(p) == []
+    p["sections"][2]["items"].append(copy.deepcopy(para))
+    assert prof(p), pp.check_pack(p, w, strict=True).problems

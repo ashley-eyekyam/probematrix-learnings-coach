@@ -69,3 +69,4 @@ These counts are from the base classification, before the resolution pass. After
 - [frontline-learning-cards](frontline-learning-cards.md): the material the crews will see.
 - [supervisor-coach](supervisor-coach.md): what supervisors are being asked to do.
 - [board-brief](board-brief.md): the questions the board is asking at the other end.
+- `learning-effectiveness-plan`: when and how to check that a learning took hold (3, 6 and 12 months, plus 30, 60 and 90 days for priority 1).

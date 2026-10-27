@@ -54,14 +54,14 @@ The table shows what `plan --workflow <preset>` printed for each preset on a fre
 
 | Preset | What it is for | Steps on Hazira | Planned (skipped) |
 |---|---|---|---|
-| `first-48-hours` | A draft register, an alert and the supervisor briefing within two days | 5: ingest and classify (done), learnings-register (draft), supervisor-coach | `safety-alert` (Phase 6) |
+| `first-48-hours` | A draft register, an alert and the supervisor briefing within two days | 5: ingest and classify (done), learnings-register (draft), safety-alert (internal), supervisor-coach | none |
 | `full-cascade` | Every level, frontline to board | 12: ingest and classify (done), learning-clusters, learnings-register, organisation-learning-map, frontline-learning-cards, supervisor-coach, manager-coach, site-leadership-coach, top-management-brief, board-brief, then `templates` | none |
-| `leadership` | Register, site leadership, top management and board | 12: ingest and classify (done), learnings-register, site-leadership-coach, top-management-brief, board-brief, then (only when the user asks for patterns or latent conditions) `timeline` (done) and `missed-opportunities`, failure-to-learn-review, `hfacs-profile` and latent-conditions-profile, then risk-register-update (only when the user asks for risk-register or bow-tie changes) | none |
+| `leadership` | Register, site leadership, top management and board | 14: ingest and classify (done), learnings-register, site-leadership-coach, top-management-brief, board-brief, then (only when the user asks for patterns or latent conditions) `timeline` (done) and `missed-opportunities`, failure-to-learn-review, `hfacs-profile` and latent-conditions-profile, then risk-register-update (only when the user asks for risk-register or bow-tie changes), then `accimap` and systemic-accimap (only when the user asks for patterns or latent conditions) | none |
 | `assurance` | Register, evidence strength, standards crosswalk and the auditor pack | 7: ingest and classify (done), learnings-register, `evidence-audit`, evidence-strength-scorecard, compliance-crosswalk, auditor-assurance-pack | none |
-| `investigation-quality` | Evidence strength, open questions and investigator coaching | 7: ingest (done), `evidence-audit`, evidence-strength-scorecard, `open-questions`, open-questions-register, investigator-coach, report-comparison (only when an official report is supplied) | none |
+| `investigation-quality` | Evidence strength, open questions and investigator coaching | 9: ingest (done), `evidence-audit`, evidence-strength-scorecard, `open-questions`, open-questions-register, investigator-coach, then (only when the user asks for a learning team or work-as-done session) `wai-wad` and learning-team-facilitator, then report-comparison (only when an official report is supplied) | none |
 | `action-design` | 9M analysis, recommendation strength and an action export | 7: ingest and classify (done), learnings-register, `nine-m-seed` and nine-m-analysis, recommendation-strength-review, then `export-actions` | none |
-| `sister-sites` | An alert and "could it happen here" for other sites | 5: ingest and classify (done), learnings-register | `safety-alert`, `could-it-happen-here` (Phase 6) |
-| `training` | Register, training design, frontline cards and a safety-moment deck | 6: ingest and classify (done), learnings-register, training-designer, frontline-learning-cards | `safety-moment-deck` (Phase 6) |
+| `sister-sites` | An alert and "could it happen here" for other sites | 5: ingest and classify (done), learnings-register, safety-alert (sister-site), could-it-happen-here | none |
+| `training` | Register, training design, frontline cards and a safety-moment deck | 6: ingest and classify (done), learnings-register, training-designer, frontline-learning-cards, safety-moment-deck | none |
 | `follow-up` | Effectiveness plan and the verification log | 6: ingest and classify (done), learnings-register, `effect-plan`, learning-effectiveness-plan, then `templates` (the verification log) | none |
 
 All nine exit with code 0 on Hazira. Once the sample register is copied into `outputs/` and passes `check-register --strict`, the register step shows `done` in every preset that has one, so `plan --next` moves on to the first pack.
@@ -93,7 +93,7 @@ pmlc pack <ws> <run>/outputs/supervisor-coach.json
 
 **What to check.**
 
-- On Hazira the plan has five steps: ingest and classify (done), the draft register, `safety-alert` (planned for Phase 6, skipped) and the supervisor coach.
+- On Hazira the plan has five steps: ingest and classify (done), the draft register, `safety-alert` (mode internal) and the supervisor coach. The alert is written from the register (`pmlc alert-grade <ws>`), so the register comes first.
 - The register is a draft: say so when it is shared. The full register, the organisation map and the other audiences follow with `full-cascade`.
 - After the packs are reviewed, `pmlc templates <ws> distribution` gives the record of who received each one.
 
@@ -719,7 +719,7 @@ pmlc check-pack <ws> <run>/outputs/investigator-coach.json --strict
 
 **What to check.**
 
-- On Hazira the plan has seven steps: ingest (done), `evidence-audit`, [evidence-strength-scorecard](skills/evidence-strength-scorecard.md), `open-questions`, [open-questions-register](skills/open-questions-register.md), [investigator-coach](skills/investigator-coach.md), and [report-comparison](skills/report-comparison.md) only when an official report is supplied.
+- On Hazira the plan has nine steps: ingest (done), `evidence-audit`, [evidence-strength-scorecard](skills/evidence-strength-scorecard.md), `open-questions`, [open-questions-register](skills/open-questions-register.md), [investigator-coach](skills/investigator-coach.md), then `wai-wad` and [learning-team-facilitator](skills/learning-team-facilitator.md) only when the user asks for a learning team or work-as-done session, and [report-comparison](skills/report-comparison.md) only when an official report is supplied.
 - `evidence-audit` counts 284 findings `direct`, 152 `corroborated` and 0 `inferred`; 203 rest on one evidence item and 195 on documents only. EVD-8645 supports 67 of the 436 findings (15%), and 11 of the 167 level 3 findings cite a witness statement.
 - The scorecard says "This scorecard shows where more evidence would strengthen confidence. It does not grade the investigation team."
 - `open-questions` finds the 4 follow-up columns empty, 21 of 30 Incident Summary fields blank, 240 findings whose justification says something is absent and 193 that are hedged. The follow-up CSV has 44 rows, one per cited finding, and is never overwritten.
@@ -753,3 +753,86 @@ pmlc pack <ws> <run>/outputs/auditor-assurance-pack.json
 - After `evidence-audit` the sample register still passes `check-register --strict` with 0 problems: every `evidence_strength` matches the engine's.
 - `crosswalk --framework iso45001` gives 23 clauses: 17 `partly` and 6 `needs organisation evidence`, among them 5.4 worker consultation, 7.3 awareness and 9.3 management review. `--framework rbps` gives the 20 elements: 16 `partly` and 4 `needs organisation evidence`. A requirement whose wording has not been checked against its primary source says "(unverified)": 15 of the 23 ISO rows.
 - The crosswalk pack says "Aid to assurance, not a compliance opinion." and makes the legal-conclusions rule JC5 an error in this pack, so wording such as "breach" or "non-compliant with" stops the check (see [Language checks](Language-checks.md)).
+
+## Alert the sister sites and ask could it happen here
+
+**Goal.** Tell the organisation's other sites what happened in one page, graded so they know how fast to act, then ask each site to check itself against the transferable learnings and bring the answers together without ranking the sites. This is the `sister-sites` preset.
+
+**Prompt.**
+
+> Our other terminals need to hear about this. Write the safety alert, then give each site a "could it happen here" check they can fill in, and pull the returns together when they come back.
+
+**Engine commands.**
+
+```bash
+pmlc plan <ws> --workflow sister-sites
+pmlc alert-grade <ws>                                         # the grade from the register's urgency
+pmlc check-pack <ws> <run>/outputs/safety-alert.json --strict --register <run>/outputs/learnings-register.json
+pmlc pack <ws> <run>/outputs/safety-alert.json --format docx,pptx,email --layout poster
+pmlc check-pack <ws> <run>/outputs/could-it-happen-here.json --strict --register <run>/outputs/learnings-register.json
+pmlc templates <ws> cihh --pack <run>/outputs/could-it-happen-here.json
+pmlc consolidate <ws> returns/north.xlsx returns/south.xlsx --pack <run>/outputs/could-it-happen-here.json
+```
+
+**What to check.**
+
+- On Hazira, with the sample register copied into `outputs/`, the plan has five steps: ingest and classify (done), [learnings-register](skills/learnings-register.md), [safety-alert](skills/safety-alert.md) in `sister-site` mode and [could-it-happen-here](skills/could-it-happen-here.md). The alert step first asks who the alert is for: `internal`, `sister-site` or `industry`.
+- `alert-grade` printed `alert-grade: alert for LR-01, LR-02, LR-03 (grade_source "register urgency")`: the three priority-1 learnings that travel furthest, and the highest urgency the register gives them. When the register has no `urgency`, the command suggests a grade from priority and transferability, the agent asks you, and the pack records `"chosen by the user"`.
+- The alert shows "Grade: Alert" under its title in every format. `--format docx,pptx,email --layout poster` wrote the Word page, a one-slide deck, the email digest and the A3 poster.
+- The Hazira alert is `internal`, because a draft cannot be shared. Set to `sister-site`, the same alert renders with "Review copy: not for distribution outside the organisation until it is approved and shared with --share external." first, and `--share external` says `cannot share externally: review is draft …` until a reviewer approves it, the classification is `external` and the legal review is cleared. See [My sister-site alert says Review copy](Troubleshooting.md#my-sister-site-alert-says-review-copy).
+- `templates cihh` wrote `could-it-happen-here.cihh-template.xlsx` with 11 self-checks, one per transferable learning in the pack, and Site, answer, site_response and assessed_by_role blank. One copy goes to each site; it is never overwritten.
+- With two returns filled in by invented sites ("North Works" and "South Terminal"), `consolidate` printed `consolidated 2 return(s) over 11 self-check(s): …; 20 site assessment event(s) in …/cihh-events.jsonl`. `cihh-consolidated.json` counts, for each learning, how many returns assessed it and how many found the condition present or partly; under `sites` it lists only which learnings each site assessed. Nothing ranks or scores a site.
+- Giving the same return twice is refused: `… row 1: site 'North Works' already has a return (…)`, then `1 problem(s) in the returns; nothing written (fix them, or pass --keep-going to use the good rows)`. See [consolidate refuses a return](Troubleshooting.md#consolidate-refuses-a-return).
+
+## Plan the follow-up checks
+
+**Goal.** Decide, before anyone forgets, what to check for each learning and when, so the organisation can show that the learning reached people, was understood, is applied and made a difference. This is the `follow-up` preset.
+
+**Prompt.**
+
+> These learnings have been adopted. What should we check, and when, to know they have stuck? Give us a log to record the checks in.
+
+**Engine commands.**
+
+```bash
+pmlc plan <ws> --workflow follow-up
+pmlc effect-plan <ws> --register <run>/outputs/learnings-register.json
+pmlc effect-plan <ws> --register <run>/outputs/learnings-register.json --table-item schedule
+pmlc templates <ws> verification
+```
+
+**What to check.**
+
+- The plan lists the effectiveness plan, then the verification log (`templates <ws> verification`).
+- On Hazira `effect-plan` printed `effect-plan: 97 checks for 25 learning(s) written to …/effect_plan.json.` and `Every check is counted from adoption; the organisation sets owners, dates and statuses.` That is 11 priority-1 learnings with five checks each (30, 60 and 90 days, 6 and 12 months after adoption) and 14 others with three (3, 6 and 12 months).
+- Each check names its Kirkpatrick level: communicated (L1), understood (L2), applied (L3) or effective (L4). The schedule table's first rows for LR-01 read `30 days after adoption | communicated | L1`, then `60 days after adoption | understood | L2`. No row holds a calendar date, an owner or a status.
+- The leading indicator comes from the register; the lagging column is left blank by the engine, and the `learning-effectiveness-plan` pack must fill it in for every row before its check passes.
+- `templates <ws> verification` wrote `verification.jsonl` with 25 lines, one per learning, and `check_date`, `level`, `evidence` and `assessed_by_role` blank for the organisation. If you keep a [learnings library](Library.md), `library publish` adds each reading as a verification event, by month only.
+
+## Prepare a learning-team session
+
+**Goal.** Before the team that does the work meets, find where the procedures and the evidence of how the work was really done differ, and prepare open questions about what made sense at the time. The team supplies the answers.
+
+**Prompt.**
+
+> We want to run a learning team with the operators and maintainers. Where does work as imagined differ from work as done here, and what should we ask them? Give us a session plan and somewhere to record what they say.
+
+**Engine commands.**
+
+```bash
+pmlc plan <ws> --workflow investigation-quality
+pmlc wai-wad <ws>
+pmlc wai-wad <ws> --table-item gaps
+pmlc wai-wad <ws> --items prompts --top 5
+pmlc check-pack <ws> <run>/outputs/learning-team-facilitator.json --strict
+pmlc pack <ws> <run>/outputs/learning-team-facilitator.json --format docx
+pmlc templates <ws> learning-team
+```
+
+**What to check.**
+
+- In the `investigation-quality` plan, `wai-wad` and [learning-team-facilitator](skills/learning-team-facilitator.md) are steps 7 and 8, run only when the user asks for a learning team or a work-as-done session.
+- On Hazira `wai-wad` printed: codes with both document and work-as-done evidence `68 of 94`; findings with both `92`; findings with any work-as-done evidence `210`; findings with counterfactual wording `337`. Work-as-done evidence is witness statements, log records and recordings; work as imagined is documents.
+- `--items prompts --top 5` printed five ready `question` items, each starting "What made sense at the time about this condition: …". Counterfactual wording in the export ("did not", "failure to", "could have") is turned into an open question, never repeated as a judgement.
+- The pack opens with "The team supplies the answers. These are questions, not findings about people." On Hazira it has 5 sections (about this session, work as imagined and work as done, questions for the team, the session plan and notes for the facilitator) and passes `check-pack --strict`.
+- `templates <ws> learning-team` wrote `learning-team-notes.csv` with only its header, `prompt_id,prompt,team_answer,source`. The team fills it in; the agent never writes `team_answer`, and the file is never overwritten.

@@ -1,0 +1,134 @@
+{
+ "evals": [
+  {
+   "id": 6100,
+   "owner": "learning-team-facilitator",
+   "skill": "learning-team-facilitator",
+   "kind": "trigger",
+   "prompt": "Using the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx), set up a learning team with the maintenance fitters and field operators about the meter gasket job: what the procedures say against how the job is really done, and the questions to put to them. Roles only, no names.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "learning-team-facilitator"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "learning-team-facilitator"
+    },
+    {
+     "type": "language_clean",
+     "pack": "learning-team-facilitator"
+    },
+    {
+     "type": "section_exists",
+     "pack": "learning-team-facilitator",
+     "section": "session-plan"
+    },
+    {
+     "type": "routes_to",
+     "skill": "learning-team-facilitator"
+    }
+   ]
+  },
+  {
+   "id": 6101,
+   "owner": "learning-team-facilitator",
+   "skill": null,
+   "not_skill": "learning-team-facilitator",
+   "kind": "no-trigger",
+   "prompt": "Write me a generic agenda for a weekly team meeting in our warehouse: safety minute, production numbers, absences and any other business. There is no incident behind it.",
+   "files": [],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "skill": null
+    }
+   ]
+  },
+  {
+   "id": 6102,
+   "owner": "learning-team-facilitator",
+   "skill": "learning-team-facilitator",
+   "sibling": "investigator-coach",
+   "kind": "collision",
+   "prompt": "The investigation of the Hazira release is done (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). I am not after more interview questions for the investigators. I want to bring the crew who do the seal work into a room for an hour, hear how the job really goes on a normal shift, and keep it about the work, not about who did what.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "learning-team-facilitator"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "learning-team-facilitator"
+    },
+    {
+     "type": "language_clean",
+     "pack": "learning-team-facilitator"
+    },
+    {
+     "type": "pack_absent",
+     "pack": "investigator-coach"
+    },
+    {
+     "type": "routes_to",
+     "skill": "learning-team-facilitator"
+    }
+   ]
+  },
+  {
+   "id": 6103,
+   "owner": "learning-team-facilitator",
+   "skill": "learning-team-facilitator",
+   "sibling": "safety-committee-guide",
+   "kind": "collision",
+   "prompt": "From the Hazira ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx): not a briefing for the safety committee or the workforce reps. I need questions and a short session plan for a group of operators and fitters to talk through what made sense to them at the time, with the documents set against what the witness statements and logs show.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "pack_exists",
+     "pack": "learning-team-facilitator"
+    },
+    {
+     "type": "check_pack_ok",
+     "pack": "learning-team-facilitator"
+    },
+    {
+     "type": "language_clean",
+     "pack": "learning-team-facilitator"
+    },
+    {
+     "type": "pack_absent",
+     "pack": "safety-committee-guide"
+    },
+    {
+     "type": "routes_to",
+     "skill": "learning-team-facilitator"
+    }
+   ]
+  },
+  {
+   "id": 6104,
+   "owner": "learnings-coach",
+   "sibling": "investigator-coach",
+   "kind": "router",
+   "prompt": "Here is our ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx). The fitters keep saying the gasket procedure is not how they actually do it on nights. Before we change anything, I want to sit down with them for about an hour, hear their side without pointing fingers, and come away with their own ideas. Help me prepare.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {
+     "type": "routes_to",
+     "value": "learning-team-facilitator"
+    }
+   ]
+  }
+ ]
+}

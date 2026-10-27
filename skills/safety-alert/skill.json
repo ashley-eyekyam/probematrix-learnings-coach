@@ -1,0 +1,34 @@
+{
+  "name": "safety-alert",
+  "kind": "audience",
+  "audiences": [
+    "other-sites"
+  ],
+  "scope": {
+    "tiers": [],
+    "levels": [],
+    "tags": []
+  },
+  "requires": [
+    "workspace",
+    "register"
+  ],
+  "optional_inputs": [],
+  "produces": {
+    "pack": "safety-alert",
+    "files": []
+  },
+  "formats": [
+    "docx",
+    "pptx",
+    "email",
+    "poster"
+  ],
+  "share_default": "internal",
+  "embed_default": "cited",
+  "interactive": false,
+  "since": "2.0.0",
+  "questions": [
+    "Who is the alert for? internal (this site and the teams around it), sister-site (the organisation's other sites, shared with --share external after an approved review) or industry (other organisations, shared with --share public after an approved review)."
+  ]
+}

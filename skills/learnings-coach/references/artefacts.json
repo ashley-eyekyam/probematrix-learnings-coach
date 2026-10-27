@@ -112,8 +112,7 @@
   "library": {
     "file": "$PMLC_LIBRARY",
     "producer": "engine:library",
-    "org_filled": false,
-    "planned": "Phase 7"
+    "org_filled": false
   },
   "cihh-template": {
     "file": "outputs/<pack>.cihh-template.xlsx",
@@ -123,6 +122,16 @@
   "cihh-consolidated": {
     "file": "outputs/cihh-consolidated.json",
     "producer": "engine:consolidate",
+    "org_filled": false
+  },
+  "frontline-learning-cards": {
+    "file": "outputs/frontline-learning-cards.json",
+    "producer": "skill:frontline-learning-cards",
+    "org_filled": false
+  },
+  "could-it-happen-here": {
+    "file": "outputs/could-it-happen-here.json",
+    "producer": "skill:could-it-happen-here",
     "org_filled": false
   }
 }

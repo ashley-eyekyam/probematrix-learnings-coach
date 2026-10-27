@@ -13,11 +13,11 @@ SKILL_COUNT = len(list(SKILLS_DIR.glob("*/skill.json")))     # P5-1: the count i
 KEYWORDS = {"type", "enum", "required", "properties", "additionalProperties", "items", "pattern", "const", "minItems"}
 ALLOWED = KEYWORDS | {"$schema", "$id", "title", "description"}
 KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisation-learning-map": "dissemination",
-         "nine-m-analysis": "interactive"}
+         "nine-m-analysis": "interactive", "learning-team-facilitator": "interactive"}
 ANALYSIS = {"learning-clusters", "causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings",
             "report-comparison", "cluster-learning-dossier", "latent-conditions-profile", "failure-to-learn-review",
             "compliance-crosswalk", "open-questions-register", "evidence-strength-scorecard",
-            "recommendation-strength-review", "learning-effectiveness-plan"}
+            "recommendation-strength-review", "systemic-accimap", "learning-effectiveness-plan"}
 sys.path.insert(0, str(SKILLS_DIR / "learnings-coach" / "scripts"))
 from pmlc_lib.contracts import load_manifests, validate  # noqa: E402  (the engine's P3-6 validator)
 
@@ -69,8 +69,8 @@ def test_every_skill_has_manifest():
         assert m["kind"] == want, s
         assert "workspace" in m["requires"], s
         assert m["embed_default"] == "cited"
-        assert m["share_default"] == ("external" if s in ("board-brief", "supply-chain-contractor-learnings")
-                                      else "internal"), s
+        external = ("board-brief", "supply-chain-contractor-learnings", "could-it-happen-here")
+        assert m["share_default"] == ("external" if s in external else "internal"), s
 
 
 def test_clusters_required_where_filtering():
@@ -117,13 +117,14 @@ def test_schema_keyword_subset():
 
 def test_artefact_names_closed():
     art = load(REFS / "artefacts.json")
-    assert len(art) == 25
+    assert len(art) == 27
     for name, a in art.items():
         assert set(a) <= {"file", "producer", "org_filled", "planned"}, name
         kind, _, who = a["producer"].partition(":")
         assert kind in ("engine", "skill") and who, name
         if kind == "skill":
             assert who in SKILLS or "planned" in a, name
+            assert not (who in SKILLS and "planned" in a), f"{name}: {who} has shipped; drop planned"
     for s in SKILLS:
         m = load(SKILLS_DIR / s / "skill.json")
         for n in m["requires"] + m["optional_inputs"]:
@@ -203,13 +204,16 @@ PINNED_ARTEFACTS = {
     "evidence-audit": ("workspace/evidence_audit.json", "engine:evidence-audit", None),
     "hfacs-profile": ("workspace/hfacs_profile.json", "engine:hfacs-profile", None),
     "missed-opportunities": ("workspace/missed_opportunities.json", "engine:missed-opportunities", None),
-    "library": ("$PMLC_LIBRARY", "engine:library", "Phase 7"),
+    "library": ("$PMLC_LIBRARY", "engine:library", None),
     "nine-m-seed": ("workspace/nine_m_seed.json", "engine:nine-m-seed", None),
     "effect-plan": ("workspace/effect_plan.json", "engine:effect-plan", None),
     "wai-wad": ("workspace/wai_wad.json", "engine:wai-wad", None),
     "learning-team-notes": ("outputs/learning-team-notes.csv", "engine:templates", None),
     "cihh-template": ("outputs/<pack>.cihh-template.xlsx", "engine:templates", None),
     "cihh-consolidated": ("outputs/cihh-consolidated.json", "engine:consolidate", None),
+    "frontline-learning-cards": ("outputs/frontline-learning-cards.json", "skill:frontline-learning-cards", None),
+    # Task 14: top-management-brief reads it when present; Task 8 shipped the skill.
+    "could-it-happen-here": ("outputs/could-it-happen-here.json", "skill:could-it-happen-here", None),
 }
 
 
@@ -230,16 +234,15 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
                      ("sister-sites", "safety-alert"): "sister-site",
                      ("follow-up", "engine:templates"): "verification"}
     planned = {(n, s["skill"]): s["planned"] for n, w in wf.items() for s in w["steps"] if "planned" in s}
-    assert planned == {
-        ("first-48-hours", "safety-alert"): "Phase 6",
-        ("sister-sites", "safety-alert"): "Phase 6",
-        ("sister-sites", "could-it-happen-here"): "Phase 6",
-        ("training", "safety-moment-deck"): "Phase 6"}
+    assert planned == {}
     whens = {(n, s["skill"]): s["when"] for n, w in wf.items() for s in w["steps"] if "when" in s}
     assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied",
+                     ("investigation-quality", "learning-team-facilitator"):
+                         "the user asks for a learning team or work-as-done session",
                      ("leadership", "failure-to-learn-review"): "the user asks for patterns or latent conditions",
                      ("leadership", "latent-conditions-profile"): "the user asks for patterns or latent conditions",
-                     ("leadership", "risk-register-update"): "the user asks for risk-register or bow-tie changes"}
+                     ("leadership", "risk-register-update"): "the user asks for risk-register or bow-tie changes",
+                     ("leadership", "systemic-accimap"): "the user asks for patterns or latent conditions"}
     # plan --next stops on the first todo step and does not read "when": a guarded step must come after every
     # unguarded step of its preset, or a user who never asked for it cannot reach the rest (task 14 review I-1)
     for name, w in wf.items():

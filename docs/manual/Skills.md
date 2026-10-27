@@ -1,6 +1,6 @@
 # Skills
 
-The Learnings Coach is 34 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
+The Learnings Coach is 39 agent skills that share one engine. You rarely need to name a skill: describe what you want and who it is for, and the hub skill picks the right one. This page lists every skill, grouped by the audience it serves. Each name links to the skill's own page.
 
 **Start here:** [learnings-coach](skills/learnings-coach.md) sets up the workspace for an export and routes your request. Every other skill relies on it.
 
@@ -17,6 +17,7 @@ These skills prepare the ground or analyse the whole investigation. Their output
 | [cluster-learning-dossier](skills/cluster-learning-dossier.md) | every learning for one function | "What does maintenance need to learn?" |
 | [causal-map](skills/causal-map.md) | causal graph and pathway stories | "How do the factors connect?" |
 | [latent-conditions-profile](skills/latent-conditions-profile.md) | HFACS heat map, the factors that recur and feed the most others | "Which conditions keep coming up?" |
+| [systemic-accimap](skills/systemic-accimap.md) | an AcciMap: the findings on six levels from government to equipment, with the empty levels to confirm | "Where in the wider system did this come from?" |
 | [precursor-timeline](skills/precursor-timeline.md) | dated warnings and how they were handled | "Did we see this coming?" |
 | [failure-to-learn-review](skills/failure-to-learn-review.md) | why earlier warnings did not lead to change, and which step of the learning cycle broke | "Why didn't we learn from the earlier leaks?" |
 | [interface-learnings](skills/interface-learnings.md) | what fell between departments | "What fell through the cracks?" |
@@ -48,13 +49,17 @@ One skill for each tier, from the sharp end to the board.
 |---|---|---|
 | Auditors, inspectors, certification bodies, insurers | [auditor-assurance-pack](skills/auditor-assurance-pack.md) | audit test points, sampling, evidence requests |
 | Investigators and HSE professionals | [investigator-coach](skills/investigator-coach.md) | evidence gaps, key questions, interviews, method lessons |
+| Learning-team facilitators and the people who do the work | [learning-team-facilitator](skills/learning-team-facilitator.md) | a learning-team session: work as imagined against work as done, "what made sense at the time" questions, a session plan and a blank notes sheet |
 | Training managers and instructors | [training-designer](skills/training-designer.md) | training-needs map, modules, assessments |
+| Supervisors and trainers leading a short safety moment | [safety-moment-deck](skills/safety-moment-deck.md) | a 3 to 6 slide deck, a one-page poster, optional narration and captions |
 | Fire services, emergency teams, incident command | [emergency-response-learnings](skills/emergency-response-learnings.md) | response timeline, plan gaps, drills |
 | Engineering, integrity, change control, instrumentation | [engineering-integrity-learnings](skills/engineering-integrity-learnings.md) | technical learnings and pending decisions |
 | Procurement, stores, vendors, contractors | [supply-chain-contractor-learnings](skills/supply-chain-contractor-learnings.md) | sourcing and contractor learnings |
 | Enterprise risk management, risk owners, insurers' risk engineers | [risk-register-update](skills/risk-register-update.md) | proposed risk-register and bow-tie changes, as proposals for the risk owner |
 | HR, workforce planners, rostering and competence-framework owners | [people-workforce-learnings](skills/people-workforce-learnings.md) | people-system learnings and competence-framework changes |
 | Leaders and peer supporters responding to the people involved | [restorative-response-guide](skills/restorative-response-guide.md) | restorative questions to ask, obligations and second-victim support |
+| HSE managers and advisers at the organisation's other sites | [could-it-happen-here](skills/could-it-happen-here.md) | a self-assessment for each site, with a return template and a consolidated view of coverage and conditions |
+| Other sites and peer organisations | [safety-alert](skills/safety-alert.md) | a one-page alert graded alert, notice or information, with what to check now |
 | Safety committees and workforce representatives | [safety-committee-guide](skills/safety-committee-guide.md) | a discussion guide and questions to raise |
 
 ## What every skill does the same way
@@ -63,5 +68,7 @@ One skill for each tier, from the sharp end to the board.
 - It writes a **pack**: a JSON file the engine checks with [check-pack](commands/check-pack.md) and renders with [pack](commands/pack.md) to an offline HTML page and a Markdown file. The register skill writes a register instead.
 - It follows the [learning principles](https://github.com/ashley-eyekyam/probematrix-learnings-coach/blob/main/skills/learnings-coach/references/learning-principles.md): roles only, no blame, every sentence traced to Finding and Evidence IDs, learnings counted rather than finding instances.
 - Its outputs are marked "Learning purposes: not a statutory document" and stay **draft** until a person signs them off (see [Review and sharing](Review-and-sharing.md)).
+
+Skills that read across many investigations (learning verification, repeat learnings, portfolio trends, change and task lessons, and a learning-from-incidents health check) come in v2.1. The [learnings library](Library.md) they will read from starts in v2.0, with `library publish`.
 
 For ready-made sequences of skills, see [Workflows and recipes](Workflows-and-recipes.md). Each page uses the words in the [Glossary](Glossary.md).

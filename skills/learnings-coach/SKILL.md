@@ -10,7 +10,7 @@ One investigation, learned by the whole organisation. This skill sets up the wor
 ## Where things are
 
 - Engine: `scripts/pmlc.py` in this skill's folder (Python 3.9+, needs `openpyxl`). `PMLC` means `python3 <path-to-this-skill>/scripts/pmlc.py`. Paths, the run folder and `run-path` / `status` are in `references/skill-common.md` §1.
-- The other 33 skills sit beside this one under the same `skills/` folder and use this folder's engine and references.
+- The other 38 skills sit beside this one under the same `skills/` folder and use this folder's engine and references.
 - References (read the ones you need):
   - `learnings-coach/references/learning-principles.md`: **read before writing any learning** (just culture, grounding, honest counting).
   - `references/skill-common.md`: what every skill does the same way (set-up, packs, the check loop, thin evidence, sharing).
@@ -59,14 +59,18 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | auditors, assurance test points | `auditor-assurance-pack` | it is an executive brief (`top-management-brief`) |
 | which clauses of a standard the learnings speak to (ISO 45001, PSM, RBPS) | `compliance-crosswalk` | it is audit test points (`auditor-assurance-pack`) |
 | the lead investigator, next questions | `investigator-coach` | an official report is supplied to compare (`report-comparison`) |
+| a learning team: work as done against work as imagined, with the crew | `learning-team-facilitator` | it is the investigation's next interviews (`investigator-coach`) |
 | how well each finding is evidenced, where the evidence is thin | `evidence-strength-scorecard` | it is the method or interviews (`investigator-coach`) |
 | trainers, a course or e-learning | `training-designer` | it is a frontline card (`frontline-learning-cards`) |
+| a safety moment, a short session deck, a beacon-style poster | `safety-moment-deck` | it is cards the crew keep (`frontline-learning-cards`) |
 | emergency responders | `emergency-response-learnings` | it is a frontline card (`frontline-learning-cards`) |
 | engineers, integrity, MOC owners | `engineering-integrity-learnings` | it is the barrier view (`barrier-learnings`) |
 | procurement, stores, contractors | `supply-chain-contractor-learnings` | it is a function manager's change (`manager-coach`) |
 | enterprise risk, risk register, bow-tie | `risk-register-update` | it is the barrier view (`barrier-learnings`) |
 | HR, staffing, qualification, rostering | `people-workforce-learnings` | it is course content (`training-designer`) |
 | supporting the people involved, second victims, a restorative response | `restorative-response-guide` | it is HR's staffing systems (`people-workforce-learnings`) |
+| could it happen at our other sites, a sister-site self-assessment | `could-it-happen-here` | it is the executive decision to transfer it (`top-management-brief`) |
+| a safety alert or bulletin for other sites or the industry | `safety-alert` | it is cards the crew keep (`frontline-learning-cards`) |
 | safety committee, workforce reps | `safety-committee-guide` | it is a frontline card (`frontline-learning-cards`) |
 | all learnings for one department | `cluster-learning-dossier` | it is a manager's change list (`manager-coach`) |
 | grouping by function, tier and role; placing roles | `learning-clusters` | it is the whole-organisation map (`organisation-learning-map`) |
@@ -74,6 +78,7 @@ Map the request to one preset, a set of audiences or named skills. If it is ambi
 | a formal register or spreadsheet of learnings | `learnings-register` | it is action design (`action-design`) |
 | how the factors connect | `causal-map` | it is what fell between departments (`interface-learnings`) |
 | recurring factors, latent conditions, the HFACS heat map | `latent-conditions-profile` | it is how the factors connect (`causal-map`) or who should learn (`learning-clusters`) |
+| an AcciMap: where in the wider system, regulator to equipment, the causes sit | `systemic-accimap` | it is the causal pathways (`causal-map`) or recurring factors (`latent-conditions-profile`) |
 | early warnings that were missed | `precursor-timeline` | it is how the factors connect (`causal-map`) |
 | why earlier warnings and audits never led to change | `failure-to-learn-review` | it is the dated list of warnings (`precursor-timeline`) |
 | what fell between departments | `interface-learnings` | it is the causal chain (`causal-map`) |
@@ -129,8 +134,7 @@ PMLC index <ws>                           # -> <run>/outputs/index.html
 - Report the HTML paths first: `index.html`, then each pack's `.html`; then the `.md`, `.json` and `.xlsx` files and any other format written (`.docx`, `.pptx`, `.email.html`, print layouts). Every output is a draft until a person reviews it; say so.
 - Then point to what the organisation does next (the coach never does these for them):
   - **Review** with the people involved and the function owners. Sign-off records it, and is never run by you: give the user the `PMLC sign-off <ws> <file> --role "<their role>"` line to run once they have reviewed the file.
-  - **Classify for distribution** at sign-off (`--classification`, `--distribution`).
-  - **Cascade:** `PMLC templates <ws> distribution` writes the record of who received which pack.
+  - **Classify for distribution** at sign-off (`--classification`, `--distribution`), then **cascade:** `PMLC templates <ws> distribution` writes the record of who received which pack.
   - **Follow up:** `PMLC templates <ws> verification` writes the log for checking, later, that each learning was applied.
 - The organisation fills those files in. Never write owners, due dates or a reviewer's name yourself; `templates` refuses to overwrite a filled-in file.
 

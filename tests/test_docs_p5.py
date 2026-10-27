@@ -10,6 +10,10 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 MANUAL = ROOT / "docs" / "manual"
+# Phase 6 (plan P6-1): the documents state the count of the skill folders, Phase 6 skills included (each integrator
+# sets it after a merge; Task 20 sets 39). The Phase 5 lists below stay Phase 5.
+PHASE6_SKILLS = frozenset({"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+                           "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"})
 SKILL_COUNT = len(list((ROOT / "skills").glob("*/skill.json")))      # P5-1: the folders, never a constant
 SUB_COUNT = SKILL_COUNT - 1                                           # every skill but the hub
 
@@ -28,12 +32,10 @@ COUNT_STATEMENTS = [
     ("evals/README.md", r"presets or (\d+) sub-skills", SUB_COUNT),
 ]
 COUNT_RX = re.compile(r"\b(\d+) (?:agent |sub-)?skills\b")
-# Phase 6 skills also carry since 2.0.0; the Phase 5 checks below are about the nine Phase 5 skills only.
-P6_SKILLS = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
-             "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan"}
 NEW_SKILLS = sorted(p.parent.name for p in (ROOT / "skills").glob("*/skill.json")
                     if json.loads(p.read_text(encoding="utf-8")).get("since") == "2.0.0"
-                    and p.parent.name not in P6_SKILLS)
+                    and p.parent.name not in PHASE6_SKILLS)
+P5_SKILLS = NEW_SKILLS   # NEW_SKILLS already leaves out the Phase 6 skills
 NEW_COMMANDS = ["evidence-audit", "hfacs-profile", "open-questions", "nine-m-seed", "nine-m-suggest", "nine-m-answer",
                 "nine-m-replay", "nine-m-actions-template", "rec-review", "missed-opportunities", "crosswalk"]
 NEW_FLAGS = ["--event-day", "--m", "--m-secondary", "--industry", "--kind table"]
@@ -83,7 +85,13 @@ P6_SKILLS = {"safety-alert", "could-it-happen-here", "safety-moment-deck", "lear
 
 
 def test_nine_new_skills():
-    assert len(set(NEW_SKILLS) - P6_SKILLS) == 9, NEW_SKILLS          # the Phase 5 nine; Phase 6 adds its own
+    assert len(P5_SKILLS) == 9, NEW_SKILLS
+
+
+def test_phase_5_skills_are_since_2_0_0():
+    since = {p.parent.name for p in (ROOT / "skills").glob("*/skill.json")
+             if json.loads(p.read_text(encoding="utf-8")).get("since") == "2.0.0"}
+    assert set(NEW_SKILLS) <= since, sorted(set(NEW_SKILLS) - since)
 
 
 @pytest.mark.parametrize("doc,row", [("README.md", "| `{s}` |"), ("docs/manual/Skills.md", "[{s}](skills/{s}.md)")])
@@ -97,8 +105,8 @@ def test_readme_whats_new_starts_with_phase_5():
     readme = read("README.md")
     news = readme.split("## What's new in v2.0 so far", 1)[1].split("\n## ", 1)[0]
     phases = re.findall(r"^\*\*Phase (\d+) \(([^)]*)\):\*\*", news, re.M)
-    assert phases[0] == ("5", "2.0.0-alpha.7"), phases
-    assert "current build: 2.0.0-alpha.7, Phase 5" in news
+    # Phase 6 (alpha.8) now comes first (tests/test_docs_p6.py); Phase 5 follows it.
+    assert ("5", "2.0.0-alpha.7") in phases[:2], phases
 
 
 def test_agents_typical_run_has_evidence_audit_and_nine_m_seed():
@@ -112,7 +120,7 @@ def test_changelog_2_0_0a7():
     assert log.index("### 2.0.0a7") < log.index("### 2.0.0a6")
     entry = log.split("### 2.0.0a7", 1)[1].split("### 2.0.0a6", 1)[0]
     missing = [f"`{c}`" for c in NEW_COMMANDS if f"`{c}`" not in entry]
-    missing += [f"`{s}`" for s in NEW_SKILLS if s not in P6_SKILLS and f"`{s}`" not in entry]   # a7: Phase 5 only
+    missing += [f"`{s}`" for s in P5_SKILLS if f"`{s}`" not in entry]
     missing += [f for f in NEW_FLAGS if f"`{f}" not in entry]
     assert not missing, missing
     notes = entry.split("**Migration notes.**", 1)[1]

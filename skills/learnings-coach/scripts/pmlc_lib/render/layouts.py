@@ -384,6 +384,10 @@ def _ly_poster(ctx, L):
                              f'<p>{_ly_text(it.get("good_looks_like"))}</p></div>')
             elif it.get("kind") == "learning" and len(tiles) < POSTER_MAX:
                 tiles.append(f'<div class="tile"><h3>{_ly_text(it.get("lesson"))}</h3></div>')
+    for s in pack.get("sections") or []:                  # then the checks, "what you can do" (Phase 6 Task 9)
+        for it in s.get("items") or []:
+            if it.get("kind") == "check" and len(tiles) < POSTER_MAX:
+                tiles.append(f'<div class="tile"><p>{_ly_text(it.get("text"))}</p></div>')
     evs = sorted_events([e for s in pack.get("sections") or [] for it in s.get("items") or []
                          if it.get("kind") == "timeline" and isinstance(it.get("events"), list)
                          for e in it["events"] if isinstance(e, dict) and isinstance(e.get("date"), str)])

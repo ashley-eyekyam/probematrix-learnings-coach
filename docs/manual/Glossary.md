@@ -6,6 +6,10 @@ The skills keep their own word list in `skills/learnings-coach/references/glossa
 
 ## A to C
 
+### AcciMap
+
+Rasmussen's map of an accident across the whole system that shaped it, in six levels: government policy and budgeting, regulatory bodies and associations, company management, technical and operational management, physical processes and actor activities, and equipment and surroundings. [accimap](commands/accimap.md) places each finding on a level, and the [systemic-accimap](skills/systemic-accimap.md) pack draws the map. Placements at levels 1 to 3 are inferred from codes and departments, so a person confirms them before the map is shared, and a level with no finding is drawn as an empty band. On Hazira, levels 1 and 2 are empty and level 3 holds 143 inferred placements.
+
 ### AI justification
 
 The export's own explanation of why the evidence supports a finding, written by ProbeMatrix's AI and checked by investigators. Pages label it "AI justification (ProbeMatrix)" so it is never mistaken for the coach's learning.
@@ -128,9 +132,17 @@ The seam between two functions: a handover, a shared piece of equipment, a decis
 
 ## J to L
 
+### Jacobsson's levels of learning
+
+Jacobsson's way of describing how far and how deep a learning reaches. **Spread**: the site, the organisation or the industry. **Depth**: the individual, the procedure or the system. **Duration**: how long the change is checked. [effect-plan](commands/effect-plan.md) takes the spread from a learning's transferability and the depth from its strongest recommendation (an engineering change is system depth, a procedure is procedure depth, training is individual depth).
+
 ### Just culture
 
 A culture in which people are not blamed for honest mistakes and system problems, so that they report and learn openly. The organisation still draws a clear line for acts that are not honest mistakes, through its own processes, never through a learning pack. The coach writes for a just culture: roles only, no blame wording, system fixes before retraining.
+
+### Kirkpatrick levels
+
+Four levels for judging whether learning worked: **L1** people received it (communicated), **L2** they understood it, **L3** they apply it at work, **L4** it made the difference it was meant to (effective). The effectiveness plan from [effect-plan](commands/effect-plan.md) checks each learning at these levels, counted from adoption: for a priority-1 learning at 30, 60 and 90 days and at 6 and 12 months.
 
 ### Knowable-then test
 
@@ -160,6 +172,10 @@ A one-page learning for frontline readers: what happened, why it made sense at t
 
 The group of findings that one function at one tier must learn from: an *entity* times a *tier* times a *relation*. See [learning-clusters](skills/learning-clusters.md).
 
+### Learning Team
+
+A facilitated session in which the people who do the work explain how it is really done, what makes it hard and what made sense at the time, so the organisation learns from normal work and not only from the failure. The team supplies the answers; the facilitator only asks. [learning-team-facilitator](skills/learning-team-facilitator.md) prepares the questions and a 60 to 90 minute session plan, and `templates <ws> learning-team` writes a blank notes sheet that only the team fills in.
+
 ### Level 1: Unsafe Acts
 
 The first HFACS level: the acts and decisions at the sharp end, such as errors and deviations from the rule. Learnings at this level are about practice, never about character.
@@ -179,6 +195,10 @@ The fourth HFACS level: resources, organisational climate and culture, policies 
 ### lint_ok
 
 A field on a pack item that accepts one language-check hit, naming the rule and the reason the rule does not apply. The reason is shown on the page. See [Language checks](Language-checks.md#accepting-a-hit).
+
+### LL-ID
+
+The ID of a learning in a learnings library, such as `LL-000001`. It is given once, for an incident and its LR-ID, and kept when the learning is reworded; each reworded version is a new snapshot (`LL-000001#2`) that supersedes the last. See [The learnings library](Library.md).
 
 ### LR-ID
 
@@ -256,6 +276,10 @@ The formal register of learnings: one row per learning, with its evidence, HFACS
 
 How a role relates to a factor: actor, approver, owner, absent, norm-setter, learner or expected challenger. It decides the kind of learning, for example a practice to change (actor) or a function that should exist (absent).
 
+### Restorative just culture
+
+A response to an incident that asks who was hurt, what they need and whose obligation it is to meet those needs, rather than who is to blame. It covers the people affected by the event, the people involved in it and the organisation. [restorative-response-guide](skills/restorative-response-guide.md) turns this into questions a leader asks; the export says nothing about the people affected, so every need is a question to ask, never an assumption.
+
 ### Role override
 
 Your decision about where a role belongs, kept in `role_overrides.json` and applied on every `classify`.
@@ -275,6 +299,10 @@ The part of a pack that says which findings it should cover, using the same filt
 ### SCORM
 
 Sharable Content Object Reference Model: a standard package a learning management system (LMS) can run as a course and record a score from. `pack --format scorm` writes a SCORM 1.2 package, `<pack>.scorm.zip`, holding the learner view and a quiz graded in the browser. The answer keys travel inside the package, so use the score to show who took the learning, never to judge a person.
+
+### Second victim
+
+A person involved in an incident who is harmed by it themselves: distress, guilt, loss of confidence, fear of blame. Peer support, a fair process and a chance to help with the learning reduce the harm. [restorative-response-guide](skills/restorative-response-guide.md) covers how to offer that support; it never names or describes a person.
 
 ### Share mode (`--share`)
 
@@ -345,6 +373,10 @@ How far a learning applies beyond the site: this site only, likely at similar si
 ### Why not stronger (`why_not_stronger`)
 
 A sentence on a priority-1 learning (or a pack recommendation) that explains why no fix above the administrative tier is offered, for example because the stronger engineering fix sits in another learning. It is grounded in the entry's own cited findings.
+
+### Work as imagined and work as done
+
+**Work as imagined** is the work as procedures, plans and documents describe it; **work as done** is the work as people actually do it, with the pressures and adaptations of the day. The gap between them is where learning lies. [wai-wad](commands/wai-wad.md) compares the two from the evidence types: documents for work as imagined, and witness statements, log records and recordings for work as done. On Hazira, 68 of the 94 codes have both.
 
 ### Workflow preset
 

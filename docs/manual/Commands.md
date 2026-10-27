@@ -117,6 +117,12 @@ pmlc 2.0.0a4
 | [export-actions](commands/export-actions.md) | Writes actions.csv and actions.json (owner, due date and status left blank) for your action-tracking system |
 | [nine-m-actions-template](commands/nine-m-actions-template.md) | Writes a blank actions sheet from a nine-m-analysis pack (owner, due date and status left blank) |
 
+### Keep a library across incidents
+
+| Command | What it does |
+|---|---|
+| [library](commands/library.md) | `publish` adds a finished run's learnings to an append-only library folder, with stable `LL-` IDs and references that carry their incident, after a de-identification gate (zero listed names, sites coded `S01`…, dates to the month) |
+
 ### 4a. Compare with another report
 
 | Command | What it does |
@@ -183,7 +189,7 @@ To translate a pack, use [strings](commands/strings.md); [register-render](comma
 
   ```text
   usage: pmlc [-h] [--version]
-              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,consolidate,export-actions,plan,compare,rec-review,effect-plan,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,wai-wad,hfacs-profile,accimap,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities,alert-grade} ...
+              {ingest,profile,classify,select,causal,timeline,interfaces,dashboard,check-register,check-language,register-xlsx,register-md,register-render,status,run-path,run-manifest,purge,check-samples,check-pack,pack,causal-item,sign-off,scan-names,setup,check-all,render-all,index,dossier-index,templates,consolidate,export-actions,plan,compare,rec-review,effect-plan,table-item,register-items,timeline-item,open-questions,facts,crosswalk,evidence-audit,wai-wad,hfacs-profile,accimap,pack-xlsx,strings,nine-m-seed,nine-m-suggest,nine-m-answer,nine-m-replay,nine-m-actions-template,missed-opportunities,alert-grade,library} ...
   pmlc: error: unrecognized arguments: --top-rat
   ```
 

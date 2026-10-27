@@ -1,0 +1,30 @@
+{
+ "title": "Synthetic register A (invented content only)",
+ "source": "export-a.xlsx",
+ "entries": [
+  {"lr_id": "LR-01", "title": "Return to service without a test",
+   "lesson": "If a joint is disturbed, test it before service, because untested joints leak (EVD-0001).",
+   "context": "A pump went back to service after a seal change with no leak test on the work order.",
+   "finding_ids": ["FND-0001", "FND-0002"], "evidence_ids": ["EVD-0001"], "evidence_strength": "direct",
+   "hfacs_level": "L3 Supervision Inadequate", "org_system": "maintenance regime",
+   "barrier": "prevention: return-to-service test", "priority": 1, "transferability": "other sites",
+   "urgency": "alert", "owner_entity": "F02 Mechanical Maintenance",
+   "recommendations": [
+    {"what": "Interlock pressurisation on a signed test record", "hoc_tier": "engineering",
+     "leading_indicator": "Share of restarts with a test record"},
+    {"what": "Add the leak test to the return-to-service checklist", "hoc_tier": "administrative"}]},
+  {"lr_id": "LR-02", "title": "Spares bought without a specification",
+   "lesson": "If spares are bought without a specification, the wrong part can reach the plant (EVD-0003).",
+   "context": "Seals were bought locally without a specification.",
+   "finding_ids": ["FND-0003"], "evidence_ids": ["EVD-0003", "EVD-0001"], "evidence_strength": "corroborated",
+   "hfacs_level": "L4 Resource Management", "org_system": "contractor and supply chain",
+   "priority": 2, "transferability": "industry-wide",
+   "recommendations": [{"what": "Hold spares against a specification in the stores system", "hoc_tier": "engineering",
+                        "leading_indicator": "Share of seal issues with a specification check"}]},
+  {"lr_id": "LR-03", "title": "Gas alarm with no shutdown",
+   "lesson": "If a gas alarm only displays, the response waits for a person to notice (EVD-0002).",
+   "finding_ids": ["FND-0004"], "evidence_ids": ["EVD-0002"], "evidence_strength": "direct",
+   "hfacs_level": "L2 Technological Environment", "priority": 3, "transferability": "same site",
+   "recommendations": [{"what": "Link the gas detector to a shutdown", "hoc_tier": "engineering"}]}
+ ]
+}

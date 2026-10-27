@@ -212,6 +212,37 @@
    "gate": [
     "check-pack --strict"
    ]
+  },
+  {
+   "n": 13,
+   "skill": "engine:accimap",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "accimap",
+   "mode": null,
+   "when": null,
+   "commands": [
+    "PMLC accimap <ws>"
+   ],
+   "questions": [],
+   "gate": []
+  },
+  {
+   "n": 14,
+   "skill": "systemic-accimap",
+   "status": "todo",
+   "planned_for": null,
+   "produces": "systemic-accimap",
+   "mode": null,
+   "when": "the user asks for patterns or latent conditions",
+   "commands": [
+    "PMLC check-pack <ws> <run>/outputs/systemic-accimap.json --strict",
+    "PMLC pack <ws> <run>/outputs/systemic-accimap.json"
+   ],
+   "questions": [],
+   "gate": [
+    "check-pack --strict"
+   ]
   }
  ],
  "next": 3
