@@ -204,7 +204,7 @@ PINNED_ARTEFACTS = {
     "evidence-audit": ("workspace/evidence_audit.json", "engine:evidence-audit", None),
     "hfacs-profile": ("workspace/hfacs_profile.json", "engine:hfacs-profile", None),
     "missed-opportunities": ("workspace/missed_opportunities.json", "engine:missed-opportunities", None),
-    "library": ("$PMLC_LIBRARY", "engine:library", "Phase 7"),
+    "library": ("$PMLC_LIBRARY", "engine:library", None),
     "nine-m-seed": ("workspace/nine_m_seed.json", "engine:nine-m-seed", None),
     "effect-plan": ("workspace/effect_plan.json", "engine:effect-plan", None),
     "wai-wad": ("workspace/wai_wad.json", "engine:wai-wad", None),

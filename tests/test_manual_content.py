@@ -32,6 +32,7 @@ SUBCOMMANDS += ["accimap"]
 SUBCOMMANDS += ["wai-wad"]
 SUBCOMMANDS += ["nine-m-suggest", "nine-m-answer", "nine-m-replay", "nine-m-actions-template"]
 SUBCOMMANDS += ["consolidate", "alert-grade"]
+SUBCOMMANDS += ["library"]
 T13_PAGES = {"Home.md", "Commands.md", "Developer-tools.md"} | {f"commands/{c}.md" for c in SUBCOMMANDS}
 # Flags of other programs the pages quote (pip).
 OTHER_FLAGS = {"--user"}

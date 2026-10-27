@@ -59,6 +59,7 @@ Subcommands
   nine-m-actions-template  a blank actions sheet from a nine-m-analysis pack (Owner, Due date and Status left blank)
   wai-wad         work as imagined against work as done: codes with document and work-as-done evidence, counterfactual wording (wai_wad.json)
   alert-grade     a safety alert's default learnings and grade (register urgency, or a suggestion from priority)
+  library         publish a finished run's learnings to an append-only library folder with stable LL- IDs (publish)
 
 Only dependency outside the standard library: openpyxl.
 Run `python3 pmlc.py <subcommand> -h` for options.
@@ -117,6 +118,7 @@ from .ninem_session import (cmd_nine_m_actions_template, cmd_nine_m_answer, cmd_
                             NINE_M_GLOBAL_STEPS, NINE_M_STEPS)
 from .missed import cmd_missed_opportunities
 from .alert import cmd_alert_grade
+from .library import cmd_library
 
 
 # ----------------------------------------------------------------------------- main
@@ -724,6 +726,20 @@ def build_parser():
                    help="the learnings the alert carries (repeatable; default: the top 3 priority-1 learnings)")
     s.add_argument("--json", action="store_true", help="print {grade, grade_source, suggested, learnings, notes}")
     s.set_defaults(fn=cmd_alert_grade)
+
+    s = sp.add_parser("library", help="publish a finished run's learnings to an append-only library folder "
+                      "(learnings.jsonl, events.jsonl, incidents.jsonl) with stable LL- IDs", allow_abbrev=False)
+    s.add_argument("action", choices=["publish"])
+    s.add_argument("ws")
+    s.add_argument("--register", help="Learnings Register JSON (default: <run>/outputs/learnings-register.json)")
+    s.add_argument("--library", help="the library folder (default: $PMLC_LIBRARY); a new or empty folder becomes a "
+                                     "library on the first publish")
+    s.add_argument("--site", help="the site's real name, coded S01... in the library (default: the Site or Location "
+                                  "field of the export)")
+    s.add_argument("--names", help="names file, one per line, for the zero-hit name check (default: $PMLC_NAMES)")
+    s.add_argument("--dry-run", dest="dry_run", action="store_true",
+                   help="print what would be appended and write nothing")
+    s.set_defaults(fn=cmd_library)
 
     for name in JSON_COMMANDS:   # P3-24: --json on every analysis and check command (dest as_json: check-language has a positional "json")
         sp.choices[name].add_argument("--json", dest="as_json", action="store_true",
