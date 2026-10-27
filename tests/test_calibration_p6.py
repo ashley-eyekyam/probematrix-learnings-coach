@@ -50,3 +50,18 @@ def test_wai_wad_hazira_prompts_are_clean(hazira_ws):
     for it in items:
         assert it["kind"] == "question" and len(it["cites"]) == 1
         assert not waiwad.counterfactual_hits(it["question"])
+
+
+# ----------------------------------------------------------------------------- Task 2: alert-grade (P6-3)
+
+def test_hazira_alert_grade_numbers():
+    """priority-1 learnings: register priority == 1 (11 of 25). Suggested grades: the P6-3 rule applied to each of the
+    25 learnings on its own (priority 1 with other sites or industry-wide -> alert; priority 1 at the same site, or
+    priority 2 -> notice; otherwise information), whatever urgency the register gives. The default choice is the top 3
+    priority-1 rows by transferability, then evidence strength, then LR-ID."""
+    from collections import Counter
+    from pmlc_lib import alert
+    entries = json.loads(REGISTER.read_text(encoding="utf-8"))["entries"]
+    assert sum(1 for e in entries if e.get("priority") == 1) == 11
+    assert Counter(alert.suggest_grade(e) for e in entries) == {"alert": 11, "notice": 12, "information": 2}
+    assert alert.default_choice(entries) == ["LR-01", "LR-02", "LR-03"]

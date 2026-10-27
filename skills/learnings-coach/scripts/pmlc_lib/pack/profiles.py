@@ -22,7 +22,9 @@ people M). banner:nine-m-demo applies only when the workspace's nine_m_session.j
 
 The Phase 6 rules (Task 1): grade-source warns when grade or grade_source is missing, even under --strict (OD6-1:
 advice()); alert-priority-1 (with a register), leading-lagging and inferred-banner are problems even without
---strict (hard()); needs-are-questions follows --strict, as the profile's kind check does."""
+--strict (hard()); needs-are-questions follows --strict, as the profile's kind check does.
+
+A profile may set "pptx_slides": 1 (Task 2): the pptx renderer then puts every section on one content slide."""
 from __future__ import annotations
 
 import fnmatch
