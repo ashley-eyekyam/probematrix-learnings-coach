@@ -174,8 +174,7 @@
     "title": "Follow-up: effectiveness plan and verification log",
     "steps": [
       {
-        "skill": "learning-effectiveness-plan",
-        "planned": "Phase 6"
+        "skill": "learning-effectiveness-plan"
       },
       {
         "skill": "engine:templates",

@@ -17,7 +17,7 @@ KINDS = {"learnings-coach": "hub", "learnings-register": "register", "organisati
 ANALYSIS = {"learning-clusters", "causal-map", "precursor-timeline", "interface-learnings", "barrier-learnings",
             "report-comparison", "cluster-learning-dossier", "latent-conditions-profile", "failure-to-learn-review",
             "compliance-crosswalk", "open-questions-register", "evidence-strength-scorecard",
-            "recommendation-strength-review"}
+            "recommendation-strength-review", "learning-effectiveness-plan"}
 sys.path.insert(0, str(SKILLS_DIR / "learnings-coach" / "scripts"))
 from pmlc_lib.contracts import load_manifests, validate  # noqa: E402  (the engine's P3-6 validator)
 
@@ -234,8 +234,7 @@ def test_p4h_workflow_modes_planned_phases_and_when_pinned():
         ("first-48-hours", "safety-alert"): "Phase 6",
         ("sister-sites", "safety-alert"): "Phase 6",
         ("sister-sites", "could-it-happen-here"): "Phase 6",
-        ("training", "safety-moment-deck"): "Phase 6",
-        ("follow-up", "learning-effectiveness-plan"): "Phase 6"}
+        ("training", "safety-moment-deck"): "Phase 6"}
     whens = {(n, s["skill"]): s["when"] for n, w in wf.items() for s in w["steps"] if "when" in s}
     assert whens == {("investigation-quality", "report-comparison"): "an official report is supplied",
                      ("leadership", "failure-to-learn-review"): "the user asks for patterns or latent conditions",

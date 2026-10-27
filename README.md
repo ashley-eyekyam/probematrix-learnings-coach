@@ -9,7 +9,7 @@
 
 **One investigation. Every level of the organisation learns.**
 
-An open-source plugin of 32 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
+An open-source plugin of 33 agent skills that turns a single [ProbeMatrix](mailto:ashley@eyekyam.com) investigation export into learning for frontline crews, supervisors, managers, site leaders, top management, the board, auditors, investigators, trainers, emergency responders, engineers, the supply chain and workforce representatives.
 
 Works with **Claude Code**, **Claude (Cowork / desktop)** and **OpenAI Codex**, and any agent that reads the Agent Skills format or `AGENTS.md`.
 
@@ -106,6 +106,7 @@ v2.0 is in testing (current build: 2.0.0-alpha.7, Phase 5: new skills, wave 1). 
 | `barrier-learnings` | engineers, HSE | barriers, failure modes, control-tier fixes |
 | `nine-m-analysis` | investigators, HSE, CAPA teams | a 9M interview: one learning and direction of change per relevant M, a blank actions sheet |
 | `recommendation-strength-review` | function managers, CAPA designers, HSE leads | strength band per learning, weak fixes for deep causes, loops, 9M spread, directions for stronger change |
+| `learning-effectiveness-plan` | HSE leads, safety committee, function managers | what to check and when after adoption, Kirkpatrick levels, leading and lagging indicators, audit questions |
 | `report-comparison` | HSE, consultants | fair two-way comparison with an official report |
 | `compliance-crosswalk` | HSE leads, management-system owners, auditors | learnings mapped to ISO 45001, PSM, RBPS and other frameworks |
 | `open-questions-register` | investigators, investigation sponsors | open questions, what would settle each, follow-up CSV |

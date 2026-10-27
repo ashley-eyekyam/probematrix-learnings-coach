@@ -50,7 +50,7 @@ pmlc plan <ws> --workflow leadership --json      # the same plan as one JSON obj
 pmlc plan <ws> --next                            # the next step to do; exit code 2 when the plan is complete
 ```
 
-The table shows what `plan --workflow <preset>` printed for each preset on a fresh Hazira workspace (after `setup` with the `india-process-site` overlay, before any pack or register was written). "Engine" steps are `ingest`, `classify`, `evidence-audit`, `timeline`, `missed-opportunities`, `hfacs-profile`, `open-questions`, `templates` and `export-actions`; "planned" steps belong to skills that arrive in a later v2.0 phase and are skipped.
+The table shows what `plan --workflow <preset>` printed for each preset on a fresh Hazira workspace (after `setup` with the `india-process-site` overlay, before any pack or register was written). "Engine" steps are `ingest`, `classify`, `evidence-audit`, `timeline`, `missed-opportunities`, `hfacs-profile`, `open-questions`, `effect-plan`, `templates` and `export-actions`; "planned" steps belong to skills that arrive in a later v2.0 phase and are skipped.
 
 | Preset | What it is for | Steps on Hazira | Planned (skipped) |
 |---|---|---|---|
@@ -62,7 +62,7 @@ The table shows what `plan --workflow <preset>` printed for each preset on a fre
 | `action-design` | 9M analysis, recommendation strength and an action export | 7: ingest and classify (done), learnings-register, `nine-m-seed` and nine-m-analysis, recommendation-strength-review, then `export-actions` | none |
 | `sister-sites` | An alert and "could it happen here" for other sites | 5: ingest and classify (done), learnings-register | `safety-alert`, `could-it-happen-here` (Phase 6) |
 | `training` | Register, training design, frontline cards and a safety-moment deck | 6: ingest and classify (done), learnings-register, training-designer, frontline-learning-cards | `safety-moment-deck` (Phase 6) |
-| `follow-up` | Effectiveness plan and the verification log | 2: `templates` (the verification log) | `learning-effectiveness-plan` (Phase 6) |
+| `follow-up` | Effectiveness plan and the verification log | 6: ingest and classify (done), learnings-register, `effect-plan`, learning-effectiveness-plan, then `templates` (the verification log) | none |
 
 All nine exit with code 0 on Hazira. Once the sample register is copied into `outputs/` and passes `check-register --strict`, the register step shows `done` in every preset that has one, so `plan --next` moves on to the first pack.
 

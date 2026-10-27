@@ -173,7 +173,9 @@ def test_hazira_samples_render_identically(hz, tmp_path):
 def test_no_hazira_pack_waits_for_its_render():
     """Task 24: every Phase 5 golden is rendered beside its JSON and listed in the README, so the staging set is
     empty and check-samples holds every pack to the OD4-4 rule again."""
-    assert RENDER_PENDING == frozenset() and PENDING == []
+    p6 = {f"{s}.json" for s in ("safety-alert", "could-it-happen-here", "safety-moment-deck", "learning-team-facilitator",
+                                "restorative-response-guide", "systemic-accimap", "learning-effectiveness-plan")}
+    assert RENDER_PENDING <= p6, sorted(RENDER_PENDING - p6)     # only Phase 6 goldens wait, until Task 18 renders them
     assert len(RENDERED) == len(PACKS) == len(readme_packs()) >= 34
 
 

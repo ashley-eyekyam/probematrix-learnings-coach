@@ -2,7 +2,7 @@
 
 ## What it does
 
-Collects every `recommendation`, `decision` and `indicator` item from the packs, plus each recommendation in the Learnings Register, and writes them as `actions.csv` and `actions.json`. The owner, due date, status, CAPA reference and effectiveness check columns are always written blank: your organisation assigns them in its own system.
+Collects every `recommendation`, `decision` and `indicator` item from the packs, one row per check in a `learning-effectiveness-plan` pack's schedule (counted from adoption), plus each recommendation in the Learnings Register, and writes them as `actions.csv` and `actions.json`. The owner, due date, status, CAPA reference and effectiveness check columns are always written blank: your organisation assigns them in its own system.
 
 ## When to use it
 

@@ -1,0 +1,66 @@
+{
+ "evals": [
+  {
+   "id": 1311,
+   "owner": "learning-effectiveness-plan",
+   "skill": "learning-effectiveness-plan",
+   "kind": "trigger",
+   "prompt": "We have the ProbeMatrix export of the Hazira release (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and its learnings register (samples/2020-09-24-hazira-gas-release-fire/outputs/learnings-register.json). How do we check, over the next year, that each of these lessons actually took hold? Give me when to check, what to look for and the indicators to track.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx",
+    "samples/2020-09-24-hazira-gas-release-fire/outputs/learnings-register.json"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "learning-effectiveness-plan"},
+    {"type": "check_pack_ok", "pack": "learning-effectiveness-plan"},
+    {"type": "language_clean", "pack": "learning-effectiveness-plan"},
+    {"type": "section_exists", "pack": "learning-effectiveness-plan", "section": "indicators"},
+    {"type": "routes_to", "skill": "learning-effectiveness-plan"}
+   ]
+  },
+  {
+   "id": 1312,
+   "owner": "learning-effectiveness-plan",
+   "skill": null,
+   "not_skill": "learning-effectiveness-plan",
+   "kind": "no-trigger",
+   "prompt": "Write a training evaluation form for our new forklift course, with Kirkpatrick level 1 reaction questions for the trainees to fill in at the end of the day.",
+   "files": [],
+   "expectations": [
+    {"type": "routes_to", "skill": null}
+   ]
+  },
+  {
+   "id": 1313,
+   "owner": "learning-effectiveness-plan",
+   "skill": "learning-effectiveness-plan",
+   "sibling": "manager-coach",
+   "kind": "collision",
+   "prompt": "Using the ProbeMatrix export of the Hazira fire (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and the register (samples/2020-09-24-hazira-gas-release-fire/outputs/learnings-register.json): the managers already have their briefings. What I need now is the follow-up: at 30, 90 days and a year after we adopt each learning, what do we check to show it is understood, applied and working?",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx",
+    "samples/2020-09-24-hazira-gas-release-fire/outputs/learnings-register.json"
+   ],
+   "expectations": [
+    {"type": "pack_exists", "pack": "learning-effectiveness-plan"},
+    {"type": "check_pack_ok", "pack": "learning-effectiveness-plan"},
+    {"type": "language_clean", "pack": "learning-effectiveness-plan"},
+    {"type": "pack_absent", "pack": "manager-coach"},
+    {"type": "routes_to", "skill": "learning-effectiveness-plan"}
+   ]
+  },
+  {
+   "id": 1314,
+   "owner": "learnings-coach",
+   "sibling": "safety-committee-guide",
+   "kind": "router",
+   "prompt": "Here is our ProbeMatrix export (samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx) and the register we built from it. The safety committee wants a plan for verifying that the learnings were effective: what gets checked and when, with leading and lagging indicators, so it can track them.",
+   "files": [
+    "samples/2020-09-24-hazira-gas-release-fire/2020-09-24-hazira-gas-release-fire_probematrix-findings.xlsx"
+   ],
+   "expectations": [
+    {"type": "routes_to", "value": "learning-effectiveness-plan"}
+   ]
+  }
+ ]
+}

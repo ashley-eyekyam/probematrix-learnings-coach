@@ -1,0 +1,2404 @@
+{
+ "pack": "learning-effectiveness-plan",
+ "schema": 1,
+ "skill": "learning-effectiveness-plan",
+ "title": "Learning effectiveness plan: Hazira gas terminal release and fire, 2020",
+ "audience": "The HSE lead, the safety committee and the function managers who follow the learnings up",
+ "status": "Learning purposes: not a statutory document; draft: the investigation status is in progress",
+ "data_quality": [
+  {
+   "text": "Draft learnings from an unreviewed analysis: the ProbeMatrix investigation status is in progress and no finding is marked as edited by a person. Validate before adoption."
+  },
+  {
+   "text": "The schedule, the Kirkpatrick levels, the leading indicators and the audit questions are the engine's (effect-plan, from the register); the lagging indicators and what an auditor would see are the analyst's, drawn from each learning's lesson, worst case and recommendations."
+  }
+ ],
+ "bottom_line": [
+  {
+   "text": "The plan sets 97 checks for the register's 25 learnings, each counted from the day the organisation adopts the learning: the 11 priority-1 learnings are checked five times in their first 12 months, the other 14 three times; every check is in the schedule below.",
+   "cites": [
+    "FND-31405D96",
+    "FND-314D34C5",
+    "FND-4C645CB5",
+    "FND-7A32AC87",
+    "FND-8C0BB623",
+    "FND-DE132C95"
+   ]
+  },
+  {
+   "text": "On Jacobsson's measures, 16 learnings spread to the industry and 9 to the organisation; 19 change the system and 6 (LR-08, LR-12, LR-18, LR-19, LR-20, LR-24) change a procedure, so their effect depends most on the checks of how they are applied.",
+   "cites": [
+    "FND-20217957",
+    "FND-337CB67F",
+    "FND-36179046",
+    "FND-4215704E",
+    "FND-C0466EB3",
+    "FND-E4596837"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "id": "banner",
+   "heading": "Who sets owners, dates and statuses",
+   "items": [
+    {
+     "kind": "para",
+     "text": "The organisation sets owners, dates and statuses. This plan sets out what to check and when, counted from adoption."
+    }
+   ]
+  },
+  {
+   "id": "schedule",
+   "heading": "What to check and when",
+   "items": [
+    {
+     "kind": "table",
+     "id": "effect-schedule",
+     "columns": [
+      "LR",
+      "Priority",
+      "When",
+      "Check",
+      "Kirkpatrick"
+     ],
+     "rows": [
+      [
+       "LR-01",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-01",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-01",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-01",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-01",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-02",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-02",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-02",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-02",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-02",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-03",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-03",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-03",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-03",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-03",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-04",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-04",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-04",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-05",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-05",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-05",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-05",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-05",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-06",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-06",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-06",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-06",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-06",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-07",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-07",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-07",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-07",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-07",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-08",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-08",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-08",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-08",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-08",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-09",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-09",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-09",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-09",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-09",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-10",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-10",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-10",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-10",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-10",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-11",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-11",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-11",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-11",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-11",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-12",
+       1,
+       "30 days after adoption",
+       "communicated",
+       "L1"
+      ],
+      [
+       "LR-12",
+       1,
+       "60 days after adoption",
+       "understood",
+       "L2"
+      ],
+      [
+       "LR-12",
+       1,
+       "90 days after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-12",
+       1,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-12",
+       1,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-13",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-13",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-13",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-14",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-14",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-14",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-15",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-15",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-15",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-16",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-16",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-16",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-17",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-17",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-17",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-18",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-18",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-18",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-19",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-19",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-19",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-20",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-20",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-20",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-21",
+       3,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-21",
+       3,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-21",
+       3,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-22",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-22",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-22",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-23",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-23",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-23",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-24",
+       3,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-24",
+       3,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-24",
+       3,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ],
+      [
+       "LR-25",
+       2,
+       "3 months after adoption",
+       "communicated and understood",
+       "L1-L2"
+      ],
+      [
+       "LR-25",
+       2,
+       "6 months after adoption",
+       "applied",
+       "L3"
+      ],
+      [
+       "LR-25",
+       2,
+       "12 months after adoption",
+       "effective",
+       "L4"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-8C0BB623",
+       "FND-7A32AC87",
+       "FND-89962239",
+       "FND-B356F15B",
+       "FND-91B45FF9"
+      ],
+      [
+       "FND-8C0BB623",
+       "FND-7A32AC87",
+       "FND-89962239",
+       "FND-B356F15B",
+       "FND-91B45FF9"
+      ],
+      [
+       "FND-8C0BB623",
+       "FND-7A32AC87",
+       "FND-89962239",
+       "FND-B356F15B",
+       "FND-91B45FF9"
+      ],
+      [
+       "FND-8C0BB623",
+       "FND-7A32AC87",
+       "FND-89962239",
+       "FND-B356F15B",
+       "FND-91B45FF9"
+      ],
+      [
+       "FND-8C0BB623",
+       "FND-7A32AC87",
+       "FND-89962239",
+       "FND-B356F15B",
+       "FND-91B45FF9"
+      ],
+      [
+       "FND-7C5ED5B3",
+       "FND-FD617187",
+       "FND-212DC9B7",
+       "FND-15279F97",
+       "FND-7FA02383"
+      ],
+      [
+       "FND-7C5ED5B3",
+       "FND-FD617187",
+       "FND-212DC9B7",
+       "FND-15279F97",
+       "FND-7FA02383"
+      ],
+      [
+       "FND-7C5ED5B3",
+       "FND-FD617187",
+       "FND-212DC9B7",
+       "FND-15279F97",
+       "FND-7FA02383"
+      ],
+      [
+       "FND-7C5ED5B3",
+       "FND-FD617187",
+       "FND-212DC9B7",
+       "FND-15279F97",
+       "FND-7FA02383"
+      ],
+      [
+       "FND-7C5ED5B3",
+       "FND-FD617187",
+       "FND-212DC9B7",
+       "FND-15279F97",
+       "FND-7FA02383"
+      ],
+      [
+       "FND-2FAB8D51",
+       "FND-A6312B6B",
+       "FND-28F8790B",
+       "FND-59A2F497",
+       "FND-F8C125D5"
+      ],
+      [
+       "FND-2FAB8D51",
+       "FND-A6312B6B",
+       "FND-28F8790B",
+       "FND-59A2F497",
+       "FND-F8C125D5"
+      ],
+      [
+       "FND-2FAB8D51",
+       "FND-A6312B6B",
+       "FND-28F8790B",
+       "FND-59A2F497",
+       "FND-F8C125D5"
+      ],
+      [
+       "FND-2FAB8D51",
+       "FND-A6312B6B",
+       "FND-28F8790B",
+       "FND-59A2F497",
+       "FND-F8C125D5"
+      ],
+      [
+       "FND-2FAB8D51",
+       "FND-A6312B6B",
+       "FND-28F8790B",
+       "FND-59A2F497",
+       "FND-F8C125D5"
+      ],
+      [
+       "FND-50775B5A",
+       "FND-56C66B96",
+       "FND-267F1E09",
+       "FND-8071945B",
+       "FND-C59DCD29"
+      ],
+      [
+       "FND-50775B5A",
+       "FND-56C66B96",
+       "FND-267F1E09",
+       "FND-8071945B",
+       "FND-C59DCD29"
+      ],
+      [
+       "FND-50775B5A",
+       "FND-56C66B96",
+       "FND-267F1E09",
+       "FND-8071945B",
+       "FND-C59DCD29"
+      ],
+      [
+       "FND-8DA35CA9",
+       "FND-69067A1C",
+       "FND-71D631C1",
+       "FND-CEE3D4D7",
+       "FND-D14B8424"
+      ],
+      [
+       "FND-8DA35CA9",
+       "FND-69067A1C",
+       "FND-71D631C1",
+       "FND-CEE3D4D7",
+       "FND-D14B8424"
+      ],
+      [
+       "FND-8DA35CA9",
+       "FND-69067A1C",
+       "FND-71D631C1",
+       "FND-CEE3D4D7",
+       "FND-D14B8424"
+      ],
+      [
+       "FND-8DA35CA9",
+       "FND-69067A1C",
+       "FND-71D631C1",
+       "FND-CEE3D4D7",
+       "FND-D14B8424"
+      ],
+      [
+       "FND-8DA35CA9",
+       "FND-69067A1C",
+       "FND-71D631C1",
+       "FND-CEE3D4D7",
+       "FND-D14B8424"
+      ],
+      [
+       "FND-5A5F6AB3",
+       "FND-8083ECAC",
+       "FND-F7FE8463",
+       "FND-7838175A",
+       "FND-ADF96860"
+      ],
+      [
+       "FND-5A5F6AB3",
+       "FND-8083ECAC",
+       "FND-F7FE8463",
+       "FND-7838175A",
+       "FND-ADF96860"
+      ],
+      [
+       "FND-5A5F6AB3",
+       "FND-8083ECAC",
+       "FND-F7FE8463",
+       "FND-7838175A",
+       "FND-ADF96860"
+      ],
+      [
+       "FND-5A5F6AB3",
+       "FND-8083ECAC",
+       "FND-F7FE8463",
+       "FND-7838175A",
+       "FND-ADF96860"
+      ],
+      [
+       "FND-5A5F6AB3",
+       "FND-8083ECAC",
+       "FND-F7FE8463",
+       "FND-7838175A",
+       "FND-ADF96860"
+      ],
+      [
+       "FND-314D34C5",
+       "FND-DE132C95",
+       "FND-AE629313",
+       "FND-81E3EEA0",
+       "FND-500E0B2D"
+      ],
+      [
+       "FND-314D34C5",
+       "FND-DE132C95",
+       "FND-AE629313",
+       "FND-81E3EEA0",
+       "FND-500E0B2D"
+      ],
+      [
+       "FND-314D34C5",
+       "FND-DE132C95",
+       "FND-AE629313",
+       "FND-81E3EEA0",
+       "FND-500E0B2D"
+      ],
+      [
+       "FND-314D34C5",
+       "FND-DE132C95",
+       "FND-AE629313",
+       "FND-81E3EEA0",
+       "FND-500E0B2D"
+      ],
+      [
+       "FND-314D34C5",
+       "FND-DE132C95",
+       "FND-AE629313",
+       "FND-81E3EEA0",
+       "FND-500E0B2D"
+      ],
+      [
+       "FND-20217957",
+       "FND-36179046",
+       "FND-305216AF",
+       "FND-4245FBF2",
+       "FND-C92C29DB"
+      ],
+      [
+       "FND-20217957",
+       "FND-36179046",
+       "FND-305216AF",
+       "FND-4245FBF2",
+       "FND-C92C29DB"
+      ],
+      [
+       "FND-20217957",
+       "FND-36179046",
+       "FND-305216AF",
+       "FND-4245FBF2",
+       "FND-C92C29DB"
+      ],
+      [
+       "FND-20217957",
+       "FND-36179046",
+       "FND-305216AF",
+       "FND-4245FBF2",
+       "FND-C92C29DB"
+      ],
+      [
+       "FND-20217957",
+       "FND-36179046",
+       "FND-305216AF",
+       "FND-4245FBF2",
+       "FND-C92C29DB"
+      ],
+      [
+       "FND-4C645CB5",
+       "FND-31405D96",
+       "FND-A7137BC4",
+       "FND-DE978BF5",
+       "FND-DBE08E73"
+      ],
+      [
+       "FND-4C645CB5",
+       "FND-31405D96",
+       "FND-A7137BC4",
+       "FND-DE978BF5",
+       "FND-DBE08E73"
+      ],
+      [
+       "FND-4C645CB5",
+       "FND-31405D96",
+       "FND-A7137BC4",
+       "FND-DE978BF5",
+       "FND-DBE08E73"
+      ],
+      [
+       "FND-4C645CB5",
+       "FND-31405D96",
+       "FND-A7137BC4",
+       "FND-DE978BF5",
+       "FND-DBE08E73"
+      ],
+      [
+       "FND-4C645CB5",
+       "FND-31405D96",
+       "FND-A7137BC4",
+       "FND-DE978BF5",
+       "FND-DBE08E73"
+      ],
+      [
+       "FND-A245072B",
+       "FND-B5C0CE8F",
+       "FND-94C28ACE",
+       "FND-9399FA02",
+       "FND-D45021AD"
+      ],
+      [
+       "FND-A245072B",
+       "FND-B5C0CE8F",
+       "FND-94C28ACE",
+       "FND-9399FA02",
+       "FND-D45021AD"
+      ],
+      [
+       "FND-A245072B",
+       "FND-B5C0CE8F",
+       "FND-94C28ACE",
+       "FND-9399FA02",
+       "FND-D45021AD"
+      ],
+      [
+       "FND-A245072B",
+       "FND-B5C0CE8F",
+       "FND-94C28ACE",
+       "FND-9399FA02",
+       "FND-D45021AD"
+      ],
+      [
+       "FND-A245072B",
+       "FND-B5C0CE8F",
+       "FND-94C28ACE",
+       "FND-9399FA02",
+       "FND-D45021AD"
+      ],
+      [
+       "FND-784A23E4",
+       "FND-74A80D24",
+       "FND-C7F16268",
+       "FND-554BFB4A",
+       "FND-1D61DC3A"
+      ],
+      [
+       "FND-784A23E4",
+       "FND-74A80D24",
+       "FND-C7F16268",
+       "FND-554BFB4A",
+       "FND-1D61DC3A"
+      ],
+      [
+       "FND-784A23E4",
+       "FND-74A80D24",
+       "FND-C7F16268",
+       "FND-554BFB4A",
+       "FND-1D61DC3A"
+      ],
+      [
+       "FND-784A23E4",
+       "FND-74A80D24",
+       "FND-C7F16268",
+       "FND-554BFB4A",
+       "FND-1D61DC3A"
+      ],
+      [
+       "FND-784A23E4",
+       "FND-74A80D24",
+       "FND-C7F16268",
+       "FND-554BFB4A",
+       "FND-1D61DC3A"
+      ],
+      [
+       "FND-337CB67F",
+       "FND-E4596837",
+       "FND-4C146B0E",
+       "FND-02B682F3",
+       "FND-D2343F46"
+      ],
+      [
+       "FND-337CB67F",
+       "FND-E4596837",
+       "FND-4C146B0E",
+       "FND-02B682F3",
+       "FND-D2343F46"
+      ],
+      [
+       "FND-337CB67F",
+       "FND-E4596837",
+       "FND-4C146B0E",
+       "FND-02B682F3",
+       "FND-D2343F46"
+      ],
+      [
+       "FND-337CB67F",
+       "FND-E4596837",
+       "FND-4C146B0E",
+       "FND-02B682F3",
+       "FND-D2343F46"
+      ],
+      [
+       "FND-337CB67F",
+       "FND-E4596837",
+       "FND-4C146B0E",
+       "FND-02B682F3",
+       "FND-D2343F46"
+      ],
+      [
+       "FND-BC00FF3A",
+       "FND-5AB5DFA3",
+       "FND-1ABF45B7",
+       "FND-C75F81B9",
+       "FND-57281AC5"
+      ],
+      [
+       "FND-BC00FF3A",
+       "FND-5AB5DFA3",
+       "FND-1ABF45B7",
+       "FND-C75F81B9",
+       "FND-57281AC5"
+      ],
+      [
+       "FND-BC00FF3A",
+       "FND-5AB5DFA3",
+       "FND-1ABF45B7",
+       "FND-C75F81B9",
+       "FND-57281AC5"
+      ],
+      [
+       "FND-F91D4A48",
+       "FND-B59A077E",
+       "FND-6A00BC2F",
+       "FND-38F0B929",
+       "FND-934DCBE1"
+      ],
+      [
+       "FND-F91D4A48",
+       "FND-B59A077E",
+       "FND-6A00BC2F",
+       "FND-38F0B929",
+       "FND-934DCBE1"
+      ],
+      [
+       "FND-F91D4A48",
+       "FND-B59A077E",
+       "FND-6A00BC2F",
+       "FND-38F0B929",
+       "FND-934DCBE1"
+      ],
+      [
+       "FND-2B5C46B9",
+       "FND-4108DB15",
+       "FND-B6C89A9C",
+       "FND-0D4C2C13",
+       "FND-0FFC03BB"
+      ],
+      [
+       "FND-2B5C46B9",
+       "FND-4108DB15",
+       "FND-B6C89A9C",
+       "FND-0D4C2C13",
+       "FND-0FFC03BB"
+      ],
+      [
+       "FND-2B5C46B9",
+       "FND-4108DB15",
+       "FND-B6C89A9C",
+       "FND-0D4C2C13",
+       "FND-0FFC03BB"
+      ],
+      [
+       "FND-85748D86",
+       "FND-8F0CB4F9",
+       "FND-1E35B220",
+       "FND-DC3D4F71",
+       "FND-0BA85877"
+      ],
+      [
+       "FND-85748D86",
+       "FND-8F0CB4F9",
+       "FND-1E35B220",
+       "FND-DC3D4F71",
+       "FND-0BA85877"
+      ],
+      [
+       "FND-85748D86",
+       "FND-8F0CB4F9",
+       "FND-1E35B220",
+       "FND-DC3D4F71",
+       "FND-0BA85877"
+      ],
+      [
+       "FND-98A4D631",
+       "FND-6D307E93",
+       "FND-5EC15274",
+       "FND-47B1702F",
+       "FND-E5C4209D"
+      ],
+      [
+       "FND-98A4D631",
+       "FND-6D307E93",
+       "FND-5EC15274",
+       "FND-47B1702F",
+       "FND-E5C4209D"
+      ],
+      [
+       "FND-98A4D631",
+       "FND-6D307E93",
+       "FND-5EC15274",
+       "FND-47B1702F",
+       "FND-E5C4209D"
+      ],
+      [
+       "FND-172D2FE4",
+       "FND-75CEBE09",
+       "FND-2F99FB62",
+       "FND-5ABEE30B",
+       "FND-C4B133AA"
+      ],
+      [
+       "FND-172D2FE4",
+       "FND-75CEBE09",
+       "FND-2F99FB62",
+       "FND-5ABEE30B",
+       "FND-C4B133AA"
+      ],
+      [
+       "FND-172D2FE4",
+       "FND-75CEBE09",
+       "FND-2F99FB62",
+       "FND-5ABEE30B",
+       "FND-C4B133AA"
+      ],
+      [
+       "FND-72DCEE68",
+       "FND-82687B50",
+       "FND-D25BF914",
+       "FND-583EB5FE",
+       "FND-9D19BE37"
+      ],
+      [
+       "FND-72DCEE68",
+       "FND-82687B50",
+       "FND-D25BF914",
+       "FND-583EB5FE",
+       "FND-9D19BE37"
+      ],
+      [
+       "FND-72DCEE68",
+       "FND-82687B50",
+       "FND-D25BF914",
+       "FND-583EB5FE",
+       "FND-9D19BE37"
+      ],
+      [
+       "FND-C0466EB3",
+       "FND-4215704E",
+       "FND-303495E9",
+       "FND-48967DB2",
+       "FND-BB34B250"
+      ],
+      [
+       "FND-C0466EB3",
+       "FND-4215704E",
+       "FND-303495E9",
+       "FND-48967DB2",
+       "FND-BB34B250"
+      ],
+      [
+       "FND-C0466EB3",
+       "FND-4215704E",
+       "FND-303495E9",
+       "FND-48967DB2",
+       "FND-BB34B250"
+      ],
+      [
+       "FND-1D713648",
+       "FND-850B270C",
+       "FND-5A742738",
+       "FND-B2AC0F8C",
+       "FND-2A77BAFB"
+      ],
+      [
+       "FND-1D713648",
+       "FND-850B270C",
+       "FND-5A742738",
+       "FND-B2AC0F8C",
+       "FND-2A77BAFB"
+      ],
+      [
+       "FND-1D713648",
+       "FND-850B270C",
+       "FND-5A742738",
+       "FND-B2AC0F8C",
+       "FND-2A77BAFB"
+      ],
+      [
+       "FND-7E1F2B3F",
+       "FND-AA571C63",
+       "FND-A3D2773A",
+       "FND-EFC192D7",
+       "FND-1DF986F8"
+      ],
+      [
+       "FND-7E1F2B3F",
+       "FND-AA571C63",
+       "FND-A3D2773A",
+       "FND-EFC192D7",
+       "FND-1DF986F8"
+      ],
+      [
+       "FND-7E1F2B3F",
+       "FND-AA571C63",
+       "FND-A3D2773A",
+       "FND-EFC192D7",
+       "FND-1DF986F8"
+      ],
+      [
+       "FND-A4B843EB",
+       "FND-814A8889",
+       "FND-B6BB0738",
+       "FND-D8BC7096",
+       "FND-694B2DA0"
+      ],
+      [
+       "FND-A4B843EB",
+       "FND-814A8889",
+       "FND-B6BB0738",
+       "FND-D8BC7096",
+       "FND-694B2DA0"
+      ],
+      [
+       "FND-A4B843EB",
+       "FND-814A8889",
+       "FND-B6BB0738",
+       "FND-D8BC7096",
+       "FND-694B2DA0"
+      ],
+      [
+       "FND-DC0751CF",
+       "FND-B8B75D91",
+       "FND-BFABC63C",
+       "FND-C69E0C67",
+       "FND-332DC593"
+      ],
+      [
+       "FND-DC0751CF",
+       "FND-B8B75D91",
+       "FND-BFABC63C",
+       "FND-C69E0C67",
+       "FND-332DC593"
+      ],
+      [
+       "FND-DC0751CF",
+       "FND-B8B75D91",
+       "FND-BFABC63C",
+       "FND-C69E0C67",
+       "FND-332DC593"
+      ],
+      [
+       "FND-D871D980",
+       "FND-1B3355D5"
+      ],
+      [
+       "FND-D871D980",
+       "FND-1B3355D5"
+      ],
+      [
+       "FND-D871D980",
+       "FND-1B3355D5"
+      ]
+     ],
+     "cites": [
+      "FND-02B682F3",
+      "FND-0BA85877",
+      "FND-0D4C2C13",
+      "FND-0FFC03BB",
+      "FND-15279F97",
+      "FND-172D2FE4",
+      "FND-1ABF45B7",
+      "FND-1B3355D5",
+      "FND-1D61DC3A",
+      "FND-1D713648",
+      "FND-1DF986F8",
+      "FND-1E35B220",
+      "FND-20217957",
+      "FND-212DC9B7",
+      "FND-267F1E09",
+      "FND-28F8790B",
+      "FND-2A77BAFB",
+      "FND-2B5C46B9",
+      "FND-2F99FB62",
+      "FND-2FAB8D51",
+      "FND-303495E9",
+      "FND-305216AF",
+      "FND-31405D96",
+      "FND-314D34C5",
+      "FND-332DC593",
+      "FND-337CB67F",
+      "FND-36179046",
+      "FND-38F0B929",
+      "FND-4108DB15",
+      "FND-4215704E",
+      "FND-4245FBF2",
+      "FND-47B1702F",
+      "FND-48967DB2",
+      "FND-4C146B0E",
+      "FND-4C645CB5",
+      "FND-500E0B2D",
+      "FND-50775B5A",
+      "FND-554BFB4A",
+      "FND-56C66B96",
+      "FND-57281AC5",
+      "FND-583EB5FE",
+      "FND-59A2F497",
+      "FND-5A5F6AB3",
+      "FND-5A742738",
+      "FND-5AB5DFA3",
+      "FND-5ABEE30B",
+      "FND-5EC15274",
+      "FND-69067A1C",
+      "FND-694B2DA0",
+      "FND-6A00BC2F",
+      "FND-6D307E93",
+      "FND-71D631C1",
+      "FND-72DCEE68",
+      "FND-74A80D24",
+      "FND-75CEBE09",
+      "FND-7838175A",
+      "FND-784A23E4",
+      "FND-7A32AC87",
+      "FND-7C5ED5B3",
+      "FND-7E1F2B3F",
+      "FND-7FA02383",
+      "FND-8071945B",
+      "FND-8083ECAC",
+      "FND-814A8889",
+      "FND-81E3EEA0",
+      "FND-82687B50",
+      "FND-850B270C",
+      "FND-85748D86",
+      "FND-89962239",
+      "FND-8C0BB623",
+      "FND-8DA35CA9",
+      "FND-8F0CB4F9",
+      "FND-91B45FF9",
+      "FND-934DCBE1",
+      "FND-9399FA02",
+      "FND-94C28ACE",
+      "FND-98A4D631",
+      "FND-9D19BE37",
+      "FND-A245072B",
+      "FND-A3D2773A",
+      "FND-A4B843EB",
+      "FND-A6312B6B",
+      "FND-A7137BC4",
+      "FND-AA571C63",
+      "FND-ADF96860",
+      "FND-AE629313",
+      "FND-B2AC0F8C",
+      "FND-B356F15B",
+      "FND-B59A077E",
+      "FND-B5C0CE8F",
+      "FND-B6BB0738",
+      "FND-B6C89A9C",
+      "FND-B8B75D91",
+      "FND-BB34B250",
+      "FND-BC00FF3A",
+      "FND-BFABC63C",
+      "FND-C0466EB3",
+      "FND-C4B133AA",
+      "FND-C59DCD29",
+      "FND-C69E0C67",
+      "FND-C75F81B9",
+      "FND-C7F16268",
+      "FND-C92C29DB",
+      "FND-CEE3D4D7",
+      "FND-D14B8424",
+      "FND-D2343F46",
+      "FND-D25BF914",
+      "FND-D45021AD",
+      "FND-D871D980",
+      "FND-D8BC7096",
+      "FND-DBE08E73",
+      "FND-DC0751CF",
+      "FND-DC3D4F71",
+      "FND-DE132C95",
+      "FND-DE978BF5",
+      "FND-E4596837",
+      "FND-E5C4209D",
+      "FND-EFC192D7",
+      "FND-F7FE8463",
+      "FND-F8C125D5",
+      "FND-F91D4A48",
+      "FND-FD617187"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "levels",
+   "heading": "Checks at each level",
+   "items": [
+    {
+     "kind": "table",
+     "id": "effect-levels",
+     "columns": [
+      "Level",
+      "Check",
+      "Learnings"
+     ],
+     "rows": [
+      [
+       "L1",
+       "communicated",
+       25
+      ],
+      [
+       "L2",
+       "understood",
+       25
+      ],
+      [
+       "L3",
+       "applied",
+       25
+      ],
+      [
+       "L4",
+       "effective",
+       25
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-02B682F3",
+       "FND-0BA85877",
+       "FND-0D4C2C13",
+       "FND-0FFC03BB",
+       "FND-15279F97"
+      ],
+      [
+       "FND-02B682F3",
+       "FND-0BA85877",
+       "FND-0D4C2C13",
+       "FND-0FFC03BB",
+       "FND-15279F97"
+      ],
+      [
+       "FND-02B682F3",
+       "FND-0BA85877",
+       "FND-0D4C2C13",
+       "FND-0FFC03BB",
+       "FND-15279F97"
+      ],
+      [
+       "FND-02B682F3",
+       "FND-0BA85877",
+       "FND-0D4C2C13",
+       "FND-0FFC03BB",
+       "FND-15279F97"
+      ]
+     ],
+     "cites": [
+      "FND-02B682F3",
+      "FND-0BA85877",
+      "FND-0D4C2C13",
+      "FND-0FFC03BB",
+      "FND-15279F97"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "indicators",
+   "heading": "Leading and lagging indicators",
+   "items": [
+    {
+     "kind": "table",
+     "id": "effect-indicators",
+     "columns": [
+      "LR",
+      "Leading",
+      "Lagging"
+     ],
+     "rows": [
+      [
+       "LR-01",
+       "Share of critical pressure-boundary spares with a specification and certificate on file (target 100%).",
+       "Pressure-boundary seal or gasket leaks (count per year), and leaks at substituted parts"
+      ],
+      [
+       "LR-02",
+       "Share of pressure-boundary work orders closed with a recorded test result and witness signature (audited sample).",
+       "Leaks at pressure-boundary joints within the first run after return to service (count per year)"
+      ],
+      [
+       "LR-03",
+       "Share of safety-critical jobs with all verification steps signed by someone other than the performer.",
+       "Defects in safety-critical repairs found after release to service (count per year)"
+      ],
+      [
+       "LR-04",
+       "Count of in-service equipment with an open corrective notification older than 7 days.",
+       "Failures on equipment returned to service while its corrective notification was open (count)"
+      ],
+      [
+       "LR-05",
+       "Number of bad actors flagged per quarter and share with a completed root-cause analysis within 60 days.",
+       "Repeat failures on the same tag within 12 months (count per year)"
+      ],
+      [
+       "LR-06",
+       "MOCs raised per month (non-zero, trending stable) and share of substitute-part issues with an MOC reference.",
+       "Incidents or near misses traced to an unreviewed change or substitute part (count per year)"
+      ],
+      [
+       "LR-07",
+       "Share of release scenarios in the plan with written criteria, valves and authority; time-to-isolate in drills.",
+       "Time from a confirmed major release to isolation in real events (minutes)"
+      ],
+      [
+       "LR-08",
+       "Isolation matrices in place for all hydrocarbon areas; tested in drills.",
+       "Major releases in which isolation began only after ignition or escalation (count)"
+      ],
+      [
+       "LR-09",
+       "Share of identified emergency isolation points with remote operation; ESD valve proof-test pass rate.",
+       "Releases in which an isolation valve could not be reached or operated (count)"
+      ],
+      [
+       "LR-10",
+       "Share of major-release areas covered by executive F&G action; spurious-trip and proof-test records.",
+       "Confirmed gas releases with no automatic protective action (count per year)"
+      ],
+      [
+       "LR-11",
+       "Share of zoned-area luminaires replaced with certified fittings.",
+       "Ex equipment defects found in service in zoned areas, and ignitions in zoned areas (count per year)"
+      ],
+      [
+       "LR-12",
+       "Share of control-room positions filled by qualified staff on each shift.",
+       "Emergencies or exercises in which the control-room crew did not complete its emergency duties (count)"
+      ],
+      [
+       "LR-13",
+       "Time from detection to control-room notification in drills (target under 1 minute).",
+       "Time from first sighting of a release to control-room notification in real events (minutes)"
+      ],
+      [
+       "LR-14",
+       "Share of high-hazard areas with continuous, redundant coverage; camera availability percentage.",
+       "Releases or fires not seen on camera in high-hazard areas (count)"
+      ],
+      [
+       "LR-15",
+       "Maximum clock drift between systems (target under 1 second), checked monthly.",
+       "Events whose timeline cannot be reconstructed from system records (count)"
+      ],
+      [
+       "LR-16",
+       "Share of critical calibrations with a complete checklist and second-person verification.",
+       "Unrecorded configuration changes found on critical instruments (count per year)"
+      ],
+      [
+       "LR-17",
+       "Number of open wall-loss findings without a fitness-for-service decision (target zero).",
+       "Leaks or ruptures at known wall-loss locations (count)"
+      ],
+      [
+       "LR-18",
+       "Inspection compliance against plan (percentage on time).",
+       "Corrosion leaks on lines with an overdue thickness inspection (count)"
+      ],
+      [
+       "LR-19",
+       "Share of safety-critical P&IDs field-verified in the last 5 years.",
+       "Isolation or maintenance errors traced to a drawing that did not match the field (count)"
+      ],
+      [
+       "LR-20",
+       "Share of audit items with recorded evidence; number of plant-specific defects found per audit.",
+       "Plant-specific defects found by an incident, inspection or regulator after an audit recorded compliance (count)"
+      ],
+      [
+       "LR-21",
+       "Number of extensions without approval record (target zero); overdue action count.",
+       "Overdue safety actions open past an unapproved extension (count, by age)"
+      ],
+      [
+       "LR-22",
+       "Unreconciled permits per week (target zero); share of permits with JSA attached.",
+       "Incidents during work with no permit or job safety analysis on record (count per year)"
+      ],
+      [
+       "LR-23",
+       "Diesel fire-pump availability percentage and test pass rate.",
+       "Diesel fire-water pump failures on demand or in test (count per year)"
+      ],
+      [
+       "LR-24",
+       "Share of drills with at least one recorded action; action closure rate.",
+       "Drill observations that recur at the next drill on the same scenario (count)"
+      ],
+      [
+       "LR-25",
+       "Occupied buildings in hazardous areas with a verified protective envelope (percentage).",
+       "Occupied buildings in hazardous areas found with an unprotected envelope (count)"
+      ]
+     ],
+     "row_cites": [
+      [
+       "FND-8C0BB623",
+       "FND-7A32AC87",
+       "FND-89962239",
+       "FND-B356F15B",
+       "FND-91B45FF9"
+      ],
+      [
+       "FND-7C5ED5B3",
+       "FND-FD617187",
+       "FND-212DC9B7",
+       "FND-15279F97",
+       "FND-7FA02383"
+      ],
+      [
+       "FND-2FAB8D51",
+       "FND-A6312B6B",
+       "FND-28F8790B",
+       "FND-59A2F497",
+       "FND-F8C125D5"
+      ],
+      [
+       "FND-50775B5A",
+       "FND-56C66B96",
+       "FND-267F1E09",
+       "FND-8071945B",
+       "FND-C59DCD29"
+      ],
+      [
+       "FND-8DA35CA9",
+       "FND-69067A1C",
+       "FND-71D631C1",
+       "FND-CEE3D4D7",
+       "FND-D14B8424"
+      ],
+      [
+       "FND-5A5F6AB3",
+       "FND-8083ECAC",
+       "FND-F7FE8463",
+       "FND-7838175A",
+       "FND-ADF96860"
+      ],
+      [
+       "FND-314D34C5",
+       "FND-DE132C95",
+       "FND-AE629313",
+       "FND-81E3EEA0",
+       "FND-500E0B2D"
+      ],
+      [
+       "FND-20217957",
+       "FND-36179046",
+       "FND-305216AF",
+       "FND-4245FBF2",
+       "FND-C92C29DB"
+      ],
+      [
+       "FND-4C645CB5",
+       "FND-31405D96",
+       "FND-A7137BC4",
+       "FND-DE978BF5",
+       "FND-DBE08E73"
+      ],
+      [
+       "FND-A245072B",
+       "FND-B5C0CE8F",
+       "FND-94C28ACE",
+       "FND-9399FA02",
+       "FND-D45021AD"
+      ],
+      [
+       "FND-784A23E4",
+       "FND-74A80D24",
+       "FND-C7F16268",
+       "FND-554BFB4A",
+       "FND-1D61DC3A"
+      ],
+      [
+       "FND-337CB67F",
+       "FND-E4596837",
+       "FND-4C146B0E",
+       "FND-02B682F3",
+       "FND-D2343F46"
+      ],
+      [
+       "FND-BC00FF3A",
+       "FND-5AB5DFA3",
+       "FND-1ABF45B7",
+       "FND-C75F81B9",
+       "FND-57281AC5"
+      ],
+      [
+       "FND-F91D4A48",
+       "FND-B59A077E",
+       "FND-6A00BC2F",
+       "FND-38F0B929",
+       "FND-934DCBE1"
+      ],
+      [
+       "FND-2B5C46B9",
+       "FND-4108DB15",
+       "FND-B6C89A9C",
+       "FND-0D4C2C13",
+       "FND-0FFC03BB"
+      ],
+      [
+       "FND-85748D86",
+       "FND-8F0CB4F9",
+       "FND-1E35B220",
+       "FND-DC3D4F71",
+       "FND-0BA85877"
+      ],
+      [
+       "FND-98A4D631",
+       "FND-6D307E93",
+       "FND-5EC15274",
+       "FND-47B1702F",
+       "FND-E5C4209D"
+      ],
+      [
+       "FND-172D2FE4",
+       "FND-75CEBE09",
+       "FND-2F99FB62",
+       "FND-5ABEE30B",
+       "FND-C4B133AA"
+      ],
+      [
+       "FND-72DCEE68",
+       "FND-82687B50",
+       "FND-D25BF914",
+       "FND-583EB5FE",
+       "FND-9D19BE37"
+      ],
+      [
+       "FND-C0466EB3",
+       "FND-4215704E",
+       "FND-303495E9",
+       "FND-48967DB2",
+       "FND-BB34B250"
+      ],
+      [
+       "FND-1D713648",
+       "FND-850B270C",
+       "FND-5A742738",
+       "FND-B2AC0F8C",
+       "FND-2A77BAFB"
+      ],
+      [
+       "FND-7E1F2B3F",
+       "FND-AA571C63",
+       "FND-A3D2773A",
+       "FND-EFC192D7",
+       "FND-1DF986F8"
+      ],
+      [
+       "FND-A4B843EB",
+       "FND-814A8889",
+       "FND-B6BB0738",
+       "FND-D8BC7096",
+       "FND-694B2DA0"
+      ],
+      [
+       "FND-DC0751CF",
+       "FND-B8B75D91",
+       "FND-BFABC63C",
+       "FND-C69E0C67",
+       "FND-332DC593"
+      ],
+      [
+       "FND-D871D980",
+       "FND-1B3355D5"
+      ]
+     ],
+     "cites": [
+      "FND-02B682F3",
+      "FND-0BA85877",
+      "FND-0D4C2C13",
+      "FND-0FFC03BB",
+      "FND-15279F97",
+      "FND-172D2FE4",
+      "FND-1ABF45B7",
+      "FND-1B3355D5",
+      "FND-1D61DC3A",
+      "FND-1D713648",
+      "FND-1DF986F8",
+      "FND-1E35B220",
+      "FND-20217957",
+      "FND-212DC9B7",
+      "FND-267F1E09",
+      "FND-28F8790B",
+      "FND-2A77BAFB",
+      "FND-2B5C46B9",
+      "FND-2F99FB62",
+      "FND-2FAB8D51",
+      "FND-303495E9",
+      "FND-305216AF",
+      "FND-31405D96",
+      "FND-314D34C5",
+      "FND-332DC593",
+      "FND-337CB67F",
+      "FND-36179046",
+      "FND-38F0B929",
+      "FND-4108DB15",
+      "FND-4215704E",
+      "FND-4245FBF2",
+      "FND-47B1702F",
+      "FND-48967DB2",
+      "FND-4C146B0E",
+      "FND-4C645CB5",
+      "FND-500E0B2D",
+      "FND-50775B5A",
+      "FND-554BFB4A",
+      "FND-56C66B96",
+      "FND-57281AC5",
+      "FND-583EB5FE",
+      "FND-59A2F497",
+      "FND-5A5F6AB3",
+      "FND-5A742738",
+      "FND-5AB5DFA3",
+      "FND-5ABEE30B",
+      "FND-5EC15274",
+      "FND-69067A1C",
+      "FND-694B2DA0",
+      "FND-6A00BC2F",
+      "FND-6D307E93",
+      "FND-71D631C1",
+      "FND-72DCEE68",
+      "FND-74A80D24",
+      "FND-75CEBE09",
+      "FND-7838175A",
+      "FND-784A23E4",
+      "FND-7A32AC87",
+      "FND-7C5ED5B3",
+      "FND-7E1F2B3F",
+      "FND-7FA02383",
+      "FND-8071945B",
+      "FND-8083ECAC",
+      "FND-814A8889",
+      "FND-81E3EEA0",
+      "FND-82687B50",
+      "FND-850B270C",
+      "FND-85748D86",
+      "FND-89962239",
+      "FND-8C0BB623",
+      "FND-8DA35CA9",
+      "FND-8F0CB4F9",
+      "FND-91B45FF9",
+      "FND-934DCBE1",
+      "FND-9399FA02",
+      "FND-94C28ACE",
+      "FND-98A4D631",
+      "FND-9D19BE37",
+      "FND-A245072B",
+      "FND-A3D2773A",
+      "FND-A4B843EB",
+      "FND-A6312B6B",
+      "FND-A7137BC4",
+      "FND-AA571C63",
+      "FND-ADF96860",
+      "FND-AE629313",
+      "FND-B2AC0F8C",
+      "FND-B356F15B",
+      "FND-B59A077E",
+      "FND-B5C0CE8F",
+      "FND-B6BB0738",
+      "FND-B6C89A9C",
+      "FND-B8B75D91",
+      "FND-BB34B250",
+      "FND-BC00FF3A",
+      "FND-BFABC63C",
+      "FND-C0466EB3",
+      "FND-C4B133AA",
+      "FND-C59DCD29",
+      "FND-C69E0C67",
+      "FND-C75F81B9",
+      "FND-C7F16268",
+      "FND-C92C29DB",
+      "FND-CEE3D4D7",
+      "FND-D14B8424",
+      "FND-D2343F46",
+      "FND-D25BF914",
+      "FND-D45021AD",
+      "FND-D871D980",
+      "FND-D8BC7096",
+      "FND-DBE08E73",
+      "FND-DC0751CF",
+      "FND-DC3D4F71",
+      "FND-DE132C95",
+      "FND-DE978BF5",
+      "FND-E4596837",
+      "FND-E5C4209D",
+      "FND-EFC192D7",
+      "FND-F7FE8463",
+      "FND-F8C125D5",
+      "FND-F91D4A48",
+      "FND-FD617187"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "audit",
+   "heading": "What an auditor would see",
+   "items": [
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-01 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-8C0BB623",
+      "FND-7A32AC87",
+      "FND-89962239",
+      "FND-B356F15B",
+      "FND-91B45FF9"
+     ],
+     "good_evidence": "A specification and certificate on file for each pressure-boundary spare, and a stores issue that is refused without a specification reference."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-02 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-7C5ED5B3",
+      "FND-FD617187",
+      "FND-212DC9B7",
+      "FND-15279F97",
+      "FND-7FA02383"
+     ],
+     "good_evidence": "A return-to-service procedure with test pressure, hold time and witness, and closed pressure-boundary work orders that each carry a recorded test result."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-03 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-2FAB8D51",
+      "FND-A6312B6B",
+      "FND-28F8790B",
+      "FND-59A2F497",
+      "FND-F8C125D5"
+     ],
+     "good_evidence": "Safety-critical jobs in the work plan with inspection, test-witness and close-out steps signed by someone other than the performer."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-04 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-50775B5A",
+      "FND-56C66B96",
+      "FND-267F1E09",
+      "FND-8071945B",
+      "FND-C59DCD29"
+     ],
+     "good_evidence": "No safety-critical equipment shown as available while its corrective notification is open, and monthly sample checks on record."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-05 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-8DA35CA9",
+      "FND-69067A1C",
+      "FND-71D631C1",
+      "FND-CEE3D4D7",
+      "FND-D14B8424"
+     ],
+     "good_evidence": "Repeat-failure triggers in the maintenance system, each with a root-cause task and a repair-or-replace decision."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-06 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-5A5F6AB3",
+      "FND-8083ECAC",
+      "FND-F7FE8463",
+      "FND-7838175A",
+      "FND-ADF96860"
+     ],
+     "good_evidence": "Work orders and stores issues for non-catalogue or substitute parts that each carry a management-of-change reference."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-07 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-314D34C5",
+      "FND-DE132C95",
+      "FND-AE629313",
+      "FND-81E3EEA0",
+      "FND-500E0B2D"
+     ],
+     "good_evidence": "Isolation criteria, valve lists and delegated authority in the emergency plan, and night-shift drill records with times to isolate."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-08 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-20217957",
+      "FND-36179046",
+      "FND-305216AF",
+      "FND-4245FBF2",
+      "FND-C92C29DB"
+     ],
+     "good_evidence": "Isolation matrices by area in the control room, and scenario training records with time to the isolate decision."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-09 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-4C645CB5",
+      "FND-31405D96",
+      "FND-A7137BC4",
+      "FND-DE978BF5",
+      "FND-DBE08E73"
+     ],
+     "good_evidence": "Emergency isolation valves that can be operated from the control room or a safe location, with proof-test records."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-10 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-A245072B",
+      "FND-B5C0CE8F",
+      "FND-94C28ACE",
+      "FND-9399FA02",
+      "FND-D45021AD"
+     ],
+     "good_evidence": "Confirmed-gas logic that starts isolation in the metering and terminal areas, with historised detector signals and proof tests."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-11 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-784A23E4",
+      "FND-74A80D24",
+      "FND-C7F16268",
+      "FND-554BFB4A",
+      "FND-1D61DC3A"
+     ],
+     "good_evidence": "Certified fittings in the zoned areas and an Ex inspection programme with item-level records."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-12 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-337CB67F",
+      "FND-E4596837",
+      "FND-4C146B0E",
+      "FND-02B682F3",
+      "FND-D2343F46"
+     ],
+     "good_evidence": "A control-room qualification with a simulator pass standard, met by every rostered operator."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-13 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-BC00FF3A",
+      "FND-5AB5DFA3",
+      "FND-1ABF45B7",
+      "FND-C75F81B9",
+      "FND-57281AC5"
+     ],
+     "good_evidence": "A direct channel from perimeter posts and the camera room to each control room, and drills that use the standard release message."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-14 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-F91D4A48",
+      "FND-B59A077E",
+      "FND-6A00BC2F",
+      "FND-38F0B929",
+      "FND-934DCBE1"
+     ],
+     "good_evidence": "Fixed cameras covering the metering skid, shown in the control room, with protected cabling and local recording."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-15 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-2B5C46B9",
+      "FND-4108DB15",
+      "FND-B6C89A9C",
+      "FND-0D4C2C13",
+      "FND-0FFC03BB"
+     ],
+     "good_evidence": "System clocks on one time source with drift alarms, and live, historised data from the metering-line transmitters."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-16 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-85748D86",
+      "FND-8F0CB4F9",
+      "FND-1E35B220",
+      "FND-DC3D4F71",
+      "FND-0BA85877"
+     ],
+     "good_evidence": "Calibration records for high-pressure meters with as-found and as-left values, a change log and a second person's check."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-17 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-98A4D631",
+      "FND-6D307E93",
+      "FND-5EC15274",
+      "FND-47B1702F",
+      "FND-E5C4209D"
+     ],
+     "good_evidence": "A fitness-for-service decision for each known wall-loss location, tracked in an integrity action register."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-18 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-172D2FE4",
+      "FND-75CEBE09",
+      "FND-2F99FB62",
+      "FND-5ABEE30B",
+      "FND-C4B133AA"
+     ],
+     "good_evidence": "Thickness inspections scheduled in the maintenance system with escalation, and none overdue."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-19 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-72DCEE68",
+      "FND-82687B50",
+      "FND-D25BF914",
+      "FND-583EB5FE",
+      "FND-9D19BE37"
+     ],
+     "good_evidence": "Controlled, field-verified drawings for the metering and emergency isolation systems."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-20 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-C0466EB3",
+      "FND-4215704E",
+      "FND-303495E9",
+      "FND-48967DB2",
+      "FND-BB34B250"
+     ],
+     "good_evidence": "Site-specific audit protocols with a record, photo or reading behind each compliance claim."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-21 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-1D713648",
+      "FND-850B270C",
+      "FND-5A742738",
+      "FND-B2AC0F8C",
+      "FND-2A77BAFB"
+     ],
+     "good_evidence": "Every due-date extension in the action tracker with the approver's record."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-22 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-7E1F2B3F",
+      "FND-AA571C63",
+      "FND-A3D2773A",
+      "FND-EFC192D7",
+      "FND-1DF986F8"
+     ],
+     "good_evidence": "An e-permit with a job safety analysis for each hydrocarbon job, and a daily reconciliation of issued and closed permits."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-23 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-A4B843EB",
+      "FND-814A8889",
+      "FND-B6BB0738",
+      "FND-D8BC7096",
+      "FND-694B2DA0"
+     ],
+     "good_evidence": "A performance standard for the diesel fire-water pumps, weekly run-test records and the pumps available."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-24 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-DC0751CF",
+      "FND-B8B75D91",
+      "FND-BFABC63C",
+      "FND-C69E0C67",
+      "FND-332DC593"
+     ],
+     "good_evidence": "One drill record per drill, with timings, observations and tracked actions."
+    },
+    {
+     "kind": "question",
+     "question": "What would an auditor see that shows LR-25 is applied?",
+     "why": "An auditor checks that the learning is applied, by what they can see or hear, not by what is written.",
+     "cites": [
+      "FND-D871D980",
+      "FND-1B3355D5"
+     ],
+     "good_evidence": "Blast-rated doors on the terminal control room and an envelope check against the occupied-building risk assessment."
+    }
+   ]
+  },
+  {
+   "id": "verification-log",
+   "heading": "Recording the checks",
+   "items": [
+    {
+     "kind": "para",
+     "text": "The organisation records each check in its own verification log, made with PMLC templates <ws> verification: one line per learning, with the check date, the level reached (communicated, understood, applied or effective), the evidence seen and the role that assessed it, all left blank for the organisation. Statuses come only from the organisation; this plan never records one.",
+     "cites": [
+      "FND-7A32AC87",
+      "FND-8C0BB623",
+      "FND-B8B75D91",
+      "FND-DC0751CF"
+     ]
+    }
+   ]
+  }
+ ]
+}
